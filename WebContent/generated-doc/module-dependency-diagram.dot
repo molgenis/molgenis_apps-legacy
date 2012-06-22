@@ -1,0 +1,94 @@
+digraph G {
+        color = "white"
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+        edge [
+             taillabel = "4"
+        ]
+	"org.molgenis.auth"->"org.molgenis.core"
+        edge [
+             taillabel = "3"
+        ]
+	"org.molgenis.data"->"org.molgenis.pheno"
+        edge [
+             taillabel = "1"
+        ]
+	"org.molgenis.data"->"org.molgenis.protocol"
+        edge [
+             taillabel = "3"
+        ]
+	"org.molgenis.data"->"org.molgenis.core"
+        edge [
+             taillabel = "4"
+        ]
+	"org.molgenis.organization"->"org.molgenis.core"
+        edge [
+             taillabel = "4"
+        ]
+	"org.molgenis.pheno"->"org.molgenis.core"
+        edge [
+             taillabel = "1"
+        ]
+	"org.molgenis.pheno"->"org.molgenis.organization"
+        edge [
+             taillabel = "2"
+        ]
+	"org.molgenis.protocol"->"org.molgenis.organization"
+        edge [
+             taillabel = "5"
+        ]
+	"org.molgenis.protocol"->"org.molgenis.core"
+        edge [
+             taillabel = "16"
+        ]
+	"org.molgenis.xgap"->"org.molgenis.pheno"
+        edge [
+             taillabel = "3"
+        ]
+	"org.molgenis.xgap"->"org.molgenis.core"
+        edge [
+             taillabel = "11"
+        ]
+	"org.molgenis.cluster"->"org.molgenis.core"
+        edge [
+             taillabel = "1"
+        ]
+	"org.molgenis.cluster"->"org.molgenis.xgap"
+        edge [
+             taillabel = "3"
+        ]
+	"org.molgenis.hemodb"->"org.molgenis.pheno"
+        edge [
+             taillabel = "1"
+        ]
+	"org.molgenis.hemodb"->"org.molgenis.xgap"
+}

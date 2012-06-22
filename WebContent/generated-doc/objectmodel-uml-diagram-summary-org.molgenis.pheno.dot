@@ -1,0 +1,477 @@
+digraph G {
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+		orientation = "portrait"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Species" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Species}"
+                ]
+
+               "AlternateId" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{AlternateId}"
+                ]
+
+               "ObservationElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationElement}"
+                ]
+
+               "ObservationTarget" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationTarget}"
+                ]
+
+               "ObservableFeature" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservableFeature}"
+                ]
+
+               "Measurement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Measurement}"
+                ]
+
+               "Category" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Category}"
+                ]
+
+               "Individual" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Individual}"
+                ]
+
+               "Location" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Location}"
+                ]
+
+               "Panel" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Panel}"
+                ]
+
+               "Observation" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Observation}"
+                ]
+
+               "ObservedValue" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedValue}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 1
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 2
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 3
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 4
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 5
+                style="filled"*/
+
+                "Species" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Species}"
+                ]
+                "AlternateId" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{AlternateId}"
+                ]
+                "ObservationElement" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationElement}"
+                ]
+                "ObservationTarget" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationTarget}"
+                ]
+                "ObservableFeature" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservableFeature}"
+                ]
+                "Measurement" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Measurement}"
+                ]
+                "Category" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Category}"
+                ]
+                "Individual" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Individual}"
+                ]
+                "Location" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Location}"
+                ]
+                "Panel" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Panel}"
+                ]
+                "Observation" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Observation}"
+                ]
+                "ObservedValue" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedValue}"
+                ]
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 6
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 7
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 8
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 9
+                style="filled"*/
+
+/*        }  */
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        "Species" -> "OntologyTerm"
+        "AlternateId" -> "OntologyTerm"
+        "ObservationTarget" -> "ObservationElement"
+        "ObservableFeature" -> "ObservationElement"
+        "Measurement" -> "ObservableFeature"
+        "Category" -> "ObservationElement"
+        "Individual" -> "ObservationTarget"
+        "Location" -> "ObservationTarget"
+        "Panel" -> "ObservationTarget"
+
+/*interface relationships*/
+        edge [
+                color = "#808080"
+        ]
+    	"ObservedValue" -> "Observation"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+                color = "black"
+        ]
+		"ObservationElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservationElement" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Measurement" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Measurement" -> "MolgenisEntity" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Category" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Individual" -> "Individual" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Individual" -> "Individual" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Panel" -> "Species" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Panel" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Observation" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Observation" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Observation" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"Observation" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ObservationElement" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+             constraint = false
+        ]
+		"AlternateId" -> "ObservationElement"[
+			]
+		"Category" -> "Measurement"[
+			]
+		"Individual" -> "Panel"[
+			]
+		"Panel" -> "Panel"[
+			]
+}

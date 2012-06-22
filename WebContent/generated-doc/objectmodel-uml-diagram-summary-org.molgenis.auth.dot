@@ -1,0 +1,301 @@
+digraph G {
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+		orientation = "portrait"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Contact" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Contact}"
+                ]
+
+               "Person" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Person}"
+                ]
+
+               "Institute" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Institute}"
+                ]
+
+               "Authorizable" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Authorizable}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 1
+                style="filled"*/
+
+                "MolgenisRole" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MolgenisRole}"
+                ]
+                "MolgenisGroup" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MolgenisGroup}"
+                ]
+                "MolgenisRoleGroupLink" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MolgenisRoleGroupLink}"
+                ]
+                "Contact" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Contact}"
+                ]
+                "Person" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Person}"
+                ]
+                "Institute" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Institute}"
+                ]
+                "MolgenisUser" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MolgenisUser}"
+                ]
+                "MolgenisPermission" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MolgenisPermission}"
+                ]
+                "Authorizable" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Authorizable}"
+                ]
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 2
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 3
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 4
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 5
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 6
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 7
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 8
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 9
+                style="filled"*/
+
+/*        }  */
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        "MolgenisGroup" -> "MolgenisRole"
+        "Person" -> "MolgenisRole"
+        "MolgenisUser" -> "Person"
+
+/*interface relationships*/
+        edge [
+                color = "#808080"
+        ]
+    	"Person" -> "Contact"
+    	"Institute" -> "Contact"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+                color = "black"
+        ]
+		"Person" -> "Institute" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Person" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Authorizable" -> "MolgenisRole" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Authorizable" -> "MolgenisRole" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Authorizable" -> "MolgenisRole" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+             constraint = false
+        ]
+}

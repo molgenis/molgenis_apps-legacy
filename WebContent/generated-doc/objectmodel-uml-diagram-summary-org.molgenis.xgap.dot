@@ -1,0 +1,679 @@
+digraph G {
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+		orientation = "portrait"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Locus" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Locus}"
+                ]
+
+               "Chromosome" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Chromosome}"
+                ]
+
+               "NMRBin" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{NMRBin}"
+                ]
+
+               "Clone" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Clone}"
+                ]
+
+               "DerivedTrait" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DerivedTrait}"
+                ]
+
+               "EnvironmentalFactor" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{EnvironmentalFactor}"
+                ]
+
+               "Gene" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Gene}"
+                ]
+
+               "Transcript" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Transcript}"
+                ]
+
+               "Protein" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Protein}"
+                ]
+
+               "Metabolite" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Metabolite}"
+                ]
+
+               "Marker" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Marker}"
+                ]
+
+               "SNP" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SNP}"
+                ]
+
+               "Polymorphism" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Polymorphism}"
+                ]
+
+               "Probe" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Probe}"
+                ]
+
+               "Spot" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Spot}"
+                ]
+
+               "ProbeSet" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProbeSet}"
+                ]
+
+               "MassPeak" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MassPeak}"
+                ]
+
+               "InvestigationFile" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{InvestigationFile}"
+                ]
+
+               "Tissue" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Tissue}"
+                ]
+
+               "SampleLabel" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SampleLabel}"
+                ]
+
+               "Sample" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Sample}"
+                ]
+
+               "PairedSample" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{PairedSample}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 1
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 2
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 3
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 4
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 5
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 6
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 7
+                style="filled"*/
+
+                "Locus" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Locus}"
+                ]
+                "Chromosome" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Chromosome}"
+                ]
+                "NMRBin" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{NMRBin}"
+                ]
+                "Clone" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Clone}"
+                ]
+                "DerivedTrait" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DerivedTrait}"
+                ]
+                "EnvironmentalFactor" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{EnvironmentalFactor}"
+                ]
+                "Gene" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Gene}"
+                ]
+                "Transcript" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Transcript}"
+                ]
+                "Protein" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Protein}"
+                ]
+                "Metabolite" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Metabolite}"
+                ]
+                "Marker" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Marker}"
+                ]
+                "SNP" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SNP}"
+                ]
+                "Polymorphism" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Polymorphism}"
+                ]
+                "Probe" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Probe}"
+                ]
+                "Spot" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Spot}"
+                ]
+                "ProbeSet" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProbeSet}"
+                ]
+                "MassPeak" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MassPeak}"
+                ]
+                "InvestigationFile" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{InvestigationFile}"
+                ]
+                "Tissue" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Tissue}"
+                ]
+                "SampleLabel" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SampleLabel}"
+                ]
+                "Sample" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Sample}"
+                ]
+                "PairedSample" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{PairedSample}"
+                ]
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 8
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 9
+                style="filled"*/
+
+/*        }  */
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        "Chromosome" -> "ObservableFeature"
+        "NMRBin" -> "ObservableFeature"
+        "Clone" -> "ObservableFeature"
+        "DerivedTrait" -> "ObservableFeature"
+        "EnvironmentalFactor" -> "ObservableFeature"
+        "Gene" -> "ObservableFeature"
+        "Transcript" -> "ObservableFeature"
+        "Protein" -> "ObservableFeature"
+        "Metabolite" -> "ObservableFeature"
+        "Marker" -> "ObservableFeature"
+        "SNP" -> "Marker"
+        "Polymorphism" -> "ObservableFeature"
+        "Probe" -> "ObservableFeature"
+        "Spot" -> "Probe"
+        "ProbeSet" -> "ObservableFeature"
+        "MassPeak" -> "ObservableFeature"
+        "InvestigationFile" -> "MolgenisFile"
+        "Tissue" -> "OntologyTerm"
+        "SampleLabel" -> "OntologyTerm"
+        "Sample" -> "ObservationTarget"
+        "PairedSample" -> "ObservationTarget"
+
+/*interface relationships*/
+        edge [
+                color = "#808080"
+        ]
+    	"Clone" -> "Locus"
+    	"Gene" -> "Locus"
+    	"Marker" -> "Locus"
+    	"Probe" -> "Locus"
+    	"ProbeSet" -> "Locus"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+                color = "black"
+        ]
+		"Locus" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Chromosome" -> "Species" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Clone" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Gene" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Transcript" -> "Gene" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protein" -> "Gene" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protein" -> "Transcript" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Marker" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Probe" -> "ProbeSet" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Probe" -> "Gene" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Probe" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ProbeSet" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"InvestigationFile" -> "Investigation" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"Sample" -> "Individual" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Sample" -> "Tissue" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "Individual" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "SampleLabel" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "Individual" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "SampleLabel" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+             constraint = false
+        ]
+		"Marker" -> "Marker"[
+			]
+		"Polymorphism" -> "SNP"[
+			]
+}

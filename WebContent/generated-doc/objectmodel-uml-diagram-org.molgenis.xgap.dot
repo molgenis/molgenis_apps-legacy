@@ -1,0 +1,661 @@
+digraph G {
+        color = "white"
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Locus" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Locus|chromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\l}"
+                ]
+
+               "Chromosome" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Chromosome\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lorderNr : int*\lisAutosomal : bool*\lbpLength : int\lspecies : xref-&gt;species\l}"
+                ]
+
+               "NMRBin" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{NMRBin\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "Clone" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Clone\n implements Locus\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\l}"
+                ]
+
+               "DerivedTrait" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DerivedTrait\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "EnvironmentalFactor" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{EnvironmentalFactor\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "Gene" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Gene\n implements Locus\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lorientation : enum\lcontrol : bool\l}"
+                ]
+
+               "Transcript" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Transcript\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lgene : xref-&gt;gene\l}"
+                ]
+
+               "Protein" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Protein\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lgene : xref-&gt;gene\ltranscript : xref-&gt;transcript\laminoSequence : text\lmass : decimal\l}"
+                ]
+
+               "Metabolite" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Metabolite\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lformula : string\lmass : decimal\lstructure : text\l}"
+                ]
+
+               "Marker" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Marker\n implements Locus\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lreportsFor : mref-&gt;marker\l}"
+                ]
+
+               "SNP" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SNP\n extends marker|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lreportsFor : mref-&gt;marker\lstatus : string\lpolymorphism : mref-&gt;polymorphism\l}"
+                ]
+
+               "Polymorphism" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Polymorphism\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lbase : enum*\lvalue : string\l}"
+                ]
+
+               "Probe" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Probe\n implements Locus\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lmismatch : bool*\lprobeSet : xref-&gt;probeSet\lreportsFor : xref-&gt;gene\l}"
+                ]
+
+               "Spot" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Spot\n extends probe|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lmismatch : bool*\lprobeSet : xref-&gt;probeSet\lreportsFor : xref-&gt;gene\lx : int*\ly : int*\lgridX : int\lgridY : int\l}"
+                ]
+
+               "ProbeSet" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProbeSet\n implements Locus\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\l}"
+                ]
+
+               "MassPeak" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MassPeak\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lmZ : decimal\lretentionTime : decimal\l}"
+                ]
+
+               "InvestigationFile" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{InvestigationFile\n extends molgenisFile|name : string*\lextension : string*\linvestigation : xref-&gt;investigation*\l}"
+                ]
+
+               "Tissue" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Tissue\n extends ontologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+
+               "SampleLabel" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SampleLabel\n extends ontologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+
+               "Sample" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Sample\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lindividual : xref-&gt;individual\ltissue : xref-&gt;tissue\l}"
+                ]
+
+               "PairedSample" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{PairedSample\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lsubject1 : xref-&gt;individual*\llabel1 : xref-&gt;sampleLabel\lsubject2 : xref-&gt;individual*\llabel2 : xref-&gt;sampleLabel\l}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+                "Locus" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Locus|chromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\l}"
+                ]
+                "Chromosome" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Chromosome\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lorderNr : int*\lisAutosomal : bool*\lbpLength : int\lspecies : xref-&gt;species\l}"
+                ]
+                "NMRBin" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{NMRBin\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "Clone" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Clone\n implements Locus\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\l}"
+                ]
+                "DerivedTrait" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DerivedTrait\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "EnvironmentalFactor" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{EnvironmentalFactor\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "Gene" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Gene\n implements Locus\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lorientation : enum\lcontrol : bool\l}"
+                ]
+                "Transcript" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Transcript\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lgene : xref-&gt;gene\l}"
+                ]
+                "Protein" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Protein\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lgene : xref-&gt;gene\ltranscript : xref-&gt;transcript\laminoSequence : text\lmass : decimal\l}"
+                ]
+                "Metabolite" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Metabolite\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lformula : string\lmass : decimal\lstructure : text\l}"
+                ]
+                "Marker" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Marker\n implements Locus\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lreportsFor : mref-&gt;marker\l}"
+                ]
+                "SNP" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SNP\n extends Marker|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lreportsFor : mref-&gt;marker\lstatus : string\lpolymorphism : mref-&gt;polymorphism\l}"
+                ]
+                "Polymorphism" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Polymorphism\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lbase : enum*\lvalue : string\l}"
+                ]
+                "Probe" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Probe\n implements Locus\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lmismatch : bool*\lprobeSet : xref-&gt;probeSet\lreportsFor : xref-&gt;gene\l}"
+                ]
+                "Spot" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Spot\n extends Probe|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lmismatch : bool*\lprobeSet : xref-&gt;probeSet\lreportsFor : xref-&gt;gene\lx : int*\ly : int*\lgridX : int\lgridY : int\l}"
+                ]
+                "ProbeSet" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProbeSet\n implements Locus\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\l}"
+                ]
+                "MassPeak" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{MassPeak\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lmZ : decimal\lretentionTime : decimal\l}"
+                ]
+                "InvestigationFile" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{InvestigationFile\n extends MolgenisFile|name : string*\lextension : string*\linvestigation : xref-&gt;investigation*\l}"
+                ]
+                "Tissue" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Tissue\n extends OntologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+                "SampleLabel" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{SampleLabel\n extends OntologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+                "Sample" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Sample\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lindividual : xref-&gt;individual\ltissue : xref-&gt;tissue\l}"
+                ]
+                "PairedSample" [
+                	    style = "filled"
+                	    fillcolor =  "7"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{PairedSample\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lsubject1 : xref-&gt;individual*\llabel1 : xref-&gt;sampleLabel\lsubject2 : xref-&gt;individual*\llabel2 : xref-&gt;sampleLabel\l}"
+                ]
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+
+/*interface relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "#808080"
+        ]
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        
+        "Chromosome" -> "ObservableFeature"
+        "NMRBin" -> "ObservableFeature"
+        "Clone" -> "ObservableFeature"
+        "DerivedTrait" -> "ObservableFeature"
+        "EnvironmentalFactor" -> "ObservableFeature"
+        "Gene" -> "ObservableFeature"
+        "Transcript" -> "ObservableFeature"
+        "Protein" -> "ObservableFeature"
+        "Metabolite" -> "ObservableFeature"
+        "Marker" -> "ObservableFeature"
+        "SNP" -> "Marker"
+        "Polymorphism" -> "ObservableFeature"
+        "Probe" -> "ObservableFeature"
+        "Spot" -> "Probe"
+        "ProbeSet" -> "ObservableFeature"
+        "MassPeak" -> "ObservableFeature"
+        "InvestigationFile" -> "MolgenisFile"
+        "Tissue" -> "OntologyTerm"
+        "SampleLabel" -> "OntologyTerm"
+        "Sample" -> "ObservationTarget"
+        "PairedSample" -> "ObservationTarget"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+        ]
+		"Chromosome" -> "Species" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Clone" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Gene" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Transcript" -> "Gene" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protein" -> "Gene" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protein" -> "Transcript" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Marker" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Probe" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Probe" -> "ProbeSet" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Probe" -> "Gene" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ProbeSet" -> "Chromosome" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"InvestigationFile" -> "Investigation" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"Sample" -> "Individual" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Sample" -> "Tissue" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "Individual" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "SampleLabel" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "Individual" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"PairedSample" -> "SampleLabel" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+        ]
+		"Marker" -> "Marker"[
+			]
+		"SNP" -> "Polymorphism"[
+			]
+}

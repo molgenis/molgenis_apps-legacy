@@ -1,0 +1,231 @@
+digraph G {
+        color = "white"
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Contact" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Contact\n implements Identifiable|id : int*\laddress : text\lphone : string\lemail : string\lfax : string\ltollFreePhone : string\lcity : string\lcountry : string\l}"
+                ]
+
+               "Person" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Person\n implements Contact\n extends molgenisRole|id : int*\lname : string*\laddress : text\lphone : string\lemail : string\lfax : string\ltollFreePhone : string\lcity : string\lcountry : string\lfirstName : string\lmidInitials : string\llastName : string\ltitle : string\laffiliation : xref-&gt;institute\ldepartment : string\lroles : xref-&gt;ontologyTerm\l}"
+                ]
+
+               "Institute" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Institute\n implements Contact|id : int*\laddress : text\lphone : string\lemail : string\lfax : string\ltollFreePhone : string\lcity : string\lcountry : string\lname : string*\l}"
+                ]
+
+               "Authorizable" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Authorizable|canRead : xref-&gt;molgenisRole\lcanWrite : xref-&gt;molgenisRole\lowns : xref-&gt;molgenisRole*\l}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+                "Contact" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Contact\n implements Identifiable|id : int*\laddress : text\lphone : string\lemail : string\lfax : string\ltollFreePhone : string\lcity : string\lcountry : string\l}"
+                ]
+                "Person" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Person\n implements Contact\n extends MolgenisRole|id : int*\lname : string*\laddress : text\lphone : string\lemail : string\lfax : string\ltollFreePhone : string\lcity : string\lcountry : string\lfirstName : string\lmidInitials : string\llastName : string\ltitle : string\laffiliation : xref-&gt;institute\ldepartment : string\lroles : xref-&gt;ontologyTerm\l}"
+                ]
+                "Institute" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Institute\n implements Contact|id : int*\laddress : text\lphone : string\lemail : string\lfax : string\ltollFreePhone : string\lcity : string\lcountry : string\lname : string*\l}"
+                ]
+                "Authorizable" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Authorizable|canRead : xref-&gt;molgenisRole\lcanWrite : xref-&gt;molgenisRole\lowns : xref-&gt;molgenisRole*\l}"
+                ]
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+
+/*interface relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "#808080"
+        ]
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        
+        "MolgenisUser" -> "Person"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+        ]
+		"Person" -> "Institute" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Person" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+        ]
+}
