@@ -150,6 +150,8 @@ SELECT 'HemoGene' AS entity, count(*) AS count FROM ObservationElement NATURAL J
  UNION 
 SELECT 'HemoProbe' AS entity, count(*) AS count FROM ObservationElement NATURAL JOIN ObservableFeature NATURAL JOIN HemoProbe WHERE __Type = 'HemoProbe'
  UNION 
+SELECT 'HemoSampleGroup' AS entity, count(*) AS count FROM HemoSampleGroup
+ UNION 
 SELECT 'ObservedInference_derivedFrom' AS entity, count(*) AS count FROM ObservedInference_derivedFrom
  UNION 
 SELECT 'Investigation_contacts' AS entity, count(*) AS count FROM Investigation_contacts

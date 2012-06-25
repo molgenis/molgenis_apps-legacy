@@ -191,6 +191,7 @@
 <li><a href="#HemoSample">HemoSample</a></li>
 <li><a href="#HemoGene">HemoGene</a></li>
 <li><a href="#HemoProbe">HemoProbe</a></li>
+<li><a href="#HemoSampleGroup">HemoSampleGroup</a></li>
 </ul>
 </td>
 <td>
@@ -281,6 +282,7 @@
 <li><a href="#HemoSample">HemoSample</a></li>
 <li><a href="#HemoGene">HemoGene</a></li>
 <li><a href="#HemoProbe">HemoProbe</a></li>
+<li><a href="#HemoSampleGroup">HemoSampleGroup</a></li>
 </ul>
 </td>
 </tr></table>
@@ -6250,14 +6252,6 @@ label,
 </td></tr>
 <tr>
 <td 1>
-<b>Sample_Group</b>: string 
-(optional)
-</td>
-</tr>
-<tr><td style="padding-left: 50px;">Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
-</td></tr>
-<tr>
-<td 1>
 <b>age</b>: string 
 (optional)
 </td>
@@ -6352,6 +6346,18 @@ label,
 </tr>
 <tr><td style="padding-left: 50px;">Complete remission
 </td></tr>
+</table>
+<p>
+<u>Associations:</u>
+<table>	
+<tr>
+<td 1>
+<b>SampleGroup</b>: 
+HemoSampleGroup (0..1)
+
+</td>
+</tr>
+
 </table>
 <p>
 <u>Constraints:</u>
@@ -6548,6 +6554,59 @@ Chromosome (0..1)
 </tr>
 <tr><td style="padding-left: 50px;">
 Field id is unique within an HemoProbe.
+</td></tr>
+</table>
+<h3><a name="HemoSampleGroup">HemoSampleGroup</a></h3>
+<p style="margin-top: 0px; margin-bottom: 0px;">
+
+<i> implements Identifiable</i><br>
+</p>
+<p>	
+Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
+			
+
+</p>
+<p>
+<u>Inherited atttributes:</u><br>
+id, 
+</p>
+<p>
+<u>Attributes:</u>
+<table>	
+<tr>
+<td 1>
+<b>name</b>: string 
+(optional)
+</td>
+</tr>
+
+<tr>
+<td style="color:#333333;">
+<b>id</b>: int 
+(required)
+</td>
+</tr>
+<tr><td style="padding-left: 50px;">automatically generated id
+</td></tr>
+</table>
+<p>
+<u>Constraints:</u>
+<table>	
+<tr>
+<td style="color:#333333;">
+<b>unique(id)</b>: 
+</td>
+</tr>
+<tr><td style="padding-left: 50px;">
+Field id is unique within an HemoSampleGroup.
+</td></tr>
+<tr>
+<td style="color:#333333;">
+<b>unique(name)</b>: 
+</td>
+</tr>
+<tr><td style="padding-left: 50px;">
+Field name is unique within an HemoSampleGroup.
 </td></tr>
 </table>
 <br>
@@ -12447,14 +12506,6 @@ label,
 </td></tr>
 <tr>
 <td 1>
-<b>Sample_Group</b>: string 
-(optional)
-</td>
-</tr>
-<tr><td style="padding-left: 50px;">Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
-</td></tr>
-<tr>
-<td 1>
 <b>age</b>: string 
 (optional)
 </td>
@@ -12549,6 +12600,18 @@ label,
 </tr>
 <tr><td style="padding-left: 50px;">Complete remission
 </td></tr>
+</table>
+<p>
+<u>Associations:</u>
+<table>	
+<tr>
+<td 1>
+<b>SampleGroup</b>: 
+HemoSampleGroup (0..1)
+
+</td>
+</tr>
+
 </table>
 <p>
 <u>Constraints:</u>
@@ -12747,6 +12810,59 @@ Chromosome (0..1)
 Field id is unique within an HemoProbe.
 </td></tr>
 </table>
+<h3><a name="HemoSampleGroup">HemoSampleGroup</a></h3>
+<p style="margin-top: 0px; margin-bottom: 0px;">
+
+<i> implements Identifiable</i><br>
+</p>
+<p>	
+Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
+			
+
+</p>
+<p>
+<u>Inherited atttributes:</u><br>
+id, 
+</p>
+<p>
+<u>Attributes:</u>
+<table>	
+<tr>
+<td 1>
+<b>name</b>: string 
+(optional)
+</td>
+</tr>
+
+<tr>
+<td style="color:#333333;">
+<b>id</b>: int 
+(required)
+</td>
+</tr>
+<tr><td style="padding-left: 50px;">automatically generated id
+</td></tr>
+</table>
+<p>
+<u>Constraints:</u>
+<table>	
+<tr>
+<td style="color:#333333;">
+<b>unique(id)</b>: 
+</td>
+</tr>
+<tr><td style="padding-left: 50px;">
+Field id is unique within an HemoSampleGroup.
+</td></tr>
+<tr>
+<td style="color:#333333;">
+<b>unique(name)</b>: 
+</td>
+</tr>
+<tr><td style="padding-left: 50px;">
+Field name is unique within an HemoSampleGroup.
+</td></tr>
+</table>
 <br>
 <br>
 
@@ -12756,7 +12872,7 @@ Field id is unique within an HemoProbe.
 <br>
 <a href="#_top_of_page">go to top</a>
 
-<div align="center">Documentation generated on June 22, 2012 by MOLGENIS <a href="http://www.molgenis.org">http://www.molgenis.org</a></div>
+<div align="center">Documentation generated on June 25, 2012 by MOLGENIS <a href="http://www.molgenis.org">http://www.molgenis.org</a></div>
 </body></html>
 
 

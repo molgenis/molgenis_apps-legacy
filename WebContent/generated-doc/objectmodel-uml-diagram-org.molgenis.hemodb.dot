@@ -39,7 +39,7 @@ digraph G {
 			        	fontcolor = "black"
 			        	color = "black"
                 
-                        label = "{HemoSample\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lplatform : string\lrNA_Amplification : string\lsample : string\lexpr_CD34 : string\laML_normal : string\lsample_Group : string\lage : string\lfAB : string\lrisk : string\lfLT3_class : string\lnPM : string\lpROCENT_CD34 : decimal\lpB_BM_cb : string\lage_years : decimal\lcytogenetics : string\loS_months : string\leFS_months : string\lcR : string\l}"
+                        label = "{HemoSample\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lplatform : string\lrNA_Amplification : string\lsample : string\lexpr_CD34 : string\laML_normal : string\lsampleGroup : xref-&gt;hemoSampleGroup\lage : string\lfAB : string\lrisk : string\lfLT3_class : string\lnPM : string\lpROCENT_CD34 : decimal\lpB_BM_cb : string\lage_years : decimal\lcytogenetics : string\loS_months : string\leFS_months : string\lcR : string\l}"
                 ]
 
                "HemoGene" [
@@ -60,6 +60,16 @@ digraph G {
 			        	color = "black"
                 
                         label = "{HemoProbe\n implements Locus\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lprobeSet : xref-&gt;probeSet\lreportsFor : xref-&gt;hemoGene\lentrezID : string\lrefseqID : string\l}"
+                ]
+
+               "HemoSampleGroup" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{HemoSampleGroup\n implements Identifiable|id : int*\lname : string\l}"
                 ]
 
 /*entities inside modules*/
@@ -150,7 +160,7 @@ digraph G {
 			        	fontcolor = "black"
 			        	color = "black"
                 
-                        label = "{HemoSample\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lplatform : string\lrNA_Amplification : string\lsample : string\lexpr_CD34 : string\laML_normal : string\lsample_Group : string\lage : string\lfAB : string\lrisk : string\lfLT3_class : string\lnPM : string\lpROCENT_CD34 : decimal\lpB_BM_cb : string\lage_years : decimal\lcytogenetics : string\loS_months : string\leFS_months : string\lcR : string\l}"
+                        label = "{HemoSample\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lplatform : string\lrNA_Amplification : string\lsample : string\lexpr_CD34 : string\laML_normal : string\lsampleGroup : xref-&gt;hemoSampleGroup\lage : string\lfAB : string\lrisk : string\lfLT3_class : string\lnPM : string\lpROCENT_CD34 : decimal\lpB_BM_cb : string\lage_years : decimal\lcytogenetics : string\loS_months : string\leFS_months : string\lcR : string\l}"
                 ]
                 "HemoGene" [
                 	    style = "filled"
@@ -169,6 +179,15 @@ digraph G {
 			        	color = "black"
                 
                         label = "{HemoProbe\n implements Locus\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lchromosome : xref-&gt;chromosome\lcM : decimal\lbpStart : long\lbpEnd : long\lseq : text\lsymbol : string\lprobeSet : xref-&gt;probeSet\lreportsFor : xref-&gt;hemoGene\lentrezID : string\lrefseqID : string\l}"
+                ]
+                "HemoSampleGroup" [
+                	    style = "filled"
+                	    fillcolor =  "1"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{HemoSampleGroup\n implements Identifiable|id : int*\lname : string\l}"
                 ]
 /*        }  */
 
@@ -193,6 +212,10 @@ digraph G {
                 arrowhead = "open"
                 arrowsize = 0.6
         ]
+		"HemoSample" -> "HemoSampleGroup" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
 		"HemoProbe" -> "Chromosome" [
 			headlabel = "0..1"
 			taillabel = "*"

@@ -150,6 +150,8 @@ SELECT 'HemoGene' AS entity, count(*) AS count FROM hemoGene
  UNION 
 SELECT 'HemoProbe' AS entity, count(*) AS count FROM hemoProbe
  UNION 
+SELECT 'HemoSampleGroup' AS entity, count(*) AS count FROM hemoSampleGroup
+ UNION 
 SELECT 'ObservedInference_derivedFrom' AS entity, count(*) AS count FROM observedInference_derivedFrom
  UNION 
 SELECT 'Investigation_contacts' AS entity, count(*) AS count FROM investigation_contacts

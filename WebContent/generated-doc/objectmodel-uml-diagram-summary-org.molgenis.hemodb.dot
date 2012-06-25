@@ -62,6 +62,16 @@ digraph G {
                         label = "{HemoProbe}"
                 ]
 
+               "HemoSampleGroup" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{HemoSampleGroup}"
+                ]
+
 /*entities inside modules*/
 /*        subgraph cluster_0 {
         		rankdir = "TB"
@@ -179,6 +189,15 @@ digraph G {
                 
                         label = "{HemoProbe}"
                 ]
+                "HemoSampleGroup" [
+                	    style = "filled"
+                	    fillcolor =  "9"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{HemoSampleGroup}"
+                ]
 /*        }  */
 
 /*inheritance relationships*/
@@ -201,6 +220,10 @@ digraph G {
                 arrowsize = 0.6
                 color = "black"
         ]
+		"HemoSample" -> "HemoSampleGroup" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
 		"HemoProbe" -> "ProbeSet" [
 			headlabel = "0..1"
 			taillabel = "*"

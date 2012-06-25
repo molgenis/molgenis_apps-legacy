@@ -98,6 +98,7 @@ INSERT INTO MolgenisEntity(name, type_, classname) values ('RScript', 'ENTITY', 
 INSERT INTO MolgenisEntity(name, type_, classname) values ('HemoSample', 'ENTITY', 'org.molgenis.hemodb.HemoSample');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('HemoGene', 'ENTITY', 'org.molgenis.hemodb.HemoGene');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('HemoProbe', 'ENTITY', 'org.molgenis.hemodb.HemoProbe');
+INSERT INTO MolgenisEntity(name, type_, classname) values ('HemoSampleGroup', 'ENTITY', 'org.molgenis.hemodb.HemoSampleGroup');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('ObservedInference_DerivedFrom', 'ENTITY', 'org.molgenis.data.ObservedInference_DerivedFrom');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('Investigation_Contacts', 'ENTITY', 'org.molgenis.organization.Investigation_Contacts');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('ObservationElement_AlternateId', 'ENTITY', 'org.molgenis.pheno.ObservationElement_AlternateId');
@@ -131,6 +132,7 @@ INSERT INTO MolgenisEntity(name, type_, classname) values ('ProbesFormController
 INSERT INTO MolgenisEntity(name, type_, classname) values ('ProbeCollectionFormController', 'FORM', 'app.ui.ProbeCollectionFormController');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('GenesFormController', 'FORM', 'app.ui.GenesFormController');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('TranscriptsFormController', 'FORM', 'app.ui.TranscriptsFormController');
+INSERT INTO MolgenisEntity(name, type_, classname) values ('SampleGroupFormController', 'FORM', 'app.ui.SampleGroupFormController');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('ImportDataMenuMenu', 'MENU', 'app.ui.ImportDataMenuMenu');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('QTLWizardPlugin', 'PLUGIN', 'app.ui.QTLWizardPlugin');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('PlinkFileManagerPlugin', 'PLUGIN', 'app.ui.PlinkFileManagerPlugin');
@@ -187,6 +189,7 @@ INSERT INTO MolgenisEntity(name, type_, classname) values ('OtherAdminMenu', 'ME
 INSERT INTO MolgenisEntity(name, type_, classname) values ('JobsFormController', 'FORM', 'app.ui.JobsFormController');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('SubjobsFormController', 'FORM', 'app.ui.SubjobsFormController');
 INSERT INTO MolgenisEntity(name, type_, classname) values ('ROnlinePlugin', 'PLUGIN', 'app.ui.ROnlinePlugin');
+INSERT INTO MolgenisEntity(name, type_, classname) values ('QuestionsPlugin', 'PLUGIN', 'app.ui.QuestionsPlugin');
 
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, 'read' FROM MolgenisEntity WHERE MolgenisEntity.name = 'UserLoginPlugin';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = 'InvestigationsFormController';
@@ -210,6 +213,8 @@ INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FRO
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.id = (SELECT id FROM MolgenisEntity WHERE className = 'org.molgenis.hemodb.HemoGene');
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = 'TranscriptsFormController';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.id = (SELECT id FROM MolgenisEntity WHERE className = 'org.molgenis.xgap.Transcript');
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = 'SampleGroupFormController';
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.id = (SELECT id FROM MolgenisEntity WHERE className = 'org.molgenis.hemodb.HemoSampleGroup');
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = 'ImportDataMenuMenu';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = 'QTLWizardPlugin';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = 'biologist'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = 'PlinkFileManagerPlugin';

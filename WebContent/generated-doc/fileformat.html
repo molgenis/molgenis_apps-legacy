@@ -174,6 +174,7 @@ The following files are currently recognized by this program (grouped by topic):
 <li><a href="#hemoSample_entity">hemosample.txt</a>
 <li><a href="#hemoGene_entity">hemogene.txt</a>
 <li><a href="#hemoProbe_entity">hemoprobe.txt</a>
+<li><a href="#hemoSampleGroup_entity">hemosamplegroup.txt</a>
 </ul>
 </li>
 <!-- outside module -->
@@ -255,6 +256,7 @@ The following files are currently recognized by this program (grouped by topic):
 <li><a href="#hemoSample_entity">hemosample.txt</a>
 <li><a href="#hemoGene_entity">hemogene.txt</a>
 <li><a href="#hemoProbe_entity">hemoprobe.txt</a>
+<li><a href="#hemoSampleGroup_entity">hemosamplegroup.txt</a>
 </ul>
 </li>
 </ul>
@@ -6640,12 +6642,14 @@ Below, the columns for each of these file types are detailed as well as example 
 		<td>Sample type.<br></td>
 	</tr>
 	<tr>
-		<td width="150">sample_group</td>
-		<td width="50">string</td>
+		<td width="150">samplegroup_name<br></td>
+		<td width="50">xref</td>
 		<td width="20">&nbsp;</td>
 		<td width="50">&nbsp;</td>
-		<td>Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma).<br></td>
-	</tr>
+		<td>SampleGroup.
+		This xref uses {samplegroup_name} to find related elements in file <a href="#hemoSampleGroup_entity">hemoSampleGroup.txt</a> based on unique column {name}.
+		</td>
+	</tr>	
 	<tr>
 		<td width="150">age</td>
 		<td width="50">string</td>
@@ -6988,6 +6992,43 @@ Below, the columns for each of these file types are detailed as well as example 
 	<!-- all optional fields -->
 	<!-- all the uniques -->
 <tr><td colspan="5">Contraint: values in the combined columns (name, investigation) should be unique.</td></tr>
+<tr><td colspan="5">Constraint: values in column name should unique.</td></tr>
+</table>
+</p>
+
+
+<h3 id="hemoSampleGroup_entity">File: hemosamplegroup.txt</h3> 
+<p>Contents:<br> Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
+			
+.</p>
+<p>Structure:<br>
+<table width="100%" cellspacing="0" border="1" bordercolor="#000000">
+	<!-- table header -->
+	<tr>
+		<th>column name</th>
+		<th>type</th>
+		<th>required?</th>
+		<th>auto/default</th>
+		<th>description</th>
+	</tr>
+	
+	<!-- all required fields -->
+	<tr>
+		<td width="150">id</td>
+		<td width="50">int</td>
+		<td width="20">&nbsp;</td>
+		<td width="50">n+1</td>
+		<td>automatically generated id.<br></td>
+	</tr>
+	<tr>
+		<td width="150">name</td>
+		<td width="50">string</td>
+		<td width="20">&nbsp;</td>
+		<td width="50">&nbsp;</td>
+		<td>name.<br></td>
+	</tr>
+	<!-- all optional fields -->
+	<!-- all the uniques -->
 <tr><td colspan="5">Constraint: values in column name should unique.</td></tr>
 </table>
 </p>
@@ -13339,12 +13380,14 @@ Below, the columns for each of these file types are detailed as well as example 
 		<td>Sample type.<br></td>
 	</tr>
 	<tr>
-		<td width="150">sample_group</td>
-		<td width="50">string</td>
+		<td width="150">samplegroup_name<br></td>
+		<td width="50">xref</td>
 		<td width="20">&nbsp;</td>
 		<td width="50">&nbsp;</td>
-		<td>Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma).<br></td>
-	</tr>
+		<td>SampleGroup.
+		This xref uses {samplegroup_name} to find related elements in file <a href="#hemoSampleGroup_entity">hemoSampleGroup.txt</a> based on unique column {name}.
+		</td>
+	</tr>	
 	<tr>
 		<td width="150">age</td>
 		<td width="50">string</td>
@@ -13687,6 +13730,43 @@ Below, the columns for each of these file types are detailed as well as example 
 	<!-- all optional fields -->
 	<!-- all the uniques -->
 <tr><td colspan="5">Contraint: values in the combined columns (name, investigation) should be unique.</td></tr>
+<tr><td colspan="5">Constraint: values in column name should unique.</td></tr>
+</table>
+</p>
+
+
+<h3 id="hemoSampleGroup_entity">File: hemosamplegroup.txt</h3> 
+<p>Contents:<br> Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
+			
+.</p>
+<p>Structure:<br>
+<table width="100%" cellspacing="0" border="1" bordercolor="#000000">
+	<!-- table header -->
+	<tr>
+		<th>column name</th>
+		<th>type</th>
+		<th>required?</th>
+		<th>auto/default</th>
+		<th>description</th>
+	</tr>
+	
+	<!-- all required fields -->
+	<tr>
+		<td width="150">id</td>
+		<td width="50">int</td>
+		<td width="20">&nbsp;</td>
+		<td width="50">n+1</td>
+		<td>automatically generated id.<br></td>
+	</tr>
+	<tr>
+		<td width="150">name</td>
+		<td width="50">string</td>
+		<td width="20">&nbsp;</td>
+		<td width="50">&nbsp;</td>
+		<td>name.<br></td>
+	</tr>
+	<!-- all optional fields -->
+	<!-- all the uniques -->
 <tr><td colspan="5">Constraint: values in column name should unique.</td></tr>
 </table>
 </p>

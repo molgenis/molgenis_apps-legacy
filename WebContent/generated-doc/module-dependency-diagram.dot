@@ -91,4 +91,8 @@ digraph G {
              taillabel = "1"
         ]
 	"org.molgenis.hemodb"->"org.molgenis.xgap"
+        edge [
+             taillabel = "1"
+        ]
+	"org.molgenis.hemodb"->"org.molgenis.core"
 }
