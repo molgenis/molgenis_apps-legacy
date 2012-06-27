@@ -1,0 +1,318 @@
+digraph G {
+        color = "white"
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Protocol" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Protocol\n implements InvestigationElement|id : int*\lname : string*\ldescription : richtext\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lprotocolType : xref-&gt;ontologyTerm\lfeatures : mref-&gt;observableFeature\ltargetFilter : string\lcontact : xref-&gt;person\lsubprotocols : mref-&gt;protocol\l}"
+                ]
+
+               "ProtocolApplication" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProtocolApplication\n implements InvestigationElement|id : int*\lname : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\ltime : datetime*\lprotocol : xref-&gt;protocol\lperformer : mref-&gt;person\l}"
+                ]
+
+               "ProtocolDocument" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProtocolDocument\n extends molgenisFile|name : string*\lextension : string*\lprotocol : xref-&gt;protocol*\ldocument : file*\l}"
+                ]
+
+               "Workflow" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Workflow\n implements Identifiable, Nameable\n extends protocol|id : int*\lname : string*\ldescription : richtext\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lprotocolType : xref-&gt;ontologyTerm\lfeatures : mref-&gt;observableFeature\ltargetFilter : string\lcontact : xref-&gt;person\lsubprotocols : mref-&gt;protocol\l}"
+                ]
+
+               "WorkflowElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{WorkflowElement\n implements Nameable|id : int*\lname : string*\lworkflow : xref-&gt;workflow*\lprotocol : xref-&gt;protocol*\lpreviousSteps : mref-&gt;workflowElement\l}"
+                ]
+
+               "WorkflowElementParameter" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{WorkflowElementParameter\n implements Identifiable|id : int*\lworkflowElement : xref-&gt;workflowElement*\lparameter : xref-&gt;observableFeature*\lvalue : string*\l}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+                "Protocol" [
+                	    style = "filled"
+                	    fillcolor =  "6"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Protocol\n implements InvestigationElement|id : int*\lname : string*\ldescription : richtext\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lprotocolType : xref-&gt;ontologyTerm\lfeatures : mref-&gt;observableFeature\ltargetFilter : string\lcontact : xref-&gt;person\lsubprotocols : mref-&gt;protocol\l}"
+                ]
+                "ProtocolApplication" [
+                	    style = "filled"
+                	    fillcolor =  "6"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProtocolApplication\n implements InvestigationElement|id : int*\lname : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\ltime : datetime*\lprotocol : xref-&gt;protocol\lperformer : mref-&gt;person\l}"
+                ]
+                "ProtocolDocument" [
+                	    style = "filled"
+                	    fillcolor =  "6"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ProtocolDocument\n extends MolgenisFile|name : string*\lextension : string*\lprotocol : xref-&gt;protocol*\ldocument : file*\l}"
+                ]
+                "Workflow" [
+                	    style = "filled"
+                	    fillcolor =  "6"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Workflow\n implements Identifiable, Nameable\n extends Protocol|id : int*\lname : string*\ldescription : richtext\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lprotocolType : xref-&gt;ontologyTerm\lfeatures : mref-&gt;observableFeature\ltargetFilter : string\lcontact : xref-&gt;person\lsubprotocols : mref-&gt;protocol\l}"
+                ]
+                "WorkflowElement" [
+                	    style = "filled"
+                	    fillcolor =  "6"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{WorkflowElement\n implements Nameable|id : int*\lname : string*\lworkflow : xref-&gt;workflow*\lprotocol : xref-&gt;protocol*\lpreviousSteps : mref-&gt;workflowElement\l}"
+                ]
+                "WorkflowElementParameter" [
+                	    style = "filled"
+                	    fillcolor =  "6"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{WorkflowElementParameter\n implements Identifiable|id : int*\lworkflowElement : xref-&gt;workflowElement*\lparameter : xref-&gt;observableFeature*\lvalue : string*\l}"
+                ]
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+
+/*interface relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "#808080"
+        ]
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        
+        "ProtocolDocument" -> "MolgenisFile"
+        "Workflow" -> "Protocol"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+        ]
+		"Protocol" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protocol" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protocol" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Protocol" -> "Person" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ProtocolApplication" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ProtocolApplication" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ProtocolApplication" -> "Protocol" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ProtocolDocument" -> "Protocol" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"WorkflowElement" -> "Workflow" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"WorkflowElement" -> "Protocol" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"WorkflowElementParameter" -> "WorkflowElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"WorkflowElementParameter" -> "ObservableFeature" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+        ]
+		"Protocol" -> "ObservableFeature"[
+			]
+		"Protocol" -> "Protocol"[
+			]
+		"ProtocolApplication" -> "Person"[
+			]
+		"WorkflowElement" -> "WorkflowElement"[
+			]
+}

@@ -1,0 +1,447 @@
+digraph G {
+        color = "white"
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "Species" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Species\n extends ontologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+
+               "AlternateId" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{AlternateId\n extends ontologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+
+               "ObservationElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationElement\n implements InvestigationElement|id : int*\lname : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "ObservationTarget" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationTarget\n extends observationElement|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "ObservableFeature" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservableFeature\n extends observationElement|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "Measurement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Measurement\n extends observableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lunit : xref-&gt;ontologyTerm\ldataType : enum*\ltemporal : bool*\lcategories : mref-&gt;category\ltargettypeAllowedForRelation : xref-&gt;molgenisEntity\lpanelLabelAllowedForRelation : string\l}"
+                ]
+
+               "Category" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Category\n extends observationElement|name : string*\ldescription : text*\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lcode_string : string*\lisMissing : bool*\l}"
+                ]
+
+               "Individual" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Individual\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lmother : xref-&gt;individual\lfather : xref-&gt;individual\l}"
+                ]
+
+               "Location" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Location\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+
+               "Panel" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Panel\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lindividuals : mref-&gt;individual\lspecies : xref-&gt;species\lpanelType : xref-&gt;ontologyTerm\lfounderPanels : mref-&gt;panel\l}"
+                ]
+
+               "Observation" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Observation\n implements Identifiable|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\l}"
+                ]
+
+               "ObservedValue" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedValue\n implements Identifiable, Observation|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\lontologyReference : xref-&gt;ontologyTerm\lvalue : string\lrelation : xref-&gt;observationElement\ltime : datetime\lendtime : datetime\l}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+                "Species" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Species\n extends OntologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+                "AlternateId" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{AlternateId\n extends OntologyTerm|name : string*\lontology : xref-&gt;ontology\ltermAccession : string\ldefinition : string\ltermPath : string\l}"
+                ]
+                "ObservationElement" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationElement\n implements InvestigationElement|id : int*\lname : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "ObservationTarget" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservationTarget\n extends ObservationElement|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "ObservableFeature" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservableFeature\n extends ObservationElement|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "Measurement" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Measurement\n extends ObservableFeature|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lunit : xref-&gt;ontologyTerm\ldataType : enum*\ltemporal : bool*\lcategories : mref-&gt;category\ltargettypeAllowedForRelation : xref-&gt;molgenisEntity\lpanelLabelAllowedForRelation : string\l}"
+                ]
+                "Category" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Category\n extends ObservationElement|name : string*\ldescription : text*\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lcode_string : string*\lisMissing : bool*\l}"
+                ]
+                "Individual" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Individual\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lmother : xref-&gt;individual\lfather : xref-&gt;individual\l}"
+                ]
+                "Location" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Location\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\l}"
+                ]
+                "Panel" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Panel\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\lindividuals : mref-&gt;individual\lspecies : xref-&gt;species\lpanelType : xref-&gt;ontologyTerm\lfounderPanels : mref-&gt;panel\l}"
+                ]
+                "Observation" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:Observation\n implements Identifiable|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\l}"
+                ]
+                "ObservedValue" [
+                	    style = "filled"
+                	    fillcolor =  "5"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedValue\n implements Identifiable, Observation|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\lontologyReference : xref-&gt;ontologyTerm\lvalue : string\lrelation : xref-&gt;observationElement\ltime : datetime\lendtime : datetime\l}"
+                ]
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+
+/*interface relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "#808080"
+        ]
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        
+        "Species" -> "OntologyTerm"
+        "AlternateId" -> "OntologyTerm"
+        "ObservationTarget" -> "ObservationElement"
+        "ObservableFeature" -> "ObservationElement"
+        "Measurement" -> "ObservableFeature"
+        "Category" -> "ObservationElement"
+        "Individual" -> "ObservationTarget"
+        "Location" -> "ObservationTarget"
+        "Panel" -> "ObservationTarget"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+        ]
+		"ObservationElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservationElement" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Measurement" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Category" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Individual" -> "Individual" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Individual" -> "Individual" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Panel" -> "Species" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"Panel" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"ObservedValue" -> "ObservationElement" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+        ]
+		"ObservationElement" -> "AlternateId"[
+			]
+		"Measurement" -> "Category"[
+			]
+		"Panel" -> "Individual"[
+			]
+		"Panel" -> "Panel"[
+			]
+}

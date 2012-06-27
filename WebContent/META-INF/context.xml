@@ -1,0 +1,16 @@
+<Context path="/molgenis" docBase="molgenis4mpd" debug="5" reloadable="true" crossContext="true">		
+	<Resource 
+		name="molgenis_jndi" 
+		auth="Container" 
+		factory="org.apache.commons.dbcp.BasicDataSourceFactory" 
+		type="javax.sql.DataSource" 
+		username="sa"
+		password="" 
+		driverClassName="org.hsqldb.jdbcDriver" 
+		url="jdbc:hsqldb:file:hsqldb/molgenisdb;shutdown=true?autoReconnect=true"
+		validationQuery="select now()"
+		maxWait="1000"
+		removeAbandoned="true"
+		maxActive="8" 
+		maxIdle="4"/>		
+</Context>

@@ -1,0 +1,385 @@
+digraph G {
+        color = "white"
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "ObservedInference" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedInference\n extends observedValue|investigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\lontologyReference : xref-&gt;ontologyTerm\lvalue : string\lrelation : xref-&gt;observationElement\ltime : datetime\lendtime : datetime\lderivedFrom : mref-&gt;observedValue*\linferenceType : xref-&gt;ontologyTerm\l}"
+                ]
+
+               "DataFile" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DataFile\n extends observationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\luri : string*\lformat : xref-&gt;ontologyTerm*\l}"
+                ]
+
+               "Data" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Data\n extends protocolApplication|description : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\ltime : datetime*\lprotocol : xref-&gt;protocol\lperformer : mref-&gt;person\lfeatureType : enum*\ltargetType : enum*\lvalueType : enum*\lstorage : enum*\l}"
+                ]
+
+               "DataElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:DataElement\n implements Observation|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\ldata : xref-&gt;data*\lfeatureIndex : int*\ltargetIndex : int*\l}"
+                ]
+
+               "BinaryDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{BinaryDataMatrix\n extends molgenisFile|name : string*\lextension : string*\ldata : xref-&gt;data*\l}"
+                ]
+
+               "CSVDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{CSVDataMatrix\n extends molgenisFile|name : string*\lextension : string*\ldata : xref-&gt;data*\l}"
+                ]
+
+               "DecimalDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DecimalDataElement\n implements DataElement|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\ldata : xref-&gt;data*\lfeatureIndex : int*\ltargetIndex : int*\lvalue : decimal\l}"
+                ]
+
+               "TextDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{TextDataElement\n implements DataElement|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\ldata : xref-&gt;data*\lfeatureIndex : int*\ltargetIndex : int*\lvalue : string\l}"
+                ]
+
+               "OriginalFile" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{OriginalFile\n extends molgenisFile|name : string*\lextension : string*\ldata : xref-&gt;data*\l}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+                "ObservedInference" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedInference\n extends ObservedValue|investigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\lontologyReference : xref-&gt;ontologyTerm\lvalue : string\lrelation : xref-&gt;observationElement\ltime : datetime\lendtime : datetime\lderivedFrom : mref-&gt;observedValue*\linferenceType : xref-&gt;ontologyTerm\l}"
+                ]
+                "DataFile" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DataFile\n extends ObservationTarget|name : string*\ldescription : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\lalternateId : mref-&gt;alternateId\llabel : string\luri : string*\lformat : xref-&gt;ontologyTerm*\l}"
+                ]
+                "Data" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Data\n extends ProtocolApplication|description : text\linvestigation : xref-&gt;investigation\lontologyReference : xref-&gt;ontologyTerm\ltime : datetime*\lprotocol : xref-&gt;protocol\lperformer : mref-&gt;person\lfeatureType : enum*\ltargetType : enum*\lvalueType : enum*\lstorage : enum*\l}"
+                ]
+                "DataElement" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{Interface:DataElement\n implements Observation|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\ldata : xref-&gt;data*\lfeatureIndex : int*\ltargetIndex : int*\l}"
+                ]
+                "BinaryDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{BinaryDataMatrix\n extends MolgenisFile|name : string*\lextension : string*\ldata : xref-&gt;data*\l}"
+                ]
+                "CSVDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{CSVDataMatrix\n extends MolgenisFile|name : string*\lextension : string*\ldata : xref-&gt;data*\l}"
+                ]
+                "DecimalDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DecimalDataElement\n implements DataElement|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\ldata : xref-&gt;data*\lfeatureIndex : int*\ltargetIndex : int*\lvalue : decimal\l}"
+                ]
+                "TextDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{TextDataElement\n implements DataElement|id : int*\linvestigation : xref-&gt;investigation\lprotocolApplication : xref-&gt;protocolApplication\lfeature : xref-&gt;observationElement*\ltarget : xref-&gt;observationElement*\ldata : xref-&gt;data*\lfeatureIndex : int*\ltargetIndex : int*\lvalue : string\l}"
+                ]
+                "OriginalFile" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{OriginalFile\n extends MolgenisFile|name : string*\lextension : string*\ldata : xref-&gt;data*\l}"
+                ]
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+				fillcolor = "white"
+                style="filled"*/
+
+/*        }  */
+
+/*interface relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "#808080"
+        ]
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        
+        "ObservedInference" -> "ObservedValue"
+        "DataFile" -> "ObservationTarget"
+        "Data" -> "ProtocolApplication"
+        "BinaryDataMatrix" -> "MolgenisFile"
+        "CSVDataMatrix" -> "MolgenisFile"
+        "OriginalFile" -> "MolgenisFile"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+        ]
+		"ObservedInference" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DataFile" -> "OntologyTerm" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"BinaryDataMatrix" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"CSVDataMatrix" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"OriginalFile" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+        ]
+		"ObservedInference" -> "ObservedValue"[
+			]
+}

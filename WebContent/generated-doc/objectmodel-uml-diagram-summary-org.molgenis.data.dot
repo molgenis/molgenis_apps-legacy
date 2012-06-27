@@ -1,0 +1,416 @@
+digraph G {
+		compound = true
+		fontname = "Bitstream Vera Sans"
+		fontsize = 8
+		pagedir="TB"
+		rankdir="BT"
+		bgcolor = "lightyellow"  
+		labelfloat = "true"
+		mode = "hier"
+		overlap = "false"
+		splines = "true"
+		layers = "1:2"
+		clusterrank = "local"
+		outputorder="edgesfirst"
+		orientation = "portrait"
+
+        node [
+			fontname = "Arial"
+            fontsize = 8
+            shape = "record"
+            color = "#808080"
+            style="filled"
+            fillcolor = "white"
+            layer = "2"
+            colorscheme = pastel19
+        ]
+
+        edge [
+                fontname = "Bitstream Vera Sans"
+                fontsize = 8
+                layer = "1"
+        ]
+
+/* entities outside modules*/
+               "ObservedInference" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedInference}"
+                ]
+
+               "DataFile" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DataFile}"
+                ]
+
+               "Data" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Data}"
+                ]
+
+               "DataElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{DataElement}"
+                ]
+
+               "BinaryDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{BinaryDataMatrix}"
+                ]
+
+               "CSVDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{CSVDataMatrix}"
+                ]
+
+               "DecimalDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DecimalDataElement}"
+                ]
+
+               "TextDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{TextDataElement}"
+                ]
+
+               "OriginalFile" [
+                	    style = "filled"
+                	    fillcolor =  "white"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{OriginalFile}"
+                ]
+
+/*entities inside modules*/
+/*        subgraph cluster_0 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.auth"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 1
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_1 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.core"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 2
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_2 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.data"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 3
+                style="filled"*/
+
+                "ObservedInference" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{ObservedInference}"
+                ]
+                "DataFile" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DataFile}"
+                ]
+                "Data" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{Data}"
+                ]
+                "DataElement" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial-Italic"
+			        	fontcolor = "dimgrey"
+			        	color = "dimgrey"
+                
+                        label = "{DataElement}"
+                ]
+                "BinaryDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{BinaryDataMatrix}"
+                ]
+                "CSVDataMatrix" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{CSVDataMatrix}"
+                ]
+                "DecimalDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{DecimalDataElement}"
+                ]
+                "TextDataElement" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{TextDataElement}"
+                ]
+                "OriginalFile" [
+                	    style = "filled"
+                	    fillcolor =  "3"
+			        	fontname = "Arial"
+			        	fontcolor = "black"
+			        	color = "black"
+                
+                        label = "{OriginalFile}"
+                ]
+/*        }  */
+/*        subgraph cluster_3 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.organization"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 4
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_4 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.pheno"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 5
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_5 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.protocol"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 6
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_6 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.xgap"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 7
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_7 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.cluster"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 8
+                style="filled"*/
+
+/*        }  */
+/*        subgraph cluster_8 {
+        		rankdir = "TB"
+        		pagedir = "TB"
+                label = "org.molgenis.hemodb"
+                labelloc = bottom
+                colorscheme = pastel19
+                fillcolor = 9
+                style="filled"*/
+
+/*        }  */
+
+/*inheritance relationships*/
+        edge [
+                arrowhead = "empty"
+                color = "black"
+        ]
+        "ObservedInference" -> "ObservedValue"
+        "DataFile" -> "ObservationTarget"
+        "Data" -> "ProtocolApplication"
+        "BinaryDataMatrix" -> "MolgenisFile"
+        "CSVDataMatrix" -> "MolgenisFile"
+        "OriginalFile" -> "MolgenisFile"
+
+/*interface relationships*/
+        edge [
+                color = "#808080"
+        ]
+    	"DecimalDataElement" -> "DataElement"
+    	"TextDataElement" -> "DataElement"
+
+/*one to many 'xref' foreign key relationships*/
+        edge [
+                arrowhead = "open"
+                arrowsize = 0.6
+                color = "black"
+        ]
+		"ObservedInference" -> "OntologyTerm" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DataFile" -> "OntologyTerm" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DataElement" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DataElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DataElement" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"BinaryDataMatrix" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"CSVDataMatrix" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"DecimalDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "Investigation" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "ProtocolApplication" [
+			headlabel = "0..1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"TextDataElement" -> "ObservationElement" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+		"OriginalFile" -> "Data" [
+			headlabel = "1"
+			taillabel = "*"
+		]
+        
+        
+/*many to many 'mref' foreign key relationships*/
+        edge [
+             arrowtail = "open"
+             color = "black"
+             headlabel = "*"
+             taillabel = "*"
+             arrowsize = 0.6
+             constraint = false
+        ]
+		"ObservedValue" -> "ObservedInference"[
+			]
+}
