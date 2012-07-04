@@ -862,7 +862,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							.get(displayName);
 
 					childTree = new JQueryTreeViewElement(displayName
-							+ multipleInheritance.get(displayName),
+							+ "_" + multipleInheritance.get(displayName),
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
 
