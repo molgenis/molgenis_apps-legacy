@@ -11,6 +11,8 @@
             label="EXP TEST"/>
 		<!-- plugin name="Login" type="org.molgenis.auth.ui.UserLogin" / -->
 
+<plugin name="OntoCat" type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat"
+            label="Ontologies"/>
 		<form name="StudyInfo" label="Studies" entity="Study"
 			compact_view="identifier">
 			<menu name="StudyMenu">
