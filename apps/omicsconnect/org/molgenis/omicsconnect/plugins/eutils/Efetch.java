@@ -1,7 +1,6 @@
 package org.molgenis.omicsconnect.plugins.eutils;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
@@ -10,34 +9,32 @@ import java.net.URL;
  * Fetches data using the NCBI eutils service
  */
 
-public class Efetch {
+public class Efetch
+{
 
-	public static String getHttpUrl(String urlStr) {
+	public static String getHttpUrl(String urlStr) throws Exception
+	{
 		// Data obtained from service, to be returned
-		String retVal = null;
+		String retVal = "";
 		// Get data using HTTP GET
-		try {
-			URL url = new URL(urlStr);
-			BufferedReader inBuf = new BufferedReader(new InputStreamReader(
-					url.openStream()));
-			StringBuffer strBuf = new StringBuffer();
-			while (inBuf.ready()) {
-				strBuf.append(inBuf.readLine()
-						+ System.getProperty("line.separator"));
-			}
-			retVal = strBuf.toString();
-		} catch (IOException ex) {
-			System.out.println(ex.getMessage());
-		}
+
+		URL url = new URL(urlStr);
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+
+		String inputLine;
+		while ((inputLine = in.readLine()) != null)
+			retVal += inputLine + System.getProperty("line.separator");
+		in.close();
+
 		// Return the response data
 		return retVal;
 	}
 
-	public static String constructURL(String baseURL, String db, String format,
-			String id) {
+	public static String constructURL(String baseURL, String db, String format, String id)
+	{
 
-		String returnUrl = baseURL + "db=" + db + "&" + "id=" + id + "&"
-				+ "rettype=" + format;
+		String returnUrl = baseURL + "db=" + db + "&" + "id=" + id + "&" + "rettype=" + format;
 
 		return returnUrl;
 

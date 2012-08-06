@@ -3,6 +3,9 @@ package org.molgenis.omicsconnect.plugins.pubmed;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,20 +16,15 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.*;
-
+import org.molgenis.omicsconnect.plugins.eutils.Efetch;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import org.molgenis.omicsconnect.plugins.eutils.Efetch;
-import org.molgenis.omicsconnect.plugins.pubmed.*;
-
-public class GetData {
+public class GetData
+{
 
 	public String db;
 	public String format;
@@ -36,45 +34,55 @@ public class GetData {
 	static Logger logger = Logger.getLogger("test.GetData");
 	static Map<String, String> pubMed = new HashMap<String, String>();
 
-	public String getBaseURL() {
+	public String getBaseURL()
+	{
 		return baseURL;
 	}
 
-	public void setBaseURL(String baseURL) {
+	public void setBaseURL(String baseURL)
+	{
 		this.baseURL = baseURL;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(String id)
+	{
 		this.id = id;
 	}
 
-	public String getFormat() {
+	public String getFormat()
+	{
 		return format;
 	}
 
-	public void setFormat(String format) {
+	public void setFormat(String format)
+	{
 		this.format = format;
 	}
 
-	public String getDb() {
+	public String getDb()
+	{
 		return db;
 	}
 
-	public void setDb(String db) {
+	public void setDb(String db)
+	{
 		this.db = db;
 	}
 
-	public GetData() {
+	public GetData()
+	{
 	}
 
 	/**
 	 * @return
 	 */
-	public String generateURL() {
+	public String generateURL()
+	{
 
 		String db = this.getDb();
 		String format = this.getFormat();
@@ -96,39 +104,34 @@ public class GetData {
 	 * @throws IOException
 	 * @throws ParserConfigurationException
 	 */
-	public static Document generateDoc(String xmlString)
-			throws UnsupportedEncodingException, SAXException, IOException,
-			ParserConfigurationException {
+	public static Document generateDoc(String xmlString) throws UnsupportedEncodingException, SAXException,
+			IOException, ParserConfigurationException
+	{
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true); // never forget this!
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(new ByteArrayInputStream(xmlString
-				.getBytes("UTF-8")));
+		Document doc = db.parse(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
 
 		return doc;
 
 	}
-	
-	
-	public static String getMeshTerms (XPath xpath, String id, Document doc,
-			String expression) throws XPathExpressionException{
-				
+
+	public static String getMeshTerms(XPath xpath, String id, Document doc, String expression)
+			throws XPathExpressionException
+	{
+
 		XPathExpression expr = xpath.compile(expression);
 
 		NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
-		
-		
 		return expression;
-		
-		
-		
-	}
-	
 
-	public static String getAuthors(XPath xpath, String id, Document doc,
-			String expression) throws XPathExpressionException {
+	}
+
+	public static String getAuthors(XPath xpath, String id, Document doc, String expression)
+			throws XPathExpressionException
+	{
 
 		XPathExpression expr = xpath.compile(expression);
 
@@ -139,7 +142,8 @@ public class GetData {
 		String initials;
 		StringBuilder sb = new StringBuilder();
 
-		for (int i = 0; i < list.getLength(); i++) {
+		for (int i = 0; i < list.getLength(); i++)
+		{
 
 			Node t = list.item(i);
 			NodeList tc = t.getChildNodes();
@@ -147,11 +151,13 @@ public class GetData {
 			// System.out.println(t.toString());
 			// logger.info(t.getNodeName());
 
-			for (int j = 0; j < tc.getLength(); j++) {
+			for (int j = 0; j < tc.getLength(); j++)
+			{
 				Node c = tc.item(j);
 
 				// logger.info(c.getLocalName());
-				if (c.getNodeName().equals("LastName")) {
+				if (c.getNodeName().equals("LastName"))
+				{
 
 					// logger.info(c.getTextContent());
 					lastname = c.getTextContent();
@@ -159,11 +165,15 @@ public class GetData {
 					sb.append(lastname);
 					sb.append(",");
 
-				} else if (c.getNodeName().equals("ForeName")) {
+				}
+				else if (c.getNodeName().equals("ForeName"))
+				{
 					// logger.info(c.getTextContent());
 					forename = c.getTextContent();
 
-				} else if (c.getNodeName().equals("Initials")) {
+				}
+				else if (c.getNodeName().equals("Initials"))
+				{
 					// logger.info(c.getTextContent());
 					initials = c.getTextContent();
 					sb.append(initials);
@@ -180,7 +190,8 @@ public class GetData {
 		return null;
 	}
 
-	public static String getDetails(String expression) {
+	public static String getDetails(String expression)
+	{
 
 		return expression;
 
@@ -195,14 +206,16 @@ public class GetData {
 	 * @throws XPathExpressionException
 	 */
 
-	public static String getField(XPath xpath, String id, Document doc,
-			String expression, String key) throws XPathExpressionException {
+	public static String getField(XPath xpath, String id, Document doc, String expression, String key)
+			throws XPathExpressionException
+	{
 		XPathExpression expr = xpath.compile(expression);
 		NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 		// System.out.println(id);
 		String text = "";
-		for (int i = 0; i < list.getLength(); i++) {
+		for (int i = 0; i < list.getLength(); i++)
+		{
 
 			text = (list.item(i).getTextContent());
 
@@ -217,9 +230,10 @@ public class GetData {
 
 	/**
 	 * @param args
-	 * @throws XPathExpressionException
+	 * @throws Exception
 	 */
-	public static void main(String[] args) throws XPathExpressionException {
+	public static void main(String[] args) throws Exception
+	{
 		GetData data = new GetData();
 		data.setDb("pubmed");
 		data.setFormat("xml");
@@ -232,20 +246,20 @@ public class GetData {
 		System.out.println(output);
 
 		// Parse Pubmed XML
-		try {
+		try
+		{
 			Document doc = generateDoc(output);
 			XPath xpath = XPathFactory.newInstance().newXPath();
 
 			// define the expressions for XPath search
-			String abstractExpression = "/PubmedArticleSet/PubmedArticle/MedlineCitation[PMID/text()='"
-					+ data.getId() + "']/Article/Abstract/AbstractText/text()";
+			String abstractExpression = "/PubmedArticleSet/PubmedArticle/MedlineCitation[PMID/text()='" + data.getId()
+					+ "']/Article/Abstract/AbstractText/text()";
 
 			String authorExpression = "/PubmedArticleSet/PubmedArticle/MedlineCitation/Article/AuthorList/Author";
 			String titleExpression = "/PubmedArticleSet/PubmedArticle/MedlineCitation/Article/ArticleTitle";
 			String doiExpression = "/PubmedArticleSet/PubmedArticle/PubmedData/ArticleIdList";
 			String jourTitle = "/PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/Title";
 			String meshTermsExpression = "/PubmedArticleSet/PubmedArticle/MedlineCitation/MeshHeadingList";
-	
 
 			// Get the data
 			getAuthors(xpath, data.getId(), doc, authorExpression);
@@ -253,21 +267,28 @@ public class GetData {
 			getField(xpath, data.getId(), doc, jourTitle, "Journal");
 			getField(xpath, data.getId(), doc, titleExpression, "Title");
 			getPublicationIdentifiers(xpath, data.getId(), doc, doiExpression);
-			//getMeshTerms(xpath, data.getId(), doc,meshTermsExpression);
-			
+			// getMeshTerms(xpath, data.getId(), doc,meshTermsExpression);
 
-			 System.out.println(pubMed.toString());
+			System.out.println(pubMed.toString());
 
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (SAXException e) {
+		}
+		catch (SAXException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
+		}
+		catch (ParserConfigurationException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -275,16 +296,17 @@ public class GetData {
 		// String output =
 	}
 
-	private static void getPublicationIdentifiers(XPath xpath, String id, Document doc,
-			String expression) {
+	private static void getPublicationIdentifiers(XPath xpath, String id, Document doc, String expression)
+	{
 
 		XPathExpression expr;
-		try {
+		try
+		{
 			expr = xpath.compile(expression);
-			NodeList list = (NodeList) expr.evaluate(doc,
-					XPathConstants.NODESET);
+			NodeList list = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
-			for (int i = 0; i < list.getLength(); i++) {
+			for (int i = 0; i < list.getLength(); i++)
+			{
 
 				Node t = list.item(i);
 				NodeList tc = t.getChildNodes();
@@ -292,61 +314,67 @@ public class GetData {
 				// System.out.println(t.toString());
 				// logger.info(t.getNodeName());
 
-				for (int j = 0; j < tc.getLength(); j++) {
+				for (int j = 0; j < tc.getLength(); j++)
+				{
 					Node c = tc.item(j);
 
 					// check we have the Article ID
-					if (c.getNodeName().equals("ArticleId")) {
+					if (c.getNodeName().equals("ArticleId"))
+					{
 
 						// Get all attributes
 						NamedNodeMap attributes = c.getAttributes();
 
 						// foreach attribute check for doi, PMID PMC etc
-						for (int a = 0; a < attributes.getLength(); a++) {
+						for (int a = 0; a < attributes.getLength(); a++)
+						{
 							Node theAttribute = attributes.item(a);
 							// System.out.println(theAttribute.getNodeName() +
 							// "=" + theAttribute.getNodeValue());
 
-							if (theAttribute.getNodeValue().equals("doi")) {
+							if (theAttribute.getNodeValue().equals("doi"))
+							{
 
 								String s = c.getTextContent();
 
 								System.out.println(s);
-								
+
 								pubMed.put("DOI:", s);
 
 							}
-							
-							if (theAttribute.getNodeValue().equals("pubmed")) {
+
+							if (theAttribute.getNodeValue().equals("pubmed"))
+							{
 
 								String p = c.getTextContent();
 
 								System.out.println();
-								
+
 								pubMed.put("PUBMED", p);
 
 							}
-							
-							if (theAttribute.getNodeValue().equals("pii")) {
+
+							if (theAttribute.getNodeValue().equals("pii"))
+							{
 
 								String pi = c.getTextContent();
 
 								System.out.println();
-								
+
 								pubMed.put("PII", pi);
 
 							}
-							
-							if (theAttribute.getNodeValue().equals("pmc")) {
+
+							if (theAttribute.getNodeValue().equals("pmc"))
+							{
 
 								String pmc = c.getTextContent();
 
 								System.out.println();
-								
+
 								pubMed.put("PMC", pmc);
 
 							}
-
 
 						}
 
@@ -356,20 +384,13 @@ public class GetData {
 
 			}
 
-		} catch (XPathExpressionException e) {
+		}
+		catch (XPathExpressionException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-	
-	
-	
-	
-		
-		
-		
-
-		
 	}
 
 }
