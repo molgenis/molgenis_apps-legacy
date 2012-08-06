@@ -48,7 +48,7 @@
 		<unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}" overwrite="false" />
 		<unjar src="WebContent/WEB-INF/lib/mydas-1.6.0.jar" dest="${build}" overwrite="false" />
 		<unjar src="WebContent/WEB-INF/lib/mindterm.jar" dest="${build}" overwrite="false" />
-		<unjar src="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar" dest="${build}" overwrite="false" />
+		<unjar src="WebContent/WEB-INF/lib/ontocat-0.9.9.1.jar" dest="${build}" overwrite="false" />
 		<!-- Erik -->
 		<unjar src="WebContent/WEB-INF/lib/charts4j-1.2.jar" dest="${build}" overwrite="false" />
 		<unjar src="WebContent/WEB-INF/lib/jopenid-1.07.jar" dest="${build}" overwrite="false" />
