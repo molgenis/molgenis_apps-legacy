@@ -181,6 +181,11 @@ public class JQGridColModel
 				{
 					datetype = "datetype";
 				}
+				else
+				{
+					editoptions.value = m.getDescription();
+					editoptions.style = "color:#A3A3A3";
+				}
 			}
 			else
 			{

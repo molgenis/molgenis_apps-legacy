@@ -252,6 +252,8 @@ public class JQGridView extends HtmlWidget
 
 				case ADD_RECORD:
 
+					// $('#Lengte_input').val("hello").css('color','#A3A3A3')
+
 					// respond to the ajax calling of adding new records/.
 					String patientID = request.getString("targetID");
 
