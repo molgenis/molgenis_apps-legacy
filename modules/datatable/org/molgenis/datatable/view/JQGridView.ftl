@@ -6,6 +6,8 @@
 <script src="jqGrid/grid.formedit.js" type="text/javascript"></script>
 <script src="jqGrid/jqDnR.js" type="text/javascript"></script>
 <script src="jqGrid/jqModal.js" type="text/javascript"></script>
+<script src="jqGrid/jqGridCustomjavascript.js" type="text/javascript"></script>
+
 
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
 <script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
@@ -191,12 +193,18 @@ var JQGridView = {
     },
     
     createJQGrid : function(filters) {
-    	var self = this;
-    	
+    	var self = this; 	
     	
 		if(filters != null) { // If condition may be redundant?
 			this.config.postData.filters = filters; 
 		}
+    	
+    	if(self.grid != null){
+    		
+    		currentPage = self.grid.jqGrid('getGridParam', 'page');
+    		this.config.page = currentPage;
+    	}
+        
     	
     	grid = jQuery("table#"+this.tableId).jqGrid(this.config)
             .jqGrid('navGrid', "#"+this.pagerId,
@@ -225,7 +233,7 @@ var JQGridView = {
 					 
             	},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
-        
+ 
         if(this.columnPageEnabled) {
 
         	firstButton = $("<input id='firstColButton' type='button' value='|< Columns' style='height:20px;font-size:-3'/>")
@@ -345,13 +353,8 @@ var JQGridView = {
 				
  					addRecordTable += "<tr id=\"" + colModel[index].name + "\" style=\"display:none\"><td>" + colModel[index].name + 
  					"</td><td><input id=\""+ colModel[index].name +"_input\" type=\"text\" ></input></td></tr>";
- 				}
- 				
- 				
+ 				}		
  			}
- 			
- 			
- 			
  			
  			//close the table and add it to the dialog div
  			addRecordTable += "</table></br>";
@@ -372,13 +375,21 @@ var JQGridView = {
 			//Create a new div in which the next and previous buttons are added.
 			navPage = "<div id=\"navPage\">";
 			navPage += "<input id=\"prevPage\" type=\"button\" style=\"font-size:0.7em\" value=\"< previous page\"></input>";
-			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";
+			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";			
 			navPage += "</div>";
+			
+			
 			$('#dialog').append(navPage);
+			
 			//Using jQuery UI Button
 			$('#nextPage').button();
  			$('#prevPage').button();
  			
+			if(columnPage==1){
+ 				$('#prevPage').hide();
+ 			}else{
+ 				$('#prevPage').show();
+ 			}
 			
 			//Add the submit and cancel buttons to the dialog
 			controlDiv = "</br><div id=\"controlDiv\">";
@@ -404,6 +415,17 @@ var JQGridView = {
 		 			for(var index = beginningIndex; index <= endingIndex; index++){
 		 				$(allRows).eq(index).show();
 		 			}
+		 			if(columnPage==(maxPage)){
+		 		
+						$('#nextPage').hide();
+		 			}else{
+		 				$('#nextPage').show();
+		 			}
+		 			if(columnPage==1){
+						$('#prevPage').hide();
+		 			}else{
+		 				$('#prevPage').show();
+		 			}
 	 			}
  			});
 			
@@ -412,22 +434,29 @@ var JQGridView = {
  			$('#nextPage').click(function(){
  				
  				if(columnPage + 1 <= maxPage){
- 					
  					columnPage = columnPage + 1;
 		 			
 		 			beginningIndex = (columnPage - 1) *columnPagerSize + 1;
 		 			endingIndex = (columnPage - 1) *columnPagerSize + 6;
 		 			allRows = $('#addRecord tr');
 		 			$(allRows).hide();
-		 			$(allRows).eq(0).show();
+		 			$(allRows).eq(0).hide();
 		 			for(var index = beginningIndex; index <= endingIndex; index++){
 		 				$(allRows).eq(index).show();
 		 			}
+		 			if(columnPage==(maxPage)){
+						$('#nextPage').hide();
+		 			}else{
+		 				$('#nextPage').show();
+		 			}
+		 			if(columnPage==1){
+						$('#prevPage').hide();
+		 			}else{
+		 				$('#prevPage').show();
+		 			}
 	 			}
  			});
- 			
- 			
- 			
+
  			grid = self.grid;
  			
  			//Add click event to submit button
