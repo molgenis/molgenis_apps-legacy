@@ -8,12 +8,13 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>deb-central</name>
+    <name>${app.name}</name>
 
     <properties>
         <endorsed.dir>${basedir}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+		<context.path>/molgenis-apps</context.path>
     </properties>
 
 	<dependencies>
@@ -191,7 +192,7 @@
             </resource>
             <!-- copy freemarker templates -->
             <resource>
-                <directory>apps/col7a1/</directory>
+                <directory>apps/${app.name}/</directory>
                 <includes>
                     <include>**/*.ftl</include>
                 </includes>
@@ -237,7 +238,7 @@
                         <configuration>
                             <sources>
                                 <source>generated/java</source>
-                                <source>apps/col7a1</source>
+                                <source>apps/${app.name}</source>
                                 <source>modules/auth</source>
                                 <source>modules/datamodel</source>
                                 <source>modules/file</source>
@@ -265,7 +266,7 @@
                         <configuration>
                             <sources>
                                 <source>generated/java</source>
-                                <source>apps/col7a1</source>
+                                <source>apps/${app.name}</source>
                                 <source>modules/auth</source>
                                 <source>modules/datamodel</source>
                                 <source>modules/file</source>
@@ -288,7 +289,7 @@
             	<artifactId>molgenis-maven-plugin</artifactId>
             	<version>1.0</version>
             	<configuration>
-            		<propertiesPath>apps/col7a1/org/molgenis/col7a1/col7a1.properties</propertiesPath>
+            		<propertiesPath>apps/${app.name}/org/molgenis/${app.name}/${app.name}.properties</propertiesPath>
             	</configuration>
             </plugin>
             <plugin>
@@ -338,7 +339,7 @@
 					</archive>
 					<webResources>
 						<resource>
-							<directory>apps/col7a1/res</directory>
+							<directory>apps/${app.name}/res</directory>
 							<targetPath>/generated-res</targetPath>
 						</resource>
 					</webResources>
@@ -388,7 +389,6 @@
 						<contextPath>${context.path}</contextPath>
 					</webApp>
 					<port>8080</port>
-					<contextPath>/molgenis-apps</contextPath>
                     <webAppSourceDirectory>${basedir}/WebContent</webAppSourceDirectory>
                     <scanIntervalSeconds>3</scanIntervalSeconds>
                     <stopPort>9966</stopPort> 
