@@ -19,7 +19,6 @@ import org.molgenis.core.dto.PublicationDTO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.ExonDTO;
 import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationUploadDTO;
@@ -618,8 +617,8 @@ public class UploadService extends MolgenisVariantService
 		mutationUploadDTO.setEvent("NA");
 
 		// set default gene
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-		mutationUploadDTO.setGeneDTO(searchService.findGene());
+//		SearchService searchService = (SearchService) ServiceLocator.instance().getService("searchService");
+//		mutationUploadDTO.setGeneDTO(searchService.findGene());
 	}
 
 

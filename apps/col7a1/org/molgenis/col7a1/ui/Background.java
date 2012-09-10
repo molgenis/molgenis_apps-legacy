@@ -39,7 +39,7 @@ public class Background extends EasyPluginController<BackgroundModel>
 	{
 		try
 		{
-			StatisticsService statisticsService = ServiceLocator.instance().getStatisticsService();
+			StatisticsService statisticsService = (StatisticsService) ServiceLocator.instance().getService("statisticsService");
 			this.getModel().setNumMutations(statisticsService.getNumMutations());
 			this.getModel().setNumPatients(statisticsService.getNumPatients());
 			this.getModel().setNumPatientsUnpub(statisticsService.getNumUnpublishedPatients());
