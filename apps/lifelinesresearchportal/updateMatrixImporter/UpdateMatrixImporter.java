@@ -61,6 +61,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	private List<String> newFeatures = new ArrayList<String>();
 	private List<String> rowHeaders = new ArrayList<String>();
 	private List<String> newTargets = new ArrayList<String>();
+	private String importMessage = null;
 
 	public UpdateMatrixImporter(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -87,6 +88,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		mappingMessage = null;
 		tempalteFilePath = null;
 		jsonForMapping = null;
+		importMessage = null;
 		csvTable = null;
 		tableView = null;
 		report = null;
@@ -203,11 +205,15 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
-			outputExcel.addCell(new Label(0, 0, "Table"));
+			outputExcel.addCell(new Label(0, 0, "variable"));
 
-			outputExcel.addCell(new Label(1, 0, "variable"));
+			outputExcel.addCell(new Label(1, 0, "datatype"));
 
-			outputExcel.addCell(new Label(2, 0, "data type"));
+			outputExcel.addCell(new Label(2, 0, "category"));
+
+			outputExcel.addCell(new Label(3, 0, "code"));
+
+			outputExcel.addCell(new Label(4, 0, "table"));
 
 			workbook.write();
 
@@ -464,8 +470,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			db.commitTx();
 
-		} catch (DatabaseException e) {
+			importMessage = "Your import has been successful! You can know upload a new file";
 
+		} catch (DatabaseException e) {
+			importMessage = "It fails to import the file, please check your file please!";
 			e.printStackTrace();
 			db.rollbackTx();
 		}
@@ -664,6 +672,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 	public String getMappingMessage() {
 		return mappingMessage;
+	}
+
+	public String getImportMessage() {
+		return importMessage;
 	}
 
 }

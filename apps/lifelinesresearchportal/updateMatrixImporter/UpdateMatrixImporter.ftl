@@ -338,6 +338,9 @@
 				<script>$('#explanationForm').html("${screen.getUploadFileErrorMessage()}");</script>
 			</#if>
 			
+			<#if screen.getImportMessage()??>
+				<script>$('#explanationForm').html("${screen.getImportMessage()}");</script>
+			</#if>
     	<#elseif screen.getSTATUS() == "CheckFile">
     		<div id="newColumnsMapping"></div>
     		<div id="reportForm">
