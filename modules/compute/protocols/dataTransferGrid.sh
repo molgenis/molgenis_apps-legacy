@@ -2,8 +2,9 @@
 
 getRemoteLocation()
 {
+	# Remove everything before (and including) the first slash of the given path.
+	# TODO: Actually, what we should do is remove "$WORKDIR" from the given path.
 	ARGS=($@)
-
 	myFile=${ARGS[0]}
 	
 	# 0. remoteFile = cutWorkdir( myFile )
@@ -47,7 +48,7 @@ putFile()
 		remoteFile=`getRemoteLocation $myFile`
 		
 		echo "lcg-cr -l $remoteFile file:///$myFile"
-		lcg-cr -l $remoteFile file:///$myFile
+		lcg-cr -d srm.grid.sara.nl -l $remoteFile file:///$myFile
 		else
 			echo "Example usage: getData \"\$TMPDIR/datadir/myfile.txt\""
 		fi
