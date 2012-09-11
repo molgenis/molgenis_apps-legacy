@@ -5,6 +5,8 @@
 
 ####TEMPLATE TO BE FINISHED SOON####
 
+#module load ${expandWorksheetJar}/${expandWorksheetJarversion}
+
 mkdir -p ${projectTempDir}
 mkdir -p ${projectJobsDir}
 
