@@ -7,26 +7,6 @@
 
 #FOREACH project,chr
 
-getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
-getFile ${studyTriTyperChrDir}/Individuals.txt
-getFile ${studyTriTyperChrDir}/PhenotypeInformation.txt
-getFile ${studyTriTyperChrDir}/SNPMappings.txt
-getFile ${studyTriTyperChrDir}/SNPsHash.txt
-getFile ${studyTriTyperChrDir}/SNPs.txt
-getFile ${referenceTriTyperDir}/GenotypeMatrix.dat
-getFile ${referenceTriTyperDir}/Individuals.txt
-getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
-getFile ${referenceTriTyperDir}/SNPMappings.txt
-getFile ${referenceTriTyperDir}/SNPsHash.txt
-getFile ${referenceTriTyperDir}/SNPs.txt
-
-for file in $(ls ${preparedStudyTempDir})
-do
-putFile $file;
-done
-
-
-
 inputs ${studyTriTyperChrDir}/GenotypeMatrix.dat
 inputs ${studyTriTyperChrDir}/Individuals.txt
 inputs ${studyTriTyperChrDir}/PhenotypeInformation.txt
@@ -41,7 +21,10 @@ inputs ${referenceTriTyperDir}/SNPsHash.txt
 inputs ${referenceTriTyperDir}/SNPs.txt
 
 
-#module load ${imputationToolJar}/${imputationToolJarversion}
+### This is not correct
+#alloutputsexist preparedStudyDir/*
+
+
 
 mkdir ${preparedStudyTempDir}
 

@@ -6,12 +6,6 @@
 
 #FOREACH project,chr
 
-getFile "${studyInputPedMapChr}.map"
-getFile "${studyInputPedMapChr}.ped"
-putFile "${studyPedMapChr}.map"
-putFile "${studyPedMapChr}.ped"
-
-
 inputs "${studyInputPedMapChr}.map"
 inputs "${studyInputPedMapChr}.ped"
 alloutputsexist "${studyPedMapChr}.map"
