@@ -2,5 +2,5 @@
 
 inputs "${filehandleUpdateParentsString}"
 
-${plink} --noweb --silent --bfile ${filehandleUpdateParentsString} --check-sex --out ${filehandleSexCheckString} 
+${plink} --noweb --silent --bfile ${filehandleUpdateParentsString} --check-sex --make-bed --out ${filehandleSexCheckString} 
  

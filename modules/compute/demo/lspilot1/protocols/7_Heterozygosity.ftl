@@ -2,4 +2,4 @@
 
 inputs "${filehandleUpdateSexString}"
 
-${plink} --noweb --silent --bfile ${filehandleUpdateSexString} --head --out ${filehandleHeterozygosityString}  
+${plink} --noweb --silent --bfile ${filehandleUpdateSexString} --het --out ${filehandleHeterozygosityString}  
