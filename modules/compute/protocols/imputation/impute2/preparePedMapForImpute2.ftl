@@ -20,7 +20,7 @@ alloutputsexist "${studyPedMapChr}.ped"
 mkdir -p ${studyPedMapChrDir}
 
 #Convert SNPids to chr_pos
-awk '{$2=$1_$4; print $0}' ${studyInputPedMapChr}.map > ${studyPedMapChr}.map
+awk '{$2=$1"_"$4; print $0}' ${studyInputPedMapChr}.map > ${studyPedMapChr}.map
 
 #Copy ped file
 cp ${studyInputPedMapChr}.ped ${studyPedMapChr}.ped
