@@ -8,6 +8,16 @@
 
 #FOREACH project,chr
 
+getFile "${studyPedMapChr}.map"
+getFile "${studyPedMapChr}.ped"
+putFile "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+putFile "${studyTriTyperChrDir}/Individuals.txt"
+putFile "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+putFile "${studyTriTyperChrDir}/SNPMappings.txt"
+putFile "${studyTriTyperChrDir}/SNPsHash.txt"
+putFile "${studyTriTyperChrDir}/SNPs.txt"
+
+
 inputs "${studyPedMapChr}.map"
 inputs "${studyPedMapChr}.ped"
 alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat"
@@ -17,6 +27,8 @@ alloutputsexist "${studyTriTyperChrDir}/SNPMappings.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
 
+
+#module load ${imputationToolJar}/${imputationToolJarversion}
 
 mkdir -p ${studyTriTyperChrTempDir}
 

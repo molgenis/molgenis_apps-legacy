@@ -2,10 +2,23 @@
 
 #INPUTS referenceImpute2HapFile,referenceImpute2LegendFile,referenceImpute2MapFile,preparedStudyDir/chr${chr}.gen
 #OUTPUTS impute2ResultChrBinTemp
-#EXES impute2Bin
-#LOGS log
 
-#FOREACH
+
+for file in $(ls ${impute2ResultDir}/${chr}/)
+do
+getFile $file;
+done
+
+getFile "${referenceImpute2HapFile}"
+getFile "${referenceImpute2LegendFile}"
+getFile "${referenceImpute2MapFile}"
+getFile "${preparedStudyDir}/chr${chr}.gen"
+
+for file in $(ls ${impute2ResultChrBin})
+do
+putFile $file;
+done
+
 
 
 inputs "${referenceImpute2HapFile}"
@@ -14,8 +27,7 @@ inputs "${referenceImpute2MapFile}"
 inputs "${preparedStudyDir}/chr${chr}.gen"
 
 
-###To correct
-#alloutputsexist "${impute2ResultChrBin}"
+#module load ${impute2Bin}/${impute2Binversion}
 
 mkdir -p ${impute2ResultDir}/${chr}/
 ${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultChrBinTemp}

@@ -25,7 +25,6 @@ putFile $file;
 done
 
 
-
 inputs ${studyTriTyperChrDir}/GenotypeMatrix.dat
 inputs ${studyTriTyperChrDir}/Individuals.txt
 inputs ${studyTriTyperChrDir}/PhenotypeInformation.txt
@@ -38,10 +37,7 @@ inputs ${referenceTriTyperDir}/SNPMappings.txt
 inputs ${referenceTriTyperDir}/SNPs.txt
 
 
-### This is not correct
-#alloutputsexist preparedStudyDir/*
-
-
+#module load ${imputationToolJar}/${imputationToolJarversion}
 
 mkdir ${preparedStudyTempDir}
 
