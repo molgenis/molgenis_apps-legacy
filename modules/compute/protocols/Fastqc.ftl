@@ -12,7 +12,7 @@
 
 <#if seqType == "SR">
 #INPUTS srbarcodefqgz,
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog
+#OUTPUTS leftfastqczip
 #LOGS log
 #EXES fastqcjar
 #TARGETS
@@ -23,7 +23,7 @@
 
 <#else>
 #INPUTS leftbarcodefqgz,rightbarcodefqgz
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog,rightfastqczip,rightfastqcsummarytxt,rightfastqcsummarylog
+#OUTPUTS leftfastqczip,rightfastqczip
 #LOGS log
 #EXES fastqcjar
 #TARGETS
