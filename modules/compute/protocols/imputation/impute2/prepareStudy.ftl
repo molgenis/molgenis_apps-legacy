@@ -7,6 +7,7 @@
 
 #FOREACH project,chr
 
+
 getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
 getFile ${studyTriTyperChrDir}/Individuals.txt
 getFile ${studyTriTyperChrDir}/PhenotypeInformation.txt
@@ -37,7 +38,10 @@ inputs ${referenceTriTyperDir}/SNPMappings.txt
 inputs ${referenceTriTyperDir}/SNPs.txt
 
 
-#module load ${imputationToolJar}/${imputationToolJarversion}
+### This is not correct
+#alloutputsexist preparedStudyDir/*
+
+
 
 mkdir ${preparedStudyTempDir}
 
