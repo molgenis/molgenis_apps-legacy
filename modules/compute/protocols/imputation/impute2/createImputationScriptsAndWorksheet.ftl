@@ -5,8 +5,6 @@
 
 ####TEMPLATE TO BE FINISHED SOON####
 
-#module load ${expandWorksheetJar}/${expandWorksheetJarversion}
-
 mkdir -p ${projectTempDir}
 mkdir -p ${projectJobsDir}
 
@@ -15,7 +13,7 @@ mkdir -p ${projectJobsDir}
 <#if imputationPipeline == "impute2">
 
 
-	java -jar ${expandWorksheetJar} ${projectTempDir}/${project}.csv ${projectComputeDir}/${project}.worksheet.csv ${chrBinsFile} project ${project} 
+	java -jar ${expandWorksheetJar} ${McWorksheet} ${projectComputeDir}/${project}.worksheet.csv ${chrBinsFile} project ${project} 
 	
 	
 	
