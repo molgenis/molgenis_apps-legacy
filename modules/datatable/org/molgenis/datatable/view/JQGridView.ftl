@@ -70,9 +70,12 @@ var JQGridView = {
         this.createDialog();
       
 		//load & create Tree
-	    $.getJSON(configUrl + "&Operation=LOAD_TREE").done(function(data) { 
-	    	 self.tree = self.createTree(data);   
-	    });
+		
+		if (config.showColumnTree) {
+	    	$.getJSON(configUrl + "&Operation=LOAD_TREE").done(function(data) { 
+	    		 self.tree = self.createTree(data);   
+	    	});
+	    }
 
         return JQGridView;
     },
@@ -247,22 +250,22 @@ var JQGridView = {
         	$(pageInput).attr('value', this.columnPage);  
 
 			maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
-			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 2;
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 1;
 
 			// handle input of specific column page number
         	$(pageInput).change(function() {
         		value = parseInt($(this).val(), 10);
         		
         		
-        		if(value - 1 > 0 && value - 1 < maxPage) {
+        		if(value > 0 && value < maxPage) {
         			$(this).attr('value', value);
         			self.setColumnPageIndex(value - 1);
         		} else {
-        			if(value - 1 >= maxPage) {
+        			if(value >= maxPage) {
         				$(this).attr('value', value);
         				self.setColumnPageIndex(maxPage - 1);
         			}
-        			if(value - 1 <= 0) {
+        			if(value <= 0) {
         				$(this).attr('value', value);
         				self.setColumnPageIndex(0);        			
         			}
@@ -398,7 +401,7 @@ var JQGridView = {
 			controlDiv += "</div>";
 			$('#dialog').append(controlDiv);
 			//Using jQuery UI Button
-			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
+			$('#submitAddRecord').button();
 			$('#quitAddRecord').button();
 			
 			
@@ -505,6 +508,8 @@ var JQGridView = {
  			
  			//Set up event for quit dialog button. If the quit button is clicked, another confirmation dialog
  			//pops up, therefore it prevents people from mis-clicking the quit button and losing input.
+ 			
+ 		
  			$('#quitAddRecord').click(function(){
  				confirmDialog = "<div id=\"confirmDialog\" title=\"Confirmation\">";
  				confirmDialog += "Are you sure you want to quit?</br>";
@@ -512,7 +517,7 @@ var JQGridView = {
  				confirmDialog += "<input id=\"cancelButton\" type=\"button\" style=\"font-size:0.8em\" value=\"Cancel\"></input>";
  				confirmDialog += "<div>";
  				$('#dialog').append(confirmDialog);
- 				$('#confirmButton').button();Ê Ê Ê Ê Ê Ê
+ 				$('#confirmButton').button();
 				$('#cancelButton').button();
  				$('#confirmDialog').dialog();
  				$('#confirmButton').click(function(){
@@ -521,13 +526,14 @@ var JQGridView = {
  				});
  				$('#cancelButton').click(function(){$('#confirmDialog').remove();});
  			});
+ 			
     	});
     	
         return grid;
 	},
 
 	setColumnPageIndex : function(columnPagerIndex) {
-		this.columnPage = columnPagerIndex;
+		this.columnPage = columnPagerIndex+1;
 		this.changeColumns(null);
 	},
 	
@@ -645,10 +651,9 @@ $(document).ready(function() {
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
         
-        grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
-       
-        
+        grid = JQGridView.init("${tableId}", "${tableId}_pager", config);    
     });
+    
 	$('#${tableId}_exportButton').click(function() {
 		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
