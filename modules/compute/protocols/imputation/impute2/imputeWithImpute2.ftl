@@ -1,13 +1,13 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
 
-#INPUTS impute2ResultDir/${chr}/,referenceImpute2HapFile,referenceImpute2LegendFile,referenceImpute2MapFile,preparedStudyDir/chr${chr}.gen
+#INPUTS referenceImpute2HapFile,referenceImpute2LegendFile,referenceImpute2MapFile,preparedStudyDir/chr${chr}.gen
 #OUTPUTS impute2ResultChrBinTemp
 #EXES impute2Bin
 #LOGS log
 
 #FOREACH
 
-inputs "${impute2ResultDir}/${chr}/"
+
 inputs "${referenceImpute2HapFile}"
 inputs "${referenceImpute2LegendFile}"
 inputs "${referenceImpute2MapFile}"
