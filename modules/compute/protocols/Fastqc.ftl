@@ -20,8 +20,7 @@
 	inputs "${srbarcodefqgz}"
 	alloutputsexist \
 	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
+
 <#else>
 #INPUTS leftbarcodefqgz,rightbarcodefqgz
 #OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog,rightfastqczip,rightfastqcsummarytxt,rightfastqcsummarylog
@@ -34,11 +33,7 @@
 	
 	alloutputsexist \
 	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
 	 "${rightfastqczip}" \
-	 "${rightfastqcsummarytxt}" \
-	 "${rightfastqcsummarylog}"
 </#if>
 
 # first make logdir...
