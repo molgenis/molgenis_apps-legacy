@@ -22,6 +22,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	private MapFileDriver mapFile;
 	private List<Field> columns = null;
 	private List<QueryRule> filters;
+	private List<String> snpNames = new ArrayList<String>();
 
 	private static String[] fixedColumns = new String[]
 	{ "IndividualID", "FamilyID", "FatherID", "MotherID", "Sex", "Phenotype" };
@@ -30,6 +31,11 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	{
 		this.mapFile = new MapFileDriver(map);
 		this.pedFile = new CachingPedFileDriver(ped);
+
+		for (MapEntry me : mapFile.getAllEntries())
+		{
+			snpNames.add(me.getSNP());
+		}
 	}
 
 	@Override
@@ -57,18 +63,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	private List<String> getColumnNames()
 	{
 		List<String> columns = new ArrayList<String>(Arrays.asList(fixedColumns));
-
-		try
-		{
-			for (MapEntry me : mapFile.getAllEntries())
-			{
-				columns.add(me.getSNP());
-			}
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
+		columns.addAll(snpNames);
 
 		return columns;
 	}
@@ -200,7 +195,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	public void setFilters(List<QueryRule> rules) throws TableException
 	{
 		this.filters = rules;
-		pedFile.setFilters(rules);
+		pedFile.setFilters(rules, snpNames);
 	}
 
 	@Override
