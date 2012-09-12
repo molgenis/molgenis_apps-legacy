@@ -80,10 +80,10 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			System.out.println("PedMapTupleTable created..");
 
-			if (table.getColumns().size() > 10)
+			if (table.getColumns().size() > 500)
 			{
-				table.setColLimit(10);
-				System.out.println("columns limited to 10..");
+				table.setColLimit(500);
+				System.out.println("columns limited to 500..");
 			}
 
 			// construct the gridview
