@@ -234,9 +234,10 @@ var JQGridView = {
 						delete self.config.postData["SelectedRow"];
 					} 
 					 
-            	},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
+            	},
+            	this.config.searchOptions
             ).jqGrid('gridResize');
- 
+ 		
         if(this.columnPageEnabled) {
 
         	firstButton = $("<input id='firstColButton' type='button' value='|< Columns' style='height:20px;font-size:-3'/>")

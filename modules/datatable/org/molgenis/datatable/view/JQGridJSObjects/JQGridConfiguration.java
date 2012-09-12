@@ -75,6 +75,8 @@ public class JQGridConfiguration
 
 	public JQGridSettings settings = new JQGridSettings();
 
+	public JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+
 	// The javascript tree to show/hide columns above the grid
 	public boolean showColumnTree = true;
 

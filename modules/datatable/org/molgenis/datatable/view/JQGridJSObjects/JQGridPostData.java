@@ -18,6 +18,21 @@ public class JQGridPostData
 		sord = request.getString("sord");
 
 		this.filters = new Gson().fromJson(request.getString("filters"), JQGridFilter.class);
+
+		if (filters == null)
+		{
+			// Check simple, single search
+			String searchString = request.getString("searchString");
+			String searchField = request.getString("searchField");
+			String searchOper = request.getString("searchOper");
+
+			if ((searchString != null) && (searchField != null) && (searchOper != null))
+			{
+				JQGridRule.JQGridOp op = JQGridRule.JQGridOp.valueOf(searchOper);
+				filters = new JQGridFilter();
+				filters.rules.add(new JQGridRule(searchField, op, searchString));
+			}
+		}
 	}
 
 	public JQGridPostData()
