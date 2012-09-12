@@ -284,7 +284,7 @@ var JQGridView = {
         	}        	
         	
         	$(firstButton).click(function() {
-        		self.setColumnPageIndex(1);
+        		self.setColumnPageIndex(0);
         	});
         	
         	$(prevButton).click(function() {
