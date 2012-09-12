@@ -17,15 +17,18 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
+import org.json.JSONObject;
 import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
+import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
@@ -111,6 +114,58 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	// checkHeaders(db, request, fileName);
 	// }
 
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
+			throws Exception {
+
+		if (out != null) {
+			if (request.getAction().equals("download_json_test")) {
+
+				tableView.handleRequest(db, request, out);
+
+			} else if (request.getAction().equals("download_json_loadPreview")) {
+
+				if (csvTable != null) {
+
+					// If there are no new records and columns at all, show all
+					// the
+					// table
+					if (newTargets.size() > 0) {// If there are new records,
+						// show new records only
+						String targetString = csvTable.getAllColumns().get(0)
+								.getName();
+
+						List<Tuple> newRecords = new ArrayList<Tuple>();
+
+						for (Tuple tuple : csvTable.getRows()) {
+							String targetName = tuple.getString(targetString);
+							if (newTargets.contains(targetName)) {
+								newRecords.add(tuple);
+							}
+						}
+
+						MemoryTable table = new MemoryTable(newRecords);
+
+						tableView = new JQGridView("test", this, table);
+
+					} else {
+
+						tableView = new JQGridView("test", this, csvTable);
+					}
+
+					JSONObject json = new JSONObject();
+					json.put("result", tableView.getHtml());
+					((MolgenisRequest) request).getResponse().getOutputStream()
+							.print(json.toString());
+				}
+
+			}
+		} else {
+			this.handleRequest(db, request);
+		}
+
+		return Show.SHOW_MAIN;
+	}
+
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
@@ -179,11 +234,11 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 					MemoryTable table = new MemoryTable(newRecords);
 
-					tableView = new JQGridView("Preview", this, table);
+					tableView = new JQGridView("test", this, table);
 
 				} else {
 
-					tableView = new JQGridView("Preview", this, csvTable);
+					tableView = new JQGridView("test", this, csvTable);
 				}
 			}
 		} else if (request.getAction().equals("previousStepSummary")) {
@@ -281,7 +336,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			MemoryTable table = new MemoryTable(newRecords);
 
-			tableView = new JQGridView("Preview", this, table);
+			tableView = new JQGridView("test", this, table);
 
 		} else {
 			tableView.handleRequest(db, request, null);
@@ -290,7 +345,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	}
 
 	private void importUploadFile(Database db, Tuple request)
-			throws DatabaseException {
+			throws DatabaseException, TableException {
 
 		try {
 			db.beginTx();
@@ -508,6 +563,20 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			db.commitTx();
 
 			importMessage = "Your import has been successful! You can know upload a new file";
+
+			Protocol p = db.query(Protocol.class)
+					.eq(Protocol.NAME, "stageCatalogue").find().get(0);
+
+			// create table
+			ProtocolTable table = new ProtocolTable(db, p);
+			table.setTargetString("Pa_Id");
+			// add editable decorator
+
+			// check which table to show
+			tableView = new JQGridView("test", this, table);
+
+			tableView
+					.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
 
 		} catch (DatabaseException e) {
 			importMessage = "It fails to import the file, please check your file please!";
