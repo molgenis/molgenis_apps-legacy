@@ -2,6 +2,15 @@
 <molgenis name="org.molgenis" label="Catalog of Dutch Biobank">
 	<module name="bbmri" label="Catalog of Dutch Biobank">
 		
+		<entity name="Welcome" >
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="welcomeTitle" description="the title of the welcome page"></field>
+			<field name="welcomeText" type="text" description="the text of the welcome page"></field>
+			<!-- <field name="contactLink" type="text" description="the contact link"></field>
+			<field name="helpLink" type="text" description="the help link"></field> -->
+			<field name="welcomeDatetime" type="datetime" ></field>
+			<field name="status" description="old or new indicated by 'old' or 'new'"></field>
+		</entity>
 		
 		<entity name="ChangeLog" implements="Identifiable">
 			<description>This contains changes to bbmri entities. </description>
