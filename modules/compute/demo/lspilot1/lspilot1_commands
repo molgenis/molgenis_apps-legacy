@@ -1,0 +1,12 @@
+1. plink --noweb --bed GvNL_good_samples.bed --bim GvNL_good_samples.bim --fam GvNL_good_samples.fam --remove GvNL_suspicious.txt --make-bed --out out1_1
+2. plink --noweb --silent --bfile out1_1 --update-ids GvNL_family_update.txt --make-bed --out out2_1
+3. plink --noweb --bfile out2_1 --update-parents GvNL_parents_update.txt --make-bed --out out3_1
+4. plink --noweb --bfile out3_1 --check-sex --make-bed --out out4_1
+5. does not work: plink --noweb --silent --bfile out3_1 --update-sex out4_1.sexcheck --make-bed --out out5_1
+6. plink --noweb --bfile out4_1 --missing --out out6_1
+7. plink --noweb --bfile out4_1 --het --out out7_1
+9. sh run.sh
+A. plink --noweb --bfile out4_1 --remove out9_1.txt  --out outA_1
+B. plink --noweb --bfile out4_1 --indep-pairwise 50 5 0.2 --out outB_1
+C. plink --noweb --bfile out4 --extract outB.prune.in --genome --out outC
+D. plink --noweb --bfile out4 --me 0.05 0.1 --make-bed --out outD
