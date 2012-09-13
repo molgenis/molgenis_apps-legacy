@@ -22,6 +22,8 @@ alloutputsexist "${imputationResultDir}/chr_${chr}.map"
 ${gtoolBin} -G --g ${imputationResultDir}/chr_${chr}.gen --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResultDir}/~chr_${chr}.ped --map ${imputationResultDir}/~chr_${chr}.map
 
 
+#Get return code from last program call
+returnCode=$?
 
 if [ $returnCode -eq 0 ]
 then
