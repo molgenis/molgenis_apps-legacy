@@ -8,12 +8,15 @@ import org.molgenis.datatable.model.PedMapTupleTable;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
+import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
@@ -23,8 +26,13 @@ import decorators.MolgenisFileHandler;
 /** Simple plugin that only shows a data table for testing */
 public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 {
-	JQGridView tableView;
-	boolean editable = false;
+	private static final long serialVersionUID = 1049195164197133420L;
+	private static final String JQ_GRID_VIEW_NAME = "pedmaptable";
+	private JQGridView tableView;
+	private List<InvestigationFile> pedFiles;
+	private List<InvestigationFile> mapFiles;
+	private InvestigationFile selectedPedFile;
+	private InvestigationFile selectedMapFile;
 
 	public JQGridPluginPedMap(String name, ScreenController<?> parent)
 	{
@@ -37,29 +45,30 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		// need to (re) load the table
 		try
 		{
-			// only this line changed ...
-			List<InvestigationFile> pedFiles = db.find(InvestigationFile.class, new QueryRule(
-					InvestigationFile.EXTENSION, Operator.EQUALS, "ped"));
+			pedFiles = getInvestigationFiles(db, "ped");
+			mapFiles = getInvestigationFiles(db, "map");
 
-			if (pedFiles.size() != 1)
+			if (pedFiles.isEmpty() || mapFiles.isEmpty())
 			{
-				throw new Exception("Expecting 1 PED file");
+				// Show errormessage
+				setError("Missing ped or map files");
+				return;
 			}
 
-			List<InvestigationFile> mapFiles = db.find(InvestigationFile.class, new QueryRule(
-					InvestigationFile.EXTENSION, Operator.EQUALS, "map"));
-
-			if (mapFiles.size() != 1)
+			if (selectedMapFile == null)
 			{
-				throw new Exception("Expecting 1 MAP file");
+				selectedMapFile = mapFiles.get(0);
 			}
 
-			System.out.println("1 ped, 1 map file..");
+			if (selectedPedFile == null)
+			{
+				selectedPedFile = pedFiles.get(0);
+			}
 
 			MolgenisFileHandler mfh = new MolgenisFileHandler(db);
 
-			File pedFile = mfh.getFile(pedFiles.get(0), db);
-			File mapFile = mfh.getFile(mapFiles.get(0), db);
+			File pedFile = mfh.getFile(selectedPedFile, db);
+			File mapFile = mfh.getFile(selectedMapFile, db);
 
 			System.out.println("got ped/map files from db..");
 
@@ -68,14 +77,16 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			System.out.println("PedMapTupleTable created..");
 
-			table.setColLimit(10);
-
-			System.out.println("columns limited to 10..");
+			if (table.getColumns().size() > 10)
+			{
+				table.setColLimit(10);
+				System.out.println("columns limited to 10..");
+			}
 
 			// check which table to show
-			tableView = new JQGridView("pedmaptable", this, table);
+			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false);
 
-			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+			tableView.setLabel("Genotypes");
 
 			System.out.println("tableView created..");
 
@@ -83,7 +94,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.setError(e.getMessage());
+			setError(e.getMessage());
 		}
 	}
 
@@ -92,26 +103,75 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 	public void download_json_pedmaptable(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
-		// handle requests for the table named 'test'
-
+		// handle requests for the table named 'genotypes'
 		tableView.handleRequest(db, request, out);
 
 	}
 
-	//
-	// public void handleRequest(Database db, Tuple request) {
-	// if (request.getAction().equals("edit")) {
-	// System.out.println("hello world");
-	// }
-	// }
+	public void reloadTable(Database db, Tuple request)
+	{
+		String pedFileName = request.getString("pedfile");
+		String mapFileName = request.getString("mapfile");
+
+		for (InvestigationFile file : pedFiles)
+		{
+			if (file.getName().equals(pedFileName))
+			{
+				selectedPedFile = file;
+			}
+		}
+
+		for (InvestigationFile file : mapFiles)
+		{
+			if (file.getName().equals(mapFileName))
+			{
+				selectedMapFile = file;
+			}
+		}
+
+	}
 
 	// what is shown to the user
 	public ScreenView getView()
 	{
 		MolgenisForm view = new MolgenisForm(this);
 
-		view.add(tableView);
+		SelectInput selectPed = new SelectInput("pedfile");
+		for (InvestigationFile file : pedFiles)
+		{
+			selectPed.addOption(file.getName(), file.getName());
+		}
+
+		if (selectedPedFile != null)
+		{
+			selectPed.setValue(selectedPedFile.getName());
+		}
+		view.add(selectPed);
+
+		SelectInput selectMap = new SelectInput("mapfile");
+		for (InvestigationFile file : mapFiles)
+		{
+			selectMap.addOption(file.getName(), file.getName());
+		}
+
+		if (selectedMapFile != null)
+		{
+			selectMap.setValue(selectedMapFile.getName());
+		}
+		view.add(selectMap);
+
+		view.add(new ActionInput("reloadTable", "Reload table"));
+
+		if (tableView != null)
+		{
+			view.add(tableView);
+		}
 
 		return view;
+	}
+
+	private List<InvestigationFile> getInvestigationFiles(Database db, String extension) throws DatabaseException
+	{
+		return db.find(InvestigationFile.class, new QueryRule(InvestigationFile.EXTENSION, Operator.EQUALS, extension));
 	}
 }
