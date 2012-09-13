@@ -398,7 +398,7 @@ var JQGridView = {
 			controlDiv += "</div>";
 			$('#dialog').append(controlDiv);
 			//Using jQuery UI Button
-			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
+			$('#submitAddRecord').button();
 			$('#quitAddRecord').button();
 			
 			
@@ -512,7 +512,7 @@ var JQGridView = {
  				confirmDialog += "<input id=\"cancelButton\" type=\"button\" style=\"font-size:0.8em\" value=\"Cancel\"></input>";
  				confirmDialog += "<div>";
  				$('#dialog').append(confirmDialog);
- 				$('#confirmButton').button();Ê Ê Ê Ê Ê Ê
+ 				$('#confirmButton').button();
 				$('#cancelButton').button();
  				$('#confirmDialog').dialog();
  				$('#confirmButton').click(function(){
