@@ -40,7 +40,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
@@ -53,13 +52,12 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	 * 
 	 */
 	private static final long serialVersionUID = 4743753566046137438L;
-	private String loadingMatrix = null;
 	private String mappingMessage = null;
 	private String report = null;
 	private String uploadFileErrorMessage = null;
 	private CsvTable csvTable = null;
 	private JQGridView tableView = null;
-	private String STATUS = "showMatrix";
+	private String STATUS = "UploadFile";
 	private final String investigationName = "LifeLines";
 	private String tempalteFilePath = null;
 	private String jsonForMapping = null;
@@ -74,6 +72,16 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		super(name, parent);
 	}
 
+	@Override
+	public String getViewName() {
+		return "UpdateMatrixImporter";
+	}
+
+	@Override
+	public String getViewTemplate() {
+		return "UpdateMatrixImporter/UpdateMatrixImporter.ftl";
+	}
+
 	public void resetVariables() {
 		colHeaders.clear();
 		newFeatures.clear();
@@ -81,7 +89,6 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		newTargets.clear();
 		listOfProtocols.clear();
 		jsonForMapping = null;
-		loadingMatrix = null;
 		uploadFileErrorMessage = null;
 		mappingMessage = null;
 		tempalteFilePath = null;
@@ -91,28 +98,6 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		tableView = null;
 		report = null;
 	}
-
-	// public void uploadNewFileAction(Database db, Tuple request) {
-	// STATUS = "showMatrix";
-	// }
-	//
-	// public void uploadFile(Database db, Tuple request) {
-	//
-	// resetVariables();
-	//
-	// STATUS = "CheckFile";
-	//
-	// String fileName = request.getString("uploadFileName");
-	//
-	// File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-	//
-	// File templateMapping = new File(tmpDir.getAbsolutePath()
-	// + "/tempalteMapping.xls");
-	//
-	// tempalteFilePath = templateMapping.getAbsolutePath();
-	//
-	// checkHeaders(db, request, fileName);
-	// }
 
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws Exception {
@@ -186,29 +171,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			checkHeaders(db, request, fileName);
 
-		} else if (request.getAction().equals("showMatrix")) {
+		} else if (request.getAction().equals("uploadNewFile")) {
 
-			STATUS = "showMatrix";
-
-			Protocol p;
-			try {
-				p = db.query(Protocol.class)
-						.eq(Protocol.NAME, "stageCatalogue").find().get(0);
-
-				// create table
-				ProtocolTable table = new ProtocolTable(db, p);
-				table.setTargetString("Pa_Id");
-				// add editable decorator
-
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
-
-				tableView
-						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			STATUS = "UploadFile";
 
 		} else if (request.getAction().equals("previewFileAction")) {
 
@@ -219,7 +184,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				// If there are no new records and columns at all, show all the
 				// table
 				if (newTargets.size() > 0) {// If there are new records,
-					// show new records only
+											// show new records only
 					String targetString = csvTable.getAllColumns().get(0)
 							.getName();
 
@@ -239,6 +204,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				} else {
 
 					tableView = new JQGridView("test", this, csvTable);
+
 				}
 			}
 		} else if (request.getAction().equals("previousStepSummary")) {
@@ -247,9 +213,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 		} else if (request.getAction().equals("importUploadFile")) {
 
-			STATUS = "showMatrix";
-
 			importUploadFile(db, request);
+
+			STATUS = "UploadFile";
 
 		} else if (request.getAction().equals("uploadMapping")) {
 
@@ -339,9 +305,12 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			tableView = new JQGridView("test", this, table);
 
 		} else {
-			tableView.handleRequest(db, request, null);
-			loadingMatrix = "Loading the matrix";
+
+			if (STATUS.equals("previewFile")) {
+				tableView.handleRequest(db, request, null);
+			}
 		}
+
 	}
 
 	private void importUploadFile(Database db, Tuple request)
@@ -370,19 +339,6 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					existingColumn = eachHeader;
 					break;
 				}
-			}
-
-			HashMap<String, String> targetToProtocolApplication = new HashMap<String, String>();
-
-			Query<ObservedValue> query = db.query(ObservedValue.class);
-			query.addRules(new QueryRule(ObservedValue.TARGET_NAME,
-					Operator.IN, rowHeaders));
-			query.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-					Operator.EQUALS, existingColumn));
-
-			for (ObservedValue ov : query.find()) {
-				targetToProtocolApplication.put(ov.getTarget_Name(),
-						ov.getProtocolApplication_Name());
 			}
 
 			// new rows are added
@@ -503,25 +459,35 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					// Add values for new columns only
 					if (addedColumns.size() > 0) {
 
+						Query<ObservedValue> query = db
+								.query(ObservedValue.class);
+
+						query.addRules(new QueryRule(ObservedValue.TARGET_NAME,
+								Operator.EQUALS, targetName));
+						query.addRules(new QueryRule(
+								ObservedValue.FEATURE_NAME, Operator.EQUALS,
+								existingColumn));
+
+						ObservedValue existingValues = query.find().get(0);
+
 						for (String eachNewColumn : addedColumns) {
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
 							ov.setFeature_Name(eachNewColumn);
 							ov.setValue(row.getString(eachNewColumn));
 							ov.setInvestigation_Name(investigationName);
-							ov.setProtocolApplication_Name(targetToProtocolApplication
-									.get(ov.getTarget_Name()));
+							ov.setProtocolApplication_Name(existingValues
+									.getProtocolApplication_Name());
 							listOfValues.add(ov);
 						}
 					}
 				}
 			}
-			if (listOfCategories.keySet().size() > 0) {
-				for (Category c : db.find(Category.class, new QueryRule(
-						Category.NAME, Operator.IN, new ArrayList<String>(
-								listOfCategories.keySet())))) {
-					listOfCategories.remove(c.getName().toLowerCase());
-				}
+
+			for (Category c : db.find(Category.class, new QueryRule(
+					Category.NAME, Operator.IN, new ArrayList<String>(
+							listOfCategories.keySet())))) {
+				listOfCategories.remove(c.getName().toLowerCase());
 			}
 
 			List<Category> uniqueCategories = new ArrayList<Category>(
@@ -587,29 +553,8 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 	@Override
 	public void reload(Database db) {
-
-		if (tableView == null) {
-			Protocol p;
-			try {
-				p = db.query(Protocol.class)
-						.eq(Protocol.NAME, "stageCatalogue").find().get(0);
-
-				// create table
-				ProtocolTable table = new ProtocolTable(db, p);
-				table.setTargetString("Pa_Id");
-				// add editable decorator
-
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
-
-				tableView
-						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		// TODO Auto-generated method stub
+		System.out.println("-----------RELOAD!");
 	}
 
 	public void checkHeaders(Database db, Tuple request, String filePath) {
@@ -672,18 +617,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			}
 
 		} catch (Exception e) {
-			STATUS = "showMatrix";
+			STATUS = "UploadFile";
 			uploadFileErrorMessage = "There are errors in your file, please upload before check";
 			e.printStackTrace();
 		}
-
-	}
-
-	public void reload_preview_grid(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException {
-		// handle requests for the table named 'test'
-
-		System.out.println();
 
 	}
 
@@ -813,19 +750,4 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		return importMessage;
 	}
 
-	public String getLoadingMatrix() {
-		return loadingMatrix;
-	}
-
-	@Override
-	public String getViewTemplate() {
-		// TODO Auto-generated method stub
-		return "updateMatrixImporter/UpdateMatrixImporter.ftl";
-	}
-
-	@Override
-	public String getViewName() {
-		// TODO Auto-generated method stub
-		return "UpdateMatrixImporter";
-	}
 }

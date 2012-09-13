@@ -19,9 +19,13 @@
 		$('#fileUploadCancel').button();
 		$('#uploadFileButton').button();
 		
+
 		$('#previousStepSummary').click(function(){
 			$('#showPreviewedTable').fadeOut();
 			$('#summaryPage').fadeIn();
+		});
+		$('#fileUploadCancel').click(function(){
+			$('#uploadFileForm').dialog('close');
 		});
 		
 		$('#preview').click(function(){
