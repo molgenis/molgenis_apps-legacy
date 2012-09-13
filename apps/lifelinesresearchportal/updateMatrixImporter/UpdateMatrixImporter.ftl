@@ -14,17 +14,26 @@
 		$('#importUploadFile').button();
 		$('#preview').button();
 		$('#uploadNewFile').button();
+		$('#uploadNewFileSecond').button();
 		$('#fileUploadNext').button();
 		$('#fileUploadCancel').button();
 		$('#uploadFileButton').button();
 		
+		$('#previousStepSummary').click(function(){
+			$('#showPreviewedTable').fadeOut();
+			$('#summaryPage').fadeIn();
+		});
+		
 		$('#preview').click(function(){
 			
-			$.ajax("${screen.getUrl()}").done(function(previewTable){
-				$('#showPreviewedTable').empty();
-				$('#showPreviewedTable').append(previewTable);
-			});
-			
+			if($('#previewedTable').children().length == 0){
+				$.ajax("${screen.getUrl()}&__action=download_json_loadPreview").done(function(status) {
+					previewTable = status["result"];
+					$('#previewedTable').append(previewTable);
+				});
+			}
+			$('#summaryPage').fadeOut();
+			$('#showPreviewedTable').fadeIn();
 		});
 		
 		$('#uploadFileButton').click(function(){
@@ -379,39 +388,49 @@
 				</#if>
 			</div>
     	<#elseif screen.getSTATUS() == "CheckFile">
-    		<div id="newColumnsMapping" style="display:none"></div>
-    		<div id="reportForm">
-    			<fieldset>
-    				<table style="width:100%;">
-	    				<tr><td id="reportContent" style="width:50%;font-size:22px">
-			    			<div id="existingColHeaders" style="cursor:pointer" value="existing columns"></div>
-			    			<div id="newColHeaders" style="cursor:pointer" value="new columns"></div>
-			    			<div id="existingRowRecords" style="cursor:pointer" value="existing records"></div>
-			    			<div id="newRowRecords" style="cursor:pointer" value="new records"></div>
-			    		</td><td id="notification" style="width:50%;font-size:22px"></td></tr>
-	    			</table>
-    			</fieldset>
-    			<fieldset id="controlPanel">
-    				<input type="button" name="preview" id="preview" value="Preview"  
-    					style="font-size:0.6em;color:#03406A"/>
-					<input type="submit" name="importUploadFile" id="importUploadFile" value="Next"  
-						style="font-size:0.6em;color:#03406A" onclick="__action.value='importUploadFile';return true;"/>
-    				<input type="submit" name="uploadNewFile" id="uploadNewFile" value="Upload a new file" 
-    					style="font-size:0.6em;color:#03406A" onclick="__action.value='showMatrix';return true;"/>
-    			</fieldset>
-    			<script>
-    				<#if screen.getReport()??>
-    					generateReport(${screen.getReport()});
-    				</#if>
-    				<#if screen.getJsonForMapping()??>
-						$('#newColHeaders').trigger('click');
-					</#if>
-					<#if screen.getMappingMessage()??>
-						$('#newColHeaders').trigger('click');
-					</#if>
-    			</script>
+    		<div id="summaryPage">
+	    		<div id="newColumnsMapping" style="display:none"></div>
+	    		<div id="reportForm">
+	    			<fieldset>
+	    				<table style="width:100%;">
+		    				<tr><td id="reportContent" style="width:50%;font-size:22px">
+				    			<div id="existingColHeaders" style="cursor:pointer" value="existing columns"></div>
+				    			<div id="newColHeaders" style="cursor:pointer" value="new columns"></div>
+				    			<div id="existingRowRecords" style="cursor:pointer" value="existing records"></div>
+				    			<div id="newRowRecords" style="cursor:pointer" value="new records"></div>
+				    		</td><td id="notification" style="width:50%;font-size:22px"></td></tr>
+		    			</table>
+	    			</fieldset>
+	    			<fieldset id="controlPanel">
+	    				<input type="button" name="preview" id="preview" value="Preview"  
+	    					style="font-size:0.6em;color:#03406A"/>
+						<input type="submit" name="importUploadFile" id="importUploadFile" value="Next"  
+							style="font-size:0.6em;color:#03406A" onclick="__action.value='importUploadFile';return true;"/>
+	    				<input type="submit" name="uploadNewFile" id="uploadNewFile" value="Upload a new file" 
+	    					style="font-size:0.6em;color:#03406A" onclick="__action.value='showMatrix';return true;"/>
+	    			</fieldset>
+	    			<script>
+	    				<#if screen.getReport()??>
+	    					generateReport(${screen.getReport()});
+	    				</#if>
+	    				<#if screen.getJsonForMapping()??>
+							$('#newColHeaders').trigger('click');
+						</#if>
+						<#if screen.getMappingMessage()??>
+							$('#newColHeaders').trigger('click');
+						</#if>
+	    			</script>
+	    		</div>
     		</div>
-    		<div id="showPreviewedTable"></div>
+    		<div id="showPreviewedTable" style="display:none">
+    			<div id="previewedTable"></div>
+    			<fieldset id="controlPanelForImporting">
+					<input type="button" name="previousStepSummary" id="previousStepSummary" value="Previous"  
+	    					style="font-size:0.6em;color:#03406A"/>
+					<input type="submit" name="uploadNewFileSecond" id="uploadNewFileSecond" value="Upload a new file" 
+						style="font-size:0.6em;color:#03406A" onclick="__action.value='showMatrix';return true;"/>
+				</fieldset>
+    		</div>
     	<#elseif screen.getSTATUS() == "previewFile">
     		<#if screen.getTableView()??>${screen.getTableView()}</#if>
     		<fieldset id="controlPanelForImporting">
