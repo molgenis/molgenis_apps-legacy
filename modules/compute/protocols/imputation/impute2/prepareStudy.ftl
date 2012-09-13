@@ -42,7 +42,7 @@ inputs ${referenceTriTyperDir}/SNPs.txt
 mkdir ${preparedStudyTempDir}
 
 
-java -Xmx16g -jar ${imputationToolJar} \
+java -Xmx8g -jar ${imputationToolJar} \
 --mode ttpmh \
 --in ${studyTriTyperChrDir} \
 --hap ${referenceTriTyperDir} \
