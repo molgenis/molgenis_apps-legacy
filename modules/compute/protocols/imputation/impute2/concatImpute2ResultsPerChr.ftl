@@ -9,13 +9,13 @@
 	getFile ${genFile}
 </#list>
 putFile ${imputationResultDir}/chr_${chr}.gen
-putFile ${imputationResultDir}/chr_${chr}.info
+putFile ${imputationResultDir}/chr_${chr}_info
 
 
 inputs ${ssvQuoted(impute2ResultChrBinInfoFile)}
 inputs ${ssvQuoted(impute2ResultChrBinGenFile)}
 alloutputsexist ${imputationResultDir}/chr_${chr}.gen
-alloutputsexist ${imputationResultDir}/chr_${chr}.info
+alloutputsexist ${imputationResultDir}/chr_${chr}_info
 
 #Concat the bins with compute for each
 
