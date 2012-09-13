@@ -1,14 +1,19 @@
+
+
+
+
+
+
 #MOLGENIS walltime=01:00:00 nodes=1 cores=1 mem=1
 
 inputs ${chrVcfInputFile}
 alloutputsexist ${chrVcfReferenceFile}
 
-mkdir -p ${tmpFolder}
+mkdir -p ${vcfReferenceFolder}
 
-${vcftoolsBin} --vcf ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} --recode --remove-indels --remove-filtered-all --mac 1 --min-alleles 2 --max-alleles 2
 
-#Get return code from last program call
-returnCode=$?
+java -jar ~/Programs/ConvertVcfToTriTyper.jar ./vcf/ ./TriTyper/
+
 
 if [ $returnCode -eq 0 ]
 then

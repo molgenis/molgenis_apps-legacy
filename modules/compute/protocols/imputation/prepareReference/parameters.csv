@@ -15,9 +15,10 @@ resdir,${root}/resources,,,
 JAVA_HOME,/cm/shared/apps/sunjdk/jdk1.6.0_21/,,,
 #,,,,
 referenceFolder,${resdir}/imputationReference/${referenceName}/,,,
+tmpFolder,${referenceFolder}/tmp/,,,
 vcfReferenceFolder,${referenceFolder}/vcf,,,
-chrVcfReferenceFile,${vcfReferenceFolder}/chr${chr}.vcf,,,
-chrVcfReferenceFileTemp,${vcfReferenceFolder}/~chr${chr}.vcf,,,
+chrVcfReferenceIntermediateFile,${tmpFolder}/~chr${chr}.recode.vcf,,,
+chrVcfReferenceIntermediateFileTemp,${tmpFolder}/chr${chr}.recode.vcf,,,
 vcftoolsBin,${tooldir}/vcftools_0.1.9/bin/vcftools,,,
 
 
