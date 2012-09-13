@@ -1,4 +1,4 @@
-#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr
 
@@ -19,6 +19,6 @@ alloutputsexist ${imputationResultDir}/chr_${chr}_info
 
 #Concat the bins with compute for each
 
-cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResultDir}/chr_${chr}.info
+cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResultDir}/chr_${chr}_info
 
-cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResultDir}/chr_${chr}.gen
+cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResultDir}/chr_${chr}

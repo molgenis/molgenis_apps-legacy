@@ -5,13 +5,13 @@
 
 #FOREACH project,chr
 
-getFile "${imputationResultDir}/chr_${chr}.gen"
+getFile "${imputationResultDir}/chr_${chr}"
 getFile "${preparedStudyDir}/chr${chr}.sample"
 putFile "${imputationResultDir}/chr_${chr}.ped"
 putFile "${imputationResultDir}/chr_${chr}.map"
 
 
-inputs "${imputationResultDir}/chr_${chr}.gen"
+inputs "${imputationResultDir}/chr_${chr}"
 inputs "${preparedStudyDir}/chr${chr}.sample"
 alloutputsexist "${imputationResultDir}/chr_${chr}.ped"
 alloutputsexist "${imputationResultDir}/chr_${chr}.map"
@@ -19,7 +19,7 @@ alloutputsexist "${imputationResultDir}/chr_${chr}.map"
 
 #module load ${gtoolBin}/${gtoolBinversion}
 
-${gtoolBin} -G --g ${imputationResultDir}/chr_${chr}.gen --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResultDir}/~chr_${chr}.ped --map ${imputationResultDir}/~chr_${chr}.map
+${gtoolBin} -G --g ${imputationResultDir}/chr_${chr} --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResultDir}/~chr_${chr}.ped --map ${imputationResultDir}/~chr_${chr}.map
 
 
 #Get return code from last program call

@@ -1,4 +1,4 @@
-#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=8
 
 #INPUTS studyTriTyperChrDir,referenceTriTyperDir
 #OUTPUTS preparedStudyDir
