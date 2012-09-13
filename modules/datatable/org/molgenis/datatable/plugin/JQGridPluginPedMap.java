@@ -2,11 +2,14 @@ package org.molgenis.datatable.plugin;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.datatable.model.PedMapTupleTable;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -77,15 +80,21 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			System.out.println("PedMapTupleTable created..");
 
-			if (table.getColumns().size() > 10)
+			if (table.getColumns().size() > 500)
 			{
-				table.setColLimit(10);
-				System.out.println("columns limited to 10..");
+				table.setColLimit(500);
+				System.out.println("columns limited to 500..");
 			}
 
-			// check which table to show
-			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false);
+			// construct the gridview
+			JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+			searchOptions.multipleGroup = false;
+			searchOptions.multipleSearch = false;
+			searchOptions.showQuery = false;
+			searchOptions.sopt = Arrays.asList(new JQGridRule.JQGridOp[]
+			{ JQGridRule.JQGridOp.eq });
 
+			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false, searchOptions);
 			tableView.setLabel("Genotypes");
 
 			System.out.println("tableView created..");

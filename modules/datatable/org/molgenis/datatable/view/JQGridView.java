@@ -22,6 +22,7 @@ import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.datatable.view.renderers.Renderers;
 import org.molgenis.datatable.view.renderers.Renderers.JQGridRenderer;
 import org.molgenis.datatable.view.renderers.Renderers.Renderer;
@@ -52,6 +53,8 @@ public class JQGridView extends HtmlWidget
 	private boolean initialize = true;
 	private boolean showColumnTree = true;// The javascript tree to show/hide
 											// columns above the grid
+	private JQGridSearchOptions searchOptions;
+
 	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
@@ -118,10 +121,11 @@ public class JQGridView extends HtmlWidget
 	}
 
 	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table,
-			boolean showColumnTree)
+			boolean showColumnTree, JQGridSearchOptions searchOptions)
 	{
 		this(name, hostController, table);
 		this.showColumnTree = showColumnTree;
+		this.searchOptions = searchOptions;
 	}
 
 	/**
@@ -652,6 +656,11 @@ public class JQGridView extends HtmlWidget
 		tupleTable.setDb(db);
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(),
 				getLabel(), tupleTable, showColumnTree);
+
+		if (searchOptions != null)
+		{
+			config.searchOptions = searchOptions;
+		}
 
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);

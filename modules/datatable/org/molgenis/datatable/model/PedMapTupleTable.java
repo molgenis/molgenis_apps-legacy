@@ -6,27 +6,36 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.MapEntry;
 import org.molgenis.util.plink.datatypes.PedEntry;
+import org.molgenis.util.plink.drivers.CachingPedFileDriver;
 import org.molgenis.util.plink.drivers.MapFileDriver;
 import org.molgenis.util.plink.drivers.PedFileDriver;
 
-public class PedMapTupleTable extends AbstractTupleTable
+public class PedMapTupleTable extends AbstractTupleTable implements FilterableTupleTable
 {
-	private PedFileDriver pedFile;
+	private CachingPedFileDriver pedFile;
 	private MapFileDriver mapFile;
 	private List<Field> columns = null;
+	private List<QueryRule> filters;
+	private List<String> snpNames = new ArrayList<String>();
 
 	private static String[] fixedColumns = new String[]
 	{ "IndividualID", "FamilyID", "FatherID", "MotherID", "Sex", "Phenotype" };
 
 	public PedMapTupleTable(File ped, File map) throws Exception
 	{
-		this.pedFile = new PedFileDriver(ped);
 		this.mapFile = new MapFileDriver(map);
+		this.pedFile = new CachingPedFileDriver(ped);
+
+		for (MapEntry me : mapFile.getAllEntries())
+		{
+			snpNames.add(me.getSNP());
+		}
 	}
 
 	@Override
@@ -37,14 +46,9 @@ public class PedMapTupleTable extends AbstractTupleTable
 			if (columns == null)
 			{
 				columns = new ArrayList<Field>();
-				for (String col : fixedColumns)
+				for (String columnName : getColumnNames())
 				{
-					columns.add(new Field(col));
-				}
-
-				for (MapEntry me : mapFile.getAllEntries())
-				{
-					columns.add(new Field(me.getSNP()));
+					columns.add(new Field(columnName));
 				}
 			}
 		}
@@ -52,6 +56,15 @@ public class PedMapTupleTable extends AbstractTupleTable
 		{
 			throw new TableException(e);
 		}
+
+		return columns;
+	}
+
+	private List<String> getColumnNames()
+	{
+		List<String> columns = new ArrayList<String>(Arrays.asList(fixedColumns));
+		columns.addAll(snpNames);
+
 		return columns;
 	}
 
@@ -82,29 +95,17 @@ public class PedMapTupleTable extends AbstractTupleTable
 		List<String> columns;
 
 		// wrapper state
-		TupleTable table;
+		PedMapTupleTable table;
 
 		// colLimit
 		int colLimit;
 
-		PedMapIterator(PedFileDriver pedFile, MapFileDriver mapFile, TupleTable table)
+		PedMapIterator(PedFileDriver pedFile, MapFileDriver mapFile, PedMapTupleTable table)
 		{
 			this.pedFile = pedFile;
 			this.table = table;
 
-			columns = new ArrayList<String>(Arrays.asList(fixedColumns));
-
-			try
-			{
-				for (MapEntry me : mapFile.getAllEntries())
-				{
-					columns.add(me.getSNP());
-				}
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
+			columns = table.getColumnNames();
 
 			// TODO FIX MapFile.getNrOfElements
 			colLimit = (int) (table.getColLimit() == 0 ? mapFile.getNrOfElements() + fixedColumns.length
@@ -188,6 +189,25 @@ public class PedMapTupleTable extends AbstractTupleTable
 			// TODO Auto-generated method stub
 		}
 
+	}
+
+	@Override
+	public void setFilters(List<QueryRule> rules) throws TableException
+	{
+		this.filters = rules;
+		pedFile.setFilters(rules, snpNames);
+	}
+
+	@Override
+	public List<QueryRule> getFilters()
+	{
+		return this.filters;
+	}
+
+	@Override
+	public QueryRule getSortRule()
+	{
+		return null;
 	}
 
 }
