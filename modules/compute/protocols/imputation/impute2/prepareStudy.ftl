@@ -1,4 +1,4 @@
-#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=8
 
 #INPUTS studyTriTyperChrDir,referenceTriTyperDir
 #OUTPUTS preparedStudyDir
@@ -7,29 +7,46 @@
 
 #FOREACH project,chr
 
+
+getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
+getFile ${studyTriTyperChrDir}/Individuals.txt
+getFile ${studyTriTyperChrDir}/PhenotypeInformation.txt
+getFile ${studyTriTyperChrDir}/SNPMappings.txt
+getFile ${studyTriTyperChrDir}/SNPs.txt
+getFile ${referenceTriTyperDir}/GenotypeMatrix.dat
+getFile ${referenceTriTyperDir}/Individuals.txt
+getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
+getFile ${referenceTriTyperDir}/SNPMappings.txt
+getFile ${referenceTriTyperDir}/SNPs.txt
+
+for file in $(ls ${preparedStudyTempDir})
+do
+putFile $file;
+done
+
+
 inputs ${studyTriTyperChrDir}/GenotypeMatrix.dat
 inputs ${studyTriTyperChrDir}/Individuals.txt
 inputs ${studyTriTyperChrDir}/PhenotypeInformation.txt
 inputs ${studyTriTyperChrDir}/SNPMappings.txt
-inputs ${studyTriTyperChrDir}/SNPsHash.txt
 inputs ${studyTriTyperChrDir}/SNPs.txt
 inputs ${referenceTriTyperDir}/GenotypeMatrix.dat
 inputs ${referenceTriTyperDir}/Individuals.txt
 inputs ${referenceTriTyperDir}/PhenotypeInformation.txt
 inputs ${referenceTriTyperDir}/SNPMappings.txt
-inputs ${referenceTriTyperDir}/SNPsHash.txt
 inputs ${referenceTriTyperDir}/SNPs.txt
 
 
-### This is not correct
-#alloutputsexist preparedStudyDir/*
-
-
+#module load ${imputationToolJar}/${imputationToolJarversion}
 
 mkdir ${preparedStudyTempDir}
 
 
-java -Xmx16g -jar ${imputationToolJar} --mode ttpmh --in ${studyTriTyperChrDir} --hap ${referenceTriTyperDir} --out ${preparedStudyTempDir}
+java -Xmx8g -jar ${imputationToolJar} \
+--mode ttpmh \
+--in ${studyTriTyperChrDir} \
+--hap ${referenceTriTyperDir} \
+--out ${preparedStudyTempDir}
 
 
 #Get return code from last program call
