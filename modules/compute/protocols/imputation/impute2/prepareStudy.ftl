@@ -17,11 +17,9 @@ getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
 getFile ${referenceTriTyperDir}/SNPMappings.txt
 getFile ${referenceTriTyperDir}/SNPs.txt
 putFile ${preparedStudyDir}/chr${chr}.dat
-putFile ${preparedStudyDir}/chr${chr}.gen
 putFile ${preparedStudyDir}/chr${chr}.map
 putFile ${preparedStudyDir}/chr${chr}.markersbeagleformat
 putFile ${preparedStudyDir}/chr${chr}.ped
-putFile ${preparedStudyDir}/chr${chr}.sample
 putFile ${preparedStudyDir}/exportlog.txt
 
 inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
@@ -35,12 +33,12 @@ inputs "${referenceTriTyperDir}/PhenotypeInformation.txt"
 inputs "${referenceTriTyperDir}/SNPMappings.txt"
 inputs "${referenceTriTyperDir}/SNPs.txt"
 alloutputsexist "${preparedStudyDir}/chr${chr}.dat"
-alloutputsexist "${preparedStudyDir}/chr${chr}.gen"
 alloutputsexist "${preparedStudyDir}/chr${chr}.map"
 alloutputsexist "${preparedStudyDir}/chr${chr}.markersbeagleformat"
 alloutputsexist "${preparedStudyDir}/chr${chr}.ped"
-alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
 alloutputsexist "${preparedStudyDir}/exportlog.txt"
+
+module load java
 
 mkdir ${preparedStudyTempDir}
 

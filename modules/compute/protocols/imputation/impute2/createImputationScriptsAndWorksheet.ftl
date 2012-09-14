@@ -1,14 +1,22 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
 
-
 #FOREACH project
 
-####TEMPLATE TO BE FINISHED SOON####
+getFile ${expandWorksheetJar}
 
-#module load ${expandWorksheetJar}/${expandWorksheetJarversion}
+getFile ${McWorksheet}
+getFile ${chrBinsFile}
+putFile ${projectComputeDir}/${project}.worksheet.csv
+
+inputs "${McWorksheet}"
+inputs "${chrBinsFile}"
+alloutputsexist "${projectComputeDir}/${project}.worksheet.csv"
+
 
 mkdir -p ${projectTempDir}
 mkdir -p ${projectJobsDir}
+
+module load java
 
 #Run Jar to create full worksheet
 
