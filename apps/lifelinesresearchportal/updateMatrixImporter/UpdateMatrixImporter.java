@@ -379,15 +379,23 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			HashMap<String, String> targetToProtocolApplication = new HashMap<String, String>();
 
-			Query<ObservedValue> query = db.query(ObservedValue.class);
-			query.addRules(new QueryRule(ObservedValue.TARGET_NAME,
-					Operator.IN, rowHeaders));
-			query.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-					Operator.EQUALS, existingColumn));
+			if (rowHeaders.size() > 0 && existingColumn != null) {
 
-			for (ObservedValue ov : query.find()) {
-				targetToProtocolApplication.put(ov.getTarget_Name(),
-						ov.getProtocolApplication_Name());
+				Query<ObservedValue> query = db.query(ObservedValue.class);
+
+				query.addRules(new QueryRule(ObservedValue.TARGET_NAME,
+						Operator.IN, rowHeaders));
+				query.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
+						Operator.EQUALS, existingColumn));
+				List<ObservedValue> listOfExistingValues = query.find();
+
+				if (listOfExistingValues.size() > 0) {
+					for (ObservedValue ov : query.find()) {
+						targetToProtocolApplication.put(ov.getTarget_Name(),
+								ov.getProtocolApplication_Name());
+					}
+				}
+
 			}
 
 			// new rows are added
@@ -584,6 +592,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
 
 		} catch (DatabaseException e) {
+
 			importMessage = "It fails to import the file, please check your file please!";
 			e.printStackTrace();
 			db.rollbackTx();
