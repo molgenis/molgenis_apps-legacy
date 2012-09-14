@@ -1,6 +1,21 @@
 #MOLGENIS walltime=00:45:00
 
-inputs "${filehandleGenomeString}"
+module load plink
 
-${plink} --noweb --silent --bfile ${filehandleGenomeString} --me ${familyError} ${snpError} --make-bed --out ${filehandleMendelString}
- 
+getFile ${filehandleUpdateSexString}.bed
+getFile ${filehandleUpdateSexString}.sexcheck
+getFile ${filehandleUpdateSexString}.nof
+getFile ${filehandleUpdateSexString}.hh
+getFile ${filehandleUpdateSexString}.fam
+getFile ${filehandleUpdateSexString}.bim
+getFile ${filehandleUpdateSexString}.nosex
+
+${plink} --noweb --silent --bfile ${filehandleUpdateSexString} --me ${familyError} ${snpError} --make-bed --out ${filehandleMendelString}
+
+putFile ${filehandleMendelString}.bed
+putFile ${filehandleMendelString}.bim
+putFile ${filehandleMendelString}.fam
+putFile ${filehandleMendelString}.hh
+putFile ${filehandleMendelString}.log
+putFile ${filehandleMendelString}.nof
+putFile ${filehandleMendelString}.nosex

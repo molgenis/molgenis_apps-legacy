@@ -1,7 +1,6 @@
 #MOLGENIS walltime=00:45:00
 
-inputs "${filehandleUpdateParentsString}"
-inputs "${filehandleSexCheckString}"
+#module load plink
 
 #This step should automatically correct the sexes of the samples.
 #Officially we'd run the following command, however, the UpdateSexFile is missing. Therefore, this step (5) fails.

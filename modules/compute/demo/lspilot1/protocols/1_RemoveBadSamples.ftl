@@ -1,9 +1,17 @@
 #MOLGENIS walltime=00:45:00
 
-inputs "${bedFile}" 
-inputs "${bimFile}"
-inputs "${famFile}"
-inputs "${badSampleFile}"
+module load plink
 
-${plink} --noweb --silent --bed ${bedFile} --bim ${bimFile} --fam ${famFile} --remove ${badSampleFile} --make-bed --out ${filehandleRemoveString} 
- 
+getFile ${bedFile} 
+getFile ${bimFile}
+getFile ${famFile}
+getFile ${badSampleFile}
+
+${plink} --noweb --bed ${bedFile} --bim ${bimFile} --fam ${famFile} --remove ${badSampleFile} --make-bed --out ${filehandleRemoveString}
+
+putFile ${filehandleRemoveString}.bed
+putFile ${filehandleRemoveString}.nof
+putFile ${filehandleRemoveString}.hh
+putFile ${filehandleRemoveString}.fam
+putFile ${filehandleRemoveString}.bim
+putFile ${filehandleRemoveString}.nosex
