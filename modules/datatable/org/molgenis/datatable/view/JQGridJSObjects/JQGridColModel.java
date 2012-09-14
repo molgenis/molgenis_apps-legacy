@@ -1,14 +1,7 @@
 package org.molgenis.datatable.view.JQGridJSObjects;
 
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
-import org.molgenis.pheno.Category;
-import org.molgenis.pheno.Measurement;
-
-import app.DatabaseFactory;
 
 public class JQGridColModel {
 
@@ -140,26 +133,18 @@ public class JQGridColModel {
 				.getEnumType());
 
 		try {
-			Database db = DatabaseFactory.create();
 
 			if (!name.equals("Pa_Id")) {
 
-				Measurement m = db.find(
-						Measurement.class,
-						new QueryRule(Measurement.NAME, Operator.EQUALS,
-								this.name)).get(0);
-
-				String dataType = m.getDataType();
-
 				String temporary = "";
 
-				if ("categorical".equals(dataType)) {
+				if ("enum".equals(f.getType().toString())) {
 
-					for (Category c : db
-							.find(Category.class, new QueryRule(Category.NAME,
-									Operator.IN, m.getCategories_Name()))) {
-						temporary += c.getCode_String()  + ":" + c.getCode_String()
-								+ "." + c.getDescription() + ";";
+					for (String category : f.getEnumOptions()) {
+
+						String code = category.split("\\.")[0];
+
+						temporary += code + ":" + category + ";";
 					}
 
 					temporary = temporary.substring(0, temporary.length() - 1);
@@ -172,10 +157,10 @@ public class JQGridColModel {
 					this.stype = "select";
 					searchoptions.value = temporary;
 
-				} else if ("bool".equals(dataType)) {
+				} else if ("bool".equals(f.getType().toString())) {
 					edittype = "select";
 
-				} else if ("datetime".equals(dataType)) {
+				} else if ("datetime".equals(f.getType().toString())) {
 					datetype = "datetype";
 				}
 			} else {
