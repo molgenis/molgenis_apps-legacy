@@ -18,6 +18,7 @@ import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.util.JQueryUtil;
 import org.molgenis.datatable.view.MolgenisUpdateDatabase;
+import org.molgenis.datatable.view.ViewFactory;
 import org.molgenis.datatable.view.ViewFactoryImpl;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
@@ -54,6 +55,9 @@ public class JQGridView extends HtmlWidget
 	public static final String OPERATION = "Operation";
 	private boolean showColumnTree = true;// The javascript tree to show/hide
 											// columns above the grid
+	private JQGridSearchOptions searchOptions;
+
+	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
 	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
