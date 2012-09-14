@@ -7,7 +7,7 @@ alloutputsexist ${chrVcfReferenceIntermediateFile}
 
 mkdir -p ${tmpFolder}
 
-${vcftoolsBin} --vcf ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} --recode --remove-indels --remove-filtered-all --mac 1 --min-alleles 2 --max-alleles 2
+${vcftoolsBin} --vcf ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} <#if samplesToIncludeFile != ""> --keep ${samplesToIncludeFile} </#if> ${vcfFilterOptions}
 
 #Get return code from last program call
 returnCode=$?
