@@ -31,7 +31,7 @@
 		     <arg value="--short"/>			
 		     <arg value="HEAD"/>
 		</exec>
-		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.version}</echo>
+		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.molgenis.version}</echo>
 	</target>
 	
 	<!-- Make a distribution:
