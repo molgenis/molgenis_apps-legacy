@@ -3,19 +3,19 @@
 #FOREACH project,chr
 
 <#list impute2ResultChrBinInfoFile as infoFile>
-	getFile ${infoFile}
+	getFile "${infoFile}"
 </#list>
 <#list impute2ResultChrBinGenFile as genFile>
-	getFile ${genFile}
+	getFile "${genFile}"
 </#list>
-putFile ${imputationResultDir}/chr_${chr}
-putFile ${imputationResultDir}/chr_${chr}_info
+putFile "${imputationResultDir}/chr_${chr}"
+putFile "${imputationResultDir}/chr_${chr}_info"
 
 
-inputs ${ssvQuoted(impute2ResultChrBinInfoFile)}
-inputs ${ssvQuoted(impute2ResultChrBinGenFile)}
-alloutputsexist ${imputationResultDir}/chr_${chr}
-alloutputsexist ${imputationResultDir}/chr_${chr}_info
+inputs "${ssvQuoted(impute2ResultChrBinInfoFile)}"
+inputs "${ssvQuoted(impute2ResultChrBinGenFile)}"
+alloutputsexist "${imputationResultDir}/chr_${chr}"
+alloutputsexist "${imputationResultDir}/chr_${chr}_info"
 
 #Concat the bins with compute for each
 

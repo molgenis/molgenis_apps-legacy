@@ -1,12 +1,10 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=8
 
-#INPUTS studyTriTyperChrDir,referenceTriTyperDir
-#OUTPUTS preparedStudyDir
-#EXES imputationToolJar
-#LOGS log
-
 #FOREACH project,chr
 
+getFile "${imputationToolJar}"
+getFile "${imputationToolJsciCoreJar}"
+getFile "${imputationToolGeneticaLibraries}"
 
 getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
 getFile ${studyTriTyperChrDir}/Individuals.txt
@@ -18,26 +16,31 @@ getFile ${referenceTriTyperDir}/Individuals.txt
 getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
 getFile ${referenceTriTyperDir}/SNPMappings.txt
 getFile ${referenceTriTyperDir}/SNPs.txt
+putFile ${preparedStudyDir}/chr${chr}.dat
+putFile ${preparedStudyDir}/chr${chr}.gen
+putFile ${preparedStudyDir}/chr${chr}.map
+putFile ${preparedStudyDir}/chr${chr}.markersbeagleformat
+putFile ${preparedStudyDir}/chr${chr}.ped
+putFile ${preparedStudyDir}/chr${chr}.sample
+putFile ${preparedStudyDir}/exportlog.txt
 
-for file in $(ls ${preparedStudyTempDir})
-do
-putFile $file;
-done
-
-
-inputs ${studyTriTyperChrDir}/GenotypeMatrix.dat
-inputs ${studyTriTyperChrDir}/Individuals.txt
-inputs ${studyTriTyperChrDir}/PhenotypeInformation.txt
-inputs ${studyTriTyperChrDir}/SNPMappings.txt
-inputs ${studyTriTyperChrDir}/SNPs.txt
-inputs ${referenceTriTyperDir}/GenotypeMatrix.dat
-inputs ${referenceTriTyperDir}/Individuals.txt
-inputs ${referenceTriTyperDir}/PhenotypeInformation.txt
-inputs ${referenceTriTyperDir}/SNPMappings.txt
-inputs ${referenceTriTyperDir}/SNPs.txt
-
-
-#module load ${imputationToolJar}/${imputationToolJarversion}
+inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+inputs "${studyTriTyperChrDir}/Individuals.txt"
+inputs "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+inputs "${studyTriTyperChrDir}/SNPMappings.txt"
+inputs "${studyTriTyperChrDir}/SNPs.txt"
+inputs "${referenceTriTyperDir}/GenotypeMatrix.dat"
+inputs "${referenceTriTyperDir}/Individuals.txt"
+inputs "${referenceTriTyperDir}/PhenotypeInformation.txt"
+inputs "${referenceTriTyperDir}/SNPMappings.txt"
+inputs "${referenceTriTyperDir}/SNPs.txt"
+alloutputsexist "${preparedStudyDir}/chr${chr}.dat"
+alloutputsexist "${preparedStudyDir}/chr${chr}.gen"
+alloutputsexist "${preparedStudyDir}/chr${chr}.map"
+alloutputsexist "${preparedStudyDir}/chr${chr}.markersbeagleformat"
+alloutputsexist "${preparedStudyDir}/chr${chr}.ped"
+alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
+alloutputsexist "${preparedStudyDir}/exportlog.txt"
 
 mkdir ${preparedStudyTempDir}
 

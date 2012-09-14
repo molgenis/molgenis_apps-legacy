@@ -1,8 +1,5 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
 
-#EXES gtoolBin
-#LOGS log
-
 #FOREACH project,chr
 
 getFile "${imputationResultDir}/chr_${chr}"
