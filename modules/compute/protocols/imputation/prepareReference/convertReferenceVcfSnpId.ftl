@@ -1,4 +1,4 @@
-#MOLGENIS walltime=02:00:00 nodes=1 cores=1 mem=1
+#MOLGENIS walltime=06:00:00 nodes=1 cores=1 mem=1
 
 inputs ${chrVcfReferenceIntermediateFile}
 alloutputsexist ${chrVcfReferenceFile}
