@@ -49,10 +49,8 @@ import com.google.gson.Gson;
 public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
-	private boolean initialize = true;
 	private boolean showColumnTree = true;// The javascript tree to show/hide
 											// columns above the grid
-	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
 	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
@@ -152,21 +150,6 @@ public class JQGridView extends HtmlWidget
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
 
-			if (initialize)
-			{
-				List<Measurement> listOM = db.find(Measurement.class);
-				for (Measurement m : listOM)
-				{
-					if (m.getCategories_Name().size() > 0)
-					{
-						hashMeasurementsWithCategories.put(m.getName(), m.getDataType());
-
-					}
-
-				}
-				initialize = false;
-			}
-
 			switch (operation)
 			{
 				case LOAD_CONFIG:
@@ -259,7 +242,7 @@ public class JQGridView extends HtmlWidget
 							{
 								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
 								mu.UpdateDatabase(db, targetID, request.getString(eachField.getName()),
-										eachField.getName(), protAppID, hashMeasurementsWithCategories);
+										eachField.getName(), protAppID);
 							}
 						}
 
@@ -355,15 +338,7 @@ public class JQGridView extends HtmlWidget
 									ObservedValue ov = new ObservedValue();
 									ov.setTarget_Name(patientID);
 									ov.setFeature_Name(feature);
-									if (hashMeasurementsWithCategories.containsKey(feature))
-									{
-										String[] splitValue = value.split("\\.");
-										ov.setValue(splitValue[0]);
-									}
-									else
-									{
-										ov.setValue(value);
-									}
+									ov.setValue(value);
 									ov.setProtocolApplication_Name(pa.getName());
 									ov.setInvestigation_Name(investigationName);
 									listOfNewValues.add(ov);
@@ -636,11 +611,6 @@ public class JQGridView extends HtmlWidget
 		args.put("url", tupleTableBuilder.getUrl());
 
 		return new FreemarkerView(JQGridView.class, args).render();
-	}
-
-	public HashMap<String, String> getHashMeasurements()
-	{
-		return hashMeasurementsWithCategories;
 	}
 
 	/**
