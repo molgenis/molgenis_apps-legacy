@@ -320,12 +320,12 @@
 		
 		$(document).ready(function(){	
 			
-			$('#cohortSelectSubmit').button();
-			$('#cohortSelectSubmit').css({
+			$('input[name="cohortSelectSubmit"]').button();
+			$('input[name="cohortSelectSubmit"]').css({
 				'font-size':'1.2em',
 				'color':'#123481'
 			});
-			$('#cohortSelectSubmit').show();
+			$('input[name="cohortSelectSubmit"]').show();
 			
 			$('#downloadButton').button();
 			$('#downloadButton').css({
@@ -366,14 +366,17 @@
 					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr>
 							<td class="box-header" colspan="2">  
-						        <label style='font-size:14px'>Choose a cohort:
+						        <label style='font-size:14px'>
+						        <#if (screen.arrayInvestigations?size > 1)>
+									Choose a cohort:
 									<#list screen.arrayInvestigations as inv>
 										<#assign invName = inv.name>
-											<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
-												style="display:none" onclick="__action.value='cohortSelect';"/>
-									
+											<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value= ${invName}
+												 style="display:none" onclick="__action.value='cohortSelect';"/>
 									</#list>
-								<script>$('#investigation').chosen();</script>	
+								<#else>
+									Catalog: ${screen.arrayInvestigations}
+								</#if>
 								</label>
 								
 							<!--	<div id="masstoggler"> 		
