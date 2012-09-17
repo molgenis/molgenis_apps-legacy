@@ -8,7 +8,9 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="clickedVariable" id="clickedVariable">
+	
 	<script src="res/scripts/cataloguetree.js" language="javascript"></script>
+	
 	<script type="text/javascript">
 		function searchInTree(){
 			
@@ -372,15 +374,18 @@
 						<tr>
 							<td class="box-header" colspan="2">  
 						        <label style='font-size:14px'>
-						        <#if (screen.arrayInvestigations?size > 1)>
-									Choose a cohort:
-									<#list screen.arrayInvestigations as inv>
-										<#assign invName = inv.name>
-											<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value= ${invName}
-												 style="display:none" onclick="__action.value='cohortSelect';"/>
-									</#list>
-								<#else>
-									Catalog: ${screen.arrayInvestigations}
+						        <#if screen.arrayInvestigations??>
+							        <#if (screen.arrayInvestigations?size > 1)>
+										Choose a cohort:
+										<#list screen.arrayInvestigations as inv>
+											<#assign invName = inv.name>
+												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value= ${invName}
+													 style="display:none" onclick="__action.value='cohortSelect';"/>
+										</#list>
+									<#else>
+										Catalog: 
+										<#assign invName = screen.arrayInvestigations[0].name> ${invName}
+									</#if>
 								</#if>
 								</label>
 
