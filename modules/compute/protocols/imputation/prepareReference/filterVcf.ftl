@@ -1,11 +1,13 @@
-#MOLGENIS walltime=02:00:00 nodes=1 cores=1 mem=1
+#MOLGENIS walltime=06:00:00 nodes=1 cores=1 mem=1
+
+sleep 120
 
 inputs ${chrVcfInputFile}
 alloutputsexist ${chrVcfReferenceIntermediateFile}
 
 mkdir -p ${tmpFolder}
 
-${vcftoolsBin} --vcf ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} --recode --remove-indels --remove-filtered-all --mac 1 --min-alleles 2 --max-alleles 2
+${vcftoolsBin} --vcf ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} <#if samplesToIncludeFile != ""> --keep ${samplesToIncludeFile} </#if> ${vcfFilterOptions}
 
 #Get return code from last program call
 returnCode=$?
