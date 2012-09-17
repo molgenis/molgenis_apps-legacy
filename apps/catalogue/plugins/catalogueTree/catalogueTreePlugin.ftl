@@ -26,7 +26,7 @@
 					}
 				});		
 			}
-			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
+			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All"){
 				
 				$('#leftSideTree li').each(function(){
 					
@@ -52,7 +52,7 @@
 				});
 			}
 			
-			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
+			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All"){
 				
 				$('#leftSideTree li').each(function(){
 					
@@ -93,7 +93,7 @@
 				});
 				
 			}
-			if($('#selectedField').val() == "Details" || $('#selectedField').val() == "All fields"){
+			if($('#selectedField').val() == "All"){
 				var jsonString = eval(${screen.getInheritance()});
 				//var json = eval(jsonString);
 				

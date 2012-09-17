@@ -334,10 +334,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// this.searchingInvestigation = null;
 			// this.selectedInvestigation = null;
 
-			arraySearchFields.add("All fields");
+			arraySearchFields.add("All");
 			arraySearchFields.add("Protocols");
 			arraySearchFields.add("Measurements");
-			arraySearchFields.add("Details");
 
 			this.arrayInvestigations.clear();
 
