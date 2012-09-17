@@ -133,7 +133,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			System.out.println("The selected investigation is : "
 					+ selectedInvestigation);
 			arrayInvestigations.clear();
-			firstElement = true;
 
 		} else if (request.getAction().equals("downloadButtonEMeasure")) {
 			// do output stream ourselves
@@ -331,7 +330,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					}
 				}
 			}
-
+			firstElement = true;
 			arraySearchFields.clear();
 			// this.searchingInvestigation = null;
 			// this.selectedInvestigation = null;

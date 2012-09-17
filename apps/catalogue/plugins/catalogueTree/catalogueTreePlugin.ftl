@@ -344,6 +344,9 @@
 				$('#InputToken').val('');
 				checkSearchingStatus();
 			});
+			$('#showDetailsHeader').show();
+      		$('#selectionInformationHeader').show();
+      		$('#treeHeader').show();
 		});
 	</script>
 
@@ -413,6 +416,7 @@
 					    <td class="box-body" style="width: 50%"><div >Details:</div></td></tr>
 					    <tr>
 					    	<td class="box-body">
+					    		<div id="treeHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View all the data items in the study</div>
 								<div id="leftSideTree">
 									${screen.getTreeView()}<br/>
 								</div>
@@ -421,12 +425,15 @@
 						    	<table  style="height:500px;width:100% ">
 							    	<tr>
 								    	<td style="height:250px; padding:0px" >
+									    	<div id="showDetailsHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View the variable details here</div>
 									    	<div id="details" style="height:250px;overflow:auto">
+									    		
 			      							</div>
       									</td>
   									</tr>
 									<tr>
 								    	<td style="height:20px; border-top:1px solid lightgray;">
+											<div id="selectionInformationHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View your selection here</div>
 											<div id="selectionState" >Your selection:
 												<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
 												<div id="traceBack" style="float:right;display:none">Locate the variable in the tree</div>
@@ -483,6 +490,13 @@
  				<script>
  				
 					var json = eval(${screen.getInheritance()});
+			      	
+			      	$('#browser').click(function(){
+			      		$('#showDetailsHeader').fadeOut();
+			      		$('#selectionInformationHeader').fadeOut();
+			      		$('#treeHeader').fadeOut();
+			      		$('#browser').unbind('click');
+			      	});
 			      	
 			      	$('#browser').find('li').each(function(){
 			      		
