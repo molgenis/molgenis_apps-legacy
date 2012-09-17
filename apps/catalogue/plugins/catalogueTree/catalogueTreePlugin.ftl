@@ -9,8 +9,6 @@
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="clickedVariable" id="clickedVariable">
 	
-	<script src="res/scripts/cataloguetree.js" language="javascript"></script>
-	
 	<script type="text/javascript">
 		
 		function searchInTree(){
@@ -343,6 +341,13 @@
 				}
 			}
 			
+      		$('#browser').click(function(){
+	      		$('#showDetailsHeader').fadeOut();
+	      		$('#selectionInformationHeader').fadeOut();
+	      		$('#treeHeader').fadeOut();
+	      		$('#browser').unbind('click');
+	      	});
+			
 			$('input[name="cohortSelectSubmit"]').button();
 			$('input[name="cohortSelectSubmit"]').css({
 				'font-size':'1.2em',
@@ -519,13 +524,6 @@
  				<script>
  				
 					var json = eval(${screen.getInheritance()});
-			      	
-			      	$('#browser').click(function(){
-			      		$('#showDetailsHeader').fadeOut();
-			      		$('#selectionInformationHeader').fadeOut();
-			      		$('#treeHeader').fadeOut();
-			      		$('#browser').unbind('click');
-			      	});
 			      	
 			      	$('#browser').find('li').each(function(){
 			      		
