@@ -380,12 +380,7 @@
 									Catalog: ${screen.arrayInvestigations}
 								</#if>
 								</label>
-								
-							<!--	<div id="masstoggler"> 		
-				 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-				 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-				 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
-	 							</div>-->
+
 	 						</td>
 			    		</tr>
 			    		<tr>
@@ -479,7 +474,6 @@
 						</tr>
 					</table>
 			   	</#if>	
-			    <label><#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>
  				<!-- The detailed table bound to the branch is store in a click event. Therefore this table is not available
  							until the branch has been clicked. As checkbox is part of this branch therefore when the checkbox is ticked
  							the table shows up on the right as well. Another event is fired when the checkbox is checked which is
@@ -487,6 +481,7 @@
  							use the information (description) from the datailed table. Therefore we have to trigger the click event on branch
  							here first and create the detailed table!-->
  				<script>
+ 				
 					var json = eval(${screen.getInheritance()});
 			      	
 			      	$('#browser').find('li').each(function(){
@@ -645,7 +640,6 @@
  							}
  						});	
  					});
- 					
  				</script>
 			</div>
 		</div>
