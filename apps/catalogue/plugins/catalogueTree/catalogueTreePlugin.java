@@ -70,7 +70,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<String> arraySearchFields = new ArrayList<String>();
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
-	private boolean firstElement = true;
 
 	// private static int SEARCHINGPROTOCOL = 2;
 	//
@@ -330,7 +329,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					}
 				}
 			}
-			firstElement = true;
 			arraySearchFields.clear();
 			// this.searchingInvestigation = null;
 			// this.selectedInvestigation = null;
@@ -799,16 +797,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
-
-				if (firstElement == true) {
-					JQueryTreeViewElement firstOpenNode = childTree;
-					while (firstOpenNode.getParent() != null) {
-						firstOpenNode.getParent().setCollapsed(false);
-						firstOpenNode = firstOpenNode.getParent();
-					}
-					firstElement = false;
-				}
-
 				// Query the all the detail information about this measurement,
 				// in molgenis terminology, the detail information
 				// are all the observedValue and some of the fields from the

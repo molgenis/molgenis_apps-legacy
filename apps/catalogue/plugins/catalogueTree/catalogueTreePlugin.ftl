@@ -12,6 +12,7 @@
 	<script src="res/scripts/cataloguetree.js" language="javascript"></script>
 	
 	<script type="text/javascript">
+		
 		function searchInTree(){
 			
 			var inputToken = $('#InputToken').val();
@@ -324,6 +325,24 @@
 		
 		$(document).ready(function(){	
 			
+			$("#browser").treeview({
+				control:"#masstoggler",
+			});	
+			
+			$('ul#browser li').show();
+			
+			var startingElement = $('#browser');
+			
+			while(true){
+			
+				if(startingElement.find('li ul:first').length > 0){
+					startingElement.find('li span:first').trigger('click');
+					startingElement = startingElement.find('li ul:first');
+				}else{
+					break;
+				}
+			}
+			
 			$('input[name="cohortSelectSubmit"]').button();
 			$('input[name="cohortSelectSubmit"]').css({
 				'font-size':'1.2em',
@@ -424,6 +443,11 @@
 					    		<div id="treeHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View all the data items in the study</div>
 								<div id="leftSideTree">
 									${screen.getTreeView()}<br/>
+									
+									<script>
+										
+										$('#browser').find('li:first').find('span:first').trigger('click');
+									</script>
 								</div>
 							</td>
 						    <td class="box-body" id="showInformation"> 
@@ -664,5 +688,4 @@
 		</div>
 	</div>
 </form>
-
 </#macro>
