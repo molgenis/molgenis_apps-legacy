@@ -16,7 +16,14 @@ alloutputsexist "${imputationResultDir}/chr_${chr}.map"
 
 module load ${gtoolBin}/${gtoolBinversion}
 
-${gtoolBin} -G --g ${imputationResultDir}/chr_${chr} --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResultDir}/~chr_${chr}.ped --map ${imputationResultDir}/~chr_${chr}.map --snp --chr ${chr}
+${gtoolBin} \
+-G \
+--g ${imputationResultDir}/chr_${chr} \
+--s ${preparedStudyDir}/chr${chr}.sample \
+--ped ${imputationResultDir}/~chr_${chr}.ped \
+--map ${imputationResultDir}/~chr_${chr}.map \
+--snp \
+--chr ${chr}
 
 
 #Get return code from last program call
