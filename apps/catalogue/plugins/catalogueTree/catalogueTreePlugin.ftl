@@ -211,6 +211,7 @@
 			}else{
 				$('#selectedVariableHeader').remove();
 				$('#selectedVariableTable').remove();
+				$('#selectNotification').show();
 			}
 			var myCheckBoxId = $(this).attr('id').replace("_delete", "");
 			$('#' + myCheckBoxId).find('input:checkbox').attr('checked',false);
@@ -270,7 +271,8 @@
 					
 					<!--We are going to check whether this selectedVariableTable already existed-->
 					if($('#selectedVariableTable').length == 0){
-					
+						
+						$('#selectNotification').hide();
 						var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
 						'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
 						'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
@@ -433,6 +435,7 @@
 											<div id="selectionState" >Your selection:
 												<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
 												<div id="traceBack" style="float:right;display:none">Locate the variable in the tree</div>
+												<div id="selectNotification" style="font-size:20px" ></br></br>Please select a variable in the tree</div>
 											</div>
 										</td>
 									</tr>
@@ -590,7 +593,9 @@
 	 								if($('#selectedVariableTable').find('tr').length == 0){
 	 									$('#selectedVariableTable').remove();
 	 									$('#selectedVariableHeader').remove();
+	 									$('#selectNotification').show();
 	 								}
+
  									
  								}else{
  								
@@ -620,6 +625,7 @@
 	 								}else{
 	 									$('#selectedVariableTable').remove();
 	 									$('#selectedVariableHeader').remove()
+	 									$('#selectNotification').show();
 	 								}
 	 								var uncheckProtocol = true;
 	 								var currentNode = $(this).parents('li:first');
