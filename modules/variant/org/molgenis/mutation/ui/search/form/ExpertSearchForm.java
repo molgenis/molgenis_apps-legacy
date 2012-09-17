@@ -15,7 +15,6 @@ import org.molgenis.mutation.dto.ProteinDomainDTO;
 import org.molgenis.util.ValueLabel;
 import org.springframework.stereotype.Component;
 
-@Component
 public class ExpertSearchForm extends Container
 {
 

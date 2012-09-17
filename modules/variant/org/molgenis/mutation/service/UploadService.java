@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.EntityManager;
-
 import jxl.Workbook;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -16,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
 import org.molgenis.core.dto.PublicationDTO;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.mutation.dto.ExonDTO;
@@ -41,19 +38,9 @@ import org.springframework.stereotype.Service;
 public class UploadService extends MolgenisVariantService
 {
 	private final transient Logger logger = Logger.getLogger(UploadService.class.getSimpleName());
-	private Database db;
-	private EntityManager em;
 
 	@Autowired
 	private UploadBatchExcelReader reader;
-
-	@Autowired
-	public UploadService(Database db)
-	{
-		super(db);
-		this.db = db;
-		this.em = db.getEntityManager();
-	}
 
 	public void reindex()
 	{

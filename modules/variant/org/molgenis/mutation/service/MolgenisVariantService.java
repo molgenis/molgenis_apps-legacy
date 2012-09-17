@@ -61,10 +61,11 @@ public class MolgenisVariantService
 	@Autowired
 	protected PublicationService publicationService;
 
-	@Autowired
-	public MolgenisVariantService(final Database db)
+	//@Autowired
+	public void setDatabase(final Database db)
 	{
 		this.db = db;
+		/*FIXME: This should not be in a setter */
 		this.em = db.getEntityManager();
 		this.init();
 	}

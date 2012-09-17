@@ -25,7 +25,6 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.VariantDTO;
-import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.BatchForm;
@@ -39,12 +38,16 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private static final long serialVersionUID = -3499931124766785979L;
 	private final transient Logger logger      = Logger.getLogger(Upload.class.getSimpleName());
+	private UploadService uploadService;
 
 	public Upload(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setModel(new UploadModel(this));
 		this.view = new FreemarkerView("uploadBatch.ftl", getModel());
+		
+		this.uploadService = ServiceLocator.instance().getUploadService();
+
 		this.populateBatchForm();
 	}
 	
@@ -65,6 +68,8 @@ public class Upload extends EasyPluginController<UploadModel>
 	{
 		try
 		{
+			this.uploadService.setDatabase(db);
+
 			String action = request.getAction();
 			
 			if (StringUtils.equals(action, "newBatch"))
@@ -160,7 +165,6 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private void handleAssignMutation()
 	{
-		UploadService uploadService = this.getUploadService();
 		uploadService.assignValuesFromPosition(this.getModel().getMutationUploadVO());
 		this.populateMutationForm();
 	}
@@ -204,7 +208,6 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private void handleInsertBatch(Tuple request)
 	{
-		UploadService uploadService = this.getUploadService();
 		int count                   = uploadService.insert(request.getFile("filefor_upload"));
 		this.getModel().getMessages().add(new ScreenMessage("Successfully inserted " + count + " rows", true));
 		
@@ -213,7 +216,6 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private void handleReindex()
 	{
-		UploadService uploadService = this.getUploadService();
 		uploadService.reindex();
 		this.getModel().getMessages().add(new ScreenMessage("Successfully rebuilt the full text index", true));
 	}
@@ -263,10 +265,5 @@ public class Upload extends EasyPluginController<UploadModel>
 		{
 			this.view = new FreemarkerView("uploadBatch.ftl", getModel());
 		}
-	}
-	
-	private UploadService getUploadService()
-	{
-		return (UploadService) ServiceLocator.instance().getService("uploadService");
 	}
 }

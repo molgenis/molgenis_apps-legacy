@@ -53,6 +53,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 		try
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();
+			searchService.setDatabase(db);
 
 			List<PatientSummaryDTO> patientSummaryVOs = searchService.findPatientsByUserId(this.getApplicationController().getLogin().getUserId());
 	

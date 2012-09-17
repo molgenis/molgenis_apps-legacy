@@ -25,7 +25,7 @@ public class ServiceLocator
 
     private static final ServiceLocator instance = new ServiceLocator();
 
-    private ApplicationContext context;
+    private static ApplicationContext context = null;
 
     /**
      * Gets the shared instance of this Class
@@ -34,16 +34,15 @@ public class ServiceLocator
      */
     public static final ServiceLocator instance()
     {
+    	if (context == null)
+    	{
+    		context = new AnnotationConfigApplicationContext();
+    		((AnnotationConfigApplicationContext) context).scan("org.molgenis");
+    		((AnnotationConfigApplicationContext) context).refresh();
+    	}
         return instance;
     }
 
-    /**
-     * Sets the Spring ApplicationContext.
-     */
-    public synchronized void setContext(ApplicationContext context)
-    {
-        this.context = context;
-    }
     /**
      * Gets the Spring ApplicationContext.
      * @return ApplicationContext

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.molgenis</groupId>
-    <artifactId>molgenisapp</artifactId>
+    <artifactId>${app.name}</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -14,7 +14,7 @@
         <endorsed.dir>${basedir}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
-		<context.path>/molgenis-apps</context.path>
+		<context.path>/${app.name}</context.path>
     </properties>
 
 	<dependencies>
@@ -90,6 +90,12 @@
 			<artifactId>selenium-firefox-driver</artifactId>
 			<version>2.19.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>  
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -110,6 +116,12 @@
 			<groupId>org.gatein.captcha</groupId>
 			<artifactId>simplecaptcha</artifactId>
 			<version>1.1.1-GA-Patch01</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- RSS Feeds -->
@@ -119,12 +131,16 @@
 			<version>1.1.2</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>lucene-core</artifactId>
-					<groupId>org.apache.lucene</groupId>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<artifactId>spring-web</artifactId>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-core</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>        
@@ -319,6 +335,7 @@
 					<excludes>
 						<exclude>**/test/**</exclude>
 						<exclude>**/res/**</exclude>
+						<exclude>**/resources/**</exclude>
 					</excludes>
 					<testIncludes>
 						<testInclude>**/test/**</testInclude>
@@ -339,8 +356,8 @@
 					</archive>
 					<webResources>
 						<resource>
-							<directory>apps/${app.name}/res</directory>
-							<targetPath>/generated-res</targetPath>
+							<directory>apps/${app.name}/resources</directory>
+							<targetPath>/</targetPath>
 						</resource>
 					</webResources>
                 </configuration>
@@ -398,7 +415,8 @@
 					<dependency>
 						<groupId>mysql</groupId>
 						<artifactId>mysql-connector-java</artifactId>
-						<version>5.1.20</version>         
+						<version>5.1.20</version>
+						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
             </plugin>
