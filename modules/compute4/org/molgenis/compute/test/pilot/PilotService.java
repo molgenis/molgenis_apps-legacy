@@ -65,7 +65,7 @@ public class PilotService implements MolgenisService
 
             ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.NAME, taskID).limit(1).find().get(0);
 
-            if(task != null)
+            if(task != null && task.getStatusCode().equalsIgnoreCase("running"))
             {
                 task.setStatusCode("done");
                 task.setRunLog(results);
