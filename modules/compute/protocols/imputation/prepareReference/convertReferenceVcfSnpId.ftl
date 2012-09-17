@@ -5,7 +5,7 @@ alloutputsexist ${chrVcfReferenceFile}
 
 mkdir -p ${vcfReferenceFolder}
 
-perl ${convertVcfIdsScript} -inputvcf ${chrVcfReferenceIntermediateFile} -outputvcf ${chrVcfReferenceFileTmp}
+perl ${convertVcfIdsScript} -inputvcf ${chrVcfReferenceIntermediateFile} -outputvcf ${chrVcfReferenceFileTmp} -delimiter ${convertVcfIdsScriptDelimiter}
 
 #Get return code from last program call
 returnCode=$?

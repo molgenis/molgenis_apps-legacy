@@ -25,7 +25,7 @@ alloutputsexist "${studyTriTyperChrDir}/SNPMappings.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
 
-module load java
+module load java/${javaversion}
 
 mkdir -p ${studyTriTyperChrTempDir}
 

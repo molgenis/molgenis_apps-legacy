@@ -16,7 +16,7 @@ alloutputsexist "${projectComputeDir}/${project}.worksheet.csv"
 mkdir -p ${projectTempDir}
 mkdir -p ${projectJobsDir}
 
-module load java
+module load java/${javaversion}
 
 #Run Jar to create full worksheet
 

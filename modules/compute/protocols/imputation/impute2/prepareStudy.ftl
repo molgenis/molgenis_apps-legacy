@@ -38,7 +38,7 @@ alloutputsexist "${preparedStudyDir}/chr${chr}.markersbeagleformat"
 alloutputsexist "${preparedStudyDir}/chr${chr}.ped"
 alloutputsexist "${preparedStudyDir}/exportlog.txt"
 
-module load java
+module load java/${javaversion}
 
 mkdir ${preparedStudyTempDir}
 
