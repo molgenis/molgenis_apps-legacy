@@ -1,7 +1,12 @@
 package plugins.catalogueTree;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +32,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -64,6 +70,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<String> arraySearchFields = new ArrayList<String>();
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
+	private boolean firstElement = true;
 
 	// private static int SEARCHINGPROTOCOL = 2;
 	//
@@ -178,7 +185,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			outputExcel.addCell(new Label(1, 0, "Descriptions"));
 
-			outputExcel.addCell(new Label(1, 0, "Sector/Protocol"));
+			outputExcel.addCell(new Label(2, 0, "Sector/Protocol"));
 
 			for (Measurement m : allMeasList) {
 
@@ -207,11 +214,32 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
 			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
 
-			String redirectURL = "tmpfile/selectedVariables.xls";
+			// String redirectURL = "tmpfile/selectedVariables.xls";
 
-			httpResponse.sendRedirect(redirectURL);
+			// httpResponse.sendRedirect(redirectURL);
 
+			OutputStream outSpecial = rt.getResponse().getOutputStream();
+			URL localURL = mappingResult.toURI().toURL();
+			URLConnection conn = localURL.openConnection();
+			InputStream in = new BufferedInputStream(conn.getInputStream());
+			rt.getResponse().setContentType("application/vnd.ms-excel");
+			rt.getResponse().setContentLength((int) mappingResult.length());
+			rt.getResponse().setHeader(
+					"Content-disposition",
+					"attachment; filename=\"" + "selectedVariables" + ".xls"
+							+ "\"");
+			byte[] buffer = new byte[2048];
+			for (;;) {
+				int nBytes = in.read(buffer);
+				if (nBytes <= 0)
+					break;
+				outSpecial.write(buffer, 0, nBytes);
+			}
+			outSpecial.flush();
+			outSpecial.close();
+			EasyPluginController.HTML_WAS_ALREADY_SERVED = true;
 		}
+
 		// else if ("SaveSelectionSubmit".equals(request.getAction())) {
 		//
 		// if (!this.getLogin().isAuthenticated()) {
@@ -302,15 +330,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					}
 				}
 			}
-
+			firstElement = true;
 			arraySearchFields.clear();
 			// this.searchingInvestigation = null;
 			// this.selectedInvestigation = null;
 
-			arraySearchFields.add("All fields");
+			arraySearchFields.add("All");
 			arraySearchFields.add("Protocols");
 			arraySearchFields.add("Measurements");
-			arraySearchFields.add("Details");
 
 			this.arrayInvestigations.clear();
 
@@ -461,8 +488,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					.add(new ScreenMessage(
 							"There are no results to show. Please, redifine your search or import some data.",
 							true));
-			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
-					+ "</h4>");
+			// this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
+			// + "</h4>");
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
@@ -771,6 +798,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					listOfMeasurements.add(displayName);
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
+				}
+
+				if (firstElement == true) {
+					JQueryTreeViewElement firstOpenNode = childTree;
+					while (firstOpenNode.getParent() != null) {
+						firstOpenNode.getParent().setCollapsed(false);
+						firstOpenNode = firstOpenNode.getParent();
+					}
+					firstElement = false;
 				}
 
 				// Query the all the detail information about this measurement,
