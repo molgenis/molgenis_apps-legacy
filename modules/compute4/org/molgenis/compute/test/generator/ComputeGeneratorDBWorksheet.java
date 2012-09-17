@@ -150,7 +150,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 		try
 		{
 			// dirty hack to ensure we don't add tasks twice
-			if (db.find(ComputeTask.class).size() < 0) db.add(tasks);
+			db.add(tasks);
 			db.commitTx();
 		}
 		catch (DatabaseException e)
