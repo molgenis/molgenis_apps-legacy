@@ -70,6 +70,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<String> arraySearchFields = new ArrayList<String>();
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
+	private boolean firstElement = true;
 
 	// private static int SEARCHINGPROTOCOL = 2;
 	//
@@ -132,6 +133,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			System.out.println("The selected investigation is : "
 					+ selectedInvestigation);
 			arrayInvestigations.clear();
+			firstElement = true;
 
 		} else if (request.getAction().equals("downloadButtonEMeasure")) {
 			// do output stream ourselves
@@ -797,6 +799,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					listOfMeasurements.add(displayName);
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
+				}
+
+				if (firstElement == true) {
+					JQueryTreeViewElement firstOpenNode = childTree;
+					while (firstOpenNode.getParent() != null) {
+						firstOpenNode.getParent().setCollapsed(false);
+						firstOpenNode = firstOpenNode.getParent();
+					}
+					firstElement = false;
 				}
 
 				// Query the all the detail information about this measurement,
