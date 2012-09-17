@@ -488,8 +488,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					.add(new ScreenMessage(
 							"There are no results to show. Please, redifine your search or import some data.",
 							true));
-			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
-					+ "</h4>");
+			// this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
+			// + "</h4>");
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
