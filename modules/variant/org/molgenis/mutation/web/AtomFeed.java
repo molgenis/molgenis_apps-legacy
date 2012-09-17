@@ -24,12 +24,10 @@ import org.molgenis.mutation.service.SearchService;
 
 public class AtomFeed implements MolgenisService 
 {
-	private MolgenisContext mc;
 	private static Abdera abdera = null;
 	
 	public AtomFeed(MolgenisContext mc)
 	{
-		this.mc = mc;
 		if (abdera == null)
 			abdera = new Abdera();
 	}
@@ -64,7 +62,7 @@ public class AtomFeed implements MolgenisService
 
 	}
 
-	private void handleGeneFeed(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, IOException
+	private void handleGeneFeed(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 	
@@ -103,9 +101,9 @@ public class AtomFeed implements MolgenisService
 		feed.writeTo(response.getOutputStream());
 	}
 	
-	private void handleVariantsFeed(HttpServletRequest request, HttpServletResponse response) throws DatabaseException, ParseException, IOException
+	private void handleVariantsFeed(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
+		SearchService searchService = (SearchService) ServiceLocator.instance().getService("searchService");
 	
 		String geneURL              = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
 

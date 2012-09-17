@@ -11,10 +11,13 @@
 <display:setProperty name="paging.banner.item_name" value="publication"/>
 <display:setProperty name="paging.banner.items_name" value="publications"/>
 <display:setProperty name="paging.banner.page.separator" value=" "/>
+<display:setProperty name="paging.banner.placement" value="both"/>
 <display:setProperty name="export.banner"><div class="exportlinks">Export: {0}</div></display:setProperty>
 <display:setProperty name="export.csv.filename" value="publications.csv"/>
 <display:setProperty name="export.excel.filename" value="publications.xls"/>
 <display:setProperty name="export.pdf.filename" value="publications.pdf"/>
+<display:setProperty name="export.pdf" value="true"/>
+<display:setProperty name="export.xml" value="false"/>
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column title="Title" property="title" sortable="true"/>
