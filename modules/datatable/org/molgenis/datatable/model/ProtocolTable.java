@@ -7,12 +7,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
+import org.molgenis.fieldtypes.BoolField;
+import org.molgenis.fieldtypes.DatetimeField;
+import org.molgenis.fieldtypes.EnumField;
+import org.molgenis.fieldtypes.StringField;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
@@ -30,7 +36,8 @@ import org.molgenis.util.Tuple;
  * added as first column. Optionally, the ProtocolApplication metadata can be
  * viewed (future todo).
  */
-public class ProtocolTable extends AbstractFilterableTupleTable {
+public class ProtocolTable extends AbstractFilterableTupleTable implements
+		EditableTupleTable {
 	// protocol to query
 	private Protocol protocol;
 
@@ -70,12 +77,40 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 				// get all features of protocol AND subprotocols
 				measurements = getMeasurementsRecursive(protocol);
 
+				Field target = new Field(targetString);
+
+				columns.add(target);
+
 				// convert into field
 				for (Measurement m : measurements.keySet()) {
+
 					Field col = new Field(m.getName());
-					// col.setLabel(m.getName());
-					// col.setTableName(measurements.get(m).getName());
+
 					col.setDescription(m.getDescription());
+
+					if (m.getDataType().equals("categorical")) {
+
+						Vector<String> enumOptions = new Vector<String>();
+
+						for (Category c : getDb().find(
+								Category.class,
+								new QueryRule(Category.NAME, Operator.IN, m
+										.getCategories_Name()))) {
+							enumOptions.add(c.getCode_String() + "."
+									+ c.getDescription());
+						}
+
+						col.setType(new EnumField());
+						col.setEnumOptions(enumOptions);
+
+					} else if (m.getDataType().equals("bool")) {
+						col.setType(new BoolField());
+					} else if (m.getDataType().equals("datetime")) {
+						col.setType(new DatetimeField());
+					} else {
+						col.setType(new StringField());
+					}
+
 					// todo: setType()
 					columns.add(col);
 				}
@@ -128,7 +163,9 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 				boolean target = false;
 				Tuple row = new SimpleTuple();
 
-				for (ObservedValue v : getDb().query(ObservedValue.class)
+				Database db = getDb();
+
+				for (ObservedValue v : db.query(ObservedValue.class)
 						.eq(ObservedValue.PROTOCOLAPPLICATION, rowId).find()) {
 					if (!target) {
 						row.set(targetString, v.getTarget_Name());
@@ -137,21 +174,43 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 
 					// get measurements (evil expensive)
 					Protocol p = null;
+
+					Measurement currentMeasurement = null;
 					for (Measurement m : measurements.keySet()) {
 						if (m.getName().equals(v.getFeature_Name())) {
 							p = measurements.get(m);
+							currentMeasurement = m;
 							break;
 						}
 					}
 
-					// if (p == null) {
-					row.set(v.getFeature_Name(), v.getValue());
-					// } else {
-					// row.set(p.getName() + "." + v.getFeature_Name(),
-					// v.getValue());
-					// }
+					if ("categorical".equals(currentMeasurement.getDataType())) {
+
+						for (Category c : db
+								.find(Category.class,
+										new QueryRule(Category.NAME,
+												Operator.IN, currentMeasurement
+														.getCategories_Name()))) {
+							if (v.getValue().equals(c.getCode_String())) {
+								row.set(v.getFeature_Name(), v.getValue() + "."
+										+ c.getDescription());
+								break;
+							}
+						}
+					} else {
+						if (!v.getValue().isEmpty())
+							row.set(v.getFeature_Name(), v.getValue());
+					}
 				}
 				result.add(row);
+			}
+
+			// Query for the measurement that is asked to sort, Scolsom01, with
+			// filter rule
+			//
+
+			if (this.getFilters().size() > 0) {
+
 			}
 
 			return result;
@@ -188,8 +247,16 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 			DatabaseException {
 		// get columns that are used in filtering or sorting
 		Set<String> columnsUsed = new HashSet<String>();
+
 		for (QueryRule r : getFilters()) {
-			columnsUsed.add(r.getField());
+
+			// IF SEARCH BUTTON IS CLICKED
+			if (getFilters().get(0).getField() != null) {
+				columnsUsed.add(r.getField());
+			} else {
+				// IF WE WANT TO ORDER A COLUMN
+				columnsUsed.add(r.getValue().toString());
+			}
 		}
 
 		// get measurements
@@ -199,6 +266,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 			measurementsUsed = getDb().query(Measurement.class)
 					.in(Measurement.NAME, new ArrayList<String>(columnsUsed))
 					.find();
+
 		}
 
 		// one column is defined by ObservedValue.Investigation,
@@ -217,21 +285,48 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 		}
 		// filtering [todo: data model change!]
 		if (columnsUsed.contains(targetString)) {
-			sql += " NATURAL JOIN (SELECT id as targetId, name as target from ObservationElement) as target";
+			sql += " NATURAL JOIN (SELECT id as targetId, name as "
+					+ this.targetString + " from ObservationElement) as "
+					+ this.targetString;
 		}
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
 		// limit and offset
-		if (!count && getLimit() > 0)
+		if (!count && getLimit() > 0) {
 			filters.add(new QueryRule(Operator.LIMIT, getLimit()));
-		if (!count && getOffset() > 0)
+		}
+		if (!count && getOffset() > 0) {
 			filters.add(new QueryRule(Operator.OFFSET, getOffset()));
+		}
 
 		List<Integer> result = new ArrayList<Integer>();
+		// sql = SELECT count (*) as id from ProtocolApplication
+		// filters = Scl90som3 = '1'
+		// filters.size() = 1
+
 		for (Tuple t : this.getDb().sql(sql,
 				filters.toArray(new QueryRule[filters.size()])))
 			result.add(t.getInt("id"));
+
 		return result;
+	}
+
+	@Override
+	public void add(Tuple tuple) throws TableException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(Tuple tuple) throws TableException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void remove(Tuple tuple) throws TableException {
+		// TODO Auto-generated method stub
+
 	}
 }

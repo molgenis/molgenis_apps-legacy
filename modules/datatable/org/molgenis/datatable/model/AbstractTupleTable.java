@@ -5,8 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
+
+import app.DatabaseFactory;
 
 public abstract class AbstractTupleTable implements TupleTable
 {
@@ -63,7 +66,7 @@ public abstract class AbstractTupleTable implements TupleTable
 		{
 			if (getColLimit() > 0)
 			{
-				return columns.subList(getColOffset(), getColOffset() + getColLimit());
+				return columns.subList(getColOffset(), Math.min(getColOffset() + getColLimit(), columns.size()));
 			}
 			else
 			{
@@ -154,6 +157,15 @@ public abstract class AbstractTupleTable implements TupleTable
 
 	public Database getDb()
 	{
+		try
+		{
+			db = DatabaseFactory.create();
+		}
+		catch (DatabaseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return this.db;
 	}
 }

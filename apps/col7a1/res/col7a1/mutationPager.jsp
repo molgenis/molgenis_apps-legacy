@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
-<display:table name="mutationSummaryDTOList" pagesize="10" export="true" sort="list" class="listtable2" id="current">
+<display:table name="mutationSummaryDTOList" pagesize="10" export="true" sort="list" class="listtable" id="current">
 <display:setProperty name="paging.banner.full"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0} <a href="{3}">Next</a> <a href="{4}">Last</a></span></display:setProperty>  
 <display:setProperty name="paging.banner.first"><span class="pagelinks">{0} <a href="{3}">Next</a> <a href="{4}">Last</a> </span></display:setProperty>
 <display:setProperty name="paging.banner.last"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0}</span></display:setProperty>
@@ -42,7 +42,14 @@
 	<c:out value="${patientDTO.variantDTOList[0].cdnaNotation}"/>
 	</c:when>
 	<c:otherwise>
-	<c:out value="${patientDTO.variantComment}"/>
+		<c:choose>
+		<c:when test="${fn:contains(current.inheritance, 'dominant')}">
+			NA
+		</c:when>
+		<c:otherwise>
+			Unknown
+		</c:otherwise>
+		</c:choose>
 	</c:otherwise>
 	</c:choose>
 </div>
@@ -80,13 +87,13 @@
 </display:column>
 <display:column media="html" title="Consequence">
 <div class="unwrapped">
-	<c:out value="${current.observedValue}"/>
+	<c:out value="${current.consequence}"/>
 	<br/>
 </div>
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
-	<c:out value="${patientDTO.variantDTOList[0].observedValue}"/>
+	<c:out value="${patientDTO.variantDTOList[0].consequence}"/>
 	</c:if>
 	<br/>
 </div>
@@ -94,13 +101,13 @@
 </display:column>
 <display:column media="html" title="Inheritance">
 <div class="unwrapped">
-	<c:out value="${current.observedValue}"/>
+	<c:out value="${current.inheritance}"/>
 	<br/>
 </div>
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
-	<c:out value="${patientDTO.variantDTOList[0].observedValue}"/>
+	<c:out value="${patientDTO.variantDTOList[0].inheritance}"/>
 	</c:if>
 	<br/>
 </div>
@@ -135,8 +142,8 @@
 <div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
-	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a><br/>
 	</c:forEach>
 <!-- 	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>-->
 	</c:when>
@@ -155,7 +162,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="${publicationDTO.name}"/>
+	<c:out value="${publicationDTO.title}"/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>

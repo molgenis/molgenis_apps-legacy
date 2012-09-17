@@ -53,6 +53,10 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			Exon exon = this.em.find(Exon.class, id);
+
+			if (exon == null)
+				throw new SearchServiceException("No exon found for " + id);
+
 			return this.exonToExonDTO(exon);
 		}
 		catch (Exception e)
@@ -73,6 +77,23 @@ public class SearchService extends MolgenisVariantService
 			List<Variant> variantList = this.db.query(Variant.class).sortASC(Variant.STARTGDNA).find();
 
 			return this.variantListToVariantDTOList(variantList);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
+	public List<String> getAllVariantTypes()
+	{
+		try
+		{
+			String sql = "SELECT DISTINCT type_ FROM Variant";
+			TypedQuery<String> query = this.em.createQuery(sql, String.class);
+			List<String> typeList = query.getResultList();
+			
+			return typeList;
 		}
 		catch (Exception e)
 		{
@@ -808,7 +829,12 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			return this.proteinDomainToProteinDomainDTO(this.em.find(ProteinDomain.class, id), noIntrons);
+			ProteinDomain domain = this.em.find(ProteinDomain.class, id);
+
+			if (domain == null)
+				throw new SearchServiceException("No domain found for " + id);
+
+			return this.proteinDomainToProteinDomainDTO(domain, noIntrons);
 		}
 		catch (Exception e)
 		{

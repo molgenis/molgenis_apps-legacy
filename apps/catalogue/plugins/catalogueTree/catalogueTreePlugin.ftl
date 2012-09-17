@@ -26,7 +26,7 @@
 					}
 				});		
 			}
-			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
+			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All"){
 				
 				$('#leftSideTree li').each(function(){
 					
@@ -52,7 +52,7 @@
 				});
 			}
 			
-			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
+			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All"){
 				
 				$('#leftSideTree li').each(function(){
 					
@@ -93,7 +93,7 @@
 				});
 				
 			}
-			if($('#selectedField').val() == "Details" || $('#selectedField').val() == "All fields"){
+			if($('#selectedField').val() == "All"){
 				var jsonString = eval(${screen.getInheritance()});
 				//var json = eval(jsonString);
 				
@@ -211,6 +211,7 @@
 			}else{
 				$('#selectedVariableHeader').remove();
 				$('#selectedVariableTable').remove();
+				$('#selectNotification').show();
 			}
 			var myCheckBoxId = $(this).attr('id').replace("_delete", "");
 			$('#' + myCheckBoxId).find('input:checkbox').attr('checked',false);
@@ -270,7 +271,8 @@
 					
 					<!--We are going to check whether this selectedVariableTable already existed-->
 					if($('#selectedVariableTable').length == 0){
-					
+						
+						$('#selectNotification').hide();
 						var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
 						'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
 						'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
@@ -320,12 +322,12 @@
 		
 		$(document).ready(function(){	
 			
-			$('#cohortSelectSubmit').button();
-			$('#cohortSelectSubmit').css({
+			$('input[name="cohortSelectSubmit"]').button();
+			$('input[name="cohortSelectSubmit"]').css({
 				'font-size':'1.2em',
 				'color':'#123481'
 			});
-			$('#cohortSelectSubmit').show();
+			$('input[name="cohortSelectSubmit"]').show();
 			
 			$('#downloadButton').button();
 			$('#downloadButton').css({
@@ -342,6 +344,9 @@
 				$('#InputToken').val('');
 				checkSearchingStatus();
 			});
+			$('#showDetailsHeader').show();
+      		$('#selectionInformationHeader').show();
+      		$('#treeHeader').show();
 		});
 	</script>
 
@@ -366,21 +371,19 @@
 					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr>
 							<td class="box-header" colspan="2">  
-						        <label style='font-size:14px'>Choose a cohort:
+						        <label style='font-size:14px'>
+						        <#if (screen.arrayInvestigations?size > 1)>
+									Choose a cohort:
 									<#list screen.arrayInvestigations as inv>
 										<#assign invName = inv.name>
-											<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
-												style="display:none" onclick="__action.value='cohortSelect';"/>
-									
+											<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value= ${invName}
+												 style="display:none" onclick="__action.value='cohortSelect';"/>
 									</#list>
-								<script>$('#investigation').chosen();</script>	
+								<#else>
+									Catalog: ${screen.arrayInvestigations}
+								</#if>
 								</label>
-								
-							<!--	<div id="masstoggler"> 		
-				 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-				 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-				 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
-	 							</div>-->
+
 	 						</td>
 			    		</tr>
 			    		<tr>
@@ -413,6 +416,7 @@
 					    <td class="box-body" style="width: 50%"><div >Details:</div></td></tr>
 					    <tr>
 					    	<td class="box-body">
+					    		<div id="treeHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View all the data items in the study</div>
 								<div id="leftSideTree">
 									${screen.getTreeView()}<br/>
 								</div>
@@ -421,15 +425,19 @@
 						    	<table  style="height:500px;width:100% ">
 							    	<tr>
 								    	<td style="height:250px; padding:0px" >
+									    	<div id="showDetailsHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View the variable details here</div>
 									    	<div id="details" style="height:250px;overflow:auto">
+									    		
 			      							</div>
       									</td>
   									</tr>
 									<tr>
 								    	<td style="height:20px; border-top:1px solid lightgray;">
+											<div id="selectionInformationHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View your selection here</div>
 											<div id="selectionState" >Your selection:
 												<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
 												<div id="traceBack" style="float:right;display:none">Locate the variable in the tree</div>
+												<div id="selectNotification" style="font-size:20px" ></br></br>Please select a variable in the tree</div>
 											</div>
 										</td>
 									</tr>
@@ -473,7 +481,6 @@
 						</tr>
 					</table>
 			   	</#if>	
-			    <label><#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>
  				<!-- The detailed table bound to the branch is store in a click event. Therefore this table is not available
  							until the branch has been clicked. As checkbox is part of this branch therefore when the checkbox is ticked
  							the table shows up on the right as well. Another event is fired when the checkbox is checked which is
@@ -481,7 +488,15 @@
  							use the information (description) from the datailed table. Therefore we have to trigger the click event on branch
  							here first and create the detailed table!-->
  				<script>
+ 				
 					var json = eval(${screen.getInheritance()});
+			      	
+			      	$('#browser').click(function(){
+			      		$('#showDetailsHeader').fadeOut();
+			      		$('#selectionInformationHeader').fadeOut();
+			      		$('#treeHeader').fadeOut();
+			      		$('#browser').unbind('click');
+			      	});
 			      	
 			      	$('#browser').find('li').each(function(){
 			      		
@@ -587,7 +602,9 @@
 	 								if($('#selectedVariableTable').find('tr').length == 0){
 	 									$('#selectedVariableTable').remove();
 	 									$('#selectedVariableHeader').remove();
+	 									$('#selectNotification').show();
 	 								}
+
  									
  								}else{
  								
@@ -617,6 +634,7 @@
 	 								}else{
 	 									$('#selectedVariableTable').remove();
 	 									$('#selectedVariableHeader').remove()
+	 									$('#selectNotification').show();
 	 								}
 	 								var uncheckProtocol = true;
 	 								var currentNode = $(this).parents('li:first');
@@ -636,7 +654,6 @@
  							}
  						});	
  					});
- 					
  				</script>
 			</div>
 		</div>
