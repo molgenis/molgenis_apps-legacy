@@ -355,6 +355,7 @@ It should be used via 'import' plus passing of properties
 
 	<target name="download-jars">
 		<echo message="installing ivy.." />
+		<mkdir dir="${lib.dir}" />
 		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0-rc1/ivy-2.0.0-rc1.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
 		<path id="ivy.lib.path">
 			<fileset dir="${lib.dir}" includes="ivy.jar"/>
