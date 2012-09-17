@@ -20,8 +20,6 @@ import org.molgenis.core.dto.PublicationDTO;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.ExonSearchCriteriaDTO;
 import org.molgenis.mutation.dto.ExonDTO;
 import org.molgenis.mutation.dto.GeneDTO;
@@ -58,9 +56,16 @@ public class MolgenisVariantService
 	protected Map<String, OntologyTerm> ontologyTermCache;
 
 	@Autowired
-	public MolgenisVariantService(final Database db)
+	protected PhenoService phenoService;
+
+	@Autowired
+	protected PublicationService publicationService;
+
+	//@Autowired
+	public void setDatabase(final Database db)
 	{
 		this.db = db;
+		/*FIXME: This should not be in a setter */
 		this.em = db.getEntityManager();
 		this.init();
 	}
@@ -697,9 +702,7 @@ public class MolgenisVariantService
 			/* find ObservedValue's, separate 'Inheritance' and 'Consequence' */
 			mutationSummaryDTO.setProtocolDTOList(new ArrayList<ProtocolDTO>());
 			mutationSummaryDTO.setObservedValueDTOHash(new HashMap<String, List<ObservedValueDTO>>());
-	
-			PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
-	
+
 			List<Protocol> protocolList = this.em.createQuery("SELECT p FROM Protocol p", Protocol.class).getResultList();
 	
 			for (Protocol protocol : protocolList)
@@ -806,7 +809,6 @@ public class MolgenisVariantService
 	
 				if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
 				{
-					PublicationService publicationService = ServiceLocator.instance().getPublicationService();
 					List<PublicationDTO> publicationDTOList = publicationService.publicationListToPublicationDTOList(patient.getPatientreferences());
 					for (PublicationDTO publicationDTO : publicationDTOList)
 					{
@@ -887,8 +889,6 @@ public class MolgenisVariantService
 			/* find ObservedValue's, separate 'Inheritance' and 'Consequence' */
 			mutationSummaryDTO.setProtocolDTOList(new ArrayList<ProtocolDTO>());
 			mutationSummaryDTO.setObservedValueDTOHash(new HashMap<String, List<ObservedValueDTO>>());
-	
-			PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
 	
 			List<Protocol> protocolList = this.em.createQuery("SELECT p FROM Protocol p", Protocol.class).getResultList();
 	
@@ -988,7 +988,6 @@ public class MolgenisVariantService
 	
 				if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
 				{
-					PublicationService publicationService = ServiceLocator.instance().getPublicationService();
 					List<PublicationDTO> publicationDTOList = publicationService.publicationListToPublicationDTOList(patient.getPatientreferences());
 					for (PublicationDTO publicationDTO : publicationDTOList)
 					{
@@ -1096,7 +1095,6 @@ public class MolgenisVariantService
 		/* Add literature references */
 		if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
 		{
-			PublicationService publicationService = ServiceLocator.instance().getPublicationService();
 			patientSummaryDTO.setPublicationDTOList(publicationService.publicationListToPublicationDTOList(patient.getPatientreferences()));
 		}
 
