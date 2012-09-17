@@ -1,12 +1,20 @@
 #MOLGENIS walltime=05:00:00 nodes=1 cores=1 mem=4
 
-
-#INPUTS studyPedMap.map,studyPedMap.ped
-#OUTPUTS studyTriTyperChrDir
-#EXES imputationToolJar
-#LOGS log
-
 #FOREACH project,chr
+
+getFile "${imputationToolJar}"
+getFile "${imputationToolJsciCoreJar}"
+getFile "${imputationToolGeneticaLibraries}"
+
+getFile "${studyPedMapChr}.map"
+getFile "${studyPedMapChr}.ped"
+putFile "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+putFile "${studyTriTyperChrDir}/Individuals.txt"
+putFile "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+putFile "${studyTriTyperChrDir}/SNPMappings.txt"
+putFile "${studyTriTyperChrDir}/SNPsHash.txt"
+putFile "${studyTriTyperChrDir}/SNPs.txt"
+
 
 inputs "${studyPedMapChr}.map"
 inputs "${studyPedMapChr}.ped"
@@ -17,10 +25,14 @@ alloutputsexist "${studyTriTyperChrDir}/SNPMappings.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
 
+module load java/${javaversion}
 
 mkdir -p ${studyTriTyperChrTempDir}
 
-java -jar ${imputationToolJar} --mode pmtt --in ${studyPedMapChrDir} --out ${studyTriTyperChrTempDir}
+java -jar ${imputationToolJar} \
+--mode pmtt \
+--in ${studyPedMapChrDir} \
+--out ${studyTriTyperChrTempDir}
 
 
 #Get return code from last program call

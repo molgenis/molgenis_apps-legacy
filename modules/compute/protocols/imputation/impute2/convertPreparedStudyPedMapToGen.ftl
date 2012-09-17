@@ -1,18 +1,21 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
 
-#INPUTS preparedStudyDir/chr${chr}.ped,preparedStudyDir/chr${chr}.map
-#OUTPUTS preparedStudyDir/chr${chr}.gen,preparedStudyDir/chr${chr}.sample
-#EXES gtoolBin
-#LOGS log
-#TARGETS project,chr
-
 #FOREACH project,chr
+
+getFile ${preparedStudyDir}/chr${chr}.ped
+getFile ${preparedStudyDir}/chr${chr}.map
+putFile ${preparedStudyDir}/chr${chr}.gen
+putFile ${preparedStudyDir}/chr${chr}.sample
+
+
 
 inputs "${preparedStudyDir}/chr${chr}.ped"
 inputs "${preparedStudyDir}/chr${chr}.map"
 alloutputsexist "${preparedStudyDir}/chr${chr}.gen"
 alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
 
+
+module load ${gtoolBin}/${gtoolBinversion}
 
 ${gtoolBin} -P --ped ${preparedStudyDir}/chr${chr}.ped --map ${preparedStudyDir}/chr${chr}.map --og ${preparedStudyDir}/~chr${chr}.gen --os ${preparedStudyDir}/~chr${chr}.sample
 
