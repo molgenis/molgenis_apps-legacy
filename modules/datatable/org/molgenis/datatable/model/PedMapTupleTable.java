@@ -71,7 +71,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		return new PedMapIterator(pedFile, mapFile, this);
+		return new PedMapIterator(pedFile, this);
 	}
 
 	@Override
@@ -100,16 +100,25 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 		// colLimit
 		int colLimit;
 
-		PedMapIterator(PedFileDriver pedFile, MapFileDriver mapFile, PedMapTupleTable table)
+		PedMapIterator(PedFileDriver pedFile, PedMapTupleTable table)
 		{
 			this.pedFile = pedFile;
 			this.table = table;
 
 			columns = table.getColumnNames();
 
-			// TODO FIX MapFile.getNrOfElements
-			colLimit = (int) (table.getColLimit() == 0 ? mapFile.getNrOfElements() + fixedColumns.length
-					- table.getColOffset() : table.getColLimit());
+			try
+			{
+				colLimit = (int) (table.getColLimit() == 0 ? table.getColCount() - table.getColOffset() : table
+						.getCurrentPageSize());
+
+			}
+			catch (TableException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 		@Override
