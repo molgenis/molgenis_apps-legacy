@@ -25,7 +25,7 @@ public class AddComputeHost
 			host.setHostDir("/home/byelas/pilot");
 			host.setHostName("ui.grid.sara.nl");
 			host.setHostUsername("byelas");
-			host.setHostPassword("secret!");// K960u4jT
+			host.setHostPassword("!secret");// K960u4jT
 			host.setHostType("glite");
 
 			db.add(host);

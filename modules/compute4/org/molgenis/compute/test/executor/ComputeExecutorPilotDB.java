@@ -25,27 +25,33 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
     public void executeTasks()
     {
         //evaluate if we have tasks ready to run
-        Database db = null;
-        List<ComputeTask> generatedTasks = null;
+        //Database db = null;
+        //List<ComputeTask> generatedTasks = null;
         int readyToSubmitSize = 0;
 
         try
         {
-            db = DatabaseFactory.create();
+            Database db = DatabaseFactory.create();
             db.beginTx();
 
-            generatedTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "generated"));
-
-
+            List<ComputeTask> generatedTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "generated"));
             readyToSubmitSize = evaluateTasks(db, generatedTasks);
-
             db.commitTx();
+
+            List<ComputeTask> readyTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "ready"));
+            readyToSubmitSize = readyTasks.size();
+
 
         }
         catch (DatabaseException e)
         {
             e.printStackTrace();
         }
+
+        System.out.println("task ready for execution " + readyToSubmitSize);
+
+        //create free pilots for one actual task
+        //readyToSubmitSize = readyToSubmitSize * 3;
 
         //start as many pilots as we have tasks ready to run
         for(int i = 0; i < readyToSubmitSize; i++)
@@ -55,6 +61,16 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                 host.submitPilot();
             }
             catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            //sleep, because we have a strange behavior in pilot service
+            try
+            {
+                Thread.sleep(10000);
+            }
+            catch (InterruptedException e)
             {
                 e.printStackTrace();
             }
@@ -76,7 +92,8 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 
             if(isReady)
             {
-                count++;
+                System.out.println(">>> TASK " + task.getName() + " is ready for execution");
+                //count++;
                 task.setStatusCode("ready");
             }
         }

@@ -40,6 +40,7 @@ public class PilotService implements MolgenisService
 			{
 				String taskName = task.getName();
 				String taskScript = task.getComputeScript();
+				taskScript = taskScript.replaceAll("\r", "");
 
 				// we add task id to the run listing to identify task when it is
 				// done
@@ -66,7 +67,7 @@ public class PilotService implements MolgenisService
 			ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.NAME, taskID).limit(1)
 					.find().get(0);
 
-			if (task != null)
+			if (task != null && task.getStatusCode().equalsIgnoreCase("running"))
 			{
 				task.setStatusCode("done");
 				task.setRunLog(results);
