@@ -23,6 +23,7 @@ alloutputsexist "${b36conversionPedMapResultDir}/chr_${chr}.ped"
 alloutputsexist "${convertB36unmappedSNPs}"
 
 #module load ${liftOverUcscBin}/${liftOverUcscBinversion}
+#module load ${plinkseqBin}/${plinkseqversion}
 
 mkdir -p ${convertB36ChrTempDir}
 
@@ -46,7 +47,7 @@ ${convertB36unmapped} \
 mkdir -p ${b36conversionPedMapResultDir}
 
 #Generate new Ped/Map file excluding SNPs which were NOT lifted over
-plink \
+${plinkseqBin} \
 --noweb \
 --recode \
 --ped ${imputationResultDir}/chr_${chr}.ped \
