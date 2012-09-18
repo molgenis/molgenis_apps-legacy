@@ -62,12 +62,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		this.protocol = protocol;
 	}
 
-	@Override
-	public int getColCount()
-	{
-		// +1 for the target column
-		return protocol.getFeatures_Id().size() + 1;
-	}
+	/*
+	 * @Override public int getColCount() { // +1 for the target column return
+	 * protocol.getFeatures_Id().size() + 1; }
+	 */
 
 	public List<Field> getAllColumns() throws TableException
 	{

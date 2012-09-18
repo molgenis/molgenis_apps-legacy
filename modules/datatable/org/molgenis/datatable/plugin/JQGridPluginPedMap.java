@@ -17,9 +17,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
@@ -145,31 +143,23 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 	{
 		MolgenisForm view = new MolgenisForm(this);
 
-		SelectInput selectPed = new SelectInput("pedfile");
-		for (InvestigationFile file : pedFiles)
-		{
-			selectPed.addOption(file.getName(), file.getName());
-		}
-
-		if (selectedPedFile != null)
-		{
-			selectPed.setValue(selectedPedFile.getName());
-		}
-		view.add(selectPed);
-
-		SelectInput selectMap = new SelectInput("mapfile");
-		for (InvestigationFile file : mapFiles)
-		{
-			selectMap.addOption(file.getName(), file.getName());
-		}
-
-		if (selectedMapFile != null)
-		{
-			selectMap.setValue(selectedMapFile.getName());
-		}
-		view.add(selectMap);
-
-		view.add(new ActionInput("reloadTable", "Reload table"));
+		/*
+		 * SelectInput selectPed = new SelectInput("pedfile"); for
+		 * (InvestigationFile file : pedFiles) {
+		 * selectPed.addOption(file.getName(), file.getName()); }
+		 * 
+		 * if (selectedPedFile != null) {
+		 * selectPed.setValue(selectedPedFile.getName()); } view.add(selectPed);
+		 * 
+		 * SelectInput selectMap = new SelectInput("mapfile"); for
+		 * (InvestigationFile file : mapFiles) {
+		 * selectMap.addOption(file.getName(), file.getName()); }
+		 * 
+		 * if (selectedMapFile != null) {
+		 * selectMap.setValue(selectedMapFile.getName()); } view.add(selectMap);
+		 * 
+		 * view.add(new ActionInput("reloadTable", "Reload table"));
+		 */
 
 		if (tableView != null)
 		{

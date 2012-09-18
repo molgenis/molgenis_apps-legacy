@@ -112,7 +112,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public int getColCount() throws TableException
 	{
-		return this.getColumns().size();
+		return this.getAllColumns().size();
 	}
 
 	@Override
@@ -167,5 +167,19 @@ public abstract class AbstractTupleTable implements TupleTable
 			e.printStackTrace();
 		}
 		return this.db;
+	}
+
+	protected int getCurrentPageSize() throws TableException
+	{
+		int colCount = getColCount();
+		int pageSize = colLimit;
+
+		if (getColOffset() + pageSize > colCount)
+		{
+			pageSize = colCount - getColOffset();
+		}
+
+		return pageSize;
+
 	}
 }
