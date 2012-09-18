@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -54,9 +53,9 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 		try
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();
-			Login securityService       = ServiceLocator.instance().getSecurityService();
+			searchService.setDatabase(db);
 
-			List<PatientSummaryDTO> patientSummaryVOs = searchService.findPatientsByUserId(securityService.getUserId());
+			List<PatientSummaryDTO> patientSummaryVOs = searchService.findPatientsByUserId(this.getApplicationController().getLogin().getUserId());
 	
 			this.getModel().setPatientSummaryVOList(patientSummaryVOs);
 			((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOList());
