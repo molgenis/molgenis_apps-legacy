@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.model.elements.Field;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 public class TestTupleTable extends AbstractTupleTable
@@ -54,9 +55,16 @@ public class TestTupleTable extends AbstractTupleTable
 	}
 
 	@Override
-	protected Object getValue(int row, int col) throws TableException
+	protected Tuple getValues(int row, int colStart, int colEnd) throws TableException
 	{
-		return (row + 1) + ":" + (col + 1);
+		Tuple tuple = new SimpleTuple();
+
+		for (int col = colStart; col < colEnd; col++)
+		{
+			tuple.set(columns.get(col).getName(), (row + 1) + "-" + (col + 1));
+		}
+
+		return tuple;
 	}
 
 }

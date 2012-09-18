@@ -188,9 +188,8 @@ public abstract class AbstractTupleTable implements TupleTable
 	 * 
 	 * @throws TableException
 	 */
-	protected Object getValue(int row, int col) throws TableException
+	protected Tuple getValues(int row, int colStart, int colEnd) throws TableException
 	{
-		Tuple tuple = getRows().get(row);
-		return tuple.getObject(col);
+		return getRows().get(row);
 	}
 }

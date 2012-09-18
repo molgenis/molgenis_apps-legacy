@@ -2,7 +2,6 @@ package org.molgenis.datatable.model;
 
 import java.util.Iterator;
 
-import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /**
@@ -51,24 +50,34 @@ public class TupleTableIterator implements Iterator<Tuple>
 	@Override
 	public Tuple next()
 	{
-		Tuple tuple = new SimpleTuple();
 
-		for (int col = tupleTable.getColOffset(); col < tupleTable.getColOffset() + colLimit; col++)
+		Tuple tuple;
+		try
 		{
-			try
-			{
-				tuple.set(tupleTable.getAllColumns().get(col).getName(),
-						tupleTable.getValue(tupleTable.getOffset() + row, col));
-			}
-			catch (TableException e)
-			{
-				throw new RuntimeException(e);
-			}
+			tuple = tupleTable.getValues(tupleTable.getOffset() + row, tupleTable.getColOffset(),
+					tupleTable.getColOffset() + colLimit);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
 		}
 
 		row++;
 
 		return tuple;
+		/*
+		 * Tuple tuple = new SimpleTuple();
+		 * 
+		 * for (int col = tupleTable.getColOffset(); col <
+		 * tupleTable.getColOffset() + colLimit; col++) { try {
+		 * tuple.set(tupleTable.getAllColumns().get(col).getName(),
+		 * tupleTable.getValue(tupleTable.getOffset() + row, col)); } catch
+		 * (TableException e) { throw new RuntimeException(e); } }
+		 * 
+		 * row++;
+		 * 
+		 * return tuple;
+		 */
 	}
 
 	@Override
