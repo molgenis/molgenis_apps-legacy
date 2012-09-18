@@ -59,7 +59,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	// private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private List<String> listOfJSONs = new ArrayList<String>();
-	private JSONObject inheritance = new JSONObject();
+	private JSONObject variableInformation = new JSONObject();
 
 	private String selectedInvestigation = null;
 	// private String InputToken = null;
@@ -109,6 +109,59 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	@Override
 	public String getViewTemplate() {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
+	}
+
+	@Override
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
+			throws Exception {
+
+		if (out == null) {
+
+			this.handleRequest(db, request);
+
+		} else {
+
+			if (request.getAction().equals("download_json_showInformation")) {
+
+				System.out.println("showVariableInformation------------"
+						+ request);
+				List<String> listOfVariables = request
+						.getStringList("variableName");
+
+				PrintWriter writer = new PrintWriter(out);
+				JSONObject jsonVariableInformation = new JSONObject();
+
+				String variableHtmlTable = "";
+
+				for (String eachVariable : listOfVariables) {
+
+					if (variableInformation.has(eachVariable)) {
+
+						variableHtmlTable += variableInformation
+								.get(eachVariable);
+					}
+				}
+
+				if (!variableHtmlTable.equals("")) {
+					jsonVariableInformation.put("result", variableHtmlTable);
+				} else {
+					jsonVariableInformation.put("result",
+							"There is no information for this variable");
+				}
+				writer.write(jsonVariableInformation.toString());
+				writer.flush();
+				writer.close();
+
+			} else if (request.getAction().equals("download_json_searchAll")) {
+				PrintWriter writer = new PrintWriter(out);
+				writer.write(variableInformation.toString());
+				writer.flush();
+				writer.close();
+			}
+		}
+
+		return Show.SHOW_MAIN;
+
 	}
 
 	@Override
@@ -371,7 +424,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
-		inheritance = new JSONObject();
+		variableInformation = new JSONObject();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 		multipleInheritance.clear();
 		listOfMeasurements.clear();
@@ -811,7 +864,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				try {
 
 					json.put(uniqueName.replaceAll(" ", "_"), htmlValue);
-					inheritance.put(uniqueName.replaceAll(" ", "_"), htmlValue);
+					variableInformation.put(uniqueName.replaceAll(" ", "_"),
+							htmlValue);
 					// json.put("tableID", measurement.getName().replaceAll(" ",
 					// "_") + "_table");
 					// json.put("table", htmlValue);
@@ -1219,7 +1273,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	public String getInheritance() {
-		return inheritance.toString();
+		return variableInformation.toString();
 	}
 
 	// @Override
@@ -1259,6 +1313,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public String getStatus() {
 		return Status;
+	}
+
+	public String getUrl() {
+		return "molgenis.do?__target=" + this.getName();
 	}
 
 	// /**

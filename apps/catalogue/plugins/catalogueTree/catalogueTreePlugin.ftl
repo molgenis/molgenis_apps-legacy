@@ -13,6 +13,19 @@
 		
 		function searchInTree(){
 			
+			var json = "";
+			
+			if($('#selectedField').val() == "All"){
+
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_searchAll",
+      				async: false
+      			}).done(function(data) {
+					json = data;
+				});
+			
+			}
+			
 			var inputToken = $('#InputToken').val();
 			
 			$('#leftSideTree li').hide();
@@ -95,7 +108,7 @@
 				
 			}
 			if($('#selectedField').val() == "All"){
-				var jsonString = eval(${screen.getInheritance()});
+				
 				//var json = eval(jsonString);
 				
 				$('#leftSideTree li').each(function(){
@@ -255,7 +268,7 @@
 			
 				var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
 				
-				$('#' + uniqueID + '>span').trigger('click');
+				//$('#' + uniqueID + '>span').trigger('click');
 				
 				if($('#' + uniqueID + '_row').length == 0){
 					
@@ -523,7 +536,7 @@
  							here first and create the detailed table!-->
  				<script>
  				
-					var json = eval(${screen.getInheritance()});
+					
 			      	
 			      	$('#browser').find('li').each(function(){
 			      		
@@ -540,8 +553,8 @@
 			      					'font-style':'italic',
 			      					'font-weight':'bold'
 			      				});
-			      				
-		      				var parent = $(this).parent().parent().siblings('span');
+			      			
+		      					var parent = $(this).parent().parent().siblings('span');
 			      				//Parent
 			      				$(parent).css({
 									'color':'#778899',
@@ -570,10 +583,15 @@
 										'font-weight':400									
 									});
 		      						
-								}			   				
+								}   				
 								$('#clickedVariable').val(measurementID);
 								$('#details').empty();
-								$('#details').append(json[measurementID]);
+								$.ajax({
+									url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + measurementID,
+				      				async: false
+				      			}).done(function(data) {
+									$('#details').append(data["result"]);
+								});
 								$('#' + measurementID + '_itemName').click(function(){
 									var uniqueID = $(this).attr('id').replace("_itemName","");
 									traceBackSelection(uniqueID);
@@ -615,6 +633,7 @@
  						
  						$(this).click(function(){
  							
+ 							//The protocol is clicked
  							if($(this).parent().parent().find('input:checkbox').length > 1){
  								
  								if($(this).attr('checked') != 'checked'){
@@ -638,17 +657,29 @@
 	 								//Get all the checkbox id's of the children
 	 								var index = 0;
 	 								var array = new Array();
-	 								var variableID = $(this).attr('id');
-	 								
+	 								var listOfVariable = new Array();
+	 								var variableCheckBoxID = $(this).attr('id');
 	 								$(this).parent().parent().find('input:checkbox').each(function(){
-	 									if($(this).attr('id') != variableID){
+	 									if($(this).attr('id') != variableCheckBoxID){
 		 									array[index] = $(this).attr('id');
+		 									listOfVariable[index] = $(this).parents('li:first').attr('id');
 		 									index++;
 	 									}
 	 								});
-	 								
+	 								$.ajax({
+										url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + listOfVariable,
+					      				async: false
+					      			}).done(function(data) {
+										
+										$('#details').append("<div id=\"hiddenDetails\" style=\"display:none\">" + data["result"] + "</div>");
+									});
 	 								addSelection(array);
+	 								
+	 								$('#' + listOfVariable[listOfVariable.length - 1]).children('span').trigger('click');
+	 								
+	 								$('#hiddenDetails').remove();
 	 							}
+	 							
  							}else{
  							
  								//Add only one measurement to the selection 
