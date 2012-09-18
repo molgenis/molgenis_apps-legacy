@@ -10,6 +10,7 @@ putFile ${convertB36ChrHg18Bed}
 putFile ${convertB36unmapped}
 putFile ${b36conversionPedMapResultDir}/chr_${chr}.map
 putFile ${b36conversionPedMapResultDir}/chr_${chr}.ped
+putFile ${convertB36unmappedSNPs}
 
 inputs "${imputationResultDir}/chr_${chr}.map"
 inputs "${hg19ToHg18chainfile}"
@@ -19,6 +20,7 @@ alloutputsexist "${convertB36ChrHg18Bed}"
 alloutputsexist "${convertB36unmapped}"
 alloutputsexist "${b36conversionPedMapResultDir}/chr_${chr}.map"
 alloutputsexist "${b36conversionPedMapResultDir}/chr_${chr}.ped"
+alloutputsexist "${convertB36unmappedSNPs}"
 
 #module load ${liftOverUcscBin}/${liftOverUcscBinversion}
 
@@ -36,12 +38,24 @@ ${hg19ToHg18chainfile} \
 ${convertB36ChrHg18Bed} \
 ${convertB36unmapped}
 
+#Select SNP ID from non-lifted over SNPs
+awk '/^[^#]/ {print $4}' \
+${convertB36unmapped} \
+> ${convertB36unmappedSNPs}
+
 mkdir -p ${b36conversionPedMapResultDir}
 
-#Create new map file from hg18 bed
-awk '{sub("chr","",$1);print $1,$4,0,$2}' OFS="\t" ${convertB36ChrHg18Bed} \
-> ${b36conversionPedMapResultDir}/chr_${chr}.map
+#Generate new Ped/Map file excluding SNPs which were NOT lifted over
+plink \
+--noweb \
+--recode \
+--ped ${imputationResultDir}/chr_${chr}.ped \
+--map ${imputationResultDir}/chr_${chr}.map \
+--out ${b36conversionPedMapResultDir}/chr_${chr} \
+--exclude ${convertB36unmappedSNPs} \
+--missing-genotype N
 
-#Create symlink from hg19 ped to "new" hg18 ped
-ln -s ${imputationResultDir}/chr_${chr}.ped \
-${b36conversionPedMapResultDir}/chr_${chr}.ped
+#Create new map file from hg18 bed
+awk '{sub("chr","",$1);print $1,$4,0,$2}' OFS="\t" \
+${convertB36ChrHg18Bed} \
+> ${b36conversionPedMapResultDir}/chr_${chr}.map
