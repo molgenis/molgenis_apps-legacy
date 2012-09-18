@@ -27,8 +27,7 @@ public class LSPilot1_GridDemo
 		WorkflowReader reader = new WorkflowReaderDBJPA();
 
 		// read a workflow
-		Workflow workflow = reader
-				.getWorkflow("/Users/mdijkstra/Documents/work/git/molgenis_apps/modules/compute/demo/lspilot1/lspilot1_workflow.csv");
+		Workflow workflow = reader.getWorkflow("lspilot1_workflow.csv");
 
 		// Get command line parameters and add them to workflow
 		addCommandLineParameters(args, workflow);
