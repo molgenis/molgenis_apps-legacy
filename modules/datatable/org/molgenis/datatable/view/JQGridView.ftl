@@ -32,6 +32,7 @@ $.fn.extend({
 			var columnPager = $('.columnpager', container).detach();
            	var grid; //The jqGrid
            	var currentPage = 1;
+           	var maxColPage;
            	
        		reloadGrid = function(operation, keepCurrentPageNr) {
        			$.ajax(options.url + '&Operation=' + operation).done(function(config) {
@@ -59,7 +60,9 @@ $.fn.extend({
        				
        				
        				//Create new jqGrid
-       				grid = $('#' + options.tableId, container).jqGrid(config);
+       				//alert(config.searchOptions.multipleSearch);
+       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, {}, {}, {}, config.searchOptions);
+       				
        				
        				//Put the columnpager in the grid toolbar (if exists)
         			columnPager.appendTo($('#t_' + options.tableId));
@@ -69,7 +72,7 @@ $.fn.extend({
         			var end = start + config.colLimit - 1;
 					$('.ui-columnpaging-info', container).html('Column ' + start + '-' + end + ' of ' + config.totalColumnCount);
 					
-					var maxColPage = Math.floor(config.totalColumnCount / config.colLimit);
+					maxColPage = Math.floor(config.totalColumnCount / config.colLimit);
 					if ((config.totalColumnCount % config.colLimit) > 0) {
 						maxColPage++;
 					}
@@ -82,14 +85,18 @@ $.fn.extend({
 					$('.colpager-input', container).val(colPage);
 					
 					//Update the buttons
+					$('.first_columnpager', container).removeClass('ui-state-disabled'); 
 					$('.prev_columnpager', container).removeClass('ui-state-disabled'); 
 					$('.next_columnpager', container).removeClass('ui-state-disabled'); 
+					$('.last_columnpager', container).removeClass('ui-state-disabled'); 
 					
 					if (start <= 1) {
 						$('.prev_columnpager', container).addClass('ui-state-disabled');
+						$('.first_columnpager', container).addClass('ui-state-disabled');
 					}
 					if (end >= config.totalColumnCount) {
 						$('.next_columnpager', container).addClass('ui-state-disabled');
+						$('.last_columnpager', container).addClass('ui-state-disabled');
 					}	
        			});	
        		} 
@@ -98,6 +105,13 @@ $.fn.extend({
        			return $('#' + options.tableId, container).getGridParam('postData');
        		}
        		
+       		//Handle first column range click
+       		$('.first_columnpager', container).live('click',function() {
+       			if (!$('.first_columnpager', container).hasClass('ui-state-disabled')) {
+					reloadGrid('SET_COLUMN_PAGE&colPage=1', true);
+				}
+			});
+			
        		//Handle next column range click
        		$('.next_columnpager', container).live('click',function() {
        			if (!$('.next_columnpager', container).hasClass('ui-state-disabled')) {
@@ -105,17 +119,36 @@ $.fn.extend({
 				}
 			});
 				
+			//Handle column inputbox
+       		$('.colpager-input', container).live('change',function(event) {
+       			reloadGrid('SET_COLUMN_PAGE&colPage=' + $(this).val(), true);
+			});
+			
 			//Handle prev column range click
        		$('.prev_columnpager', container).live('click',function() {
        			if (!$('.prev_columnpager', container).hasClass('ui-state-disabled')) {
 					reloadGrid('PREVIOUS_COLUMNS', true);
 				}
 			});
-				
-			//Handle column inputbox
-       		$('.colpager-input', container).live('change',function(event) {
-       			reloadGrid('SET_COLUMN_PAGE&colPage=' + $(this).val(), true);
+			
+			//Handle last column range click
+       		$('.last_columnpager', container).live('click',function() {
+       			if (!$('.last_columnpager', container).hasClass('ui-state-disabled')) {
+					reloadGrid('SET_COLUMN_PAGE&colPage=' + maxColPage, true);
+				}
 			});
+				
+			//Add or remove hover class from all elements that have the hovarable class
+			$('.hoverable', container).live({
+        		mouseenter: function() {
+        			if (!$(this).hasClass('ui-state-disabled')) {//Only for enabled elements
+        				$(this).addClass('ui-state-hover');
+        			}
+           		},
+        		mouseleave: function() {
+					$(this).removeClass('ui-state-hover');
+           		}
+       		});	
 			
        		reloadGrid('LOAD_CONFIG', false);
         });
@@ -149,15 +182,21 @@ $(document).ready(function() {
         				<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" style="table-layout:auto;" style="width:100%">
             				<tbody>
                 				<tr>
-                    				<td class="prev_columnpager ui-pg-button ui-corner-all" style="cursor: default;">
+                					<td class="first_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
+										<span class="ui-icon ui-icon-seek-first"></span>
+									</td>
+                    				<td class="prev_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-prev"></span>
                     				</td>
                     				<td dir="ltr">
-										<input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="2" /> of <span class="total-column-pages"></span>
+										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="2" /> of <span class="total-column-pages"></span>
 									</td>
-                    				<td class="next_columnpager ui-pg-button ui-corner-all" style="cursor: default;">
+                    				<td class="next_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-next"></span>
                     				</td>
+                    				<td class="last_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
+										<span class="ui-icon ui-icon-seek-end"></span>
+									</td>
                 				</tr>
             				</tbody>
         				</table>
