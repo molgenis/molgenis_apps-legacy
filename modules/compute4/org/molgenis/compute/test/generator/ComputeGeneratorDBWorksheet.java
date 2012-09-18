@@ -45,12 +45,77 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 	}
 
 	/**
-	 * Generate tasks and put them into the database
+	 * Create a script, given a tuple from folded worksheet, taskName,
+	 * workflowElementsList and ComputeParameter list
+	 * 
+	 * @param template
+	 * @param work
+	 * @param taskName
+	 * @param workflowElementsList
+	 * @param protocolsDir
+	 * @return filledtemplate.toString();
 	 */
-	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet,
-			Hashtable<String, String> commandLineParameters)
+	private String createScript(String templateScript, Tuple work, String taskName,
+			Collection<WorkflowElement> workflowElementsList, List<ComputeParameter> paramList, File protocolsDir)
 	{
 
+		// put all parameters from tuple in hashmap for weaving
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		for (String field : work.getFields())
+		{
+			parameters.put(field, work.getObject(field));
+		}
+
+		// add the helper
+		parameters.put("freemarkerHelper", new FreemarkerHelper(paramList));
+		parameters.put("parameters", work);
+		parameters.put("workflowElements", workflowElementsList);
+
+		try
+		{
+			Configuration cfg = new Configuration();
+
+			// Set path so that protocols can include other protocols using the
+			// "include" statement
+
+			cfg.setDirectoryForTemplateLoading(protocolsDir);
+
+			System.out.println(">> Create script name: " + taskName);
+			// System.out.println(">> Create script template: " +
+			// templateScript);
+
+			Template template = new Template(taskName, new StringReader(templateScript), cfg);
+			StringWriter script = new StringWriter();
+			template.process(parameters, script);
+
+			return script.toString();
+		}
+		catch (IOException e)
+		{
+			System.err.println(">> ERROR >> IOException");
+			e.printStackTrace();
+		}
+		catch (TemplateException e)
+		{
+			System.err.println(">> ERROR >> TemplateException");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	/**
+	 * Generate tasks and put them into the database
+	 */
+	public void generateTasks(Workflow workflow, List<Tuple> worksheet, File protocolsDir)
+	{
 		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
 				.getWorkflowComputeParameterCollection();
 		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
@@ -67,7 +132,6 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 		}
 
 		// I guess, we should also add line_number as a 'ComputeParameter'...
-		// Actually, I think this should happen at a different place...
 		ComputeParameter line_number = new ComputeParameter();
 		line_number.setName("line_number");
 		line_number.setDefaultValue(null);
@@ -120,7 +184,8 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 				String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
 						+ parameters.get("line_number");
 
-				String script = createScript(template, work, taskName, workflowElementsList, parameterList);
+				String script = createScript(template, work, taskName, workflowElementsList, parameterList,
+						protocolsDir);
 
 				ComputeTask task = new ComputeTask();
 				task.setName(taskName);
@@ -149,7 +214,6 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 		try
 		{
-			// dirty hack to ensure we don't add tasks twice
 			db.add(tasks);
 			db.commitTx();
 		}
@@ -158,57 +222,5 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 			e.printStackTrace();
 		}
 
-	}
-
-	/**
-	 * Create a script, given a tuple from folded worksheet, taskName,
-	 * workflowElementsList and ComputeParameter list
-	 * 
-	 * @param template
-	 * @param work
-	 * @param taskName
-	 * @param workflowElementsList
-	 * @return filledtemplate.toString();
-	 */
-	private String createScript(String templateScript, Tuple work, String taskName,
-			Collection<WorkflowElement> workflowElementsList, List<ComputeParameter> paramList)
-	{
-
-		// put all parameters from tuple in hashmap for weaving
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		for (String field : work.getFields())
-		{
-			parameters.put(field, work.getObject(field));
-		}
-
-		// add the helper
-		parameters.put("freemarkerHelper", new FreemarkerHelper(paramList));
-		parameters.put("parameters", work);
-		parameters.put("workflowElements", workflowElementsList);
-
-		try
-		{
-			Configuration cfg = new Configuration();
-			// Set path so that protocols can include other protocols using the
-			// "include" statement
-			cfg.setDirectoryForTemplateLoading(new File(parameters.get("McProtocols").toString()));
-
-			Template template;
-			template = new Template(taskName, new StringReader(templateScript), cfg);
-			StringWriter script = new StringWriter();
-			template.process(parameters, script);
-			return script.toString();
-		}
-		catch (IOException e)
-		{
-			System.err.println(">> ERROR >> IOException");
-			e.printStackTrace();
-		}
-		catch (TemplateException e)
-		{
-			System.err.println(">> ERROR >> TemplateException");
-			e.printStackTrace();
-		}
-		return null;
 	}
 }
