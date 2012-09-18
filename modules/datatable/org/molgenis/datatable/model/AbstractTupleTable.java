@@ -182,4 +182,15 @@ public abstract class AbstractTupleTable implements TupleTable
 		return pageSize;
 
 	}
+
+	/**
+	 * Please override in subclass if you use the TupleTableIterator !!!!
+	 * 
+	 * @throws TableException
+	 */
+	protected Object getValue(int row, int col) throws TableException
+	{
+		Tuple tuple = getRows().get(row);
+		return tuple.getObject(col);
+	}
 }

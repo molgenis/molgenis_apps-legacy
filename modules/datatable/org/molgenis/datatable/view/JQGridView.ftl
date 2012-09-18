@@ -66,10 +66,15 @@ $.fn.extend({
        				
        				//Put the columnpager in the grid toolbar (if exists)
         			columnPager.appendTo($('#t_' + options.tableId));
-        		
+					
         			//Add the columnpaging info
         			var start = config.colOffset + 1;
         			var end = start + config.colLimit - 1;
+        			if (end > config.totalColumnCount) 
+        			{
+        				end = config.totalColumnCount;
+        			}
+        			
 					$('.ui-columnpaging-info', container).html('Column ' + start + '-' + end + ' of ' + config.totalColumnCount);
 					
 					maxColPage = Math.floor(config.totalColumnCount / config.colLimit);
@@ -78,6 +83,7 @@ $.fn.extend({
 					}
 					$('.total-column-pages', container).html(maxColPage);
 					
+					//Calculate the current columnpage
 					var colPage = Math.floor(end / config.colLimit);
 					if ((end % config.colLimit) > 0) {
 						colPage++;
