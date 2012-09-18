@@ -41,6 +41,7 @@ public class PilotService implements MolgenisService
             {
                 String taskName = task.getName();
                 String taskScript = task.getComputeScript();
+                taskScript = taskScript.replaceAll("\r", "");
 
                 //we add task id to the run listing to identify task when it is done
                 taskScript = "echo TASKID:" + taskName + "\n" + taskScript;
