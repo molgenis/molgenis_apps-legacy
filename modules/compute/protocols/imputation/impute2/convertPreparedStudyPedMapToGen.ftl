@@ -17,7 +17,17 @@ alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
 
 module load ${gtoolBin}/${gtoolBinversion}
 
-${gtoolBin} -P --ped ${preparedStudyDir}/chr${chr}.ped --map ${preparedStudyDir}/chr${chr}.map --og ${preparedStudyDir}/~chr${chr}.gen --os ${preparedStudyDir}/~chr${chr}.sample
+${gtoolBin} -P \
+--ped ${preparedStudyDir}/chr${chr}.ped \
+--map ${preparedStudyDir}/chr${chr}.map \
+--og ${preparedStudyDir}/~chr${chr}.gen
+
+awk '
+    BEGIN { print "ID_1 ID_2 missing sex phenotype"; print "0 0 0 D P"}    
+    {print $2,$1,"0",$5,$6}
+' OFS=" " ${preparedStudyDir}/chr${chr}.ped \
+> ${preparedStudyDir}/~chr${chr}.sample
+
 
 #Get return code from last program call
 returnCode=$?
