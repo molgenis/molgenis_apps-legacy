@@ -57,7 +57,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree;
 
 	// private List<Measurement> shoppingCart = new ArrayList<Measurement>();
-	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
+	private List<String> arrayInvestigations = new ArrayList<String>();
 	private List<String> listOfJSONs = new ArrayList<String>();
 	private JSONObject variableInformation = new JSONObject();
 
@@ -184,7 +184,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			this.setSelectedInvestigation(selectedInvestigation);
 			System.out.println("The selected investigation is : "
 					+ selectedInvestigation);
-			arrayInvestigations.clear();
 
 		} else if (request.getAction().equals("downloadButtonEMeasure")) {
 			// do output stream ourselves
@@ -371,13 +370,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						Investigation.class).find();
 				if (listOfInvestigation.size() > 0) {
 
+					int count = 0;
+
 					for (Investigation inv : listOfInvestigation) {
 						if (db.find(
 								Protocol.class,
 								new QueryRule(Protocol.INVESTIGATION_NAME,
 										Operator.EQUALS, inv.getName())).size() > 0) {
-							this.setSelectedInvestigation(inv.getName());
-							break;
+							if (count == 0) {
+								this.setSelectedInvestigation(inv.getName());
+								count++;
+							}
+							arrayInvestigations.add(inv.getName());
 						}
 					}
 				}
@@ -389,12 +393,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			arraySearchFields.add("All");
 			arraySearchFields.add("Protocols");
 			arraySearchFields.add("Measurements");
-
-			this.arrayInvestigations.clear();
-
-			for (Investigation i : db.find(Investigation.class)) {
-				this.arrayInvestigations.add(i);
-			}
 
 			RetrieveProtocols(db);
 
@@ -1216,11 +1214,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	// return shoppingCart;
 	// }
 
-	public void setArrayInvestigations(List<Investigation> arrayInvestigations) {
+	public void setArrayInvestigations(List<String> arrayInvestigations) {
 		this.arrayInvestigations = arrayInvestigations;
 	}
 
-	public List<Investigation> getArrayInvestigations() {
+	public List<String> getArrayInvestigations() {
 		return arrayInvestigations;
 	}
 

@@ -414,14 +414,13 @@
 						        <#if screen.arrayInvestigations??>
 							        <#if (screen.arrayInvestigations?size > 1)>
 										Choose a cohort:
-										<#list screen.arrayInvestigations as inv>
-											<#assign invName = inv.name>
-												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value= ${invName}
+										<#list screen.arrayInvestigations as invName>
+												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value = "${invName}"
 													 style="display:none" onclick="__action.value='cohortSelect';"/>
 										</#list>
 									<#else>
 										Catalog: 
-										<#assign invName = screen.arrayInvestigations[0].name> ${invName}
+										<#assign invName = screen.arrayInvestigations[0]> ${invName}
 									</#if>
 								</#if>
 								</label>
