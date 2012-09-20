@@ -2,11 +2,13 @@
 
 #FOREACH project,chr
 
-alloutputsexist ${imputationResult}/chr_${chr}
+inputs ${ssvQuoted(impute2ResultChrBinInfoFile)}
+inputs ${ssvQuoted(impute2ResultChrBinGenFile)}
+alloutputsexist ${imputationResultDir}/chr_${chr}
 
 
 #Concate the bins with compute for each
 
-cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResult}/chr_${chr}.gen
+cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResultDir}/chr_${chr}.gen
 
-cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResult}/chr_${chr}.info
+cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResultDir}/chr_${chr}.info

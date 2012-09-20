@@ -7,7 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
+import org.molgenis.fieldtypes.BoolField;
+import org.molgenis.fieldtypes.DatetimeField;
+import org.molgenis.fieldtypes.EnumField;
+import org.molgenis.fieldtypes.StringField;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -31,8 +36,8 @@ import org.molgenis.util.Tuple;
  * added as first column. Optionally, the ProtocolApplication metadata can be
  * viewed (future todo).
  */
-public class ProtocolTable extends AbstractFilterableTupleTable
-{
+public class ProtocolTable extends AbstractFilterableTupleTable implements
+		EditableTupleTable {
 	// protocol to query
 	private Protocol protocol;
 
@@ -40,41 +45,35 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 	private List<Field> columns = new ArrayList<Field>();
 	private String targetString = "Pa_Id";
 
-	public String getTargetString()
-	{
+	public String getTargetString() {
 		return targetString;
 	}
 
-	public void setTargetString(String targetString)
-	{
+	public void setTargetString(String targetString) {
 		this.targetString = targetString;
 	}
 
 	// measurements
 	Map<Measurement, Protocol> measurements = new LinkedHashMap<Measurement, Protocol>();
 
-	public ProtocolTable(Database db, Protocol protocol) throws TableException
-	{
+	public ProtocolTable(Database db, Protocol protocol) throws TableException {
 		this.setDb(db);
 
-		if (protocol == null) throw new TableException("protocol cannot be null");
+		if (protocol == null)
+			throw new TableException("protocol cannot be null");
 
 		this.protocol = protocol;
 	}
 
 	@Override
-	public int getColCount()
-	{
+	public int getColCount() {
 		// +1 for the target column
 		return protocol.getFeatures_Id().size() + 1;
 	}
 
-	public List<Field> getAllColumns() throws TableException
-	{
-		if (columns.size() == 0)
-		{
-			try
-			{
+	public List<Field> getAllColumns() throws TableException {
+		if (columns.size() == 0) {
+			try {
 				// get all features of protocol AND subprotocols
 				measurements = getMeasurementsRecursive(protocol);
 
@@ -83,46 +82,65 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 				columns.add(target);
 
 				// convert into field
-				for (Measurement m : measurements.keySet())
-				{
+				for (Measurement m : measurements.keySet()) {
+
 					Field col = new Field(m.getName());
 
 					col.setDescription(m.getDescription());
+
+					if (m.getDataType().equals("categorical")) {
+
+						Vector<String> enumOptions = new Vector<String>();
+
+						for (Category c : getDb().find(
+								Category.class,
+								new QueryRule(Category.NAME, Operator.IN, m
+										.getCategories_Name()))) {
+							enumOptions.add(c.getCode_String() + "."
+									+ c.getDescription());
+						}
+
+						col.setType(new EnumField());
+						col.setEnumOptions(enumOptions);
+
+					} else if (m.getDataType().equals("bool")) {
+						col.setType(new BoolField());
+					} else if (m.getDataType().equals("datetime")) {
+						col.setType(new DatetimeField());
+					} else {
+						col.setType(new StringField());
+					}
+
 					// todo: setType()
 					columns.add(col);
 				}
 
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				throw new TableException(e);
 			}
 		}
 		return columns;
 	}
 
-	private Map<Measurement, Protocol> getMeasurementsRecursive(Protocol protocol) throws DatabaseException
-	{
+	private Map<Measurement, Protocol> getMeasurementsRecursive(
+			Protocol protocol) throws DatabaseException {
 		List<Integer> featureIds = protocol.getFeatures_Id();
 
 		Map<Measurement, Protocol> result = new LinkedHashMap<Measurement, Protocol>();
 
-		if (featureIds.size() > 0)
-		{
-			List<Measurement> mList = getDb().query(Measurement.class).in(Measurement.ID, featureIds).find();
-			for (Measurement m : mList)
-			{
+		if (featureIds.size() > 0) {
+			List<Measurement> mList = getDb().query(Measurement.class)
+					.in(Measurement.ID, featureIds).find();
+			for (Measurement m : mList) {
 				result.put(m, protocol);
 			}
 		}
 
 		// go recursive on all subprotocols
-		if (protocol.getSubprotocols_Id().size() > 0)
-		{
-			List<Protocol> subProtocols = getDb().query(Protocol.class).in(Protocol.ID, protocol.getSubprotocols_Id())
-					.find();
-			for (Protocol subProtocol : subProtocols)
-			{
+		if (protocol.getSubprotocols_Id().size() > 0) {
+			List<Protocol> subProtocols = getDb().query(Protocol.class)
+					.in(Protocol.ID, protocol.getSubprotocols_Id()).find();
+			for (Protocol subProtocol : subProtocols) {
 				result.putAll(getMeasurementsRecursive(subProtocol));
 			}
 		}
@@ -132,10 +150,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 
 	}
 
-	public List<Tuple> getRows() throws TableException
-	{
-		try
-		{
+	public List<Tuple> getRows() throws TableException {
+		try {
 			// List<String> colNames = new ArrayList<String>();
 			// for (Field f : getColumns())
 			// {
@@ -143,18 +159,15 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 			// }
 
 			List<Tuple> result = new ArrayList<Tuple>();
-			for (Integer rowId : getRowIds(false))
-			{
+			for (Integer rowId : getRowIds(false)) {
 				boolean target = false;
 				Tuple row = new SimpleTuple();
 
 				Database db = getDb();
 
-				for (ObservedValue v : db.query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, rowId)
-						.find())
-				{
-					if (!target)
-					{
+				for (ObservedValue v : db.query(ObservedValue.class)
+						.eq(ObservedValue.PROTOCOLAPPLICATION, rowId).find()) {
+					if (!target) {
 						row.set(targetString, v.getTarget_Name());
 						target = true;
 					}
@@ -163,32 +176,30 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					Protocol p = null;
 
 					Measurement currentMeasurement = null;
-					for (Measurement m : measurements.keySet())
-					{
-						if (m.getName().equals(v.getFeature_Name()))
-						{
+					for (Measurement m : measurements.keySet()) {
+						if (m.getName().equals(v.getFeature_Name())) {
 							p = measurements.get(m);
 							currentMeasurement = m;
 							break;
 						}
 					}
 
-					if ("categorical".equals(currentMeasurement.getDataType()))
-					{
+					if ("categorical".equals(currentMeasurement.getDataType())) {
 
-						for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
-								currentMeasurement.getCategories_Name())))
-						{
-							if (v.getValue().equals(c.getCode_String()))
-							{
-								row.set(v.getFeature_Name(), v.getValue() + "." + c.getDescription());
+						for (Category c : db
+								.find(Category.class,
+										new QueryRule(Category.NAME,
+												Operator.IN, currentMeasurement
+														.getCategories_Name()))) {
+							if (v.getValue().equals(c.getCode_String())) {
+								row.set(v.getFeature_Name(), v.getValue() + "."
+										+ c.getDescription());
 								break;
 							}
 						}
-					}
-					else
-					{
-						if (!v.getValue().isEmpty()) row.set(v.getFeature_Name(), v.getValue());
+					} else {
+						if (!v.getValue().isEmpty())
+							row.set(v.getFeature_Name(), v.getValue());
 					}
 				}
 				result.add(row);
@@ -198,67 +209,51 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 			// filter rule
 			//
 
-			if (this.getFilters().size() > 0)
-			{
+			if (this.getFilters().size() > 0) {
 
 			}
 
 			return result;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			throw new TableException(e);
 		}
 	}
 
 	@Override
-	public Iterator<Tuple> iterator()
-	{
-		try
-		{
+	public Iterator<Tuple> iterator() {
+		try {
 			return getRows().iterator();
-		}
-		catch (TableException e)
-		{
+		} catch (TableException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public void close()
-	{
+	public void close() {
 	}
 
 	@Override
-	public int getCount() throws TableException
-	{
-		try
-		{
+	public int getCount() throws TableException {
+		try {
 			return this.getRowIds(true).get(0);
-		}
-		catch (DatabaseException e)
-		{
+		} catch (DatabaseException e) {
 			throw new TableException(e);
 		}
 	}
 
 	// FILTERING
 	// we only need to know what rows to show :-)
-	private List<Integer> getRowIds(boolean count) throws TableException, DatabaseException
-	{
+	private List<Integer> getRowIds(boolean count) throws TableException,
+			DatabaseException {
 		// get columns that are used in filtering or sorting
 		Set<String> columnsUsed = new HashSet<String>();
 
-		for (QueryRule r : getFilters())
-		{
+		for (QueryRule r : getFilters()) {
 
 			// IF SEARCH BUTTON IS CLICKED
-			if (getFilters().get(0).getField() != null)
-			{
+			if (getFilters().get(0).getField() != null) {
 				columnsUsed.add(r.getField());
-			}
-			else
-			{
+			} else {
 				// IF WE WANT TO ORDER A COLUMN
 				columnsUsed.add(r.getValue().toString());
 			}
@@ -267,10 +262,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		// get measurements
 		List<Measurement> measurementsUsed = new ArrayList<Measurement>();
 
-		if (columnsUsed.size() > 0)
-		{
+		if (columnsUsed.size() > 0) {
 			measurementsUsed = getDb().query(Measurement.class)
-					.in(Measurement.NAME, new ArrayList<String>(columnsUsed)).find();
+					.in(Measurement.NAME, new ArrayList<String>(columnsUsed))
+					.find();
 
 		}
 
@@ -279,33 +274,29 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		// 'target' will be moved to ProtocolApplication)
 
 		String sql = "SELECT id from ProtocolApplication ";
-		if (count) sql = "SELECT count(*) as id from ProtocolApplication";
+		if (count)
+			sql = "SELECT count(*) as id from ProtocolApplication";
 
-		for (Measurement m : measurementsUsed)
-		{
+		for (Measurement m : measurementsUsed) {
 			sql += " NATURAL JOIN (SELECT ObservedValue.protocolApplication as id, ObservedValue.target as targetId, ObservedValue.value as "
 					+ m.getName()
 					+ " FROM ObservedValue WHERE ObservedValue.feature = "
-					+ m.getId()
-					+ ") as "
-					+ m.getName();
+					+ m.getId() + ") as " + m.getName();
 		}
 		// filtering [todo: data model change!]
-		if (columnsUsed.contains(targetString))
-		{
-			sql += " NATURAL JOIN (SELECT id as targetId, name as " + this.targetString
-					+ " from ObservationElement) as " + this.targetString;
+		if (columnsUsed.contains(targetString)) {
+			sql += " NATURAL JOIN (SELECT id as targetId, name as "
+					+ this.targetString + " from ObservationElement) as "
+					+ this.targetString;
 		}
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
 		// limit and offset
-		if (!count && getLimit() > 0)
-		{
+		if (!count && getLimit() > 0) {
 			filters.add(new QueryRule(Operator.LIMIT, getLimit()));
 		}
-		if (!count && getOffset() > 0)
-		{
+		if (!count && getOffset() > 0) {
 			filters.add(new QueryRule(Operator.OFFSET, getOffset()));
 		}
 
@@ -314,9 +305,28 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		// filters = Scl90som3 = '1'
 		// filters.size() = 1
 
-		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
+		for (Tuple t : this.getDb().sql(sql,
+				filters.toArray(new QueryRule[filters.size()])))
 			result.add(t.getInt("id"));
 
 		return result;
+	}
+
+	@Override
+	public void add(Tuple tuple) throws TableException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(Tuple tuple) throws TableException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void remove(Tuple tuple) throws TableException {
+		// TODO Auto-generated method stub
+
 	}
 }

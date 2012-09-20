@@ -19,8 +19,8 @@ public class MolgenisUpdateDatabase
 		// TODO Auto-generated constructor stub
 	}
 
-	public void UpdateDatabase(Database db, String targetID, String value, String measurement, Integer protappID,
-			HashMap<String, String> hashMapMeas) throws DatabaseException
+	public void UpdateDatabase(Database db, String targetID, String value, 
+			String measurement, Integer protappID) throws DatabaseException
 	{
 
 		List<QueryRule> filterRules = new ArrayList<QueryRule>();
@@ -32,18 +32,8 @@ public class MolgenisUpdateDatabase
 
 			ObservedValue oldValue = db.find(ObservedValue.class, new QueryRule(filterRules)).get(0);
 
-			String[] splitvalue = value.split("\\.");
+			oldValue.setValue(value);
 
-			if (hashMapMeas.containsKey(measurement))
-			{
-				String[] splitValue = value.split("\\.");
-				oldValue.setValue(splitValue[0]);
-			}
-			else
-			{
-				oldValue.setValue(value);
-
-			}
 			db.update(oldValue);
 
 		}
@@ -62,16 +52,7 @@ public class MolgenisUpdateDatabase
 				ObservedValue ob = new ObservedValue();
 				ob.setFeature_Name(measurement);
 				ob.setTarget_Name(targetID);
-				if (hashMapMeas.containsKey(measurement))
-				{
-					String[] splitValue = value.split("\\.");
-					ob.setValue(splitValue[0]);
-				}
-				else
-				{
-					ob.setValue(value);
-				}
-
+				ob.setValue(value);
 				ob.setProtocolApplication_Id(protappID);
 				ob.setInvestigation(indv.getInvestigation_Id());
 				db.add(ob);

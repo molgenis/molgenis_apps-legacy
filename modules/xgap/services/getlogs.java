@@ -13,21 +13,21 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
 
-import app.servlet.MolgenisServlet;
+import app.servlet.UsedMolgenisOptions;
 
 public class getlogs implements MolgenisService
 {
 
 	private MolgenisContext mc;
-	
+	String appName;
+
 	public getlogs(MolgenisContext mc)
 	{
 		this.mc = mc;
+		this.appName = new UsedMolgenisOptions().appName;
 	}
-	
+
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -38,7 +38,7 @@ public class getlogs implements MolgenisService
 
 		out.println("<html><head></head><body>");
 		out.println("<div style=\"font-family: Courier, 'Courier New', monospace\">");
-		
+
 		try
 		{
 
@@ -52,7 +52,7 @@ public class getlogs implements MolgenisService
 				}
 				else
 				{
-					//special: filter root dir with job id
+					// special: filter root dir with job id
 					File workingDir = new File(".");
 					listDir("", workingDir, out, request.getInt("job").intValue());
 				}
@@ -79,7 +79,7 @@ public class getlogs implements MolgenisService
 					}
 				}
 			}
-			
+
 			out.println("</div>");
 			out.println("</body></html>");
 		}
@@ -100,15 +100,18 @@ public class getlogs implements MolgenisService
 			Date lastMod = new Date(f.lastModified());
 			if (listJob != -1)
 			{
-				if (f.getName().startsWith("runmij"+listJob) || f.getName().startsWith("subjob") || f.getName().equals("download.Rout")|| f.getName().equals("ESTtime.Rout"))
+				if (f.getName().startsWith("runmij" + listJob) || f.getName().startsWith("subjob")
+						|| f.getName().equals("download.Rout") || f.getName().equals("ESTtime.Rout"))
 				{
-					out.println("file: <a href=\"/" + MolgenisServlet.getMolgenisVariantID() + "/getlogs?file=" + path + f.getName() + "\">"
-							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
+					out.println("file: <a href=\"/" + appName + "/getlogs?file=" + path + f.getName() + "\">"
+							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: " + lastMod
+							+ "<br><br>");
 				}
-				else if ((f.isDirectory() && f.getName().startsWith("run"+listJob)))
+				else if ((f.isDirectory() && f.getName().startsWith("run" + listJob)))
 				{
-					out.println("dir > <a href=\"/" + MolgenisServlet.getMolgenisVariantID() + "/getlogs?file=" + path + f.getName()
-							+ "/" + "\">" + f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
+					out.println("dir > <a href=\"/" + appName + "/getlogs?file=" + path + f.getName() + "/" + "\">"
+							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: " + lastMod
+							+ "<br><br>");
 				}
 			}
 			else
@@ -116,13 +119,15 @@ public class getlogs implements MolgenisService
 				if (f.getName().endsWith(".Rout") || f.getName().endsWith(".R") || f.getName().endsWith(".sh")
 						|| f.getName().endsWith(".RData"))
 				{
-					out.println("file: <a href=\"/" + MolgenisServlet.getMolgenisVariantID() + "/getlogs?file=" + path + f.getName() + "\">"
-							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
+					out.println("file: <a href=\"/" + appName + "/getlogs?file=" + path + f.getName() + "\">"
+							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: " + lastMod
+							+ "<br><br>");
 				}
 				else if ((f.isDirectory() && f.getName().startsWith("run")))
 				{
-					out.println("dir > <a href=\"/" + MolgenisServlet.getMolgenisVariantID() + "/getlogs?file=" + path + f.getName()
-							+ "/" + "\">" + f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
+					out.println("dir > <a href=\"/" + appName + "/getlogs?file=" + path + f.getName() + "/" + "\">"
+							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: " + lastMod
+							+ "<br><br>");
 				}
 			}
 		}

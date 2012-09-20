@@ -17,11 +17,15 @@ import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.util.JQueryUtil;
+import org.molgenis.datatable.view.MolgenisUpdateDatabase;
+import org.molgenis.datatable.view.ViewFactory;
+import org.molgenis.datatable.view.ViewFactoryImpl;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.datatable.view.renderers.Renderers;
 import org.molgenis.datatable.view.renderers.Renderers.JQGridRenderer;
 import org.molgenis.datatable.view.renderers.Renderers.Renderer;
@@ -49,7 +53,10 @@ import com.google.gson.Gson;
 public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
-	private boolean initialize = true;
+	private boolean showColumnTree = true;// The javascript tree to show/hide
+											// columns above the grid
+	private JQGridSearchOptions searchOptions;
+
 	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
@@ -74,6 +81,16 @@ public class JQGridView extends HtmlWidget
 	}
 
 	private final TupleTableBuilder tupleTableBuilder;
+
+	public boolean isShowColumnTree()
+	{
+		return showColumnTree;
+	}
+
+	public void setShowColumnTree(boolean showColumnTree)
+	{
+		this.showColumnTree = showColumnTree;
+	}
 
 	public JQGridView(String name, TupleTableBuilder tupleTableBuilder)
 	{
@@ -105,6 +122,14 @@ public class JQGridView extends HtmlWidget
 		});
 	}
 
+	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table,
+			boolean showColumnTree, JQGridSearchOptions searchOptions)
+	{
+		this(name, hostController, table);
+		this.showColumnTree = showColumnTree;
+		this.searchOptions = searchOptions;
+	}
+
 	/**
 	 * Handle a particular {@link MolgenisRequest}, and render into an
 	 * {@link OutputStream}. Particulars handled:
@@ -132,21 +157,6 @@ public class JQGridView extends HtmlWidget
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
-
-			if (initialize)
-			{
-				List<Measurement> listOM = db.find(Measurement.class);
-				for (Measurement m : listOM)
-				{
-					if (m.getCategories_Name().size() > 0)
-					{
-						hashMeasurementsWithCategories.put(m.getName(), m.getDataType());
-
-					}
-
-				}
-				initialize = false;
-			}
 
 			switch (operation)
 			{
@@ -240,7 +250,7 @@ public class JQGridView extends HtmlWidget
 							{
 								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
 								mu.UpdateDatabase(db, targetID, request.getString(eachField.getName()),
-										eachField.getName(), protAppID, hashMeasurementsWithCategories);
+										eachField.getName(), protAppID);
 							}
 						}
 
@@ -336,15 +346,7 @@ public class JQGridView extends HtmlWidget
 									ObservedValue ov = new ObservedValue();
 									ov.setTarget_Name(patientID);
 									ov.setFeature_Name(feature);
-									if (hashMeasurementsWithCategories.containsKey(feature))
-									{
-										String[] splitValue = value.split("\\.");
-										ov.setValue(splitValue[0]);
-									}
-									else
-									{
-										ov.setValue(value);
-									}
+									ov.setValue(value);
 									ov.setProtocolApplication_Name(pa.getName());
 									ov.setInvestigation_Name(investigationName);
 									listOfNewValues.add(ov);
@@ -619,11 +621,6 @@ public class JQGridView extends HtmlWidget
 		return new FreemarkerView(JQGridView.class, args).render();
 	}
 
-	public HashMap<String, String> getHashMeasurements()
-	{
-		return hashMeasurementsWithCategories;
-	}
-
 	/**
 	 * Create a properly-configured grid with default settings, on first load.
 	 */
@@ -632,7 +629,12 @@ public class JQGridView extends HtmlWidget
 	{
 		tupleTable.setDb(db);
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(),
-				getLabel(), tupleTable);
+				getLabel(), tupleTable, showColumnTree);
+
+		if (searchOptions != null)
+		{
+			config.searchOptions = searchOptions;
+		}
 
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
@@ -659,8 +661,11 @@ public class JQGridView extends HtmlWidget
 			final TupleTable table) throws TableException
 	{
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
-		for (final Tuple row : table.getRows())
+
+		Iterator<Tuple> it = table.iterator();
+		while (it.hasNext())
 		{
+			Tuple row = it.next();
 			System.out.println("check: " + row);
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 

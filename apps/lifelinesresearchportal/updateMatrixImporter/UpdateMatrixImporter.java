@@ -1,19 +1,38 @@
 package updateMatrixImporter;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+
+import org.json.JSONObject;
 import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
+import org.molgenis.datatable.model.ProtocolTable;
+import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -21,6 +40,8 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HandleRequestDelegationException;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -32,29 +53,122 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	 * 
 	 */
 	private static final long serialVersionUID = 4743753566046137438L;
+	private String loadingMatrix = null;
+	private String mappingMessage = null;
 	private String report = null;
+	private String uploadFileErrorMessage = null;
 	private CsvTable csvTable = null;
 	private JQGridView tableView = null;
-	private String STATUS = "UploadFile";
-	private String investigationName = "LifeLines";
-
+	private String STATUS = "showMatrix";
+	private final String investigationName = "LifeLines";
+	private String tempalteFilePath = null;
+	private String jsonForMapping = null;
+	private List<String> listOfProtocols = new ArrayList<String>();
 	private List<String> colHeaders = new ArrayList<String>();
 	private List<String> newFeatures = new ArrayList<String>();
 	private List<String> rowHeaders = new ArrayList<String>();
 	private List<String> newTargets = new ArrayList<String>();
+	private String importMessage = null;
 
 	public UpdateMatrixImporter(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
-	@Override
-	public String getViewName() {
-		return "UpdateMatrixImporter";
+	public void resetVariables() {
+		colHeaders.clear();
+		newFeatures.clear();
+		rowHeaders.clear();
+		newTargets.clear();
+		listOfProtocols.clear();
+		jsonForMapping = null;
+		loadingMatrix = null;
+		uploadFileErrorMessage = null;
+		mappingMessage = null;
+		tempalteFilePath = null;
+		jsonForMapping = null;
+		importMessage = null;
+		csvTable = null;
+		tableView = null;
+		report = null;
 	}
 
-	@Override
-	public String getViewTemplate() {
-		return "UpdateMatrixImporter/UpdateMatrixImporter.ftl";
+	// public void uploadNewFileAction(Database db, Tuple request) {
+	// STATUS = "showMatrix";
+	// }
+	//
+	// public void uploadFile(Database db, Tuple request) {
+	//
+	// resetVariables();
+	//
+	// STATUS = "CheckFile";
+	//
+	// String fileName = request.getString("uploadFileName");
+	//
+	// File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+	//
+	// File templateMapping = new File(tmpDir.getAbsolutePath()
+	// + "/tempalteMapping.xls");
+	//
+	// tempalteFilePath = templateMapping.getAbsolutePath();
+	//
+	// checkHeaders(db, request, fileName);
+	// }
+
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
+			throws Exception {
+
+		if (out != null) {
+			if (request.getAction().equals("download_json_test")) {
+
+				tableView.handleRequest(db, request, out);
+
+			} else if (request.getAction().equals("download_json_loadPreview")) {
+
+				if (csvTable != null) {
+
+					// If there are no new records and columns at all, show all
+					// the
+					// table
+					if (newTargets.size() > 0) {// If there are new records,
+						// show new records only
+						String targetString = csvTable.getAllColumns().get(0)
+								.getName();
+
+						List<Tuple> newRecords = new ArrayList<Tuple>();
+
+						for (Tuple tuple : csvTable.getRows()) {
+							String targetName = tuple.getString(targetString);
+							if (newTargets.contains(targetName)) {
+								newRecords.add(tuple);
+							}
+						}
+
+						MemoryTable table = new MemoryTable(newRecords);
+
+						tableView = new JQGridView("test", this, table);
+
+					} else {
+
+						tableView = new JQGridView("test", this, csvTable);
+					}
+
+					JSONObject json = new JSONObject();
+					json.put("result", tableView.getHtml());
+					// ((MolgenisRequest)
+					// request).getResponse().getOutputStream()
+					// .print(json.toString());
+					PrintWriter writer = new PrintWriter(out);
+					writer.write(json.toString());
+					writer.flush();
+					writer.close();
+				}
+
+			}
+		} else {
+			this.handleRequest(db, request);
+		}
+
+		return Show.SHOW_MAIN;
 	}
 
 	@Override
@@ -62,20 +176,44 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 		if (request.getAction().equals("uploadFile")) {
 
-			colHeaders.clear();
-			newFeatures.clear();
-			rowHeaders.clear();
-			newTargets.clear();
-
-			String fileName = request.getString("uploadFileName");
-
-			checkHeaders(db, request, fileName);
+			resetVariables();
 
 			STATUS = "CheckFile";
 
-		} else if (request.getAction().equals("uploadNewFile")) {
+			String fileName = request.getString("uploadFileName");
 
-			STATUS = "UploadFile";
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+			File templateMapping = new File(tmpDir.getAbsolutePath()
+					+ "/tempalteMapping.xls");
+
+			tempalteFilePath = templateMapping.getAbsolutePath();
+
+			checkHeaders(db, request, fileName);
+
+		} else if (request.getAction().equals("showMatrix")) {
+
+			STATUS = "showMatrix";
+
+			Protocol p;
+			try {
+				p = db.query(Protocol.class)
+						.eq(Protocol.NAME, "stageCatalogue").find().get(0);
+
+				// create table
+				ProtocolTable table = new ProtocolTable(db, p);
+				table.setTargetString("Pa_Id");
+				// add editable decorator
+
+				// check which table to show
+				tableView = new JQGridView("test", this, table);
+
+				tableView
+						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} else if (request.getAction().equals("previewFileAction")) {
 
@@ -85,12 +223,8 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 				// If there are no new records and columns at all, show all the
 				// table
-				if (newFeatures.size() == 0 && newTargets.size() == 0) {
-
-					tableView = new JQGridView("Preview", this, csvTable);
-
-				} else if (newTargets.size() > 0) {// If there are new records,
-													// show new records only
+				if (newTargets.size() > 0) {// If there are new records,
+					// show new records only
 					String targetString = csvTable.getAllColumns().get(0)
 							.getName();
 
@@ -104,7 +238,12 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					}
 
 					MemoryTable table = new MemoryTable(newRecords);
-					tableView = new JQGridView("Preview", this, table);
+
+					tableView = new JQGridView("test", this, table);
+
+				} else {
+
+					tableView = new JQGridView("test", this, csvTable);
 				}
 			}
 		} else if (request.getAction().equals("previousStepSummary")) {
@@ -113,9 +252,77 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 		} else if (request.getAction().equals("importUploadFile")) {
 
+			STATUS = "showMatrix";
+
 			importUploadFile(db, request);
 
-			STATUS = "UploadFile";
+		} else if (request.getAction().equals("uploadMapping")) {
+
+			try {
+				mappingMessage = null;
+
+				String mappingFileName = request.getString("mappingForColumns");
+
+				CsvTable mappingTable = new CsvTable(new File(mappingFileName));
+
+				mappingClass allMappings = new mappingClass();
+
+				for (Tuple tuple : mappingTable.getRows()) {
+
+					String variableName = tuple.getString("variable");
+					String dataType = tuple.getString("datatype");
+					String category = tuple.getString("category");
+					String code = tuple.getString("code");
+					String table = tuple.getString("table");
+					allMappings.addMapping(variableName, dataType, table,
+							category, code);
+
+				}
+
+				jsonForMapping = new Gson().toJson(allMappings.getMapping());
+
+			} catch (Exception e) {
+				mappingMessage = "There are errors in your mapping file, please check your mapping file!";
+				e.printStackTrace();
+			}
+
+		} else if (request.getAction().equals("downloadTemplate")) {
+
+			WorkbookSettings ws = new WorkbookSettings();
+
+			ws.setLocale(new Locale("en", "EN"));
+
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+			File mappingResult = new File(tmpDir + File.separator
+					+ "template.xls");
+
+			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult,
+					ws);
+
+			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
+
+			outputExcel.addCell(new Label(0, 0, "variable"));
+
+			outputExcel.addCell(new Label(1, 0, "datatype"));
+
+			outputExcel.addCell(new Label(2, 0, "category"));
+
+			outputExcel.addCell(new Label(3, 0, "code"));
+
+			outputExcel.addCell(new Label(4, 0, "table"));
+
+			workbook.write();
+
+			workbook.close();
+
+			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+
+			HttpServletResponse httpResponse = rt.getResponse();
+
+			String redirectURL = "tmpfile/template.xls";
+
+			httpResponse.sendRedirect(redirectURL);
 
 		} else if (request.getAction().equals("showNewRecordsOnly")) {
 
@@ -133,19 +340,17 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			}
 
 			MemoryTable table = new MemoryTable(newRecords);
-			tableView = new JQGridView("Preview", this, table);
+
+			tableView = new JQGridView("test", this, table);
 
 		} else {
-
-			if (STATUS.equals("previewFile")) {
-				tableView.handleRequest(db, request, null);
-			}
+			tableView.handleRequest(db, request, null);
+			loadingMatrix = "Loading the matrix";
 		}
-
 	}
 
 	private void importUploadFile(Database db, Tuple request)
-			throws DatabaseException {
+			throws DatabaseException, TableException {
 
 		try {
 			db.beginTx();
@@ -154,10 +359,44 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			List<Measurement> listOfFeatures = new ArrayList<Measurement>();
 			List<ObservedValue> listOfValues = new ArrayList<ObservedValue>();
 			List<ProtocolApplication> listOfPA = new ArrayList<ProtocolApplication>();
+			HashMap<String, Category> listOfCategories = new HashMap<String, Category>();
+			HashMap<String, List<String>> featureToProtocolTable = new HashMap<String, List<String>>();
 
 			List<Field> allColumns = csvTable.getAllColumns();
 
+			List<String> addedColumns = new ArrayList<String>();
+
 			String targetString = allColumns.get(0).getName();
+
+			String existingColumn = null;
+
+			for (String eachHeader : colHeaders) {
+				if (!newFeatures.contains(eachHeader)) {
+					existingColumn = eachHeader;
+					break;
+				}
+			}
+
+			HashMap<String, String> targetToProtocolApplication = new HashMap<String, String>();
+
+			if (rowHeaders.size() > 0 && existingColumn != null) {
+
+				Query<ObservedValue> query = db.query(ObservedValue.class);
+
+				query.addRules(new QueryRule(ObservedValue.TARGET_NAME,
+						Operator.IN, rowHeaders));
+				query.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
+						Operator.EQUALS, existingColumn));
+				List<ObservedValue> listOfExistingValues = query.find();
+
+				if (listOfExistingValues.size() > 0) {
+					for (ObservedValue ov : query.find()) {
+						targetToProtocolApplication.put(ov.getTarget_Name(),
+								ov.getProtocolApplication_Name());
+					}
+				}
+
+			}
 
 			// new rows are added
 			if (newTargets.size() > 0) {
@@ -172,112 +411,219 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			// new columns are added.
 			if (newFeatures.size() > 0) {
+
 				for (String feature : newFeatures) {
-					Measurement m = new Measurement();
-					m.setName(feature);
-					m.setInvestigation_Name(investigationName);
-					listOfFeatures.add(m);
+
+					String identifier = feature.replaceAll(" ", "_");
+
+					if (request.getBool(identifier + "_check") != null) {
+
+						Measurement m = new Measurement();
+
+						String dataType = request.getString(identifier
+								+ "_dataType");
+
+						m.setName(feature);
+						m.setInvestigation_Name(investigationName);
+						m.setDataType(dataType);
+
+						String protocolTable = request.getString(identifier
+								+ "_protocolTable");
+
+						if (!featureToProtocolTable.containsKey(protocolTable)) {
+
+							List<String> features = new ArrayList<String>();
+							features.add(feature);
+							featureToProtocolTable.put(protocolTable, features);
+
+						} else {
+							List<String> features = featureToProtocolTable
+									.get(protocolTable);
+							if (!features.contains(feature)) {
+								features.add(feature);
+								featureToProtocolTable.put(protocolTable,
+										features);
+							}
+						}
+
+						if (dataType.equals("categorical")) {
+
+							List<String> categoryNameClean = new ArrayList<String>();
+
+							for (String eachCategory : request
+									.getStringList(identifier
+											+ "_categoryString")) {
+
+								String standardName = eachCategory.replaceAll(
+										"[^(a-zA-Z0-9_\\s)]", " ").trim();
+
+								if (!listOfCategories.containsKey(standardName
+										.toLowerCase())) {
+
+									String code = eachCategory.split("=")[0]
+											.trim();
+									String codeLabel = eachCategory.split("=")[1]
+											.trim();
+									Category c = new Category();
+									c.setCode_String(code);
+									c.setDescription(codeLabel);
+									c.setName(standardName);
+									listOfCategories.put(
+											standardName.toLowerCase(), c);
+								}
+								categoryNameClean.add(standardName);
+							}
+							m.setCategories_Name(categoryNameClean);
+						}
+
+						listOfFeatures.add(m);
+
+						addedColumns.add(feature);
+					}
 				}
 			}
 
 			for (Tuple row : csvTable.getRows()) {
 
 				String targetName = row.getString(targetString);
-				// Only add the new records to the database
-				String paName = null;
 
+				// Add values for new records only
 				if (newTargets.contains(targetName)) {
+
 					ProtocolApplication pa = new ProtocolApplication();
 					pa.setProtocol_Name("TestProtocol");
 					pa.setName("pa_" + row.getString(targetString));
 					pa.setInvestigation_Name(investigationName);
-					paName = pa.getName();
 					listOfPA.add(pa);
-				}
 
-				for (Field field : allColumns) {
+					for (Field field : allColumns) {
 
-					String eachColumn = field.getName();
+						String eachColumn = field.getName();
 
-					if (newFeatures.contains(eachColumn) && paName == null
-							|| paName != null
-							&& !eachColumn.equalsIgnoreCase(targetString)) {
-
-						if (paName == null) {
-							if (db.find(
-									ObservedValue.class,
-									new QueryRule(ObservedValue.TARGET_NAME,
-											Operator.EQUALS, targetName))
-									.size() > 0) {
-								paName = db
-										.find(ObservedValue.class,
-												new QueryRule(
-														ObservedValue.TARGET_NAME,
-														Operator.EQUALS,
-														targetName)).get(0)
-										.getProtocolApplication_Name();
-							} else {
-								ProtocolApplication pa = new ProtocolApplication();
-								pa.setProtocol_Name("TestProtocol");
-								pa.setName("pa_" + row.getString(targetString));
-								pa.setInvestigation_Name(investigationName);
-								paName = pa.getName();
-								listOfPA.add(pa);
-							}
+						if (!eachColumn.equals(targetString)) {
+							ObservedValue ov = new ObservedValue();
+							ov.setTarget_Name(row.getString(targetString));
+							ov.setFeature_Name(eachColumn);
+							ov.setValue(row.getString(eachColumn));
+							ov.setInvestigation_Name(investigationName);
+							ov.setProtocolApplication_Name(pa.getName());
+							listOfValues.add(ov);
 						}
-						ObservedValue ov = new ObservedValue();
-						ov.setTarget_Name(row.getString(targetString));
-						ov.setFeature_Name(eachColumn);
-						ov.setValue(row.getString(eachColumn));
-						ov.setInvestigation_Name(investigationName);
-						ov.setProtocolApplication_Name(paName);
-						listOfValues.add(ov);
+					}
 
+				} else {
+
+					// Add values for new columns only
+					if (addedColumns.size() > 0) {
+
+						for (String eachNewColumn : addedColumns) {
+							ObservedValue ov = new ObservedValue();
+							ov.setTarget_Name(row.getString(targetString));
+							ov.setFeature_Name(eachNewColumn);
+							ov.setValue(row.getString(eachNewColumn));
+							ov.setInvestigation_Name(investigationName);
+							ov.setProtocolApplication_Name(targetToProtocolApplication
+									.get(ov.getTarget_Name()));
+							listOfValues.add(ov);
+						}
 					}
 				}
 			}
+			if (listOfCategories.keySet().size() > 0) {
+				for (Category c : db.find(Category.class, new QueryRule(
+						Category.NAME, Operator.IN, new ArrayList<String>(
+								listOfCategories.keySet())))) {
+					listOfCategories.remove(c.getName().toLowerCase());
+				}
+			}
+
+			List<Category> uniqueCategories = new ArrayList<Category>(
+					listOfCategories.values());
 
 			db.add(listOfTargets);
+			db.add(uniqueCategories);
+
+			for (Measurement m : listOfFeatures) {
+
+				if (m.getCategories_Name().size() > 0) {
+
+					List<Integer> listOfCategoryID = new ArrayList<Integer>();
+
+					for (Category c : db
+							.find(Category.class, new QueryRule(Category.NAME,
+									Operator.IN, m.getCategories_Name()))) {
+						listOfCategoryID.add(c.getId());
+					}
+					m.setCategories_Id(listOfCategoryID);
+				}
+			}
+
 			db.add(listOfFeatures);
 			db.add(listOfPA);
 			db.add(listOfValues);
 
-			if (newFeatures.size() > 0
-					&& db.find(
-							Protocol.class,
-							new QueryRule(Protocol.NAME, Operator.EQUALS,
-									"NotClassified")).size() > 0) {
-				Protocol p = db.find(
-						Protocol.class,
-						new QueryRule(Protocol.NAME, Operator.EQUALS,
-								"NotClassified")).get(0);
-				p.getFeatures_Name().addAll(newFeatures);
-
+			for (Protocol p : db.find(Protocol.class, new QueryRule(
+					Protocol.NAME, Operator.IN, new ArrayList<String>(
+							featureToProtocolTable.keySet())))) {
+				List<Integer> oldFeatures = p.getFeatures_Id();
+				for (Measurement m : listOfFeatures) {
+					oldFeatures.add(m.getId());
+				}
+				p.setFeatures_Id(oldFeatures);
 				db.update(p);
 			}
 
 			db.commitTx();
 
+			importMessage = "Your import has been successful! You can know upload a new file";
+
+			Protocol p = db.query(Protocol.class)
+					.eq(Protocol.NAME, "stageCatalogue").find().get(0);
+
+			// create table
+			ProtocolTable table = new ProtocolTable(db, p);
+			table.setTargetString("Pa_Id");
+			// add editable decorator
+
+			// check which table to show
+			tableView = new JQGridView("test", this, table);
+
+			tableView
+					.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+
 		} catch (DatabaseException e) {
 
+			importMessage = "It fails to import the file, please check your file please!";
 			e.printStackTrace();
 			db.rollbackTx();
 		}
 	}
 
-	// public void download_json_test(Database db, Tuple request, OutputStream
-	// out)
-	// throws HandleRequestDelegationException {
-	// // handle requests for the table named 'test'
-	//
-	// tableView.handleRequest(db, request, out);
-	//
-	// }
-
 	@Override
 	public void reload(Database db) {
-		// TODO Auto-generated method stub
-		System.out.println("-----------RELOAD!");
+
+		if (tableView == null) {
+			Protocol p;
+			try {
+				p = db.query(Protocol.class)
+						.eq(Protocol.NAME, "stageCatalogue").find().get(0);
+
+				// create table
+				ProtocolTable table = new ProtocolTable(db, p);
+				table.setTargetString("Pa_Id");
+				// add editable decorator
+
+				// check which table to show
+				tableView = new JQGridView("test", this, table);
+
+				tableView
+						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	public void checkHeaders(Database db, Tuple request, String filePath) {
@@ -310,7 +656,6 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			}
 
 			// check the existing records
-
 			for (Tuple tuple : csvTable.getRows()) {
 				rowHeaders.add(tuple.getString(targetString));
 				newTargets.add(tuple.getString(targetString));
@@ -325,21 +670,94 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					newTargets.remove(ot.getName());
 				}
 			}
+
 			colHeaders.removeAll(newFeatures);
+
 			rowHeaders.removeAll(newTargets);
 
 			report = new Gson().toJson(ReportUploadStatus
 					.createReportUploadStatus(colHeaders, newFeatures,
 							rowHeaders, newTargets));
 
+			for (Protocol p : db.find(Protocol.class, new QueryRule(
+					Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+					investigationName))) {
+				listOfProtocols.add(p.getName());
+			}
+
 		} catch (Exception e) {
+			STATUS = "showMatrix";
+			uploadFileErrorMessage = "There are errors in your file, please upload before check";
 			e.printStackTrace();
 		}
 
 	}
 
+	public void reload_preview_grid(Database db, Tuple request, OutputStream out)
+			throws HandleRequestDelegationException {
+		// handle requests for the table named 'test'
+
+		System.out.println();
+
+	}
+
+	public class mappingClass {
+
+		HashMap<String, eachMapping> allMappings = null;
+
+		public mappingClass() {
+			allMappings = new HashMap<String, eachMapping>();
+		}
+
+		public void addMapping(String variableName, String dataType,
+				String table, String category, String code) {
+
+			if (allMappings.containsKey(variableName)) {
+				allMappings.get(variableName).addCategory(category, code);
+			} else {
+				if (variableName != null) {
+					eachMapping newMapping = new eachMapping(variableName,
+							dataType, table, category, code);
+					allMappings.put(variableName, newMapping);
+				}
+			}
+		}
+
+		public int getSize() {
+			return allMappings.size();
+		}
+
+		public List<eachMapping> getMapping() {
+			return new ArrayList<eachMapping>(allMappings.values());
+		}
+
+		private class eachMapping {
+
+			private String variableName;
+			private String dataType;
+			private String table;
+			private Map<String, String> listOfCategories;
+
+			private eachMapping(String variableName, String dataType,
+					String table, String category, String code) {
+
+				this.variableName = variableName;
+				this.dataType = dataType;
+				this.table = table;
+				this.listOfCategories = new LinkedHashMap<String, String>();
+				this.listOfCategories.put(code, category);
+			}
+
+			private void addCategory(String category, String code) {
+
+				this.listOfCategories.put(code, category);
+			}
+		}
+	}
+
 	public static class ReportUploadStatus {
 
+		boolean success = true;
 		List<String> colHeaders;
 		List<String> newFeatures;
 		List<String> rowHeaders;
@@ -378,5 +796,50 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		}
 
 		return dataTypes;
+	}
+
+	public List<String> getProtocolTables() throws Exception {
+
+		return listOfProtocols;
+	}
+
+	public String getTempalteFilePath() {
+		return tempalteFilePath;
+	}
+
+	public String getUrl() {
+		return "molgenis.do?__target=" + this.getName();
+	}
+
+	public String getJsonForMapping() {
+		return jsonForMapping;
+	}
+
+	public String getUploadFileErrorMessage() {
+		return uploadFileErrorMessage;
+	}
+
+	public String getMappingMessage() {
+		return mappingMessage;
+	}
+
+	public String getImportMessage() {
+		return importMessage;
+	}
+
+	public String getLoadingMatrix() {
+		return loadingMatrix;
+	}
+
+	@Override
+	public String getViewTemplate() {
+		// TODO Auto-generated method stub
+		return "updateMatrixImporter/UpdateMatrixImporter.ftl";
+	}
+
+	@Override
+	public String getViewName() {
+		// TODO Auto-generated method stub
+		return "UpdateMatrixImporter";
 	}
 }

@@ -2,11 +2,14 @@ package org.molgenis.datatable.plugin;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.datatable.model.PedMapTupleTable;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -27,6 +30,7 @@ import decorators.MolgenisFileHandler;
 public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 {
 	private static final long serialVersionUID = 1049195164197133420L;
+	private static final String JQ_GRID_VIEW_NAME = "pedmaptable";
 	private JQGridView tableView;
 	private List<InvestigationFile> pedFiles;
 	private List<InvestigationFile> mapFiles;
@@ -47,14 +51,11 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 			pedFiles = getInvestigationFiles(db, "ped");
 			mapFiles = getInvestigationFiles(db, "map");
 
-			if (pedFiles.isEmpty())
+			if (pedFiles.isEmpty() || mapFiles.isEmpty())
 			{
-				throw new Exception("No ped files");
-			}
-
-			if (mapFiles.isEmpty())
-			{
-				throw new Exception("No map files");
+				// Show errormessage
+				setError("Missing ped or map files");
+				return;
 			}
 
 			if (selectedMapFile == null)
@@ -66,8 +67,6 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 			{
 				selectedPedFile = pedFiles.get(0);
 			}
-
-			System.out.println("1 ped, 1 map file..");
 
 			MolgenisFileHandler mfh = new MolgenisFileHandler(db);
 
@@ -81,13 +80,21 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			System.out.println("PedMapTupleTable created..");
 
-			// table.setColLimit(10);
-			//
-			// System.out.println("columns limited to 10..");
+			if (table.getColumns().size() > 500)
+			{
+				table.setColLimit(500);
+				System.out.println("columns limited to 500..");
+			}
 
-			// check which table to show
-			tableView = new JQGridView("pedmaptable", this, table);
+			// construct the gridview
+			JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+			searchOptions.multipleGroup = false;
+			searchOptions.multipleSearch = false;
+			searchOptions.showQuery = false;
+			searchOptions.sopt = Arrays.asList(new JQGridRule.JQGridOp[]
+			{ JQGridRule.JQGridOp.eq });
 
+			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false, searchOptions);
 			tableView.setLabel("Genotypes");
 
 			System.out.println("tableView created..");
@@ -96,7 +103,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.setError(e.getMessage());
+			setError(e.getMessage());
 		}
 	}
 
@@ -114,7 +121,6 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 	{
 		String pedFileName = request.getString("pedfile");
 		String mapFileName = request.getString("mapfile");
-		System.out.println("XXXXXloadFile mapFile=" + mapFileName);
 
 		for (InvestigationFile file : pedFiles)
 		{
@@ -144,7 +150,11 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		{
 			selectPed.addOption(file.getName(), file.getName());
 		}
-		selectPed.setValue(selectedPedFile.getName());
+
+		if (selectedPedFile != null)
+		{
+			selectPed.setValue(selectedPedFile.getName());
+		}
 		view.add(selectPed);
 
 		SelectInput selectMap = new SelectInput("mapfile");
@@ -152,12 +162,19 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		{
 			selectMap.addOption(file.getName(), file.getName());
 		}
-		selectMap.setValue(selectedMapFile.getName());
+
+		if (selectedMapFile != null)
+		{
+			selectMap.setValue(selectedMapFile.getName());
+		}
 		view.add(selectMap);
 
 		view.add(new ActionInput("reloadTable", "Reload table"));
 
-		view.add(tableView);
+		if (tableView != null)
+		{
+			view.add(tableView);
+		}
 
 		return view;
 	}

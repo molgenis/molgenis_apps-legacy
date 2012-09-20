@@ -1,7 +1,12 @@
 package plugins.catalogueTree;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +32,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -109,7 +115,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
 		appLoc = ((MolgenisRequest) request).getAppLocation();
-		
+
 		System.out
 				.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<"
 						+ request);
@@ -178,7 +184,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			outputExcel.addCell(new Label(1, 0, "Descriptions"));
 
-			outputExcel.addCell(new Label(1, 0, "Sector/Protocol"));
+			outputExcel.addCell(new Label(2, 0, "Sector/Protocol"));
 
 			for (Measurement m : allMeasList) {
 
@@ -207,11 +213,32 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
 			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
 
-			String redirectURL = "tmpfile/selectedVariables.xls";
+			// String redirectURL = "tmpfile/selectedVariables.xls";
 
-			httpResponse.sendRedirect(redirectURL);
+			// httpResponse.sendRedirect(redirectURL);
 
+			OutputStream outSpecial = rt.getResponse().getOutputStream();
+			URL localURL = mappingResult.toURI().toURL();
+			URLConnection conn = localURL.openConnection();
+			InputStream in = new BufferedInputStream(conn.getInputStream());
+			rt.getResponse().setContentType("application/vnd.ms-excel");
+			rt.getResponse().setContentLength((int) mappingResult.length());
+			rt.getResponse().setHeader(
+					"Content-disposition",
+					"attachment; filename=\"" + "selectedVariables" + ".xls"
+							+ "\"");
+			byte[] buffer = new byte[2048];
+			for (;;) {
+				int nBytes = in.read(buffer);
+				if (nBytes <= 0)
+					break;
+				outSpecial.write(buffer, 0, nBytes);
+			}
+			outSpecial.flush();
+			outSpecial.close();
+			EasyPluginController.HTML_WAS_ALREADY_SERVED = true;
 		}
+
 		// else if ("SaveSelectionSubmit".equals(request.getAction())) {
 		//
 		// if (!this.getLogin().isAuthenticated()) {
@@ -528,7 +555,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(protocolName
 							+ "_identifier_"
 							+ multipleInheritance.get(protocolName),
-							protocolName, protocol.getId().toString()
+							protocolName, Protocol.class.getSimpleName()
+									+ protocol.getId().toString()
 									+ "_identifier_"
 									+ multipleInheritance.get(protocolName),
 							parentNode);
@@ -537,7 +565,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					// The tree first time is being created.
 					childTree = new JQueryTreeViewElement(protocolName,
-							protocol.getId().toString(), parentNode);
+							Protocol.class.getSimpleName()
+									+ protocol.getId().toString(), parentNode);
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
@@ -746,7 +775,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(displayName
 							+ "_identifier_"
 							+ multipleInheritance.get(displayName),
-							displayName, measurement.getId().toString()
+							displayName, Measurement.class.getSimpleName()
+									+ measurement.getId().toString()
 									+ "_identifier_"
 									+ multipleInheritance.get(displayName),
 							parentNode);
@@ -759,7 +789,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				} else {
 
 					childTree = new JQueryTreeViewElement(displayName,
-							measurement.getId().toString(), parentNode);
+							Measurement.class.getSimpleName()
+									+ measurement.getId().toString(),
+							parentNode);
 
 					uniqueName = displayName;
 
