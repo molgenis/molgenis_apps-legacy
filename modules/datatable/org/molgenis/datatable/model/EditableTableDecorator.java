@@ -186,4 +186,10 @@ public class EditableTableDecorator implements FilterableTupleTable
 		decoratedTable.setVisibleColumnNames(columnNames);
 	}
 
+	@Override
+	public List<String> getVisibleColumnNames()
+	{
+		return decoratedTable.getVisibleColumnNames();
+	}
+
 }
