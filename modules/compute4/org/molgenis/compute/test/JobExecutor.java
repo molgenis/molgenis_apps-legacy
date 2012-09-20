@@ -14,7 +14,7 @@ public class JobExecutor
 
 		while (true)
 		{
-			executor.executeTasks();
+			executor.executeTasks("");
 			try
 			{
 				Thread.sleep(3000);

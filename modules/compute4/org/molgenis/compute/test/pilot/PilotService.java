@@ -1,8 +1,5 @@
 package org.molgenis.compute.test.pilot;
 
-import java.io.IOException;
-import java.text.ParseException;
-
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.db.DatabaseException;
@@ -10,6 +7,9 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
+
+import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 20/07/2012 Time: 16:53

@@ -19,10 +19,14 @@ import java.util.List;
  */
 public class ComputeExecutorPilotDB implements ComputeExecutor
 {
+    public static final String BACK_END_GRID="Grid";
+    public static final String BACK_END_CLUSTER="Cluster";
+
+
     private ExecutionHost host = null;
 
     //actual start pilots here
-    public void executeTasks()
+    public void executeTasks(String backend)
     {
         //evaluate if we have tasks ready to run
         //Database db = null;
@@ -58,7 +62,10 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
         {
             try
             {
-                host.submitPilot();
+                if(backend.equalsIgnoreCase(BACK_END_GRID))
+                    host.submitPilotGrid();
+                else if(backend.equalsIgnoreCase(BACK_END_CLUSTER))
+                    host.submitPilotCluster();
             }
             catch (IOException e)
             {

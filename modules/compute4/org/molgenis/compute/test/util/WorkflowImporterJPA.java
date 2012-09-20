@@ -1,28 +1,18 @@
 package org.molgenis.compute.test.util;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import org.molgenis.compute.design.ComputeParameter;
-import org.molgenis.compute.design.ComputeProtocol;
-import org.molgenis.compute.design.ComputeRequirement;
-import org.molgenis.compute.design.Workflow;
-import org.molgenis.compute.design.WorkflowElement;
+import app.DatabaseFactory;
+import org.molgenis.compute.design.*;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 15/08/2012 Time: 13:15
@@ -81,7 +71,7 @@ public class WorkflowImporterJPA
 			// create one requirement which we use for all protocols (for
 			// testing)
 			ComputeRequirement requirement = new ComputeRequirement();
-			requirement.setName("TestRequirement");
+			requirement.setName("InHouseRequirement");
 			requirement.setCores(1);
 			requirement.setNodes(1);
 			requirement.setMem("test");
