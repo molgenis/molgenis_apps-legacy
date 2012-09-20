@@ -87,13 +87,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	}
 
 	@Override
-	public int getColCount() throws TableException
-	{
-		return (int) (mapFile.getNrOfElements() + fixedColumns.length);
-	}
-
-	@Override
-	protected Tuple getValues(int row, int colStart, int colEnd) throws TableException
+	protected Tuple getValues(int row, List<Field> columns) throws TableException
 	{
 		List<PedEntry> pedEntries;
 		try
@@ -109,8 +103,9 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 
 		Tuple result = new SimpleTuple();
 
-		for (int col = colStart; col < colEnd; col++)
+		for (Field column : columns)
 		{
+			int col = getColumnIndex(column.getName());
 			Object value;
 
 			switch (col)
@@ -138,8 +133,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 
 			}
 
-			result.set(getAllColumns().get(col).getName(), value);
-
+			result.set(column.getName(), value);
 		}
 
 		return result;

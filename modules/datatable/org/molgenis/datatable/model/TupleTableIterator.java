@@ -8,7 +8,7 @@ import org.molgenis.util.Tuple;
  * Iterator to be used with an AbstractTupleTable. Takes into account limit,
  * offset, colLimit and colOffset of the TupleTable
  * 
- * If you use this make sure to override getValue(row, col) in
+ * If you use this make sure to override getValues(row, colStart, colEnd) in
  * AbstractTupleTable
  * 
  * @author erwin
@@ -18,14 +18,10 @@ public class TupleTableIterator implements Iterator<Tuple>
 {
 	private AbstractTupleTable tupleTable;
 	private int row = 0;
-	private int colLimit;
 
 	public TupleTableIterator(AbstractTupleTable tupleTable) throws TableException
 	{
 		this.tupleTable = tupleTable;
-
-		colLimit = (int) (tupleTable.getColLimit() == 0 ? tupleTable.getColCount() - tupleTable.getColOffset()
-				: tupleTable.getCurrentPageSize());
 	}
 
 	@Override
@@ -54,8 +50,7 @@ public class TupleTableIterator implements Iterator<Tuple>
 		Tuple tuple;
 		try
 		{
-			tuple = tupleTable.getValues(tupleTable.getOffset() + row, tupleTable.getColOffset(),
-					tupleTable.getColOffset() + colLimit);
+			tuple = tupleTable.getValues(tupleTable.getOffset() + row, tupleTable.getColumns());
 		}
 		catch (TableException e)
 		{
@@ -65,19 +60,6 @@ public class TupleTableIterator implements Iterator<Tuple>
 		row++;
 
 		return tuple;
-		/*
-		 * Tuple tuple = new SimpleTuple();
-		 * 
-		 * for (int col = tupleTable.getColOffset(); col <
-		 * tupleTable.getColOffset() + colLimit; col++) { try {
-		 * tuple.set(tupleTable.getAllColumns().get(col).getName(),
-		 * tupleTable.getValue(tupleTable.getOffset() + row, col)); } catch
-		 * (TableException e) { throw new RuntimeException(e); } }
-		 * 
-		 * row++;
-		 * 
-		 * return tuple;
-		 */
 	}
 
 	@Override

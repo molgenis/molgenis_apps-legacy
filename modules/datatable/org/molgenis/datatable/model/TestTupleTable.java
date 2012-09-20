@@ -44,6 +44,7 @@ public class TestTupleTable extends AbstractTupleTable
 		}
 		catch (TableException e)
 		{
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
@@ -55,13 +56,14 @@ public class TestTupleTable extends AbstractTupleTable
 	}
 
 	@Override
-	protected Tuple getValues(int row, int colStart, int colEnd) throws TableException
+	protected Tuple getValues(int row, List<Field> columns) throws TableException
 	{
 		Tuple tuple = new SimpleTuple();
 
-		for (int col = colStart; col < colEnd; col++)
+		for (Field column : columns)
 		{
-			tuple.set(columns.get(col).getName(), (row + 1) + "-" + (col + 1));
+			int col = getColumnIndex(column.getName());
+			tuple.set(getAllColumns().get(col).getName(), (row + 1) + "-" + (col + 1));
 		}
 
 		return tuple;
