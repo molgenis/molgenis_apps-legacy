@@ -21,7 +21,7 @@ public class ExecutionHost extends Ssh
         System.out.println("... " + host + " is started");
     }
 
-    public void submitPilot() throws IOException
+    public void submitPilotGrid() throws IOException
     {
         //do wee need any unique id here? - if yes why?
         String uniqueID = "pilot-one";
@@ -42,4 +42,23 @@ public class ExecutionHost extends Ssh
         //here we can log our grid pilot job ID
     }
 
+    public void submitPilotCluster() throws IOException
+    {
+
+        String id = System.nanoTime() + "";
+        String command = "sh /target/gpfs/tools/scripts/maverick.sh " + id;
+        System.out.println(">>> " + command);
+
+        SshResult result = this.executeCommand(command);
+
+
+        if (!"".equals(result.getStdErr()))
+        {
+            throw new IOException(result.getStdErr());
+        }
+
+        String sOut = result.getStdOut();
+        System.out.println(sOut);
+
+    }
 }

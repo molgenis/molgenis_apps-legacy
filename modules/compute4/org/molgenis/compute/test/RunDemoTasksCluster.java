@@ -10,19 +10,19 @@ import org.molgenis.compute.test.executor.ComputeExecutorPilotDB;
  * Time: 16:10
  * To change this template use File | Settings | File Templates.
  */
-public class RunDemoTasks
+public class RunDemoTasksCluster
 {
     public static void main(String[] args)
     {
-        System.out.println("execute with pilots on the grid");
+        System.out.println("execute with pilots on the cluster");
         // execute generated tasks with pilots
         ComputeExecutor executor = new ComputeExecutorPilotDB();
-        executor.startHost("lsgrid");
-        executor.executeTasks();
+        executor.startHost("gcc");
+        executor.executeTasks(ComputeExecutorPilotDB.BACK_END_CLUSTER);
 
         while (true)
         {
-            executor.executeTasks();
+            executor.executeTasks(ComputeExecutorPilotDB.BACK_END_CLUSTER);
             try
             {
                 Thread.sleep(10000);
