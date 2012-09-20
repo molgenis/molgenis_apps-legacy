@@ -107,7 +107,7 @@ public class ComputeGeneratorDB implements ComputeGenerator
 	}
 
 	@Override
-	public void generateTasks(Workflow workflow, List<Tuple> targets, File protocolsDir)
+	public void generateTasks(Workflow workflow, List<Tuple> targets)
 	{
 		// TODO Auto-generated method stub
 

@@ -1,6 +1,5 @@
 package org.molgenis.compute.test.generator;
 
-import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -18,5 +17,5 @@ public interface ComputeGenerator
 
 	void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config);
 
-	void generateTasks(Workflow workflow, List<Tuple> targets, File protocolsDir);
+	void generateTasks(Workflow workflow, List<Tuple> targets);
 }

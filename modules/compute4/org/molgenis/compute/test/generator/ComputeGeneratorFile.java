@@ -1,6 +1,5 @@
 package org.molgenis.compute.test.generator;
 
-import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class ComputeGeneratorFile implements ComputeGenerator
 	}
 
 	@Override
-	public void generateTasks(Workflow workflow, List<Tuple> targets, File protocolsDir)
+	public void generateTasks(Workflow workflow, List<Tuple> targets)
 	{
 		// TODO Auto-generated method stub
 

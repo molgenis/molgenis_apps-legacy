@@ -12,15 +12,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.FreemarkerHelper;
 import org.molgenis.compute.commandline.Worksheet;
 import org.molgenis.compute.design.ComputeParameter;
+import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.compute.test.temp.Target;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
@@ -114,17 +117,30 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 	/**
 	 * Generate tasks and put them into the database
 	 */
-	public void generateTasks(Workflow workflow, List<Tuple> worksheet, File protocolsDir)
+	public void generateTasks(Workflow workflow, List<Tuple> worksheet)
 	{
 		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
 				.getWorkflowComputeParameterCollection();
 		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
 
+		// Put protocols in a temporary directory to enable a protocol to
+		// include other protocols while generating. We do it this way because
+		// we want to use Freemarker to handle the includes. Doing the includes
+		// ourselves (in memory) would mean that we would have to deal with many
+		// exceptional cases, which are now automatically handled by Freemarker.
+
+		String protocolsDirName = System.getProperty("java.io.tmpdir") + worksheet.get(0).getString("McId")
+				+ System.getProperty("file.separator");
+
+		File protocolsDir = new File(protocolsDirName);
+
+
 		try
 		{
 			db = DatabaseFactory.create();
+			saveProtocolsInDir(db, protocolsDir);
+			
 			db.beginTx();
-
 		}
 		catch (DatabaseException e)
 		{
@@ -223,4 +239,54 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 		}
 
 	}
+
+	/**
+	 * Save protocols from DB in the directory protocolsDir
+	 */
+	private static void saveProtocolsInDir(Database db, File protocolsDir)
+	{
+		// remove if directory exists
+		if (protocolsDir.exists()) try
+		{
+			FileUtils.deleteDirectory(protocolsDir);
+		}
+		catch (IOException e)
+		{
+			System.err.println(">> ERROR: Unable to delete tmp dir: " + protocolsDir);
+			e.printStackTrace();
+		}
+
+		// create new, empty directory
+		boolean success = protocolsDir.mkdirs();
+
+		if (success) System.out.println(">> Created an empty tmp directory to store protocols: " + protocolsDir);
+		else
+			throw new RuntimeException(">> ERROR: Unable to create tmp directory " + protocolsDir);
+
+		// put protocols there
+		Query<ComputeProtocol> cp_query = db.query(ComputeProtocol.class);
+		try
+		{
+			System.out.println(">> Saving protocols...");
+			Iterator<ComputeProtocol> it = cp_query.find().iterator();
+			while (it.hasNext())
+			{
+				ComputeProtocol cp = it.next();
+				FileUtils.writeStringToFile(
+						new File(protocolsDir + System.getProperty("file.separator") + cp.getName()),
+						cp.getScriptTemplate());
+			}
+		}
+		catch (DatabaseException e)
+		{
+			System.err.println(">> ERROR: unable to iterate over ComputeProtocols from db");
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			System.err.println(">> ERROR: Something goes wrong");
+			e.printStackTrace();
+		}
+	}
+
 }
