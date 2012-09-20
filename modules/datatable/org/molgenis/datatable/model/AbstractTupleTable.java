@@ -56,6 +56,27 @@ public abstract class AbstractTupleTable implements TupleTable
 
 	}
 
+	public List<String> getVisibleColumnNames()
+	{
+		List<Field> visibleColumns;
+		try
+		{
+			visibleColumns = getVisibleColumns();
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		List<String> visibleColumnNames = new ArrayList<String>(visibleColumns.size());
+		for (Field column : visibleColumns)
+		{
+			visibleColumnNames.add(column.getName());
+		}
+
+		return visibleColumnNames;
+	}
+
 	protected List<Field> getVisibleColumns() throws TableException
 	{
 		if (visibleColumns == null)

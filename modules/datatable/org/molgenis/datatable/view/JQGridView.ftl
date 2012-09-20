@@ -62,7 +62,8 @@ $.fn.extend({
        				//Create new jqGrid
        				//alert(config.searchOptions.multipleSearch);
        				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, {}, {}, {}, config.searchOptions);
-       				
+       			
+       				addColumnRemoveButtons();
        				
        				//Put the columnpager in the grid toolbar (if exists)
         			columnPager.appendTo($('#t_' + options.tableId));
@@ -106,6 +107,30 @@ $.fn.extend({
 					}	
        			});	
        		} 
+       		
+       		addColumnRemoveButtons = function() {
+       			grid.closest("div.ui-jqgrid-view")
+       				.find("div.ui-jqgrid-hdiv table.ui-jqgrid-htable tr.ui-jqgrid-labels > th.ui-th-column > div.ui-jqgrid-sortable")
+    				.each(function () {
+        				$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
+            				icons: { primary: "ui-icon-circle-close" },
+            				text: false
+        			}).click(function (e) {
+        			 	var idPrefix = "jqgh_" + grid[0].id + "_";
+                		var thId = $(e.target).closest('div.ui-jqgrid-sortable')[0].id;
+                		
+            			// thId will be like "jqgh_tablename_column"
+            			if (thId.substr(0, idPrefix.length) === idPrefix) {
+            				var column = thId.substr(idPrefix.length);
+                			reloadGrid('HIDE_COLUMN&column=' + column, true);
+                			
+                			return false;
+            			}
+
+       				});
+    			});
+       				
+       		}
        		
        		getPostData = function() {
        			return $('#' + options.tableId, container).getGridParam('postData');

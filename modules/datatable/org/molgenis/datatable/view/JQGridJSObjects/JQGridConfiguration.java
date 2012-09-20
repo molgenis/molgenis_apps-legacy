@@ -57,7 +57,7 @@ public class JQGridConfiguration
 	public String sortorder = "desc";
 
 	/** default height */
-	public String height = "222px";
+	public String height = "232px";
 
 	public int totalColumnCount;
 	public int colOffset;

@@ -49,7 +49,7 @@ import com.google.gson.Gson;
 public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
-	private static final int DEFAULT_MAX_VISIBLE_COLUMN_COUNT = 6;
+	private static final int DEFAULT_MAX_VISIBLE_COLUMN_COUNT = 5;
 	private boolean initialize = true;
 	private JQGridSearchOptions searchOptions;
 	private int maxVisibleColumnCount = DEFAULT_MAX_VISIBLE_COLUMN_COUNT;
@@ -62,7 +62,7 @@ public class JQGridView extends HtmlWidget
 	 */
 	private enum Operation
 	{
-		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE
+		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE, HIDE_COLUMN
 	}
 
 	/**
@@ -164,6 +164,13 @@ public class JQGridView extends HtmlWidget
 			switch (operation)
 			{
 				case LOAD_CONFIG:
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case HIDE_COLUMN:
+					String columnToRemove = request.getString("column");
+					List<String> visibleColumns = tupleTable.getVisibleColumnNames();
+					visibleColumns.remove(columnToRemove);
+					tupleTable.setVisibleColumnNames(visibleColumns);
 					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 					break;
 				case SET_COLUMN_PAGE:

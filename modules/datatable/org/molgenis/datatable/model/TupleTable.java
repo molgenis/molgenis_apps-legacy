@@ -30,6 +30,8 @@ public interface TupleTable extends Iterable<Tuple>
 	 */
 	public void setVisibleColumnNames(List<String> columnNames);
 
+	public List<String> getVisibleColumnNames();
+
 	/**
 	 * Get meta data describing the columns in current view (within
 	 * colLimit/colOffset)
