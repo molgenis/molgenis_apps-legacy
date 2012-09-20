@@ -6,17 +6,17 @@ getFile ${expandWorksheetJar}
 
 getFile ${McWorksheet}
 getFile ${chrBinsFile}
-putFile ${projectComputeDir}/${project}.worksheet.csv
+#putFile ${projectComputeDir}/${project}.worksheet.csv
 
 inputs "${McWorksheet}"
 inputs "${chrBinsFile}"
-alloutputsexist "${projectComputeDir}/${project}.worksheet.csv"
+#alloutputsexist "${projectComputeDir}/${project}.worksheet.csv"
 
 
 mkdir -p ${projectTempDir}
 mkdir -p ${projectJobsDir}
 
-module load java/${javaversion}
+module load jdk/${javaversion}
 
 #Run Jar to create full worksheet
 

@@ -19,8 +19,8 @@ ${plinkseqBin} \
 --recode-vcf \
 --ped ${imputationResultDir}/chr_${chr}.ped \
 --map ${imputationResultDir}/chr_${chr}.map \
---out ${imputationResultDir}/~chr_${chr}
-
+--out ${imputationResultDir}/~chr_${chr} \
+--missing-genotype N
 
 #Get return code from last program call
 returnCode=$?

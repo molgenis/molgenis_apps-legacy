@@ -4,7 +4,7 @@
 
 getFile "${imputationToolJar}"
 getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibraries}"
+getFile "${imputationToolGeneticaLibrariesJar}"
 
 getFile "${studyPedMapChr}.map"
 getFile "${studyPedMapChr}.ped"
@@ -25,7 +25,7 @@ alloutputsexist "${studyTriTyperChrDir}/SNPMappings.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
 
-module load java/${javaversion}
+module load jdk/${javaversion}
 
 mkdir -p ${studyTriTyperChrTempDir}
 

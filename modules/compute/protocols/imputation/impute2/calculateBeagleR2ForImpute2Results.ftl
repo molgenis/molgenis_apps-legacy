@@ -11,6 +11,6 @@ putFile ${imputationResultDir}/chr_${chr}.beagleR2
 inputs "${imputationResultDir}/chr_${chr}"
 alloutputsexist "${imputationResultDir}/chr_${chr}.beagleR2"
 
-module load python/${pythonversion}
+module load Python/${pythonversion}
 
 python ${calculateBeagleR2ForIMpute2ResultsPythonScript} ${imputationResultDir}/chr_${chr} ${imputationResultDir}/chr_${chr}.beagleR2
