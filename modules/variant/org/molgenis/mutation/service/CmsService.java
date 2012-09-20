@@ -13,8 +13,8 @@ public class CmsService
 {
 	private Database db;
 
-	@Autowired
-	public CmsService(Database db)
+	//@Autowired
+	public void setDatabase(Database db)
 	{
 		this.db = db;
 	}

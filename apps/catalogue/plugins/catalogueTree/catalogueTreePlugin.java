@@ -74,6 +74,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	// private static int SEARCHINGDETAIL = 5;
 
 	Integer mode;
+	private String appLoc;
 
 	/**
 	 * Multiple inheritance: some measurements might have multiple parents
@@ -106,6 +107,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception {
+
+		appLoc = ((MolgenisRequest) request).getAppLocation();
 
 		System.out
 				.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<"
@@ -273,7 +276,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// db.getLogin().getClass().getGenericSuperclass().g
 		System.out.println("-------------In reload---------------------"
-				+ this.getApplicationUrl());
+				+ appLoc);
 
 		try {
 			// if (this.request!=null && this.request.getString("measurementId")
@@ -525,7 +528,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(protocolName
 							+ "_identifier_"
 							+ multipleInheritance.get(protocolName),
-							protocolName, protocol.getId().toString()
+							protocolName, Protocol.class.getSimpleName()
+									+ protocol.getId().toString()
 									+ "_identifier_"
 									+ multipleInheritance.get(protocolName),
 							parentNode);
@@ -534,7 +538,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					// The tree first time is being created.
 					childTree = new JQueryTreeViewElement(protocolName,
-							protocol.getId().toString(), parentNode);
+							Protocol.class.getSimpleName()
+									+ protocol.getId().toString(), parentNode);
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
@@ -743,7 +748,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(displayName
 							+ "_identifier_"
 							+ multipleInheritance.get(displayName),
-							displayName, measurement.getId().toString()
+							displayName, Measurement.class.getSimpleName()
+									+ measurement.getId().toString()
 									+ "_identifier_"
 									+ multipleInheritance.get(displayName),
 							parentNode);
@@ -756,7 +762,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				} else {
 
 					childTree = new JQueryTreeViewElement(displayName,
-							measurement.getId().toString(), parentNode);
+							Measurement.class.getSimpleName()
+									+ measurement.getId().toString(),
+							parentNode);
 
 					uniqueName = displayName;
 
