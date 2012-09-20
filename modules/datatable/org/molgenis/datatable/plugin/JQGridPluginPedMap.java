@@ -80,12 +80,6 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			System.out.println("PedMapTupleTable created..");
 
-			if (table.getColumns().size() > 500)
-			{
-				table.setColLimit(500);
-				System.out.println("columns limited to 500..");
-			}
-
 			// construct the gridview
 			JQGridSearchOptions searchOptions = new JQGridSearchOptions();
 			searchOptions.multipleGroup = false;
@@ -143,33 +137,38 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 	// what is shown to the user
 	public ScreenView getView()
 	{
+
 		MolgenisForm view = new MolgenisForm(this);
 
-		SelectInput selectPed = new SelectInput("pedfile");
-		for (InvestigationFile file : pedFiles)
+		if (pedFiles.size() > 1 || mapFiles.size() > 1)
 		{
-			selectPed.addOption(file.getName(), file.getName());
-		}
+			SelectInput selectPed = new SelectInput("pedfile");
+			for (InvestigationFile file : pedFiles)
+			{
+				selectPed.addOption(file.getName(), file.getName());
+			}
 
-		if (selectedPedFile != null)
-		{
-			selectPed.setValue(selectedPedFile.getName());
-		}
-		view.add(selectPed);
+			if (selectedPedFile != null)
+			{
+				selectPed.setValue(selectedPedFile.getName());
+			}
+			view.add(selectPed);
 
-		SelectInput selectMap = new SelectInput("mapfile");
-		for (InvestigationFile file : mapFiles)
-		{
-			selectMap.addOption(file.getName(), file.getName());
-		}
+			SelectInput selectMap = new SelectInput("mapfile");
+			for (InvestigationFile file : mapFiles)
+			{
+				selectMap.addOption(file.getName(), file.getName());
+			}
 
-		if (selectedMapFile != null)
-		{
-			selectMap.setValue(selectedMapFile.getName());
-		}
-		view.add(selectMap);
+			if (selectedMapFile != null)
+			{
+				selectMap.setValue(selectedMapFile.getName());
+			}
+			view.add(selectMap);
 
-		view.add(new ActionInput("reloadTable", "Reload table"));
+			ActionInput button = new ActionInput("reloadTable", "Reload table");
+			view.add(button);
+		}
 
 		if (tableView != null)
 		{

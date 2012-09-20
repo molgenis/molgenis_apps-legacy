@@ -16,6 +16,12 @@ public class JQGridPostData
 		page = request.getInt("page");
 		sidx = request.getString("sidx");
 		sord = request.getString("sord");
+		colPage = request.getInt("colPage");
+
+		for (String f : request.getFieldNames())
+		{
+			System.out.println(f + "=" + request.getObject(f));
+		}
 
 		this.filters = new Gson().fromJson(request.getString("filters"), JQGridFilter.class);
 
@@ -48,4 +54,5 @@ public class JQGridPostData
 	public int rows = 0;
 	/** page offset, each page being rows long */
 	public int page = 0;
+	public int colPage = 1;
 }

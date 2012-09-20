@@ -14,7 +14,6 @@ import org.molgenis.util.plink.datatypes.MapEntry;
 import org.molgenis.util.plink.datatypes.PedEntry;
 import org.molgenis.util.plink.drivers.CachingPedFileDriver;
 import org.molgenis.util.plink.drivers.MapFileDriver;
-import org.molgenis.util.plink.drivers.PedFileDriver;
 
 public class PedMapTupleTable extends AbstractTupleTable implements FilterableTupleTable
 {
@@ -71,7 +70,14 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		return new PedMapIterator(pedFile, mapFile, this);
+		try
+		{
+			return new TupleTableIterator(this);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -81,114 +87,56 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	}
 
 	@Override
-	public int getColCount() throws TableException
+	protected Tuple getValues(int row, List<Field> columns) throws TableException
 	{
-		return (int) (mapFile.getNrOfElements() + fixedColumns.length);
-	}
-
-	private static class PedMapIterator implements Iterator<Tuple>
-	{
-		int count = 0;
-
-		// source data
-		PedFileDriver pedFile;
-		List<String> columns;
-
-		// wrapper state
-		PedMapTupleTable table;
-
-		// colLimit
-		int colLimit;
-
-		PedMapIterator(PedFileDriver pedFile, MapFileDriver mapFile, PedMapTupleTable table)
+		List<PedEntry> pedEntries;
+		try
 		{
-			this.pedFile = pedFile;
-			this.table = table;
-
-			columns = table.getColumnNames();
-
-			// TODO FIX MapFile.getNrOfElements
-			colLimit = (int) (table.getColLimit() == 0 ? mapFile.getNrOfElements() + fixedColumns.length
-					- table.getColOffset() : table.getColLimit());
+			pedEntries = pedFile.getEntries(row, row + 1);
+		}
+		catch (Exception e)
+		{
+			throw new TableException(e);
 		}
 
-		@Override
-		public boolean hasNext()
+		PedEntry pe = pedEntries.get(0);
+
+		Tuple result = new SimpleTuple();
+
+		for (Field column : columns)
 		{
-			if (table.getOffset() + count >= pedFile.getNrOfElements()
-					|| (table.getLimit() > 0 && count >= table.getLimit()))
+			int col = getColumnIndex(column.getName());
+			Object value;
+
+			switch (col)
 			{
-				return false;
+				case 0:
+					value = pe.getIndividual();
+					break;
+				case 1:
+					value = pe.getFamily();
+					break;
+				case 2:
+					value = pe.getFather();
+					break;
+				case 3:
+					value = pe.getMother();
+					break;
+				case 4:
+					value = pe.getSex();
+					break;
+				case 5:
+					value = pe.getPhenotype();
+					break;
+				default:
+					value = pe.getBialleles().get(col - fixedColumns.length).toString();
+
 			}
 
-			return true;
+			result.set(column.getName(), value);
 		}
 
-		@Override
-		public Tuple next()
-		{
-			if (!hasNext())
-			{
-				throw new UnsupportedOperationException("No next element exists");
-			}
-
-			try
-			{
-				int index = table.getOffset() + count;
-				List<PedEntry> pedEntries = pedFile.getEntries(index, index + 1);
-				PedEntry pe = pedEntries.get(0);
-
-				Tuple result = new SimpleTuple();
-
-				for (int i = table.getColOffset(); i < table.getColOffset() + colLimit; i++)
-				{
-					Object value;
-
-					switch (i)
-					{
-						case 0:
-							value = pe.getIndividual();
-							break;
-						case 1:
-							value = pe.getFamily();
-							break;
-						case 2:
-							value = pe.getFather();
-							break;
-						case 3:
-							value = pe.getMother();
-							break;
-						case 4:
-							value = pe.getSex();
-							break;
-						case 5:
-							value = pe.getPhenotype();
-							break;
-						default:
-							value = pe.getBialleles().get(i - fixedColumns.length).toString();
-
-					}
-
-					result.set(columns.get(i), value);
-				}
-
-				count++;
-
-				return result;
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public void remove()
-		{
-			System.out.println("REMOVE");
-			// TODO Auto-generated method stub
-		}
-
+		return result;
 	}
 
 	@Override

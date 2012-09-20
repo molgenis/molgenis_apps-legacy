@@ -28,13 +28,20 @@ import org.springframework.stereotype.Service;
 public class PhenoService
 {
 	private Database db;
-//	private EntityManager em;
-	
-	@Autowired
-	public PhenoService(Database db)
+
+	public PhenoService()
+	{
+	}
+
+	public PhenoService(final Database db)
 	{
 		this.db = db;
-//		this.em = db.getEntityManager();
+	}
+
+	//@Autowired
+	public void setDatabase(final Database db)
+	{
+		this.db = db;
 	}
 	
 	/**

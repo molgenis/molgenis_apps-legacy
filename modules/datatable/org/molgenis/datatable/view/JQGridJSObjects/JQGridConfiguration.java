@@ -57,7 +57,11 @@ public class JQGridConfiguration
 	public String sortorder = "desc";
 
 	/** default height */
-	public String height = "auto";
+	public String height = "232px";
+
+	public int totalColumnCount;
+	public int colOffset;
+	public int colLimit;
 
 	/** virtual scrolling */
 	// public int scroll = 1;
@@ -77,18 +81,8 @@ public class JQGridConfiguration
 
 	public JQGridSearchOptions searchOptions = new JQGridSearchOptions();
 
-	// The javascript tree to show/hide columns above the grid
-	public boolean showColumnTree = true;
-
 	@SuppressWarnings("unchecked")
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
-
-	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable,
-			boolean showColumnTree) throws TableException
-	{
-		this(id, idField, url, caption, tupleTable);
-		this.showColumnTree = showColumnTree;
-	}
 
 	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)
 			throws TableException
@@ -98,6 +92,9 @@ public class JQGridConfiguration
 		this.url = url;
 		this.editurl = url;
 		this.caption = caption;
+		this.totalColumnCount = tupleTable.getColCount();
+		this.colOffset = tupleTable.getColOffset();
+		this.colLimit = tupleTable.getColLimit();
 
 		// "{repeatitems: false, id: \"Code\"}"
 		jsonReader.put("repeatitems", false);

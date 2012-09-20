@@ -16,10 +16,6 @@ import org.json.JSONObject;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.util.JQueryUtil;
-import org.molgenis.datatable.view.MolgenisUpdateDatabase;
-import org.molgenis.datatable.view.ViewFactory;
-import org.molgenis.datatable.view.ViewFactoryImpl;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
@@ -53,9 +49,10 @@ import com.google.gson.Gson;
 public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
-	private boolean showColumnTree = true;// The javascript tree to show/hide
-											// columns above the grid
+	private static final int DEFAULT_MAX_VISIBLE_COLUMN_COUNT = 5;
+	private boolean initialize = true;
 	private JQGridSearchOptions searchOptions;
+	private int maxVisibleColumnCount = DEFAULT_MAX_VISIBLE_COLUMN_COUNT;
 
 	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
@@ -65,7 +62,7 @@ public class JQGridView extends HtmlWidget
 	 */
 	private enum Operation
 	{
-		LOAD_CONFIG, RENDER_DATA, LOAD_TREE, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX
+		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE, HIDE_COLUMN
 	}
 
 	/**
@@ -81,16 +78,6 @@ public class JQGridView extends HtmlWidget
 	}
 
 	private final TupleTableBuilder tupleTableBuilder;
-
-	public boolean isShowColumnTree()
-	{
-		return showColumnTree;
-	}
-
-	public void setShowColumnTree(boolean showColumnTree)
-	{
-		this.showColumnTree = showColumnTree;
-	}
 
 	public JQGridView(String name, TupleTableBuilder tupleTableBuilder)
 	{
@@ -126,7 +113,6 @@ public class JQGridView extends HtmlWidget
 			boolean showColumnTree, JQGridSearchOptions searchOptions)
 	{
 		this(name, hostController, table);
-		this.showColumnTree = showColumnTree;
 		this.searchOptions = searchOptions;
 	}
 
@@ -155,20 +141,73 @@ public class JQGridView extends HtmlWidget
 		try
 		{
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+			tupleTable.setColLimit(maxVisibleColumnCount);
+
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
+
+			if (initialize)
+			{
+				List<Measurement> listOM = db.find(Measurement.class);
+				for (Measurement m : listOM)
+				{
+					if (m.getCategories_Name().size() > 0)
+					{
+						hashMeasurementsWithCategories.put(m.getName(), m.getDataType());
+
+					}
+
+				}
+				initialize = false;
+			}
 
 			switch (operation)
 			{
 				case LOAD_CONFIG:
 					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 					break;
-				case LOAD_TREE:
-					// risky: we give it all columns which would fail if
-					// there
-					// are many
-					final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getAllColumns());
-					((MolgenisRequest) request).getResponse().getOutputStream().print(treeNodes);
+				case HIDE_COLUMN:
+					String columnToRemove = request.getString("column");
+					List<String> visibleColumns = tupleTable.getVisibleColumnNames();
+					visibleColumns.remove(columnToRemove);
+					tupleTable.setVisibleColumnNames(visibleColumns);
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case SET_COLUMN_PAGE:
+
+					// TODO put this in a util class (default value for
+					// requestparams)
+					int colPage;
+					try
+					{
+						colPage = request.getInt("colPage");
+					}
+					catch (Exception e)
+					{
+						colPage = 1;
+					}
+
+					// TODO put maxColPage function in util class
+					int maxColPage = (int) Math.floor(tupleTable.getColCount() / tupleTable.getColLimit());
+					if ((tupleTable.getColCount() % tupleTable.getColLimit()) > 0)
+					{
+						maxColPage++;
+					}
+					colPage = Math.min(colPage, maxColPage);
+
+					int colOffset = (colPage - 1) * tupleTable.getColLimit();
+					colOffset = Math.max(colOffset, 0);
+
+					tupleTable.setColOffset(colOffset);
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case NEXT_COLUMNS:
+					tupleTable.setColOffset(tupleTable.getColOffset() + maxVisibleColumnCount);
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case PREVIOUS_COLUMNS:
+					tupleTable.setColOffset(tupleTable.getColOffset() - maxVisibleColumnCount);
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 					break;
 				case RENDER_DATA:
 					final List<QueryRule> rules = new ArrayList<QueryRule>();
@@ -250,7 +289,7 @@ public class JQGridView extends HtmlWidget
 							{
 								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
 								mu.UpdateDatabase(db, targetID, request.getString(eachField.getName()),
-										eachField.getName(), protAppID);
+										eachField.getName(), protAppID, hashMeasurementsWithCategories);
 							}
 						}
 
@@ -346,7 +385,15 @@ public class JQGridView extends HtmlWidget
 									ObservedValue ov = new ObservedValue();
 									ov.setTarget_Name(patientID);
 									ov.setFeature_Name(feature);
-									ov.setValue(value);
+									if (hashMeasurementsWithCategories.containsKey(feature))
+									{
+										String[] splitValue = value.split("\\.");
+										ov.setValue(splitValue[0]);
+									}
+									else
+									{
+										ov.setValue(value);
+									}
 									ov.setProtocolApplication_Name(pa.getName());
 									ov.setInvestigation_Name(investigationName);
 									listOfNewValues.add(ov);
@@ -621,6 +668,11 @@ public class JQGridView extends HtmlWidget
 		return new FreemarkerView(JQGridView.class, args).render();
 	}
 
+	public HashMap<String, String> getHashMeasurements()
+	{
+		return hashMeasurementsWithCategories;
+	}
+
 	/**
 	 * Create a properly-configured grid with default settings, on first load.
 	 */
@@ -628,8 +680,9 @@ public class JQGridView extends HtmlWidget
 			throws TableException, IOException
 	{
 		tupleTable.setDb(db);
+
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(),
-				getLabel(), tupleTable, showColumnTree);
+				getLabel(), tupleTable);
 
 		if (searchOptions != null)
 		{
