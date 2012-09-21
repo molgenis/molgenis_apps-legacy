@@ -1,0 +1,26 @@
+<molgenis name="xqtl" label="xQTL workbench">
+	<plugin name="MiniGUI" type="org.molgenis.minigui.MiniGUI" />
+	<menu name="main">
+		<plugin label="Home" name="CleanHome" type="org.molgenis.omicsconnect.minigui.CleanHome" />
+		<form name="Characteristics" entity="Characteristic" />
+		<form name="Panels" entity="Panel" />
+		<form name="Individuals" entity="Individual" />
+		<form name="Features" entity="ObservableFeature">
+			<form name="PermittedValues" entity="PermittedValue" />
+		</form>
+		<form name="Protocols" entity="Protocol" />
+		<form name="DataSets" entity="DataSet">
+			<form name="ObservationSets" entity="ObservationSet">
+				<form name="ObservedValues" entity="ObservedValue" />
+			</form>
+		</form>
+<!-- 		<plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" />
+		<plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" /> -->
+		<menu name="Lookups">
+			<form name="Ontologies" entity="Ontology">
+				<form name="OntologyTerms" entity="OntologyTerm" />
+			</form>
+			<form name="Species" entity="Species" />
+		</menu>
+	</menu>
+</molgenis>

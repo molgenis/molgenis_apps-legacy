@@ -62,12 +62,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		this.protocol = protocol;
 	}
 
-	@Override
-	public int getColCount()
-	{
-		// +1 for the target column
-		return protocol.getFeatures_Id().size() + 1;
-	}
+	/*
+	 * @Override public int getColCount() { // +1 for the target column return
+	 * protocol.getFeatures_Id().size() + 1; }
+	 */
 
 	public List<Field> getAllColumns() throws TableException
 	{
@@ -155,19 +153,19 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 				{
 					if (!target)
 					{
-						row.set(targetString, v.getTarget_Name());
+						if (isInViewPort(targetString))
+						{
+							row.set(targetString, v.getTarget_Name());
+						}
 						target = true;
 					}
 
 					// get measurements (evil expensive)
-					Protocol p = null;
-
 					Measurement currentMeasurement = null;
 					for (Measurement m : measurements.keySet())
 					{
 						if (m.getName().equals(v.getFeature_Name()))
 						{
-							p = measurements.get(m);
 							currentMeasurement = m;
 							break;
 						}
@@ -179,7 +177,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 						for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
 								currentMeasurement.getCategories_Name())))
 						{
-							if (v.getValue().equals(c.getCode_String()))
+							if (v.getValue().equals(c.getCode_String()) && isInViewPort(v.getFeature_Name()))
 							{
 								row.set(v.getFeature_Name(), v.getValue() + "." + c.getDescription());
 								break;
@@ -188,7 +186,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					}
 					else
 					{
-						if (!v.getValue().isEmpty()) row.set(v.getFeature_Name(), v.getValue());
+						if (!v.getValue().isEmpty() && isInViewPort(v.getFeature_Name())) row.set(v.getFeature_Name(),
+								v.getValue());
 					}
 				}
 				result.add(row);
@@ -315,7 +314,9 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		// filters.size() = 1
 
 		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
+		{
 			result.add(t.getInt("id"));
+		}
 
 		return result;
 	}

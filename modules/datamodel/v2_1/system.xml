@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="core">
+		<entity name="Nameable" abstract="true" decorator="decorators.NameableDecorator"
+			implements="Identifiable">
+			<description>This interface extends Identifiable with a unique 'name'
+				field. The name length can be stored in one byte. (Java has signed
+				integers) The name is by itself not unique, this should be enforced
+				within a certain context. For example, unique(name, study) to make
+				the name unique within one single study. The NameableDecorator
+				ensures that names don't lead to problems in R and other script
+				environments.</description>
+			<field name="name" length="127" type="varchar" description="human-readable name." />
+		</entity>
+		<entity name="MolgenisFile" implements="Nameable"
+			decorator="decorators.MolgenisFileDecorator"  xref_label="name">
+			<description>
+				Helper entity to deal with files. Has a decorator to regulate
+				storage and coupling to an Entity. Do not make abstract because of
+				subtyping. This means the names of the subclasses will be used to
+				distinguish MolgenisFiles and place them in the correct folders.
+				<br />
+				MS: make it use the &lt;field type="file" property under the hood. 
+				<br />
+				MS: where do the mimetypes go? I mean, I don't see the added value
+				now.
+			</description>
+			<field name="Extension" nillable="false" length="8"
+				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
+			<unique fields="name"/>
+		</entity>
+		<entity name="RuntimeProperty" implements="Nameable"  xref_label="name">
+			<field name="Value" length="127" type="varchar" nillable="false" />
+			<unique fields="name" description="Name is unique within its type " />
+		</entity>
+	</module>
+</molgenis>

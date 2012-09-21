@@ -4,6 +4,8 @@ It should be used via 'import' plus passing of properties
 'app_src' (listing of the src folders to be included) -->
 <project xmlns:ivy="antlib:org.apache.ivy.ant">
 
+	<mkdir dir="WebContent/WEB-INF/lib" />
+		
 	<!-- requires app_name, app_properties properties and app_src path -->
 	<fail unless="app_properties">app_properties is not set. Did you use the right build_xyz.xml?</fail>
 	<available file="${app_properties}" property="isFileAvail" />
@@ -355,6 +357,7 @@ It should be used via 'import' plus passing of properties
 
 	<target name="download-jars">
 		<echo message="installing ivy.." />
+		<mkdir dir="WebContent/WEB-INF/lib" />
 		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0-rc1/ivy-2.0.0-rc1.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
 		<path id="ivy.lib.path">
 			<fileset dir="${lib.dir}" includes="ivy.jar"/>
