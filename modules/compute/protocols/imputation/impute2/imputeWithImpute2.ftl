@@ -17,11 +17,11 @@ inputs "${referenceImpute2HapFile}"
 inputs "${referenceImpute2LegendFile}"
 inputs "${referenceImpute2MapFile}"
 inputs "${preparedStudyDir}/chr${chr}.gen"
-inputs "${impute2ResultChrBin}"
-inputs "${impute2ResultChrBin}_info"
-inputs "${impute2ResultChrBin}_info_by_sample"
-inputs "${impute2ResultChrBin}_summary"
-inputs "${impute2ResultChrBin}_warnings"
+alloutputsexist "${impute2ResultChrBin}"
+alloutputsexist "${impute2ResultChrBin}_info"
+alloutputsexist "${impute2ResultChrBin}_info_by_sample"
+alloutputsexist "${impute2ResultChrBin}_summary"
+alloutputsexist "${impute2ResultChrBin}_warnings"
 
 module load ${impute}/${impute2Binversion}
 
