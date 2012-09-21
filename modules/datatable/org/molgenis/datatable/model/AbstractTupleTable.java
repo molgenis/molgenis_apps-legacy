@@ -19,7 +19,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	private int offset = 0;
 	private int colOffset = 0;
 	private int colLimit = 0;
-	private List<Field> visibleColumns;
+	// private List<Field> visibleColumns;
 	private Database db;
 	private Map<String, Integer> columnByIndex;
 
@@ -33,59 +33,65 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public void setVisibleColumnNames(List<String> columnNames)
+	public void hideColumn(String columnName)
 	{
-		List<Field> columns;
 		try
 		{
-			columns = getAllColumns();
+			getColumnByName(columnName).setHidden(true);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void showColumn(String columnName)
+	{
+		try
+		{
+			getColumnByName(columnName).setHidden(false);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<String> getHiddenColumnNames()
+	{
+		List<String> hiddenColumns = new ArrayList<String>();
+		try
+		{
+			for (Field column : getAllColumns())
+			{
+				if (column.isHidden())
+				{
+					hiddenColumns.add(column.getName());
+				}
+			}
 		}
 		catch (TableException e)
 		{
 			throw new RuntimeException(e);
 		}
 
-		visibleColumns = new ArrayList<Field>(columnNames.size());
-		for (Field column : columns)
+		return hiddenColumns;
+	}
+
+	protected List<Field> getVisibleColumns() throws TableException
+	{
+		List<Field> visibleColumns = new ArrayList<Field>();
+		for (Field column : getAllColumns())
 		{
-			if (columnNames.contains(column.getName()))
+			if (!column.isHidden())
 			{
 				visibleColumns.add(column);
 			}
 		}
 
-	}
-
-	public List<String> getVisibleColumnNames()
-	{
-		List<Field> visibleColumns;
-		try
-		{
-			visibleColumns = getVisibleColumns();
-		}
-		catch (TableException e)
-		{
-			throw new RuntimeException(e);
-		}
-
-		List<String> visibleColumnNames = new ArrayList<String>(visibleColumns.size());
-		for (Field column : visibleColumns)
-		{
-			visibleColumnNames.add(column.getName());
-		}
-
-		return visibleColumnNames;
-	}
-
-	protected List<Field> getVisibleColumns() throws TableException
-	{
-		if (visibleColumns == null)
-		{
-			visibleColumns = getAllColumns();
-		}
-
 		return visibleColumns;
-
 	}
 
 	@Override

@@ -62,6 +62,7 @@ public class JQGridConfiguration
 	public int totalColumnCount;
 	public int colOffset;
 	public int colLimit;
+	public List<String> hiddenColumns;
 
 	/** virtual scrolling */
 	// public int scroll = 1;
@@ -99,6 +100,8 @@ public class JQGridConfiguration
 		// "{repeatitems: false, id: \"Code\"}"
 		jsonReader.put("repeatitems", false);
 		jsonReader.put("id", idField);
+
+		this.hiddenColumns = tupleTable.getHiddenColumnNames();
 
 		if (tupleTable instanceof FilterableTupleTable)
 		{

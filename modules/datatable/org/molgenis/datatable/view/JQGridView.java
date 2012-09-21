@@ -62,7 +62,7 @@ public class JQGridView extends HtmlWidget
 	 */
 	private enum Operation
 	{
-		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE, HIDE_COLUMN
+		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE, HIDE_COLUMN, SHOW_COLUMN
 	}
 
 	/**
@@ -168,9 +168,12 @@ public class JQGridView extends HtmlWidget
 					break;
 				case HIDE_COLUMN:
 					String columnToRemove = request.getString("column");
-					List<String> visibleColumns = tupleTable.getVisibleColumnNames();
-					visibleColumns.remove(columnToRemove);
-					tupleTable.setVisibleColumnNames(visibleColumns);
+					tupleTable.hideColumn(columnToRemove);
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case SHOW_COLUMN:
+					String columnToShow = request.getString("column");
+					tupleTable.showColumn(columnToShow);
 					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 					break;
 				case SET_COLUMN_PAGE:
