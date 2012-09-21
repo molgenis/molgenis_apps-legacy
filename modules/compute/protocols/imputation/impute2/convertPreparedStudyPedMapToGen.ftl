@@ -14,6 +14,9 @@ inputs "${preparedStudyDir}/chr${chr}.map"
 alloutputsexist "${preparedStudyDir}/chr${chr}.gen"
 alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
 
+# Added to workaround scheduler :(
+sleep 720
+
 
 module load ${gtoolBin}/${gtoolBinversion}
 
