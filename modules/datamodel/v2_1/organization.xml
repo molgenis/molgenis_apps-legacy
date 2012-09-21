@@ -21,6 +21,8 @@
 			<field name="Contact" type="xref" xref_entity="Person"
 				nillable="true" description="Primary contact person for this study" />
 			<!-- discussion: should this be a PersonAffiliated? Or Role? -->
+			<!--  rkh: added xref to investigation -->
+			<field name="PartOfInvestigation" label="Part of Investigation" type="xref" xref_entity="Investigation" description="xref to the investigation the study is part of"/>
 		</entity>
 		
 		<entity name="Experiment" implements="Identifiable">
