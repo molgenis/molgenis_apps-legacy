@@ -2,13 +2,18 @@
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="omicsconnect">
 	<plugin name="oc_header" type="org.molgenis.omicsconnect.plugins.header.Header" />
+	
 
-	<!-- plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" 
-		/ -->
 	<menu name="main">
-	<plugin name="Pubmed" type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup"/>
+	
+		
+	<plugin name="Pubmed" type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
+	<plugin name="OntoCat" type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat"/>
+	<plugin name="BootStrap" type="org.molgenis.omicsconnect.plugins.ontocat.BootStrap"/>
+	
 		<form name="Characteristics" entity="Characteristic" />
 		<form name="Panels" entity="Panel" />
+		<form name="Citations" entity="Citation"/>
 		<form name="Individuals" entity="Individual" />
 		<form name="Features" entity="ObservableFeature">
 			<form name="PermittedValues" entity="PermittedValue" />
@@ -49,7 +54,6 @@
 
 					<form name="Contributions" entity="Contribution" />
 					<form name="StudyAnalysisMethods" entity="Protocol" />
-					<form name="Citations" label="Citations" entity="Citation" />
 					<form name="Experiments" entity="Experiment" compact_view="identifier,experimentType">
 						<menu name="ExperimentMenu">
 							<!-- <form name="DataSets" lalel="DataSets / ResultSets" entity="DataSet"/> 
