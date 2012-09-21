@@ -1,7 +1,9 @@
 package org.molgenis.datatable.model;
 
 import java.util.Iterator;
+import java.util.List;
 
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
 /**
@@ -50,7 +52,14 @@ public class TupleTableIterator implements Iterator<Tuple>
 		Tuple tuple;
 		try
 		{
-			tuple = tupleTable.getValues(tupleTable.getOffset() + row, tupleTable.getColumns());
+			List<Field> columns = tupleTable.getColumns();
+
+			if (tupleTable.isFirstColumnFixed())
+			{
+				columns.add(tupleTable.getAllColumns().get(0));
+			}
+
+			tuple = tupleTable.getValues(tupleTable.getOffset() + row, columns);
 		}
 		catch (TableException e)
 		{

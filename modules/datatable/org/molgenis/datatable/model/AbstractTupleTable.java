@@ -19,7 +19,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	private int offset = 0;
 	private int colOffset = 0;
 	private int colLimit = 0;
-	// private List<Field> visibleColumns;
+	private boolean firstColumnFixed;
 	private Database db;
 	private Map<String, Integer> columnByIndex;
 
@@ -30,6 +30,18 @@ public abstract class AbstractTupleTable implements TupleTable
 		offset = 0;
 		colOffset = 0;
 		colLimit = 0;
+	}
+
+	@Override
+	public void setFirstColumnFixed(boolean firstColumnFixed)
+	{
+		this.firstColumnFixed = firstColumnFixed;
+	}
+
+	@Override
+	public boolean isFirstColumnFixed()
+	{
+		return firstColumnFixed;
 	}
 
 	@Override
@@ -129,17 +141,24 @@ public abstract class AbstractTupleTable implements TupleTable
 		List<Field> result;
 		List<Field> columns = getVisibleColumns();
 
-		int colLimit = (int) (getColLimit() == 0 ? getColCount() - getColOffset() : getCurrentColumnPageSize());
+		if (isFirstColumnFixed())
+		{
+			columns.remove(0);
+		}
+
+		int colCount = columns.size();
+
+		int colLimit = (int) (this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize());
 
 		if (getColOffset() > 0)
 		{
 			if (colLimit > 0)
 			{
-				result = columns.subList(getColOffset(), Math.min(getColOffset() + colLimit, columns.size()));
+				result = columns.subList(getColOffset(), Math.min(getColOffset() + colLimit, colCount));
 			}
 			else
 			{
-				result = columns.subList(getColOffset(), columns.size());
+				result = columns.subList(getColOffset(), colCount);
 			}
 		}
 		else
@@ -152,6 +171,11 @@ public abstract class AbstractTupleTable implements TupleTable
 			{
 				result = columns;
 			}
+		}
+
+		if (isFirstColumnFixed())
+		{
+			result.add(0, getAllColumns().get(0));
 		}
 
 		return result;
@@ -169,7 +193,17 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public abstract Iterator<Tuple> iterator();
+	public Iterator<Tuple> iterator()
+	{
+		try
+		{
+			return new TupleTableIterator(this);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public void close() throws TableException
@@ -196,13 +230,13 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public int getColLimit()
 	{
-		return this.colLimit;
+		return colLimit;
 	}
 
 	@Override
 	public int getColOffset()
 	{
-		return this.colOffset;
+		return colOffset;
 	}
 
 	@Override
@@ -234,8 +268,7 @@ public abstract class AbstractTupleTable implements TupleTable
 		}
 		catch (DatabaseException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return this.db;
 	}

@@ -28,6 +28,11 @@ public interface TupleTable extends Iterable<Tuple>
 
 	public List<String> getHiddenColumnNames();
 
+	/** Wether the first column is 'fixed', must always be visible **/
+	public void setFirstColumnFixed(boolean firstColumnFixed);
+
+	public boolean isFirstColumnFixed();
+
 	/**
 	 * Get meta data describing the columns in current view (within
 	 * colLimit/colOffset)

@@ -77,6 +77,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			// create table
 			TupleTable table = new PedMapTupleTable(pedFile, mapFile);
+			table.setFirstColumnFixed(true);
 
 			System.out.println("PedMapTupleTable created..");
 

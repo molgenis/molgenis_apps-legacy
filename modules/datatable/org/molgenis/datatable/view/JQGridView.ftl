@@ -62,7 +62,7 @@ $.fn.extend({
        				//Create new jqGrid
        				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, {}, {}, {}, config.searchOptions);
        			
-       				addColumnRemoveButtons();
+       				addColumnRemoveButtons(config);
        				
        				//Put the columnpager in the grid toolbar
        				var toolbar = $('#t_' + options.tableId);
@@ -132,27 +132,29 @@ $.fn.extend({
        			});	
        		} 
        		
-       		addColumnRemoveButtons = function() {
+       		addColumnRemoveButtons = function(config) {
        			grid.closest("div.ui-jqgrid-view")
        				.find("div.ui-jqgrid-hdiv table.ui-jqgrid-htable tr.ui-jqgrid-labels > th.ui-th-column > div.ui-jqgrid-sortable")
-    				.each(function () {
-        				$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
-            				icons: { primary: "ui-icon-circle-close" },
-            				text: false,
-            				label: 'Hide column'
-        				}).click(function (e) {
-        			 		var idPrefix = "jqgh_" + grid[0].id + "_";
-                			var thId = $(e.target).closest('div.ui-jqgrid-sortable')[0].id;
+    				.each(function (index) {
+    					if (!config.firstColumnFixed || index > 0) {
+        					$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
+            					icons: { primary: "ui-icon-circle-close" },
+            					text: false,
+            					label: 'Hide column'
+        					}).click(function (e) {
+        			 			var idPrefix = "jqgh_" + grid[0].id + "_";
+                				var thId = $(e.target).closest('div.ui-jqgrid-sortable')[0].id;
                 		
-            				// thId will be like "jqgh_tablename_column"
-            				if (thId.substr(0, idPrefix.length) === idPrefix) {
-            					var column = thId.substr(idPrefix.length);
-                				reloadGrid('HIDE_COLUMN&column=' + column, true);
+            					// thId will be like "jqgh_tablename_column"
+            					if (thId.substr(0, idPrefix.length) === idPrefix) {
+            						var column = thId.substr(idPrefix.length);
+                					reloadGrid('HIDE_COLUMN&column=' + column, true);
                 			
-                				return false;
-            				}
+                					return false;
+            					}
 
-       					});
+       						});
+       					}
     			});
        				
        		}
