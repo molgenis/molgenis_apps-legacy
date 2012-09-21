@@ -4,7 +4,7 @@
 
 getFile "${imputationToolJar}"
 getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibraries}"
+getFile "${imputationToolGeneticaLibrariesJar}"
 
 getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
 getFile ${studyTriTyperChrDir}/Individuals.txt
@@ -38,7 +38,7 @@ alloutputsexist "${preparedStudyDir}/chr${chr}.markersbeagleformat"
 alloutputsexist "${preparedStudyDir}/chr${chr}.ped"
 alloutputsexist "${preparedStudyDir}/exportlog.txt"
 
-module load java/${javaversion}
+module load jdk/${javaversion}
 
 mkdir ${preparedStudyTempDir}
 
