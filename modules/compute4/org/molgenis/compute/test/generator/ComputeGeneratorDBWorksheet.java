@@ -81,7 +81,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 			// Set path so that protocols can include other protocols using the
 			// "include" statement
 
-			//cfg.setDirectoryForTemplateLoading(protocolsDir);
+			cfg.setDirectoryForTemplateLoading(protocolsDir);
 
 			System.out.println(">> Create script name: " + taskName);
 			// System.out.println(">> Create script template: " +
@@ -134,12 +134,11 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 		File protocolsDir = new File(protocolsDirName);
 
-
 		try
 		{
 			db = DatabaseFactory.create();
 			saveProtocolsInDir(db, protocolsDir);
-			
+
 			db.beginTx();
 		}
 		catch (DatabaseException e)
