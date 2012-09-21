@@ -292,7 +292,7 @@ public class JQGridView extends HtmlWidget
 							{
 								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
 								mu.UpdateDatabase(db, targetID, request.getString(eachField.getName()),
-										eachField.getName(), protAppID, hashMeasurementsWithCategories);
+										eachField.getName(), protAppID);
 							}
 						}
 
