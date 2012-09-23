@@ -33,8 +33,10 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 	private HashMap<String, String> variableInformation = new HashMap<String, String>();
-
+	private int loadingProcess = 0;
 	private String investigationName = "Prevend";
+
+	private List<String> topProtocols = new ArrayList<String>();;
 
 	public catalogueTreePluginNew(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -66,10 +68,23 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 			if ("download_json_loadingTree".equals(request.getAction())) {
 
-				List<String> topProtocols = getTopProtocols(investigationName,
-						db);
+				if (topProtocols.size() == 0) {
+					topProtocols = getTopProtocols(investigationName, db);
+				}
 
-				for (String protocolName : topProtocols) {
+				int increment = topProtocols.size() / 5;
+
+				int upperLimit = topProtocols.size() < (loadingProcess + 1)
+						* increment ? topProtocols.size()
+						: (loadingProcess + 1) * increment;
+
+				for (int i = loadingProcess * increment; i < upperLimit; i++) {
+
+					String protocolName = topProtocols.get(i);
+
+					// }
+					//
+					// for (String protocolName : topProtocols) {
 
 					JQueryTreeViewElement childTree = null;
 
@@ -87,9 +102,47 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 								protocolName.replaceAll(" ", "_"), childTree);
 
 					}
-
 					createNodesForChild(childTree, db);
+
+					// if (protocolsAndMeasurementsinTree.size() >
+					// loadingProcess * 1000) {
+					//
+					// JSONObject json = new JSONObject();
+					//
+					// json.put("result", loadingProcess * 1000);
+					//
+					// PrintWriter writer = new PrintWriter(out);
+					//
+					// writer.write(json.toString());
+					//
+					// writer.flush();
+					//
+					// writer.close();
+					//
+					// loadingProcess++;
+					// }
+
 				}
+
+				loadingProcess++;
+
+				JSONObject json = new JSONObject();
+
+				json.put("result", loadingProcess);
+
+				if (loadingProcess == 5) {
+					json.put("status", true);
+				} else {
+					json.put("status", false);
+				}
+
+				PrintWriter writer = new PrintWriter(out);
+
+				writer.write(json.toString());
+
+				writer.flush();
+
+				writer.close();
 
 			} else if ("download_json_search".equals(request.getAction())) {
 
@@ -281,6 +334,8 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	@Override
 	public void reload(Database db) {
 
+		loadingProcess = 0;
+		topProtocols.clear();
 		nameToProtocol.clear();
 		multipleInheritance.clear();
 		protocolsAndMeasurementsinTree.clear();

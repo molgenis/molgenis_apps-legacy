@@ -101,32 +101,47 @@
 				toggleNodeEvent($(this));
 			});	
 			showModal();
+			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:36%;top:60%\"></div>");
+			$("#progressbar").progressbar({
+				value: 0
+			});
+			loadTree();
+			$('.modalWindow').remove();
+			$('#progressbar').remove();
+			$('#treePanel').show();
+		});
+		
+		function loadTree(){
+			status = {};
 			$.ajax({
 				url:"${screen.getUrl()}&__action=download_json_loadingTree",
 				async: false,
-			}).done();
-			$('.modalWindow').remove();
-		});
+			}).done(function(result){
+				status = result;
+			});
+			$("#progressbar").progressbar({
+				value: status["result"]/5 * 100
+			});
+			if(status["status"] == false){
+				loadTree();
+			}
+		}
 		
 		function showModal(){
-		  $("body").append('<div class="modalWindow"/>');
+			$("body").append("<div class=\"modalWindow\"></div>");
+			$('.modalWindow').css({
+				'left' : '0px',
+				'top' : '0px',
+				'width' : '100%',
+			    'height' : '100%',
+			    'position' : 'absolute',
+			    'z-index' : '1500',
+			    'background' : 'grey',
+			    'opacity' : '0.5'
+			});
 		}
 		
 	</script>
-	
-	<style>
-    	.modalWindow{
-			left:0px;
-			top:0px;
-			width: 100%;
-		    height: 100%;
-		    position: absolute;
-		    z-index: 1500;
-		    background: grey;
-		    opacity: 0.5;
-		}
-    </style>
-	
 	
 	<div class="formscreen">
 		
@@ -144,14 +159,15 @@
 		</#list>
 		
 		<div class="screenbody">
-			</br>
-			<input type="button" id="search" value="search"/>
-			</br>
-			<#if screen.getTreeView??>
-				<ul id="browser" class="pointtree"> 
-					${screen.getTreeView()} 
-				</ul>
-			</#if>
+			<div id="treePanel" style="display:none">
+				<input type="button" id="search" value="search"/>
+				</br>
+				<#if screen.getTreeView??>
+					<ul id="browser" class="pointtree"> 
+						${screen.getTreeView()} 
+					</ul>
+				</#if>
+			</div>
 		</div>
 	</div>
 	
