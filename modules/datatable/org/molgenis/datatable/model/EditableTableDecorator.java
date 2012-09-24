@@ -181,15 +181,33 @@ public class EditableTableDecorator implements FilterableTupleTable
 	}
 
 	@Override
-	public void setVisibleColumnNames(List<String> columnNames)
+	public void hideColumn(String columnName)
 	{
-		decoratedTable.setVisibleColumnNames(columnNames);
+		decoratedTable.hideColumn(columnName);
 	}
 
 	@Override
-	public List<String> getVisibleColumnNames()
+	public void showColumn(String columnName)
 	{
-		return decoratedTable.getVisibleColumnNames();
+		decoratedTable.showColumn(columnName);
+	}
+
+	@Override
+	public List<String> getHiddenColumnNames()
+	{
+		return decoratedTable.getHiddenColumnNames();
+	}
+
+	@Override
+	public void setFirstColumnFixed(boolean firstColumnFixed)
+	{
+		decoratedTable.setFirstColumnFixed(firstColumnFixed);
+	}
+
+	@Override
+	public boolean isFirstColumnFixed()
+	{
+		return decoratedTable.isFirstColumnFixed();
 	}
 
 }

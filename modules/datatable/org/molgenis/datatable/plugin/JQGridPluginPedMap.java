@@ -77,6 +77,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			// create table
 			TupleTable table = new PedMapTupleTable(pedFile, mapFile);
+			table.setFirstColumnFixed(true);
 
 			System.out.println("PedMapTupleTable created..");
 
@@ -88,7 +89,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 			searchOptions.sopt = Arrays.asList(new JQGridRule.JQGridOp[]
 			{ JQGridRule.JQGridOp.eq });
 
-			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false, searchOptions);
+			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, searchOptions);
 			tableView.setLabel("Genotypes");
 
 			System.out.println("tableView created..");

@@ -134,12 +134,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			// List<String> colNames = new ArrayList<String>();
-			// for (Field f : getColumns())
-			// {
-			// colNames.add(protocol.getName() + "." + f.getName());
-			// }
-
 			List<Tuple> result = new ArrayList<Tuple>();
 			for (Integer rowId : getRowIds(false))
 			{
