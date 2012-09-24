@@ -10,6 +10,7 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/import" />
 		<pathelement location="modules/webserver" />
+		<pathelement location="modules/minigui" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

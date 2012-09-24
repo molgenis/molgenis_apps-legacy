@@ -45,7 +45,7 @@
 			</ul>
 		</description>
 		<entity name="Identifiable" implements="Autoid" abstract="true"
-			system="true" xref_label="Identifier">
+			system="true" xref_label="Identifier" decorator="org.molgenis.omicsconnect.decorators.IdentifiableDecorator">
 			<description>This interface assigns an automatic 'id', globally
 				unique identifier
 				'identifier' field, and possibly not unique 'name'
