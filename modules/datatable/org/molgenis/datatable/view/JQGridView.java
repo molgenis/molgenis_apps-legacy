@@ -110,7 +110,7 @@ public class JQGridView extends HtmlWidget
 	}
 
 	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table,
-			boolean showColumnTree, JQGridSearchOptions searchOptions)
+			JQGridSearchOptions searchOptions)
 	{
 		this(name, hostController, table);
 		this.searchOptions = searchOptions;

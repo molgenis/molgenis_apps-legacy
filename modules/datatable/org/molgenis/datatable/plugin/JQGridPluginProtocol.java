@@ -16,8 +16,8 @@ import org.molgenis.util.Tuple;
 /** Simple plugin that only shows a data table for testing */
 public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProtocol>
 {
-	JQGridView tableView;
-	boolean editable = false;
+	private static final long serialVersionUID = 1678403545717313675L;
+	private JQGridView tableView;
 
 	public JQGridPluginProtocol(String name, ScreenController<?> parent)
 	{
@@ -41,13 +41,12 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 
 			// check which table to show
 			tableView = new JQGridView("test", this, table);
-
-			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+			tableView.setLabel("Phenotypes");
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.setError(e.getMessage());
+			setError(e.getMessage());
 		}
 	}
 
@@ -61,13 +60,6 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 		tableView.handleRequest(db, request, out);
 
 	}
-
-	//
-	// public void handleRequest(Database db, Tuple request) {
-	// if (request.getAction().equals("edit")) {
-	// System.out.println("hello world");
-	// }
-	// }
 
 	// what is shown to the user
 	public ScreenView getView()
