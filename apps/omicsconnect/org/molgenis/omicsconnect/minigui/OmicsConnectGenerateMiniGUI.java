@@ -10,9 +10,8 @@ public class OmicsConnectGenerateMiniGUI
 
 	/**
 	 * 
-	 * Experimental GUI, development mock-up.
-	 * 
-	 * Add to the default OmicsConnect build path: modules/minigui
+	 * Experimental GUI, development mock-up. Uses the same build settings as
+	 * the regular Omics Connect.
 	 * 
 	 */
 	public static void main(String[] args) throws Exception
