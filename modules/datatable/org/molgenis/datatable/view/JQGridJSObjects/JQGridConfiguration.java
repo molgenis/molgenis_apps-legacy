@@ -59,9 +59,20 @@ public class JQGridConfiguration
 	/** default height */
 	public String height = "232px";
 
+	/** the total column count **/
 	public int totalColumnCount;
+
+	/** the current column offset **/
 	public int colOffset;
+
+	/** the current coliumn limit, so the nr of visible columns **/
 	public int colLimit;
+
+	/** list of hidden column names **/
+	public List<String> hiddenColumns;
+
+	/** Wether the first column is 'fixed', must always be visible **/
+	public boolean firstColumnFixed;
 
 	/** virtual scrolling */
 	// public int scroll = 1;
@@ -95,10 +106,13 @@ public class JQGridConfiguration
 		this.totalColumnCount = tupleTable.getColCount();
 		this.colOffset = tupleTable.getColOffset();
 		this.colLimit = tupleTable.getColLimit();
+		this.firstColumnFixed = tupleTable.isFirstColumnFixed();
 
 		// "{repeatitems: false, id: \"Code\"}"
 		jsonReader.put("repeatitems", false);
 		jsonReader.put("id", idField);
+
+		this.hiddenColumns = tupleTable.getHiddenColumnNames();
 
 		if (tupleTable instanceof FilterableTupleTable)
 		{
