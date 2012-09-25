@@ -57,13 +57,54 @@ $.fn.extend({
      					
        					return true;
        				};
-       				
-       				
+    				
        				//Create new jqGrid
-       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, {}, {}, {}, config.searchOptions);
+       				var deleteRecordConfig = {
+       					onclickSubmit : function(param) {
+							config.postData.Operation = "DELETE_RECORD";
+							
+							var selRowId = grid.jqGrid ('getGridParam', 'selrow');
+							var rowData = grid.jqGrid('getRowData', selRowId);
+							
+							for (col in rowData) {
+								config.postData[col] = rowData[col];
+							}
+							
+							return config.postData;
+						},
+						afterComplete : function (response, postdata, formid) {
+							delete config.postdata.Operation;
+						} 
+       				}
+       				
+       				var editRecordConfig = {
+       					onclickSubmit : function(param) {
+							config.postData.Operation = "EDIT_RECORD";
+							return config.postData;
+						},
+						afterComplete : function (response, postdata, formid) {
+							delete config.postData.Operation;
+						} 
+       				}
+       				
+       				var addRecordConfig = {
+       					onclickSubmit : function(param) {
+							config.postData.Operation = "ADD_RECORD";
+							return config.postData;
+						},
+						afterComplete : function (response, postdata, formid) {
+							delete config.postData.Operation;
+						} 
+       				}
+       				
+       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, editRecordConfig, addRecordConfig, deleteRecordConfig, config.searchOptions);
        			
        				addColumnRemoveButtons(config);
        				
+       				grid.bind('jqGridAddEditBeforeShowForm', function(e, form, oper) {
+       					
+					});
+					
        				//Put the columnpager in the grid toolbar
        				var toolbar = $('#t_' + options.tableId);
        				toolbar.css({"height" : "30px", "padding" : "4px", "width" : "848px"});//Style of the toolbar where all paging widges are
