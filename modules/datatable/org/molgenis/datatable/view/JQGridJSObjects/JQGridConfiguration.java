@@ -122,10 +122,9 @@ public class JQGridConfiguration
 
 		if (tupleTable instanceof EditableTupleTable)
 		{
-			// this does not work correctly yet
-			// settings.add = true;
-			// settings.edit = true;
-			// settings.del = true;
+			settings.add = true;
+			settings.edit = true;
+			settings.del = true;
 		}
 
 		if (tupleTable instanceof ProtocolTable)
