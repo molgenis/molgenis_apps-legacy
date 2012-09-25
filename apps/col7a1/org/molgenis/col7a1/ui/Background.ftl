@@ -19,7 +19,7 @@
 This International Dystrophic Epidermolysis Bullosa Patient Registry is constructed to aid all clinicians and scientists working in the field of dystrophic epidermolysis bullosa (DEB) and the COL7A1 gene. The registry contains all DEB patients who have been published in the medical literature together with their COL7A1 genotypes and molecular phenotypes (i.e. results from immunofluorescence and electron microscopy investigations). The DEB Registry can be searched for patients or mutations, and each by several categories. The registry also contains a number of unpublished patients and COL7A1 mutations. Therefore, this registry can be used as a central, quick reference for all who work in the DEB field. Mutations are numbered according to the current reference sequence (<a href="http://www.ncbi.nlm.nih.gov/nuccore/157389010" target="_new">GenBank Accession no. NM000094.3</a>). Mutation nomenclature is according to the <a href="http://www.hgvs.org/mutnomen/" target="_new">HGVS recommendations</a>. 
 </p>
 <p>
-You are free to use the registry for your studies. A paper describing the development, construction and data of the DEB registry is currently under review. Please cite <a href="http://www.col7a1.org/" target="_new">http://www.col7a1.org/</a> when using the registry. 
+You are free to use the registry for your studies. A paper describing the development, construction and data of the DEB registry is currently under review. Please cite <a href="http://www.deb-central.org/" target="_new">http://www.deb-central.org/</a> when using the registry. 
 </p>
 <h3>About dystrophic epidermolysis bullosa and the COL7A1 gene</h3>
 <p>
@@ -79,7 +79,7 @@ Curation will be done by the curator (Dr. Peter C. van den Akker, MD, Department
 <p>
 The database software has been constructed by the <a href="http://wiki.gcc.rug.nl">Genomics Coordination Center</a>, a joined venture of the Dept. of Genetics, UMCG and the Groningen Bioinformatics Center, University of Groningen, the Netherlands. 
 All software is build using the open source <a href="http://www.molgenis.org">MOLGENIS</a> framework (<a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831">Swertz et al., Bioinformatics, 2004</a> and <a href="http://www.ncbi.nlm.nih.gov/pubmed/17297480">Swertz & Jansen, Nature Reviews Genetics, 2007</a>). 
-and is freely available to others working on locus specific databases at <a href="http://www.molgenis.org/svn/col7a1">http://www.molgenis.org/svn/col7a1</a>.
+and is freely available to others working on locus specific databases at <a href="https://github.com/molgenis/molgenis_apps">https://github.com/molgenis/molgenis_apps</a>.
 Please contact Dr. Morris Swertz, <a href="mailto:m.a.swertz@rug.nl">m.a.swertz@rug.nl</a> if you need assistence.
 </p>
 <h3>References</h3>

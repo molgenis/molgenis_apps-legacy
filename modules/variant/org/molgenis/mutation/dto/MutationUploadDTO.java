@@ -22,22 +22,15 @@ public class MutationUploadDTO implements Serializable
 	private Integer gdnaStart;
 	private Integer gdnaEnd;
 	private String identifier;
-//	private String inheritance;
 	private Integer length;
 	private String mutationPosition;
 	private String ntChange;
-//	private String pathogenicity;
 	private String type;
-	
 	private Integer exonId;
 	private Boolean exonIsIntron;
-	
-	private GeneDTO geneDTO;
 
 	// Values that are calculated but not stored in the db
-//	private String refseq;
 	private String nt;
-//	private String codon;
 	private String aa;
 	private String aachange;
 	
@@ -141,14 +134,6 @@ public class MutationUploadDTO implements Serializable
 		this.identifier = identifier;
 	}
 
-//	public String getInheritance() {
-//		return inheritance;
-//	}
-//
-//	public void setInheritance(String inheritance) {
-//		this.inheritance = inheritance;
-//	}
-
 	public String getEvent() {
 		return event;
 	}
@@ -189,14 +174,6 @@ public class MutationUploadDTO implements Serializable
 		this.ntChange = ntChange;
 	}
 
-//	public String getPathogenicity() {
-//		return pathogenicity;
-//	}
-//
-//	public void setPathogenicity(String pathogenicity) {
-//		this.pathogenicity = pathogenicity;
-//	}
-
 	public String getType() {
 		return type;
 	}
@@ -221,32 +198,12 @@ public class MutationUploadDTO implements Serializable
 		this.exonIsIntron = exonIsIntron;
 	}
 
-	public GeneDTO getGeneDTO() {
-		return geneDTO;
-	}
-
-	public void setGeneDTO(GeneDTO geneDTO) {
-		this.geneDTO = geneDTO;
-	}
-
-//	public String getRefseq() {
-//		return refseq;
-//	}
-//	public void setRefseq(String refseq) {
-//		this.refseq = refseq;
-//	}
 	public String getNt() {
 		return nt;
 	}
 	public void setNt(String nt) {
 		this.nt = nt;
 	}
-//	public String getCodon() {
-//		return codon;
-//	}
-//	public void setCodon(String codon) {
-//		this.codon = codon;
-//	}
 	public String getAa() {
 		return aa;
 	}
