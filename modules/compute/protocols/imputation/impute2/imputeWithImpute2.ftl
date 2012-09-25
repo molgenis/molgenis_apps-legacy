@@ -17,17 +17,25 @@ inputs "${referenceImpute2HapFile}"
 inputs "${referenceImpute2LegendFile}"
 inputs "${referenceImpute2MapFile}"
 inputs "${preparedStudyDir}/chr${chr}.gen"
-alloutputsexist "${impute2ResultChrBin}"
-alloutputsexist "${impute2ResultChrBin}_info"
-alloutputsexist "${impute2ResultChrBin}_info_by_sample"
-alloutputsexist "${impute2ResultChrBin}_summary"
-alloutputsexist "${impute2ResultChrBin}_warnings"
+alloutputsexist "${impute2ResultChrBin}" \
+"${impute2ResultChrBin}_info" \
+"${impute2ResultChrBin}_info_by_sample" \
+"${impute2ResultChrBin}_summary" \
+"${impute2ResultChrBin}_warnings"
+
 
 module load ${impute}/${impute2Binversion}
 
 mkdir -p ${impute2ResultDir}/${chr}/
 
-${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultChrBinTemp}
+${impute2Bin} \
+-h ${referenceImpute2HapFile} \
+-l ${referenceImpute2LegendFile} \
+-m ${referenceImpute2MapFile} \
+-g ${preparedStudyDir}/chr${chr}.gen \
+-int ${fromChrPos} ${toChrPos} \
+-o ${impute2ResultChrBinTemp} \
+2>&1 | tee -a ${impute2ResultChrBinLog}
 
 
 #Get return code from last program call
@@ -50,3 +58,21 @@ else
 	exit 1
 
 fi
+
+#Grep the log file, if there are no SNPs in this interval, three additional empty files will be created
+#This to prevent the pipeline from crashing, since Impute2 doesn't produce these files when no SNPs available
+
+grep "There are no SNPs in the imputation interval" ${impute2ResultChrBinLog}
+
+#Get return code from last program call
+returnCode=$?
+
+if [ $returnCode -eq 0 ]
+then
+
+	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}
+	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info
+	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info_by_sample
+	
+fi
+

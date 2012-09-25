@@ -40,7 +40,7 @@ alloutputsexist "${preparedStudyDir}/exportlog.txt"
 
 module load jdk/${javaversion}
 
-mkdir ${preparedStudyTempDir}
+mkdir -p ${preparedStudyTempDir}
 
 
 java -Xmx8g -jar ${imputationToolJar} \
