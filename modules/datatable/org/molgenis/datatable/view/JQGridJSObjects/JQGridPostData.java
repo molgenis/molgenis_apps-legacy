@@ -18,11 +18,6 @@ public class JQGridPostData
 		sord = request.getString("sord");
 		colPage = request.getInt("colPage");
 
-		for (String f : request.getFieldNames())
-		{
-			System.out.println(f + "=" + request.getObject(f));
-		}
-
 		this.filters = new Gson().fromJson(request.getString("filters"), JQGridFilter.class);
 
 		if (filters == null)
