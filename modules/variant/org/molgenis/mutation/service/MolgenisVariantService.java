@@ -66,6 +66,8 @@ public class MolgenisVariantService
 	{
 		this.db = db;
 		/*FIXME: This should not be in a setter */
+		this.phenoService.setDatabase(db);
+		this.publicationService.setDatabase(db);
 		this.em = db.getEntityManager();
 		this.init();
 	}
