@@ -104,8 +104,6 @@ public class ServiceLocator
      */
     public final Object getService(String serviceName)
     {
-    	for (String s : this.getContext().getBeanDefinitionNames())
-    		System.out.println(">>>name==" + s);
         return this.getContext().getBean(BEAN_PREFIX + serviceName);
     }
 }
