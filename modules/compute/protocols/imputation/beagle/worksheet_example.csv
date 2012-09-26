@@ -1,2 +1,2 @@
 project,imputationResultDir,referencePanel,studyInputDir,chr,imputationPipeline
-proj001,/target/gpfs2/gcc/home/akanterakis/runs/Beagle_19_Sep_2012/RESULTS,gonl_release31,/target/gpfs2/gcc/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood_b37/,20,MACH_MINIMAC
+proj001,/target/gpfs2/gcc/home/akanterakis/runs/Beagle_19_Sep_2012/RESULTS,gonl_release3.1,/target/gpfs2/gcc/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood_b37/,20,MACH_MINIMAC
