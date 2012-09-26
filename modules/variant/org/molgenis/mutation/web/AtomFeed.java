@@ -43,7 +43,7 @@ public class AtomFeed implements MolgenisService
 
 		try
 		{
-			if (StringUtils.startsWith(request.getPathInfo(), "/genes"))
+			if (StringUtils.startsWith(request.getPathInfo(), "/gene"))
 			{
 				this.handleGeneFeed(req, resp);
 			}
