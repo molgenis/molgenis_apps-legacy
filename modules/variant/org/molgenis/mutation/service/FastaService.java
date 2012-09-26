@@ -13,8 +13,8 @@ public class FastaService
 	private Database db;
 	private final int ROWSIZE = 60;
 	
-	@Autowired
-	public FastaService(Database db)
+	//@Autowired
+	public void setDatabase(Database db)
 	{
 		this.db = db;
 	}

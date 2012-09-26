@@ -27,6 +27,21 @@
 	<tr>
 		<td align="center" colspan="7" >
 			<div align="left">
+			<#if screen.userIsAdminAndDatabaseIsEmpty == true>
+				<table bgcolor="white" border="3" bordercolor="red">
+					<tr>
+						<td>
+							<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations or other users. Automated setup is now possible. Database additions will disable this notice. <b>Please be patient: loading the test data will take a few minutes.</b></font></i><br><br>
+							<#if screen.validFileStorage == true>
+							<input type="submit" value="Load" id="loadExamples" onclick="document.forms.${screen.name}.__action.value = 'setPathAndLoad'; document.forms.${screen.name}.submit();"/>
+							<#else>
+							<h2>Please setup your file storage location first:</h2><h3>Go to <u>Admin</u> -> <u>File Storage</u>, validate a location, and come back here.</h3>
+							</#if>
+							<br><br>
+						</td>
+					</tr>
+				</table>
+			</#if>
 			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
 			<br><br>
 			<h3>Welcome to the LifeLines Research Platform<#if screen.studyInfo??> for study ${screen.studyInfo}</#if></h3>

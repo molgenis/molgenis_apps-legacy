@@ -26,8 +26,8 @@ public class PublicationService
 	private final int BATCH_SIZE = 50;
 	public static final String PUBMED_URL = "http://www.ncbi.nlm.nih.gov/pubmed/";
 
-	@Autowired
-	public PublicationService(final Database db)
+	//@Autowired
+	public void setDatabase(final Database db)
 	{
 		this.db = db;
 		this.em = db.getEntityManager();
@@ -99,6 +99,7 @@ public class PublicationService
 		PublicationDTO publicationDTO = new PublicationDTO();
 		publicationDTO.setId(publication.getId());
 		publicationDTO.setAuthors(publication.getAuthorList());
+		publicationDTO.setFirstAuthor(StringUtils.split(publication.getAuthorList(), ",")[0]);
 		publicationDTO.setJournal(publication.getJournal());
 		publicationDTO.setName(publication.getName());
 		publicationDTO.setPubmedId(publication.getName());
