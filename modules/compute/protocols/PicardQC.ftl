@@ -9,15 +9,15 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=4
+#TARGETS
 
-inputs "${sortedbam}"
-inputs "${indexfile}"
+
+getFile ${sortedbam}
+getFile ${indexfile}
 <#if capturingKit != "None">
-inputs ${baitintervals}
-inputs ${targetintervals}
-#INPUTS sortedbam,indexfile,baitintervals,targetintervals
+getFile ${baitintervals}
+getFile ${targetintervals}
 <#else>
-#INPUTS sortedbam,indexfile
 </#if>
 
 alloutputsexist \
@@ -33,10 +33,7 @@ alloutputsexist \
  "${hsmetrics}" \
  "${bamindexstats}"
 
-#OUTPUTS alignmentmetrics,gcbiasmetrics,gcbiasmetricspdf,insertsizemetrics,insertsizemetricspdf,meanqualitybycycle,meanqualitybycyclepdf,qualityscoredistribution,qualityscoredistributionpdf,hsmetrics,bamindexstats
-#LOGS log
 #EXES alignmentmetricsjar,gcbiasmetricsjar,insertsizemetricsjar,meanqualitybycyclejar,qualityscoredistributionjar,hsmetricsjar,bamindexstatsjar
-#TARGETS
 
 java -jar -Xmx4g ${alignmentmetricsjar} \
 I=${sortedbam} \
@@ -102,3 +99,16 @@ INPUT=${sortedbam} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir} \
 > ${bamindexstats}
+
+
+putFile ${alignmentmetrics}
+putFile ${gcbiasmetrics}
+putFile ${gcbiasmetricspdf}
+putFile ${insertsizemetrics}
+putFile ${insertsizemetricspdf}
+putFile ${meanqualitybycycle}
+putFile ${meanqualitybycyclepdf}
+putFile ${qualityscoredistribution}
+putFile ${qualityscoredistributionpdf}
+putFile ${hsmetrics}
+putFile ${bamindexstats}

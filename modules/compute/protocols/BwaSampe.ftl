@@ -9,18 +9,15 @@
 #
 
 #MOLGENIS walltime=23:59:00
-
-#INPUTS	indexfile,leftbwaout,rightbwaout,leftbarcodefqgz,rightbarcodefqgz
-#OUTPUTS samfile
-#LOGS log
-#EXES bwasampejar
 #TARGETS
 
-inputs "${indexfile}"
-inputs "${leftbwaout}"
-inputs "${rightbwaout}"
-inputs "${leftbarcodefqgz}"
-inputs "${rightbarcodefqgz}"
+#EXES bwasampejar
+
+getFile ${indexfile}
+getFile ${leftbwaout}
+getFile ${rightbwaout}
+getFile ${leftbarcodefqgz}
+getFile ${rightbarcodefqgz}
 alloutputsexist "${samfile}"
 
 <#if seqType == "PE">${bwasampejar} sampe -P \<#else>${bwasampejar} samse \</#if>
@@ -34,3 +31,5 @@ ${leftbwaout} \
 </#if>${leftbarcodefqgz} \
 <#if seqType == "PE">${rightbarcodefqgz} \
 </#if>-f ${samfile}
+
+putFile ${samfile}

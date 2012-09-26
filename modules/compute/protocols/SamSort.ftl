@@ -9,14 +9,11 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=4
-
-#INPUTS bamfile
-#OUTPUTS sortedbam,sortedbamindex
-#LOGS log
-#EXES sortsamjar,buildbamindexjar
 #TARGETS
 
-inputs "${bamfile}"
+#EXES sortsamjar,buildbamindexjar
+
+getFile ${bamfile}
 alloutputsexist \
  "${sortedbam}" \
  "${sortedbamindex}"
@@ -35,3 +32,6 @@ OUTPUT=${sortedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
+
+putFile ${sortedbam}
+putFile ${sortedbamindex}
