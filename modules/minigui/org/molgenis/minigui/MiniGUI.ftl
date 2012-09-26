@@ -32,7 +32,7 @@
 			<table>
 				<tr>
 					<td align="center">
-						<img src="clusterdemo/logos/molgenis_logo.png">
+						<img src="${screen.VO.logoLocation}">
 					</td>
 				</tr>
 				<tr>

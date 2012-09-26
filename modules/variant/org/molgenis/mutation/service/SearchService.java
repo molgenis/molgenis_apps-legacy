@@ -15,7 +15,6 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.molgenis.core.Publication;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 
@@ -31,18 +30,11 @@ import org.molgenis.variant.Exon;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.ProteinDomain;
 import org.molgenis.variant.Variant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SearchService extends MolgenisVariantService
 {
-	@Autowired
-	public SearchService(Database db)
-	{
-		super(db);
-	}
-
 	/**
 	 * Find exon by its primary key
 	 * @param id

@@ -42,23 +42,37 @@ import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 public class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
 	private static final long serialVersionUID = 651270609185006020L;
+	
+	private CmsService cmsService;
+	private PhenoService phenoService;
+	private SearchService searchService;
+	private StatisticsService statisticsService;
 
 	public SearchPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
 		this.setModel(new SearchModel(this));
 		this.view = new FreemarkerView("init.ftl", getModel());
+		
+		this.cmsService        = ServiceLocator.instance().getCmsService();
+		this.phenoService      = ServiceLocator.instance().getPhenoService();
+		this.searchService     = ServiceLocator.instance().getSearchService();
+		this.statisticsService = ServiceLocator.instance().getStatisticsService();
+
 		this.getModel().setPatientPager("/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 		this.getModel().setMutationViewer("/org/molgenis/mutation/ui/search/mutation.ftl");
 		this.getModel().setMbrowse(new MBrowse());
 		this.getModel().getMbrowse().setTarget(this.getName());
-		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
+//		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
 	}
 	
 	private ScreenView view;
@@ -78,6 +92,11 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	{
 		try
 		{
+			this.cmsService.setDatabase(db);
+			this.phenoService.setDatabase(db);
+			this.searchService.setDatabase(db);
+			this.statisticsService.setDatabase(db);
+
 			if (StringUtils.isEmpty(request.getAction()))
 				this.getModel().setAction("init");
 			else
@@ -231,8 +250,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			if (request.getString("snpbool").equals("hide"))
 				this.getModel().getMutationSearchCriteriaVO().setReportedAsSNP(false);
 
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-
 		this.getModel().setMutationSummaryDTOList(searchService.findMutations(this.getModel().getMutationSearchCriteriaVO()));
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList", this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
@@ -252,8 +269,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 //				if (request.getString("snpbool").equals("hide"))
 //					this.getModel().getMutationSearchCriteriaVO().setReportedAsSNP(false);
 	
-			SearchService searchService = ServiceLocator.instance().getSearchService();
-	
 			MutationSummaryDTO mutationSummaryDTO = searchService.findMutationByIdentifier(mutationIdentifier);
 	
 			this.getModel().setMutationSummaryVO(mutationSummaryDTO);
@@ -272,8 +287,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		if (StringUtils.isNotEmpty(request.getString("mid")))
 		{
 			String mutationIdentifier = request.getString("mid");
-
-			SearchService searchService = ServiceLocator.instance().getSearchService();
 
 			List<PatientSummaryDTO> patientSummaryVOList = searchService.findPatientsByMutationIdentifier(mutationIdentifier);
 
@@ -297,8 +310,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	
 		this.getModel().setMutationSummaryVOHash(new HashMap<String, String>());
 		this.getModel().setPatientSummaryVOHash(new HashMap<String, String>());
-
-		SearchService searchService = ServiceLocator.instance().getSearchService();
 
 		if (this.getModel().getResult().equals("patients"))
 		{
@@ -342,7 +353,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowNextMutation(Tuple request)
 	{
-		SearchService searchService           = ServiceLocator.instance().getSearchService();
 		MutationSummaryDTO mutationSummaryDTO = searchService.findNextMutation(request.getString("mid"));
 		request.set("mid", mutationSummaryDTO.getIdentifier());
 		this.handleShowMutation(request);
@@ -350,7 +360,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowPrevMutation(Tuple request)
 	{
-		SearchService searchService          = ServiceLocator.instance().getSearchService();
 		MutationSummaryDTO mutationSummaryVO = searchService.findPrevMutation(request.getString("mid"));
 		request.set("mid", mutationSummaryVO.getIdentifier());
 		this.handleShowMutation(request);
@@ -358,7 +367,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowLastMutation(Tuple request)
 	{
-		SearchService searchService          = ServiceLocator.instance().getSearchService();
 		MutationSummaryDTO mutationSummaryVO = searchService.findLastMutation();
 		request.set("mid", mutationSummaryVO.getIdentifier());
 		this.handleShowMutation(request);
@@ -366,7 +374,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowFirstMutation(Tuple request)
 	{
-		SearchService searchService          = ServiceLocator.instance().getSearchService();
 		MutationSummaryDTO mutationSummaryVO = searchService.findFirstMutation();
 		request.set("mid", mutationSummaryVO.getIdentifier());
 		this.handleShowMutation(request);
@@ -374,8 +381,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void listAllMutations(Tuple request)
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-
 		this.getModel().setMutationSummaryDTOList(searchService.findAllMutationSummaries());
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList", this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
@@ -389,8 +394,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
 			String patientIdentifier = request.getString("pid");
-
-			SearchService searchService = ServiceLocator.instance().getSearchService();
 
 			PatientSummaryDTO patientSummaryVO = searchService.findPatientByPatientIdentifier(patientIdentifier);
 
@@ -407,8 +410,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 //		MolgenisUser user = new MolgenisUser();
 //		user.setId(this.getLogin().getUserId());
 //		this.getModel().setPatientSummaryVOs(this.patientService.find(user));
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-
 		List<PatientSummaryDTO> patientSummaryVOs = searchService.findAllPatientSummaries();
 		this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 		((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
@@ -423,9 +424,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
 			String patientIdentifier = request.getString("pid");
-
-			PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
-			SearchService searchService = ServiceLocator.instance().getSearchService();
 
 			PatientSummaryDTO patientSummaryVO = searchService.findPatientByPatientIdentifier(patientIdentifier);
 
@@ -445,8 +443,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			if (request.getString("snpbool").equals("hide"))
 				this.getModel().getMutationSearchCriteriaVO().setReportedAsSNP(false);
 
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-
 		this.getModel().setProteinDomainDTO(searchService.findProteinDomain(request.getInt("domain_id"), false));
 		this.getModel().setMutationSummaryDTOList(searchService.findMutationsByDomainId(request.getInt("domain_id")));
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList", this.getModel().getMutationSummaryDTOList());
@@ -464,8 +460,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowExon(Tuple request)
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-		
 		Integer exonId = request.getInt("exon_id");
 
 		this.getModel().setExonDTO(searchService.findExonById(exonId));
@@ -486,7 +480,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowNextExon(Tuple request)
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findNextExon(request.getInt("exon_id"));
 		request.set("__action", "showExon");
 		request.set("exon_id", exonDTO.getId());
@@ -495,7 +488,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowPrevExon(Tuple request)
 	{
-		SearchService searchService         = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findPrevExon(request.getInt("exon_id"));
 		request.set("__action", "showExon");
 		request.set("exon_id", exonDTO.getId());
@@ -504,7 +496,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowLastExon(Tuple request)
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findLastExon();
 		request.set("exon_id", exonDTO.getId());
 		this.handleShowExon(request);
@@ -512,7 +503,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void handleShowFirstExon(Tuple request)
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findFirstExon();
 		request.set("exon_id", exonDTO.getId());
 		this.handleShowExon(request);
@@ -523,7 +513,11 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	{
 		try
 		{
-			SearchService searchService = ServiceLocator.instance().getSearchService();
+			this.cmsService.setDatabase(db);
+			this.phenoService.setDatabase(db);
+			this.searchService.setDatabase(db);
+			this.statisticsService.setDatabase(db);
+
 			this.getModel().setGeneDTO(searchService.findGene());
 
 			if (this.getModel().getMbrowse().getIsVisible())
@@ -534,8 +528,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 				if (this.getModel().getMbrowse().getProteinDomainDTOList() == null)
 					this.getModel().getMbrowse().setProteinDomainDTOList(searchService.findAllProteinDomains());
 			}
-
-			CmsService cmsService = ServiceLocator.instance().getCmsService();
 
 			this.getModel().setTextRemarks(cmsService.findContentByName("remarks"));
 			this.getModel().setTextCollaborations(cmsService.findContentByName("collaborators"));
@@ -550,8 +542,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			{
 				this.getModel().setTextWelcome(cmsService.findContentByName("welcome"));
 				this.getModel().setTextSearch(cmsService.findContentByName("search"));
-
-				StatisticsService statisticsService = ServiceLocator.instance().getStatisticsService();
 
 				this.getModel().setNumMutations(statisticsService.getNumMutations());
 				this.getModel().setNumPatients(statisticsService.getNumPatients());
@@ -660,8 +650,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void populateShowMutationForm()
 	{
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-
 		this.getModel().getShowMutationForm().get("__target").setValue(this.getName());
 		this.getModel().getListAllMutationsForm().get("select").setValue(this.getName());
 		List<ValueLabel> mutationIdOptions  = new ArrayList<ValueLabel>();
@@ -674,9 +662,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	protected void populateExpertSearchForm()
 	{
-		PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
-		SearchService searchService = ServiceLocator.instance().getSearchService();
-
 		Container expertSearchForm  = this.getModel().getExpertSearchFormWrapper().getForm();
 
 		expertSearchForm.get("__target").setValue(this.getName());
@@ -789,4 +774,32 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		else
 			((SelectInput) this.getModel().getDisplayOptionsForm().get("showMutations")).setValue("hide");
 	}
+	
+//	private CmsService getCmsService(Database db)
+//	{
+//		CmsService cmsService = ServiceLocator.instance().getCmsService();
+//		cmsService.setDatabase(db);
+//		return cmsService;
+//	}
+//	
+//	private PhenoService getPhenoService(Database db)
+//	{
+//		PhenoService phenoService = ServiceLocator.instance().getPhenoService();
+//		phenoService.setDatabase(db);
+//		return phenoService;
+//	}
+//
+//	private SearchService getSearchService(Database db)
+//	{
+//		SearchService searchService = ServiceLocator.instance().getSearchService();
+//		searchService.setDatabase(db);
+//		return searchService;
+//	}
+//	
+//	private StatisticsService getStatisticsService(Database db)
+//	{
+//		StatisticsService statisticsService = ServiceLocator.instance().getStatisticsService();
+//		statisticsService.setDatabase(db);
+//		return statisticsService;
+//	}
 }

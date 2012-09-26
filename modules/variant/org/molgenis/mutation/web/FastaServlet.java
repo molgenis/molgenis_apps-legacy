@@ -16,11 +16,8 @@ import org.molgenis.mutation.service.FastaService;
 
 public class FastaServlet implements MolgenisService
 {
-	private MolgenisContext mc;
-	
 	public FastaServlet(MolgenisContext mc)
 	{
-		this.mc = mc;
 	}
 
 	@Override
@@ -32,7 +29,7 @@ public class FastaServlet implements MolgenisService
 		
 		String type = req.getString("type");
 
-		FastaService fastaService = ServiceLocator.instance().getFastService();
+		FastaService fastaService = ServiceLocator.instance().getFastaService();
 
 		String result = "";
 

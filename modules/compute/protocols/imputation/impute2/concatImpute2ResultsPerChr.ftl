@@ -1,14 +1,24 @@
-#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr
 
-inputs ${ssvQuoted(impute2ResultChrBinInfoFile)}
-inputs ${ssvQuoted(impute2ResultChrBinGenFile)}
-alloutputsexist ${imputationResultDir}/chr_${chr}
+<#list impute2ResultChrBinInfoFile as infoFile>
+	getFile ${infoFile}
+</#list>
+<#list impute2ResultChrBinGenFile as genFile>
+	getFile ${genFile}
+</#list>
+putFile ${imputationResultDir}/chr_${chr}
+putFile ${imputationResultDir}/chr_${chr}_info
 
 
-#Concate the bins with compute for each
+inputs "${ssvQuoted(impute2ResultChrBinInfoFile)}"
+inputs "${ssvQuoted(impute2ResultChrBinGenFile)}"
+alloutputsexist "${imputationResultDir}/chr_${chr}"
+alloutputsexist "${imputationResultDir}/chr_${chr}_info"
 
-cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResultDir}/chr_${chr}.gen
+#Concat the bins with compute for each
 
-cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResultDir}/chr_${chr}.info
+cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResultDir}/chr_${chr}_info
+
+cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResultDir}/chr_${chr}

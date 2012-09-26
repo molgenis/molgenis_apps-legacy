@@ -10,8 +10,6 @@ package org.molgenis.col7a1.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.text.StrBuilder;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.IntInput;

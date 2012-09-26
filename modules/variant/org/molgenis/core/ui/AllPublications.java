@@ -50,6 +50,8 @@ public class AllPublications extends IntegratedPluginController<AllPublicationsM
 		try
 		{
 			PublicationService publicationService = ServiceLocator.instance().getPublicationService();
+			publicationService.setDatabase(db);
+
 			this.getModel().setPublicationDTOList(publicationService.getAll());
 			((HttpServletRequestTuple) request).getRequest().setAttribute("publicationDTOList", this.getModel().getPublicationDTOList());
 			this.getModel().setRawOutput(this.include(request, this.getModel().getPublicationPager()));
