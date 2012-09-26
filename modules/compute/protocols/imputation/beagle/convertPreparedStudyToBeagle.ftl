@@ -4,15 +4,14 @@
 #OUTPUTS ${preparedStudyDir}/chr${chr}.bgl
 #EXES ${linkage2beagle}
 #LOGS log
-#TARGETS project,chr
+#TARGETS project,chr,batch
 
-#FOREACH project,chr
+#FOREACH project,chr,batch
 
 inputs "${preparedStudyDir}/chr${chr}.dat"
-inputs "${preparedStudyDir}/chr${chr}.ped"
-alloutputsexist "${preparedStudyDir}/chr${chr}.bgl"
+inputs "${preparedStudyDir}/chr${chr}-${batch}.ped"
+alloutputsexist "${preparedStudyDir}/chr${chr}-${batch}.bgl"
 
-java -jar ${linkage2beagle} ${preparedStudyDir}/chr${chr}.dat ${preparedStudyDir}/chr${chr}.ped > ${preparedStudyDir}/chr${chr}.bgl
+java -jar ${linkage2beagle} ${preparedStudyDir}/chr${chr}.dat ${preparedStudyDir}/chr${chr}-${batch}.ped > ${preparedStudyDir}/chr${chr}-${batch}.bgl
 
 sleep 30
-
