@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class ComputeExecutorPilotDB implements ComputeExecutor
 {
-    public static final String BACK_END_GRID="Grid";
-    public static final String BACK_END_CLUSTER="Cluster";
+    public static final String BACK_END_GRID = "grid";
+    public static final String BACK_END_CLUSTER = "cluster";
 
 
     private ExecutionHost host = null;
@@ -58,13 +58,13 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
         //readyToSubmitSize = readyToSubmitSize * 3;
 
         //start as many pilots as we have tasks ready to run
-        for(int i = 0; i < readyToSubmitSize; i++)
+        for (int i = 0; i < readyToSubmitSize; i++)
         {
             try
             {
-                if(backend.equalsIgnoreCase(BACK_END_GRID))
+                if (backend.equalsIgnoreCase(BACK_END_GRID))
                     host.submitPilotGrid();
-                else if(backend.equalsIgnoreCase(BACK_END_CLUSTER))
+                else if (backend.equalsIgnoreCase(BACK_END_CLUSTER))
                     host.submitPilotCluster();
             }
             catch (IOException e)
@@ -87,17 +87,17 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
     private int evaluateTasks(Database db, List<ComputeTask> generatedTasks)
     {
         int count = 0;
-        for(ComputeTask task : generatedTasks)
+        for (ComputeTask task : generatedTasks)
         {
             boolean isReady = true;
             List<ComputeTask> prevSteps = task.getPrevSteps();
-            for(ComputeTask prev : prevSteps)
+            for (ComputeTask prev : prevSteps)
             {
-                if(!prev.getStatusCode().equalsIgnoreCase("done"))
+                if (!prev.getStatusCode().equalsIgnoreCase("done"))
                     isReady = false;
             }
 
-            if(isReady)
+            if (isReady)
             {
                 System.out.println(">>> TASK " + task.getName() + " is ready for execution");
                 //count++;
@@ -128,6 +128,19 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
         try
         {
             host = new ExecutionHost(dbHost.getHostName(), dbHost.getHostUsername(), dbHost.getHostPassword(), 22);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void startHostWithCredentials(String h, String user, String password, int port)
+    {
+        try
+        {
+            host = new ExecutionHost(h, user, password, port);
         }
         catch (IOException e)
         {

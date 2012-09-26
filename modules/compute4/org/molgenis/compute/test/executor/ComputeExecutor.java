@@ -11,4 +11,5 @@ public interface ComputeExecutor
 {
     void executeTasks(String backend);
     void startHost(String name);
+    void startHostWithCredentials(String host, String user, String password, int port);
 }
