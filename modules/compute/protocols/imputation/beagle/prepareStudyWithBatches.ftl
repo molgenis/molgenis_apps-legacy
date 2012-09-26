@@ -4,7 +4,7 @@
 
 getFile "${imputationToolJar}"
 getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibraries}"
+getFile "${imputationToolGeneticaLibrariesJar}"
 
 getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
 getFile ${studyTriTyperChrDir}/Individuals.txt
