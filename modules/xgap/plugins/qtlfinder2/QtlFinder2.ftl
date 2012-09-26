@@ -513,7 +513,11 @@
 		
 
 	<table cellpadding="30"><tr><td>
-		<h2>Results for my selected hits:</h2><br>
+		<h2>Results for my selected hits:</h2>
+		
+		<h3>(get a <a href="?__target=QtlFinderPublic2&select=QtlFinderPublic2&p=${model.permaLink}">permanent link to these results</a>)</h3>
+		
+		<br>
 		
 		<table>
 			<tr>

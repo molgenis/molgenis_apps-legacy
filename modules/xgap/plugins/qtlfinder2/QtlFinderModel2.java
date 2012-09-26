@@ -40,8 +40,19 @@ public class QtlFinderModel2{
 	//if true, display contents of cart
 	private Boolean cartView;
 	
+	// permanent link to a plotted shopping cart
+	String permaLink;
 	
 	
+	
+	public String getPermaLink() {
+		return permaLink;
+	}
+
+	public void setPermaLink(String permaLink) {
+		this.permaLink = permaLink;
+	}
+
 	public Boolean getCartView()
 	{
 		return cartView;

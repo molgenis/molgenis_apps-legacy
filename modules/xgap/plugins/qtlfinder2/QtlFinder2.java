@@ -139,20 +139,14 @@ public class QtlFinder2 extends PluginModel<Entity>
 				
 				if(action.equals("plotShoppingCart"))
 				{
-					if(this.model.getShoppingCart().size() == 0)
-					{
-						throw new Exception("Your shopping cart is empty!");
-					}
-					else if(this.model.getShoppingCart().size() > 500)
-					{
-						throw new Exception("You cannot plot more than 500 items.");
-					}
+					plotFromShoppingCart(db);
 					
-					this.model.setCartView(false);
-					
-					QTLMultiPlotResult res = multiplot(new ArrayList<Entity>(this.model.getShoppingCart().values()), db);
-					this.model.setReport(null);
-					this.model.setMultiplot(res);
+					StringBuilder permaLink = new StringBuilder();
+					for (Entity e : this.model.getShoppingCart().values()) {
+						permaLink.append(e.get(ObservableFeature.ID) + ",");
+					}
+					permaLink.deleteCharAt(permaLink.length()-1);
+					this.model.setPermaLink(permaLink.toString());
 				}
 				
 				if(action.equals("emptyShoppingCart"))
@@ -238,6 +232,40 @@ public class QtlFinder2 extends PluginModel<Entity>
 			{
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+			}
+		}
+		//special case: no action, but plot from 
+		else
+		{
+			System.out.println("ELSE");
+			String permaLinkIds = request.getString("p");
+			if(permaLinkIds != null)
+			{
+				System.out.println("permaLinkIds != null");
+				try
+				{
+					System.out.println("TRY");
+					String[] ids = permaLinkIds.split(",");
+					Class<? extends Entity> entityClass =  db.getClassForName("ObservationElement");
+					List<? extends Entity> findIds = db.find(entityClass, new QueryRule(ObservationElement.ID, Operator.IN, ids));
+					Map<String, Entity> hits = new HashMap<String, Entity>();
+					for(Entity e : findIds)
+					{
+						hits.put(e.get(ObservationElement.NAME).toString(), e);
+					}
+					this.model.setShoppingCart(hits);
+					this.model.setHits(hits);
+					this.model.setPermaLink(permaLinkIds);
+				//	List<? extends Entity> result  = db.search(entityClass, query);
+				//	result = db.load(entityClass, result);;
+					plotFromShoppingCart(db);
+					System.out.println("DONE");
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+				}
 			}
 		}
 	}
@@ -343,6 +371,24 @@ public class QtlFinder2 extends PluginModel<Entity>
 		}
 		
 		return hits;
+	}
+	
+	private void plotFromShoppingCart(Database db) throws Exception
+	{
+		if(this.model.getShoppingCart().size() == 0)
+		{
+			throw new Exception("Your shopping cart is empty!");
+		}
+		else if(this.model.getShoppingCart().size() > 500)
+		{
+			throw new Exception("You cannot plot more than 500 items.");
+		}
+		
+		this.model.setCartView(false);
+		
+		QTLMultiPlotResult res = multiplot(new ArrayList<Entity>(this.model.getShoppingCart().values()), db);
+		this.model.setReport(null);
+		this.model.setMultiplot(res);
 	}
 	
 	private QTLMultiPlotResult multiplot(List<Entity> entities, Database db) throws Exception
