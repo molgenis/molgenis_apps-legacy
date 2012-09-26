@@ -141,14 +141,15 @@ public abstract class AbstractTupleTable implements TupleTable
 		List<Field> result;
 		List<Field> columns = getVisibleColumns();
 
+		int colCount = columns.size();
+
 		if (isFirstColumnFixed())
 		{
 			columns.remove(0);
+			colCount--;
 		}
 
-		int colCount = columns.size();
-
-		int colLimit = (int) (this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize());
+		int colLimit = (int) (this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize(colCount));
 
 		if (getColOffset() > 0)
 		{
@@ -273,9 +274,8 @@ public abstract class AbstractTupleTable implements TupleTable
 		return this.db;
 	}
 
-	protected int getCurrentColumnPageSize() throws TableException
+	protected int getCurrentColumnPageSize(int colCount) throws TableException
 	{
-		int colCount = getColCount();
 		int pageSize = getColLimit();
 
 		if (getColOffset() + pageSize > colCount)
