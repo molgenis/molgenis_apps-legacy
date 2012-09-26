@@ -47,7 +47,7 @@ java -Xmx8g -jar ${imputationToolJar} \
 --mode ttpmh \
 --in ${studyTriTyperChrDir} \
 --hap ${referenceTriTyperDir} \
---batch-file ${studyTriTyperBatchChrDir}
+--batch-file ${studyTriTyperBatchChrDir} \
 --out ${preparedStudyTempDir}
 
 
