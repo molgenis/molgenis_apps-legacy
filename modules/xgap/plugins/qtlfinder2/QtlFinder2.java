@@ -237,17 +237,15 @@ public class QtlFinder2 extends PluginModel<Entity>
 		//special case: no action, but plot from 
 		else
 		{
-			System.out.println("ELSE");
 			String permaLinkIds = request.getString("p");
 			if(permaLinkIds != null)
 			{
-				System.out.println("permaLinkIds != null");
 				try
 				{
-					System.out.println("TRY");
 					String[] ids = permaLinkIds.split(",");
 					Class<? extends Entity> entityClass =  db.getClassForName("ObservationElement");
 					List<? extends Entity> findIds = db.find(entityClass, new QueryRule(ObservationElement.ID, Operator.IN, ids));
+					findIds = db.load((Class)ObservationElement.class, findIds);
 					Map<String, Entity> hits = new HashMap<String, Entity>();
 					for(Entity e : findIds)
 					{
@@ -256,10 +254,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.setShoppingCart(hits);
 					this.model.setHits(hits);
 					this.model.setPermaLink(permaLinkIds);
-				//	List<? extends Entity> result  = db.search(entityClass, query);
-				//	result = db.load(entityClass, result);;
 					plotFromShoppingCart(db);
-					System.out.println("DONE");
 				}
 				catch (Exception e)
 				{
