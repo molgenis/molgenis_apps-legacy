@@ -5,18 +5,18 @@
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		 <plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" /> 
-		<!--<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" /> -->
-		
-         <!--  		<menu name="BiobankOverview" label="Biobank Overview">
+<!-- 		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" /> 
+ -->		
+     <!--     <menu name="BiobankOverview" label="Biobank Overview">
 			<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
-		</menu>
-		 -->
-		<!-- <menu name="BiobankOverview" label="Biobank Overview">
-			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
 		</menu> -->
+		 
+		 <menu name="BiobankOverview" label="Biobank Overview">
+			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
+		</menu> 
 		<menu name="Admin">
 		    <menu name="DataViews">
-		    	<!-- <form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
+		    	<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
 				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
 				<form name="BiobankCoordinator" entity="BiobankCoordinator" view="list" />
@@ -24,7 +24,8 @@
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
 				<form name="OntologyTerm" entity="OntologyTerm" />
-				<form name="BiobankDataType" entity="BiobankDataType" /> -->
+				<form name="BiobankDataType" entity="BiobankDataType" />
+				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole"/>
 				<form name="ChangeLog" entity="ChangeLog" />
 			</menu>
 			<menu name="usermanagement" position="left" label="User management">
