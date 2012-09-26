@@ -273,7 +273,9 @@ public class JQGridView extends HtmlWidget
 
 				case ADD_RECORD:
 
+
 					if (!(tupleTable instanceof EditableTupleTable))
+
 					{
 						throw new UnsupportedOperationException("TupleTable is not editable");
 					}
