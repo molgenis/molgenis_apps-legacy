@@ -9,29 +9,19 @@
 #
 
 #MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
-
-<#if seqType == "SR">
-#INPUTS srbarcodefqgz,
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog
-#LOGS log
-#EXES fastqcjar
 #TARGETS
 
-	inputs "${srbarcodefqgz}"
-	alloutputsexist \
+module load fastqc/${fastqcVersion}
+
+<#if seqType == "SR">
+     getFile ${srbarcodefqgz}
+	 alloutputsexist \
 	 "${leftfastqczip}" \
 	 "${leftfastqcsummarytxt}" \
 	 "${leftfastqcsummarylog}" \
 <#else>
-#INPUTS leftbarcodefqgz,rightbarcodefqgz
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog,rightfastqczip,rightfastqcsummarytxt,rightfastqcsummarylog
-#LOGS log
-#EXES fastqcjar
-#TARGETS
-
-	inputs "${leftbarcodefqgz}"
-	inputs "${rightbarcodefqgz}"
-	
+    getFile "${leftbarcodefqgz}"
+    getFile "${rightbarcodefqgz}"
 	alloutputsexist \
 	 "${leftfastqczip}" \
 	 "${leftfastqcsummarytxt}" \
@@ -45,15 +35,28 @@
 mkdir -p "${intermediatedir}"
 
 # pair1
-${fastqcjar} ${leftbarcodefqgz} \
+fastqc ${leftbarcodefqgz} \
 -Djava.io.tmpdir=${tempdir} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
 
 <#if seqType == "PE">
 # pair2
-${fastqcjar} ${rightbarcodefqgz} \
+fastqc ${rightbarcodefqgz} \
 -Djava.io.tmpdir=${tempdir} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
+</#if>
+
+<#if seqType == "SR">
+      putFile ${leftfastqczip}
+      putFile ${leftfastqcsummarytxt}
+      putFile ${leftfastqcsummarylog}
+<#else>
+      putFile ${leftfastqczip}
+      putFile ${leftfastqcsummarytxt}
+      putFile ${leftfastqcsummarylog}
+      putFile ${rightfastqczip}
+      putFile ${rightfastqcsummarytxt}
+      putFile ${rightfastqcsummarylog}
 </#if>
