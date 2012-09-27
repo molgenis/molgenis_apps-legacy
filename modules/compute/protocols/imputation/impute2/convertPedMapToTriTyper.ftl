@@ -18,12 +18,19 @@ putFile "${studyTriTyperChrDir}/SNPs.txt"
 
 inputs "${studyPedMapChr}.map"
 inputs "${studyPedMapChr}.ped"
-alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat"
-alloutputsexist "${studyTriTyperChrDir}/Individuals.txt"
-alloutputsexist "${studyTriTyperChrDir}/PhenotypeInformation.txt"
-alloutputsexist "${studyTriTyperChrDir}/SNPMappings.txt"
-alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
-alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
+alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat" \
+"${studyTriTyperChrDir}/Individuals.txt" \
+"${studyTriTyperChrDir}/PhenotypeInformation.txt" \
+"${studyTriTyperChrDir}/SNPMappings.txt" \
+"${studyTriTyperChrDir}/SNPsHash.txt" \
+"${studyTriTyperChrDir}/SNPs.txt"
+
+
+if [ -d ${studyTriTyperChrDir} ]
+then
+	rm -r ${studyTriTyperChrDir}
+fi
+
 
 module load jdk/${javaversion}
 
