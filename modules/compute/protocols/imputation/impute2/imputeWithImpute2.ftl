@@ -62,29 +62,13 @@ fi
 #Grep the log file, if there are no SNPs in this interval, three additional empty files will be created
 #This to prevent the pipeline from crashing, since Impute2 doesn't produce these files when no SNPs available
 
-#No SNPs in interval check
-grep "There are no SNPs in the imputation interval" ${impute2ResultChrBinLog}
 
-#Get return code from last program call
-returnCodeIntervalCheck=$?
-
-
-#No suitable SNPs at end of chromosome check
-grep "ERROR: There are no type" ${impute2ResultChrBinLog}
-
-#Get return code from last program call
-returnCodeEndOfChrCheck=$?
-
-
-#Cmdline settings check
-grep "Your current command-line settings imply" ${impute2ResultChrBinLog}
-
-#Get return code from last program call
-returnCodeCmdLineCheck=$?
-
-
-if [ $returnCodeIntervalCheck -eq 0 -o returnCodeEndOfChrCheck -eq 0 -o returnCodeCmdLineCheck -eq 0 ]
+if [ ! -f ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info ]
 then
+
+	echo "Touching file: ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}"
+	echo "Touching file: ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info"
+	echo "Touching file: ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info_by_sample"
 
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info
