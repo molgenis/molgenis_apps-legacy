@@ -10,7 +10,6 @@
 inputs "${referenceVCFFile}"
 inputs "${preparedStudyDir}/chr${chr}.gz"
 inputs "${preparedStudyDir}/chr${chr}.dat"
-inputs "${preparedStudyDir}/chr${chr}.snps"
 alloutputsexist "${preparedStudyDir}/chr${chr}.results"
 
 #Minimac requires a file listing markers in the haplotype file. This file can be easily
