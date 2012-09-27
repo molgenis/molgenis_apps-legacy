@@ -9,7 +9,6 @@
 		
 	<plugin name="Pubmed" type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
 	<plugin name="OntoCat" type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat"/>
-	<plugin name="BootStrap" type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat"/>
 	
 		<form name="Characteristics" entity="Characteristic" />
 		<form name="Panels" entity="Panel" />
