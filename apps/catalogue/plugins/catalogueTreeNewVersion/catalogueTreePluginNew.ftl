@@ -18,6 +18,7 @@
 		
 		var CLASSES = $.treeview.classes;
 		var settings = {};
+		var searchNode = new Array();
 		
 		function toggler() {
 			$(this)
@@ -57,7 +58,10 @@
 				
 				if($('#' + nodeName).find('li').length > 0){
 					
-					//$('#' + nodeName).find('li').remove();
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_toggleNode&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done();
 					
 				}else{
 					
@@ -89,10 +93,30 @@
 			$('#search').button();
 			
 			$('#search').click(function(){
+				array = {};
 				$.ajax({
 					url:"${screen.getUrl()}&__action=download_json_search&searchToken=height",
 					async: false,
-				}).done();
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				if($('#browser li:first').filter(":has(>ul:hidden)").length > 0){
+					toggler.apply($('#browser li:first >ul'));
+				}
+				$('#browser li:first').find('li').hide();
+				
+				
+				for(var nodeName in array){
+					if (array.hasOwnProperty(nodeName)) {
+				       	$('#' + nodeName).remove();
+		            	$('#browser li:first >ul').prepend(array[nodeName]);
+		            	var branches = $('#' + nodeName).prepareBranches(settings);
+						branches.applyClasses(settings, toggler);
+						branches = $('#' + nodeName + ' li').prepareBranches(settings);
+						branches.applyClasses(settings, toggler);
+				    }
+				}
 			});
 			
 			$("#browser").treeview(settings).find('li').show();	

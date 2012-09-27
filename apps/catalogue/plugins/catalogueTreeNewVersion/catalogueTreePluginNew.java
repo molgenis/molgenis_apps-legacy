@@ -31,8 +31,7 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	private JQueryTreeViewElement protocolsTree = null;
 	private HashMap<String, Protocol> nameToProtocol = new HashMap<String, Protocol>();
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
-	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
-	private HashMap<String, String> variableInformation = new HashMap<String, String>();
+	private HashMap<String, List<JQueryTreeViewElement>> findNodes = new HashMap<String, List<JQueryTreeViewElement>>();
 	private int loadingProcess = 0;
 	private String investigationName = "Prevend";
 
@@ -82,10 +81,6 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 					String protocolName = topProtocols.get(i);
 
-					// }
-					//
-					// for (String protocolName : topProtocols) {
-
 					JQueryTreeViewElement childTree = null;
 
 					if (!protocolsAndMeasurementsinTree
@@ -103,25 +98,6 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 					}
 					createNodesForChild(childTree, db);
-
-					// if (protocolsAndMeasurementsinTree.size() >
-					// loadingProcess * 1000) {
-					//
-					// JSONObject json = new JSONObject();
-					//
-					// json.put("result", loadingProcess * 1000);
-					//
-					// PrintWriter writer = new PrintWriter(out);
-					//
-					// writer.write(json.toString());
-					//
-					// writer.flush();
-					//
-					// writer.close();
-					//
-					// loadingProcess++;
-					// }
-
 				}
 
 				loadingProcess++;
@@ -144,6 +120,12 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				writer.close();
 
+			} else if ("download_json_toggleNode".equals(request.getAction())) {
+
+				String nodeIdentifier = request.getString("nodeIdentifier");
+
+				protocolsAndMeasurementsinTree.get(nodeIdentifier).toggleNode();
+
 			} else if ("download_json_search".equals(request.getAction())) {
 
 				String searchToken = request.getString("searchToken");
@@ -155,9 +137,38 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				query.addRules(new QueryRule(Measurement.NAME, Operator.LIKE,
 						"age"));
 
+				List<JQueryTreeViewElement> listOfNodes = new ArrayList<JQueryTreeViewElement>();
+
 				for (Measurement m : query.find()) {
-					System.out.println(m);
+					System.out.println(findNodes.get(m.getName()));
+					if (findNodes.get(m.getName()) != null) {
+						listOfNodes.addAll(findNodes.get(m.getName()));
+					}
 				}
+
+				JSONObject searchResult = new JSONObject();
+
+				for (int i = 0; i < listOfNodes.size(); i++) {
+
+					String results[] = listOfNodes.get(i).renderParent();
+
+					searchResult.put(results[0], results[1]);
+
+				}
+
+				String tree = searchForInTree(protocolsTree, listOfNodes);
+
+				JSONObject json = new JSONObject();
+
+				json.put("result", tree);
+
+				PrintWriter writer = new PrintWriter(out);
+
+				writer.write(json.toString());
+
+				writer.flush();
+
+				writer.close();
 
 				System.out.println("The searching token is " + searchToken);
 
@@ -168,54 +179,14 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				JQueryTreeViewElement node = protocolsAndMeasurementsinTree
 						.get(nodeIdentifier);
 
+				node.toggleNode();
+
 				String addedNodes = "";
 
 				for (JQueryTreeViewElement child : node.getChildren()) {
 
-					addedNodes += child.toHtml();
+					addedNodes += child.toHtml(null);
 				}
-				//
-				// if (nodeIdentifier.equals("Study_" + investigationName)) {
-				//
-				// List<String> topProtocols = getTopProtocols(
-				// investigationName, db);
-				//
-				// for (String protocolName : topProtocols) {
-				//
-				// JQueryTreeViewElement childTree = null;
-				//
-				// if (!protocolsAndMeasurementsinTree
-				// .containsKey(protocolName)) {
-				//
-				// Protocol protocol = nameToProtocol
-				// .get(protocolName);
-				// // The tree first time is being created.
-				// childTree = new JQueryTreeViewElement(protocolName,
-				// Protocol.class.getSimpleName()
-				// + protocol.getId().toString(),
-				// protocolsTree);
-				//
-				// protocolsAndMeasurementsinTree.put(
-				// protocolName.replaceAll(" ", "_"),
-				// childTree);
-				//
-				// addedNodes += childTree.toHtml();
-				// }
-				// }
-				// //
-				// }
-				// else {
-				//
-				// JQueryTreeViewElement node = protocolsAndMeasurementsinTree
-				// .get(nodeIdentifier);
-				//
-				// createNodesForChild(node, db);
-				//
-				// for (JQueryTreeViewElement child : node.getChildren()) {
-				//
-				// addedNodes += child.toHtml();
-				// }
-				// }
 
 				JSONObject json = new JSONObject();
 
@@ -234,6 +205,39 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 		return Show.SHOW_MAIN;
 	}
+
+	private String searchForInTree(JQueryTreeViewElement parentNode,
+			List<JQueryTreeViewElement> listOfNodes) {
+		// System.out.println(parentNode);
+
+		String returnString = "";
+
+		for (JQueryTreeViewElement childNode : parentNode.getChildren()) {
+
+			if (listOfNodes.contains(childNode)) {
+
+				returnString += childNode.toHtml();
+
+			} else {
+				returnString += searchForInTree(childNode, listOfNodes);
+			}
+		}
+
+		return returnString;
+	}
+
+	// private void searchBottomNode() {
+	//
+	// for (JQueryTreeViewElement eachNode : protocolsTree.getAllChildren()) {
+	//
+	// if (eachNode.getParent() == null) {
+	//
+	// } else if (eachNode.isIsbottom()) {
+	// String label = eachNode.getLabel();
+	//
+	// }
+	// }
+	// }
 
 	private void createNodesForChild(JQueryTreeViewElement parentNode,
 			Database db) throws DatabaseException {
@@ -260,8 +264,17 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 					protocolsAndMeasurementsinTree.put(
 							uniqueName.replaceAll(" ", "_"), childTree);
-
 				}
+
+				List<JQueryTreeViewElement> treeNodes = null;
+				if (findNodes.containsKey(subProtocolName)) {
+					treeNodes = findNodes.get(subProtocolName);
+
+				} else {
+					treeNodes = new ArrayList<JQueryTreeViewElement>();
+				}
+				treeNodes.add(childTree);
+				findNodes.put(subProtocolName, treeNodes);
 
 				createNodesForChild(childTree, db);
 			}
@@ -275,8 +288,10 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 						new QueryRule(Measurement.NAME, Operator.IN, p
 								.getFeatures_Name()))) {
 
-					String featureName = (feature.getLabel() != null ? feature
+					String labelName = (feature.getLabel() != null ? feature
 							.getLabel() : feature.getName());
+
+					String featureName = feature.getName();
 
 					JQueryTreeViewElement childTree = null;
 
@@ -285,7 +300,7 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 					if (!protocolsAndMeasurementsinTree.containsKey(uniqueName)) {
 
 						childTree = new JQueryTreeViewElement(uniqueName,
-								featureName, Measurement.class.getSimpleName()
+								labelName, Measurement.class.getSimpleName()
 										+ feature.getId().toString(),
 								parentNode);
 
@@ -300,26 +315,15 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 								uniqueName.replaceAll(" ", "_"), childTree);
 
 					}
-					// if (!protocolsAndMeasurementsinTree.containsKey(feature
-					// .getName())) {
-					//
-					// // The tree first time is being created.
-					// childTree = new JQueryTreeViewElement(
-					// feature.getName(), label,
-					// Measurement.class.getSimpleName()
-					// + feature.getId().toString(),
-					// parentNode);
-					//
-					// childTree.setIsbottom(true);
-					//
-					// protocolsAndMeasurementsinTree.put(feature.getName()
-					// .replaceAll(" ", "_"), childTree);
-					//
-					// } else {
-					// childTree = protocolsAndMeasurementsinTree.get(feature
-					// .getName());
-					// childTree.setParent(parentNode);
-					// }
+					List<JQueryTreeViewElement> treeNodes = null;
+					if (findNodes.containsKey(featureName)) {
+						treeNodes = findNodes.get(featureName);
+
+					} else {
+						treeNodes = new ArrayList<JQueryTreeViewElement>();
+					}
+					treeNodes.add(childTree);
+					findNodes.put(featureName, treeNodes);
 				}
 			}
 		}
@@ -336,8 +340,8 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 		loadingProcess = 0;
 		topProtocols.clear();
+		findNodes.clear();
 		nameToProtocol.clear();
-		multipleInheritance.clear();
 		protocolsAndMeasurementsinTree.clear();
 
 		try {
@@ -534,7 +538,7 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	}
 
 	public String getTreeView() {
-		return protocolsTree.toHtml();
+		return protocolsTree.toHtml(null);
 	}
 
 	public String getUrl() {
