@@ -176,7 +176,9 @@ It should be used via 'import' plus passing of properties
 
 	</target>
 	
-	<target name="test">
+	<target name="test" depends="cb,findbugs" />
+	
+	<target name="testng">
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
 			<path refid="molgenis.classpath" />
@@ -205,6 +207,20 @@ It should be used via 'import' plus passing of properties
 			<report format="noframes" todir="${testng.report.dir}" />
 		</junitreport-->
 
+	</target>
+	
+	<!-- findbugs -->
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="molgenis.classpath"/>
+  	<property name="findbugs.home" value="${molgenis.dir}/lib/findbugs-2.0.1" />
+ 
+	<target name="findbugs">
+   		<findbugs home="${findbugs.home}"
+       		output="html" outputFile="${basedir}/dist/findbugs.html"
+       		jvmargs="-Xms1024M -Xmx1024M ">
+      		<sourcePath path="${molgenis.dir}/src" />
+       		<class location="${build.molgenis.dir}" />
+       		<class location="${build.molgenis_apps.dir}" />
+   		</findbugs>
 	</target>
 	
 	<!-- cobertura stuff -->
@@ -245,7 +261,7 @@ It should be used via 'import' plus passing of properties
    		</path>
 	</target>
 	
-	<target name="cb.run" depends="init.cb.path, test" />
+	<target name="cb.run" depends="init.cb.path, testng" />
 	
 	<target name="cb.gen" depends="cb.init, cb.instrument, cb.run" />
 	
@@ -359,7 +375,7 @@ It should be used via 'import' plus passing of properties
 
 	<target name="clean-generate-compile-run" depends="clean,generate,compile,run" />
 
-	<target name="clean-generate-compile-test" depends="clean,generate,compile,cb" />
+	<target name="clean-generate-compile-test" depends="clean,generate,compile,test" />
 
 	<target name="clean-generate-compile-webtest" depends="clean,generate,compile,webtest" />
 
