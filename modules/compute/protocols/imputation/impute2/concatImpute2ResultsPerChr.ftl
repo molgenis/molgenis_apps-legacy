@@ -14,8 +14,8 @@ putFile ${imputationResultDir}/chr_${chr}_info
 
 inputs "${ssvQuoted(impute2ResultChrBinInfoFile)}"
 inputs "${ssvQuoted(impute2ResultChrBinGenFile)}"
-alloutputsexist "${imputationResultDir}/chr_${chr}"
-alloutputsexist "${imputationResultDir}/chr_${chr}_info"
+alloutputsexist "${imputationResultDir}/chr_${chr}" \
+"${imputationResultDir}/chr_${chr}_info"
 
 #Concat the bins with compute for each
 

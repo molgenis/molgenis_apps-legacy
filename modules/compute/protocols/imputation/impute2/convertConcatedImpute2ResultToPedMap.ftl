@@ -10,8 +10,8 @@ putFile ${imputationResultDir}/chr_${chr}.map
 
 inputs "${imputationResultDir}/chr_${chr}"
 inputs "${preparedStudyDir}/chr${chr}.sample"
-alloutputsexist "${imputationResultDir}/chr_${chr}.ped"
-alloutputsexist "${imputationResultDir}/chr_${chr}.map"
+alloutputsexist "${imputationResultDir}/chr_${chr}.ped" \
+"${imputationResultDir}/chr_${chr}.map"
 
 
 module load ${gtoolBin}/${gtoolBinversion}
