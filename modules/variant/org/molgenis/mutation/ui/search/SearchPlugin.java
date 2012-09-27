@@ -35,16 +35,11 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.StatisticsService;
-import org.molgenis.mutation.ui.HtmlFormWrapper;
 import org.molgenis.mutation.ui.html.MBrowse;
-import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.stereotype.Component;
 
 public class SearchPlugin extends IntegratedPluginController<SearchModel>
 {

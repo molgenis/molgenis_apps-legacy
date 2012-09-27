@@ -1,40 +1,15 @@
 package org.molgenis.mutation.ui.search.form;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.TextLineInput;
-import org.molgenis.mutation.dto.ExonDTO;
-import org.molgenis.mutation.dto.ProteinDomainDTO;
-import org.molgenis.util.ValueLabel;
-import org.springframework.stereotype.Component;
 
 public class ExpertSearchForm extends Container
 {
-
 	private static final long serialVersionUID = -6880726573479157651L;
-
-	private String target;
-	private String select;
-	private String action;
-	private String expertSearch;
-	
-	private String cdnaNotation;
-	private String cdnaStart;
-	private String aaStart;
-	private String exonName;
-	private String exonId;
-	private String type;
-	private String consequence;
-	private String domainId;
-	private String phenotype;
-	private String inheritance;
 
 	public ExpertSearchForm()
 	{
@@ -85,7 +60,7 @@ public class ExpertSearchForm extends Container
 
 		for (int i = 0; i < this.getInputs().size(); ++i)
 		{
-			HtmlInput input = this.getInputs().get(i);
+			HtmlInput<?> input = this.getInputs().get(i);
 
 			buf.append("<td>");
 			buf.append(input.getLabel());
@@ -93,7 +68,7 @@ public class ExpertSearchForm extends Container
 			buf.append(input.toHtml());
 			buf.append("</td>");
 			
-			if (i % 2 == 1)
+			if (i % 2 != 0)
 			{
 				buf.append("</tr>\n");
 				buf.append("<tr>");
@@ -108,13 +83,13 @@ public class ExpertSearchForm extends Container
 		return buf.toString();
 	}
 
-	public void setSelect(String select)
-	{
-		
-	}
+//	public void setSelect(String select)
+//	{
+//		
+//	}
 	public void setTarget(String target)
 	{
-		this.get("__target").setValue(target);
+		((HiddenInput) this.get("__target")).setValue(target);
 	}
 	public void populate()
 	{

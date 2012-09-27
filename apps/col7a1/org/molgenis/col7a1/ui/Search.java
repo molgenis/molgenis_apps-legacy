@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.Container;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.TextLineInput;
@@ -45,11 +46,11 @@ public class Search extends SearchPlugin
 
 		Container expertSearchForm  = this.getModel().getExpertSearchFormWrapper().getForm();
 
-		expertSearchForm.get("__target").setValue(this.getName());
-		expertSearchForm.get("select").setValue(this.getName());
+		((HiddenInput) expertSearchForm.get("__target")).setValue(this.getName());
+		((HiddenInput) expertSearchForm.get("select")).setValue(this.getName());
 
 		if (this.getModel().getMutationSearchCriteriaVO().getVariation() != null)
-			((TextLineInput) expertSearchForm.get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
+			((TextLineInput<String>) expertSearchForm.get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
 
 		if (this.getModel().getMutationSearchCriteriaVO().getCdnaPosition() != null)
 			((IntInput) expertSearchForm.get("nuclno")).setValue(this.getModel().getMutationSearchCriteriaVO().getCdnaPosition());

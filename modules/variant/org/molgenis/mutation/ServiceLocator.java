@@ -9,7 +9,6 @@ import org.molgenis.mutation.service.StatisticsService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.pheno.service.PhenoService;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Locates and provides all available application services.
@@ -36,9 +35,10 @@ public class ServiceLocator
     {
     	if (context == null)
     	{
-    		context = new AnnotationConfigApplicationContext();
-    		((AnnotationConfigApplicationContext) context).scan("org.molgenis");
-    		((AnnotationConfigApplicationContext) context).refresh();
+    		context = new org.springframework.context.support.ClassPathXmlApplicationContext();
+//    		context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
+//    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).scan("org.molgenis");
+//    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).refresh();
     	}
         return instance;
     }
@@ -54,7 +54,7 @@ public class ServiceLocator
 
     public synchronized void shutdown()
     {
-        ((AnnotationConfigApplicationContext) this.getContext()).close();
+//        ((AnnotationConfigApplicationContext) this.getContext()).close();
     }
 
     public final CmsService getCmsService()

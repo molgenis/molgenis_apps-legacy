@@ -111,6 +111,7 @@ public class StatisticsService extends MolgenisVariantService
 		else if (this.db instanceof JpaDatabase)
 		{
 			String sql                      = "SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value";
+			@SuppressWarnings("unchecked")
 			List<Object[]> counts           = this.db.getEntityManager().createNativeQuery(sql).getResultList();
 
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
