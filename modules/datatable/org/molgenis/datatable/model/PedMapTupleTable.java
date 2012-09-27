@@ -3,30 +3,37 @@ package org.molgenis.datatable.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.MapEntry;
 import org.molgenis.util.plink.datatypes.PedEntry;
+import org.molgenis.util.plink.drivers.CachingPedFileDriver;
 import org.molgenis.util.plink.drivers.MapFileDriver;
-import org.molgenis.util.plink.drivers.PedFileDriver;
 
-public class PedMapTupleTable extends AbstractTupleTable
+public class PedMapTupleTable extends AbstractTupleTable implements FilterableTupleTable
 {
-	private PedFileDriver pedFile;
+	private CachingPedFileDriver pedFile;
 	private MapFileDriver mapFile;
 	private List<Field> columns = null;
+	private List<QueryRule> filters;
+	private List<String> snpNames = new ArrayList<String>();
 
 	private static String[] fixedColumns = new String[]
 	{ "IndividualID", "FamilyID", "FatherID", "MotherID", "Sex", "Phenotype" };
 
 	public PedMapTupleTable(File ped, File map) throws Exception
 	{
-		this.pedFile = new PedFileDriver(ped);
 		this.mapFile = new MapFileDriver(map);
+		this.pedFile = new CachingPedFileDriver(ped);
+
+		for (MapEntry me : mapFile.getAllEntries())
+		{
+			snpNames.add(me.getSNP());
+		}
 	}
 
 	@Override
@@ -37,14 +44,9 @@ public class PedMapTupleTable extends AbstractTupleTable
 			if (columns == null)
 			{
 				columns = new ArrayList<Field>();
-				for (String col : fixedColumns)
+				for (String columnName : getColumnNames())
 				{
-					columns.add(new Field(col));
-				}
-
-				for (MapEntry me : mapFile.getAllEntries())
-				{
-					columns.add(new Field(me.getSNP()));
+					columns.add(new Field(columnName));
 				}
 			}
 		}
@@ -52,13 +54,16 @@ public class PedMapTupleTable extends AbstractTupleTable
 		{
 			throw new TableException(e);
 		}
+
 		return columns;
 	}
 
-	@Override
-	public Iterator<Tuple> iterator()
+	private List<String> getColumnNames()
 	{
-		return new PedMapIterator(pedFile, mapFile, this);
+		List<String> columns = new ArrayList<String>(Arrays.asList(fixedColumns));
+		columns.addAll(snpNames);
+
+		return columns;
 	}
 
 	@Override
@@ -68,126 +73,75 @@ public class PedMapTupleTable extends AbstractTupleTable
 	}
 
 	@Override
-	public int getColCount() throws TableException
+	protected Tuple getValues(int row, List<Field> columns) throws TableException
 	{
-		return (int) (mapFile.getNrOfElements() + fixedColumns.length);
+		List<PedEntry> pedEntries;
+		try
+		{
+			pedEntries = pedFile.getEntries(row, row + 1);
+		}
+		catch (Exception e)
+		{
+			throw new TableException(e);
+		}
+
+		PedEntry pe = pedEntries.get(0);
+
+		Tuple result = new SimpleTuple();
+
+		for (Field column : columns)
+		{
+			int col = getColumnIndex(column.getName());
+			Object value;
+
+			switch (col)
+			{
+				case 0:
+					value = pe.getIndividual();
+					break;
+				case 1:
+					value = pe.getFamily();
+					break;
+				case 2:
+					value = pe.getFather();
+					break;
+				case 3:
+					value = pe.getMother();
+					break;
+				case 4:
+					value = pe.getSex();
+					break;
+				case 5:
+					value = pe.getPhenotype();
+					break;
+				default:
+					value = pe.getBialleles().get(col - fixedColumns.length).toString();
+
+			}
+
+			result.set(column.getName(), value);
+		}
+
+		return result;
 	}
 
-	private static class PedMapIterator implements Iterator<Tuple>
+	@Override
+	public void setFilters(List<QueryRule> rules) throws TableException
 	{
-		int count = 0;
+		this.filters = rules;
+		pedFile.setFilters(rules, snpNames);
+	}
 
-		// source data
-		PedFileDriver pedFile;
-		List<String> columns;
+	@Override
+	public List<QueryRule> getFilters()
+	{
+		return this.filters;
+	}
 
-		// wrapper state
-		TupleTable table;
-
-		// colLimit
-		int colLimit;
-
-		PedMapIterator(PedFileDriver pedFile, MapFileDriver mapFile, TupleTable table)
-		{
-			this.pedFile = pedFile;
-			this.table = table;
-
-			columns = new ArrayList<String>(Arrays.asList(fixedColumns));
-
-			try
-			{
-				for (MapEntry me : mapFile.getAllEntries())
-				{
-					columns.add(me.getSNP());
-				}
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
-
-			// TODO FIX MapFile.getNrOfElements
-			colLimit = (int) (table.getColLimit() == 0 ? mapFile.getNrOfElements() + fixedColumns.length
-					- table.getColOffset() : table.getColLimit());
-		}
-
-		@Override
-		public boolean hasNext()
-		{
-			if (table.getOffset() + count >= pedFile.getNrOfElements()
-					|| (table.getLimit() > 0 && count >= table.getLimit()))
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		@Override
-		public Tuple next()
-		{
-			if (!hasNext())
-			{
-				throw new UnsupportedOperationException("No next element exists");
-			}
-
-			try
-			{
-				int index = table.getOffset() + count;
-				List<PedEntry> pedEntries = pedFile.getEntries(index, index + 1);
-				PedEntry pe = pedEntries.get(0);
-
-				Tuple result = new SimpleTuple();
-
-				for (int i = table.getColOffset(); i < table.getColOffset() + colLimit; i++)
-				{
-					Object value;
-
-					switch (i)
-					{
-						case 0:
-							value = pe.getIndividual();
-							break;
-						case 1:
-							value = pe.getFamily();
-							break;
-						case 2:
-							value = pe.getFather();
-							break;
-						case 3:
-							value = pe.getMother();
-							break;
-						case 4:
-							value = pe.getSex();
-							break;
-						case 5:
-							value = pe.getPhenotype();
-							break;
-						default:
-							value = pe.getBialleles().get(i - fixedColumns.length).toString();
-
-					}
-
-					result.set(columns.get(i), value);
-				}
-
-				count++;
-
-				return result;
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public void remove()
-		{
-			System.out.println("REMOVE");
-			// TODO Auto-generated method stub
-		}
-
+	@Override
+	public QueryRule getSortRule()
+	{
+		return null;
 	}
 
 }

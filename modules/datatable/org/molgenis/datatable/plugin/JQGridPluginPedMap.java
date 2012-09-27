@@ -2,11 +2,14 @@ package org.molgenis.datatable.plugin;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.datatable.model.PedMapTupleTable;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -74,18 +77,19 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			// create table
 			TupleTable table = new PedMapTupleTable(pedFile, mapFile);
+			table.setFirstColumnFixed(true);
 
 			System.out.println("PedMapTupleTable created..");
 
-			if (table.getColumns().size() > 10)
-			{
-				table.setColLimit(10);
-				System.out.println("columns limited to 10..");
-			}
+			// construct the gridview
+			JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+			searchOptions.multipleGroup = false;
+			searchOptions.multipleSearch = false;
+			searchOptions.showQuery = false;
+			searchOptions.sopt = Arrays.asList(new JQGridRule.JQGridOp[]
+			{ JQGridRule.JQGridOp.eq });
 
-			// check which table to show
-			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false);
-
+			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, searchOptions);
 			tableView.setLabel("Genotypes");
 
 			System.out.println("tableView created..");
@@ -134,33 +138,38 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 	// what is shown to the user
 	public ScreenView getView()
 	{
+
 		MolgenisForm view = new MolgenisForm(this);
 
-		SelectInput selectPed = new SelectInput("pedfile");
-		for (InvestigationFile file : pedFiles)
+		if (pedFiles.size() > 1 || mapFiles.size() > 1)
 		{
-			selectPed.addOption(file.getName(), file.getName());
-		}
+			SelectInput selectPed = new SelectInput("pedfile");
+			for (InvestigationFile file : pedFiles)
+			{
+				selectPed.addOption(file.getName(), file.getName());
+			}
 
-		if (selectedPedFile != null)
-		{
-			selectPed.setValue(selectedPedFile.getName());
-		}
-		view.add(selectPed);
+			if (selectedPedFile != null)
+			{
+				selectPed.setValue(selectedPedFile.getName());
+			}
+			view.add(selectPed);
 
-		SelectInput selectMap = new SelectInput("mapfile");
-		for (InvestigationFile file : mapFiles)
-		{
-			selectMap.addOption(file.getName(), file.getName());
-		}
+			SelectInput selectMap = new SelectInput("mapfile");
+			for (InvestigationFile file : mapFiles)
+			{
+				selectMap.addOption(file.getName(), file.getName());
+			}
 
-		if (selectedMapFile != null)
-		{
-			selectMap.setValue(selectedMapFile.getName());
-		}
-		view.add(selectMap);
+			if (selectedMapFile != null)
+			{
+				selectMap.setValue(selectedMapFile.getName());
+			}
+			view.add(selectMap);
 
-		view.add(new ActionInput("reloadTable", "Reload table"));
+			ActionInput button = new ActionInput("reloadTable", "Reload table");
+			view.add(button);
+		}
 
 		if (tableView != null)
 		{

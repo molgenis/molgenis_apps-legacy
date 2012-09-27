@@ -7,7 +7,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import app.servlet.MolgenisServlet;
 import app.servlet.UsedMolgenisOptions;
 import boot.Helper;
 import boot.RunStandalone;
@@ -18,17 +17,17 @@ import com.thoughtworks.selenium.Selenium;
 
 /**
  * 
- * The complete xQTL Selenium web test.
- * Has a section for init/helpers and section for the real tests.
+ * The complete xQTL Selenium web test. Has a section for init/helpers and
+ * section for the real tests.
  * 
  */
 public class DesignGGSeleniumTest
 {
-	
+
 	/**
-	 *******************************************************************
-	 *************************  Init and helpers  **********************
-	 *******************************************************************
+	 ******************************************************************* 
+	 ************************* Init and helpers **********************
+	 ******************************************************************* 
 	 */
 
 	Selenium selenium;
@@ -80,7 +79,7 @@ public class DesignGGSeleniumTest
 	{
 		selenium.stop();
 	}
-	
+
 	/**
 	 * Helper function. Click a target and wait.
 	 */
@@ -104,7 +103,7 @@ public class DesignGGSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Define experimental factors"));
 		Assert.assertTrue(selenium.isTextPresent("Set constraints"));
 	}
-	
+
 	/**
 	 * Login as admin and redirect
 	 */
@@ -113,11 +112,13 @@ public class DesignGGSeleniumTest
 	public void pressTest() throws InterruptedException
 	{
 		clickAndWait("name=test");
-		Assert.assertTrue(selenium.isTextPresent("Required parameter missing: You must provide a valid file with genotype data."));
-		
-		// Unfortunately, uploading files with Selenium is very complicated, so we cannot test more than this!
-		// Maybe create a hidden action that runs a test with a predefined file instead?
-	}
+		Assert.assertTrue(selenium
+				.isTextPresent("Required parameter missing: You must provide a valid file with genotype data."));
 
+		// Unfortunately, uploading files with Selenium is very complicated, so
+		// we cannot test more than this!
+		// Maybe create a hidden action that runs a test with a predefined file
+		// instead?
+	}
 
 }

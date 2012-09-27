@@ -148,7 +148,7 @@
 				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
 			<unique fields="name"/>
 		</entity>
-		<entity name="RuntimeProperty" implements="Nameable"  xref_label="name">
+		<entity name="RuntimeProperty" implements="Nameable"  system="true" xref_label="name">
 			<field name="Value" length="127" type="varchar" nillable="false" />
 			<unique fields="name" description="Name is unique within its type " />
 		</entity>

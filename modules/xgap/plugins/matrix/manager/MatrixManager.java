@@ -29,9 +29,9 @@ public class MatrixManager extends PluginModel
 {
 
 	protected DataMatrixHandler dmh = null;
-	
+
 	public static String SESSION_MATRIX_DATA = "session_inmemory_matrix_data";
-	
+
 	protected MatrixManagerModel model = new MatrixManagerModel();
 
 	public MatrixManagerModel getMyModel()
@@ -66,9 +66,10 @@ public class MatrixManager extends PluginModel
 				if (this.model.isUploadMode())
 				{
 					// if(request.getString("inputTextArea") != null){
-					//DON'T DO THIS: BAD FOR LARGE UPLOADS -> this.getModel().setUploadTextAreaContent(request.getString("inputTextArea"));
+					// DON'T DO THIS: BAD FOR LARGE UPLOADS ->
+					// this.getModel().setUploadTextAreaContent(request.getString("inputTextArea"));
 					// }
-					Importer.performImport(request, this.model.getSelectedData(), db);
+					new Importer().performImport(request, this.model.getSelectedData(), db);
 					// set to null to force backend check/creation of browser
 					// instance
 					this.model.setSelectedData(null);
@@ -87,11 +88,14 @@ public class MatrixManager extends PluginModel
 		}
 	}
 
-	public void setHeaderAttr(Database db) throws DatabaseException, MolgenisModelException, InstantiationException, IllegalAccessException
+	public void setHeaderAttr(Database db) throws DatabaseException, MolgenisModelException, InstantiationException,
+			IllegalAccessException
 	{
-		
-		ObservationElement target = (ObservationElement) db.getClassForName(this.model.getSelectedData().getTargetType()).newInstance();
-		ObservationElement feature = (ObservationElement) db.getClassForName(this.model.getSelectedData().getFeatureType()).newInstance();
+
+		ObservationElement target = (ObservationElement) db.getClassForName(
+				this.model.getSelectedData().getTargetType()).newInstance();
+		ObservationElement feature = (ObservationElement) db.getClassForName(
+				this.model.getSelectedData().getFeatureType()).newInstance();
 		this.model.setRowHeaderAttr(target.getFields());
 		this.model.setColHeaderAttr(feature.getFields());
 	}
@@ -100,8 +104,10 @@ public class MatrixManager extends PluginModel
 	{
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
-		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData().getTargetType())));
-		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames,  this.model.getSelectedData().getFeatureType())));
+		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData()
+				.getTargetType())));
+		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames, this.model.getSelectedData()
+				.getFeatureType())));
 	}
 
 	public void createHeaders()
@@ -115,7 +121,7 @@ public class MatrixManager extends PluginModel
 				+ this.model.getBrowser().getModel().getRowStop() + " of "
 				+ this.model.getBrowser().getModel().getRowMax());
 	}
-	
+
 	public void setAllOperators()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
@@ -124,26 +130,26 @@ public class MatrixManager extends PluginModel
 		ops.put("LESS", "less than");
 		ops.put("LESS_EQUAL", "less and equal");
 		ops.put("EQUALS", "equals exactly");
-//		ops.put("SORTASC", "sort asc");
-//		ops.put("SORTDESC", "sort desc");
-//		ops.put("NOT", "is not");
+		// ops.put("SORTASC", "sort asc");
+		// ops.put("SORTDESC", "sort desc");
+		// ops.put("NOT", "is not");
 		this.model.setAllOperators(ops);
 	}
-	
+
 	public void setValueOperators()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
-		//if(this.model.getSelectedData().getValueType().equals("Decimal"))
-		//{
-			ops.put("GREATER", "greater than");
-			ops.put("GREATER_EQUAL", "greater and equal");
-			ops.put("LESS", "less than");
-			ops.put("LESS_EQUAL", "less and equal");
-		//}
+		// if(this.model.getSelectedData().getValueType().equals("Decimal"))
+		// {
+		ops.put("GREATER", "greater than");
+		ops.put("GREATER_EQUAL", "greater and equal");
+		ops.put("LESS", "less than");
+		ops.put("LESS_EQUAL", "less and equal");
+		// }
 		ops.put("EQUALS", "equals exactly");
-//		ops.put("SORTASC", "sort asc");
-//		ops.put("SORTDESC", "sort desc");
-//		ops.put("NOT", "is not");
+		// ops.put("SORTASC", "sort asc");
+		// ops.put("SORTDESC", "sort desc");
+		// ops.put("NOT", "is not");
 		this.model.setValueOperators(ops);
 	}
 
@@ -186,18 +192,18 @@ public class MatrixManager extends PluginModel
 		// TODO: review this 'core' logic carefully :)
 
 		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
 		Data data = parentForm.getRecords().get(0);
 
-		  
 		try
 		{
-			
-			if(this.dmh == null){
+
+			if (this.dmh == null)
+			{
 				dmh = new DataMatrixHandler(db);
 			}
-			
-			if(this.model.getSelectedFilterDiv() == null)
+
+			if (this.model.getSelectedFilterDiv() == null)
 			{
 				this.model.setSelectedFilterDiv("filter2");
 			}
@@ -226,47 +232,54 @@ public class MatrixManager extends PluginModel
 
 			if (newOrOtherData)
 			{
-				//find out if the 'Data' has a proper backend
+				// find out if the 'Data' has a proper backend
 				boolean hasLinkedStorage = dmh.isDataStoredIn(data, data.getStorage(), db);
-				
-				//if not, it doesn't mean the source file is not there! e.g. after updating your database
-				if(!hasLinkedStorage)
+
+				// if not, it doesn't mean the source file is not there! e.g.
+				// after updating your database
+				if (!hasLinkedStorage)
 				{
-					//attempt to relink
+					// attempt to relink
 					boolean relinked = dmh.attemptStorageRelink(data, data.getStorage(), db);
-					
-					if(relinked)
+
+					if (relinked)
 					{
-						this.setMessages(new ScreenMessage("INFO: Datamatrix '"+data.getName()+"' relinked to a storage file with the same (file escaped) name. Please make sure this is intented.", true));
+						this.setMessages(new ScreenMessage(
+								"INFO: Datamatrix '"
+										+ data.getName()
+										+ "' relinked to a storage file with the same (file escaped) name. Please make sure this is intented.",
+								true));
 					}
-					
-					//and requery
+
+					// and requery
 					this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
 				}
 				else
 				{
-					//already has properly linked storage
+					// already has properly linked storage
 					this.model.setHasBackend(true);
 				}
-				
+
 				if (this.model.isHasBackend())
 				{
 					logger.info("*** creating browser instance");
 					Browser br = new CreateBrowserInstance(db, data, this.getApplicationController()).getBrowser();
 					this.model.setBrowser(br);
-					
-					if(!br.getModel().getInstance().getData().getValueType().equals(data.getValueType()))
+
+					if (!br.getModel().getInstance().getData().getValueType().equals(data.getValueType()))
 					{
 						String oldDt = data.getValueType();
 						String newDt = br.getModel().getInstance().getData().getValueType();
-						
+
 						data.setValueType(newDt);
 						db.update(data);
-						
-						this.setMessages(new ScreenMessage("WARNING: Data valuetype '" + oldDt + "' adjusted to storage specification '" + newDt + "' to prevent problems with e.g. value types", true));
+
+						this.setMessages(new ScreenMessage("WARNING: Data valuetype '" + oldDt
+								+ "' adjusted to storage specification '" + newDt
+								+ "' to prevent problems with e.g. value types", true));
 					}
-					
-					//refresh attributes, operators, filter
+
+					// refresh attributes, operators, filter
 					this.model.setRowHeaderAttr(null);
 					this.model.setColHeaderAttr(null);
 					this.model.setAllOperators(null);
@@ -280,18 +293,18 @@ public class MatrixManager extends PluginModel
 				this.model.setUploadMode(false);
 				createOverLibText(db);
 				createHeaders();
-				
-				if(model.getRowHeaderAttr() == null || model.getColHeaderAttr() == null)
+
+				if (model.getRowHeaderAttr() == null || model.getColHeaderAttr() == null)
 				{
 					setHeaderAttr(db);
 				}
-				
-				if(model.getAllOperators() == null)
+
+				if (model.getAllOperators() == null)
 				{
 					setAllOperators();
 				}
-				
-				if(model.getValueOperators() == null)
+
+				if (model.getValueOperators() == null)
 				{
 					setValueOperators();
 				}

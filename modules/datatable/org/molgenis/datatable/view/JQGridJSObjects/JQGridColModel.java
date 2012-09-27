@@ -163,7 +163,9 @@ public class JQGridColModel {
 				} else if ("datetime".equals(f.getType().toString())) {
 					datetype = "datetype";
 				}
+
 			} else {
+
 
 				editoptions = EditOptions.createEditOptions();
 				editoptions.disabled = "disabled";

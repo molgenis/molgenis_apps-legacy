@@ -45,7 +45,7 @@
 			</ul>
 		</description>
 		<entity name="Identifiable" implements="Autoid" abstract="true"
-			system="true" xref_label="Identifier">
+			system="true" xref_label="Identifier" decorator="org.molgenis.omicsconnect.decorators.IdentifiableDecorator">
 			<description>This interface assigns an automatic 'id', globally
 				unique identifier
 				'identifier' field, and possibly not unique 'name'
@@ -218,9 +218,10 @@
 			<field auto="true" name="endTime" type="datetime" nillable="true"
 				description="(Optional) time when the protocol ended." />
 		</entity>
-		<entity name="ObservationSet" implements="Autoid">
+		<entity name="ObservationSet" implements="Autoid" xref_label="name">
 			<description>In practice: Observation is one row within a DataSet.
 			</description>
+			<field name="name" nillable="true" unique="true" description="Only needed as unique xref_label"/>
 			<field name="partOfDataSet" type="xref" xref_entity="DataSet"
 				description="DataSet this ValueSet is part of." />
 			<field name="Target" type="xref" xref_entity="ObservationTarget"
