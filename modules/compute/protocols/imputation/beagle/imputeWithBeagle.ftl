@@ -1,4 +1,4 @@
-#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=36
 
 #INPUTS ${preparedStudyDir}/chr${chr}-${batch}.bgl,${preparedStudyDir}/chr${chr}.markersBeagleFormat,${referenceBeagleFile},${referenceMarkersFile}
 #OUTPUTS ${preparedStudyDir}/chr${chr}.bgl
@@ -15,5 +15,5 @@ alloutputsexist "${preparedStudyDir}/chr${chr}.bgl"
 
 mkdir -p ${projectTempDir}/beagle_temp
 
-java -Xmx11g -Djava.io.tmpdir=${projectTempDir}/beagle_temp -jar ${beagle} unphased=${preparedStudyDir}/chr${chr}-${batch}.bgl phased=${referenceBeagleFile} markers=${referenceMarkersFile} missing=0 out=${imputationResultDir}/results-${batch}
+java -Xmx35g -Djava.io.tmpdir=${projectTempDir}/beagle_temp -jar ${beagle} unphased=${preparedStudyDir}/chr${chr}-${batch}.bgl phased=${referenceBeagleFile} markers=${referenceMarkersFile} missing=0 out=${imputationResultDir}/results-${batch}
 
