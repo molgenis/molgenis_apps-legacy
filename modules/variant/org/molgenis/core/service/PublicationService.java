@@ -14,7 +14,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.services.PubmedService;
 import org.molgenis.services.pubmed.Author;
 import org.molgenis.services.pubmed.PubmedArticle;
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

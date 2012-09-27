@@ -1133,8 +1133,9 @@ public class MolgenisVariantService
 			/* Find exons */
 			proteinDomainDTO.setExonDTOList(new ArrayList<ExonDTO>());
 
-			String sql = "SELECT e FROM Exon e WHERE e.isIntron = 0 AND ((:startPos <= e.startGdna AND e.endGdna <= :endPos AND e.strand = '+1') OR (:endPos <= e.endGdna AND e.startGdna <= :startPos AND e.strand = '-1'))";
+			String sql = "SELECT e FROM Exon e WHERE e.isIntron = :isIntron AND ((:startPos <= e.startGdna AND e.endGdna <= :endPos AND e.strand = '+1') OR (:endPos <= e.endGdna AND e.startGdna <= :startPos AND e.strand = '-1'))";
 			TypedQuery<Exon> query = this.em.createQuery(sql, Exon.class);
+			query.setParameter("isIntron", !noIntrons);
 			query.setParameter("startPos", proteinDomain.getStartGdna());
 			query.setParameter("endPos", proteinDomain.getEndGdna());
 			

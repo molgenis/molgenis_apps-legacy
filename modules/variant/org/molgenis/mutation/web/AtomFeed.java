@@ -26,7 +26,7 @@ public class AtomFeed implements MolgenisService
 {
 	private static Abdera abdera = null;
 	
-	public AtomFeed(MolgenisContext mc)
+	public AtomFeed(@SuppressWarnings("unused") MolgenisContext mc)
 	{
 		if (abdera == null)
 			abdera = new Abdera();

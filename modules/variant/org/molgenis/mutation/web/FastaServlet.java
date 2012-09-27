@@ -16,7 +16,7 @@ import org.molgenis.mutation.service.FastaService;
 
 public class FastaServlet implements MolgenisService
 {
-	public FastaServlet(MolgenisContext mc)
+	public FastaServlet(@SuppressWarnings("unused") MolgenisContext mc)
 	{
 	}
 

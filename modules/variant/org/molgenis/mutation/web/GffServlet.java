@@ -16,7 +16,7 @@ import org.molgenis.mutation.service.GffService;
 
 public class GffServlet implements MolgenisService
 {
-	public GffServlet(MolgenisContext mc)
+	public GffServlet(@SuppressWarnings("unused") MolgenisContext mc)
 	{
 	}
 

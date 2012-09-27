@@ -8,7 +8,6 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.RadioInput;
-import org.molgenis.variant.Variant;
 
 public class SimpleSearchForm extends Container
 {
@@ -20,7 +19,7 @@ public class SimpleSearchForm extends Container
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", "findMutationsByTerm"));
-		AutocompleteInput<Variant> termInput = new AutocompleteInput<Variant>("term", "", "org.molgenis.variant.Variant", "nameCdna", "");
+		AutocompleteInput termInput = new AutocompleteInput("term", "", "org.molgenis.variant.Variant", "nameCdna", "");
 		termInput.setClazz("simple_search");
 		termInput.setSize(50);
 		this.add(termInput);

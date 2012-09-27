@@ -19,10 +19,12 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-//import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.AutocompleteInput;
 import org.molgenis.framework.ui.html.Container;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.IntInput;
+import org.molgenis.framework.ui.html.RadioInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.mutation.ServiceLocator;
@@ -615,38 +617,38 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	private void populateSimpleSearchForm()
 	{
-		this.getModel().getSimpleSearchForm().get("__target").setValue(this.getName());
-		this.getModel().getSimpleSearchForm().get("select").setValue(this.getName());
-		this.getModel().getSimpleSearchForm().get("result").setValue(this.getModel().getResult());
-		this.getModel().getSimpleSearchForm().get("term").setValue(this.getModel().getSearchTerm());
+		((HiddenInput) this.getModel().getSimpleSearchForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getSimpleSearchForm().get("select")).setValue(this.getName());
+		((RadioInput) this.getModel().getSimpleSearchForm().get("result")).setValue(this.getModel().getResult());
+		((AutocompleteInput) this.getModel().getSimpleSearchForm().get("term")).setValue(this.getModel().getSearchTerm());
 	}
 
 	private void populateListAllMutationsForm()
 	{
-		this.getModel().getListAllMutationsForm().get("__target").setValue(this.getName());
-		this.getModel().getListAllMutationsForm().get("select").setValue(this.getName());
+		((HiddenInput) this.getModel().getListAllMutationsForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getListAllMutationsForm().get("select")).setValue(this.getName());
 	}
 
 	private void populateListAllPatientsForm()
 	{
-		this.getModel().getListAllPatientsForm().get("__target").setValue(this.getName());
-		this.getModel().getListAllMutationsForm().get("select").setValue(this.getName());
+		((HiddenInput) this.getModel().getListAllPatientsForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getListAllMutationsForm().get("select")).setValue(this.getName());
 	}
 
 	private void populateToSimpleSearchForm()
 	{
-		this.getModel().getToSimpleSearchForm().get("__target").setValue(this.getName());
+		((HiddenInput) this.getModel().getToSimpleSearchForm().get("__target")).setValue(this.getName());
 	}
 
 	private void populateToExpertSearchForm()
 	{
-		this.getModel().getToExpertSearchForm().get("__target").setValue(this.getName());
+		((HiddenInput) this.getModel().getToExpertSearchForm().get("__target")).setValue(this.getName());
 	}
 
 	private void populateShowMutationForm()
 	{
-		this.getModel().getShowMutationForm().get("__target").setValue(this.getName());
-		this.getModel().getListAllMutationsForm().get("select").setValue(this.getName());
+		((HiddenInput) this.getModel().getShowMutationForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getListAllMutationsForm().get("select")).setValue(this.getName());
 		List<ValueLabel> mutationIdOptions  = new ArrayList<ValueLabel>();
 		mutationIdOptions.add(new ValueLabel("", "Select mutation"));
 		for (VariantDTO variantDTO : searchService.getAllVariants())
@@ -655,15 +657,16 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		((SelectInput) this.getModel().getShowMutationForm().get("mid")).setValue("Select mutation");
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void populateExpertSearchForm()
 	{
 		Container expertSearchForm  = this.getModel().getExpertSearchFormWrapper().getForm();
 
-		expertSearchForm.get("__target").setValue(this.getName());
-		expertSearchForm.get("select").setValue(this.getName());
+		((HiddenInput) expertSearchForm.get("__target")).setValue(this.getName());
+		((HiddenInput) expertSearchForm.get("select")).setValue(this.getName());
 
 		if (this.getModel().getMutationSearchCriteriaVO().getVariation() != null)
-			((TextLineInput) expertSearchForm.get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
+			((TextLineInput<String>) expertSearchForm.get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
 
 		if (this.getModel().getMutationSearchCriteriaVO().getCdnaPosition() != null)
 			((IntInput) expertSearchForm.get("nuclno")).setValue(this.getModel().getMutationSearchCriteriaVO().getCdnaPosition());
@@ -734,15 +737,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	
 	private void populateDisplayOptionsForm()
 	{
-		this.getModel().getDisplayOptionsForm().get("__target").setValue(this.getName());
-		this.getModel().getDisplayOptionsForm().get("__action").setValue(this.getModel().getAction());
+		((HiddenInput) this.getModel().getDisplayOptionsForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getDisplayOptionsForm().get("__action")).setValue(this.getModel().getAction());
 		
 		if (this.getModel().getMutationSearchCriteriaVO().getProteinDomainId() != null)
-			this.getModel().getDisplayOptionsForm().get("domain_id").setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId());
+			((HiddenInput) this.getModel().getDisplayOptionsForm().get("domain_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId().toString());
 		if (this.getModel().getMutationSearchCriteriaVO().getExonId() != null)
-			this.getModel().getDisplayOptionsForm().get("exon_id").setValue(this.getModel().getMutationSearchCriteriaVO().getExonId());
+			((HiddenInput) this.getModel().getDisplayOptionsForm().get("exon_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getExonId().toString());
 		if (this.getModel().getMutationSearchCriteriaVO().getMid() != null)
-			this.getModel().getDisplayOptionsForm().get("mid").setValue(this.getModel().getMutationSearchCriteriaVO().getMid());
+			((HiddenInput) this.getModel().getDisplayOptionsForm().get("mid")).setValue(this.getModel().getMutationSearchCriteriaVO().getMid());
 
 		if (this.getModel().getQueryParametersVO().getShowSNP())
 			((SelectInput) this.getModel().getDisplayOptionsForm().get("snpbool")).setValue("show");

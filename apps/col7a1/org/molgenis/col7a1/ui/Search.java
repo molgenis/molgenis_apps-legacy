@@ -39,6 +39,7 @@ public class Search extends SearchPlugin
 		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void populateExpertSearchForm()
 	{
 		PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
