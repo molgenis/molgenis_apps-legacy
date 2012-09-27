@@ -11,7 +11,7 @@
 #MOLGENIS walltime=23:59:00
 #TARGETS
 
-#EXES bwasampejar
+module load bwa/${bwaVersion}
 
 getFile ${indexfile}
 getFile ${leftbwaout}
@@ -20,7 +20,7 @@ getFile ${leftbarcodefqgz}
 getFile ${rightbarcodefqgz}
 alloutputsexist "${samfile}"
 
-<#if seqType == "PE">${bwasampejar} sampe -P \<#else>${bwasampejar} samse \</#if>
+<#if seqType == "PE">bwa sampe -P \<#else>bwa samse \</#if>
 -p illumina \
 -i ${lane} \
 -m ${externalSampleID} \

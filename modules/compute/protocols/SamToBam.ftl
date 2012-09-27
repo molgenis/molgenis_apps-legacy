@@ -11,12 +11,12 @@
 #MOLGENIS walltime=35:59:00 mem=3
 #TARGETS
 
-#EXES samtobamjar
+module load picard-tools/${picardVersion}
 
 getFile ${samfile}
 alloutputsexist "${bamfile}"
 
-java -jar -Xmx3g ${samtobamjar} \
+java -jar -Xmx3g SamFormatConverter.jar \
 INPUT=${samfile} \
 OUTPUT=${bamfile} \
 VALIDATION_STRINGENCY=LENIENT \
