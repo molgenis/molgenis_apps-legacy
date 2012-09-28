@@ -11,8 +11,10 @@
 			label="Welcome" />
 		
 		<!-- ManualPlugin; Goal: provide links to AnimalDB manuals; Flavor: Freemarker -->
-		<plugin name="Manual" type="org.molgenis.animaldb.plugins.accessibility.ManualPlugin"
-			label="Manuals" />
+		<menu name="manualmenu" position="left" label="Manuals">
+			<plugin name="Manual" type="org.molgenis.animaldb.plugins.accessibility.ManualPlugin"
+				label="Manuals" />
+		</menu>
 		
 		<menu name="animalmenu" position="left" label="Animals">
 			<!-- ListPluginMatrix; Goal: matrix for viewing animal values; Flavor: Java-only -->
@@ -35,7 +37,7 @@
 			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
 			<!-- LocationPlugin; Goal: manage animals in locations; Flavor: Freemarker -->
-			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.animal.LocationPlugin"
+			<plugin name="LocationManagementPlugin" type="org.molgenis.animaldb.plugins.animal.LocationManagementPlugin"
 				label="Animals in locations" />
 			<!-- PrintLabelPlugin; Goal: print (cage) labels with any kind of info on them; Flavor: Java-only -->
 			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.administration.PrintLabelPlugin"
