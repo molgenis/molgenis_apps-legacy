@@ -69,7 +69,7 @@ public class ExpertSearchForm extends Container
 			buf.append(input.toHtml());
 			buf.append("</td>");
 			
-			if (i % 2 == 1)
+			if (i % 2 != 0)
 			{
 				buf.append("</tr>\n");
 				buf.append("<tr>");
