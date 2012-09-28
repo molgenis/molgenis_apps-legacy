@@ -24,6 +24,18 @@ It should be used via 'import' plus passing of properties
 	<property name="webxml.dir" value="WebContent/WEB-INF/web.xml" />
 	<property name="lib.dir" value="WebContent/WEB-INF/lib" />
 
+	<!--  cobertura -->
+	<property name="cb.file" location="${basedir}/dist/cobertura.ser" />
+	<path id="cb.classpath">
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="cobertura.jar" />
+			<include name="asm.jar" />
+			<include name="asm-tree.jar" />
+			<include name="log4j.jar" />
+			<include name="oro.jar" />
+		</fileset>
+	</path>
+
 	<!-- path to MOLGENIS toolkit -->
 	<path id="molgenis.classpath">
 		<pathelement location="${build.molgenis.dir}" />
@@ -163,8 +175,10 @@ It should be used via 'import' plus passing of properties
 		</javac>
 
 	</target>
-
-	<target name="test">
+	
+	<target name="test" depends="cb,findbugs" />
+	
+	<target name="testng">
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
 			<path refid="molgenis.classpath" />
@@ -174,8 +188,13 @@ It should be used via 'import' plus passing of properties
 
 
 		<!-- run the tests -->
-		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+		<testng  outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
+			<classpath location="${cb.instrument.dir}" />
+			<classpath refid="combined.class.path"/>
+			<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
+			<jvmarg value="-noverify" />
 			<jvmarg value="-ea" />
 			<jvmarg value="-Xmx1512m" />
 		</testng>
@@ -189,6 +208,87 @@ It should be used via 'import' plus passing of properties
 		</junitreport-->
 
 	</target>
+	
+	<!-- findbugs -->
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="molgenis.classpath"/>
+  	<property name="findbugs.home" value="${molgenis.dir}/lib/findbugs-2.0.1" />
+ 
+	<target name="findbugs">
+   		<findbugs home="${findbugs.home}"
+       		output="html" outputFile="${basedir}/dist/findbugs.html"
+       		jvmargs="-Xms1024M -Xmx1024M ">
+      		<sourcePath path="${molgenis.dir}/src" />
+       		<class location="${build.molgenis.dir}" />
+       		<class location="${build.molgenis_apps.dir}" />
+   		</findbugs>
+	</target>
+	
+	<!-- cobertura stuff -->
+	<target name="cb.init">
+   		<!-- output directory -->
+   		<property name="cb.report.dir" value="${basedir}/dist/cobertura" />
+   		<!-- instrumentation directory -->
+   		<property name="cb.instrument.dir" value="${cb.report.dir}/cobertura-instrumented-classes" />
+   		<property name="cb.src.dir" value="${molgenis.dir}/src" />
+   		<property name="cb.classes.dir" value="${build.molgenis.dir}" />
+   		<taskdef classpathref="cb.classpath" resource="tasks.properties" />
+	</target>
+ 
+	<target name="cb" depends="cb.gen, cb.xml, cb.html"> 
+   		<delete file="${cb.file}" />
+   		<delete dir="${cb.instrument.dir}" />
+	</target>
+ 
+	<target name="cb.instrument">
+   		<mkdir dir="${cb.report.dir}" />
+   		<cobertura-instrument todir="${cb.instrument.dir}/"
+        	                 datafile="${cb.file}">
+      		<fileset dir="${cb.classes.dir}">
+         		<include name="**/*.class" />
+         		<exclude name="**/*Test.class" />
+      		</fileset>
+   		</cobertura-instrument>
+	</target>
+ 
+	<target name="init.cb.path">
+   		<property name="test.cp" value="cb.test.cp" />
+   		<path id="cb.test.cp">
+      		<pathelement path="${cb.instrument.dir}" />
+      		<pathelement path="${cb.classes.dir}" />
+      		<path refid="molgenis.classpath" />
+			<path refid="app.class.path" />
+      		<path refid="cb.classpath" />
+   		</path>
+	</target>
+	
+	<target name="cb.run" depends="init.cb.path, testng" />
+	
+	<target name="cb.gen" depends="cb.init, cb.instrument, cb.run" />
+	
+	<target name="cb.html">
+   		<cobertura-report format="html"
+                     destdir="${cb.report.dir}"
+                     datafile="${cb.file}">
+      		<fileset dir="${cb.src.dir}">
+       			<include name="**/*.java" />
+      		</fileset>
+   		</cobertura-report>
+	</target>
+ 
+	<target name="cb.xml">
+   		<cobertura-report format="xml"
+                     destdir="${cb.report.dir}"
+                     datafile="${cb.file}">
+      		<fileset dir="${cb.src.dir}">
+         		<include name="**/*.java" />
+     		 </fileset>
+   		</cobertura-report>
+	</target>
+	
+	
+	
+	
+	
 	<!--
 	<target name="javadoc">
 		<javadoc access="public" destdir="${dir.javadoc}" author="true" version="true" noindex="false" use="true" classpathref="classpath">
