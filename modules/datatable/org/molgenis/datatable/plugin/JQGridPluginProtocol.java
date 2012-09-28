@@ -18,10 +18,14 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 {
 	private static final long serialVersionUID = 1678403545717313675L;
 	private JQGridView tableView;
+	String topProtocol;
+	String target;
 
-	public JQGridPluginProtocol(String name, ScreenController<?> parent)
+	public JQGridPluginProtocol(String name, ScreenController<?> parent, String topProtocol, String target)
 	{
 		super(name, parent);
+		this.topProtocol = topProtocol;
+		this.target = target;
 	}
 
 	@Override
@@ -31,11 +35,11 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 		try
 		{
 			// only this line changed ...
-			Protocol p = db.query(Protocol.class).eq(Protocol.NAME, "stageCatalogue").find().get(0);
+			Protocol p = db.query(Protocol.class).eq(Protocol.NAME, topProtocol).find().get(0);
 
 			// create table
 			ProtocolTable table = new ProtocolTable(db, p);
-			table.setTargetString("Pa_Id");
+			table.setTargetString(target);
 			table.setFirstColumnFixed(true);
 			// add editable decorator
 
