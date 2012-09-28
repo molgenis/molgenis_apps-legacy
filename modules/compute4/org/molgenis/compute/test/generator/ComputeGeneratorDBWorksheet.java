@@ -129,7 +129,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 		// ourselves (in memory) would mean that we would have to deal with many
 		// exceptional cases, which are now automatically handled by Freemarker.
 
-		String protocolsDirName = System.getProperty("java.io.tmpdir") + worksheet.get(0).getString("McId")
+		String protocolsDirName = System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + worksheet.get(0).getString("McId")
 				+ System.getProperty("file.separator");
 
 		File protocolsDir = new File(protocolsDirName);
