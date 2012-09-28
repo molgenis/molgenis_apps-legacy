@@ -77,7 +77,7 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		view.add(hostSel);
 		
 		view.add(new ActionInput("submitJob","Submit Job"));
-		view.add(new ActionInput("submitPilot", "Submit Pilot"));
+		view.add(new ActionInput("submitPilotGrid", "Submit Pilot"));
 
 		view.add(new Paragraph("<h1>Currently running jobs</h1>"));
 
