@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.molgenis</groupId>
-    <artifactId>${app.name}</artifactId>
+    <artifactId>molgenisapp</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -64,6 +64,11 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.20</version>         
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
 		</dependency>
 
         <!-- Testing -->
@@ -433,8 +438,11 @@
 				<version>2.6</version>
 				<configuration>
 					<suiteXmlFiles>
+						<suiteXmlFile>modules/datamodel/testng.xml</suiteXmlFile>
+<!--
 						<suiteXmlFile>modules/datamodel/testngJpa1.xml</suiteXmlFile>
 						<suiteXmlFile>modules/datamodel/testngJpa2.xml</suiteXmlFile>
+-->
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>

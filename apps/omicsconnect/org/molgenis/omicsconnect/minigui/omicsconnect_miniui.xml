@@ -1,4 +1,4 @@
-<molgenis name="xqtl" label="xQTL workbench">
+<molgenis name="omicsconnect" label="OmicsConnect">
 	<plugin name="MiniGUI" type="org.molgenis.minigui.MiniGUI" />
 	<menu name="main">
 		<plugin label="Home" name="CleanHome" type="org.molgenis.omicsconnect.minigui.CleanHome" />

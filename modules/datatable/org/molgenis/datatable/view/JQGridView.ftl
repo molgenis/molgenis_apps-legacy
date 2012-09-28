@@ -57,16 +57,81 @@ $.fn.extend({
      					
        					return true;
        				};
-       				
-       				
+    				
        				//Create new jqGrid
-       				//alert(config.searchOptions.multipleSearch);
-       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, {}, {}, {}, config.searchOptions);
-       			
-       				addColumnRemoveButtons();
+       				var deleteRecordConfig = {
+       					onclickSubmit : function(param) {
+							config.postData.Operation = "DELETE_RECORD";
+							
+							var selRowId = grid.jqGrid ('getGridParam', 'selrow');
+							var rowData = grid.jqGrid('getRowData', selRowId);
+							
+							for (col in rowData) {
+								config.postData[col] = rowData[col];
+							}
+							
+							return config.postData;
+						},
+						afterComplete : function (response, postdata, formid) {
+							delete config.postdata.Operation;
+						} 
+       				}
        				
-       				//Put the columnpager in the grid toolbar (if exists)
-        			columnPager.appendTo($('#t_' + options.tableId));
+       				var editRecordConfig = {
+       					onclickSubmit : function(param) {
+							config.postData.Operation = "EDIT_RECORD";
+							return config.postData;
+						},
+						afterComplete : function (response, postdata, formid) {
+							delete config.postData.Operation;
+						} 
+       				}
+       				
+       				var addRecordConfig = {
+       					onclickSubmit : function(param) {
+							config.postData.Operation = "ADD_RECORD";
+							return config.postData;
+						},
+						afterComplete : function (response, postdata, formid) {
+							delete config.postData.Operation;
+						} 
+       				}
+       				
+       				grid = $('#' + options.tableId, container).jqGrid(config).jqGrid('navGrid', config.pager, config.settings, editRecordConfig, addRecordConfig, deleteRecordConfig, config.searchOptions);
+       			
+       				addColumnRemoveButtons(config);
+       				
+       				grid.bind('jqGridAddEditBeforeShowForm', function(e, form, oper) {
+       					
+					});
+					
+       				//Put the columnpager in the grid toolbar
+       				var toolbar = $('#t_' + options.tableId);
+       				toolbar.css({"height" : "30px", "padding" : "4px", "width" : "848px"});//Style of the toolbar where all paging widges are
+        			columnPager.appendTo(toolbar);
+					
+					if (config.hiddenColumns.length == 0) {
+						$('#hiddenColumnsEditor').hide();
+					
+					} else {
+						$('#hiddenColumnsEditor').show();
+						
+						//Add hidden columns to the dropdown
+						$('#hiddenColumnsDropdown').find('option').remove();//Remove all options
+					
+						//Add hidden columns as options
+						$.each(config.hiddenColumns, function(index, column) {
+							$('#hiddenColumnsDropdown').append(new Option(column));
+						});
+					
+						//Button to add a hidden column (next to dropdown)
+						$('#addColumn').button({icons: { primary: 'ui-icon-circle-plus' },text: false, label: 'Show column'})
+										.click(function (e) {
+											var selectedColumn = $('#hiddenColumnsDropdown').val();
+											reloadGrid('SHOW_COLUMN&column=' + selectedColumn, true);
+											return false;
+										});
+					}
 					
         			//Add the columnpaging info
         			var start = config.colOffset + 1;
@@ -108,26 +173,29 @@ $.fn.extend({
        			});	
        		} 
        		
-       		addColumnRemoveButtons = function() {
+       		addColumnRemoveButtons = function(config) {
        			grid.closest("div.ui-jqgrid-view")
        				.find("div.ui-jqgrid-hdiv table.ui-jqgrid-htable tr.ui-jqgrid-labels > th.ui-th-column > div.ui-jqgrid-sortable")
-    				.each(function () {
-        				$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
-            				icons: { primary: "ui-icon-circle-close" },
-            				text: false
-        			}).click(function (e) {
-        			 	var idPrefix = "jqgh_" + grid[0].id + "_";
-                		var thId = $(e.target).closest('div.ui-jqgrid-sortable')[0].id;
+    				.each(function (index) {
+    					if (!config.firstColumnFixed || index > 0) {
+        					$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
+            					icons: { primary: "ui-icon-circle-close" },
+            					text: false,
+            					label: 'Hide column'
+        					}).click(function (e) {
+        			 			var idPrefix = "jqgh_" + grid[0].id + "_";
+                				var thId = $(e.target).closest('div.ui-jqgrid-sortable')[0].id;
                 		
-            			// thId will be like "jqgh_tablename_column"
-            			if (thId.substr(0, idPrefix.length) === idPrefix) {
-            				var column = thId.substr(idPrefix.length);
-                			reloadGrid('HIDE_COLUMN&column=' + column, true);
+            					// thId will be like "jqgh_tablename_column"
+            					if (thId.substr(0, idPrefix.length) === idPrefix) {
+            						var column = thId.substr(idPrefix.length);
+                					reloadGrid('HIDE_COLUMN&column=' + column, true);
                 			
-                			return false;
-            			}
+                					return false;
+            					}
 
-       				});
+       						});
+       					}
     			});
        				
        		}
@@ -168,7 +236,8 @@ $.fn.extend({
 					reloadGrid('SET_COLUMN_PAGE&colPage=' + maxColPage, true);
 				}
 			});
-				
+			
+			
 			//Add or remove hover class from all elements that have the hovarable class
 			$('.hoverable', container).live({
         		mouseenter: function() {
@@ -203,12 +272,17 @@ $(document).ready(function() {
 </style>
 
 <div id="${tableId}_gridBox">
-
-    <div class="columnpager" style="width:100%">
+    
+    <div class="columnpager" style="width:100%;">
     	<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" role="row" style="width:100%;table-layout:fixed;height:100%;">
 			<tbody>
 				<tr>
-    				<td align="left"></td>
+    				<td align="left">
+    					<div id="hiddenColumnsEditor">
+    						<select id="hiddenColumnsDropdown" role="listbox" class="ui-pg-selbox ui-widget-content ui-corner-all" style="width:200px;float:left;"></select>
+							<button id="addColumn" style="float:left;height:18px;margin-left:4px"></button>
+						</div>
+    				</td>
     				<td align="center">
         				<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" style="table-layout:auto;" style="width:100%">
             				<tbody>

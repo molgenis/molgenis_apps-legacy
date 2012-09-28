@@ -11,8 +11,8 @@ putFile ${preparedStudyDir}/chr${chr}.sample
 
 inputs "${preparedStudyDir}/chr${chr}.ped"
 inputs "${preparedStudyDir}/chr${chr}.map"
-alloutputsexist "${preparedStudyDir}/chr${chr}.gen"
-alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
+alloutputsexist "${preparedStudyDir}/chr${chr}.gen" \
+"${preparedStudyDir}/chr${chr}.sample"
 
 
 module load ${gtoolBin}/${gtoolBinversion}

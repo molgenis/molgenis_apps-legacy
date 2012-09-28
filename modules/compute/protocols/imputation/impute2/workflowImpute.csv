@@ -7,5 +7,4 @@ impute2_s04,imputeWithImpute2,impute2_s03
 impute2_s05,concatImpute2ResultsPerChr,impute2_s04
 impute2_s06,convertConcatedImpute2ResultToPedMap,impute2_s05
 impute2_s07,calculateBeagleR2ForImpute2Results,impute2_s06
-impute2_s08,convertResultPedMapToVcf,impute2_s06
-impute2_s09,convertResultPedMapToB36,impute2_s06
+impute2_s08,convertResultPedMapToB36,impute2_s06

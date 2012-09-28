@@ -63,7 +63,7 @@ public class TestTupleTable extends AbstractTupleTable
 		for (Field column : columns)
 		{
 			int col = getColumnIndex(column.getName());
-			tuple.set(getAllColumns().get(col).getName(), (row + 1) + "-" + (col + 1));
+			tuple.set(column.getName(), (row + 1) + "-" + (col + 1));
 		}
 
 		return tuple;

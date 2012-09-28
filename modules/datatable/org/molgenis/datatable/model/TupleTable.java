@@ -22,15 +22,16 @@ import org.molgenis.util.Tuple;
  */
 public interface TupleTable extends Iterable<Tuple>
 {
+	public void hideColumn(String columnName);
 
-	/**
-	 * Narrows the nr of columns Limit and offset work on this set of columns
-	 * 
-	 * @param columnNames
-	 */
-	public void setVisibleColumnNames(List<String> columnNames);
+	public void showColumn(String columnName);
 
-	public List<String> getVisibleColumnNames();
+	public List<String> getHiddenColumnNames();
+
+	/** Wether the first column is 'fixed', must always be visible **/
+	public void setFirstColumnFixed(boolean firstColumnFixed);
+
+	public boolean isFirstColumnFixed();
 
 	/**
 	 * Get meta data describing the columns in current view (within

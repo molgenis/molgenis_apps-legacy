@@ -3,7 +3,6 @@ package org.molgenis.datatable.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
@@ -65,19 +64,6 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 		columns.addAll(snpNames);
 
 		return columns;
-	}
-
-	@Override
-	public Iterator<Tuple> iterator()
-	{
-		try
-		{
-			return new TupleTableIterator(this);
-		}
-		catch (TableException e)
-		{
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override

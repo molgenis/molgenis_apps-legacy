@@ -19,7 +19,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	private int offset = 0;
 	private int colOffset = 0;
 	private int colLimit = 0;
-	private List<Field> visibleColumns;
+	private boolean firstColumnFixed;
 	private Database db;
 	private Map<String, Integer> columnByIndex;
 
@@ -33,59 +33,77 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public void setVisibleColumnNames(List<String> columnNames)
+	public void setFirstColumnFixed(boolean firstColumnFixed)
 	{
-		List<Field> columns;
+		this.firstColumnFixed = firstColumnFixed;
+	}
+
+	@Override
+	public boolean isFirstColumnFixed()
+	{
+		return firstColumnFixed;
+	}
+
+	@Override
+	public void hideColumn(String columnName)
+	{
 		try
 		{
-			columns = getAllColumns();
+			getColumnByName(columnName).setHidden(true);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void showColumn(String columnName)
+	{
+		try
+		{
+			getColumnByName(columnName).setHidden(false);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<String> getHiddenColumnNames()
+	{
+		List<String> hiddenColumns = new ArrayList<String>();
+		try
+		{
+			for (Field column : getAllColumns())
+			{
+				if (column.isHidden())
+				{
+					hiddenColumns.add(column.getName());
+				}
+			}
 		}
 		catch (TableException e)
 		{
 			throw new RuntimeException(e);
 		}
 
-		visibleColumns = new ArrayList<Field>(columnNames.size());
-		for (Field column : columns)
+		return hiddenColumns;
+	}
+
+	protected List<Field> getVisibleColumns() throws TableException
+	{
+		List<Field> visibleColumns = new ArrayList<Field>();
+		for (Field column : getAllColumns())
 		{
-			if (columnNames.contains(column.getName()))
+			if (!column.isHidden())
 			{
 				visibleColumns.add(column);
 			}
 		}
 
-	}
-
-	public List<String> getVisibleColumnNames()
-	{
-		List<Field> visibleColumns;
-		try
-		{
-			visibleColumns = getVisibleColumns();
-		}
-		catch (TableException e)
-		{
-			throw new RuntimeException(e);
-		}
-
-		List<String> visibleColumnNames = new ArrayList<String>(visibleColumns.size());
-		for (Field column : visibleColumns)
-		{
-			visibleColumnNames.add(column.getName());
-		}
-
-		return visibleColumnNames;
-	}
-
-	protected List<Field> getVisibleColumns() throws TableException
-	{
-		if (visibleColumns == null)
-		{
-			visibleColumns = getAllColumns();
-		}
-
 		return visibleColumns;
-
 	}
 
 	@Override
@@ -123,17 +141,25 @@ public abstract class AbstractTupleTable implements TupleTable
 		List<Field> result;
 		List<Field> columns = getVisibleColumns();
 
-		int colLimit = (int) (getColLimit() == 0 ? getColCount() - getColOffset() : getCurrentColumnPageSize());
+		int colCount = columns.size();
+
+		if (isFirstColumnFixed())
+		{
+			columns.remove(0);
+			colCount--;
+		}
+
+		int colLimit = (int) (this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize(colCount));
 
 		if (getColOffset() > 0)
 		{
 			if (colLimit > 0)
 			{
-				result = columns.subList(getColOffset(), Math.min(getColOffset() + colLimit, columns.size()));
+				result = columns.subList(getColOffset(), Math.min(getColOffset() + colLimit, colCount));
 			}
 			else
 			{
-				result = columns.subList(getColOffset(), columns.size());
+				result = columns.subList(getColOffset(), colCount);
 			}
 		}
 		else
@@ -146,6 +172,11 @@ public abstract class AbstractTupleTable implements TupleTable
 			{
 				result = columns;
 			}
+		}
+
+		if (isFirstColumnFixed())
+		{
+			result.add(0, getAllColumns().get(0));
 		}
 
 		return result;
@@ -163,7 +194,17 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public abstract Iterator<Tuple> iterator();
+	public Iterator<Tuple> iterator()
+	{
+		try
+		{
+			return new TupleTableIterator(this);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public void close() throws TableException
@@ -190,13 +231,13 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public int getColLimit()
 	{
-		return this.colLimit;
+		return colLimit;
 	}
 
 	@Override
 	public int getColOffset()
 	{
-		return this.colOffset;
+		return colOffset;
 	}
 
 	@Override
@@ -228,15 +269,13 @@ public abstract class AbstractTupleTable implements TupleTable
 		}
 		catch (DatabaseException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return this.db;
 	}
 
-	protected int getCurrentColumnPageSize() throws TableException
+	protected int getCurrentColumnPageSize(int colCount) throws TableException
 	{
-		int colCount = getColCount();
 		int pageSize = getColLimit();
 
 		if (getColOffset() + pageSize > colCount)

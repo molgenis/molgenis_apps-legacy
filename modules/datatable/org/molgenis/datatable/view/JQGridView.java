@@ -1,6 +1,5 @@
 package org.molgenis.datatable.view;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.molgenis.datatable.model.EditableTupleTable;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -26,18 +26,12 @@ import org.molgenis.datatable.view.renderers.Renderers;
 import org.molgenis.datatable.view.renderers.Renderers.JQGridRenderer;
 import org.molgenis.datatable.view.renderers.Renderers.Renderer;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlWidget;
-import org.molgenis.model.elements.Field;
-import org.molgenis.pheno.Individual;
-import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -50,11 +44,8 @@ public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
 	private static final int DEFAULT_MAX_VISIBLE_COLUMN_COUNT = 5;
-	private boolean initialize = true;
 	private JQGridSearchOptions searchOptions;
 	private int maxVisibleColumnCount = DEFAULT_MAX_VISIBLE_COLUMN_COUNT;
-
-	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
 	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
@@ -62,7 +53,7 @@ public class JQGridView extends HtmlWidget
 	 */
 	private enum Operation
 	{
-		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE, HIDE_COLUMN
+		LOAD_CONFIG, RENDER_DATA, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, NEXT_COLUMNS, PREVIOUS_COLUMNS, SET_COLUMN_PAGE, HIDE_COLUMN, SHOW_COLUMN
 	}
 
 	/**
@@ -110,7 +101,7 @@ public class JQGridView extends HtmlWidget
 	}
 
 	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table,
-			boolean showColumnTree, JQGridSearchOptions searchOptions)
+			JQGridSearchOptions searchOptions)
 	{
 		this(name, hostController, table);
 		this.searchOptions = searchOptions;
@@ -146,21 +137,6 @@ public class JQGridView extends HtmlWidget
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
 
-			if (initialize)
-			{
-				List<Measurement> listOM = db.find(Measurement.class);
-				for (Measurement m : listOM)
-				{
-					if (m.getCategories_Name().size() > 0)
-					{
-						hashMeasurementsWithCategories.put(m.getName(), m.getDataType());
-
-					}
-
-				}
-				initialize = false;
-			}
-
 			switch (operation)
 			{
 				case LOAD_CONFIG:
@@ -168,9 +144,12 @@ public class JQGridView extends HtmlWidget
 					break;
 				case HIDE_COLUMN:
 					String columnToRemove = request.getString("column");
-					List<String> visibleColumns = tupleTable.getVisibleColumnNames();
-					visibleColumns.remove(columnToRemove);
-					tupleTable.setVisibleColumnNames(visibleColumns);
+					tupleTable.hideColumn(columnToRemove);
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case SHOW_COLUMN:
+					String columnToShow = request.getString("column");
+					tupleTable.showColumn(columnToShow);
 					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 					break;
 				case SET_COLUMN_PAGE:
@@ -264,218 +243,93 @@ public class JQGridView extends HtmlWidget
 
 				case EDIT_RECORD:
 
-					String targetString = "Pa_Id";
-
-					String targetID = request.getString(targetString);
-
-					if (targetID != null)
+					if (!(tupleTable instanceof EditableTupleTable))
 					{
-						// List<ObservedValue> listObservedValues = new
-						// ArrayList<ObservedValue>();
-
-						List<String> listFields = request.getFieldNames();
-
-						List<QueryRule> listQuery = new ArrayList<QueryRule>();
-						listQuery.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetID));
-						listQuery.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.IN, listFields));
-
-						Integer protAppID = db.find(ObservedValue.class, new QueryRule(listQuery)).get(0)
-								.getProtocolApplication_Id();
-
-						for (Field eachField : tupleTable.getAllColumns())
-						{
-
-							if (!eachField.getName().equals(targetString))
-							{
-								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
-								mu.UpdateDatabase(db, targetID, request.getString(eachField.getName()),
-										eachField.getName(), protAppID, hashMeasurementsWithCategories);
-							}
-						}
-
-					}
-					else
-					{
-						break;
-					}
-					break;
-
-				case ADD_RECORD:
-
-					// respond to the ajax calling of adding new records/.
-					String patientID = request.getString("targetID");
-
-					Individual ot = null;
-
-					String investigationName = "";
-
-					String message = "";
-
-					boolean success = false;
-
-					// Check if the individual already exists in the database,
-					// if
-					// so, it only gives back the message. If it doesn`t, the
-					// individual is added to the database
-					if (db.find(Individual.class, new QueryRule(Individual.NAME, Operator.EQUALS, patientID)).size() > 0)
-					{
-						message = "The patient has already existed and adding failed. Please edit this patient";
-						success = false;
-					}
-					else
-					{
-						ot = new Individual();
-						ot.setName(patientID);
-					}
-					// If the individual is new, the following code will be
-					// executed.
-					if (ot != null)
-					{
-
-						if (request.getString("data") != null)
-						{
-							// Get the data and transform it to json object. And
-							// this json object contains all the new added
-							// values
-							JSONObject json = new JSONObject(request.getString("data"));
-
-							// Create a new ProtocolApplication for the new
-							// patient.
-							ProtocolApplication pa = new ProtocolApplication();
-
-							// Set the protocol to it. At the moment, the
-							// reference
-							// protocol is hard-coded in the importing. All
-							// protocolApplications refer to the same protocol
-							// in
-							// the mainImporter.
-							pa.setProtocol_Name("TestProtocol");
-
-							// Set the name to protocolApplication. The pa name
-							// schema should be more flexible later on.
-							pa.setName("pa_" + ot.getName());
-
-							List<ObservedValue> listOfNewValues = new ArrayList<ObservedValue>();
-
-							// create an iterator for the json object.
-							Iterator<?> iterator = json.keys();
-
-							int count = 0;
-
-							while (iterator.hasNext())
-							{
-
-								String feature = iterator.next().toString();
-
-								// We do not know which investigation it is in
-								// JQGridView.java class. Therefore we take the
-								// investigationName from measurement
-								if (count == 0)
-								{
-									investigationName = db
-											.find(Measurement.class,
-													new QueryRule(Measurement.NAME, Operator.EQUALS, feature)).get(0)
-											.getInvestigation_Name();
-									count++;
-								}
-
-								String value = json.get(feature).toString();
-								if (!value.equals(""))
-								{
-									ObservedValue ov = new ObservedValue();
-									ov.setTarget_Name(patientID);
-									ov.setFeature_Name(feature);
-									if (hashMeasurementsWithCategories.containsKey(feature))
-									{
-										String[] splitValue = value.split("\\.");
-										ov.setValue(splitValue[0]);
-									}
-									else
-									{
-										ov.setValue(value);
-									}
-									ov.setProtocolApplication_Name(pa.getName());
-									ov.setInvestigation_Name(investigationName);
-									listOfNewValues.add(ov);
-								}
-							}
-
-							ot.setInvestigation_Name(investigationName);
-
-							pa.setInvestigation_Name(investigationName);
-
-							db.add(ot);
-
-							db.add(pa);
-
-							db.add(listOfNewValues);
-
-							// If everything goes well, the success message is
-							// set.
-							message = "the new records have been added to the database!";
-
-							success = true;
-						}
+						throw new UnsupportedOperationException("TupleTable is not editable");
 					}
 
 					// create a json object to take the message and success
 					// variables.
-					JSONObject map = new JSONObject();
+					JSONObject result = new JSONObject();
 
-					map.put("message", message);
-					map.put("success", success);
+					try
+					{
+						((EditableTupleTable) tupleTable).update(request);
+
+						result.put("message", "Record updated");
+						result.put("success", true);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+
+						result.put("message", e.getMessage());
+						result.put("success", false);
+					}
 
 					// Send this json string back the html.
-					((MolgenisRequest) request).getResponse().getOutputStream().println(map.toString());
+					((MolgenisRequest) request).getResponse().getOutputStream().println(result.toString());
+					break;
+
+				case ADD_RECORD:
+
+
+					if (!(tupleTable instanceof EditableTupleTable))
+
+					{
+						throw new UnsupportedOperationException("TupleTable is not editable");
+					}
+
+					// create a json object to take the message and success
+					// variables.
+					result = new JSONObject();
+
+					try
+					{
+						((EditableTupleTable) tupleTable).add(request);
+
+						result.put("message", "Record added");
+						result.put("success", true);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+
+						result.put("message", e.getMessage());
+						result.put("success", false);
+					}
+
+					// Send this json string back the html.
+					((MolgenisRequest) request).getResponse().getOutputStream().println(result.toString());
 					break;
 
 				case DELETE_RECORD:
-
-					int deleteRowIndex = request.getInt("SelectedRow");
-
-					final String rowValue = tupleTable.getRows().get(deleteRowIndex - 1).getString("Pa_Id");
-					Query<ObservedValue> query = db.query(ObservedValue.class);
-					List<String> listOfColumns = new ArrayList<String>();
-					for (Field f : tupleTable.getAllColumns())
+					if (!(tupleTable instanceof EditableTupleTable))
 					{
-						if (!f.getName().equals("Pa_Id"))
-						{
-							listOfColumns.add(f.getName());
-						}
+						throw new UnsupportedOperationException("TupleTable is not editable");
 					}
-					query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, rowValue));
-					query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.IN, listOfColumns));
-					List<ObservedValue> listOfRemoveValues = query.find();
 
-					if (listOfRemoveValues.size() > 0)
+					// create a json object to take the message and success
+					// variables.
+					result = new JSONObject();
+
+					try
 					{
+						((EditableTupleTable) tupleTable).remove(request);
 
-						Integer ProtocolApplicationID = null;
-
-						if (listOfRemoveValues.get(0).getProtocolApplication_Id() != null)
-						{
-							ProtocolApplicationID = listOfRemoveValues.get(0).getProtocolApplication_Id();
-						}
-						db.remove(listOfRemoveValues);
-						if (ProtocolApplicationID != null)
-						{
-							ProtocolApplication pa = db.find(ProtocolApplication.class,
-									new QueryRule(ProtocolApplication.ID, Operator.EQUALS, ProtocolApplicationID)).get(
-									0);
-							db.remove(pa);
-						}
-
-						Individual ind = db.find(Individual.class,
-								new QueryRule(Individual.NAME, Operator.EQUALS, rowValue)).get(0);
-						db.remove(ind);
+						result.put("message", "Record deleted");
+						result.put("success", true);
 					}
-					break;
-				case UPLOAD_MATRIX:
+					catch (Exception e)
+					{
+						e.printStackTrace();
 
-					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+						result.put("message", e.getMessage());
+						result.put("success", false);
+					}
 
-					String filePath = tmpDir.getAbsolutePath() + "/" + request.getString("fileName");
-
+					// Send this json string back the html.
+					((MolgenisRequest) request).getResponse().getOutputStream().println(result.toString());
 					break;
 				default:
 					break;
@@ -484,6 +338,7 @@ public class JQGridView extends HtmlWidget
 		}
 		catch (final Exception e)
 		{
+			e.printStackTrace();
 			throw new HandleRequestDelegationException(e);
 		}
 
@@ -668,11 +523,6 @@ public class JQGridView extends HtmlWidget
 		return new FreemarkerView(JQGridView.class, args).render();
 	}
 
-	public HashMap<String, String> getHashMeasurements()
-	{
-		return hashMeasurementsWithCategories;
-	}
-
 	/**
 	 * Create a properly-configured grid with default settings, on first load.
 	 */
@@ -719,7 +569,6 @@ public class JQGridView extends HtmlWidget
 		while (it.hasNext())
 		{
 			Tuple row = it.next();
-			System.out.println("check: " + row);
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 
 			final List<String> fieldNames = row.getFieldNames();

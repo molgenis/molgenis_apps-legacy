@@ -14,6 +14,8 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import app.servlet.UsedMolgenisOptions;
+
 public class MiniGUI<E extends Entity> extends PluginModel<E>
 {
 	/**
@@ -24,6 +26,15 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 	public MiniGUI(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+
+		if (new UsedMolgenisOptions().appName.equals("omicsconnect"))
+		{
+			this.model.setLogoLocation("omicsconnect/images/oc_logo_alt_150px.png");
+		}
+		else
+		{
+			this.model.setLogoLocation("clusterdemo/logos/molgenis_logo.png");
+		}
 	}
 
 	private MiniGUIModel model = new MiniGUIModel();

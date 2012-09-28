@@ -14,6 +14,7 @@ import org.molgenis.framework.ui.ScreenController;
 public class MiniGUIModel
 {
 	private Vector<ScreenController<?>> uiTree;
+	private String logoLocation;
 
 	public Vector<ScreenController<?>> getUiTree()
 	{
@@ -23,6 +24,16 @@ public class MiniGUIModel
 	public void setUiTree(Vector<ScreenController<?>> uiTree)
 	{
 		this.uiTree = uiTree;
+	}
+
+	public String getLogoLocation()
+	{
+		return logoLocation;
+	}
+
+	public void setLogoLocation(String logoLocation)
+	{
+		this.logoLocation = logoLocation;
 	}
 
 }
