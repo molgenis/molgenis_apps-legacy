@@ -186,6 +186,12 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 			String template = workflowElement.getProtocol().getScriptTemplate();
 
+            // Add Header.ftl
+            template = "<#include \"Header.ftl\" />\n" + template;
+            //Add Footer.ftl
+            template += "\n<#include \"Footer.ftl\" />\n";
+
+
 			for (Tuple work : foldedWorksheet)
 			{
 				// put ComputeParams in map
