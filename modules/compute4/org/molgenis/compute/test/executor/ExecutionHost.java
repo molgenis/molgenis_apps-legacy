@@ -1,9 +1,9 @@
 package org.molgenis.compute.test.executor;
 
-import java.io.IOException;
-
 import org.molgenis.util.Ssh;
 import org.molgenis.util.SshResult;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 15:39
@@ -40,9 +40,7 @@ public class ExecutionHost extends Ssh
 
 	public void submitPilotCluster() throws IOException
 	{
-
-		String id = System.nanoTime() + "";
-		String command = "sh /target/gpfs2/gcc/tools/scripts/maverick.sh " + id;
+		String command = "qsub /target/gpfs2/gcc/tools/scripts/maverick.sh";
 		System.out.println(">>> " + command);
 
 		SshResult result = this.executeCommand(command);
