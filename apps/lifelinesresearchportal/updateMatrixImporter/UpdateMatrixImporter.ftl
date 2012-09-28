@@ -19,6 +19,10 @@
 		$('#fileUploadCancel').button();
 		$('#uploadFileButton').button();
 		
+		$('#fileUploadCancel').click(function(){
+			$('#uploadFileForm').dialog('close');
+		});
+		
 		$('#previousStepSummary').click(function(){
 			$('#showPreviewedTable').fadeOut();
 			$('#summaryPage').fadeIn();
@@ -355,7 +359,7 @@
 				            <input type="radio" name="uploadFileType" value="Geno">Geno<br> 
 					    </fieldset>
 					    <fieldset style="border-radius:0.2em;">
-							<label >Upload a file</label><br>
+							<label >Upload a csv file</label><br>
 					    	<input type="file" id="uploadFileName" name="uploadFileName" style="font-size:12px"/> 
 					    </fieldset>
 			            <fieldset style="border-radius:0.2em;">
