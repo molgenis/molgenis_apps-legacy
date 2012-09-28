@@ -46,7 +46,7 @@ java -Xmx8g -jar ${imputationToolJar} \
 --mode batch \
 --in ${studyTriTyperChrDir} \
 --out ${studyTriTyperBatchChrDir} \
---size 500
+--size ${imputationToolBatches}
 
 
 #Get return code from last program call
