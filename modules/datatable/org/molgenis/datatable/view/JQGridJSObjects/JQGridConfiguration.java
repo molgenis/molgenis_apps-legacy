@@ -5,16 +5,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.molgenis.datatable.model.EditableTupleTable;
 import org.molgenis.datatable.model.FilterableTupleTable;
+import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.model.elements.Field;
 
-public class JQGridConfiguration {
+import com.google.gson.Gson;
+
+public class JQGridConfiguration
+{
 	public String id;
 
 	/** ajax url */
 	public final String url;
+
+	public final String editurl;
 
 	/** formatting of the ajax service data */
 	public final String datatype = "json";
@@ -32,7 +39,8 @@ public class JQGridConfiguration {
 	public int rowNum = 10;
 
 	/** choices of alternative rowNum values */
-	public Integer[] rowList = new Integer[] { 10, 20, 30 };
+	public Integer[] rowList = new Integer[]
+	{ 10, 20, 30 };
 
 	/** indicates whether we want to show total records from query in page bar */
 	public boolean viewrecords = true;
@@ -49,7 +57,11 @@ public class JQGridConfiguration {
 	public String sortorder = "desc";
 
 	/** default height */
-	public String height = "auto";
+	public String height = "232px";
+
+	public int totalColumnCount;
+	public int colOffset;
+	public int colLimit;
 
 	/** virtual scrolling */
 	// public int scroll = 1;
@@ -67,39 +79,70 @@ public class JQGridConfiguration {
 
 	public JQGridSettings settings = new JQGridSettings();
 
+	public JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+
 	@SuppressWarnings("unchecked")
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
 
-	public JQGridConfiguration(String id, String idField, String url,
-			String caption, TupleTable tupleTable) throws TableException {
+	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)
+			throws TableException
+	{
 		this.id = id;
 		this.pager = "#" + id + "_pager";
 		this.url = url;
+		this.editurl = url;
 		this.caption = caption;
+		this.totalColumnCount = tupleTable.getColCount();
+		this.colOffset = tupleTable.getColOffset();
+		this.colLimit = tupleTable.getColLimit();
 
 		// "{repeatitems: false, id: \"Code\"}"
 		jsonReader.put("repeatitems", false);
 		jsonReader.put("id", idField);
 
-		if (tupleTable instanceof FilterableTupleTable) {
+		if (tupleTable instanceof FilterableTupleTable)
+		{
 			// sortable = true;
 			settings.search = true;
 		}
 
-		for (final Field f : tupleTable.getColumns()) {
-			JQGridColModel model = new JQGridColModel(f);
-			if (tupleTable instanceof FilterableTupleTable) {
-				model.sortable = true;
-			}
-			colModel.add(model);
-			colNames.add(f.getSqlName());
+		if (tupleTable instanceof EditableTupleTable)
+		{
+			settings.add = true;
+			settings.edit = true;
+			settings.del = true;
 		}
+
+		if (tupleTable instanceof ProtocolTable)
+		{
+			for (final Field f : tupleTable.getColumns())
+			{
+				JQGridColModel model = new JQGridColModel(f);
+				if (tupleTable instanceof FilterableTupleTable)
+				{
+					model.sortable = true;
+				}
+				colModel.add(model);
+				colNames.add(f.getSqlName());
+			}
+		}
+		else
+		{
+			for (final Field f : tupleTable.getColumns())
+			{
+				colModel.add(new JQGridColModel(f.getLabel()));
+			}
+		}
+
+		System.out.println(new Gson().toJson(settings));
 	}
 
-	public JQGridConfiguration(String id, String url, String caption) {
+	public JQGridConfiguration(String id, String url, String caption)
+	{
 		this.id = id;
 		pager = "#" + id + "Pager";
 		this.url = url;
+		this.editurl = url;
 		this.caption = caption;
 	}
 }

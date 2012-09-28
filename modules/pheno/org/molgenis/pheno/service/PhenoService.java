@@ -7,6 +7,7 @@ import java.util.List;
 //import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
@@ -27,13 +28,20 @@ import org.springframework.stereotype.Service;
 public class PhenoService
 {
 	private Database db;
-//	private EntityManager em;
-	
-	@Autowired
-	public PhenoService(Database db)
+
+	public PhenoService()
+	{
+	}
+
+	public PhenoService(final Database db)
 	{
 		this.db = db;
-//		this.em = db.getEntityManager();
+	}
+
+	//@Autowired
+	public void setDatabase(final Database db)
+	{
+		this.db = db;
 	}
 	
 	/**
@@ -55,6 +63,9 @@ public class PhenoService
 
 			for (Protocol protocol : protocolList)
 			{
+				if (CollectionUtils.isEmpty(protocol.getFeatures_Id()))
+					continue;
+
 				List<ObservedValue> observedValueList = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, id).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
 				
 				if (observedValueList.size() == 0)

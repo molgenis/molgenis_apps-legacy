@@ -12,7 +12,7 @@
 
 <#if seqType == "SR">
 #INPUTS srbarcodefqgz,
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog
+#OUTPUTS leftfastqczip
 #LOGS log
 #EXES fastqcjar
 #TARGETS
@@ -20,11 +20,10 @@
 	inputs "${srbarcodefqgz}"
 	alloutputsexist \
 	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
+
 <#else>
 #INPUTS leftbarcodefqgz,rightbarcodefqgz
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog,rightfastqczip,rightfastqcsummarytxt,rightfastqcsummarylog
+#OUTPUTS leftfastqczip,rightfastqczip
 #LOGS log
 #EXES fastqcjar
 #TARGETS
@@ -34,11 +33,7 @@
 	
 	alloutputsexist \
 	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
 	 "${rightfastqczip}" \
-	 "${rightfastqcsummarytxt}" \
-	 "${rightfastqcsummarylog}"
 </#if>
 
 # first make logdir...

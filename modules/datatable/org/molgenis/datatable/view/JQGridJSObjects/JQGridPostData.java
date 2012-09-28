@@ -16,8 +16,29 @@ public class JQGridPostData
 		page = request.getInt("page");
 		sidx = request.getString("sidx");
 		sord = request.getString("sord");
+		colPage = request.getInt("colPage");
+
+		for (String f : request.getFieldNames())
+		{
+			System.out.println(f + "=" + request.getObject(f));
+		}
 
 		this.filters = new Gson().fromJson(request.getString("filters"), JQGridFilter.class);
+
+		if (filters == null)
+		{
+			// Check simple, single search
+			String searchString = request.getString("searchString");
+			String searchField = request.getString("searchField");
+			String searchOper = request.getString("searchOper");
+
+			if ((searchString != null) && (searchField != null) && (searchOper != null))
+			{
+				JQGridRule.JQGridOp op = JQGridRule.JQGridOp.valueOf(searchOper);
+				filters = new JQGridFilter();
+				filters.rules.add(new JQGridRule(searchField, op, searchString));
+			}
+		}
 	}
 
 	public JQGridPostData()
@@ -33,4 +54,5 @@ public class JQGridPostData
 	public int rows = 0;
 	/** page offset, each page being rows long */
 	public int page = 0;
+	public int colPage = 1;
 }
