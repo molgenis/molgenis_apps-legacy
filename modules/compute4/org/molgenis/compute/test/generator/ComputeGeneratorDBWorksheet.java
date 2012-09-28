@@ -12,15 +12,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.FreemarkerHelper;
 import org.molgenis.compute.commandline.Worksheet;
 import org.molgenis.compute.design.ComputeParameter;
+import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.compute.test.temp.Target;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
@@ -45,21 +48,98 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 	}
 
 	/**
-	 * Generate tasks and put them into the database
+	 * Create a script, given a tuple from folded worksheet, taskName,
+	 * workflowElementsList and ComputeParameter list
+	 * 
+	 * @param template
+	 * @param work
+	 * @param taskName
+	 * @param workflowElementsList
+	 * @param protocolsDir
+	 * @return filledtemplate.toString();
 	 */
-	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet,
-			Hashtable<String, String> commandLineParameters)
+	private String createScript(String templateScript, Tuple work, String taskName,
+			Collection<WorkflowElement> workflowElementsList, List<ComputeParameter> paramList, File protocolsDir)
 	{
 
+		// put all parameters from tuple in hashmap for weaving
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		for (String field : work.getFields())
+		{
+			parameters.put(field, work.getObject(field));
+		}
+
+		// add the helper
+		parameters.put("freemarkerHelper", new FreemarkerHelper(paramList));
+		parameters.put("parameters", work);
+		parameters.put("workflowElements", workflowElementsList);
+
+		try
+		{
+			Configuration cfg = new Configuration();
+
+			// Set path so that protocols can include other protocols using the
+			// "include" statement
+
+			cfg.setDirectoryForTemplateLoading(protocolsDir);
+
+			System.out.println(">> Create script name: " + taskName);
+			// System.out.println(">> Create script template: " +
+			// templateScript);
+
+			Template template = new Template(taskName, new StringReader(templateScript), cfg);
+			StringWriter script = new StringWriter();
+			template.process(parameters, script);
+
+			return script.toString();
+		}
+		catch (IOException e)
+		{
+			System.err.println(">> ERROR >> IOException");
+			e.printStackTrace();
+		}
+		catch (TemplateException e)
+		{
+			System.err.println(">> ERROR >> TemplateException");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	/**
+	 * Generate tasks and put them into the database
+	 */
+	public void generateTasks(Workflow workflow, List<Tuple> worksheet)
+	{
 		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
 				.getWorkflowComputeParameterCollection();
 		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
 
+		// Put protocols in a temporary directory to enable a protocol to
+		// include other protocols while generating. We do it this way because
+		// we want to use Freemarker to handle the includes. Doing the includes
+		// ourselves (in memory) would mean that we would have to deal with many
+		// exceptional cases, which are now automatically handled by Freemarker.
+
+		String protocolsDirName = System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + worksheet.get(0).getString("McId")
+				+ System.getProperty("file.separator");
+
+		File protocolsDir = new File(protocolsDirName);
+
 		try
 		{
 			db = DatabaseFactory.create();
-			db.beginTx();
+			saveProtocolsInDir(db, protocolsDir);
 
+			db.beginTx();
 		}
 		catch (DatabaseException e)
 		{
@@ -67,7 +147,6 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 		}
 
 		// I guess, we should also add line_number as a 'ComputeParameter'...
-		// Actually, I think this should happen at a different place...
 		ComputeParameter line_number = new ComputeParameter();
 		line_number.setName("line_number");
 		line_number.setDefaultValue(null);
@@ -107,6 +186,12 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 			String template = workflowElement.getProtocol().getScriptTemplate();
 
+            // Add Header.ftl
+            template = "<#include \"Header.ftl\" />\n" + template;
+            //Add Footer.ftl
+            template += "\n<#include \"Footer.ftl\" />\n";
+
+
 			for (Tuple work : foldedWorksheet)
 			{
 				// put ComputeParams in map
@@ -120,7 +205,8 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 				String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
 						+ parameters.get("line_number");
 
-				String script = createScript(template, work, taskName, workflowElementsList, parameterList);
+				String script = createScript(template, work, taskName, workflowElementsList, parameterList,
+						protocolsDir);
 
 				ComputeTask task = new ComputeTask();
 				task.setName(taskName);
@@ -149,8 +235,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 		try
 		{
-			// dirty hack to ensure we don't add tasks twice
-			if (db.find(ComputeTask.class).size() < 0) db.add(tasks);
+			db.add(tasks);
 			db.commitTx();
 		}
 		catch (DatabaseException e)
@@ -161,54 +246,52 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 	}
 
 	/**
-	 * Create a script, given a tuple from folded worksheet, taskName,
-	 * workflowElementsList and ComputeParameter list
-	 * 
-	 * @param template
-	 * @param work
-	 * @param taskName
-	 * @param workflowElementsList
-	 * @return filledtemplate.toString();
+	 * Save protocols from DB in the directory protocolsDir
 	 */
-	private String createScript(String templateScript, Tuple work, String taskName,
-			Collection<WorkflowElement> workflowElementsList, List<ComputeParameter> paramList)
+	private static void saveProtocolsInDir(Database db, File protocolsDir)
 	{
-
-		// put all parameters from tuple in hashmap for weaving
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		for (String field : work.getFields())
+		// remove if directory exists
+		if (protocolsDir.exists()) try
 		{
-			parameters.put(field, work.getObject(field));
-		}
-
-		// add the helper
-		parameters.put("freemarkerHelper", new FreemarkerHelper(paramList));
-		parameters.put("parameters", work);
-		parameters.put("workflowElements", workflowElementsList);
-
-		try
-		{
-			Configuration cfg = new Configuration();
-			// Set path so that protocols can include other protocols using the
-			// "include" statement
-			cfg.setDirectoryForTemplateLoading(new File(parameters.get("McProtocols").toString()));
-
-			Template template;
-			template = new Template(taskName, new StringReader(templateScript), cfg);
-			StringWriter script = new StringWriter();
-			template.process(parameters, script);
-			return script.toString();
+			FileUtils.deleteDirectory(protocolsDir);
 		}
 		catch (IOException e)
 		{
-			System.err.println(">> ERROR >> IOException");
+			System.err.println(">> ERROR: Unable to delete tmp dir: " + protocolsDir);
 			e.printStackTrace();
 		}
-		catch (TemplateException e)
+
+		// create new, empty directory
+		boolean success = protocolsDir.mkdirs();
+
+		if (success) System.out.println(">> Created an empty tmp directory to store protocols: " + protocolsDir);
+		else
+			throw new RuntimeException(">> ERROR: Unable to create tmp directory " + protocolsDir);
+
+		// put protocols there
+		Query<ComputeProtocol> cp_query = db.query(ComputeProtocol.class);
+		try
 		{
-			System.err.println(">> ERROR >> TemplateException");
+			System.out.println(">> Saving protocols...");
+			Iterator<ComputeProtocol> it = cp_query.find().iterator();
+			while (it.hasNext())
+			{
+				ComputeProtocol cp = it.next();
+				FileUtils.writeStringToFile(
+						new File(protocolsDir + System.getProperty("file.separator") + cp.getName()),
+						cp.getScriptTemplate());
+			}
+		}
+		catch (DatabaseException e)
+		{
+			System.err.println(">> ERROR: unable to iterate over ComputeProtocols from db");
 			e.printStackTrace();
 		}
-		return null;
+		catch (IOException e)
+		{
+			System.err.println(">> ERROR: Something goes wrong");
+			e.printStackTrace();
+		}
 	}
+
 }
