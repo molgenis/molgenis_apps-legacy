@@ -21,7 +21,7 @@ cut -f 2 -d " " ${preparedStudyDir}/chr${chr}.dat | grep -v Status > ${preparedS
 #cut -f 2 -d " " examples/sample.dat > examples/sample.snps
 
 #The imputation step
-${minimacBin} --vcfReference --refHaps ${referenceVCFFile} --haps ${preparedStudyDir}/chr${chr}.gz --snps ${preparedStudyDir}/chr${chr}.snps --rs --rounds 5 --states 200 --prefix ${preparedStudyDir}/chr${chr}.results
+${minimacBin} --vcfReference --refHaps ${referenceVCFFile} --haps ${preparedStudyDir}/chr${chr}.gz --snps ${preparedStudyDir}/chr${chr}.snps --rs --rounds 5 --states 200 --probs --phased --prefix ${preparedStudyDir}/chr${chr}.results
 
 # (WARNING: genotypes would be treated as phased regardless of delimiter)
 #Example:
