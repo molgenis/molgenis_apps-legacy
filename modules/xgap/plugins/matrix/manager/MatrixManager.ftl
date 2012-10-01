@@ -55,7 +55,7 @@
 	<input type="checkbox" name="escapeRows" value="true" /> Escape row names to safe format where needed<br />
 	<input type="checkbox" name="escapeCols" value="true" /> Escape column names to safe format where needed<br />
 	<input type="checkbox" name="trimTextElements" value="true" /> Trim text elements to max length (127 chars)<br />
-	<br /><i>Select your data matrix file and press 'upload'.</i><br /> 
+	<br /><i>Select your data matrix file (.txt, .csv or .xls - file/worksheet name irrelevant) and press 'upload'.</i><br /> 
 	<input type="file" name="upload"/>
 	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
 	<br>

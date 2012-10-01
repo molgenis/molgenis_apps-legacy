@@ -15,6 +15,7 @@ gaftools,${gafhome}/tools,,string,
 gafscripts,${gaftools}/scripts,,string,
 scriptdir,${tooldir}/scripts,,,
 importscript,${scriptdir}/import.sh,,,
+transferDataScript,${scriptdir}/transferData.sh,,,
 demultiplexscript,${gafscripts}/demultiplex.R,,string,
 demultiplexWorkflowFile,${McDir}/workflows/in-house_workflow_demultiplex.csv,,string,
 workflowFile,${McDir}/workflows/in-house_workflow_realignmentAndSnpCalling.csv,,string,
@@ -57,6 +58,7 @@ intermediatedir,${tempprojectdir}/${project}/${McId}/,store intermediate results
 projectJobsDir,${projectdir}/jobs/,Project specific job scripts directory,string,
 projectLogsDir,${projectdir}/logs/,Project specific log directory,string,
 projectResultsDir,${projectdir}/results/,Store final results here; a sub set of the primary outputs that we want to keep/archive are moved to this dir; afterwards the remaining files from the intermediate dir will be lost when we clean up.,string,
+contact,,,,
 project,,,,"contact,allRawNgsDataDir"
 sequencingStartDate,,,,
 sequencer,,,,
@@ -270,3 +272,7 @@ demultiplexedDiscardedFastqChecksumFilenamePE1,${demultiplexedDiscardedFastqFile
 demultiplexedDiscardedFastqChecksumFilenamePE2,${demultiplexedDiscardedFastqFilenamePE2}${md5sumExtension},use these for demultiplexed reads assigned to a sample,,
 #,,,,
 log,log.log,,,
+#
+fastqcVersion,v0.7.0,,,
+bwaVersion,0.5.8c_patched,,,
+picardVersion,1.61,,,

@@ -15,7 +15,12 @@
 		<td align="right">
 			<font style="font-size:14px;">
 				<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
-				<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a> | ${screen.userLogin}
+				<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a> | <a href="api/bash/">Bash api</a> | ${screen.userLogin}
+				<#--
+				<a href="api/R/"><img src="clusterdemo/icons/r_icon.gif" width="25" height="25"/></a>
+				<a href="api/find/"><img src="clusterdemo/icons/txt_icon.png" width="25" height="25"/></a>
+				<a href="api/bash/"><img src="clusterdemo/icons/bash.png" width="25" height="25"/></a>
+				-->
 			</font>
 		</td>
 	</tr>

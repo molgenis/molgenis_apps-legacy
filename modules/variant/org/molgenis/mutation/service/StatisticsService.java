@@ -5,25 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.Tuple;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.Variant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StatisticsService extends MolgenisVariantService
 {
-	@Autowired
-	public StatisticsService(Database db)
-	{
-		super(db);
-	}
-
 	/**
 	 * Get number of mutations in the database
 	 * 
