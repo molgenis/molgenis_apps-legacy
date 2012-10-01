@@ -17,18 +17,13 @@ module load fastqc/${fastqcVersion}
      getFile ${srbarcodefqgz}
 	 alloutputsexist \
 	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
+
 <#else>
     getFile "${leftbarcodefqgz}"
     getFile "${rightbarcodefqgz}"
 	alloutputsexist \
 	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
 	 "${rightfastqczip}" \
-	 "${rightfastqcsummarytxt}" \
-	 "${rightfastqcsummarylog}"
 </#if>
 
 # first make logdir...
