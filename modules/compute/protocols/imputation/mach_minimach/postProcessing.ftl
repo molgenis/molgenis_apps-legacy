@@ -16,3 +16,5 @@ alloutputsexist "${preparedStudyDir}/chr${chr}.results"
 mkdir -p ${projectTempDir}/transpose_temp
 cat ${preparedStudyDir}/chr${chr}.results.prob | java -Djava.io.tmp.dir=${projectTempDir}/transpose_temp -jar ${transpose} > ${preparedStudyDir}/chr${chr}.results.prob.transposed
 
+#Compute Beagle's Allelic R2
+python ${calculateBeagleR2ForIMinimacResultsPythonScript} ${preparedStudyDir}/chr${chr}.results.prob.transposed ${preparedStudyDir}/chr${chr}.results.info ${preparedStudyDir}/chr${chr}.results.beagleR2
