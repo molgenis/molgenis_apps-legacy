@@ -202,8 +202,11 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 				}
 
 				// construct taskName
-				String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
-						+ parameters.get("line_number");
+                String lala = work.getList("McId").get(0)+"";
+
+                String taskName = workflowElement.getName() + "_" + lala;
+//               String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
+//						+ parameters.get("line_number");
 
 				String script = createScript(template, work, taskName, workflowElementsList, parameterList,
 						protocolsDir);
