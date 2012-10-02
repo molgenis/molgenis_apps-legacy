@@ -12,6 +12,13 @@
 			<field name="status" description="old or new indicated by 'old' or 'new'"></field>
 		</entity>
 		
+		<entity name="BiobankInstitute">
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="name" type="string" unique="true" />
+			<field name="location" type="string" nillable="true"/>
+			<unique fields="name" />
+		</entity> 
+		
 		<entity name="BiobankCategory" extends="OntologyTerm">
 			<description>This is the categories of the entries commonly written
 				in the xls file in the first column with bold letters. Obviously
@@ -42,7 +49,7 @@
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />
 			<field name="Topic" type="mref" nillable="true" xref_entity="BiobankTopic" />
 			<field name="Coordinator" type="mref" nillable="true" xref_entity="BiobankCoordinator" description="One or more contact persons for this biobank" />
-			<field name="Institutes" nillable="true" type="string" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
+			<field name="Institutes" type="xref"  xref_entity="BiobankInstitute" nillable="true" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
 			<!--  <field name="Coordinators" type="mref" nillable="true" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank" /> -->
 			<field name="PanelSize" label="Current n=" nillable="true" description="Current n= in xls" />
 			<field name="Biodata" type="mref" nillable="true" xref_entity="BiobankDataType" description="Biodata in xls" />
