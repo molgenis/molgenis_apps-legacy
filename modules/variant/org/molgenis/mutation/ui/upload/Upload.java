@@ -22,7 +22,9 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.SearchService;
@@ -38,14 +40,13 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private static final long serialVersionUID = -3499931124766785979L;
 	private final transient Logger logger      = Logger.getLogger(Upload.class.getSimpleName());
-	private UploadService uploadService;
+	private transient UploadService uploadService;
 
 	public Upload(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setModel(new UploadModel(this));
 		this.view = new FreemarkerView("uploadBatch.ftl", getModel());
-		
 		this.uploadService = ServiceLocator.instance().getUploadService();
 
 		this.populateBatchForm();
@@ -223,8 +224,8 @@ public class Upload extends EasyPluginController<UploadModel>
 	private void populateBatchForm()
 	{
 		this.getModel().setBatchForm(new BatchForm());
-		this.getModel().getBatchForm().get("__target").setValue(this.getName());
-		this.getModel().getBatchForm().get("select").setValue(this.getName());
+		((HiddenInput) this.getModel().getBatchForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getBatchForm().get("select")).setValue(this.getName());
 	}
 
 	private void populatePatientForm()
@@ -235,16 +236,16 @@ public class Upload extends EasyPluginController<UploadModel>
 		for (VariantDTO variantDTO : searchService.getAllVariants())
 			mutationOptions.add(new ValueLabel(variantDTO.getId(), variantDTO.getCdnaNotation()));
 
-		this.getModel().getPatientForm().get("identifier").setValue(this.getModel().getPatientSummaryVO().getPatientIdentifier());
+		((StringInput) this.getModel().getPatientForm().get("identifier")).setValue(this.getModel().getPatientSummaryVO().getPatientIdentifier());
 		((SelectInput) this.getModel().getPatientForm().get("mutation1")).setOptions(mutationOptions);
 		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 0)
-			this.getModel().getPatientForm().get("mutation1").setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(0).getId());
+			((SelectInput) this.getModel().getPatientForm().get("mutation1")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(0).getId());
 		((SelectInput) this.getModel().getPatientForm().get("mutation2")).setOptions(mutationOptions);
 		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 1)
-			this.getModel().getPatientForm().get("mutation2").setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(1).getId());
-		this.getModel().getPatientForm().get("number").setValue(this.getModel().getPatientSummaryVO().getPatientLocalId());
+			((SelectInput) this.getModel().getPatientForm().get("mutation2")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(1).getId());
+		((StringInput) this.getModel().getPatientForm().get("number")).setValue(this.getModel().getPatientSummaryVO().getPatientLocalId());
 //		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setOptions(phenotypeOptions);
-		this.getModel().getPatientForm().get("phenotype").setValue(this.getModel().getPatientSummaryVO().getPhenotypeId());
+		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setValue(this.getModel().getPatientSummaryVO().getPhenotypeId());
 		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setOnchange("toggleForm(this.value);");
 		((SelectInput) this.getModel().getPatientForm().get("consent")).setOptions(new Patient().getConsentOptions());
 	}

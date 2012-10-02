@@ -7,7 +7,6 @@
 
 package org.molgenis.col7a1.ui;
 
-import org.molgenis.col7a1.csv.UploadBatchCsvReader;
 import org.molgenis.framework.ui.ScreenController;
 
 public class Upload extends org.molgenis.mutation.ui.upload.Upload
@@ -17,7 +16,5 @@ public class Upload extends org.molgenis.mutation.ui.upload.Upload
 	public Upload(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-//		this.GENENAME = "COL7A1";
-//		this.uploadBatchCsvReader = new UploadBatchCsvReader();
 	}
 }
