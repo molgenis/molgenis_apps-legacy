@@ -203,7 +203,7 @@ public class TableController {
 			
 			Field f = new Field(eachField);
 			try {
-				System.out.println(f.getXrefEntityName();
+				System.out.println(f.getXrefEntityName());
 				System.out.println(f.getXrefField());
 				System.out.println(f.getXrefEntity());
 			} catch (MolgenisModelException e) {
