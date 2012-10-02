@@ -17,7 +17,6 @@ alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat" \
 "${studyTriTyperChrDir}/Individuals.txt" \
 "${studyTriTyperChrDir}/PhenotypeInformation.txt" \
 "${studyTriTyperChrDir}/SNPMappings.txt" \
-"${studyTriTyperChrDir}/SNPsHash.txt" \
 "${studyTriTyperChrDir}/SNPs.txt"
 
 
@@ -51,7 +50,6 @@ then
     putFile "${studyTriTyperChrDir}/Individuals.txt"
     putFile "${studyTriTyperChrDir}/PhenotypeInformation.txt"
     putFile "${studyTriTyperChrDir}/SNPMappings.txt"
-    putFile "${studyTriTyperChrDir}/SNPsHash.txt"
     putFile "${studyTriTyperChrDir}/SNPs.txt"
 
 else
