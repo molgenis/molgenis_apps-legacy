@@ -32,15 +32,22 @@ inputs "${referenceTriTyperDir}/Individuals.txt"
 inputs "${referenceTriTyperDir}/PhenotypeInformation.txt"
 inputs "${referenceTriTyperDir}/SNPMappings.txt"
 inputs "${referenceTriTyperDir}/SNPs.txt"
-alloutputsexist "${preparedStudyDir}/chr${chr}.dat"
-alloutputsexist "${preparedStudyDir}/chr${chr}.map"
-alloutputsexist "${preparedStudyDir}/chr${chr}.markersbeagleformat"
-alloutputsexist "${preparedStudyDir}/chr${chr}.ped"
-alloutputsexist "${preparedStudyDir}/exportlog.txt"
+alloutputsexist "${preparedStudyDir}/chr${chr}.dat" \
+"${preparedStudyDir}/chr${chr}.map" \
+"${preparedStudyDir}/chr${chr}.markersbeagleformat" \
+"${preparedStudyDir}/chr${chr}.ped" \
+"${preparedStudyDir}/exportlog.txt"
+
+#If preparedStudyDir already exists delete it
+if [ -d ${preparedStudyDir} ]
+then
+	rm -r ${preparedStudyDir}
+fi
+
 
 module load jdk/${javaversion}
 
-mkdir ${preparedStudyTempDir}
+mkdir -p ${preparedStudyTempDir}
 
 
 java -Xmx8g -jar ${imputationToolJar} \

@@ -9,21 +9,21 @@
 #
 
 #MOLGENIS walltime=15:00:00 nodes=1 cores=4 mem=6
-
-#INPUTS indexfile,leftbarcodefqgz
-#OUTPUTS leftbwaout
-#LOGS log
-#EXES bwaalignjar
 #TARGETS
 
-inputs "${indexfile}" 
-inputs "${leftbarcodefqgz}"
+module load bwa/${bwaVersion}
+
+getFile ${indexfile}
+getFile ${leftbarcodefqgz}
 alloutputsexist "${leftbwaout}"
 
 mkdir -p "${intermediatedir}"
 
-${bwaalignjar} aln \
+bwa aln \
 ${indexfile} \
 ${leftbarcodefqgz} \
 -t ${bwaaligncores} \
 -f ${leftbwaout}
+
+
+putFile ${leftbwaout}

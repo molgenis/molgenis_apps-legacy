@@ -34,7 +34,7 @@
 			</description>
 			<field name="dataType" type="enum" enum_options="[string,int,date,datetime,text]" />
 			<field name="defaultValue" type="text" nillable="true" description="the value of the parameter for ComputeProtocols" />
-			<field name="hasOne" type="mref" xref_entity="ComputeParameter" description="relationship between parameters, enables parameter 'flattening'" />
+			<field name="hasOne" type="mref" xref_entity="ComputeParameter" nillable="true" description="relationship between parameters, enables parameter 'flattening'" />
 			<unique fields="name" />
 			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name" description="Workflow this element is part of" />
 		</entity>

@@ -10,8 +10,8 @@ putFile ${studyPedMapChr}.ped
 
 inputs "${studyInputPedMapChr}.map"
 inputs "${studyInputPedMapChr}.ped"
-alloutputsexist "${studyPedMapChr}.map"
-alloutputsexist "${studyPedMapChr}.ped"
+alloutputsexist "${studyPedMapChr}.map" \
+"${studyPedMapChr}.ped"
 
 mkdir -p ${studyPedMapChrDir}
 

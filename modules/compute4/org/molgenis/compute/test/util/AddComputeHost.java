@@ -25,10 +25,19 @@ public class AddComputeHost
 			host.setHostDir("/home/byelas/pilot");
 			host.setHostName("ui.grid.sara.nl");
 			host.setHostUsername("byelas");
-			host.setHostPassword("secret!");// K960u4jT
+			host.setHostPassword("lala");// K960u4jT
 			host.setHostType("glite");
-
 			db.add(host);
+
+			host = new ComputeHost();
+			host.setName("gcc");
+			host.setHostDir("/home/byelas/pilot");
+			host.setHostName("cluster.gcc.rug.nl");
+			host.setHostUsername("mdijkstra");
+			host.setHostPassword("lala");// K960u4jT
+			host.setHostType("pbs");
+			db.add(host);
+
 			db.commitTx();
 
 		}
