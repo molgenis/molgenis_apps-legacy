@@ -12,7 +12,7 @@ import org.molgenis.mutation.dto.ProteinDomainDTO;
 /*
  * A panel that prints a protein domain with clickable exons inside
  */
-public class ProteinDomainPanel extends HtmlInput implements Serializable
+public class ProteinDomainPanel extends HtmlInput<ProteinDomainDTO> implements Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = -3632595043556432831L;
@@ -23,16 +23,16 @@ public class ProteinDomainPanel extends HtmlInput implements Serializable
 	private ProteinDomainDTO proteinDomainDTO;
 	private String baseUrl = "";
 
-	public ProteinDomainPanel()
-	{
-		this("", "");
-	}
+//	public ProteinDomainPanel()
+//	{
+//		this("", "");
+//	}
 	
-	public ProteinDomainPanel(String name, String label)
-	{
-		super(name, label);
-		this.setLabel(label);
-	}
+//	public ProteinDomainPanel(String name, String label)
+//	{
+//		super(name, label);
+//		this.setLabel(label);
+//	}
 	
 	@Override
 	public String toHtml()

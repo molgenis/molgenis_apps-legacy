@@ -15,12 +15,12 @@ putFile ${convertB36unmappedSNPs}
 inputs "${imputationResultDir}/chr_${chr}.map"
 inputs "${hg19ToHg18chainfile}"
 inputs "${imputationResultDir}/chr_${chr}.ped"
-alloutputsexist "${convertB36ChrHg19Bed}"
-alloutputsexist "${convertB36ChrHg18Bed}"
-alloutputsexist "${convertB36unmapped}"
-alloutputsexist "${b36conversionPedMapResultDir}/chr_${chr}.map"
-alloutputsexist "${b36conversionPedMapResultDir}/chr_${chr}.ped"
-alloutputsexist "${convertB36unmappedSNPs}"
+alloutputsexist "${convertB36ChrHg19Bed}" \
+"${convertB36ChrHg18Bed}" \
+"${convertB36unmapped}" \
+"${b36conversionPedMapResultDir}/chr_${chr}.map" \
+"${b36conversionPedMapResultDir}/chr_${chr}.ped" \
+"${convertB36unmappedSNPs}"
 
 #module load ${liftOverUcscBin}/${liftOverUcscBinversion}
 #module load ${plinkseqBin}/${plinkseqversion}

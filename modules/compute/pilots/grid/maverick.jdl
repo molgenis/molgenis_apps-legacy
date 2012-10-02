@@ -1,0 +1,17 @@
+# General
+Type = "Job";
+VirtualOrganisation = "bbmri.nl";
+DefaultNodeShallowRetryCount = 5;
+
+# Executables, input and output
+Executable = "/bin/sh";
+Arguments = "maverick.sh";
+StdOutput = "maverick.out";
+StdError = "maverick.err";
+InputSandbox = {"$HOME/maverick/maverick.sh","$HOME/maverick/dataTransferSRM.sh"};
+OutputSandbox = {"maverick.err","maverick.out"};
+MyProxyServer = "px.grid.sara.nl";
+RetryCount = 0;
+
+# Only run in queues longer than 1440 minutes (36 hours)
+# Requirements = (other.GlueCEPolicyMaxCPUTime >= 1440);

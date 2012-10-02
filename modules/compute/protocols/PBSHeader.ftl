@@ -7,5 +7,3 @@
 #PBS -e ${jobname}.err
 #PBS -o ${jobname}.out
 #PBS -W umask=0007
-
-source ${transferDataScript}
