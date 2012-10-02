@@ -12,12 +12,7 @@
 			<field name="status" description="old or new indicated by 'old' or 'new'"></field>
 		</entity>
 		
-		<entity name="BiobankInstitute">
-			<field name="id" type="autoid" description="automatically generated id" />
-			<field name="name" type="string" unique="true" />
-			<field name="location" type="string" nillable="true"/>
-			<unique fields="name" />
-		</entity> 
+		<entity name="BiobankInstitute" extends="Institute"></entity> 
 		
 		<entity name="BiobankCategory" extends="OntologyTerm">
 			<description>This is the categories of the entries commonly written
