@@ -126,34 +126,80 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				protocolsAndMeasurementsinTree.get(nodeIdentifier).toggleNode();
 
+			} else if ("download_json_clearSearch".equals(request.getAction())) {
+
+				String tree = protocolsTree.toHtml();
+
+				JSONObject json = new JSONObject();
+
+				json.put("result", tree);
+
+				PrintWriter writer = new PrintWriter(out);
+
+				writer.write(json.toString());
+
+				writer.flush();
+
+				writer.close();
+
 			} else if ("download_json_search".equals(request.getAction())) {
 
 				String searchToken = request.getString("searchToken");
 
-				Query<Measurement> query = db.query(Measurement.class);
-
-				query.addRules(new QueryRule(Measurement.INVESTIGATION_NAME,
-						Operator.EQUALS, investigationName));
-				query.addRules(new QueryRule(Measurement.NAME, Operator.LIKE,
-						"age"));
-
 				List<JQueryTreeViewElement> listOfNodes = new ArrayList<JQueryTreeViewElement>();
 
-				for (Measurement m : query.find()) {
-					System.out.println(findNodes.get(m.getName()));
-					if (findNodes.get(m.getName()) != null) {
-						listOfNodes.addAll(findNodes.get(m.getName()));
+				Query<Measurement> query = null;
+
+				// Search in the name of measurements
+				{
+					query = db.query(Measurement.class);
+
+					query.addRules(new QueryRule(
+							Measurement.INVESTIGATION_NAME, Operator.EQUALS,
+							investigationName));
+					query.addRules(new QueryRule(Measurement.NAME,
+							Operator.LIKE, searchToken));
+
+					for (Measurement m : query.find()) {
+						System.out.println(findNodes.get(m.getName()));
+						if (findNodes.get(m.getName()) != null) {
+							listOfNodes.addAll(findNodes.get(m.getName()));
+						}
 					}
 				}
+				// Search in the description of the variables
+				{
+					query = db.query(Measurement.class);
 
-				JSONObject searchResult = new JSONObject();
+					query.addRules(new QueryRule(
+							Measurement.INVESTIGATION_NAME, Operator.EQUALS,
+							investigationName));
+					query.addRules(new QueryRule(Measurement.DESCRIPTION,
+							Operator.LIKE, searchToken));
 
-				for (int i = 0; i < listOfNodes.size(); i++) {
+					for (Measurement m : query.find()) {
+						System.out.println(findNodes.get(m.getName()));
+						if (findNodes.get(m.getName()) != null) {
+							listOfNodes.addAll(findNodes.get(m.getName()));
+						}
+					}
+				}
+				// search in the name of protocols
+				{
+					Query<Protocol> queryProtocol = db.query(Protocol.class);
 
-					String results[] = listOfNodes.get(i).renderParent();
+					queryProtocol.addRules(new QueryRule(
+							Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+							investigationName));
+					queryProtocol.addRules(new QueryRule(Protocol.NAME,
+							Operator.LIKE, searchToken));
 
-					searchResult.put(results[0], results[1]);
-
+					for (Protocol p : queryProtocol.find()) {
+						System.out.println(findNodes.get(p.getName()));
+						if (findNodes.get(p.getName()) != null) {
+							listOfNodes.addAll(findNodes.get(p.getName()));
+						}
+					}
 				}
 
 				String tree = searchForInTree(protocolsTree, listOfNodes);
@@ -208,20 +254,30 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 	private String searchForInTree(JQueryTreeViewElement parentNode,
 			List<JQueryTreeViewElement> listOfNodes) {
-		// System.out.println(parentNode);
 
 		String returnString = "";
+
+		boolean parentCollapse = parentNode.isCollapsed();
+		parentNode.setCollapsed(false);
 
 		for (JQueryTreeViewElement childNode : parentNode.getChildren()) {
 
 			if (listOfNodes.contains(childNode)) {
-
+				boolean collapse = childNode.isCollapsed();
+				childNode.setCollapsed(false);
 				returnString += childNode.toHtml();
+				childNode.setCollapsed(collapse);
 
 			} else {
 				returnString += searchForInTree(childNode, listOfNodes);
 			}
 		}
+
+		if (!returnString.equals("")) {
+			returnString = parentNode.toHtml(returnString);
+		}
+
+		parentNode.setCollapsed(parentCollapse);
 
 		return returnString;
 	}

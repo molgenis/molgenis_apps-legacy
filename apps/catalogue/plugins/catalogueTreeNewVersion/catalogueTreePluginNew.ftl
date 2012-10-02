@@ -82,7 +82,6 @@
 						$('#' + nodeName).find('li').each(function(){
 							toggleNodeEvent($(this));
 						});
-			
 					});
 				}
 			});
@@ -92,31 +91,59 @@
 			
 			$('#search').button();
 			
-			$('#search').click(function(){
+			$('#clearButton').button();
+			
+			$('#clearButton').click(function(){
 				array = {};
 				$.ajax({
-					url:"${screen.getUrl()}&__action=download_json_search&searchToken=height",
+					url:"${screen.getUrl()}&__action=download_json_clearSearch",
 					async: false,
 				}).done(function(result){
 					array = result["result"];
 				});
 				
-				if($('#browser li:first').filter(":has(>ul:hidden)").length > 0){
-					toggler.apply($('#browser li:first >ul'));
-				}
-				$('#browser li:first').find('li').hide();
+				$('#browser').empty().append(array).treeview(settings);
 				
+				//$('#browser').append(array);
 				
-				for(var nodeName in array){
-					if (array.hasOwnProperty(nodeName)) {
-				       	$('#' + nodeName).remove();
-		            	$('#browser li:first >ul').prepend(array[nodeName]);
-		            	var branches = $('#' + nodeName).prepareBranches(settings);
-						branches.applyClasses(settings, toggler);
-						branches = $('#' + nodeName + ' li').prepareBranches(settings);
-						branches.applyClasses(settings, toggler);
-				    }
+				//$("#browser").treeview(settings);
+				
+				$("#browser").find('li').each(function(){
+					toggleNodeEvent($(this));
+				});
+				$('#searchField').val('');
+			});
+			
+			$('#search').click(function(){
+				
+				showModal();
+				
+				$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:46%;top:60%\">Searching..</div>");
+				
+				token = $('#searchField').val();
+				
+				if(token != ""){
+					array = {};
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
+						async: false,
+					}).done(function(result){
+						array = result["result"];
+					});
+					
+					$('#browser').empty();
+					
+					$('#browser').append(array);
+					
+					var branches = $('#browser li').prepareBranches(settings);
+					
+					branches.applyClasses(settings, toggler);
 				}
+				
+				$('.modalWindow').remove();
+				
+				$('#progressbar').remove();
 			});
 			
 			$("#browser").treeview(settings).find('li').show();	
@@ -126,9 +153,7 @@
 			});	
 			showModal();
 			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:36%;top:60%\"></div>");
-			$("#progressbar").progressbar({
-				value: 0
-			});
+			$("#progressbar").progressbar({value: 0});
 			loadTree();
 			$('.modalWindow').remove();
 			$('#progressbar').remove();
@@ -184,7 +209,9 @@
 		
 		<div class="screenbody">
 			<div id="treePanel" style="display:none">
+				<input type="text" id="searchField" />
 				<input type="button" id="search" value="search"/>
+				<input type="button" id="clearButton" value="clear"/>
 				</br>
 				<#if screen.getTreeView??>
 					<ul id="browser" class="pointtree"> 
