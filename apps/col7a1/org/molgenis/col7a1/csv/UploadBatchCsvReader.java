@@ -329,8 +329,6 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 			{
 				String[] cdnaNotations   = StringUtils.split(tuple.getString("cDNA change_2"), ", ");
 				String[] aaNotations     = StringUtils.split(tuple.getString("Protein change_2"), ", ");
-				String[] inheritances    = StringUtils.split(tuple.getString("Inheritance_2"), ", ");
-				String[] deNovos         = StringUtils.split(tuple.getString("De novo_2"), ", ");
 
 				for (int i = 0; i < cdnaNotations.length; i++)
 				{

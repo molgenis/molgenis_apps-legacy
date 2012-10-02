@@ -13,7 +13,7 @@ import org.molgenis.mutation.dto.MutationSummaryDTO;
 /*
  * A panel that prints a genomic sequence based on exons and mutations
  */
-public class SequencePanel extends HtmlInput implements Serializable
+public class SequencePanel extends HtmlInput<String> implements Serializable
 {
 	private static final long serialVersionUID = 715300797597319262L;
 	private ExonDTO exonDTO;
