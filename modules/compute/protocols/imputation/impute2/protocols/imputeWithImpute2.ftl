@@ -6,12 +6,6 @@ getFile ${referenceImpute2HapFile}
 getFile ${referenceImpute2LegendFile}
 getFile ${referenceImpute2MapFile}
 getFile ${preparedStudyDir}/chr${chr}.gen
-putFile ${impute2ResultChrBin}
-putFile ${impute2ResultChrBin}_info
-putFile ${impute2ResultChrBin}_info_by_sample
-putFile ${impute2ResultChrBin}_summary
-putFile ${impute2ResultChrBin}_warnings
-
 
 inputs "${referenceImpute2HapFile}"
 inputs "${referenceImpute2LegendFile}"
@@ -50,7 +44,7 @@ then
 		finalFile=`echo $tempFile | sed -e "s/~//g"`
 		mv $tempFile $finalFile
 	done
-	
+
 else
   
 	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n"
@@ -73,6 +67,12 @@ then
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info_by_sample
+
+    putFile ${impute2ResultChrBin}
+    putFile ${impute2ResultChrBin}_info
+    putFile ${impute2ResultChrBin}_info_by_sample
+    putFile ${impute2ResultChrBin}_summary
+    putFile ${impute2ResultChrBin}_warnings
 	
 fi
 

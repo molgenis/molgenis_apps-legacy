@@ -4,7 +4,6 @@
 
 getFile ${imputationResultDir}/chr_${chr}.ped
 getFile ${imputationResultDir}/chr_${chr}.map
-putFile ${imputationResultDir}/chr_${chr}.vcf
 
 inputs "${imputationResultDir}/chr_${chr}.ped"
 inputs "${imputationResultDir}/chr_${chr}.map"
@@ -32,6 +31,7 @@ then
 
 	mv ${imputationResultDir}/~chr_${chr}.vcf ${imputationResultDir}/chr_${chr}.vcf
 
+    putFile ${imputationResultDir}/chr_${chr}.vcf
 	
 else
   

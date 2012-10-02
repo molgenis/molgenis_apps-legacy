@@ -8,8 +8,7 @@
 <#list impute2ResultChrBinGenFile as genFile>
 	getFile ${genFile}
 </#list>
-putFile ${imputationResultDir}/chr_${chr}
-putFile ${imputationResultDir}/chr_${chr}_info
+
 
 
 inputs "${ssvQuoted(impute2ResultChrBinInfoFile)}"
@@ -22,3 +21,6 @@ alloutputsexist "${imputationResultDir}/chr_${chr}" \
 cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResultDir}/chr_${chr}_info
 
 cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResultDir}/chr_${chr}
+
+putFile ${imputationResultDir}/chr_${chr}
+putFile ${imputationResultDir}/chr_${chr}_info

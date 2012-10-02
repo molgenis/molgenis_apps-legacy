@@ -18,12 +18,15 @@
 #$ -e ${jobname}.err
 #$ -o ${jobname}.out
 
+<#elseif scheduler == "GRID">
+
 </#if>
 
 
-
+<#if scheduler != "GRID">
 # Configures the GCC bash environment
 . ${root}/gcc.bashrc
+</#if>
 
 <#include "Macros.ftl"/>
 <@begin/>

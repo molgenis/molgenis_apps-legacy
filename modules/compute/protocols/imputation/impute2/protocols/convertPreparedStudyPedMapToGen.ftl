@@ -4,10 +4,6 @@
 
 getFile ${preparedStudyDir}/chr${chr}.ped
 getFile ${preparedStudyDir}/chr${chr}.map
-putFile ${preparedStudyDir}/chr${chr}.gen
-putFile ${preparedStudyDir}/chr${chr}.sample
-
-
 
 inputs "${preparedStudyDir}/chr${chr}.ped"
 inputs "${preparedStudyDir}/chr${chr}.map"
@@ -40,6 +36,8 @@ then
 	mv ${preparedStudyDir}/~chr${chr}.gen ${preparedStudyDir}/chr${chr}.gen
 	mv ${preparedStudyDir}/~chr${chr}.sample ${preparedStudyDir}/chr${chr}.sample
 
+    putFile ${preparedStudyDir}/chr${chr}.gen
+    putFile ${preparedStudyDir}/chr${chr}.sample
 	
 else
   
