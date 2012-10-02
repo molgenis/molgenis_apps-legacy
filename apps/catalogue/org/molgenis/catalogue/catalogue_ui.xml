@@ -8,6 +8,7 @@
 		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
 
 		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
+		<plugin name="CatalogueTreePluginNew" type="plugins.catalogueTreeNewVersion.catalogueTreePluginNew" label="Tree developing" />
 		<!-- plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
 
