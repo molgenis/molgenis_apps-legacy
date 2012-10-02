@@ -12,7 +12,7 @@ import org.molgenis.mutation.dto.ExonDTO;
 /*
  * A panel that prints clickable exon-intron boxes
  */
-public class ExonIntronPanel extends HtmlInput implements Serializable
+public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 929100596754279741L;

@@ -13,7 +13,7 @@ import org.molgenis.mutation.dto.ProteinDomainDTO;
 /*
  * A panel that prints clickable exon-intron boxes
  */
-public class GenePanel extends HtmlInput implements Serializable
+public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID                = 600688454568632400L;
