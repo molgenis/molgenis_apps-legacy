@@ -99,8 +99,8 @@ public class TestFilterableTupleTable
 	@Test
 	public void testInitialization() throws TableException
 	{
-		assertEquals(table.getLimit(), -1);
-		assertEquals(table.getOffset(), -1);
+		assertEquals(table.getLimit(), 0);
+		assertEquals(table.getOffset(), 0);
 		assertEquals(table.getSortRule(), null);
 		assertEquals(table.getCount(), 5);
 	}
