@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="MOLGENIS datatable test suite" thread-count="1" verbose="10">
+  <test name="First test" parallel="false" preserve-order="true" thread-count="1" verbose="10">
+    <classes>
+       <class name="org.molgenis.datatable.test.TestPedMapTable"/>
+       <class name="org.molgenis.datatable.test.TestCsvTable"/>
+       
+    </classes>
+  </test>
+</suite>
