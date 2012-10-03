@@ -120,6 +120,25 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				writer.close();
 
+			} else if (request.getAction().equals(
+					"download_json_showInformation")) {
+
+				System.out.println("showVariableInformation------------"
+						+ request);
+				String nodeIdentifier = request.getString("variableName");
+
+				JQueryTreeViewElement node = protocolsAndMeasurementsinTree
+						.get(nodeIdentifier);
+
+				PrintWriter writer = new PrintWriter(out);
+				JSONObject jsonVariableInformation = new JSONObject();
+
+				jsonVariableInformation.put("result", node.getHtmlValue());
+
+				writer.write(jsonVariableInformation.toString());
+				writer.flush();
+				writer.close();
+
 			} else if ("download_json_toggleNode".equals(request.getAction())) {
 
 				String nodeIdentifier = request.getString("nodeIdentifier");

@@ -84,81 +84,55 @@
 						});
 					});
 				}
+				
+				if($(this).parent().find('li').size() == 0){
+					highlightClick($(this).parent());
+					$('#details').empty();
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + $(this).parent().attr('id'),
+	      				async: false
+	      			}).done(function(data) {
+						$('#details').append(data["result"]);
+					});
+				}
 			});
 		}
 		
-		$(document).ready(function(){	
+		function searchTree(){
 			
-			$('#search').button();
+			showModal();
+				
+			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:46%;top:80%\">Searching..</div>");
 			
-			$('#clearButton').button();
+			token = $('#searchField').val();
 			
-			$('#clearButton').click(function(){
+			if(token != ""){
 				array = {};
+				
 				$.ajax({
-					url:"${screen.getUrl()}&__action=download_json_clearSearch",
+					url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
 					async: false,
 				}).done(function(result){
 					array = result["result"];
 				});
 				
-				$('#browser').empty().append(array).treeview(settings);
+				$('#browser').empty();
 				
-				//$('#browser').append(array);
+				$('#browser').append(array);
 				
-				//$("#browser").treeview(settings);
+				var branches = $('#browser li').prepareBranches(settings);
 				
-				$("#browser").find('li').each(function(){
-					toggleNodeEvent($(this));
-				});
-				$('#searchField').val('');
-			});
+				branches.applyClasses(settings, toggler);
+			}
 			
-			$('#search').click(function(){
-				
-				showModal();
-				
-				$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:46%;top:60%\">Searching..</div>");
-				
-				token = $('#searchField').val();
-				
-				if(token != ""){
-					array = {};
-					
-					$.ajax({
-						url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
-						async: false,
-					}).done(function(result){
-						array = result["result"];
-					});
-					
-					$('#browser').empty();
-					
-					$('#browser').append(array);
-					
-					var branches = $('#browser li').prepareBranches(settings);
-					
-					branches.applyClasses(settings, toggler);
-				}
-				
-				$('.modalWindow').remove();
-				
-				$('#progressbar').remove();
-			});
-			
-			$("#browser").treeview(settings).find('li').show();	
-			
-			$("#browser").find('li').each(function(){
-				toggleNodeEvent($(this));
-			});	
-			showModal();
-			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:36%;top:60%\"></div>");
-			$("#progressbar").progressbar({value: 0});
-			loadTree();
 			$('.modalWindow').remove();
+			
 			$('#progressbar').remove();
-			$('#treePanel').show();
-		});
+			
+			$('#browser li').each(function(){
+				toggleNodeEvent($(this));
+			});
+		}
 		
 		function loadTree(){
 			status = {};
@@ -177,12 +151,18 @@
 		}
 		
 		function showModal(){
+			
 			$("body").append("<div class=\"modalWindow\"></div>");
+			
+			treePanel = $('table:first-child').children().children('tr').eq(1);
+			
+			position = $(treePanel).offset();
+			
 			$('.modalWindow').css({
-				'left' : '0px',
-				'top' : '0px',
-				'width' : '100%',
-			    'height' : '100%',
+				'left' : position.left,
+				'top' : position.top + 10,
+				'height' : $(treePanel).height(),
+				'width' : $(treePanel).width(),
 			    'position' : 'absolute',
 			    'z-index' : '1500',
 			    'background' : 'grey',
@@ -190,10 +170,116 @@
 			});
 		}
 		
+		function highlightClick(clickedBranch){
+			
+			$(clickedBranch).children('span').css({
+				'color':'#778899',
+				'font-size':17,
+				'font-style':'italic',
+				'font-weight':'bold'
+			});
+			
+			var measurementID = $(clickedBranch).attr('id');
+			
+			var clickedVar = $('#clickedVariable').val();
+			
+			if(clickedVar != "" && clickedVar != measurementID){
+				$('#' + clickedVar + '>span').css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400
+				});
+				var parentOld = $('#' + clickedVar).parent().siblings('span');
+		
+				$(parentOld).css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400									
+				});
+			}
+			$('#clickedVariable').val(measurementID);
+		}
+		
+		function initialize(){
+			
+			$('#search').button();
+			$('#search').click(function(){
+				searchTree();
+			});
+			
+			$('#clearButton').button();
+			$('#clearButton').click(function(){
+				array = {};
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_clearSearch",
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array).treeview(settings);
+				
+				$("#browser").find('li').each(function(){
+					
+					toggleNodeEvent($(this));
+				});
+				$('#searchField').val('');
+			});
+			
+			$('#fullScreen').button();
+			
+			$('#fullScreen').click(function(){
+				tableHeight = $('#layoutTable').height();
+				
+			});
+			
+			$("#browser").treeview(settings).css('font-size', 16).find('li').show();	
+			
+			$("#browser").find('li').each(function(){
+				
+				toggleNodeEvent($(this));
+			});	
+			
+			showModal();
+			
+			$('body').append("<div id=\"progressbar\"></div>");
+			
+			$("#progressbar").progressbar({value: 0});
+			
+			treePanel = $('table:first-child').children().children('tr').eq(1);
+			
+			position = $(treePanel).offset();
+			
+			elementLeft = position.left + $(treePanel).width()/2 - 150;
+			
+			elementTop = position.top + $(treePanel).height()/2;
+			
+			$('#progressbar').css({
+				'left' : elementLeft,
+				'top' : elementTop,
+				'height' : 50,
+				'width' : 300,
+			    'position' : 'absolute',
+			    'z-index' : 1501,
+			});
+			
+			loadTree();
+			
+			$('.modalWindow').remove();
+			$('#progressbar').remove();
+			$('#treePanel').show();
+		}
+		
+		$(document).ready(function(){	
+			initialize();
+		});
+		
 	</script>
 	
 	<div class="formscreen">
-		
+		<input type="hidden" id="clickedVariable"/>
 		<div class="form_header" id="${screen.getName()}">
 			${screen.label}
 		</div>
@@ -208,17 +294,48 @@
 		</#list>
 		
 		<div class="screenbody">
-			<div id="treePanel" style="display:none">
-				<input type="text" id="searchField" />
-				<input type="button" id="search" value="search"/>
-				<input type="button" id="clearButton" value="clear"/>
-				</br>
-				<#if screen.getTreeView??>
-					<ul id="browser" class="pointtree"> 
-						${screen.getTreeView()} 
-					</ul>
-				</#if>
-			</div>
+			
+			<table id="layoutTable" style="height:600px;width:100%">
+				
+				<tr style="height:50%">
+					<td>
+						<div id="predictionModelPanel">
+							</br>Please select a prediction model
+						
+						</di>
+					</td>
+				</tr>
+				<tr style="height:50%">
+					<td>
+						<hr style="width:100%">
+						<table style="width:100%">
+							<tr>
+								<td style="width:50%">
+									<div id="treePanel" style="display:none">
+										<input type="text" id="searchField" />
+										<input type="button" id="search" value="search"/>
+										<input type="button" id="clearButton" value="clear"/>
+										<input type="button" id="fullScreen" value="full screen"/>
+										</br>
+										<div id="treeView" style="height:250px;overflow:auto">
+											<#if screen.getTreeView??>
+												<ul id="browser" class="pointtree"> 
+													${screen.getTreeView()} 
+												</ul>
+											</#if>
+										</div>
+									</div>
+								</td>
+								<td style="width:50%">
+									<div id="details">
+						
+									</div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 	
