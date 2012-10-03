@@ -68,11 +68,11 @@ then
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info
 	touch ${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos}_info_by_sample
 
-    putFile ${impute2ResultChrBin}
-    putFile ${impute2ResultChrBin}_info
-    putFile ${impute2ResultChrBin}_info_by_sample
-    putFile ${impute2ResultChrBin}_summary
-    putFile ${impute2ResultChrBin}_warnings
-	
 fi
+
+putFile ${impute2ResultChrBin}
+putFile ${impute2ResultChrBin}_info
+putFile ${impute2ResultChrBin}_info_by_sample
+putFile ${impute2ResultChrBin}_summary
+putFile ${impute2ResultChrBin}_warnings
 
