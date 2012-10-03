@@ -4,9 +4,6 @@
 
 getFile ${imputationResultDir}/chr_${chr}
 getFile ${preparedStudyDir}/chr${chr}.sample
-putFile ${imputationResultDir}/chr_${chr}.ped
-putFile ${imputationResultDir}/chr_${chr}.map
-
 
 inputs "${imputationResultDir}/chr_${chr}"
 inputs "${preparedStudyDir}/chr${chr}.sample"
