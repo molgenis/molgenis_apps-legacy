@@ -1,17 +1,9 @@
 package org.molgenis.compute.test.generator;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import app.DatabaseFactory;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.FreemarkerHelper;
 import org.molgenis.compute.commandline.Worksheet;
@@ -24,12 +16,14 @@ import org.molgenis.compute.test.temp.Target;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.util.Pair;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 12:05
@@ -39,7 +33,8 @@ import freemarker.template.TemplateException;
 public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 {
 	// supplementary (just because it's handy to use)
-	Hashtable<WorkflowElement, ComputeTask> workflowElementComputeTaskHashtable = new Hashtable<WorkflowElement, ComputeTask>();
+    //one workflow element can have many tasks generated from it, so we store them as a vector of pairs
+    Vector<Pair> workflowElementComputeTaskPairs = new Vector<Pair>();
 
 	Database db = null;
 
@@ -202,11 +197,16 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 				}
 
 				// construct taskName
-                String lala = work.getList("McId").get(0)+"";
+                String lala = work.getList("McId").get(0)+ "_" +System.nanoTime();
 
                 String taskName = workflowElement.getName() + "_" + lala;
 //               String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
 //						+ parameters.get("line_number");
+
+                if(taskName.contains("impute2_s05"))
+                {
+                    int i = 0;
+                }
 
 				String script = createScript(template, work, taskName, workflowElementsList, parameterList,
 						protocolsDir);
@@ -224,15 +224,18 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 				for (WorkflowElement w : prev)
 				{
-					ComputeTask prevTask = workflowElementComputeTaskHashtable.get(w);
-					prevTasks.add(prevTask);
+					List<ComputeTask> listPrevTasks = getPreviousTasks(w);
+					prevTasks.addAll(listPrevTasks);
 				}
 				task.setPrevSteps(prevTasks);
 
 				tasks.add(task);
 
 				// because it's handy:
-				workflowElementComputeTaskHashtable.put(workflowElement, task);
+                Pair pair = new Pair();
+                pair.setA(workflowElement);
+                pair.setB(task);
+                workflowElementComputeTaskPairs.add(pair);
 			}
 		}
 
@@ -248,7 +251,23 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 
 	}
 
-	/**
+    private List<ComputeTask> getPreviousTasks(WorkflowElement w)
+    {
+        List<ComputeTask> list = new ArrayList<ComputeTask>();
+
+        for(Pair p : workflowElementComputeTaskPairs)
+        {
+            WorkflowElement we = (WorkflowElement) p.getA();
+            if(we.equals(w))
+            {
+                ComputeTask task = (ComputeTask) p.getB();
+                list.add(task);
+            }
+        }
+        return list;
+    }
+
+    /**
 	 * Save protocols from DB in the directory protocolsDir
 	 */
 	private static void saveProtocolsInDir(Database db, File protocolsDir)
