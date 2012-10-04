@@ -77,7 +77,9 @@
 	</tr>
 	<tr>
 		<td colspan="3" height="70" align="center">
-			<span style="font-size:12px;">(<i>for example:</i> ctl, daf, pgp-7, gst-27, Y65B4BR, K02B12, WBGene00021562, WBGene00006727, acetylcholine, luciferase ... )</span>
+			<span style="font-size:12px;">(<i>for example:</i> ctl, daf, pgp-7, gst-27, Y65B4BR, K02B12, WBGene00021562, WBGene00006727, acetylcholine, luciferase ... )
+			<br>Gene matches, for example by <a href="http://www.geneontology.org/">Geno Ontology</a> terms, will show the probes for that gene plus the GO annotation.
+			</span>
 		</td>
 	</tr>
 </table>
@@ -682,6 +684,8 @@
 	<#--<input type="submit" id="shopAll" onclick="$(this).closest('form').find('input[name=__action]').val('shopAll');" value="Add all to cart" /><script>$("#shopAll").addClass('grayButton').button();</script><br><br>-->
 	<#--<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i><br><br>-->
 	
+	<#assign counter = 1>
+	
 	<#list model.hits?keys as name>
 	
 	
@@ -690,15 +694,23 @@
 		<#--<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">-->
 		<#--<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'unshop';document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="generated-res/img/select.png" alt=""/> (remove)</button></div>-->
 	<#else>
-		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/shoppingcart.png" alt=""/> Add to cart</button></div>
-		<#--<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">-->
+	<#assign counter = counter+1 >
+		<div style="padding-bottom:15px;<#if counter%2==0>background:white;</#if>">
+			<div class="buttons" style="padding-top:15px;"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/shoppingcart.png" alt=""/> Add to cart</button></div>
+			<#--<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">-->
+	
+			<div style="font-size:100%;float:left;">${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
+			<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
+			
+			
+			<#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a target="_blank" href="molgenis.do?select=${model.hits[name].get(typefield)}s&__target=${model.hits[name].get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a><#else> <br> </#if></div>
 
-		${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
-		<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
-		
-		<div style="display: inline;font-size:100%"><#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a target="_blank" href="molgenis.do?select=${model.hits[name].get(typefield)}s&__target=${model.hits[name].get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a><#else> <br> </#if></div>
-		<br>
-		<br>
+			<#if (model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0) || (model.hits[name].symbol?? && model.hits[name].symbol?length gt 0)><#if model.probeToGene[name]?? && model.probeToGene[name]?length gt 0><div style=" text-align: center; float:right; padding-left:30px; position:relative; right:10px;" onmouseover="return overlib('${model.probeToGene[name].description?replace(" / ", "<br>")}', CAPTION, 'GO terms')" onmouseout="return nd();"><img src="res/img/designgg/helpicon.gif" width="25" height="25"/><br><b>GO terms</b></div></#if></#if>
+
+
+			<br>
+			<br>
+		</div>
 
 	</#if>
 		

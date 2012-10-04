@@ -34,6 +34,7 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
+import org.molgenis.xgap.Gene;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
@@ -267,6 +268,9 @@ public class QtlFinder2 extends PluginModel<Entity>
 	
 	
 	private Map<String, Entity> genesToProbes(Database db, int limit, Map<String, Entity> hits) throws DatabaseException{
+		
+		Map<String, Gene> probeToGene = new HashMap<String, Gene>();
+		
 		Map<String, Entity> result = new HashMap<String, Entity>();
 		int nrOfResults = 0;
 		
@@ -291,6 +295,9 @@ public class QtlFinder2 extends PluginModel<Entity>
 				{
 					result.put(p.getName(), p);
 					//System.out.println("GENE2PROBE SEARCH HIT: " +p.getName());
+					
+					probeToGene.put(p.getName(), (Gene)e);
+					
 					nrOfResults++;
 					if(nrOfResults == limit)
 					{
@@ -311,6 +318,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 				}
 			}
 		}
+		
+		this.model.setProbeToGene(probeToGene);
 		
 		return result;
 	}
