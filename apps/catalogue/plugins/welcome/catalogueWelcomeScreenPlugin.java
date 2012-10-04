@@ -18,6 +18,11 @@ import org.molgenis.util.Tuple;
  */
 public class catalogueWelcomeScreenPlugin extends EasyPluginController<catalogueWelcomeScreenPluginModel>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9184585349766336485L;
+
 	public catalogueWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -36,12 +41,14 @@ public class catalogueWelcomeScreenPlugin extends EasyPluginController<catalogue
 	 * All db actions are within one transaction.
 	 */ 
 	@Override
-	public void reload(Database db) throws Exception
-	{	
+	public void reload(Database db) throws Exception {
+		
 //		//example: update model with data from the database
 //		Query q = db.query(Investigation.class);
 //		q.like("name", "molgenis");
 //		getModel().investigations = q.find();
+	
+		
 	}
 	
 	/**

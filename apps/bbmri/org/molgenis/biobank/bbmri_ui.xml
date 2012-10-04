@@ -5,26 +5,27 @@
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		 <plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" /> 
-		<!--<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" /> -->
-		
-         <!--  		<menu name="BiobankOverview" label="Biobank Overview">
+<!-- 		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" /> 
+ -->		
+     <!--     <menu name="BiobankOverview" label="Biobank Overview">
 			<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
-		</menu>
-		 -->
-		<menu name="BiobankOverview" label="Biobank Overview">
+		</menu> -->
+		 
+		 <menu name="BiobankOverview" label="Biobank Overview">
 			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
-		</menu>
+		</menu> 
 		<menu name="Admin">
 		    <menu name="DataViews">
 		    	<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
 				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName" />
-				<form name="Institutes" entity="Institute" view="list" />
+				<form name="Institutes" entity="BiobankInstitute" view="list" />
 				<form name="BiobankCoordinator" entity="BiobankCoordinator" view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
 				<form name="OntologyTerm" entity="OntologyTerm" />
 				<form name="BiobankDataType" entity="BiobankDataType" />
+				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole"/>
 				<form name="ChangeLog" entity="ChangeLog" />
 			</menu>
 			<menu name="usermanagement" position="left" label="User management">
@@ -36,9 +37,9 @@
 				<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
-			<menu name="ImportMenu" position="left" label="Importing data"><!--
-				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
-				--><plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+			<menu name="ImportMenu" position="left" label="Importing data">
+				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter" label="Biobank Importer"/>
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			</menu>
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
