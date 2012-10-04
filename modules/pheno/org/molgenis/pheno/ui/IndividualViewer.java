@@ -16,6 +16,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.pheno.Individual;
@@ -108,7 +109,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	 */
 	private void handleSelect(Database db, Tuple request) throws HtmlInputException
 	{
-		PhenoService phenoService         = new PhenoService(db);
+		final PhenoService phenoService   = new PhenoService(db);
 		List<ProtocolDTO> protocolDTOList = phenoService.findProtocols();
 
 		SelectProtocolForm form           = new SelectProtocolForm();
@@ -123,10 +124,10 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	 */
 	private void handleAdd(Database db, Tuple request) throws HtmlInputException
 	{
-		PhenoService phenoService = new PhenoService(db);
-		ProtocolDTO protocolDTO   = phenoService.findProtocol(request.getInt("Protocol"));
+		final PhenoService phenoService = new PhenoService(db);
+		ProtocolDTO protocolDTO         = phenoService.findProtocol(request.getInt("Protocol"));
 
-		ApplyProtocolForm form    = new ApplyProtocolForm();
+		ApplyProtocolForm form          = new ApplyProtocolForm();
 		this.populateApplyProtocolForm(form, protocolDTO);
 		
 		this.getModel().setProtocolDTO(protocolDTO);
@@ -135,7 +136,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 
 	private void populateSelectProtocolForm(SelectProtocolForm selectProtocolForm, List<ProtocolDTO> protocolDTOList)
 	{
-		selectProtocolForm.get("__target").setValue(this.getName());
+		((HiddenInput) selectProtocolForm.get("__target")).setValue(this.getName());
 
 		List<ValueLabel> protocolOptions = new ArrayList<ValueLabel>();
 		protocolOptions.add(new ValueLabel("", "Select a Protocol"));
@@ -148,7 +149,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 
 	private void populateApplyProtocolForm(ApplyProtocolForm applyProtocolForm, ProtocolDTO protocolDTO) throws HtmlInputException
 	{
-		applyProtocolForm.get("__target").setValue(this.getName());
+		((HiddenInput) applyProtocolForm.get("__target")).setValue(this.getName());
 
 		for (FeatureDTO featureDTO : protocolDTO.getFeatureDTOList())
 		{
@@ -174,7 +175,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 		this.loadIndividualDetailsVO(db);
 
 		List<ObservedValueDTO> insertList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList    = request.getFields();
+		List<String> parameterNameList    = request.getFieldNames();
 
 		PhenoService phenoService         = new PhenoService(db);
 
@@ -228,7 +229,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 		this.loadIndividualDetailsVO(db);
 
 		List<ObservedValueDTO> updateList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList    = request.getFields();
+		List<String> parameterNameList    = request.getFieldNames();
 
 		PhenoService phenoService = new PhenoService(db);
 
@@ -255,7 +256,8 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	private IndividualDTO loadIndividualDetailsVO(Database db)
 	{
 		ScreenController<?> parentController = this.getParent();
-		FormModel<Individual> parentForm     = (FormModel<Individual>) ((FormController) parentController).getModel();
+		@SuppressWarnings("unchecked")
+		FormModel<Individual> parentForm     = ((FormController<Individual>) parentController).getModel();
 		
 		if (parentForm.getRecords().size() == 0)
 			return null;
@@ -274,6 +276,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	 * @param individualDetailsDTO
 	 * @throws HtmlInputException
 	 */
+	@SuppressWarnings("unchecked")
 	private void populateIndividualForm(IndividualForm individualForm, IndividualDTO individualDetailsDTO) throws HtmlInputException
 	{
 		individualForm.get("__target").setValue(this.getName());
@@ -282,13 +285,13 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 		{
 			// create form input widgets
 			// name of each widget conforms with "Protocol" + Protocol.id + ".Feature" + Measurement.id
-//			for (FeatureDTO featureDTO : protocolDTO.getFeatureDTOList())
-//			{
-//				String fieldType = featureDTO.getFeatureType();
-//				String fieldKey  = featureDTO.getFeatureKey();
-//				
-//				individualForm.add(MolgenisFieldTypes.createInput(fieldType, fieldKey, ""));
-//			}
+			for (FeatureDTO featureDTO : protocolDTO.getFeatureDTOList())
+			{
+				String fieldType = featureDTO.getFeatureType();
+				String fieldKey  = featureDTO.getFeatureKey();
+				
+				individualForm.add(MolgenisFieldTypes.createInput(fieldType, fieldKey, ""));
+			}
 			
 			// set values for the input widgets
 			// if present, name is changed to "ObservedValue" + ObservedValue.id

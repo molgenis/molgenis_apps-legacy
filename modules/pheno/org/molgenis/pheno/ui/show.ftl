@@ -62,8 +62,8 @@
 <form method="post" action="molgenis.do">
 ${model.individualForm.__action}
 ${model.individualForm.__target}
-<@action name="edit" label="Edit"/>
-<@action name="select" label="Apply Protocol"/>
+${model.individualForm.edit}
+${model.individualForm.select}
 </form>
 </#if>
 

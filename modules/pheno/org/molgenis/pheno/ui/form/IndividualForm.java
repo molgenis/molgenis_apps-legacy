@@ -16,21 +16,26 @@ public class IndividualForm extends Container
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", ""));
-//		
-//		this.add(new ActionInput("add"));
-//		((ActionInput) this.get("add")).setButtonValue("Add");
-//		((ActionInput) this.get("add")).setLabel("Add");
-//		((ActionInput) this.get("add")).setTooltip("Add");
-//
-//		this.add(new ActionInput("new"));
-//		((ActionInput) this.get("new")).setButtonValue("New");
-//		((ActionInput) this.get("new")).setLabel("New");
-//		((ActionInput) this.get("new")).setTooltip("New");
-//
-//		this.add(new ActionInput("update"));
-//		((ActionInput) this.get("update")).setButtonValue("Update");
-//		((ActionInput) this.get("update")).setLabel("Update");
-//		((ActionInput) this.get("update")).setTooltip("Update");
+		
+		this.add(new ActionInput("show"));
+		((ActionInput) this.get("show")).setButtonValue("Back to List mode");
+		((ActionInput) this.get("show")).setLabel("Back to List mode");
+		((ActionInput) this.get("show")).setTooltip("Back to List mode");
+
+		this.add(new ActionInput("update"));
+		((ActionInput) this.get("update")).setButtonValue("Save");
+		((ActionInput) this.get("update")).setLabel("Save");
+		((ActionInput) this.get("update")).setTooltip("Save");
+
+		this.add(new ActionInput("edit"));
+		((ActionInput) this.get("edit")).setButtonValue("Edit");
+		((ActionInput) this.get("edit")).setLabel("Edit");
+		((ActionInput) this.get("edit")).setTooltip("Edit");
+
+		this.add(new ActionInput("select"));
+		((ActionInput) this.get("select")).setButtonValue("Apply Protocol");
+		((ActionInput) this.get("select")).setLabel("Apply Protocol");
+		((ActionInput) this.get("select")).setTooltip("Apply Protocol");
 	}
 	
 	public void addTextLineInput(Integer observedValueId, String value)

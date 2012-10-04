@@ -50,9 +50,9 @@ ${model.individualForm.__target}
 
 </#list>
 
-<@action name="show" label="Back to List mode"/>
-<@action name="update" label="Save"/>
-<@action name="select" label="Apply Protocol"/>
+${model.individualForm.show}
+${model.individualForm.update}
+${model.individualForm.select}
 </form>
 
 			</div>
