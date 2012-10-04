@@ -144,7 +144,7 @@ public class BiobankDecorator<E extends Biobank> extends MapperDecorator<E>
 			for (Biobank e : entities)
 			{
 				try {
-					List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY_ID,
+					List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY,
 							e.getId()).find();
 					getDatabase().remove(changelogList);
 				} catch (Exception e1) {
