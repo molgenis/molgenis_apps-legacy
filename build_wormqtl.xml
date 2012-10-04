@@ -59,6 +59,9 @@
 		<javac srcdir="${molgenis.dir}/src" destdir="${build.molgenis.dir}" nowarn="on" debug="true">
 			<classpath refid="molgenis.classpath" />
 		</javac>
+		
+		<!-- Copy WormQTL specific application footer, before copy of resources to build dir -->
+		<copy file="apps/wormqtl/org/molgenis/wormqtl/header/WormApplicationView.ftl" tofile="../molgenis/src/org/molgenis/framework/ui/ApplicationView.ftl" overwrite="true"/>
 
 		<!-- copy resources to build dir -->
 		<copy todir="${build.molgenis.dir}">
@@ -88,7 +91,6 @@
 		</copy>
 
 		<!-- copy sql and other resources from generate sql -->
-		
 		<copy todir="${build.molgenis_apps.dir}" verbose="true">
 			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false"/>
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
@@ -96,9 +98,6 @@
 
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
 		<antcall target="copy-persistence.xml" />
-		
-		<!-- Copy WormQTL specific application footer -->
-		<copy file="apps/wormqtl/org/molgenis/wormqtl/header/WormApplicationView.ftl" tofile="../molgenis/src/org/molgenis/framework/ui/ApplicationView.ftl" overwrite="true"/>
 		
 		<!-- Copy contact and about pages into place -->
 		<copy file="WebContent/clusterdemo/wormqtl/wormqtl_contact.html" tofile="WebContent/wormqtl_contact.html" overwrite="true"/>
