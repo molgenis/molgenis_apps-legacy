@@ -6,7 +6,6 @@
 
 package plugins.welcome;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryEditable;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -36,6 +34,9 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 
 	private static final long serialVersionUID = -2848815736940818733L;
 
+	//temporary variable for distinguish version of vm7 (without editable welcome message) with new version. 
+	private String server  = "noneditable"; //editable or noneditable
+	
 	public void setDatabase(Database db) {
 		BbmriWelcomeScreenPlugin.db = db;
 	}
@@ -64,8 +65,8 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 			System.out.println(db);
 			welcomeList = db.find(Welcome.class, new QueryRule(Welcome.STATUS, Operator.EQUALS, "new"), new QueryRule(Operator.SORTASC, Welcome.WELCOMEDATETIME)); //get latest new
 		
-			String query = "SELECT * FROM welcome where status=\"new\" ORDER BY welcomeDatetime DESC limit 1;";
-			List<Tuple> aaa = db.sql(query);
+			//String query = "SELECT * FROM welcome where status=\"new\" ORDER BY welcomeDatetime DESC limit 1;";
+			//List<Tuple> aaa = db.sql(query);
 		
 			if (welcomeList.isEmpty()) {
 				
@@ -210,5 +211,9 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 
 	public void setWelcomeTitle(String welcomeTitle) {
 		this.welcomeTitle = welcomeTitle;
+	}
+	
+	public String getVm7(){
+		return this.server;
 	}
 }
