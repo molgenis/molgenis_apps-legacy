@@ -37,6 +37,7 @@ public class TestPedMapTable
 	@Test
 	public void testWithoutLimit()
 	{
+		table.setFirstColumnFixed(true);
 		Iterator<Tuple> iter = table.iterator();
 		int count = 0;
 		while (iter.hasNext())
@@ -45,8 +46,9 @@ public class TestPedMapTable
 			Tuple tuple = iter.next();
 
 			Assert.assertEquals(tuple.getNrColumns(), 8);
-			Assert.assertEquals(tuple.getColName(0), "FamilyID");
-			Assert.assertEquals(tuple.getInt(0).intValue(), count);
+			Assert.assertEquals(tuple.getColName(1), "FamilyID");
+			Assert.assertEquals(tuple.getInt(1).intValue(), count);
+
 			Assert.assertEquals(tuple.getColName(7), "snp2");
 			if (count == 1)
 			{
@@ -122,7 +124,7 @@ public class TestPedMapTable
 		Iterator<Tuple> iter = table.iterator();
 		Tuple tuple = iter.next();
 		Assert.assertEquals(tuple.getNrColumns(), 4);
-		Assert.assertEquals(tuple.getColName(0), "IndividualID");
+		Assert.assertEquals(tuple.getColName(0), "FamilyID");
 		Assert.assertEquals(tuple.getColName(3), "Sex");
 	}
 
