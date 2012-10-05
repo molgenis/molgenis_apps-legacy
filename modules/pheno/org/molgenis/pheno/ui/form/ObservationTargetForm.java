@@ -6,12 +6,12 @@ import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.Input;
 import org.molgenis.framework.ui.html.TextLineInput;
 
-public class IndividualForm extends Container
+public class ObservationTargetForm extends Container
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = -4335059390415978096L;
 
-	public IndividualForm()
+	public ObservationTargetForm()
 	{
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("select", ""));

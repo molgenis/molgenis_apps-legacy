@@ -16,19 +16,19 @@
 			<div class="screenpadding">
 
 <form method="post" action="molgenis.do">
-${model.individualForm.__action}
-${model.individualForm.__target}
-<#assign individualDTO = model.individualDTO>
+${model.observationTargetForm.__action}
+${model.observationTargetForm.__target}
+<#assign observationElementDTO = model.observationElementDTO>
 
 <#list model.protocolDTOList as protocol>
 	<#assign protocolKey = "Protocol" + protocol.protocolId>
 
-	<#if individualDTO.observedValues?keys?seq_contains(protocolKey)>
+	<#if observationElementDTO.observedValues?keys?seq_contains(protocolKey)>
 
 		<h3>${protocol.protocolName}</h3>
 
-		<#list individualDTO.observedValues[protocolKey]?keys as paKey>
-			<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
+		<#list observationElementDTO.observedValues[protocolKey]?keys as paKey>
+			<#assign observedValueDTOValList = observationElementDTO.observedValues[protocolKey][paKey]>
 			<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
 	
 			<h4>${tmpObservedValueDTO.protocolApplicationName} (${tmpObservedValueDTO.protocolApplicationTime?string.medium_short})</h4>
@@ -50,9 +50,9 @@ ${model.individualForm.__target}
 
 </#list>
 
-${model.individualForm.show}
-${model.individualForm.update}
-${model.individualForm.select}
+${model.observationTargetForm.show}
+${model.observationTargetForm.update}
+${model.observationTargetForm.select}
 </form>
 
 			</div>
