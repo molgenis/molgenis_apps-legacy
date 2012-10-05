@@ -4,6 +4,7 @@
 	<menu name="PathoDataTables" label="Data Tables" position="left">
 		<form name="PathoSeqFeatures" label="SeqCharacteristics" entity="SequenceCharacteristic">
         	<form name="PathoSeqRelationPerFeature" label="SequenceRelations" entity="SequenceRelation" />
+			<plugin name="SequenceCharacteristicViewer" type="org.molgenis.pheno.ui.ObservationElementViewer" label="ObservedValues"/>
 		</form>
 <!--
 		<form name="PathoSeqFeatures" label="SeqFeatures" entity="SeqFeature">
@@ -20,7 +21,7 @@
 		<form name="PathoPanels" label="Panels" entity="Panel" />
 		<form name="PathoProtocols" label="Protocols" entity="Protocol"/>
 		<form name="PathoIndividuals" label="Individuals" entity="Individual">
-			<plugin name="IndividualViewer" type="org.molgenis.pheno.ui.IndividualViewer"/>
+			<plugin name="IndividualViewer" type="org.molgenis.pheno.ui.ObservationElementViewer" label="ObservedValues"/>
 		</form>
 		<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
 	</menu>
