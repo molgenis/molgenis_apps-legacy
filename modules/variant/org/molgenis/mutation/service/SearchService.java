@@ -15,7 +15,6 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.molgenis.core.Publication;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 
@@ -31,18 +30,11 @@ import org.molgenis.variant.Exon;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.ProteinDomain;
 import org.molgenis.variant.Variant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SearchService extends MolgenisVariantService
 {
-	@Autowired
-	public SearchService(Database db)
-	{
-		super(db);
-	}
-
 	/**
 	 * Find exon by its primary key
 	 * @param id
@@ -53,6 +45,10 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			Exon exon = this.em.find(Exon.class, id);
+
+			if (exon == null)
+				throw new SearchServiceException("No exon found for " + id);
+
 			return this.exonToExonDTO(exon);
 		}
 		catch (Exception e)
@@ -73,6 +69,23 @@ public class SearchService extends MolgenisVariantService
 			List<Variant> variantList = this.db.query(Variant.class).sortASC(Variant.STARTGDNA).find();
 
 			return this.variantListToVariantDTOList(variantList);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
+	public List<String> getAllVariantTypes()
+	{
+		try
+		{
+			String sql = "SELECT DISTINCT type_ FROM Variant";
+			TypedQuery<String> query = this.em.createQuery(sql, String.class);
+			List<String> typeList = query.getResultList();
+			
+			return typeList;
 		}
 		catch (Exception e)
 		{
@@ -678,11 +691,11 @@ public class SearchService extends MolgenisVariantService
 	}
 
 
-	public List<PatientSummaryDTO> findPatientsByExonNumber(final int exonNumber)
-	{
-		// TODO Auto-generated method stub
-		return new ArrayList<PatientSummaryDTO>();
-	}
+//	public List<PatientSummaryDTO> findPatientsByExonNumber(final int exonNumber)
+//	{
+//		// TODO Auto-generated method stub
+//		return new ArrayList<PatientSummaryDTO>();
+//	}
 
 
 	public List<PatientSummaryDTO> findPatientsByObservedValue(final String value)
@@ -711,6 +724,7 @@ public class SearchService extends MolgenisVariantService
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public List<PatientSummaryDTO> findPatientsByMeasurement(final String featureName)
 	{
 		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.feature f JOIN ov.target p WHERE p.__Type = 'Patient' AND f.name = :name AND ov.value IN ('yes', 'true')";
@@ -808,7 +822,12 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			return this.proteinDomainToProteinDomainDTO(this.em.find(ProteinDomain.class, id), noIntrons);
+			ProteinDomain domain = this.em.find(ProteinDomain.class, id);
+
+			if (domain == null)
+				throw new SearchServiceException("No domain found for " + id);
+
+			return this.proteinDomainToProteinDomainDTO(domain, noIntrons);
 		}
 		catch (Exception e)
 		{

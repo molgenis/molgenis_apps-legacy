@@ -16,11 +16,8 @@ import org.molgenis.mutation.service.GffService;
 
 public class GffServlet implements MolgenisService
 {
-	private MolgenisContext mc;
-	
-	public GffServlet(MolgenisContext mc)
+	public GffServlet(@SuppressWarnings("unused") MolgenisContext mc)
 	{
-		this.mc = mc;
 	}
 
 	@Override

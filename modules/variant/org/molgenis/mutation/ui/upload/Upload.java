@@ -22,7 +22,9 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.SearchService;
@@ -38,12 +40,15 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private static final long serialVersionUID = -3499931124766785979L;
 	private final transient Logger logger      = Logger.getLogger(Upload.class.getSimpleName());
+	private transient UploadService uploadService;
 
 	public Upload(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setModel(new UploadModel(this));
 		this.view = new FreemarkerView("uploadBatch.ftl", getModel());
+		this.uploadService = ServiceLocator.instance().getUploadService();
+
 		this.populateBatchForm();
 	}
 	
@@ -64,11 +69,13 @@ public class Upload extends EasyPluginController<UploadModel>
 	{
 		try
 		{
+			this.uploadService.setDatabase(db);
+
 			String action = request.getAction();
 			
 			if (StringUtils.equals(action, "newBatch"))
 			{
-				this.handleNewBatch(request);
+				this.handleNewBatch();
 			}
 //			else if (StringUtils.equals(action, "checkBatch"))
 //			{
@@ -84,37 +91,42 @@ public class Upload extends EasyPluginController<UploadModel>
 			}
 			else if (StringUtils.equals(action, "newPatient"))
 			{
-				this.handleNewPatient(request);
+				this.handleNewPatient();
 			}
 			else if (StringUtils.equals(action, "insertPatient"))
 			{
-				this.handleInsertPatient(request);
+				this.handleInsertPatient();
 			}
 			else if (StringUtils.equals(action, "newMutation"))
 			{
-				this.handleNewMutation(request);
+				this.handleNewMutation();
 			}
 			else if (StringUtils.equals(action, "assignMutation"))
 			{
-				this.handleAssignMutation(request);
+				this.handleAssignMutation();
 			}
 			else if (StringUtils.equals(action, "checkMutation"))
 			{
-				this.handleCheckMutation(request);
+				this.handleCheckMutation();
 			}
 			else if (StringUtils.equals(action, "insertMutation"))
 			{
-				this.handleInsertMutation(request);
+				this.handleInsertMutation();
 			}
 			else if (StringUtils.equals(action, "reindex"))
 			{
 				this.handleReindex();
 			}
+
+			if (!this.getApplicationController().getLogin().isAuthenticated())
+			{
+				this.view = new FreemarkerView("uploadLogin.ftl", getModel());
+			}
 		}
 		catch(Exception e)
 		{
-			String message = "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
-			this.getModel().getMessages().add(new ScreenMessage(message, false));
+//			String message = "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
+			this.getModel().getMessages().add(new ScreenMessage(e.getMessage(), false));
 			logger.error(e.getMessage());
 			for (StackTraceElement el : e.getStackTrace())
 				logger.error(el.toString());
@@ -122,14 +134,14 @@ public class Upload extends EasyPluginController<UploadModel>
 		return Show.SHOW_MAIN;
 	}
 
-	private void handleNewBatch(Tuple request)
+	private void handleNewBatch()
 	{
 		this.populateBatchForm();
 
 		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
 	}
 
-	private void handleInsertMutation(Tuple request) throws EmailException
+	private void handleInsertMutation() throws EmailException
 	{
 		//TODO: Insert and mark as uncurated
 //		this.mutationService.insert(this.getModel().getMutationUploadVO());
@@ -147,24 +159,23 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.getModel().getMessages().add(new ScreenMessage("Mutation successfully inserted", true));
 	}
 
-	private void handleCheckMutation(Tuple request)
+	private void handleCheckMutation()
 	{
 		// TODO: implement check screen
 	}
 
-	private void handleAssignMutation(Tuple request)
+	private void handleAssignMutation()
 	{
-		UploadService uploadService = ServiceLocator.instance().getUploadService();
 		uploadService.assignValuesFromPosition(this.getModel().getMutationUploadVO());
 		this.populateMutationForm();
 	}
 
-	private void handleNewMutation(Tuple request)
+	private void handleNewMutation()
 	{
 		this.populateMutationForm();
 	}
 
-	private void handleInsertPatient(Tuple request) throws EmailException
+	private void handleInsertPatient() throws EmailException
 	{
 		//TODO: Insert and mark as uncurated
 //		this.patientService.insert(this.getModel().getPatientSummaryVO());
@@ -175,7 +186,7 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.getModel().getMessages().add(new ScreenMessage("Patient successfully inserted", true));
 	}
 
-	private void handleNewPatient(Tuple request)
+	private void handleNewPatient()
 	{
 		this.populatePatientForm();
 	}
@@ -198,7 +209,6 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private void handleInsertBatch(Tuple request)
 	{
-		UploadService uploadService = ServiceLocator.instance().getUploadService();
 		int count                   = uploadService.insert(request.getFile("filefor_upload"));
 		this.getModel().getMessages().add(new ScreenMessage("Successfully inserted " + count + " rows", true));
 		
@@ -207,7 +217,6 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private void handleReindex()
 	{
-		UploadService uploadService = ServiceLocator.instance().getUploadService();
 		uploadService.reindex();
 		this.getModel().getMessages().add(new ScreenMessage("Successfully rebuilt the full text index", true));
 	}
@@ -215,28 +224,28 @@ public class Upload extends EasyPluginController<UploadModel>
 	private void populateBatchForm()
 	{
 		this.getModel().setBatchForm(new BatchForm());
-		this.getModel().getBatchForm().get("__target").setValue(this.getName());
-		this.getModel().getBatchForm().get("select").setValue(this.getName());
+		((HiddenInput) this.getModel().getBatchForm().get("__target")).setValue(this.getName());
+		((HiddenInput) this.getModel().getBatchForm().get("select")).setValue(this.getName());
 	}
 
 	private void populatePatientForm()
 	{
-		SearchService searchService       = ServiceLocator.instance().getSearchService();
+		SearchService searchService       = (SearchService) ServiceLocator.instance().getService("searchService");
 
 		List<ValueLabel> mutationOptions  = new ArrayList<ValueLabel>();
 		for (VariantDTO variantDTO : searchService.getAllVariants())
 			mutationOptions.add(new ValueLabel(variantDTO.getId(), variantDTO.getCdnaNotation()));
 
-		this.getModel().getPatientForm().get("identifier").setValue(this.getModel().getPatientSummaryVO().getPatientIdentifier());
+		((StringInput) this.getModel().getPatientForm().get("identifier")).setValue(this.getModel().getPatientSummaryVO().getPatientIdentifier());
 		((SelectInput) this.getModel().getPatientForm().get("mutation1")).setOptions(mutationOptions);
 		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 0)
-			this.getModel().getPatientForm().get("mutation1").setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(0).getId());
+			((SelectInput) this.getModel().getPatientForm().get("mutation1")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(0).getId());
 		((SelectInput) this.getModel().getPatientForm().get("mutation2")).setOptions(mutationOptions);
 		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 1)
-			this.getModel().getPatientForm().get("mutation2").setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(1).getId());
-		this.getModel().getPatientForm().get("number").setValue(this.getModel().getPatientSummaryVO().getPatientLocalId());
+			((SelectInput) this.getModel().getPatientForm().get("mutation2")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(1).getId());
+		((StringInput) this.getModel().getPatientForm().get("number")).setValue(this.getModel().getPatientSummaryVO().getPatientLocalId());
 //		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setOptions(phenotypeOptions);
-		this.getModel().getPatientForm().get("phenotype").setValue(this.getModel().getPatientSummaryVO().getPhenotypeId());
+		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setValue(this.getModel().getPatientSummaryVO().getPhenotypeId());
 		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setOnchange("toggleForm(this.value);");
 		((SelectInput) this.getModel().getPatientForm().get("consent")).setOptions(new Patient().getConsentOptions());
 	}
@@ -249,6 +258,13 @@ public class Upload extends EasyPluginController<UploadModel>
 	@Override
 	public void reload(Database db)
 	{
-		//documented empty block
+		if (!this.getApplicationController().getLogin().isAuthenticated())
+		{
+			this.view = new FreemarkerView("uploadLogin.ftl", getModel());
+		}
+		else if ((((FreemarkerView) view).getTemplatePath()).equals("uploadLogin.ftl"))
+		{
+			this.view = new FreemarkerView("uploadBatch.ftl", getModel());
+		}
 	}
 }

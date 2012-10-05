@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,8 +13,8 @@ public class FastaService
 	private Database db;
 	private final int ROWSIZE = 60;
 	
-	@Autowired
-	public FastaService(Database db)
+	//@Autowired
+	public void setDatabase(Database db)
 	{
 		this.db = db;
 	}

@@ -1,12 +1,17 @@
 package org.molgenis.datatable.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
+
+import app.DatabaseFactory;
 
 public abstract class AbstractTupleTable implements TupleTable
 {
@@ -14,8 +19,9 @@ public abstract class AbstractTupleTable implements TupleTable
 	private int offset = 0;
 	private int colOffset = 0;
 	private int colLimit = 0;
-
+	private boolean firstColumnFixed;
 	private Database db;
+	private Map<String, Integer> columnByIndex;
 
 	@Override
 	public void reset()
@@ -24,6 +30,80 @@ public abstract class AbstractTupleTable implements TupleTable
 		offset = 0;
 		colOffset = 0;
 		colLimit = 0;
+	}
+
+	@Override
+	public void setFirstColumnFixed(boolean firstColumnFixed)
+	{
+		this.firstColumnFixed = firstColumnFixed;
+	}
+
+	@Override
+	public boolean isFirstColumnFixed()
+	{
+		return firstColumnFixed;
+	}
+
+	@Override
+	public void hideColumn(String columnName)
+	{
+		try
+		{
+			getColumnByName(columnName).setHidden(true);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void showColumn(String columnName)
+	{
+		try
+		{
+			getColumnByName(columnName).setHidden(false);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<String> getHiddenColumnNames()
+	{
+		List<String> hiddenColumns = new ArrayList<String>();
+		try
+		{
+			for (Field column : getAllColumns())
+			{
+				if (column.isHidden())
+				{
+					hiddenColumns.add(column.getName());
+				}
+			}
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		return hiddenColumns;
+	}
+
+	protected List<Field> getVisibleColumns() throws TableException
+	{
+		List<Field> visibleColumns = new ArrayList<Field>();
+		for (Field column : getAllColumns())
+		{
+			if (!column.isHidden())
+			{
+				visibleColumns.add(column);
+			}
+		}
+
+		return visibleColumns;
 	}
 
 	@Override
@@ -58,29 +138,48 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public List<Field> getColumns() throws TableException
 	{
-		List<Field> columns = getAllColumns();
+		List<Field> result;
+		List<Field> columns = getVisibleColumns();
+
+		int colCount = columns.size();
+
+		if (isFirstColumnFixed())
+		{
+			columns.remove(0);
+			colCount--;
+		}
+
+		int colLimit = (int) (this.colLimit == 0 ? colCount - getColOffset() : getCurrentColumnPageSize(colCount));
+
 		if (getColOffset() > 0)
 		{
-			if (getColLimit() > 0)
+			if (colLimit > 0)
 			{
-				return columns.subList(getColOffset(), getColOffset() + getColLimit());
+				result = columns.subList(getColOffset(), Math.min(getColOffset() + colLimit, colCount));
 			}
 			else
 			{
-				return columns.subList(getColOffset(), columns.size());
+				result = columns.subList(getColOffset(), colCount);
 			}
 		}
 		else
 		{
-			if (getColLimit() > 0)
+			if (colLimit > 0)
 			{
-				return columns.subList(0, getColLimit());
+				result = columns.subList(0, colLimit);
 			}
 			else
 			{
-				return columns;
+				result = columns;
 			}
 		}
+
+		if (isFirstColumnFixed())
+		{
+			result.add(0, getAllColumns().get(0));
+		}
+
+		return result;
 	}
 
 	@Override
@@ -95,7 +194,17 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public abstract Iterator<Tuple> iterator();
+	public Iterator<Tuple> iterator()
+	{
+		try
+		{
+			return new TupleTableIterator(this);
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public void close() throws TableException
@@ -109,7 +218,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public int getColCount() throws TableException
 	{
-		return this.getColumns().size();
+		return getVisibleColumns().size();
 	}
 
 	@Override
@@ -122,13 +231,13 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public int getColLimit()
 	{
-		return this.colLimit;
+		return colLimit;
 	}
 
 	@Override
 	public int getColOffset()
 	{
-		return this.colOffset;
+		return colOffset;
 	}
 
 	@Override
@@ -154,6 +263,94 @@ public abstract class AbstractTupleTable implements TupleTable
 
 	public Database getDb()
 	{
+		try
+		{
+			db = DatabaseFactory.create();
+		}
+		catch (DatabaseException e)
+		{
+			throw new RuntimeException(e);
+		}
 		return this.db;
+	}
+
+	protected int getCurrentColumnPageSize(int colCount) throws TableException
+	{
+		int pageSize = getColLimit();
+
+		if (getColOffset() + pageSize > colCount)
+		{
+			pageSize = colCount - getColOffset();
+		}
+
+		return pageSize;
+	}
+
+	/**
+	 * Please override in subclass if you use the TupleTableIterator !!!!
+	 * 
+	 * @throws TableException
+	 */
+	protected Tuple getValues(int row, List<Field> columns) throws TableException
+	{
+		return getRows().get(row);
+	}
+
+	protected int getColumnIndex(String columnName) throws TableException
+	{
+		if (columnByIndex == null)
+		{
+			columnByIndex = new HashMap<String, Integer>();
+
+			List<Field> columns = getAllColumns();
+			for (int i = 0; i < columns.size(); i++)
+			{
+				columnByIndex.put(columns.get(i).getName(), i);
+			}
+
+		}
+
+		Integer index = columnByIndex.get(columnName);
+
+		if (index == null)
+		{
+			throw new TableException("Unknown columnName [" + columnName + "]");
+		}
+
+		return index;
+	}
+
+	protected Field getColumnByName(String columnName) throws TableException
+	{
+		for (Field field : getAllColumns())
+		{
+			if (field.getName().equals(columnName))
+			{
+				return field;
+			}
+		}
+
+		throw new TableException("Unknown columnName [" + columnName + "]");
+	}
+
+	/**
+	 * Checks if the column is in the current view port (the columns that the
+	 * user sees in the table on the screen)
+	 * 
+	 * @param columnName
+	 * @return
+	 * @throws TableException
+	 */
+	protected boolean isInViewPort(String columnName) throws TableException
+	{
+		for (Field field : getColumns())
+		{
+			if (field.getName().equals(columnName))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="org.molgenis" label="Catalog of Dutch Biobank">
 	<module name="bbmri" label="Catalog of Dutch Biobank">
+		
+		<entity name="Welcome" >
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="welcomeTitle" description="the title of the welcome page"></field>
+			<field name="welcomeText" type="text" description="the text of the welcome page"></field>
+			<!-- <field name="contactLink" type="text" description="the contact link"></field>
+			<field name="helpLink" type="text" description="the help link"></field> -->
+			<field name="welcomeDatetime" type="datetime" ></field>
+			<field name="status" description="old or new indicated by 'old' or 'new'"></field>
+		</entity>
+		
+		<entity name="BiobankInstitute" extends="Institute"></entity> 
+		
 		<entity name="BiobankCategory" extends="OntologyTerm">
 			<description>This is the categories of the entries commonly written
 				in the xls file in the first column with bold letters. Obviously
@@ -23,7 +36,7 @@
 			<description>This is the values of the coordinators.</description>
 		</entity>
 		
-		<entity name="Biobank" implements="Identifiable,Authorizable" decorator="decorators.BiobankDecorator">
+		<entity name="Biobank" implements="Identifiable,Authorizable" decorator="decorators.BiobankDecorator" xref_label="Cohort">
 			<description>This describes a panel (or: cohort) of individuals for which data was collected within the biobank.</description>
 			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" /><!--  unique="true"/>   -->
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
@@ -31,7 +44,7 @@
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />
 			<field name="Topic" type="mref" nillable="true" xref_entity="BiobankTopic" />
 			<field name="Coordinator" type="mref" nillable="true" xref_entity="BiobankCoordinator" description="One or more contact persons for this biobank" />
-			<field name="Institutes" nillable="true" type="string" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
+			<field name="Institutes" type="xref"  xref_entity="BiobankInstitute" nillable="true" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
 			<!--  <field name="Coordinators" type="mref" nillable="true" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank" /> -->
 			<field name="PanelSize" label="Current n=" nillable="true" description="Current n= in xls" />
 			<field name="Biodata" type="mref" nillable="true" xref_entity="BiobankDataType" description="Biodata in xls" />
