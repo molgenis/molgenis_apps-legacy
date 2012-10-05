@@ -21,11 +21,8 @@ public class MolgenisUserService
 {
 	private Database db                                    = null;
 	private static MolgenisUserService molgenisUserService = null;
-	//TODO: Danny: Use or loose
-	//private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
 
-	// private constructor, use singleton instance
-	private MolgenisUserService(Database db)
+	public MolgenisUserService(Database db)
 	{
 		this.db = db;
 	}
@@ -37,8 +34,7 @@ public class MolgenisUserService
 	 */
 	public static MolgenisUserService getInstance(Database db)
 	{
-		//if (molgenisUserService == null)
-			molgenisUserService = new MolgenisUserService(db);
+		molgenisUserService = new MolgenisUserService(db);
 		
 		return molgenisUserService;
 	}
@@ -104,15 +100,10 @@ public class MolgenisUserService
 	{
 		try
 		{
-		//not possible: already in transaction
-		//jpa-jdbc difference?
-		//	this.db.beginTx();
 			this.db.update(user);
-		//	this.db.commitTx();
 		}
 		catch (DatabaseException e)
 		{
-		//	this.db.rollbackTx();
 			throw e;
 		}
 	}
@@ -135,5 +126,15 @@ public class MolgenisUserService
 		PasswordHasher hasher    = new PasswordHasher();
 		if (!StringUtils.equals(user.getPassword(), hasher.toMD5(oldPwd)))
 			throw new MolgenisUserException("Wrong password");
+	}
+	
+	public String findAdminEmail() throws DatabaseException
+	{
+		List<MolgenisUser> adminList = this.db.query(MolgenisUser.class).equals(MolgenisUser.SUPERUSER, true).find();
+		
+		if (adminList.size() < 1)
+			throw new MolgenisUserException("No admin found in database");
+		
+		return adminList.get(0).getEmail();
 	}
 }
