@@ -44,10 +44,30 @@ public class PhenoService
 	{
 		this.db = db;
 	}
-		
+
 	/**
 	 * Find phenotypic details (ObservedValue) for an ObservationElement
 	 * @param id
+	 * @return ObservationElementDTO
+	 * @throws PhenoServiceException
+	 */
+	public ObservationElementDTO findPhenotypeDetails(final Integer id) throws PhenoServiceException
+	{
+		try
+		{
+			ObservationElement o = this.db.findById(ObservationElement.class, id);
+			return this.findPhenotypeDetails(o);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new PhenoServiceException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Find phenotypic details (ObservedValue) for an ObservationElement
+	 * @param ObservationElement
 	 * @return ObservationElementDTO
 	 * @throws PhenoServiceException
 	 */
