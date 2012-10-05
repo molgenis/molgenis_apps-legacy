@@ -78,7 +78,7 @@
 	<tr>
 		<td colspan="3" height="70" align="center">
 			<span style="font-size:12px;">(<i>for example:</i> ctl, daf, pgp-7, gst-27, Y65B4BR, K02B12, WBGene00021562, WBGene00006727, acetylcholine, luciferase ... )
-			<br>Gene matches, for example by <a href="http://www.geneontology.org/">Geno Ontology</a> terms, will show the probes for that gene plus the GO annotation.
+			<br>Gene hits, for example on <a href="http://www.geneontology.org/">Geno Ontology</a> terms, will show the probes for that gene plus all GO annotations.
 			</span>
 		</td>
 	</tr>
