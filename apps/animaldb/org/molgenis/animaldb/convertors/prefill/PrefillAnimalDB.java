@@ -84,10 +84,8 @@ public class PrefillAnimalDB
 		while (entries.hasMoreElements())
 		{
 			ZipEntry entry = (ZipEntry) entries.nextElement();
-			copyInputStream(
-					zipFile.getInputStream(entry),
-					new BufferedOutputStream(new FileOutputStream(path
-							+ entry.getName())));
+			copyInputStream(zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
 		// Run convertor steps
 		populateProtocolApplication();
@@ -202,8 +200,7 @@ public class PrefillAnimalDB
 			String targettypeAllowedForRelationClassName = null;
 			if (tuple.getString("targetType") != null)
 			{
-				targettypeAllowedForRelationClassName = db.getClassForName(
-						tuple.getString("targetType")).getName();
+				targettypeAllowedForRelationClassName = db.getClassForName(tuple.getString("targetType")).getName();
 			}
 			String panelLabelAllowedForRelation = tuple.getString("panelLabel");
 			boolean temporal = false;
@@ -213,10 +210,8 @@ public class PrefillAnimalDB
 			}
 			String dataType = tuple.getString("dataType");
 			String description = tuple.getString("description");
-			Measurement newMeas = ct.createMeasurement(invName, name, unitName,
-					targettypeAllowedForRelationClassName,
-					panelLabelAllowedForRelation, temporal, dataType,
-					description, userName);
+			Measurement newMeas = ct.createMeasurement(invName, name, unitName, targettypeAllowedForRelationClassName,
+					panelLabelAllowedForRelation, temporal, dataType, description, userName);
 			measMap.put(name, newMeas);
 		}
 	}
@@ -229,8 +224,7 @@ public class PrefillAnimalDB
 		{
 			String code = tuple.getString("code");
 			String measName = tuple.getString("measurement");
-			Category newCat = ct.createCategory(code,
-					tuple.getString("description"), measName);
+			Category newCat = ct.createCategory(code, tuple.getString("description"), measName);
 			newCat.setInvestigation_Name(invName);
 			categoriesToAddList.add(newCat);
 			Measurement meas = measMap.get(measName);
@@ -251,10 +245,8 @@ public class PrefillAnimalDB
 		for (Tuple tuple : reader)
 		{
 			@SuppressWarnings("unchecked")
-			List<String> measurementNameList = (List<String>) tuple.getList(
-					"measurements", ",");
-			protocolsToAddList.add(ct.createProtocol(invName,
-					tuple.getString("name"), tuple.getString("description"),
+			List<String> measurementNameList = (List<String>) tuple.getList("measurements", ",");
+			protocolsToAddList.add(ct.createProtocol(invName, tuple.getString("name"), tuple.getString("description"),
 					measurementNameList));
 		}
 		System.out.println();
@@ -268,8 +260,7 @@ public class PrefillAnimalDB
 		{
 			String sexName = tuple.getString("name");
 			panelsToAddList.add(ct.createPanel(invName, sexName, userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), new Date(), null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", sexName, "Sex", null));
 		}
 	}
@@ -282,22 +273,14 @@ public class PrefillAnimalDB
 		{
 			String specName = tuple.getString("name");
 			panelsToAddList.add(ct.createPanel(invName, specName, userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), new Date(), null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", specName, "Species", null));
-			valuesToAddList
-					.add(ct.createObservedValue(invName,
-							appMap.get("SetVWASpecies"), new Date(), null,
-							"VWASpecies", specName,
-							tuple.getString("VwaSpecies"), null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetLatinSpecies"), new Date(), null,
-					"LatinSpecies", specName, tuple.getString("LatinSpecies"),
-					null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetDutchSpecies"), new Date(), null,
-					"DutchSpecies", specName, tuple.getString("DutchSpecies"),
-					null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetVWASpecies"), new Date(), null,
+					"VWASpecies", specName, tuple.getString("VwaSpecies"), null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLatinSpecies"), new Date(), null,
+					"LatinSpecies", specName, tuple.getString("LatinSpecies"), null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDutchSpecies"), new Date(), null,
+					"DutchSpecies", specName, tuple.getString("DutchSpecies"), null));
 		}
 	}
 
@@ -310,11 +293,9 @@ public class PrefillAnimalDB
 			String bkgName = tuple.getString("name");
 			String speciesName = tuple.getString("species");
 			panelsToAddList.add(ct.createPanel(invName, bkgName, userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), new Date(), null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", bkgName, "Background", null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSpecies"), new Date(), null, "Species",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), new Date(), null, "Species",
 					bkgName, null, speciesName));
 		}
 	}
@@ -327,11 +308,9 @@ public class PrefillAnimalDB
 		{
 			String sourceName = tuple.getString("name");
 			panelsToAddList.add(ct.createPanel(invName, sourceName, userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), new Date(), null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", sourceName, "Source", null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSourceType"), new Date(), null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSourceType"), new Date(), null,
 					"SourceType", sourceName, tuple.getString("type"), null));
 		}
 	}
@@ -351,18 +330,15 @@ public class PrefillAnimalDB
 		makeProtocolApplication(protocolName, protocolName);
 	}
 
-	public void makeProtocolApplication(String protocolName,
-			String protocolLabel) throws ParseException, DatabaseException,
-			IOException
+	public void makeProtocolApplication(String protocolName, String protocolLabel) throws ParseException,
+			DatabaseException, IOException
 	{
-		ProtocolApplication app = ct.createProtocolApplication(invName,
-				protocolName);
+		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
 	}
 
-	public static final void copyInputStream(InputStream in, OutputStream out)
-			throws IOException
+	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
 	{
 		byte[] buffer = new byte[1024];
 		int len;

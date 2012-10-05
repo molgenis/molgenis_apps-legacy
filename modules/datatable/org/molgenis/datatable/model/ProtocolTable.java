@@ -171,24 +171,35 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 							break;
 						}
 					}
-
-					if ("categorical".equals(currentMeasurement.getDataType()))
+					if (currentMeasurement == null)
+					{
+						System.out.println();
+					}
+					if (currentMeasurement != null)
 					{
 
-						for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
-								currentMeasurement.getCategories_Name())))
+						if ("categorical".equals(currentMeasurement.getDataType()))
 						{
-							if (v.getValue().equals(c.getCode_String()) && isInViewPort(v.getFeature_Name()))
+
+							for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
+									currentMeasurement.getCategories_Name())))
 							{
-								row.set(v.getFeature_Name(), v.getValue() + "." + c.getDescription());
-								break;
+								if (v.getValue().equals(c.getCode_String()) && isInViewPort(v.getFeature_Name()))
+								{
+									row.set(v.getFeature_Name(), v.getValue() + "." + c.getDescription());
+									break;
+								}
 							}
 						}
-					}
-					else
-					{
-						if (!v.getValue().isEmpty() && isInViewPort(v.getFeature_Name())) row.set(v.getFeature_Name(),
-								v.getValue());
+						else
+						{
+							if (v.getFeature_Name() == null || v.getValue() == null)
+							{
+								System.out.println();
+							}
+							if (v.getValue() != null && !v.getValue().isEmpty() && isInViewPort(v.getFeature_Name())) row
+									.set(v.getFeature_Name(), v.getValue());
+						}
 					}
 				}
 				result.add(row);
@@ -315,6 +326,11 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		// filters = Scl90som3 = '1'
 		// filters.size() = 1
 
+		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
+		{
+			result.add(t.getInt("id"));
+		}
+		
 		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
 		{
 			result.add(t.getInt("id"));

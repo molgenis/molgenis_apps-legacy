@@ -1,6 +1,7 @@
 package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
+import java.util.List;
 
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -18,8 +19,8 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 {
 	private static final long serialVersionUID = 1678403545717313675L;
 	private JQGridView tableView;
-	String topProtocol;
-	String target;
+	String topProtocol = null;
+	String target = null;
 
 	public JQGridPluginProtocol(String name, ScreenController<?> parent, String topProtocol, String target)
 	{
@@ -35,7 +36,24 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 		try
 		{
 			// only this line changed ...
-			Protocol p = db.query(Protocol.class).eq(Protocol.NAME, topProtocol).find().get(0);
+			Protocol p = null;
+
+			if (topProtocol != null)
+			{
+				p = db.query(Protocol.class).eq(Protocol.NAME, topProtocol).find().get(0);
+			}
+			else
+			{
+
+				p = new Protocol();
+				p.setName("topProtocol");
+				for (Protocol subProtocol : db.find(Protocol.class))
+				{
+					List<Integer> subProtocolIds = p.getSubprotocols_Id();
+					subProtocolIds.add(subProtocol.getId());
+					p.setSubprotocols_Id(subProtocolIds);
+				}
+			}
 
 			// create table
 			ProtocolTable table = new ProtocolTable(db, p);
