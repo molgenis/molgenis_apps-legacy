@@ -125,6 +125,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.setReport(null);
 					this.model.setQtls(null);
 					this.model.setCartView(false);
+					this.model.setProbeToGene(null);
 				}
 				
 				if (action.equals("gotoSearch"))
@@ -269,7 +270,19 @@ public class QtlFinder2 extends PluginModel<Entity>
 	
 	private Map<String, Entity> genesToProbes(Database db, int limit, Map<String, Entity> hits) throws DatabaseException{
 		
+		//keep a list of genes for which the probes are shown to make the GO term info box
 		Map<String, Gene> probeToGene = new HashMap<String, Gene>();
+		//include the current Gene objects in the shopping cart so they are not lost on next search action
+		//(when switching back to the shopping cart view)
+		for(Entity e : this.model.getShoppingCart().values()) //TODO: WRONG, THESE ARE NOT IN THE CART BUT IN THE PROBETOGENE LIST
+		{
+		//	System.out.println("IN CART: " + e.toString());
+			if(e.get(ObservationElement.__TYPE).equals("Gene"))
+			{
+				probeToGene.put(e.get(ObservationElement.NAME).toString(), (Gene) e);
+			//	System.out.println("FROM SHOPPING to ProbeToGene: " + e.get(ObservationElement.NAME).toString());
+			}
+		}
 		
 		Map<String, Entity> result = new HashMap<String, Entity>();
 		int nrOfResults = 0;
@@ -296,6 +309,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					result.put(p.getName(), p);
 					//System.out.println("GENE2PROBE SEARCH HIT: " +p.getName());
 					
+					//store the gene hit that belongs with this probe
 					probeToGene.put(p.getName(), (Gene)e);
 					
 					nrOfResults++;
