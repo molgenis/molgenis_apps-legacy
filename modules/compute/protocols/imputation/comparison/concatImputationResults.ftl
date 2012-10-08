@@ -25,4 +25,4 @@ inputs "${impute2ResultChrBin}_warnings"
 
 module load ${impute}/${impute2Binversion}
 
-python -c 'names = {x[1] : x[2] for x in [line.split() for line in open("all.txt")]}; files = str.join(" ", [names["chr1_1_5000000_samples_" + str(i) + "_" + str(i+500-1)] + " 500" for i in range(0,5000,500)]); print "python AssemblyImpute2GprobsBins.py " + files + " OUTPUT.gprobs"'
+`python -c 'names = {x[1] : x[2] for x in [line.split() for line in open("all.txt")]}; files = str.join(" ", [names["chr1_1_5000000_samples_" + str(i) + "_" + str(i+500-1)] + " 500" for i in range(0,5000,500)]); print "python AssemblyImpute2GprobsBins.py " + files + " OUTPUT.gprobs"'`
