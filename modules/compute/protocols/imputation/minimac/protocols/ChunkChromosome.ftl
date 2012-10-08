@@ -39,6 +39,7 @@ for c in `seq 1 $s`
 do
 	echo $c >> ${chunkChrWorkSheet}
 	putFile ${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps
+	putFile ${studyMerlinChrDir}/chunk$c-chr${chr}.dat
 done
 
 
@@ -79,8 +80,14 @@ mkdir -p ${projectChrPhasingJobsDir}
 sh ${McDir}/molgenis_compute.sh \
 -worksheet=${finalChunksWorksheet} \
 -parameters=${McParameters} \
--workflow=${McProtocols}/workflowPhasingMach.csv \
+-workflow=${McProtocols}/workflowPhasingMachStage2.csv \
 -protocols=${McProtocols}/ \
 -templates=${McTemplates}/ \
 -scripts=${projectChrPhasingJobsDir}/ \
 -id=${McId}
+
+cd ${projectChrPhasingJobsDir}
+sh submit.sh
+
+tar czf ${projectChrPhasingJobsDirTarGz} ${projectChrPhasingJobsDir}
+putFile ${projectChrPhasingJobsDirTarGz}

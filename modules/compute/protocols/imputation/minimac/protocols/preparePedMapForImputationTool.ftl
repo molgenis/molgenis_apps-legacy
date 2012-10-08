@@ -18,7 +18,5 @@ awk '{$2=$1"_"$4; print $0}' ${studyInputPedMapChr}.map > ${studyPedMapChr}.map
 #Copy ped file
 cp ${studyInputPedMapChr}.ped ${studyPedMapChr}.ped
 
-#Becarefull of phenotype field in ped files. Might crash later on -9
-
 putFile ${studyPedMapChr}.map
 putFile ${studyPedMapChr}.ped

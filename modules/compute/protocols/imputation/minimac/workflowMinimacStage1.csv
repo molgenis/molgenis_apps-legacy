@@ -1,0 +1,6 @@
+name,protocol_name,PreviousSteps_name
+prePhasingMach_s00,preparePedMapForImputationTool,
+prePhasingMach_s01,convertPedMapToTriTyper,
+prePhasingMach_s02,prepareStudy,
+prePhasingMach_s03,convertPlinkPedMapToMerlin,
+prePhasingMach_s04,ChunkChromosome,
