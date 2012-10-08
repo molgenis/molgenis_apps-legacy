@@ -160,12 +160,11 @@
 			
 			$('.modalWindow').css({
 				'left' : position.left,
-				'top' : position.top + 10,
+				'top' : position.top,
 				'height' : $(treePanel).height(),
 				'width' : $(treePanel).width(),
 			    'position' : 'absolute',
 			    'z-index' : '1500',
-			    'background' : 'grey',
 			    'opacity' : '0.5'
 			});
 		}
@@ -203,6 +202,47 @@
 		}
 		
 		function initialize(){
+
+			$('#predictionModels').chosen();
+			$('#refreshModel').button();
+			
+			$('#refreshModel').click(function(){
+				
+				selectedModel = $('#predictionModels').val();
+				array = {};
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_refreshModel&selectedModel="+selectedModel,
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				$('#predictor').empty();
+				for(var i = 0; i < array.length; i++){
+					$('#predictor').append("<option>" + array[i] + "</option>");
+				}
+				$('#predictionModelPanel').hide();
+				$('#displayPredictor').fadeIn();
+				$('#predictor').chosen();
+			});
+			
+			$('#addPredictor').button();
+			$('#addPredictor').click(function(){
+				
+				if($('#mappingTable').length == 0){
+					table = "<table id=\"mappingTable\" style=\"width:100%\" ><tr style=\"width:100%;\">"
+					      + "<td class=\"box-body-label\" style=\"height:35px;text-align:center; background: #DCE3F7;border-radius:8px 5px 5px 8px \">variable name</td>"
+					      + "<td class=\"box-body-label\" style=\"text-align:center; background: #DCE3F7;border-radius:5px 5px 5px 5px \">define variable</td>"
+					      + "<td class=\"box-body-label\" style=\"text-align:center; background: #DCE3F7;border-radius:5px 8px 12px 5px \">mapping</td></tr>";
+					table += "<tr><td style=\"text-align:center;\" id=\"" + $('#predictor').val().replace(" ", "_") + "\">" + $('#predictor').val() + "</td><td></td></tr>"
+					table += "</table>";
+					$('#displayPredictor').append(table);
+				}else{
+					if($('#' + $('#predictor').val().replace(" ", "_")).length == 0){
+						newRow = "<tr><td style=\"text-align:center;\">" + $('#predictor').val() + "</td><td></td></tr>";
+						$('#mappingTable').append(newRow);
+					}
+				}
+			});
 			
 			$('#search').button();
 			$('#search').click(function(){
@@ -231,8 +271,22 @@
 			$('#fullScreen').button();
 			
 			$('#fullScreen').click(function(){
+			
+				firstElement = $('#layoutTable >tbody >tr:first-child');
+				
 				tableHeight = $('#layoutTable').height();
 				
+				if($(firstElement).is(":visible")){
+					$(firstElement).hide()
+					$('#layoutTable >tbody >tr').eq(1).animate({'height' : tableHeight}, 1500);
+					$('hr').hide();
+					$('#treeView').height(tableHeight);
+				}else{
+					$('#layoutTable >tbody >tr').eq(1).animate({'height' : tableHeight/2}, 1500);
+					$(firstElement).show();
+					$('hr').show();
+					$('#treeView').height(250);
+				}
 			});
 			
 			$("#browser").treeview(settings).css('font-size', 16).find('li').show();	
@@ -295,28 +349,46 @@
 		
 		<div class="screenbody">
 			
-			<table id="layoutTable" style="height:600px;width:100%">
-				
-				<tr style="height:50%">
+			<table id="layoutTable" style="height:700px;width:100%">
+				<tr style="height:50%" >
 					<td>
 						<div id="predictionModelPanel">
-							</br>Please select a prediction model
-						
-						</di>
+							<p style="font-style:italic;font-size:24px;color:#123481">
+								Please select a prediction model
+							</p>
+							<select id="predictionModels">
+								<#list screen.getListOfProtocols() as model>
+									<option>${model}</option>
+								</#list>
+							</select>
+							<input type="button" id="refreshModel" style="vertical-align:top" value="refresh"/>
+						</div>
+						<div id="displayPredictor" style="display:none">
+							<p style="font-style:italic;font-size:24px;color:#123481">
+								Please define the predictors
+							</p>
+							<select id="predictor" style="display:none;vertical-align:middle">
+							</select>
+							<input type="button" id="addPredictor" style="vertical-align:top" value="add"/></br></br></br>
+						</div>
 					</td>
 				</tr>
 				<tr style="height:50%">
 					<td>
-						<hr style="width:100%">
+						<hr style="width:100%;">
 						<table style="width:100%">
 							<tr>
+								<td>
+									<input type="text" id="searchField" />
+									<input type="button" id="search" value="search"/>
+									<input type="button" id="clearButton" value="clear"/>
+									<input type="button" id="fullScreen" value="full screen"/>
+									</br>
+								</td>
+							</tr>
+							<tr>
 								<td style="width:50%">
-									<div id="treePanel" style="display:none">
-										<input type="text" id="searchField" />
-										<input type="button" id="search" value="search"/>
-										<input type="button" id="clearButton" value="clear"/>
-										<input type="button" id="fullScreen" value="full screen"/>
-										</br>
+									<div id="treePanel">
 										<div id="treeView" style="height:250px;overflow:auto">
 											<#if screen.getTreeView??>
 												<ul id="browser" class="pointtree"> 

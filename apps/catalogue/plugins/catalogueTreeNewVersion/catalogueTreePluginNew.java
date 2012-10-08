@@ -15,6 +15,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
@@ -32,10 +33,11 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	private HashMap<String, Protocol> nameToProtocol = new HashMap<String, Protocol>();
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 	private HashMap<String, List<JQueryTreeViewElement>> findNodes = new HashMap<String, List<JQueryTreeViewElement>>();
+	private List<String> listOfProtocols = new ArrayList<String>();
+	private List<String> topProtocols = new ArrayList<String>();
 	private int loadingProcess = 0;
 	private String investigationName = "Prevend";
-
-	private List<String> topProtocols = new ArrayList<String>();;
+	final private String predictionModel = "Prediction Model";
 
 	public catalogueTreePluginNew(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -53,6 +55,11 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	@Override
 	public String getViewTemplate() {
 		return "plugins/catalogueTreeNewVersion/catalogueTreePluginNew.ftl";
+	}
+
+	@Override
+	public void handleRequest(Database db, Tuple request) {
+
 	}
 
 	@Override
@@ -111,6 +118,27 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				} else {
 					json.put("status", false);
 				}
+
+				PrintWriter writer = new PrintWriter(out);
+
+				writer.write(json.toString());
+
+				writer.flush();
+
+				writer.close();
+
+			} else if (request.getAction().equals("download_json_refreshModel")) {
+
+				String selectedModel = request.getString("selectedModel");
+
+				Protocol p = db.find(
+						Protocol.class,
+						new QueryRule(Protocol.NAME, Operator.EQUALS,
+								selectedModel)).get(0);
+
+				JSONObject json = new JSONObject();
+
+				json.put("result", p.getFeatures_Name());
 
 				PrintWriter writer = new PrintWriter(out);
 
@@ -301,19 +329,6 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 		return returnString;
 	}
 
-	// private void searchBottomNode() {
-	//
-	// for (JQueryTreeViewElement eachNode : protocolsTree.getAllChildren()) {
-	//
-	// if (eachNode.getParent() == null) {
-	//
-	// } else if (eachNode.isIsbottom()) {
-	// String label = eachNode.getLabel();
-	//
-	// }
-	// }
-	// }
-
 	private void createNodesForChild(JQueryTreeViewElement parentNode,
 			Database db) throws DatabaseException {
 
@@ -406,21 +421,18 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
-
-	}
-
-	@Override
 	public void reload(Database db) {
 
 		loadingProcess = 0;
 		topProtocols.clear();
+		listOfProtocols.clear();
 		findNodes.clear();
 		nameToProtocol.clear();
 		protocolsAndMeasurementsinTree.clear();
 
 		try {
 
+			// Create the first node of the tree
 			protocolsTree = new JQueryTreeViewElement("Study_"
 					+ investigationName, "", null);
 
@@ -429,29 +441,23 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 			protocolsAndMeasurementsinTree.put(protocolsTree.getName()
 					.replaceAll(" ", "_"), protocolsTree);
 
-			// List<String> topProtocols = getTopProtocols(investigationName,
-			// db);
-			//
-			// for (String protocolName : topProtocols) {
-			//
-			// JQueryTreeViewElement childTree = null;
-			//
-			// if (!protocolsAndMeasurementsinTree.containsKey(protocolName)) {
-			//
-			// Protocol protocol = nameToProtocol.get(protocolName);
-			// // The tree first time is being created.
-			// childTree = new JQueryTreeViewElement(protocolName,
-			// Protocol.class.getSimpleName()
-			// + protocol.getId().toString(),
-			// protocolsTree);
-			//
-			// protocolsAndMeasurementsinTree.put(
-			// protocolName.replaceAll(" ", "_"), childTree);
-			//
-			// createNodesForChild(childTree, db);
-			// // addedNodes += childTree.toHtml();
-			// }
-			// }
+			// Collect the information for prediction models
+			if (db.find(
+					Investigation.class,
+					new QueryRule(Investigation.NAME, Operator.EQUALS,
+							predictionModel)).size() > 0) {
+
+				for (Protocol p : db.find(Protocol.class, new QueryRule(
+						Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+						predictionModel))) {
+					listOfProtocols.add(p.getName());
+				}
+
+			} else {
+				Investigation inv = new Investigation();
+				inv.setName(predictionModel);
+				db.add(inv);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -549,10 +555,6 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 					if (featureName.startsWith("display name")) {
 						featureName = "display name";
 					}
-
-					// htmlValue += "<tr><td class='box-body-label'>" +
-					// featureName + "</td><td> "
-					// + value + "</td></tr>";
 				}
 			}
 		}
@@ -618,6 +620,10 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 	public String getUrl() {
 		return "molgenis.do?__target=" + this.getName();
+	}
+
+	public List<String> getListOfProtocols() {
+		return listOfProtocols;
 	}
 
 }
