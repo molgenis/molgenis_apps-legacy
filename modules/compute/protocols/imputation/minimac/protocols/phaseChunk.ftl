@@ -7,6 +7,7 @@ getFile ${machBin}
 getFile ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps
 getFile ${studyMerlinChrPed}
 
+mkdir -p ${studyChunkChrDir}
 
 ${machBin} \
 	-d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
