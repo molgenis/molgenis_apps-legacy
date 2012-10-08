@@ -2,42 +2,39 @@
 
 #FOREACH project
 
+getFile ${chunkChromosomeBin}
 getFile ${expandWorksheetJar}
 
 getFile ${McWorksheet}
-getFile ${chrBinsFile}
-#putFile ${projectComputeDir}/${project}.worksheet.csv
+getFile ${studyMerlinDir}/$chr/chr$chr.dat
 
-inputs "${McWorksheet}"
-inputs "${chrBinsFile}"
-#alloutputsexist "${expandedWorksheet}"
+#Chunk chromosomes into pieces containing ~2500 markers
 
+${chunkChromosomeBin} \
+-d ${studyMerlinDir}/$chr/chr$chr.dat \
+-n ${chunkSize} \
+-o ${chunkOverlap}
 
-mkdir -p ${projectTempDir}
-mkdir -p ${projectJobsDir}
+#Create .csv file to be merged with original worksheet
+echo "chr,chunk" > ${chunkWorkSheet}
+for chr in { 1..22 }
+do
 
+	chunks=(chunk*-chr$chr.dat.snps)
+
+	s=${#chunks[*]}
+
+	for c in `seq 1 $s`
+	do
+		echo $chr,chunk$c-chr$chr.dat.snps >> ${chunkWorkSheet}
+	done
+
+done
+
+#Merge worksheets
 module load jdk/${javaversion}
 
 #Run Jar to create full worksheet
+java -jar ${expandWorksheetJar} ${McWorksheet} ${finalChunksWorksheet} ${chunkWorkSheet} project ${project}
 
-<#if imputationPipeline == "impute2">
-
-
-	java -jar ${expandWorksheetJar} ${McWorksheet} ${expandedWorksheet} ${chrBinsFile} project ${project} 
-	
-	# Execute MOLGENIS/compute to create job scripts.
-	sh ${McDir}/molgenis_compute.sh \
-	-worksheet=${expandedWorksheet} \
-	-parameters=${McParameters} \
-	-workflow=${McProtocols}/workflowImpute.csv \
-	-protocols=${McProtocols}/ \
-	-templates=${McTemplates}/ \
-	-scripts=${projectJobsDir}/ \
-	-id=${McId}
-	
-<#else>
-
-	echo "imputationPipeline ${imputationPipeline} not supported"
-	return 1
-
-</#if>
+putFile ${finalChunksWorksheet}
