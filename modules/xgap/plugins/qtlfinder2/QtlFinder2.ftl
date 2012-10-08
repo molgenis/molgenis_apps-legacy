@@ -114,7 +114,7 @@
 	
 	<div class="buttons" style="padding-top:15px;"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="generated-res/img/cancel.png" alt=""/> Remove</button></div>
 	
-		<div style="font-size:100%;float:left;">${model.shoppingCart[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}<#if model.shoppingCart[name].label?? && model.shoppingCart[name].label?length gt 0> / ${model.shoppingCart[name].label}</#if></b></a>
+		<div style="font-size:100%;float:left;">${model.shoppingCart[name].get(typefield)} <a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${name}"><b>${name}<#if model.shoppingCart[name].label?? && model.shoppingCart[name].label?length gt 0> / ${model.shoppingCart[name].label}</#if></b></a>
 
 		<#if model.shoppingCart[name].get('ReportsFor_name')?? && model.shoppingCart[name].get('ReportsFor_name')?is_string && model.shoppingCart[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.shoppingCart[name].reportsFor_name}">${model.shoppingCart[name].reportsFor_name}</a></#if> <#if model.shoppingCart[name].symbol?? && model.shoppingCart[name].symbol?length gt 0>(${model.shoppingCart[name].symbol})</#if>
 		
@@ -232,7 +232,7 @@
 							<td>
 								<#if qtl.plot??><a target="_blank" href="molgenis.do?select=Markers&__target=Markers&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a><#else>${qtl.peakMarker}</#if>
 								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${qtl.peakMarker}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+								[<a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${qtl.peakMarker}">explore deeper</a>]
 							</td>
 						</tr>
 					</table>
@@ -268,7 +268,7 @@
 						<tr class="form_listrow1">
 							<td>
 								<#if qtl.plot??><a target="_blank" href="molgenis.do?select=Markers&__target=Markers&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a><#else>${m}</#if>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${m}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+								[<a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${m}">explore deeper</a>]
 							</td>
 							<td>
 									${qtl.valuesForMarkers[m_index]}
@@ -434,7 +434,7 @@
 						<#list ml.rowCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									${key} [<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+									${key} [<a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${key}">explore deeper</a>]
 								</td>
 								<td>
 									<#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if>
@@ -471,7 +471,7 @@
 						<#list ml.colCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">${key}</a>
+									<a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${key}">${key}</a>
 								</td>
 								<td>
 									<#if ml.colCorr[key]??>${ml.colCorr[key]}<#else>N/A</#if>
@@ -525,7 +525,7 @@
 	<table cellpadding="30"><tr><td>
 		<h2>Results for my selected hits:</h2>
 		
-		<h3>(get a <a href="?__target=QtlFinderPublic2&select=QtlFinderPublic2&p=${model.permaLink}">permanent link to these results</a>)</h3>
+		<h3>(get a <a href="?__target=${screen.name}&select=${screen.name}&p=${model.permaLink}">permanent link to these results</a>)</h3>
 		
 		<br>
 		
@@ -597,7 +597,7 @@
 								<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
 							</td>
 							<td>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+								[<a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${d.name}">explore deeper</a>]
 							</td>
 							<td>
 								<#if d.description??>&nbsp;&nbsp;&nbsp;&nbsp;<#if d.description?length gt 50>${d.description?substring(0, 50)}...<#else>${d.description}</#if></#if><br>
@@ -707,7 +707,7 @@
 			<div class="buttons" style="padding-top:15px;"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/shoppingcart.png" alt=""/> Add to cart</button></div>
 			<#--<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">-->
 	
-			<div style="font-size:100%;float:left;">${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
+			<div style="font-size:100%;float:left;">${model.hits[name].get(typefield)} <a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${name}"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
 			<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
 			
 			
