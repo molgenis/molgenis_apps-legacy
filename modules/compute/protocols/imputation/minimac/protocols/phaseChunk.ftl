@@ -9,14 +9,14 @@ getFile ${studyMerlinChrPed}
 
 
 ${machBin} \
--d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
--p ${studyMerlinChrPed} \
---prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
---rounds ${phasingRounds} \
---states ${phasingStates} \
---phase \
---sample ${phasingHaplotypeSampling} \
-2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
+	-d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
+	-p ${studyMerlinChrPed} \
+	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
+	--rounds ${phasingRounds} \
+	--states ${phasingStates} \
+	--phase \
+	--sample ${phasingHaplotypeSampling} \
+	2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
 
 if [ $returnCode -eq 0 ]
 then

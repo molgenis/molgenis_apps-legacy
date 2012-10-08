@@ -80,7 +80,7 @@ mkdir -p ${projectChrPhasingJobsDir}
 sh ${McDir}/molgenis_compute.sh \
 -worksheet=${finalChunksWorksheet} \
 -parameters=${McParameters} \
--workflow=${McProtocols}/workflowPhasingMachStage2.csv \
+-workflow=${McProtocols}/workflowMinimacStage2.csv \
 -protocols=${McProtocols}/ \
 -templates=${McTemplates}/ \
 -scripts=${projectChrPhasingJobsDir}/ \
