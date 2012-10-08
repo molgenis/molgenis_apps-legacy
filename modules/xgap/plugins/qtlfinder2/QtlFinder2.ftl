@@ -118,6 +118,12 @@
 
 		<#if model.shoppingCart[name].get('ReportsFor_name')?? && model.shoppingCart[name].get('ReportsFor_name')?is_string && model.shoppingCart[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.shoppingCart[name].reportsFor_name}">${model.shoppingCart[name].reportsFor_name}</a></#if> <#if model.shoppingCart[name].symbol?? && model.shoppingCart[name].symbol?length gt 0>(${model.shoppingCart[name].symbol})</#if>
 		
+		<#if model.shoppingCart[name].get('ReportsFor_name')?? && model.shoppingCart[name].get('ReportsFor_name')?is_string && model.shoppingCart[name].get('ReportsFor_name')?length gt 0>
+			<a target="_blank" href="http://www.wormbase.org/species/c_elegans/gene/${model.shoppingCart[name].get('ReportsFor_name')}">WormBase</a>
+		<#elseif model.shoppingCart[name].symbol?? && model.shoppingCart[name].symbol?length gt 0>
+			<a target="_blank" href="http://www.wormbase.org/species/c_elegans/gene/${model.shoppingCart[name].symbol}">WormBase</a>
+		</#if>
+		
 		<#if model.shoppingCart[name].description??> <br> <#if model.shoppingCart[name].description?length gt 70>${model.shoppingCart[name].description?substring(0, 70)} <#else>${model.shoppingCart[name].description}</#if> <a target="_blank" href="molgenis.do?select=${model.shoppingCart[name].get(typefield)}s&__target=${model.shoppingCart[name].get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${model.shoppingCart[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a><#else> <br> </#if></div>
 	
 		<#if (model.shoppingCart[name].get('ReportsFor_name')?? && model.shoppingCart[name].get('ReportsFor_name')?is_string && model.shoppingCart[name].get('ReportsFor_name')?length gt 0) || (model.shoppingCart[name].symbol?? && model.shoppingCart[name].symbol?length gt 0)><#if model.probeToGene[name]?? && model.probeToGene[name]?length gt 0><div style="text-align: center; float:right; padding-left:30px; position:relative; right:10px;" onmouseover="return overlib('${model.probeToGene[name].description?replace(" / ", "<br>")}', CAPTION, 'GO terms')" onmouseout="return nd();"><img src="res/img/designgg/helpicon.gif" width="25" height="25"/><br><b>GO terms</b></div></#if></#if>
@@ -602,6 +608,13 @@
 							<td>
 								<#if d.description??>&nbsp;&nbsp;&nbsp;&nbsp;<#if d.description?length gt 50>${d.description?substring(0, 50)}...<#else>${d.description}</#if></#if><br>
 							</td>
+							<td>
+								<#if d.get('ReportsFor_name')?? && d.get('ReportsFor_name')?is_string && d.get('ReportsFor_name')?length gt 0>
+									<a target="_blank" href="http://www.wormbase.org/species/c_elegans/gene/${d.get('ReportsFor_name')}">WormBase</a>
+								<#elseif d.symbol?? && d.symbol?length gt 0>
+									<a target="_blank" href="http://www.wormbase.org/species/c_elegans/gene/${d.symbol}">WormBase</a>
+								</#if>
+							</td>
 						</tr>
 					</#list>
 					</table>
@@ -710,6 +723,11 @@
 			<div style="font-size:100%;float:left;">${model.hits[name].get(typefield)} <a target="_self" href="?__target=${screen.name}&select=${screen.name}&__action=__entity__report__for__${name}"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
 			<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
 			
+			<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>
+				<a target="_blank" href="http://www.wormbase.org/species/c_elegans/gene/${model.hits[name].get('ReportsFor_name')}">WormBase</a>
+			<#elseif model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>
+				<a target="_blank" href="http://www.wormbase.org/species/c_elegans/gene/${model.hits[name].symbol}">WormBase</a>
+			</#if>
 			
 			<#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a target="_blank" href="molgenis.do?select=${model.hits[name].get(typefield)}s&__target=${model.hits[name].get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a><#else> <br> </#if></div>
 
