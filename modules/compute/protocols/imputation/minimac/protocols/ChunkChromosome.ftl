@@ -10,6 +10,7 @@ getFile ${studyMerlinChrDat}
 
 #Chunk chromosomes into pieces containing ~2500 markers
 
+cd ${studyMerlinChrDir}
 
 ${chunkChromosomeBin} \
 -d ${studyMerlinChrDat} \
@@ -80,7 +81,7 @@ mkdir -p ${projectChrPhasingJobsDir}
 sh ${McDir}/molgenis_compute.sh \
 -worksheet=${finalChunkChrWorksheet} \
 -parameters=${McParameters} \
--workflow=${McProtocols}/workflowMinimacStage2.csv \
+-workflow=${McProtocols}/../workflowMinimacStage2.csv \
 -protocols=${McProtocols}/ \
 -templates=${McTemplates}/ \
 -scripts=${projectChrPhasingJobsDir}/ \
