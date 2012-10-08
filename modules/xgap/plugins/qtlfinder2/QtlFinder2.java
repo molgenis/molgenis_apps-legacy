@@ -272,15 +272,20 @@ public class QtlFinder2 extends PluginModel<Entity>
 		
 		//keep a list of genes for which the probes are shown to make the GO term info box
 		Map<String, Gene> probeToGene = new HashMap<String, Gene>();
-		//include the current Gene objects in the shopping cart so they are not lost on next search action
-		//(when switching back to the shopping cart view)
-		for(Entity e : this.model.getShoppingCart().values()) //TODO: WRONG, THESE ARE NOT IN THE CART BUT IN THE PROBETOGENE LIST
-		{
-		//	System.out.println("IN CART: " + e.toString());
-			if(e.get(ObservationElement.__TYPE).equals("Gene"))
+		
+		//additional: include the Gene objects for the shopping cart view so they are not lost on next search action
+		//(when switching back to the shopping cart view after a new search)
+		//find out if there is a ProbeToGene list already:
+		if(this.model.getProbeToGene() != null && this.model.getProbeToGene().size() > 0){
+			//if so, iterate over shopping cart and get a (possible) probe
+			for(Entity e : this.model.getShoppingCart().values())
 			{
-				probeToGene.put(e.get(ObservationElement.NAME).toString(), (Gene) e);
-			//	System.out.println("FROM SHOPPING to ProbeToGene: " + e.get(ObservationElement.NAME).toString());
+				String probeName = e.get(ObservationElement.NAME).toString();
+				//if the the ProbeToGene list contains the shopping cart item (probe name), add it to the new ProbeToGene list
+				if(this.model.getProbeToGene().containsKey(probeName))
+				{
+					probeToGene.put(probeName, this.model.getProbeToGene().get(probeName));
+				}
 			}
 		}
 		
