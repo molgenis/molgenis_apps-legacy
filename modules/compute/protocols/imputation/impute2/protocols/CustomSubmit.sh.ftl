@@ -7,3 +7,6 @@ ${j.name}=$(qsub -N ${j.name}<#if j.prevSteps_Name?size &gt; 0> -W depend=aftero
 echo $${j.name}
 sleep 8
 </#foreach>
+
+#For SGE
+#-hold_jid
