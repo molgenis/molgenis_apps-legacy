@@ -33,7 +33,7 @@ echo "chunk" > ${chunkChrWorkSheet}
 
 chunks=(${studyMerlinChrDir}/chunk*-chr${chr}.dat.snps)
 
-s=${#chunks[*]}
+s=${r"${#chunks[*]}"}
 
 for c in `seq 1 $s`
 do
@@ -58,9 +58,9 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-	mv ${tmpFinalChunkChrWorksheet} ${finalChunksWorksheet}
+	mv ${tmpFinalChunkChrWorksheet} ${finalChunkChrWorksheet}
 
-	putFile ${finalChunksWorksheet}
+	putFile ${finalChunkChrWorksheet}
 	
 	
 else
@@ -78,7 +78,7 @@ mkdir -p ${projectChrPhasingJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
--worksheet=${finalChunksWorksheet} \
+-worksheet=${finalChunkChrWorksheet} \
 -parameters=${McParameters} \
 -workflow=${McProtocols}/workflowPhasingMachStage2.csv \
 -protocols=${McProtocols}/ \
