@@ -22,3 +22,5 @@ cp ${studyInputPedMapChr}.ped ${studyPedMapChr}.ped
 
 putFile ${studyPedMapChr}.map
 putFile ${studyPedMapChr}.ped
+
+
