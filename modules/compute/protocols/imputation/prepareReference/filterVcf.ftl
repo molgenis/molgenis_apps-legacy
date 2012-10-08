@@ -7,7 +7,14 @@ alloutputsexist ${chrVcfReferenceIntermediateFile}
 
 mkdir -p ${tmpFolder}
 
-${vcftoolsBin} --vcf ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} <#if samplesToIncludeFile != ""> --keep ${samplesToIncludeFile} </#if> ${vcfFilterOptions}
+
+
+
+<#assign lengthVcfPath = chrVcfInputFile?length>
+<#assign isGz = chrVcfInputFile?substring(lengthVcfPath - 2, lengthVcfPath) == "gz">
+
+
+${vcftoolsBin} <#if isGz> --gzvcf <#else> --vcf </#if> ${chrVcfInputFile} --out ${tmpFolder}/~chr${chr} <#if samplesToIncludeFile != ""> --keep ${samplesToIncludeFile} </#if> ${vcfFilterOptions}
 
 #Get return code from last program call
 returnCode=$?
