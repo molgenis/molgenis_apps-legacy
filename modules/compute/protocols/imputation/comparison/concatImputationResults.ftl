@@ -25,28 +25,4 @@ inputs "${impute2ResultChrBin}_warnings"
 
 module load ${impute}/${impute2Binversion}
 
-mkdir -p ${impute2ResultDir}/${chr}/
-
-${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultChrBinTemp}
-
-
-#Get return code from last program call
-returnCode=$?
-
-if [ $returnCode -eq 0 ]
-then
-	
-	echo -e "\nMoving temp files to final files\n\n"
-
-	for tempFile in ${impute2ResultChrBinTemp}* ; do
-		finalFile=`echo $tempFile | sed -e "s/~//g"`
-		mv $tempFile $finalFile
-	done
-	
-else
-  
-	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n"
-	#Return non zero return code
-	exit 1
-
-fi
+python -c 'names = {x[1] : x[2] for x in [line.split() for line in open("all.txt")]}; files = str.join(" ", [names["chr1_1_5000000_samples_" + str(i) + "_" + str(i+500-1)] + " 500" for i in range(0,5000,500)]); print "python AssemblyImpute2GprobsBins.py " + files + " OUTPUT.gprobs"'
