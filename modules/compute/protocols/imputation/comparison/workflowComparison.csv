@@ -1,7 +1,2 @@
 name,protocol_name,PreviousSteps_name
-mach_s1,preparePedMapForImpute2,
-mach_s2,convertPedMapToTriTyper,mach_s1
-mach_s3,prepareStudy,mach_s2
-mach_s4,phase_study_with_mach,mach_s3
-mach_s5,impute_with_minimac,mach_s4
-mach_s6,postProcessing,mach_s5
+comparison_s1,concatImputationResults,
