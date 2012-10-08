@@ -2,15 +2,25 @@
 
 #FOREACH project,chr,chunk
 
+getFile ${machBin}
+
+getFile ${studyMerlinChrDir}/chunk$chunk-chr${chr}.dat.snps
+getFile ${studyMerlinChrPed}
 
 
 
-mach \
--d $chunk \
--p chr$chr.ped \
---prefix ${chunk:r} \
---rounds 20 \
---states 200 \
+${machBin} \
+-d ${studyMerlinChrDir}/chunk$chunk-chr${chr}.dat.snps \
+-p ${studyMerlinChrPed} \
+--prefix ${studyChunkChrDir}/chunk$chunk-chr${chr} \
+--rounds ${phasingRounds} \
+--states ${phasingStates} \
 --phase \
---sample 5 \
-2>&1 | tee -a ${chunk:r}-mach.log
+--sample ${phasingHaplotypeSampling} \
+2>&1 | tee -a ${studyChunkChrDir}/chunk$chunk-chr${chr}-mach.log
+
+#Add the if returnState thingy later#
+
+
+putFile ${studyChunkChrDir}/chunk$chunk-chr${chr} ..????
+putFile ${studyChunkChrDir}/chunk$chunk-chr${chr}-mach.log

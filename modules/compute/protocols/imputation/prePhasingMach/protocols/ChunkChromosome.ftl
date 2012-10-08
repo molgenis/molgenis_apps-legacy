@@ -38,6 +38,7 @@ s=${#chunks[*]}
 for c in `seq 1 $s`
 do
 	echo $c >> ${chunkChrWorkSheet}
+	putFile ${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps
 done
 
 
@@ -58,7 +59,8 @@ then
 
 	mv ${tmpFinalChunkChrWorksheet} ${finalChunksWorksheet}
 
-    putFile ${finalChunksWorksheet}
+	putFile ${finalChunksWorksheet}
+	
 	
 else
   
@@ -68,4 +70,17 @@ else
 
 fi
 
+#Call compute to generate phasing jobs
+module load jdk/${javaversion}
 
+mkdir -p ${projectChrPhasingJobsDir}
+
+# Execute MOLGENIS/compute to create job scripts.
+sh ${McDir}/molgenis_compute.sh \
+-worksheet=${finalChunksWorksheet} \
+-parameters=${McParameters} \
+-workflow=${McProtocols}/workflowPhasingMach.csv \
+-protocols=${McProtocols}/ \
+-templates=${McTemplates}/ \
+-scripts=${projectChrPhasingJobsDir}/ \
+-id=${McId}
