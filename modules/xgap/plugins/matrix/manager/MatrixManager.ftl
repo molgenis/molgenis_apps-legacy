@@ -173,6 +173,10 @@ targ2	val4	val5	val6</textarea>
 			</td>
 		</tr>
 	</table>
+	
+	<#-- a bit dangerous: assumes the parent form is named 'Datas' !! -->
+	<br><a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.selectedData.id}">Permanent link to this dataset</a>
+	
 </div><br>
 
 
