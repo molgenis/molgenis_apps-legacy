@@ -191,29 +191,9 @@ public class PhenotypeViewer extends PluginModel<Entity>
 				table.setInvestigation(investigationName);
 				// add editable decorator
 
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
-
-				String selectInvestgationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
-
-				for (String inv : projects)
-				{
-					if (inv.equals(investigationName))
-					{
-						selectInvestgationHTML += "<option selected=\"selected\">" + inv + "</option>";
-					}
-					else
-					{
-						selectInvestgationHTML += "<option>" + inv + "</option>";
-					}
-				}
-
-				selectInvestgationHTML += "</select>";
-
-				tableView.setLabel("Phenotypes: " + selectInvestgationHTML);
-
 				JSONObject json = new JSONObject();
-				json.put("result", tableView.getHtml());
+				// check which table to show
+				json.put("result", tableChecker(db, table).getHtml());
 
 				PrintWriter writer = new PrintWriter(out);
 				writer.write(json.toString());
@@ -782,25 +762,7 @@ public class PhenotypeViewer extends PluginModel<Entity>
 						// add editable decorator
 
 						// check which table to show
-						tableView = new JQGridView("test", this, table);
-
-						String selectInvestgationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
-
-						for (String inv : projects)
-						{
-							if (inv.equals(investigationName))
-							{
-								selectInvestgationHTML += "<option selected=\"selected\">" + inv + "</option>";
-							}
-							else
-							{
-								selectInvestgationHTML += "<option>" + inv + "</option>";
-							}
-						}
-
-						selectInvestgationHTML += "</select>";
-
-						tableView.setLabel("Phenotypes: " + selectInvestgationHTML);
+						tableChecker(db, table);
 
 					}
 				}
@@ -811,6 +773,32 @@ public class PhenotypeViewer extends PluginModel<Entity>
 				e.printStackTrace();
 			}
 		}
+
+	}
+
+	public JQGridView tableChecker(Database db, ProtocolTable table)
+	{
+		tableView = new JQGridView("test", this, table);
+		String selectedInv = "";
+		String selectInvestigationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
+
+		for (String inv : projects)
+		{
+			if (inv.equals(investigationName))
+			{
+				selectedInv = inv;
+				selectInvestigationHTML += "<option selected=\"selected\">" + selectedInv + "</option>";
+			}
+			else
+			{
+
+				selectInvestigationHTML += "<option>" + inv + "</option>";
+			}
+		}
+
+		selectInvestigationHTML += "</select>";
+		tableView.setLabel("Select project: " + selectInvestigationHTML);
+		return tableView;
 
 	}
 

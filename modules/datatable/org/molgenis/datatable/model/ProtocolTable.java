@@ -299,7 +299,14 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		for (QueryRule r : getFilters())
 		{
+			if (r.getValue() != null)
+			{
 
+				if (!r.getValue().toString().contains(investigationName))
+				{
+					r.setValue(r.getValue() + "_" + investigationName);
+				}
+			}
 			// IF SEARCH BUTTON IS CLICKED
 			if (getFilters().get(0).getField() != null)
 			{
@@ -317,14 +324,31 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		if (columnsUsed.size() > 0)
 		{
-			Query<Measurement> query = getDb().query(Measurement.class);
-			query.addRules(new QueryRule(Measurement.LABEL, Operator.IN, columnsUsed));
-			query.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
+
+			List<QueryRule> query = new ArrayList<QueryRule>();
+			List<String> filteredColumns = new ArrayList<String>(columnsUsed);
+			query.add(new QueryRule(Measurement.NAME, Operator.IN, filteredColumns));
+			query.add(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
 
 			// measurementsUsed = getDb().query(Measurement.class)
 			// .in(Measurement.NAME, new ArrayList<String>(columnsUsed)).find();
 
-			measurementsUsed = query.find();
+			measurementsUsed = getDb().find(Measurement.class, new QueryRule(query));
+
+			for (Measurement m : measurementsUsed)
+			{
+
+				for (QueryRule r : getFilters())
+				{
+
+					if (r.getValue().equals(m.getLabel()))
+					{
+						r.setValue(m.getName());
+						break;
+					}
+				}
+			}
+			System.out.println("");
 		}
 
 		// one column is defined by ObservedValue.Investigation,
@@ -338,8 +362,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 				.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName))
 				.get(0).getId();
 
-		sql += " WHERE ProtocolApplication.Investigation=" + invID;
-
 		for (Measurement m : measurementsUsed)
 		{
 			sql += " NATURAL JOIN (SELECT ObservedValue.protocolApplication as id, ObservedValue.target as targetId, ObservedValue.value as "
@@ -349,12 +371,17 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 					+ ") as "
 					+ m.getName();
 		}
+
 		// filtering [todo: data model change!]
 		if (columnsUsed.contains(targetString))
 		{
 			sql += " NATURAL JOIN (SELECT id as targetId, name as " + this.targetString
 					+ " from ObservationElement) as " + this.targetString;
 		}
+
+		sql += " WHERE ProtocolApplication.Investigation=" + invID;
+
+		System.out.println(sql);
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
@@ -372,11 +399,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		// sql = SELECT count (*) as id from ProtocolApplication
 		// filters = Scl90som3 = '1'
 		// filters.size() = 1
-
-		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
-		{
-			result.add(t.getInt("id"));
-		}
 
 		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
 		{
