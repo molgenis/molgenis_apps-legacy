@@ -1,1 +1,0 @@
-echo "${message} ${planet}" 2>&1 | tee -a ${greetingsFile}

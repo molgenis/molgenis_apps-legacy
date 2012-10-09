@@ -1,9 +1,6 @@
-project, planetType, planet
-terrestrial planets, inner, Mercury
-terrestrial planets, inner, Venus
-terrestrial planets, inner, Earth
-terrestrial planets, inner, Mars
-gas giants, outer, Jupiter
-gas giants, outer, Saturn
-gas giants, outer, Uranus
-gas giants, outer, Neptune
+guest, age, organizer
+Charly, child, Oscar
+Cindy, child, Oscar
+Abel, adult, Otto
+Adam, adult, Otto
+Adri, adult, Otto
