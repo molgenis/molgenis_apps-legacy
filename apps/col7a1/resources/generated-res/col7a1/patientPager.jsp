@@ -102,7 +102,7 @@
 </div>
 </display:column>
 <display:column media="html" title="Reference">
-<div class="unwrapped">
+<div>
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
@@ -110,8 +110,7 @@
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
-	<c:out value="Unpublished"/><br/>
-	<c:out value="${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
+	<c:out value="Unpublished, ${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
 	</c:otherwise>
 	</c:choose>
 </div>
