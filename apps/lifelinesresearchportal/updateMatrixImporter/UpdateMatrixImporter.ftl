@@ -345,6 +345,21 @@
 		);
 	}
 	
+	function updateInvestigation(){
+		
+		$.ajax(
+			{
+				url:"${screen.getUrl()}&__action=download_json_reloadGridByInves&investigation=" 
+				+ $('#selectInvestigation').val(),
+				async:false
+			}
+			).done(function(status) {
+			updatedTable = status["result"];
+		});
+		$('#tableViewer').empty();
+		$('#tableViewer').append(updatedTable);
+	}
+	
 </script>
 
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
@@ -361,7 +376,11 @@
 		
 		<#if screen.getSTATUS() == "showMatrix" >
 			<div id="messageForm"></div>
-			${screen.getTableView()}
+			<div id="tableViewer">
+				<#if screen.getTableView()??>
+					${screen.getTableView()}
+				</#if>
+			</div>
 			<input type="button" id="uploadFileButton" style="font-size:0.6em;color:#03406A;" value="upload" />
 			<div id="uploadFileForm">
 				<table>

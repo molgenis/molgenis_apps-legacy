@@ -1,7 +1,6 @@
 package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
-import java.util.List;
 
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -10,7 +9,6 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -35,35 +33,36 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 		// need to (re) load the table
 		try
 		{
-			// only this line changed ...
-			Protocol p = null;
-
-			if (topProtocol != null)
-			{
-				p = db.query(Protocol.class).eq(Protocol.NAME, topProtocol).find().get(0);
-			}
-			else
-			{
-
-				p = new Protocol();
-				p.setName("topProtocol");
-				for (Protocol subProtocol : db.find(Protocol.class))
-				{
-					List<Integer> subProtocolIds = p.getSubprotocols_Id();
-					subProtocolIds.add(subProtocol.getId());
-					p.setSubprotocols_Id(subProtocolIds);
-				}
-			}
+			// // only this line changed ...
+			// Protocol p = null;
+			//
+			// if (topProtocol != null)
+			// {
+			// p = db.query(Protocol.class).eq(Protocol.NAME,
+			// topProtocol).find().get(0);
+			// }
+			// else
+			// {
+			//
+			// p = new Protocol();
+			// p.setName("topProtocol");
+			// for (Protocol subProtocol : db.find(Protocol.class))
+			// {
+			// List<Integer> subProtocolIds = p.getSubprotocols_Id();
+			// subProtocolIds.add(subProtocol.getId());
+			// p.setSubprotocols_Id(subProtocolIds);
+			// }
+			// }
 
 			// create table
-			ProtocolTable table = new ProtocolTable(db, p);
+			ProtocolTable table = new ProtocolTable(db, "ChaoRoan");
 			table.setTargetString(target);
 			table.setFirstColumnFixed(true);
 			// add editable decorator
 
 			// check which table to show
 			tableView = new JQGridView("test", this, table);
-			tableView.setLabel("Phenotypes");
+			tableView.setLabel("Phenotypes: <select><option>Roan</option><option>Kanninga</option></select>");
 		}
 		catch (Exception e)
 		{

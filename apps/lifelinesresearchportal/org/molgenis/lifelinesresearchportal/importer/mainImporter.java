@@ -73,7 +73,8 @@ public class mainImporter
 				{
 					Measurement m = new Measurement();
 					m.setInvestigation(i);
-					m.setName(name);
+					m.setName(name + "_" + i.getName());
+					m.setLabel(name);
 
 					listOfFeatures.add(m.getName());
 					listOfMeas.add(m);

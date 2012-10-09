@@ -62,15 +62,18 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 	private CsvTable csvTable = null;
 	private JQGridView tableView = null;
 	private String STATUS = "showMatrix";
-	private String investigationName;
+	private String investigationName = null;
 	private String tempalteFilePath = null;
 	private String jsonForMapping = null;
 	private List<String> listOfProtocols = new ArrayList<String>();
-	private List<String> colHeaders = new ArrayList<String>();
-	private List<String> newFeatures = new ArrayList<String>();
+	// private List<String> colHeaders = new ArrayList<String>();
 	private List<String> rowHeaders = new ArrayList<String>();
 	private List<String> newTargets = new ArrayList<String>();
 	private List<String> projects = new ArrayList<String>();
+	private HashMap<String, String> hashMeasurement = new HashMap<String, String>();
+	private HashMap<String, String> newFeatures = new HashMap<String, String>();
+
+	private String projectName = "";
 
 	private String importMessage = null;
 
@@ -81,7 +84,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 	public void resetVariables()
 	{
-		colHeaders.clear();
+		// colHeaders.clear();
+		projects.clear();
+		hashMeasurement.clear();
 		newFeatures.clear();
 		rowHeaders.clear();
 		newTargets.clear();
@@ -94,7 +99,6 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 		jsonForMapping = null;
 		importMessage = null;
 		csvTable = null;
-		tableView = null;
 		report = null;
 	}
 
@@ -179,6 +183,43 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 				}
 
 			}
+			else if (request.getAction().equals("download_json_reloadGridByInves"))
+			{
+				investigationName = request.getString("investigation");
+				ProtocolTable table = new ProtocolTable(db, investigationName);
+				table.setTargetString("target");
+				table.setInvestigation(investigationName);
+				// add editable decorator
+
+				// check which table to show
+				tableView = new JQGridView("test", this, table);
+
+				String selectInvestgationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
+
+				for (String inv : projects)
+				{
+					if (inv.equals(investigationName))
+					{
+						selectInvestgationHTML += "<option selected=\"selected\">" + inv + "</option>";
+					}
+					else
+					{
+						selectInvestgationHTML += "<option>" + inv + "</option>";
+					}
+				}
+
+				selectInvestgationHTML += "</select>";
+
+				tableView.setLabel("Phenotypes: " + selectInvestgationHTML);
+
+				JSONObject json = new JSONObject();
+				json.put("result", tableView.getHtml());
+
+				PrintWriter writer = new PrintWriter(out);
+				writer.write(json.toString());
+				writer.flush();
+				writer.close();
+			}
 		}
 		else
 		{
@@ -194,8 +235,6 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 		if (request.getAction().equals("uploadFile"))
 		{
-
-			String projectName = "";
 
 			// If the checkbox is checked
 			if (request.getBool("createNewInvest") != null)
@@ -232,16 +271,13 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 		{
 
 			STATUS = "showMatrix";
-
-			Protocol p;
 			try
 			{
 
-				p = db.query(Protocol.class).eq(Protocol.NAME, "stageCatalogue").find().get(0);
-
 				// create table
-				ProtocolTable table = new ProtocolTable(db, p);
-				table.setTargetString("Pa_Id");
+				ProtocolTable table = new ProtocolTable(db, investigationName);
+				table.setTargetString("target");
+				table.setInvestigation(investigationName);
 				// add editable decorator
 
 				// check which table to show
@@ -437,10 +473,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 			String targetString = allColumns.get(0).getName();
 
 			String existingColumn = null;
-
-			for (String eachHeader : colHeaders)
+			// for (String eachHeader :colHeaders))
+			for (String eachHeader : hashMeasurement.keySet())
 			{
-				if (!newFeatures.contains(eachHeader))
+				if (!newFeatures.containsKey(eachHeader))
 				{
 					existingColumn = eachHeader;
 					break;
@@ -485,11 +521,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 			if (newFeatures.size() > 0)
 			{
 
-				for (String feature : newFeatures)
+				for (String feature : newFeatures.keySet())
 				{
+					int length = investigationName.length();
 
-					String identifier = feature.replaceAll(" ", "_");
-
+					String feat = feature.substring(0, (feature.length() - length - 1));
+					String identifier = feat.replaceAll(" ", "_");
+					// Check if there the checkboxes are checked (if the new
+					// measurement should be added)
 					if (request.getBool(identifier + "_check") != null)
 					{
 
@@ -498,6 +537,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 						String dataType = request.getString(identifier + "_dataType");
 
 						m.setName(feature);
+						m.setLabel(newFeatures.get(feature));
 						m.setInvestigation_Name(investigationName);
 						m.setDataType(dataType);
 
@@ -566,7 +606,8 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 					ProtocolApplication pa = new ProtocolApplication();
 					// FIXME: the hard coded protocol name would be fixed
-					pa.setProtocol_Name("TestProtocol");
+					pa.setProtocol_Name(investigationName);
+
 					pa.setName("pa_" + row.getString(targetString));
 					pa.setInvestigation_Name(investigationName);
 					listOfPA.add(pa);
@@ -580,13 +621,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 						{
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
-							ov.setFeature_Name(eachColumn);
+							ov.setFeature_Name(eachColumn + "_" + investigationName);
 							ov.setValue(row.getString(eachColumn));
 							ov.setInvestigation_Name(investigationName);
 							ov.setProtocolApplication_Name(pa.getName());
 							listOfValues.add(ov);
 						}
 					}
+					System.out.println();
 
 				}
 				else
@@ -600,7 +642,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 						{
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
-							ov.setFeature_Name(eachNewColumn);
+							ov.setFeature_Name(eachNewColumn + "_" + investigationName);
 							ov.setValue(row.getString(eachNewColumn));
 							ov.setInvestigation_Name(investigationName);
 							ov.setProtocolApplication_Name(targetToProtocolApplication.get(ov.getTarget_Name()));
@@ -644,9 +686,34 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 			}
 
 			db.add(listOfFeatures);
+
+			if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, investigationName)).size() == 0)
+			{
+				Protocol protocolInvest = new Protocol();
+				protocolInvest.setName(investigationName);
+				protocolInvest.setInvestigation_Name(investigationName);
+
+				List<Integer> measurementIDs = new ArrayList<Integer>();
+
+				for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+						Operator.EQUALS, investigationName)))
+				{
+					measurementIDs.add(m.getId());
+				}
+
+				protocolInvest.setFeatures_Id(measurementIDs);
+				db.add(protocolInvest);
+			}
+
 			db.add(listOfPA);
+			for (Measurement v : listOfFeatures)
+			{
+				System.out.println(v.getName() + v.getLabel());
+				System.out.println();
+			}
 			db.add(listOfValues);
 
+			// Add the features to the catalogue node
 			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, new ArrayList<String>(
 					featureToProtocolTable.keySet()))))
 			{
@@ -663,11 +730,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 			importMessage = "Your import has been successful! You can know upload a new file";
 
-			Protocol p = db.query(Protocol.class).eq(Protocol.NAME, "stageCatalogue").find().get(0);
-
 			// create table
-			ProtocolTable table = new ProtocolTable(db, p);
-			table.setTargetString("Pa_Id");
+			ProtocolTable table = new ProtocolTable(db, investigationName);
+			table.setTargetString(targetString);
+			table.setInvestigation(investigationName);
 			// add editable decorator
 
 			// check which table to show
@@ -691,31 +757,53 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 		if (tableView == null)
 		{
-
-			Protocol p;
 			try
 			{
-
-				List<Investigation> listProjects = new ArrayList<Investigation>();
-				listProjects = db.find(Investigation.class);
-
-				for (Investigation i : listProjects)
+				if (db.find(Investigation.class).size() > 0)
 				{
-					projects.add(i.getName());
+					List<Investigation> listProjects = new ArrayList<Investigation>();
+					listProjects = db.find(Investigation.class);
+
+					for (Investigation i : listProjects)
+					{
+						projects.add(i.getName());
+					}
+
+					investigationName = projects.get(0);
+
+					// p = db.query(Protocol.class).eq(Protocol.NAME,
+					// "stageCatalogue").find().get(0);
+					if (db.find(Protocol.class).size() > 0)
+					{
+						// create table
+						ProtocolTable table = new ProtocolTable(db, investigationName);
+
+						table.setTargetString(table.getTargetString());
+						// add editable decorator
+
+						// check which table to show
+						tableView = new JQGridView("test", this, table);
+
+						String selectInvestgationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
+
+						for (String inv : projects)
+						{
+							if (inv.equals(investigationName))
+							{
+								selectInvestgationHTML += "<option selected=\"selected\">" + inv + "</option>";
+							}
+							else
+							{
+								selectInvestgationHTML += "<option>" + inv + "</option>";
+							}
+						}
+
+						selectInvestgationHTML += "</select>";
+
+						tableView.setLabel("Phenotypes: " + selectInvestgationHTML);
+
+					}
 				}
-
-				p = db.query(Protocol.class).eq(Protocol.NAME, "stageCatalogue").find().get(0);
-
-				// create table
-				ProtocolTable table = new ProtocolTable(db, p);
-				table.setTargetString("Pa_Id");
-				// add editable decorator
-
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
-
-				tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
-
 			}
 			catch (Exception e)
 			{
@@ -740,24 +828,33 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 			String targetString = csvTable.getAllColumns().get(0).getName();
 
 			// check the existing variables in measurements
+			// EXTRA: added the projectname to the measurementLABEL
 			for (Field field : csvTable.getAllColumns())
 			{
-				colHeaders.add(field.getName());
-				newFeatures.add(field.getName());
+				hashMeasurement.put(field.getName() + "_" + projectName, field.getName());
+				newFeatures.put(field.getName() + "_" + projectName, field.getName());
+
 			}
 
-			colHeaders.remove(0);
-			newFeatures.remove(0);
+			// We remove the first column because it is the target string
+			// not features
+			hashMeasurement.remove(targetString);
+			newFeatures.remove(targetString);
 
+			// LABEL!!
+			// We query these entire list of columns and see whether they
+			// already existed in the database
 			List<Measurement> colHeadersMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME,
-					Operator.IN, colHeaders));
+					Operator.IN, new ArrayList<String>(hashMeasurement.keySet())));
 
+			// we remove the existing features from the new feature hashmap.
 			for (Measurement m : colHeadersMeasurement)
 			{
-				if (colHeaders.contains(m.getName()))
+				if (newFeatures.containsKey(m.getName()))
 				{
 					newFeatures.remove(m.getName());
 				}
+
 			}
 
 			// check the existing records
@@ -778,12 +875,17 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 				}
 			}
 
-			colHeaders.removeAll(newFeatures);
+			for (String existingFeature : newFeatures.keySet())
+			{
+
+				hashMeasurement.remove(existingFeature);
+
+			}
 
 			rowHeaders.removeAll(newTargets);
 
-			report = new Gson().toJson(ReportUploadStatus.createReportUploadStatus(colHeaders, newFeatures, rowHeaders,
-					newTargets));
+			report = new Gson().toJson(ReportUploadStatus.createReportUploadStatus(hashMeasurement, newFeatures,
+					rowHeaders, newTargets));
 
 			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
 					investigationName)))
@@ -882,12 +984,12 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 		List<String> rowHeaders;
 		List<String> newTargets;
 
-		public static ReportUploadStatus createReportUploadStatus(List<String> colHeaders, List<String> newFeatures,
-				List<String> rowHeaders, List<String> newTargets)
+		public static ReportUploadStatus createReportUploadStatus(HashMap<String, String> hashMeasurements,
+				HashMap<String, String> newFeatures, List<String> rowHeaders, List<String> newTargets)
 		{
 			ReportUploadStatus instance = new ReportUploadStatus();
-			instance.colHeaders = colHeaders;
-			instance.newFeatures = newFeatures;
+			instance.colHeaders = new ArrayList<String>(hashMeasurements.values());
+			instance.newFeatures = new ArrayList<String>(newFeatures.values());
 			instance.rowHeaders = rowHeaders;
 			instance.newTargets = newTargets;
 			return instance;
@@ -906,7 +1008,11 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 	public String getTableView()
 	{
-		return tableView.getHtml();
+		if (tableView != null)
+		{
+			return tableView.getHtml();
+		}
+		return "";
 	}
 
 	public List<String> getFeatureDataTypes() throws Exception
