@@ -206,12 +206,8 @@
 		}
 		
 		function onClickRemoveTableRow() {
-			if($('#').find('tr').length > 1){
-				$(this).parent().parent().remove();
-			}else{
-				$('#selectedVariableHeader').remove();
-				$('#').remove();
-			}
+			$(this).parent().parent().remove();
+			
 			var myCheckBoxId = $(this).attr('id').replace("_delete", "");
 			$('#' + myCheckBoxId).find('input:checkbox').attr('checked',false);
 			var currentNode = $('#' + myCheckBoxId);
@@ -223,6 +219,11 @@
 			});
 			if(uncheckProtocol == true){
 				$(currentNode).parents('li:first').find('input:checkbox').attr('checked', false);
+			}
+			
+			if($('#selectedVariableTable').find('tr').length == 0) {
+				$('#selectedVariableHeader').remove();
+				$('#selectedVariableTable');
 			}
 		}
 		
