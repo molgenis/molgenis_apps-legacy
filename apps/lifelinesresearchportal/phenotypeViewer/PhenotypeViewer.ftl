@@ -1,4 +1,4 @@
-<#macro UpdateMatrixImporter screen>
+<#macro PhenotypeViewer screen>
 <script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.jqGrid.src.js" type="text/javascript"></script>

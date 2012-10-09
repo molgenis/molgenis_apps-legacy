@@ -1,4 +1,4 @@
-package updateMatrixImporter;
+package phenotypeViewer;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -48,7 +48,7 @@ import org.molgenis.util.ValueLabel;
 
 import com.google.gson.Gson;
 
-public class UpdateMatrixImporter extends PluginModel<Entity>
+public class PhenotypeViewer extends PluginModel<Entity>
 {
 
 	/**
@@ -77,7 +77,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 
 	private String importMessage = null;
 
-	public UpdateMatrixImporter(String name, ScreenController<?> parent)
+	public PhenotypeViewer(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -1072,13 +1072,13 @@ public class UpdateMatrixImporter extends PluginModel<Entity>
 	public String getViewTemplate()
 	{
 		// TODO Auto-generated method stub
-		return "updateMatrixImporter/UpdateMatrixImporter.ftl";
+		return "phenotypeViewer/PhenotypeViewer.ftl";
 	}
 
 	@Override
 	public String getViewName()
 	{
 		// TODO Auto-generated method stub
-		return "UpdateMatrixImporter";
+		return "PhenotypeViewer";
 	}
 }
