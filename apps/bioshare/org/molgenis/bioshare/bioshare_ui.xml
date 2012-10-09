@@ -7,22 +7,22 @@
 	<menu name="main" position="top_left" startswith="bioshareWelcomeScreen">
 
 		<plugin name="bioshareWelcomeScreen" type="plugins.welcome.bioshareWelcomeScreenPlugin" label="Welcome" />
-
-		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
-		<plugin name="CatalogueTreePluginNew" type="plugins.catalogueTreeNewVersion.catalogueTreePluginNew" label="Tree developing" />
-
-
-		<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
-			<menu name="InvestigationMenu">
-				<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
-				<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
-					<form name="ProtocolDocuments" entity="ProtocolDocument" />
-				</form>
-				<form name="PermittedValues" entity="Category" />
-				<form name="ontologyterm" entity="OntologyTerm" label="Ontology Term"/>
-			</menu>
-		</form>
-
+		
+		<menu name="dataManagement" label="Data management" position="top_left" startswith="CatalogueTreePlugin">
+			<plugin name="bioshareImportWizard" type="plugins.importDataWizard.bioshareImportWizard" label="import wizard" />
+			<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
+			<plugin name="CatalogueTreePluginNew" type="plugins.catalogueTreeNewVersion.catalogueTreePluginNew" label="Tree developing" />
+			<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
+				<menu name="InvestigationMenu">
+					<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+					<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
+						<form name="ProtocolDocuments" entity="ProtocolDocument" />
+					</form>
+					<form name="PermittedValues" entity="Category" />
+					<form name="ontologyterm" entity="OntologyTerm" label="Ontology Term"/>
+				</menu>
+			</form>
+		</menu>
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			
 			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
