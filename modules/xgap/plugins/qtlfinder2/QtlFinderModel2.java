@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.util.Entity;
+import org.molgenis.xgap.Gene;
 
 import plugins.qtlfinder.QTLInfo;
 import plugins.qtlfinder.QTLMultiPlotResult;
@@ -40,8 +41,30 @@ public class QtlFinderModel2{
 	//if true, display contents of cart
 	private Boolean cartView;
 	
+	// permanent link to a plotted shopping cart
+	String permaLink;
+	
+	//additional infomation: what gene was a hit for this probe?
+	Map<String, Gene> probeToGene;
 	
 	
+	
+	public Map<String, Gene> getProbeToGene() {
+		return probeToGene;
+	}
+
+	public void setProbeToGene(Map<String, Gene> probeToGene) {
+		this.probeToGene = probeToGene;
+	}
+
+	public String getPermaLink() {
+		return permaLink;
+	}
+
+	public void setPermaLink(String permaLink) {
+		this.permaLink = permaLink;
+	}
+
 	public Boolean getCartView()
 	{
 		return cartView;
