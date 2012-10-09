@@ -13,6 +13,7 @@
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/file" />
 		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/datatable"/>
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/import"/>
 		<pathelement location="modules/news"/>
