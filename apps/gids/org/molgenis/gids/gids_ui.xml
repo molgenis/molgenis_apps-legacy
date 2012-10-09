@@ -15,6 +15,8 @@
 			<plugin name="ConvertDataIntoPheno" type="org.molgenis.gids.converters.phenoModelconverterandloader.PMconverterandloaderPlugin" label="Convert data"/>
 			<!-- plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />-->
 			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
+			<plugin name="AddIndividual" type="plugins.AddIndividual" label="Add individual" />
+			<plugin name="EditIndividual" type="plugins.EditIndividual" label="Edit individual" />
 			
 		</menu>	
 		
@@ -32,12 +34,12 @@
 	    <menu name="viewData" label="View Data">
 		    <menu name="ViewIndividuals" label="View Individuals">
 		    	<form entity="Investigation" name="ProjectsI" label="Projects">
-		    		<!-- was missing?? >plugin label="Individual matrix viewer" name="Individuals" type="plugins.matrix.IndividualMatrix" /-->
+		    		<plugin label="Individual matrix viewer" name="Individuals" type="plugins.matrix.IndividualMatrix"></plugin>
 		    	</form>
 		    </menu>
 		    <menu name="ViewSamples" label="View Samples">
 		    	<form entity="Investigation" name="ProjectsS" label="Projects">
-		    		<!--  was missing??? plugin label="Sample matrix viewer" name="Samples" type="plugins.matrix.SampleMatrix" /-->
+		    		<plugin label="Sample matrix viewer" name="Samples" type="plugins.matrix.SampleMatrix" ></plugin>
 		    	</form>
 		    </menu>
 		   
