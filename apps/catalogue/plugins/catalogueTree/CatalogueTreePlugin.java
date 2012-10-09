@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jxl.Workbook;
@@ -46,6 +45,9 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 //import org.molgenis.util.XlsWriter;
 
@@ -173,10 +175,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<"
 						+ request);
 
-		List<Measurement> allMeasList = db.find(Measurement.class,
-				new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-						selectedInvestigation));
-
 		// for now the cohorts are investigations
 		if ("cohortSelect".equals(request.getAction())) {
 			System.out.println("----------------------" + request);
@@ -184,6 +182,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			this.setSelectedInvestigation(selectedInvestigation);
 			System.out.println("The selected investigation is : "
 					+ selectedInvestigation);
+			arrayInvestigations.clear();
 
 		} else if (request.getAction().equals("downloadButtonEMeasure")) {
 			// do output stream ourselves
@@ -200,11 +199,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// Make E-Measure XML file
 
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
-			for (Measurement m : allMeasList) {
-				if (request.getBool(m.getId().toString()) != null) {
-					selectedMeasList.add(m);
-				}
 
+			List<Measurement> measurements = db.find(Measurement.class,
+					new QueryRule(Measurement.INVESTIGATION_NAME,
+							Operator.EQUALS, selectedInvestigation));
+
+			for (Measurement m : measurements) {
+				for (String fieldName : request.getFieldNames()) {
+					if (fieldName.startsWith(Measurement.class.getSimpleName()
+							+ m.getId())) {
+						selectedMeasList.add(m);
+					}
+				}
 			}
 
 			EMeasure em = new EMeasure(db, "EMeasure_"
@@ -228,47 +234,62 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult,
 					ws);
 
-			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
+			final WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
-			int startingRow = 1;
+			int row = 0;
 
-			outputExcel.addCell(new Label(0, 0, "Selected variables"));
+			outputExcel.addCell(new Label(0, row, "Selected variables"));
 
-			outputExcel.addCell(new Label(1, 0, "Descriptions"));
+			outputExcel.addCell(new Label(1, row, "Descriptions"));
 
-			outputExcel.addCell(new Label(2, 0, "Sector/Protocol"));
+			outputExcel.addCell(new Label(2, row, "Sector/Protocol"));
 
-			for (Measurement m : allMeasList) {
+			List<Protocol> protocols = db.find(Protocol.class, new QueryRule(
+					Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+					selectedInvestigation));
 
-				if (request.getBool(m.getId().toString()) != null) {
-					outputExcel.addCell(new Label(0, startingRow, m.getName()));
-					if (m.getDescription() != null) {
-						outputExcel.addCell(new Label(1, startingRow, m
-								.getDescription()));
-					} else {
-						outputExcel.addCell(new Label(1, startingRow, ""));
+			List<Measurement> measurements = db.find(Measurement.class,
+					new QueryRule(Measurement.INVESTIGATION_NAME,
+							Operator.EQUALS, selectedInvestigation));
+
+			row++;
+
+			for (Protocol protocol : protocols) {
+				for (final Integer featureID : protocol.getFeatures_Id()) {
+					String checkboxID = Measurement.class.getSimpleName()
+							+ featureID + Protocol.class.getSimpleName()
+							+ protocol.getId();
+
+					if (request.getBool(checkboxID) != null) {
+						Measurement measurement = Iterables.find(measurements,
+								new Predicate<Measurement>() {
+									@Override
+									public boolean apply(Measurement m) {
+										return m.getId().equals(featureID);
+									}
+
+								}, null);
+
+						outputExcel.addCell(new Label(0, row, measurement
+								.getName()));
+
+						String description = measurement.getDescription() != null ? measurement
+								.getDescription() : "";
+						outputExcel.addCell(new Label(1, row, description));
+
+						outputExcel.addCell(new Label(2, row, protocol
+								.getName()));
+
+						row++;
 					}
-					startingRow++;
+
 				}
 			}
-			// setMessages(new ScreenMessage("Your request has been downloaded",
-			// true));
 
 			workbook.write();
 			workbook.close();
 
 			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest = rt.getRequest();
-			HttpServletResponse httpResponse = rt.getResponse();
-			// System.out.println(">>> " + this.getParent().getName()+
-			// "or >>>  "+ this.getSelected().getLabel());
-			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
-			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
-
-			// String redirectURL = "tmpfile/selectedVariables.xls";
-
-			// httpResponse.sendRedirect(redirectURL);
-
 			OutputStream outSpecial = rt.getResponse().getOutputStream();
 			URL localURL = mappingResult.toURI().toURL();
 			URLConnection conn = localURL.openConnection();
@@ -497,14 +518,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		boolean foundInputToken = false;
 
 		if (topProtocols.size() == 0) { // The protocols don`t have
-			// sub-protocols and we could directly
-			// find the measurements of protocols
+										// sub-protocols and we could directly
+										// find the measurements of protocols
 			recursiveAddingNodesToTree(bottomProtocols,
 					protocolsTree.getName(), protocolsTree, db,
 					foundInputToken, mode);
 
 		} else { // The protocols that have sub-protocols, then we recursively
-			// find sub-protocols
+					// find sub-protocols
 			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(),
 					protocolsTree, db, foundInputToken, mode);
 		}
@@ -539,6 +560,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							true));
 			// this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
 			// + "</h4>");
+
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
@@ -662,12 +684,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (subProtocolRepeatProtocol == false
 							&& protocol.getFeatures_Name() != null
 							&& protocol.getFeatures_Name().size() > 0) { // error
-						// checking
+																			// checking
 
-						addingMeasurementsToTree(protocol.getFeatures_Name(),
-								childTree, db, false, mode); // .. so normally
-																// it goes
-																// always
+						addingMeasurementsToTree(protocol, childTree, db,
+								false, mode); // ..
+												// so
+												// normally
+												// it
+												// goes
+												// always
 						// this way
 					}
 
@@ -675,12 +700,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					if (protocol.getFeatures_Name() != null
 							&& protocol.getFeatures_Name().size() > 0) { // error
-						// checking
+																			// checking
 
-						addingMeasurementsToTree(protocol.getFeatures_Name(),
-								childTree, db, false, mode); // .. so normally
-																// it goes
-																// always
+						addingMeasurementsToTree(protocol, childTree, db,
+								false, mode); // ..
+												// so
+												// normally
+												// it
+												// goes
+												// always
 						// this way
 					}
 				}
@@ -697,9 +725,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param db
 	 * @throws DatabaseException
 	 */
-	public boolean addingMeasurementsToTree(List<String> childNode,
+	public boolean addingMeasurementsToTree(Protocol protocol,
 			JQueryTreeViewElement parentNode, Database db,
 			boolean foundInParent, Integer mode) {
+
+		List<String> childNode = protocol.getFeatures_Name();
 
 		// Create a variable to store the boolean value with which we could know
 		// whether we need to skip these measurements of the protocol.
@@ -839,8 +869,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(displayName,
 							Measurement.class.getSimpleName()
-									+ measurement.getId().toString(),
-							parentNode);
+									+ measurement.getId()
+									+ Protocol.class.getSimpleName()
+									+ protocol.getId(), parentNode);
 
 					uniqueName = displayName;
 
