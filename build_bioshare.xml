@@ -9,6 +9,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/bioshare" />
+		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/file" />

@@ -18,6 +18,7 @@
 			<!-- ListPluginMatrix; Goal: matrix for viewing animal values; Flavor: Java-only -->
 			<plugin name="DataViewer" type="org.molgenis.animaldb.plugins.viewers.ListPluginMatrix"
 				label="Data viewer" />
+			<plugin name="JQGridPluginAnimal" type="org.molgenis.datatable.plugin.JQGridPluginAnimal" label="Phenotype"/>
 			<!-- ListPluginMatrix; Goal: view values for one animal, in a timeline; Flavor: Java-only -->
 			<plugin name="TimelineViewer" type="org.molgenis.animaldb.plugins.viewers.EventViewerPluginMatrix"
 				label="Timeline viewer" />
