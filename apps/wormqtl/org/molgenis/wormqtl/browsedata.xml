@@ -4,7 +4,7 @@
 		<menu name="InvestigationMenu">
 			<plugin name="ExpTable" label="Experiment overview" type="org.molgenis.wormqtl.exptable.ExpTable" group="biologist" />
 			<plugin name="Overview" label="Investigation overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" group="biologist" />
-			<form name="Datas" label="Datasets" view="list" header="Navigate datasets" entity="Data" compact_view="name,description"
+			<form name="Datas" description="Browse and download datasets such as genotypes, gene expression, phenotypes or QTL results.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to open a dataset, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." label="Datasets" view="list" header="Navigate datasets" entity="Data" compact_view="name,description"
 				group="biologist">
 				<menu name="Select" group="biologist">
 					<plugin label="View" name="Manager" type="plugins.matrix.manager.MatrixManager"
