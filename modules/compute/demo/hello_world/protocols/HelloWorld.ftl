@@ -1,0 +1,1 @@
+echo "${message} ${planet}" > ${greetingsFile}
