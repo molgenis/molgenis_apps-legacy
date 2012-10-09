@@ -1,5 +1,6 @@
 package org.molgenis.compute.test.generator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -22,7 +23,8 @@ import app.DatabaseFactory;
  * To change this template use File | Settings | File Templates.
  */
 
-public class ComputeGeneratorDB implements ComputeGenerator {
+public class ComputeGeneratorDB implements ComputeGenerator
+{
 	public static final String RUN_ID = "run_id";
 	public static final String BACKEND = "backend";
 	public static final String BACKEND_GRID = "grid";
@@ -39,22 +41,27 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 
 	Database db = null;
 
-	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config) {
+	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config)
+	{
 		this.userValues = config;
 
 		Collection<ComputeParameter> listParameters = workflow.getWorkflowComputeParameterCollection();
 		Collection<WorkflowElement> listWorkflowElements = workflow.getWorkflowWorkflowElementCollection();
 
-		try {
+		try
+		{
 			db = DatabaseFactory.create();
 			db.beginTx();
 
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 
 		List<ComputeTask> tasks = new ArrayList<ComputeTask>();
-		for (WorkflowElement workflowElement : listWorkflowElements) {
+		for (WorkflowElement workflowElement : listWorkflowElements)
+		{
 			// most probably values generation
 			Hashtable<String, String> values = foldingMaster.createValues(listParameters, targets, userValues);
 
@@ -72,7 +79,8 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 			List<WorkflowElement> prev = workflowElement.getPreviousSteps();
 			List<ComputeTask> prevTasks = new ArrayList<ComputeTask>();
 
-			for (WorkflowElement w : prev) {
+			for (WorkflowElement w : prev)
+			{
 				ComputeTask prevTask = workflowElementComputeTaskHashtable.get(w);
 				prevTasks.add(prevTask);
 			}
@@ -82,15 +90,26 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 			workflowElementComputeTaskHashtable.put(workflowElement, task);
 		}
 
-		try {
+		try
+		{
 			db.add(tasks);
 			db.commitTx();
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	public void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config) {
+	public void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config)
+	{
+
+	}
+
+	@Override
+	public void generateTasks(Workflow workflow, List<Tuple> targets)
+	{
+		// TODO Auto-generated method stub
 
 	}
 
