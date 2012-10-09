@@ -7,11 +7,7 @@
 
 package org.molgenis.mutation.ui.upload;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +31,7 @@ import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.BatchForm;
 import org.molgenis.variant.Patient;
-import org.molgenis.util.SimpleEmailService.EmailException;
+import org.molgenis.util.SimpleEmailService;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -52,7 +48,8 @@ public class Upload extends EasyPluginController<UploadModel>
 		super(name, parent);
 		this.setModel(new UploadModel(this));
 		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
-		this.uploadService = ServiceLocator.instance().getUploadService();
+		this.uploadService       = ServiceLocator.instance().getUploadService();
+		this.molgenisUserService = ServiceLocator.instance().getMolgenisUserService();
 
 		this.populateBatchForm();
 	}
@@ -75,6 +72,7 @@ public class Upload extends EasyPluginController<UploadModel>
 		try
 		{
 			this.uploadService.setDatabase(db);
+			this.molgenisUserService.setDatabase(db);
 
 			String action = request.getAction();
 			
@@ -208,7 +206,7 @@ public class Upload extends EasyPluginController<UploadModel>
 	{
 		try
 		{
-			File file = request.getFile("upload");
+			File file = request.getFile("filefor_upload");
 	
 			File dest = File.createTempFile("molgenis_upload", ".xls");
 			FileUtils.copyFile(file, dest);
@@ -216,7 +214,7 @@ public class Upload extends EasyPluginController<UploadModel>
 			String emailContents = "New data upload by User: " + this.getApplicationController().getLogin().getUserName() + "\n";
 			String adminEmail    = this.molgenisUserService.findAdminEmail();
 			//assuming: 'encoded' p.w. (setting deObf = true)
-			this.getEmailService().email("New data upload for COL7A1", emailContents, adminEmail, true);
+			this.getEmailService().email("New data upload for COL7A1", emailContents, adminEmail, dest.getAbsolutePath(), true);
 			this.getModel().getMessages().add(new ScreenMessage("Thank you for your submission. Your data has been successfully emailed to us.", true));
 			
 			this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
@@ -246,6 +244,14 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.getModel().setBatchForm(new BatchForm());
 		((HiddenInput) this.getModel().getBatchForm().get("__target")).setValue(this.getName());
 		((HiddenInput) this.getModel().getBatchForm().get("select")).setValue(this.getName());
+		((HiddenInput) this.getModel().getBatchForm().get("__action")).setValue("emailBatch");
+		if (this.getApplicationController().getLogin() != null)
+		{
+			if (StringUtils.equals(this.getApplicationController().getLogin().getUserName(), "admin"))
+			{
+				((HiddenInput) this.getModel().getBatchForm().get("__action")).setValue("insertBatch");
+			}
+		}
 	}
 
 	private void populatePatientForm()

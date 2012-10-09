@@ -1,5 +1,6 @@
 package org.molgenis.mutation;
 
+import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.FastaService;
@@ -35,10 +36,10 @@ public class ServiceLocator
     {
     	if (context == null)
     	{
-    		context = new org.springframework.context.support.ClassPathXmlApplicationContext();
-//    		context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
-//    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).scan("org.molgenis");
-//    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).refresh();
+//    		context = new org.springframework.context.support.ClassPathXmlApplicationContext();
+    		context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
+    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).scan("org.molgenis");
+    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).refresh();
     	}
         return instance;
     }
@@ -54,7 +55,7 @@ public class ServiceLocator
 
     public synchronized void shutdown()
     {
-//        ((AnnotationConfigApplicationContext) this.getContext()).close();
+        ((org.springframework.context.annotation.AnnotationConfigApplicationContext) this.getContext()).close();
     }
 
     public final CmsService getCmsService()
@@ -71,6 +72,11 @@ public class ServiceLocator
     {
     	return (GffService) this.getContext().getBean("gffService");
     }
+
+	public MolgenisUserService getMolgenisUserService()
+	{
+		return (MolgenisUserService) this.getContext().getBean("molgenisUserService");
+	}
 
     public final PhenoService getPhenoService()
     {
