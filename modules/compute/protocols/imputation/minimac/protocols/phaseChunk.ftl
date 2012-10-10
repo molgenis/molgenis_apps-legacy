@@ -35,12 +35,10 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-
 	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate
 	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz
 	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.rec
-	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
-	
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log	
 	
 else
   
@@ -49,29 +47,4 @@ else
 	exit 1
 
 fi
-
-<#if autostart == "TRUE">
-
-#Call compute to generate phasing jobs
-module load jdk/${javaversion}
-
-mkdir -p ${projectChrImputationJobsDir}
-
-# Execute MOLGENIS/compute to create job scripts.
-sh ${McDir}/molgenis_compute.sh \
--worksheet=${finalChunkChrWorksheet} \
--parameters=${McParameters} \
--workflow=${McProtocols}/../workflowMinimacStage3.csv \
--protocols=${McProtocols}/ \
--templates=${McTemplates}/ \
--scripts=${projectChrImputationJobsDir}/ \
--id=${McId}
-
-cd ${projectChrImputationJobsDir}
-sh submit.sh
-
-tar czf ${projectChrImputationJobsDirTarGz} ${projectChrImputationJobsDir}
-putFile ${projectChrImputationJobsDirTarGz}
-
-</#if>
 

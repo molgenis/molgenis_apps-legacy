@@ -5,16 +5,14 @@
 getFile ${chunkChromosomeBin}
 getFile ${expandWorksheetJar}
 
-getFile ${McWorksheet}
 getFile ${studyMerlinChrDat}
+getFile ${McWorksheet}
 
-inputs "${McWorksheet}"
 inputs "${studyMerlinChrDat}"
+inputs "${McWorksheet}"
 alloutputsexist \
 "${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
-"${studyMerlinChrDir}/chunk$c-chr${chr}.dat" \
-"${finalChunkChrWorksheet}" \
-"${projectChrPhasingJobsDirTarGz}"
+"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
 
 #Chunk chromosomes into pieces containing ~2500 markers
 
@@ -58,9 +56,10 @@ module load jdk/${javaversion}
 #Run Jar to create full worksheet
 
 
-java -jar ${expandWorksheetJar} ${McWorksheet} ${tmpFinalChunkChrWorksheet} ${chunkChrWorkSheet} project ${project}
+java -jar ${expandWorksheetJar} ${McWorksheet} ${tmpFinalChunkChrWorksheet} ${chunkChrWorkSheet} project ${project} chr ${chr}
 
-
+#Get return code from last program call
+returnCode=$?
 
 if [ $returnCode -eq 0 ]
 then
@@ -81,27 +80,3 @@ else
 fi
 
 
-<#if autostart == "TRUE">
-
-#Call compute to generate phasing jobs
-module load jdk/${javaversion}
-
-mkdir -p ${projectChrPhasingJobsDir}
-
-# Execute MOLGENIS/compute to create job scripts.
-sh ${McDir}/molgenis_compute.sh \
--worksheet=${finalChunkChrWorksheet} \
--parameters=${McParameters} \
--workflow=${McProtocols}/../workflowMinimacStage2.csv \
--protocols=${McProtocols}/ \
--templates=${McTemplates}/ \
--scripts=${projectChrPhasingJobsDir}/ \
--id=${McId}
-
-cd ${projectChrPhasingJobsDir}
-sh submit.sh
-
-tar czf ${projectChrPhasingJobsDirTarGz} ${projectChrPhasingJobsDir}
-putFile ${projectChrPhasingJobsDirTarGz}
-
-</#if>

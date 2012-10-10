@@ -25,6 +25,11 @@ ${minimacOmpBin} \
 ##############FIX THIS LATER#############
 #########################################
 
+
+#Get return code from last program call
+returnCode=$?
+
+
 if [ $returnCode -eq 0 ]
 then
 	
