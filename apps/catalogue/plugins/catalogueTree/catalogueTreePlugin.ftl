@@ -1,7 +1,7 @@
-<#macro plugins_catalogueTree_catalogueTreePlugin screen>
+<#macro plugins_catalogueTree_CatalogueTreePlugin screen>
 
 <!-- normally you make one big form for the whole plugin-->
-<form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
+<form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_CatalogueTreePlugin" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
@@ -220,6 +220,7 @@
 		}
 		
 		function onClickRemoveTableRow() {
+
 			if($('#selectedVariableTable').find('tr').length > 1){
 				$(this).parent().parent().remove();
 			}else{
@@ -271,9 +272,11 @@
 			for(var i = 0; i < listOfVariables.length; i++){
 				
 				var variableID = listOfVariables[i];
+
+				var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
+			
+				$('#' + uniqueID + '>span').trigger('click');
 				
-				//$('#' + uniqueID + '>span').trigger('click');
-		
 				if($('#' + uniqueID + '_row').length == 0){
 					
 					var label = $('#' + variableID).parent().text();
@@ -423,16 +426,16 @@
 						<tr>
 							<td class="box-header" colspan="2">  
 						        <label style='font-size:14px'>
-						        <#if screen.arrayInvestigations??>
-							        <#if (screen.arrayInvestigations?size > 1)>
+						        <#if screen.getArrayInvestigations()??>
+							        <#if (screen.getArrayInvestigations()?size > 1)>
 										Choose a cohort:
-										<#list screen.arrayInvestigations as invName>
+										<#list screen.getArrayInvestigations() as invName>
 												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value = "${invName}"
 													 style="display:none" onclick="__action.value='cohortSelect';"/>
 										</#list>
 									<#else>
 										Catalog: 
-										<#assign invName = screen.arrayInvestigations[0]> ${invName}
+										<#assign invName = screen.getArrayInvestigations()[0]> ${invName}
 									</#if>
 								</#if>
 								</label>
@@ -551,9 +554,7 @@
  							here first and create the detailed table!-->
  				<script>
  				
-					
-			      	
-			      	$('#browser').find('li').each(function(){
+					$('#browser').find('li').each(function(){
 			      		
 			      		if($(this).find('li').length == 0){
 			      			
