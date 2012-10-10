@@ -1,7 +1,7 @@
 <#macro plugins_catalogueTree_CatalogueTreePlugin screen>
 
 <!-- normally you make one big form for the whole plugin-->
-<form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
+<form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_CatalogueTreePlugin" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
@@ -435,7 +435,7 @@
 										</#list>
 									<#else>
 										Catalog: 
-										<#assign invName = screen.getArrayInvestigations()> ${invName}
+										<#assign invName = screen.getArrayInvestigations()[0]> ${invName}
 									</#if>
 								</#if>
 								</label>
