@@ -129,7 +129,7 @@ public class bioshareWelcomeScreenPlugin extends
 		featuresForStudies.put("ageGroun_catalogueStudy", "Age group");
 		featuresForStudies.put("ethnicGroup_catalogueStudy", "Ethnic group");
 		// Pre-load the metadata that is used to describe the cohort studies.
-		preLoadData(db, "catalogueStudy", "studyCharacteristic",
+		preLoadData(db, "catalogueCohortStudy", "studyCharacteristic",
 				featuresForStudies);
 
 		// Pre-load the metadata that is used to describe the prediction model.
@@ -146,8 +146,8 @@ public class bioshareWelcomeScreenPlugin extends
 				"Discrimination");
 		featuresForStudies.put("calibration_catalogueStudy", "Calibration");
 		// Pre-load the metadata that is used to describe the cohort studies.
-		preLoadData(db, "catalogueStudy", "predictionModelCharacteristic",
-				featuresForStudies);
+		preLoadData(db, "cataloguePredictionModel",
+				"predictionModelCharacteristic", featuresForStudies);
 	}
 
 	/**
