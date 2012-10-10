@@ -375,16 +375,24 @@
 			});
 			$('input[name="cohortSelectSubmit"]').show();
 			
+			$('#viewButton').button();
+			$('#viewButton').css({
+				'font-size':'0.8em'
+			});
+			$('#viewButton').show();
+			
 			$('#downloadButton').button();
 			$('#downloadButton').css({
 				'font-size':'0.8em'
 			});
 			$('#downloadButton').show(); 
+			
 			$('#downloadButtonEMeasure').button();
 			$('#downloadButtonEMeasure').css({
 				'font-size':'0.8em'
 			});
 			$('#downloadButtonEMeasure').show();
+		
 			
 			$('#clearSearchingResult').click(function(){
 				$('#InputToken').val('');
@@ -514,6 +522,10 @@
 				 								<div style="float:right">
 						 							<input type="submit" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
 													 onclick="__action.value='downloadButtonEMeasure';"/>
+				 								</div>
+				 								<div style="float:right">
+						 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="viewButton" name="viewButton" value="View" 
+													 onclick="__action.value='viewButton';"/>
 				 								</div>
 											</div>
 										</td>

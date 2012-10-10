@@ -8,10 +8,8 @@
 		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
 
 		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin" label="Search variables" />
-		
-		<!-- <plugin name="CatalogueTreePluginNew" type="plugins.catalogueTreeNewVersion.catalogueTreePluginNew" label="Tree developing" />
-		plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
+		<!-- plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
 		<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 			<menu name="InvestigationMenu">
