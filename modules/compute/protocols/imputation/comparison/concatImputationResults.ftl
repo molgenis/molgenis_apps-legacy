@@ -2,7 +2,7 @@
 
 getFile ${impute2ResultsBinsLocation}
 
-#putFile ${impute2ResultChrBin}_warnings
+putFile OUTPUT.gprobs
 
 
 inputs "${impute2ResultsBinsLocation}"
