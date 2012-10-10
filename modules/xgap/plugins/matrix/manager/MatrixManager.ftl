@@ -173,6 +173,10 @@ targ2	val4	val5	val6</textarea>
 			</td>
 		</tr>
 	</table>
+	
+	<#-- a bit dangerous: assumes the parent form is named 'Datas' !! -->
+	<br><a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.selectedData.id}">Permanent link to this dataset</a>
+	
 </div><br>
 
 
@@ -219,33 +223,57 @@ targ2	val4	val5	val6</textarea>
 			<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=inmemory'">
 				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
 			</td>
-			<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'">
-				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
-			</td>		
+			<#if browser.colMax gt 1000 || browser.rowMax gt 1000>
+				<td class="submenuitem">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;N/A, matrix too large
+				</td>
+			<#else>
+				<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
+				</td>
+			</#if>
 		</tr>	
 		<tr>
 			<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=inmemory'">
 				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
 			</td>
-			<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'">
-				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
-			</td>
+			<#if browser.colMax gt 1000 || browser.rowMax gt 1000>
+				<td class="submenuitem">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;N/A, matrix too large
+				</td>
+			<#else>
+				<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
+				</td>
+			</#if>
 		</tr>
 		<tr>
 			<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=inmemory'">
 				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
 			</td>
-			<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'">
-				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
-			</td>
+			<#if browser.colMax gt 1000 || browser.rowMax gt 1000>
+				<td class="submenuitem">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;N/A, matrix too large
+				</td>
+			<#else>
+				<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
+				</td>
+			</#if>
 		</tr>
 		<tr>
 			<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=inmemory'">
 				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
 			</td>
-			<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=${model.selectedData.getId()?c}&download=all'">
-				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
-			</td>
+			<#if browser.colMax gt 1000 || browser.rowMax gt 1000>
+				<td class="submenuitem">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;N/A, matrix too large
+				</td>
+			<#else>
+				<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=${model.selectedData.getId()?c}&download=all'">
+					<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
+				</td>
+			</#if>
 		</tr>
 		
 		<#if model.selectedData.storage == "Binary" && model.hasBackend == true>

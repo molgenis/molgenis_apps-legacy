@@ -185,7 +185,7 @@ It should be used via 'import' plus passing of properties
 			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
 			<jvmarg value="-noverify" />
 			<jvmarg value="-ea" />
-			<jvmarg value="-Xmx1512m" />
+			<jvmarg value="-Xmx2048m" />
 		</testng>
 
 		<!--junitreport todir="${testng.report.dir}">
