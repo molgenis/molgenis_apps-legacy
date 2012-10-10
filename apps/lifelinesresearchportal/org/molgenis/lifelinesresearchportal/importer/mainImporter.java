@@ -59,7 +59,7 @@ public class mainImporter
 			i.setName("LifeLines");
 			db.add(i);
 			Protocol p = new Protocol();
-			p.setName("TestProtocol");
+			p.setName(i.getName());
 			db.add(p);
 
 			CsvReader reader = new CsvFileReader(voorbeeld1_dataset);
@@ -94,6 +94,7 @@ public class mainImporter
 				final ProtocolApplication pa = new ProtocolApplication();
 				pa.setName("pa" + count++);
 				pa.setProtocol(p);
+				pa.setInvestigation_Name(i.getName());
 				paList.add(pa);
 
 				for (String column : reader.colnames())
@@ -101,7 +102,7 @@ public class mainImporter
 					if (!"Pa_Id".equals(column))
 					{
 						ObservedValue ob = new ObservedValue();
-						ob.setFeature_Name(column);
+						ob.setFeature_Name(column + "_" + i.getName());
 						ob.setTarget_Name(indi.getName());
 						ob.setValue(row.getString(column));
 						ob.setProtocolApplication_Name(pa.getName());

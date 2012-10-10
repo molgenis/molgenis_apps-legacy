@@ -272,7 +272,7 @@
 			for(var i = 0; i < listOfVariables.length; i++){
 				
 				var variableID = listOfVariables[i];
-				
+
 				var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
 			
 				$('#' + uniqueID + '>span').trigger('click');
@@ -418,16 +418,16 @@
 						<tr>
 							<td class="box-header" colspan="2">  
 						        <label style='font-size:14px'>
-						        <#if screen.arrayInvestigations??>
-							        <#if (screen.arrayInvestigations?size > 1)>
+						        <#if screen.getArrayInvestigations()??>
+							        <#if (screen.getArrayInvestigations()?size > 1)>
 										Choose a cohort:
-										<#list screen.arrayInvestigations as invName>
+										<#list screen.getArrayInvestigations() as invName>
 												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value = "${invName}"
 													 style="display:none" onclick="__action.value='cohortSelect';"/>
 										</#list>
 									<#else>
 										Catalog: 
-										<#assign invName = screen.arrayInvestigations[0]> ${invName}
+										<#assign invName = screen.getArrayInvestigations()> ${invName}
 									</#if>
 								</#if>
 								</label>

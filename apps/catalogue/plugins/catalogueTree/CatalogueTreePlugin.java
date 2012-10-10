@@ -182,7 +182,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 			this.setSelectedInvestigation(selectedInvestigation);
 			System.out.println("The selected investigation is : "
 					+ selectedInvestigation);
-			arrayInvestigations.clear();
 
 		} else if (request.getAction().equals("downloadButtonEMeasure")) {
 			// do output stream ourselves
@@ -385,6 +384,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 			// + request.getString("measurementId"));
 			// }
 			// default set selected investigation to first
+
 			if (this.getSelectedInvestigation() == null) {
 
 				List<Investigation> listOfInvestigation = db.query(
@@ -399,6 +399,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 								new QueryRule(Protocol.INVESTIGATION_NAME,
 										Operator.EQUALS, inv.getName())).size() > 0) {
 							if (count == 0) {
+
 								this.setSelectedInvestigation(inv.getName());
 								count++;
 							}
@@ -558,6 +559,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 					.add(new ScreenMessage(
 							"There are no results to show. Please, redifine your search or import some data.",
 							true));
+
 			// this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
 			// + "</h4>");
 
@@ -1250,6 +1252,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	public List<String> getArrayInvestigations() {
+
 		return arrayInvestigations;
 	}
 
