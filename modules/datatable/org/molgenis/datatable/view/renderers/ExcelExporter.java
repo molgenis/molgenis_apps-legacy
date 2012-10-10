@@ -99,6 +99,7 @@ public class ExcelExporter extends AbstractExporter
 			String columnName = column.getSqlName();
 			switch (column.getType().getEnumType())
 			{
+				case RICHTEXT:
 				case CHAR:
 				case TEXT:
 				case STRING:
