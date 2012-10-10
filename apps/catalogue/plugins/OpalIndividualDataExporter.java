@@ -34,15 +34,22 @@ public class OpalIndividualDataExporter {
 
 	public static void main(String args[]) throws Exception {
 
-		new OpalIndividualDataExporter();
+		new OpalIndividualDataExporter(args);
 	}
 
-	public OpalIndividualDataExporter() throws Exception {
+	public OpalIndividualDataExporter(String args[]) throws Exception {
 
 		db = DatabaseFactory.create();
 
-		investigationName = "LifeLines";
+		if (args.length > 0) {
 
+			investigationName = args[0];
+
+		} else {
+
+			investigationName = "LifeLines";
+
+		}
 		List<ObservationTarget> listOfTargets = db.find(
 				ObservationTarget.class, new QueryRule(
 						ObservationTarget.INVESTIGATION_NAME, Operator.EQUALS,
@@ -54,18 +61,39 @@ public class OpalIndividualDataExporter {
 			listOfTargetNames.add(target.getName());
 		}
 
-		for (Protocol p : db.find(Protocol.class,
-				new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
-						investigationName))) {
+		Query<Protocol> queryRules = db.query(Protocol.class);
+
+		for (int i = 0; i < args.length; i++) {
+
+			if (i == 0) {
+				queryRules.addRules(new QueryRule(Protocol.INVESTIGATION_NAME,
+						Operator.EQUALS, investigationName));
+			} else if (i == 1) {
+				queryRules.addRules(new QueryRule(Protocol.NAME,
+						Operator.EQUALS, args[i]));
+			} else {
+				break;
+			}
+		}
+
+		String filePath = "";
+
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+		if (args.length > 2) {
+			filePath = args[2];
+		} else {
+			filePath = tmpDir.getAbsolutePath();
+		}
+
+		for (Protocol p : queryRules.find()) {
 
 			if (p.getFeatures_Name().size() > 0) {
 
-				File mappingResult = new File(
-						"/Users/pc_iverson/Desktop/importData/" + p.getName()
-								+ ".csv");
+				File mappingResult = new File(filePath + "/" + p.getName()
+						+ ".csv");
 
-				File temp = new File(
-						"/Users/pc_iverson/Desktop/importData/temp.xls");
+				File temp = new File(filePath + "/temp.xls");
 
 				OutputStream os = (OutputStream) new FileOutputStream(
 						mappingResult);
