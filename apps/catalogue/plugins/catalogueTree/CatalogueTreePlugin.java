@@ -51,7 +51,7 @@ import com.google.common.collect.Iterables;
 
 //import org.molgenis.util.XlsWriter;
 
-public class catalogueTreePlugin extends PluginModel<Entity> {
+public class CatalogueTreePlugin extends PluginModel<Entity> {
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
@@ -95,7 +95,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 	private List<String> listOfMeasurements = new ArrayList<String>();
 
-	public catalogueTreePlugin(String name, ScreenController<?> parent) {
+	public CatalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
