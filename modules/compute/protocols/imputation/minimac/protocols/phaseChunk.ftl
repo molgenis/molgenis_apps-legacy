@@ -4,20 +4,31 @@
 
 getFile ${machBin}
 
-getFile ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps
+getFile ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat
 getFile ${studyMerlinChrPed}
+
+inputs "${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat"
+inputs "${studyMerlinChrPed}"
+alloutputsexist \
+"${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate" \
+"${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" \
+"${studyChunkChrDir}/chunk${chunk}-chr${chr}.rec" \
+"${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log"
+
 
 mkdir -p ${studyChunkChrDir}
 
 ${machBin} \
-	-d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
-	-p ${studyMerlinChrPed} \
-	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
-	--rounds ${phasingRounds} \
-	--states ${phasingStates} \
-	--phase \
-	--sample ${phasingHaplotypeSampling} \
-	2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
+-d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
+-p ${studyMerlinChrPed} \
+--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
+--rounds ${phasingRounds} \
+--states ${phasingStates} \
+--phase \
+2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
+
+###REMOVED --sample ${phasingHaplotypeSampling} from command
+###If used files with extension *.sample1, *.sample6, *.sample11, *.sample16 etc are created
 
 if [ $returnCode -eq 0 ]
 then
@@ -25,7 +36,9 @@ then
 	echo -e "\nMoving temp files to final files\n\n"
 
 
-	#putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr} ..????
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.rec
 	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
 	
 	
@@ -36,3 +49,29 @@ else
 	exit 1
 
 fi
+
+<#if autostart == "TRUE">
+
+#Call compute to generate phasing jobs
+module load jdk/${javaversion}
+
+mkdir -p ${projectChrImputationJobsDir}
+
+# Execute MOLGENIS/compute to create job scripts.
+sh ${McDir}/molgenis_compute.sh \
+-worksheet=${finalChunkChrWorksheet} \
+-parameters=${McParameters} \
+-workflow=${McProtocols}/../workflowMinimacStage3.csv \
+-protocols=${McProtocols}/ \
+-templates=${McTemplates}/ \
+-scripts=${projectChrImputationJobsDir}/ \
+-id=${McId}
+
+cd ${projectChrImputationJobsDir}
+sh submit.sh
+
+tar czf ${projectChrImputationJobsDirTarGz} ${projectChrImputationJobsDir}
+putFile ${projectChrImputationJobsDirTarGz}
+
+</#if>
+

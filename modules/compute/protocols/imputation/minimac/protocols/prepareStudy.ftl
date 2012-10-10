@@ -2,9 +2,9 @@
 
 #FOREACH project,chr
 
-getFile "${imputationToolJar}"
-getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibrariesJar}"
+getFile ${imputationToolJar}
+getFile ${imputationToolJsciCoreJar}
+getFile ${imputationToolGeneticaLibrariesJar}
 
 getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
 getFile ${studyTriTyperChrDir}/Individuals.txt

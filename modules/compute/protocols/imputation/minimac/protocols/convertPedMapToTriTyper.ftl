@@ -2,12 +2,12 @@
 
 #FOREACH project,chr
 
-getFile "${imputationToolJar}"
-getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibrariesJar}"
+getFile ${imputationToolJar}
+getFile ${imputationToolJsciCoreJar}
+getFile ${imputationToolGeneticaLibrariesJar}
 
-getFile "${studyPedMapChr}.map"
-getFile "${studyPedMapChr}.ped"
+getFile ${studyPedMapChr}.map
+getFile ${studyPedMapChr}.ped
 
 
 

@@ -10,9 +10,9 @@ inputs ${studyPedMapChr}.ped
 
 
 alloutputsexist \
-	"${studyMerlinChrMap}" \
-	"${studyMerlinChrDat}" \
-	"${studyMerlinChrPed}"
+"${studyMerlinChrMap}" \
+"${studyMerlinChrDat}" \
+"${studyMerlinChrPed}"
 
 mkdir -p ${studyMerlinChrDir}
 

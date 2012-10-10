@@ -8,6 +8,14 @@ getFile ${expandWorksheetJar}
 getFile ${McWorksheet}
 getFile ${studyMerlinChrDat}
 
+inputs "${McWorksheet}"
+inputs "${studyMerlinChrDat}"
+alloutputsexist \
+"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
+"${studyMerlinChrDir}/chunk$c-chr${chr}.dat" \
+"${finalChunkChrWorksheet}" \
+"${projectChrPhasingJobsDirTarGz}"
+
 #Chunk chromosomes into pieces containing ~2500 markers
 
 cd ${studyMerlinChrDir}
@@ -72,6 +80,9 @@ else
 
 fi
 
+
+<#if autostart == "TRUE">
+
 #Call compute to generate phasing jobs
 module load jdk/${javaversion}
 
@@ -92,3 +103,5 @@ sh submit.sh
 
 tar czf ${projectChrPhasingJobsDirTarGz} ${projectChrPhasingJobsDir}
 putFile ${projectChrPhasingJobsDirTarGz}
+
+</#if>

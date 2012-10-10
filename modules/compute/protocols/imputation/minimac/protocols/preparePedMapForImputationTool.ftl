@@ -7,7 +7,8 @@ getFile ${studyInputPedMapChr}.ped
 
 inputs "${studyInputPedMapChr}.map"
 inputs "${studyInputPedMapChr}.ped"
-alloutputsexist "${studyPedMapChr}.map" \
+alloutputsexist \
+"${studyPedMapChr}.map" \
 "${studyPedMapChr}.ped"
 
 mkdir -p ${studyPedMapChrDir}
