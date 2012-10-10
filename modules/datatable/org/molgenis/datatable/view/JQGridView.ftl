@@ -293,8 +293,8 @@ $(document).ready(function() {
                     				<td class="prev_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-prev"></span>
                     				</td>
-                    				<td dir="ltr">
-										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="2" /> of <span class="total-column-pages"></span>
+                    				<td dir="ltr" style="font-size:10px">
+										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="1" /> of <span class="total-column-pages"></span>
 									</td>
                     				<td class="next_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-next"></span>

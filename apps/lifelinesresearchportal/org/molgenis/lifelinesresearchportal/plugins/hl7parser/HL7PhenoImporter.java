@@ -83,7 +83,6 @@ public class HL7PhenoImporter
 			for (HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA())
 			{
 
-				System.out.println(organizer.getHL7OrganizerNameLRA());
 				String protocolName = organizer.getHL7OrganizerNameLRA().trim();
 				Protocol protocol = new Protocol();
 				protocol.setName(protocolName);
@@ -96,14 +95,17 @@ public class HL7PhenoImporter
 
 					List<String> measurementCategory = new ArrayList<String>();
 
-					if (db.find(Measurement.class,
-							new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName())).size() > 0)
+					List<QueryRule> complexQuery = new ArrayList<QueryRule>();
+					complexQuery.add(new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName() + "_"
+							+ inv.getName()));
+					complexQuery.add(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, inv.getName()));
+
+					if (db.find(Measurement.class, new QueryRule(complexQuery)).size() > 0)
 					{
-						Measurement m = db.find(Measurement.class,
-								new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName())).get(0);
+
+						Measurement m = db.find(Measurement.class, new QueryRule(complexQuery)).get(0);
 
 						m.setDescription(meas.getMeasurementLabel());
-						m.setInvestigation(inv);
 
 						protocolFeature.add(m.getName());
 
@@ -186,10 +188,10 @@ public class HL7PhenoImporter
 				}
 			}
 
-			for (Category c : uniqueListOfCategory)
-			{
-				System.out.println("-------------." + c.getName());
-			}
+			// for (Category c : uniqueListOfCategory)
+			// {
+			// System.out.println("-------------." + c.getName());
+			// }
 
 			db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
@@ -525,7 +527,8 @@ public class HL7PhenoImporter
 
 			listOfOntologyTermIDs.add(ont.getId());
 
-			System.out.println("The mapped ontology term is " + t.getDisplayName() + "\t" + t.getCode());
+			// System.out.println("The mapped ontology term is " +
+			// t.getDisplayName() + "\t" + t.getCode());
 		}
 
 		return listOfOntologyTermIDs;
