@@ -227,6 +227,7 @@
 				$('#selectedVariableTable').remove();
 				$('#selectNotification').show();
 			}
+
 			var myCheckBoxId = $(this).attr('id').replace("_delete", "");
 			$('#' + myCheckBoxId).find('input:checkbox').attr('checked',false);
 			var currentNode = $('#' + myCheckBoxId);
@@ -238,6 +239,11 @@
 			});
 			if(uncheckProtocol == true){
 				$(currentNode).parents('li:first').find('input:checkbox').attr('checked', false);
+			}
+			
+			if($('#selectedVariableTable').find('tr').length == 0) {
+				$('#selectedVariableHeader').remove();
+				$('#selectedVariableTable');
 			}
 		}
 		
@@ -265,11 +271,9 @@
 			for(var i = 0; i < listOfVariables.length; i++){
 				
 				var variableID = listOfVariables[i];
-			
-				var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
 				
 				//$('#' + uniqueID + '>span').trigger('click');
-				
+		
 				if($('#' + uniqueID + '_row').length == 0){
 					
 					var label = $('#' + variableID).parent().text();
@@ -283,7 +287,7 @@
 								protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
 								deleteButton + '</td></tr>';
 					
-					<!--We are going to check whether this selectedVariableTable already existed-->
+					<!--We are going to check whether this  already existed-->
 					if($('#selectedVariableTable').length == 0){
 						
 						$('#selectNotification').hide();
@@ -543,7 +547,7 @@
 			      			
 			      			var measurementID = $(this).attr('id');
 	      					var clicked = $('#clickedVariable').val();
-
+						
 	      					$(this).children('span').click(function(){
 			      				//Itself
 			      				$(this).css({
