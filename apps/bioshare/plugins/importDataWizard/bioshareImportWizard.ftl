@@ -64,27 +64,47 @@
 				$(this).siblings('[name="saveStudy"]').show();
 				
 				//Edit the content of the table
-				width = $(this).parent().next().children('span').width();
-				height = $(this).parent().next().children('span').height();
-				text = $(this).parent().next().children('span').hide();
-				$(this).parent().next().children('textarea').val(text.text().replace(/\t|\n/g,""));
-				$(this).parent().next().children('textarea').css({
-					'height' : height,
-					'width' : width
-				}).show();
+				$(this).parent().parent().children('div:gt(0)').each(function(){
+					
+					$(this).attr('align','baseline');
+					width = $(this).children('span').width();
+					if(width < 100){
+						width = 100;
+					}
+					height = $(this).children('span').height();
+					text = $(this).children('span').hide();
+					$(this).children('textarea').val(text.text().replace(/\t|\n/g,""));
+					$(this).children('textarea').css({
+						'height' : height,
+						'width' : width
+					}).show();
+					
+				});
+				//width = $(this).parent().next().children('span').width();
+				//height = $(this).parent().next().children('span').height();
+				//text = $(this).parent().next().children('span').hide();
+				//$(this).parent().next().children('textarea').val(text.text().replace(/\t|\n/g,""));
+				//$(this).parent().next().children('textarea').css({
+				//	'height' : height,
+				//	'width' : width
+				//}).show();
 				
 				//Save the changes
 				$(this).siblings('[name="saveStudy"]').click(function(){
 					//Save changes for header
 					$(this).hide();
-					value = $(this).parent().find('div').eq(0).children('input').val();
-					$(this).parent().find('div').eq(0).children('span').text(value).show();
-					$(this).parent().find('div').eq(0).children('input').hide();
-					
+					if($(this).parent().children('div').lengt > 0){
+						value = $(this).parent().children('div').eq(0).children('input').val();
+						$(this).parent().find('div').eq(0).children('span').text(value).show();
+						$(this).parent().find('div').eq(0).children('input').hide();
+					}
 					//Save changes for content
-					text = $(this).parent().next().children('textarea').val();
-					$(this).parent().next().children('span').empty();
-					$(this).parent().next().children('span').text(text).show();
+					$(this).parent().parent().children('div:gt(0)').each(function(){
+						$(this).attr('align','justify');
+						text = $(this).children('textarea').hide().val();
+						$(this).children('span').empty();
+						$(this).children('span').text(text).show();
+					});
 				});
 			});
 		});
@@ -167,19 +187,21 @@
 									on events and are seen every three/four years for a survey on cardiac-, renal- and peripheral 
 									vascular morbidity.
 								</span>
-								<textarea id="test" style="display:none">
-								</textarea>
+								<textarea style="display:none"></textarea>
 							</div>
 						</div>
 						<div id="generalInformation" style="float:left;width:40%;height:58%;font-size:14px;" class="editable ui-widget-content ui-corner-bottom">
 							<div style="text-align:center;height:20px" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 								<div style="float:left;">General information</div>
+								<div name="saveStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="save changes">
+									<span class="ui-icon ui-icon-disk"></span>
+								</div>
 								<div name="editStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="edit the study">
 									<span class="ui-icon ui-icon-pencil"></span>
 								</div>
 							</div>
-							<div style="padding:4px">Launched year: <span id="launchYear" name="launchYear">1990</span></div>
-							<div style="padding:4px">Country of study: <span id="countryStudy" name="countryStudy">Netherlands</span></div>
+							<div align="justify" style="padding:4px">Launched year: <span id="launchYear" name="launchYear">1990</span><textarea style="display:none"></textarea></div>
+							<div align="justify" style="padding:4px">Country of study: <span id="countryStudy" name="countryStudy">Netherlands</span><textarea style="display:none"></textarea></div>
 							<div align="justify" style="padding:4px;height:55%;overflow:auto">Study description: 
 								<span id="description" name="description">
 									Of the 85,421 subjects invited 40,856 responded (=48%) . We invited all 
@@ -188,17 +210,21 @@
 									(n=3,395) for further studies . Of these invitees 8,592 subjects completed 
 									the first screening, that was held in 1997/1998
 								</span>
+								<textarea style="display:none"></textarea>
 							</div>
 						</div>
 						<div id="individualInformation" style="float:left;width:59.5%;height:58%;font-size:14px;" class="editable ui-widget-content ui-corner-bottom">
 							<div style="text-align:center;height:20px" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 								<div style="float:left;">Individual information</div>
+								<div name="saveStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="save changes">
+									<span class="ui-icon ui-icon-disk"></span>
+								</div>
 								<div name="editStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="edit the study">
 									<span class="ui-icon ui-icon-pencil"></span>
 								</div>
 							</div>
-							<div style="padding:4px">Number of participants: <span id="numberOfParticipants" name="numberOfParticipants">8592</span></div>
-							<div style="padding:4px">Age: <span id="ageGround" name="ageGround">15 to 75</span></div>
+							<div style="padding:4px">Number of participants: <span id="numberOfParticipants" name="numberOfParticipants">8592</span><textarea style="display:none"></textarea></div>
+							<div style="padding:4px">Age: <span id="ageGround" name="ageGround">15 to 75</span><textarea style="display:none"></textarea></div>
 						</div>
 					</div>
 				</div>
