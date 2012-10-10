@@ -60,50 +60,62 @@
 </div>
 <br>
 
-<#if model.filesAreVisible>
-	<#if model.gffFiles?size == 0>
-		There are currently no GFF files in your database!<br>
-	<#else>
-		<h3>Load GFF file tracks into browser</h3>
-		<table border="1">
-			<#list model.gffFiles as f>
-			<tr>
-				<td>
-					<b>Add track: <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a></b>
-				</td>
-				<td>
-					<#if f.description??>${f.description}</#if>
-				</td>
-			</tr>
-			</#list>
-		</table>
-		<br>
+<#if model.appUrl??>
+
+	<#if model.appUrl?contains("localhost") || model.appUrl?contains("127.0.0.1")>
+		<font color="red"><h>WARNING: your application was contacted via <b>localhost</b> or loopback (<b>127.0.0.1</b>). This means xQTL does not know what URL to provide form the UCSC browser. Please use a world-wide unique URL or IP address!</font>
 	</#if>
-<#else>
-	<br><br>ERROR: Your GFF files are not made visible to the outside world. To enable this, tell your admin to give <b>read</b> permissions for <b>anonymous</b> on <b>org.molgenis.core.MolgenisFile</b>.<br><br>
-</#if>
 
-<#if model.appUrl?? && model.appUrl?contains('localhost')>
-	<br><br>ERROR: Could not determine application URL from external location.<br>
-	Either you are not connected to the internet, your outgoing port is blocked, or you are behind a router (or other kind of network) that does not forward the application URL to the outside world.<br>
-	This means we cannot serve out your GFF files to external services such as the UCSC genome browser.<br><br>
-<#elseif model.appUrl??>
-	<#-- all is well -->
-<#else>
-	<br><br>ERROR: Application base URL was not set. Contact an xQTL developer.<br><br>
-</#if>
+	<#if model.filesAreVisible>
+		<#if model.gffFiles?size == 0>
+			There are currently no GFF files in your database!<br>
+		<#else>
+			<h3>Load GFF file tracks into browser</h3>
+			<table border="1">
+				<#list model.gffFiles as f>
+				<tr>
+					<td>
+						<b>Add track: <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a></b>
+					</td>
+					<td>
+						<#if f.description??>${f.description}</#if>
+					</td>
+				</tr>
+				</#list>
+			</table>
+			<br>
+		</#if>
+	<#else>
+		<br><br>ERROR: Your GFF files are not made visible to the outside world. To enable this, tell your admin to give <b>read</b> permissions for <b>anonymous</b> on <b>org.molgenis.core.MolgenisFile</b> or <b>org.molgenis.xgap.InvestigationFile</b>.<br><br>
+	</#if>
 
-<h3>Embedded genome browser - <a target="_blank" href="${ucscMirror}cgi-bin/hgTracks?db=${release}">open it in a new window</a></h3>
-<div align="middle">
-	<iframe name="ucsc_iframe" height="500px" width="850px" src="${ucscMirror}cgi-bin/hgTracks?db=${release}"></iframe>
-	<div style="width: 850px" align="left">
-		<br>
-		To reset the viewer, click on <b>Session</b> and then <i>Click here to reset</i> in the <b>Session Management</b> section. You start from scratch and must add any custom tracks again.
-		<br><br>
-		PLEASE NOTE: Even if you see no errors here, the UCSC browser might still prompt an error such as <b>Unrecognized format line 1 [...] </b>. This means you are probably behind a router which has a valid outgoing IP, but prevents incoming requests from reaching your computer within the local network. Ask a technical person to arrange a solution, and/or install xQTL on a properly configured web server.
-		<br><br>
+	<h3>Embedded genome browser - <a target="_blank" href="${ucscMirror}cgi-bin/hgTracks?db=${release}">open it in a new window</a></h3>
+	<div align="middle">
+		<iframe name="ucsc_iframe" height="500px" width="850px" src="${ucscMirror}cgi-bin/hgTracks?db=${release}"></iframe>
+		<div style="width: 850px" align="left">
+			<br>
+			To reset the viewer, click on <b>Session</b> and then <i>Click here to reset</i> in the <b>Session Management</b> section. You start from scratch and must add any custom tracks again.
+			<br><br>
+			PLEASE NOTE: Even if you see no errors here, the UCSC browser might still prompt an error such as <b>Unrecognized format line 1 [...] </b>, or display no results in the viewer. This means you are probably behind a router which has a valid outgoing IP, but prevents incoming requests from reaching your computer within the local network. Ask a technical person to arrange a solution, and/or install xQTL on a server that is reachable via a world-wide unique URL or IP address.
+			<br><br>
+		</div>
 	</div>
-</div>
+	
+<#else>
+
+	<br><br>
+	<table>
+		<tr>
+			<td width="20" height="50">
+				&nbsp;
+			</td>
+			<td width="20" height="50">
+				<input type="submit" value="Continue..." onclick="__action.value='__continue_to_genomebrowser';return true;"/>
+			</td>
+		</tr>
+	</table>
+	
+</#if>
 
 	</div>
 </form>

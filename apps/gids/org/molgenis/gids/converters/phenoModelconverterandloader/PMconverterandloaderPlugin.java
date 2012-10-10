@@ -9,50 +9,44 @@ package org.molgenis.gids.converters.phenoModelconverterandloader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.gids.converters.GidsConvertor;
+import org.molgenis.model.elements.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-
 import plugins.emptydb.emptyDatabase;
-
 import app.CsvImport;
 import app.FillMetadata;
-
-import convertors.GenericConvertor;
 
 /**
  * 
  * @author roankanninga
- *
+ * 
  */
 public class PMconverterandloaderPlugin extends PluginModel<Entity>
 {
@@ -61,48 +55,70 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private List<Investigation> investigations;
 	/*
-	 * state can be start, downloaded, pipeline and skip
-	 * start = startscreen -> convertwindow
-	 * pipeline = starts the pipeline, convert + load into database
-	 * skip = skips the convertwindow and goes immediately to load files into database window
+	 * state can be start, downloaded, pipeline and skip start = startscreen ->
+	 * convertwindow pipeline = starts the pipeline, convert + load into
+	 * database skip = skips the convertwindow and goes immediately to load
+	 * files into database window
 	 */
 	private String state = "start";
 	public String status = "bla";
 	public GidsConvertor gc;
 	public String wait = "no";
 	public String invName = "";
-	public String [] arrayMeasurements;
+	public ArrayList<String> arrayMeasurements = new ArrayList<String>();
 	List<String> listNewMeas = new ArrayList<String>();
 	private File fileData;
 	private String individualName;
 	private String father;
 	private String mother;
 	private String sampleName;
+	private String dob;
+	private String gender;
+	File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+	File output = new File(tmpDir + File.separator + "output.txt");
+
+	public String getDob()
+	{
+		return dob;
+	}
+
+	public String getGender()
+	{
+		return gender;
+	}
+
 	private String TAB = "\t";
 	private String COMMA = ",";
 	private String SEMICOLON = ";";
 	public String checkNewData = "";
 	private String delimeter;
-	private String [] arrayDelimeter = {",","tab",";"};
-	private String [] arrayChooseTable = {"Individuals", "Samples"};
-	private HashMap<String,String> hashStep2 = new HashMap<String, String>();
-	private HashMap<String,String> hashTargets = new HashMap<String, String>();
+	private String[] arrayDelimeter =
+	{ ",", "tab", ";" };
+	private String[] arrayChooseTable =
+	{ "Individuals", "Samples" };
+	private HashMap<String, String> hashAdvancedOptions = new HashMap<String, String>();
+	private HashMap<String, String> hashTargetsandParents = new HashMap<String, String>();
 	private List<String> sampleMeasList = new ArrayList<String>();
 	private List<String> indvMeasList = new ArrayList<String>();
 	List<String> measInDb = new ArrayList<String>();
-	private HashMap<String,String> hashChangeMeas = new HashMap<String, String>();
+	private HashMap<String, String> hashChangeMeas = new HashMap<String, String>();
 	private String existinv;
 	private String newinv;
 	private List<Conflicts> listConflicts = new ArrayList<Conflicts>();
-	
-	public String[] getArrayChooseTable() {
+
+	private CsvTable csvTable = null;
+
+	public String[] getArrayChooseTable()
+	{
 		return arrayChooseTable;
 	}
 
-	public void setArrayChooseTable(String[] arrayChooseTable) {
+	public void setArrayChooseTable(String[] arrayChooseTable)
+	{
 		this.arrayChooseTable = arrayChooseTable;
 	}
 
@@ -110,8 +126,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
-	public GidsConvertor getGC() {
+
+	public GidsConvertor getGC()
+	{
 		return this.gc;
 	}
 
@@ -128,170 +145,260 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws DatabaseException
+	public void handleRequest(Database db, Tuple request) throws DatabaseException, IOException
 	{
 		logger.info("#######################");
 		String action = request.getString("__action");
-		
+
 		PM_Updater pm = new PM_Updater();
-		
-		
-		try {
-			if(db.query(Investigation.class).eq(Investigation.NAME, "Shared").count() ==0){
+
+		PrintWriter out = new PrintWriter(new FileWriter(output));
+		try
+		{
+			if (db.query(Investigation.class).eq(Investigation.NAME, "Shared").count() == 0)
+			{
 				Investigation i = new Investigation();
 				i.setName("Shared");
-				db.add(i);	
+				db.add(i);
 			}
-			
-			//goes to the load files into database screen
-			if(action.equals("step4")){
+
+			// goes to the load files into database screen
+			if (action.equals("step4"))
+			{
 				state = "skip";
 				status = "bla";
 			}
-			
-			if(action.equals("skip")){
+
+			if (action.equals("skip"))
+			{
 				state = "skip";
 				status = "bla";
 			}
-			if (action.equals("clean") ){		
-				//state = start;
+			if (action.equals("clean"))
+			{
+				// state = start;
 				status = "bla";
 			}
-			//goes back to the startscreen
-			if(action.equals("reset")){
+			// goes back to the startscreen
+			if (action.equals("reset"))
+			{
 				state = "start";
 				status = "bla";
-			}	
-			
-			/* 
-			 * Runs pipeline, data will be converted to 3 different files; individual.txt, measurement.txt and observedvalue.txt
-			 * if all the measurements already exist, then there will be no measurement.txt made.
+			}
+
+			/*
+			 * Runs pipeline, data will be converted to 3 different files;
+			 * individual.txt, measurement.txt and observedvalue.txt if all the
+			 * measurements already exist, then there will be no measurement.txt
+			 * made.
 			 */
-			if(action.equals("goToStep2")){		
-				fileData = request.getFile("convertData");	
+			if (action.equals("goToStep2"))
+			{
+				fileData = request.getFile("convertData");
 				String fileName = fileData.toString();
-				if(request.getString("checkNewData")!=null){
+				if (request.getString("checkNewData") != null)
+				{
 					checkNewData = "true";
 					System.out.println("TRUE TRUE TRUE");
-				}else{
+				}
+				else
+				{
 					System.out.println("FALSE FALSE FALSE");
 					checkNewData = "false";
 				}
-				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
+				BufferedReader buffy = new BufferedReader(new FileReader(fileName));
 				delimeter = request.getString("delimeter");
-				
-				if(delimeter.equals("tab")){
+
+				if (delimeter.equals("tab"))
+				{
 					delimeter = TAB;
 				}
-				if(delimeter.equals(",")){
+				if (delimeter.equals(","))
+				{
 					delimeter = COMMA;
 				}
-				if(delimeter.equals(";")){
+				if (delimeter.equals(";"))
+				{
 					delimeter = SEMICOLON;
 				}
-				else if(delimeter.equals("choose the delimeter")){
+				else if (delimeter.equals("choose the delimeter"))
+				{
 					this.setMessages(new ScreenMessage("No delimeter is chosen, delimeter is set to semicolon", true));
 					delimeter = SEMICOLON;
 				}
-				for(int x =0; x<1; x++){
-					String line = buffy.readLine();
-					arrayMeasurements = line.split(delimeter);
-					
-					setNewinv(request.getString("createNewInvest"));
-					setExistinv(request.getString(request.getString("investigation")));
-					checkInvestigation(db,request);
-					
-					state="inStep2";
 
-				}			
+				csvTable = new CsvTable(new File(fileName));
+
+				for (Field field : csvTable.getAllColumns())
+				{
+					arrayMeasurements.add(field.getName());
+				}
+				// String line = buffy.readLine();
+				// arrayMeasurements = line.split(delimeter);
+
+				setNewinv(request.getString("createNewInvest"));
+				setExistinv(request.getString(request.getString("investigation")));
+				checkInvestigation(db, request);
+
+				state = "inStep2";
+
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			throw new DatabaseException(e);
 		}
 
-		if(action.equals("goToStep3")){	
+		if (action.equals("goToStep3"))
+		{
 			listNewMeas = new ArrayList<String>();
-			hashStep2.put("individual",request.getString("individual"));
-			hashStep2.put("sample",request.getString("sample"));
-			hashStep2.put("father",request.getString("father"));
-			hashStep2.put("mother",request.getString("mother"));
-			for (String e : arrayMeasurements){
-				if(db.query(Measurement.class).eq(Measurement.NAME, e).count() == 0){
-					if(!e.equals(hashStep2.get("individual"))&& !e.equals(hashStep2.get("sample"))&&
-							!e.equals(hashStep2.get("father"))&& !e.equals(hashStep2.get("mother"))){
-						
+			hashTargetsandParents.put("individual", request.getString("individual"));
+			hashTargetsandParents.put("sample", request.getString("sample"));
+
+			if (request.getString("father") != null)
+			{
+				hashTargetsandParents.put("father", request.getString("father"));
+			}
+			if (request.getString("mother") != null)
+			{
+				hashTargetsandParents.put("mother", request.getString("mother"));
+			}
+
+			// ADVANCED OPTIONS
+			if (request.getString("dob") != null)
+			{
+				hashAdvancedOptions.put("dob", request.getString("dob"));
+			}
+			if (request.getString("gender") != null)
+			{
+				hashAdvancedOptions.put("gender", request.getString("gender"));
+			}
+
+			for (String e : arrayMeasurements)
+			{
+
+				// The measurements individual,sample,father,mother,dob and
+				// gender are already assigned to individual
+				// that's why it should not be displayed in the next screen
+				if (db.query(Measurement.class).eq(Measurement.NAME, e).count() == 0)
+				{
+					if (!e.equals(hashTargetsandParents.get("individual"))
+							&& !e.equals(hashTargetsandParents.get("sample"))
+							&& !e.equals(hashTargetsandParents.get("mother"))
+							&& !e.equals(hashTargetsandParents.get("father")))
+					{
 						listNewMeas.add(e);
 					}
+
 				}
 			}
-			
+
+			List<Tuple> existingEntries = null;
+
+			if (hashAdvancedOptions.size() == 2)
+			{
+				CheckDOBandGender c = new CheckDOBandGender(db);
+				existingEntries = c.checkGenderAndDOB(csvTable, hashAdvancedOptions.get("dob"),
+						hashAdvancedOptions.get("gender"));
+				for (Tuple l : existingEntries)
+				{
+					out.print(l.toString());
+				}
+				out.close();
+			}
+
+			else if (hashAdvancedOptions.size() == 1)
+			{
+				// PLEASE PROVIDE BOTH THE COLUMNS
+			}
+
 			List<Measurement> mList = db.find(Measurement.class);
-			int teller=0;
-			for(Measurement s:mList){
-				if(!measInDb.contains(s)){
+			int teller = 0;
+			for (Measurement s : mList)
+			{
+				if (!measInDb.contains(s))
+				{
 					measInDb.add(mList.get(teller).getName());
 				}
 				teller++;
 			}
-			
-			
-			state= "inStep3";
-		}
-		int teller=0;
 
-		if(action.equals("run pipeline")){	
-			try {				
-				//convert csv file into different txt files
-				individualName = hashStep2.get("individual");
-				sampleName = hashStep2.get("sample");
-				father = hashStep2.get("father");
-				mother = hashStep2.get("mother");
+			state = "inStep3";
+		}
+		int teller = 0;
+
+		if (action.equals("run pipeline"))
+		{
+			try
+			{
+				// convert csv file into different txt files
+				individualName = hashAdvancedOptions.get("individual");
+				sampleName = hashAdvancedOptions.get("sample");
+				father = hashAdvancedOptions.get("father");
+				mother = hashAdvancedOptions.get("mother");
 				sampleMeasList.add(individualName);
-				String knownMeas = "";			
-					if(listNewMeas.size()!=0){
-						for (String e : listNewMeas){
-							
-							Boolean c = request.getBoolean("checker"+teller);
-							if(c!=null){
-								knownMeas = request.getString("dropbox"+teller);
-								hashChangeMeas.put(e, knownMeas);
-							}else{
-								String bla = request.getString(e);
-								if(bla.equals("Samples")){
-									sampleMeasList.add(e);
-								}
-								else{
-									indvMeasList.add(e);
-								}
-							teller++;
+				String knownMeas = "";
+				if (listNewMeas.size() != 0)
+				{
+					for (String e : listNewMeas)
+					{
+
+						Boolean c = request.getBoolean("checker" + teller);
+						if (c != null)
+						{
+							knownMeas = request.getString("dropbox" + teller);
+							hashChangeMeas.put(e, knownMeas);
+						}
+						else
+						{
+							String bla = request.getString(e);
+							if (bla.equals("Samples"))
+							{
+								sampleMeasList.add(e);
 							}
+							else
+							{
+								indvMeasList.add(e);
+							}
+							teller++;
 						}
 					}
-					gc = new GidsConvertor();
-					listConflicts = gc.converter(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList,indvMeasList,hashChangeMeas,this,checkNewData);		   									
-					if(!state.equals("error")){
-						if(listConflicts.size()==0){
-							state = "xxxx";
-						}else{
-							state = "updating";
-						}
+				}
+				gc = new GidsConvertor();
+				listConflicts = gc.converter(fileData, invName, db, individualName, father, mother, sampleName,
+						sampleMeasList, indvMeasList, hashChangeMeas, this, checkNewData);
+				if (!state.equals("error"))
+				{
+					if (listConflicts.size() == 0)
+					{
+						state = "xxxx";
 					}
-			}	
-			catch(Exception e){
+					else
+					{
+						state = "updating";
+					}
+				}
+			}
+			catch (Exception e)
+			{
 				this.setMessages(new ScreenMessage(e.getMessage(), false));
 			}
 		}
 		String b = "";
 
-		
-		if(action.equals("runUpdated")){
-			if(listConflicts.size()!=0){
-				for(Conflicts con : listConflicts){
-					b = request.getString(con.getTarget()+con.getFeatureName());
-					if(b.equals("oldValue")){
-					
+		if (action.equals("runUpdated"))
+		{
+			if (listConflicts.size() != 0)
+			{
+				for (Conflicts con : listConflicts)
+				{
+					b = request.getString(con.getTarget() + con.getFeatureName());
+					if (b.equals("oldValue"))
+					{
+
 					}
-					else{
+					else
+					{
 						Query<ObservedValue> testValue = db.query(ObservedValue.class);
 						testValue.addRules(new QueryRule(ObservedValue.ID, Operator.EQUALS, con.getId()));
 						ObservedValue newValue = testValue.find().get(0);
@@ -303,171 +410,221 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			state = "xxxx";
 
 		}
-		if(state.equals("xxxx")){
+		if (state.equals("xxxx"))
+		{
 			File dir = gc.getDir();
-			System.out.println("ABSOLUTE PATH: "  +dir.getAbsolutePath());
+			System.out.println("ABSOLUTE PATH: " + dir.getAbsolutePath());
 			state = "start";
-			try{
+			try
+			{
 				CsvImport.importAll(dir, db, null);
 				dir = null;
 				redirectToInvestigationPage(request);
-			}catch(Exception e){
-				if(e.getMessage().startsWith("Tried to add existing Individual elements as new insert:")){
+			}
+			catch (Exception e)
+			{
+				if (e.getMessage().startsWith("Tried to add existing Individual elements as new insert:"))
+				{
 					this.setMessages(new ScreenMessage("The individuals already exist in the database", false));
 				}
 			}
 		}
-					
-		if (action.equals("emptyDB") ){
-			try {
-				if(db.count(Investigation.class)!=0){
+
+		if (action.equals("emptyDB"))
+		{
+			try
+			{
+				if (db.count(Investigation.class) != 0)
+				{
 					new emptyDatabase(db, false);
 					FillMetadata.fillMetadata(db, false);
-					
+
 					this.setMessages(new ScreenMessage("empty database succesfully", true));
 				}
-				else{
+				else
+				{
 					this.setMessages(new ScreenMessage("database is empty already", true));
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
-			}	
-		}					
+			}
+		}
 	}
-	
-	public String getExistinv() {
+
+	public String getExistinv()
+	{
 		return existinv;
 	}
 
-	public void setExistinv(String existinv) {
+	public void setExistinv(String existinv)
+	{
 		this.existinv = existinv;
 	}
 
-	public String getNewinv() {
+	public String getNewinv()
+	{
 		return newinv;
 	}
 
-	public void setNewinv(String newinv) {
+	public void setNewinv(String newinv)
+	{
 		this.newinv = newinv;
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		
+
 		setInvestigations(new ArrayList<Investigation>());
-		try {
+		try
+		{
 			setInvestigations(db.query(Investigation.class).find());
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 
 			e.printStackTrace();
-		} 
+		}
 	}
-	
-	public void checkInvestigation(Database db, Tuple request) throws DatabaseException{
 
-		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
-			invName = request.getString("investigation");	
+	public void checkInvestigation(Database db, Tuple request) throws DatabaseException
+	{
+
+		if (!request.getString("investigation").equals("")
+				&& !request.getString("investigation").equals("select investigation"))
+		{
+			invName = request.getString("investigation");
 
 		}
-		else{
+		else
+		{
 			invName = request.getString("createNewInvest");
 			Investigation inve = new Investigation();
 			inve.setName(newinv);
 			db.add(inve);
 			Protocol prot = new Protocol();
 			prot.setName(invName);
-			
+
 			prot.setInvestigation(inve);
-	
+
 			db.add(prot);
 
 		}
 	}
-	
-	public void redirectToInvestigationPage(Tuple request){
 
-		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-		HttpServletRequest httpRequest   = rt.getRequest();
+	public void redirectToInvestigationPage(Tuple request)
+	{
+
+		HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+		HttpServletRequest httpRequest = rt.getRequest();
 
 		// get the http response that is used in this handleRequest
 		HttpServletResponse httpResponse = rt.getResponse();
-		
-		String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getName() + "&__action=mainmenu&select=investigation";
-		try {
+
+		String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getName()
+				+ "&__action=mainmenu&select=investigation";
+		try
+		{
 			httpResponse.sendRedirect(returnURL);
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	public void setError(String error){
+
+	public void setError(String error)
+	{
 		this.setMessages(new ScreenMessage(error, false));
-		state="error";
+		state = "error";
 	}
-	
-	public GidsConvertor getGc() {
+
+	public GidsConvertor getGc()
+	{
 		return gc;
 	}
 
-	public String getInvName() {
+	public String getInvName()
+	{
 		return invName;
 	}
 
-
-	public String[] getArrayMeasurements() {
-		return arrayMeasurements;
-	}
-
-	public List<String> getListNewMeas() {
+	public List<String> getListNewMeas()
+	{
 		return listNewMeas;
 	}
 
-	public void setListNewMeas(List<String> listNewMeas) {
+	public ArrayList<String> getArrayMeasurements()
+	{
+		return arrayMeasurements;
+	}
+
+	public void setArrayMeasurements(ArrayList<String> arrayMeasurements)
+	{
+		this.arrayMeasurements = arrayMeasurements;
+	}
+
+	public void setListNewMeas(List<String> listNewMeas)
+	{
 		this.listNewMeas = listNewMeas;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(String status)
+	{
 		this.status = status;
 	}
 
-	public void setInvestigations(List<Investigation> investigations) {
+	public void setInvestigations(List<Investigation> investigations)
+	{
 		this.investigations = investigations;
 	}
 
-	public List<Investigation> getInvestigations() {
+	public List<Investigation> getInvestigations()
+	{
 		return investigations;
 	}
-	public void setState(String state) {
+
+	public void setState(String state)
+	{
 		this.state = state;
 	}
-	public String getState() {
+
+	public String getState()
+	{
 		return state;
 	}
-	public String getStatus() {
+
+	public String getStatus()
+	{
 		return status;
 	}
 
-	public String[] getArrayDelimeter() {
+	public String[] getArrayDelimeter()
+	{
 		return arrayDelimeter;
 	}
 
-	public List<String> getMeasInDb() {
+	public List<String> getMeasInDb()
+	{
 		return measInDb;
 	}
 
-	public void setMeasInDb(List<String> measInDb) {
+	public void setMeasInDb(List<String> measInDb)
+	{
 		this.measInDb = measInDb;
 	}
 
-	public List<Conflicts> getListConflicts() {
+	public List<Conflicts> getListConflicts()
+	{
 		return listConflicts;
 	}
 
-	public void setListConflicts(List<Conflicts> listConflicts) {
+	public void setListConflicts(List<Conflicts> listConflicts)
+	{
 		this.listConflicts = listConflicts;
 	}
-	
-}
 
+}
