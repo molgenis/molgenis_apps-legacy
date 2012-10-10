@@ -20,6 +20,27 @@
 	<p class="errormessage">${message.text}</p>
 		</#if>
 	</#list>
+	<#assign imgM = "res/img/toggle_expand_tiny.png">;
+	<#assign imgP = "res/img/toggle_collapse_tiny.png">;
+	
+	
+		<script>
+            $(document).ready(function() {
+                $('.expand').click(function() {
+				
+        			$('#showHideAdvanced').toggle();
+                   
+                    if(  $(this).attr('src') == '${imgP}' ) {
+						 $(this).attr('src', '${imgM}');
+					} else {
+						$(this).attr('src', '${imgP}');
+					}
+                }
+            );
+            });
+    </script>	
+		
+		
 		
 	<div class="screenbody">
 		<div class="screenpadding">	
@@ -66,6 +87,7 @@
 		
 		<#-- select investigation and inputfile -->
 		<#elseif screen.state ="start">
+		
 			<h2>Convert csv to phenomodel</h2>
 			<div id="investigationdiv" class="row">
 				<label for="investigation">Investigation:</label>
@@ -173,57 +195,87 @@
 					</td>
 				</tr>
 			</table>
-			<br /><br />
-			
-			<div style="margin-top:6px; border-style:outset; border-width:3px; width:330px" >
-				<label>*Optional</label><br />
-				<div> 
+			<br />
+			<p style="font-style:italic">If you have a father and/or mother column please select</p>
+			<!-- select mother-->
+				<div style="margin-top:10px">
 					<label for="mother"> Select the mother:</label>
 					<select name="mother" id="mother" style="margin-right:10px">
-						<#if screen.arrayMeasurements?seq_contains('id_mother')>
-							<option value="id_mother">id_mother</option>
-						<#else>
-						<option value="select father"</option>
+					<option value=""/>
 							<#list screen.arrayMeasurements as mother>
 								<option value="${mother}">${mother}</option>			
 							</#list>
-						</#if>
 					</select>
-					<#if screen.arrayMeasurements?seq_contains('id_mother')>
-						<a style="color:green; font-size:9px">mother found</a>
-						<#else>
-						<br>
-						<a style="color:red; font-size:9px">&nbsp; mother not found, please select from dropdown or leave it blank</a>
-					</#if>
-				</div>
-				<br />
-				<div style="margin-bottom:10px">
+				</div>		
+		<!-- select father-->
+				<div style="margin-bottom:10px;margin-top:5px">
 					<label for="father"> Select the father:&nbsp;&nbsp;</label>
 					<select name="father" id="father" style="margin-right:5px"> 
-						<#if screen.arrayMeasurements?seq_contains('id_father')>
-							<option value="id_father">id_father</option>
-						<#else>
-						<option value="select father"</option>
+					<option value=""/>
 							<#list screen.arrayMeasurements as father>
 								<option value="${father}">${father}</option>			
 							</#list>
-							
-						</#if>
-					</select>
-					<#if screen.arrayMeasurements?seq_contains('id_father')>
-						<a style="color:green; font-size:9px">&nbsp; father found</a>
-						<#else>
-						<br>
-						<a style="color:red; font-size:9px">&nbsp; father not found, please select from dropdown or leave it blank</a>
-					</#if>
+					</select>		
 				</div>
-			</div>
-			<br />
+			<img id="imgExpand" class="expand" src="${imgM}"/>
+			<label>Advanced Options</label><br />
+			<div id="showHideAdvanced" style="margin-top:6px; display:none;  border-style:outset; border-width:3px; width:630px" >			
+		
+				<hr>		
+				<p style="font-style:italic">For checking if the individual already is in the database please select 
+				the date of birth and the gender column in the file
+				</p>
+					
+		<!-- select date of birth-->	
+				<div style="margin-top:10px">
+					<label for="dob"> Select the date of birth:</label>
+					<select name="dob" id="dob" style="margin-right:10px">
+					<option value=""/>
+							<#list screen.arrayMeasurements as dob>
+								<option value="${dob}">${dob}</option>			
+							</#list>
+					</select>
+				</div>
+		<!-- select Gender-->	
+				<div style="margin-top:10px">
+					<label for="gender"> Select the gender:</label>
+					<select name="gender" id="gender" style="margin-right:10px">
+						<option value=""/>
+							<#list screen.arrayMeasurements as gender>
+								<option value="${gender}">${gender}</option>			
+							</#list>						
+					</select>
+				</div>
+			</div> <!--close the advanced screen -->
+
 			<div style="margin-top:20px" id="converter" class="row" >			
 				<input type='submit' class='addbutton' value='next' onclick="__action.value='goToStep3'"/>
+			</div>
+			<!-- select DOB-->
+				<!--<div style="margin-top:10px">
+					<label for="dob"> Select the date of birth:</label>
+					<select name="dob" id="dob" style="margin-right:10px">
+						<!--<#if screen.arrayMeasurements?seq_contains('date_of_birth')>
+							<option value="id_mother">date_of_birth</option>
+						<#else>
+						<option value="select date_of_birth"</option>
+							<#list screen.arrayMeasurements as mother>
+								<option value="${dob}">${dob}</option>			
+							</#list>
+						<!--</#if>
+					</select>
+					
+					<#if screen.arrayMeasurements?seq_contains('date_of_birth')>
+						<a style="color:green; font-size:9px">date_of_birth found</a>
+						<#else>
+						<br>
+						<a style="color:red; font-size:9px">&nbsp; date_of_birth not found, please select from dropdown or leave it blank</a>
+					</#if>
+					
+					<br />
+				</div>-->
+			
 				
-				<br />
-			</div>	
 			<#if screen.status="downloaded">
 				<div style="margin-top:22px">
 					<#if screen.gc.listSizeTargets gt 0>
