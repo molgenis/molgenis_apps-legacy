@@ -17,27 +17,27 @@
 			</form>
 			<menu name="BasicAnnotations" label="Identifiers" header="Navigate identifiers"> <!-- header does not work yet for menu -->
 				<form name="Individuals" entity="Individual" group="biologist" />
-				<form name="Panels" entity="Panel" label="Strains (panels)" group="biologist" />
-				<form name="Chromosomes" entity="Chromosome" group="biologist" />
-				<form name="Markers" entity="Marker" group="biologist" />
-				<form name="Genes" entity="Gene" group="biologist">
+				<form name="Panels" description="Worm strains of which data has been stored in WormQTL.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to view one item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Panel" label="Strains (panels)" group="biologist" view="list" />
+				<form name="Chromosomes" description="Chromosomes of C. elegans, WormBase release WS220.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to view one item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Chromosome" group="biologist" view="list" />
+				<form name="Markers" description="Genetic markers used in one or more of the populations stored in WormQTL.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to view one item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Marker" group="biologist" view="list" />
+				<form name="Genes" description="WormBase genes, annotated with ontologies and positional information.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to plot an item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Gene" group="biologist" view="list">
 					<plugin name="LinkBackGenes" label="Create plot" type="plugins.qtlfinder2.linkback.LinkBack" group="biologist" />
 					<form name="Transcripts" entity="Transcript" group="biologist" />
 				</form>
-				<form name="Measurements" entity="Measurement" hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation" group="biologist">
+				<form name="Measurements" description="'Classical' (non-omics) phenotypes measured in experiments.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to plot an item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Measurement" hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation" group="biologist" view="list">
 					<plugin name="LinkBackMeasurements" label="Create plot" type="plugins.qtlfinder2.linkback.LinkBack" group="biologist" />
 				</form>
-				<form name="DerivedTraits" entity="DerivedTrait" group="biologist" />
+				<form name="DerivedTraits" description="Phenotypes derived from measured traits.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to view one item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="DerivedTrait" group="biologist" view="list" />
 				<form name="EnvironmentalFactors" entity="EnvironmentalFactor" group="biologist" />
 				<form name="MassPeaks" entity="MassPeak" group="biologist" />
 				<form name="Metabolites" entity="Metabolite" group="biologist" />
-				<form name="Probes" entity="Probe" group="biologist">
+				<form name="Probes" description="Micro-array probes blasted against WS220 and linked to the genes, used for gene expression phenotypes and eQTLs.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to plot an item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Probe" group="biologist" view="list">
 					<plugin name="LinkBackProbes" label="Create plot" type="plugins.qtlfinder2.linkback.LinkBack" group="biologist" />
 				</form>
 				<form name="ProbeSets" entity="ProbeSet" group="biologist" />
 				<form name="SNPs" entity="SNP" group="biologist" />
 				<form name="Polymorphisms" entity="Polymorphism" group="biologist" />
-				<form name="Samples" entity="Sample" group="biologist" />
+				<form name="Samples" description="Strains and the experiments/measurements/micro-arrays they were used in.&lt;br&gt;Click on &lt;img src=\&quot;generated-res/img/recordview.png\&quot;/&gt; to view one item, and on &lt;img src=\&quot;generated-res/img/listview.png\&quot;/&gt; to return to this list." entity="Sample" group="biologist" view="list" />
 				<form name="Spots" entity="Spot" group="biologist" />
 			</menu>
 		</menu>
