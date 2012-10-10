@@ -105,7 +105,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 
 	@Override
 	public String getViewName() {
-		return "plugins_catalogueTree_catalogueTreePlugin";
+		return "plugins_catalogueTree_CatalogueTreePlugin";
 	}
 
 	@Override
