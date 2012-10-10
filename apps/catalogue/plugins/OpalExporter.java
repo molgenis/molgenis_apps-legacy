@@ -108,7 +108,8 @@ public class OpalExporter {
 
 					variableSheet.addCell(new Label(0, rowIndex, p.getName()));
 
-					variableSheet.addCell(new Label(1, rowIndex, m.getName()));
+					variableSheet.addCell(new Label(1, rowIndex, m.getName()
+							.toLowerCase()));
 
 					String dataType = m.getDataType();
 					if (dataType.equals("string")) {
@@ -123,10 +124,13 @@ public class OpalExporter {
 
 					variableSheet.addCell(new Label(2, rowIndex, dataType));
 
-					String unit = "";
-					if (m.getUnit_Name() != null)
-						unit = m.getUnit_Name();
-					variableSheet.addCell(new Label(3, rowIndex, unit));
+					if (m.getUnit_Name() != null) {
+						String unit = m.getUnit_Name();
+						variableSheet.addCell(new Label(3, rowIndex, unit));
+					}
+					if (m.getDescription() != null)
+						variableSheet.addCell(new Label(4, rowIndex, m
+								.getDescription()));
 
 					rowIndex++;
 
@@ -140,8 +144,9 @@ public class OpalExporter {
 						for (Category c : listOfCategorys) {
 							categorySheet.addCell(new Label(0,
 									categoryRowIndex, p.getName()));
-							categorySheet.addCell(new Label(1,
-									categoryRowIndex, m.getName()));
+							categorySheet
+									.addCell(new Label(1, categoryRowIndex, m
+											.getName().toLowerCase()));
 							categorySheet.addCell(new Label(2,
 									categoryRowIndex, c.getName()));
 							categorySheet.addCell(new Label(3,

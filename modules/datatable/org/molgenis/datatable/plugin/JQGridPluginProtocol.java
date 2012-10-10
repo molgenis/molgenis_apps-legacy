@@ -1,19 +1,29 @@
 package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
+import java.util.List;
 
 import org.molgenis.datatable.model.ProtocolTable;
+import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
+import org.molgenis.model.elements.Field;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
 /** Simple plugin that only shows a data table for testing */
-public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProtocol>
+public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProtocol> implements JQGridViewCallback
 {
 	private static final long serialVersionUID = 1678403545717313675L;
 	private JQGridView tableView;
@@ -90,5 +100,43 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 		view.add(tableView);
 
 		return view;
+	}
+
+	@Override
+	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable)
+	{
+		@SuppressWarnings("unchecked")
+		List<Measurement> selectedMeasurements = (List<Measurement>) request.getRequest().getSession()
+				.getAttribute("selectedMeasurements");
+
+		if (selectedMeasurements != null)
+		{
+			try
+			{
+				for (final Field field : tupleTable.getAllColumns())
+				{
+					Measurement measurement = Iterables.find(selectedMeasurements, new Predicate<Measurement>()
+					{
+						@Override
+						public boolean apply(Measurement m)
+						{
+							return m.getName().equals(field.getName());
+						}
+
+					}, null);
+
+					if (measurement == null)
+					{
+						tupleTable.hideColumn(field.getName());
+					}
+				}
+			}
+			catch (TableException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
 	}
 }
