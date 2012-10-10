@@ -273,7 +273,6 @@
 				
 				var variableID = listOfVariables[i];
 				
-
 				var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
 			
 				$('#' + uniqueID + '>span').trigger('click');
@@ -543,9 +542,7 @@
  							here first and create the detailed table!-->
  				<script>
  				
-					
-			      	
-			      	$('#browser').find('li').each(function(){
+					$('#browser').find('li').each(function(){
 			      		
 			      		if($(this).find('li').length == 0){
 			      			
