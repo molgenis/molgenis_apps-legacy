@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import jxl.Sheet;
 
-import org.hibernate.mapping.Array;
 import org.molgenis.auth.Institute;
 import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
@@ -21,6 +20,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.model.MolgenisModelException;
+import org.molgenis.model.elements.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
@@ -195,6 +196,22 @@ public class TableController {
 		referenceFields.add(Protocol.SUBPROTOCOLS_NAME);
 		referenceFields.add(Measurement.CATEGORIES_NAME);
 		referenceFields.add(Measurement.UNIT_NAME);
+		
+		Measurement meas = new Measurement();
+		
+		for(String eachField : meas.getFields()){
+			
+			Field f = new Field(eachField);
+			try {
+				System.out.println(f.getXrefEntityName());
+				System.out.println(f.getXrefField());
+				System.out.println(f.getXrefEntity());
+			} catch (MolgenisModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 
 		//listOfInstitue.get(0).getLabelValue();
 

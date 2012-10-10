@@ -14,7 +14,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.services.PubmedService;
 import org.molgenis.services.pubmed.Author;
 import org.molgenis.services.pubmed.PubmedArticle;
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,8 +26,8 @@ public class PublicationService
 	private final int BATCH_SIZE = 50;
 	public static final String PUBMED_URL = "http://www.ncbi.nlm.nih.gov/pubmed/";
 
-	@Autowired
-	public PublicationService(final Database db)
+	//@Autowired
+	public void setDatabase(final Database db)
 	{
 		this.db = db;
 		this.em = db.getEntityManager();
@@ -63,6 +63,11 @@ public class PublicationService
 
 			return count;
 		}
+		catch (NumberFormatException e)
+		{
+			e.printStackTrace();
+			throw new PublicationServiceException("Not a valid number: " + e.getMessage());
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -92,10 +97,13 @@ public class PublicationService
 	public PublicationDTO publicationToPublicationDTO(final Publication publication)
 	{
 		PublicationDTO publicationDTO = new PublicationDTO();
+		publicationDTO.setId(publication.getId());
 		publicationDTO.setAuthors(publication.getAuthorList());
+		publicationDTO.setFirstAuthor(StringUtils.split(publication.getAuthorList(), ",")[0]);
 		publicationDTO.setJournal(publication.getJournal());
 		publicationDTO.setName(publication.getName());
 		publicationDTO.setPubmedId(publication.getName());
+		publicationDTO.setPubmedUrl(PublicationService.PUBMED_URL + publicationDTO.getPubmedId());
 //		if (publication.getPubmedID_Id() != null)
 //		{
 //			try
@@ -203,7 +211,7 @@ public class PublicationService
 			throw new PublicationServiceException(e.getMessage());
 		}
 	}
-	
+
 	public List<Publication> pubmedIdListToPublicationList(final List<String> pubmedStringList)
 	{
 		try
@@ -233,7 +241,40 @@ public class PublicationService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			throw new PublicationServiceException(e.getMessage());
+			throw new PublicationServiceException(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+	}
+
+	public List<Publication> pubmedIdListToPublicationListLocal(final List<String> pubmedStringList)
+	{
+		try
+		{
+			List<Integer> pubmedIdList  = new ArrayList<Integer>();
+	
+			for (String pubmed : pubmedStringList)
+			{
+				if (StringUtils.isEmpty(pubmed))
+					continue;
+				pubmedIdList.add(Integer.parseInt(pubmed));
+			}
+
+			List<Publication> publicationList  = new ArrayList<Publication>();
+
+			for (Integer pubmedId : pubmedIdList)
+			{
+				Publication publication = new Publication();
+				publication.setName(pubmedId.toString());
+				publication.setTitle("The Pubmed article formerly known as " + pubmedId);
+				
+				publicationList.add(publication);
+			}
+
+			return publicationList;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new PublicationServiceException(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 	}
 }

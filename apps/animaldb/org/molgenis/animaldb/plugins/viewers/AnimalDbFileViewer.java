@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.List;
 
+import org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewerModel;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormController;
@@ -21,10 +22,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 
-import app.servlet.MolgenisServlet;
 import decorators.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
 
@@ -89,7 +88,7 @@ public class AnimalDbFileViewer extends PluginModel<Entity>
 				{
 					throw new FileNotFoundException("No file selected");
 				}
-				
+
 				PerformUpload.doUpload(db, this.model.getMolgenisFile(), file, false);
 				this.setMessages(new ScreenMessage("File uploaded", true));
 			}
@@ -109,18 +108,20 @@ public class AnimalDbFileViewer extends PluginModel<Entity>
 
 		try
 		{
-			
-			if(this.model.getShowApplet() == null){
+
+			if (this.model.getShowApplet() == null)
+			{
 				this.model.setShowApplet(false);
 			}
-			
+
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent();
-			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController)parentController).getModel();
-	
+			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController) parentController)
+					.getModel();
+
 			List<MolgenisFile> molgenisFileList = parentForm.getRecords();
 			MolgenisFile molgenisFile = null;
-			
-			if(molgenisFileList.size() == 0)
+
+			if (molgenisFileList.size() == 0)
 			{
 				return;
 			}
@@ -138,7 +139,7 @@ public class AnimalDbFileViewer extends PluginModel<Entity>
 
 			boolean hasFile = false;
 			File theFile = null;
-			
+
 			try
 			{
 				theFile = mfh.getFile(molgenisFile, db);
@@ -152,11 +153,11 @@ public class AnimalDbFileViewer extends PluginModel<Entity>
 
 			this.model.setHasFile(hasFile);
 
-			if(hasFile)
+			if (hasFile)
 			{
 				this.model.setFileSize(theFile.length());
 			}
-			
+
 		}
 		catch (Exception e)
 		{
