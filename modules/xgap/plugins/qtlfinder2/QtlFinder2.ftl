@@ -552,7 +552,7 @@
 						<#assign html = "<html><head><title>QTL cis-trans plot</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="220" height="200">
-						</a><br>
+						</a>
 					</#if>
 				</td>
 				<td>
@@ -561,7 +561,7 @@
 						<#assign html = "<html><head><title>QTL profile plot</title></head><body><img src=tmpfile/" + model.multiplot.regularPlot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 							<img src="tmpfile/${model.multiplot.regularPlot}" width="220" height="200">
-						</a><br>
+						</a>
 					</#if>
 				</td>
 			</tr>
