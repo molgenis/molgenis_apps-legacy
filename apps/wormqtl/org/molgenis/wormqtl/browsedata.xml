@@ -17,7 +17,7 @@
 			</form>
 			<menu name="BasicAnnotations" label="Identifiers" header="Navigate identifiers"> <!-- header does not work yet for menu -->
 				<form name="Individuals" entity="Individual" group="biologist" />
-				<form name="Panels" entity="Panel" group="biologist" />
+				<form name="Panels" entity="Panel" label="Strains (panels)" group="biologist" />
 				<form name="Chromosomes" entity="Chromosome" group="biologist" />
 				<form name="Markers" entity="Marker" group="biologist" />
 				<form name="Genes" entity="Gene" group="biologist">
