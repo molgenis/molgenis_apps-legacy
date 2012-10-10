@@ -181,6 +181,8 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception
 	{
+		MolgenisRequest req = (MolgenisRequest) request;
+		HttpServletResponse response = req.getResponse();
 
 		appLoc = ((MolgenisRequest) request).getAppLocation();
 
@@ -198,8 +200,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		else if (request.getAction().equals("downloadButtonEMeasure"))
 		{
 			// do output stream ourselves
-			MolgenisRequest req = (MolgenisRequest) request;
-			HttpServletResponse response = req.getResponse();
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
 			Date date = new Date();
 			response.setContentType("application/x-download");
@@ -210,22 +210,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 			// Make E-Measure XML file
 
-			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
-
-			List<Measurement> measurements = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
-					Operator.EQUALS, selectedInvestigation));
-
-			for (Measurement m : measurements)
-			{
-				for (String fieldName : request.getFieldNames())
-				{
-					if (fieldName.startsWith(Measurement.class.getSimpleName() + m.getId()))
-					{
-						selectedMeasList.add(m);
-					}
-				}
-			}
-
+			List<Measurement> selectedMeasList = getSelectedMeasurements(db, request);
 			EMeasure em = new EMeasure(db, "EMeasure_" + dateFormat.format(date));
 
 			String result = em.convert(selectedMeasList);
@@ -319,6 +304,12 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			outSpecial.close();
 			EasyPluginController.HTML_WAS_ALREADY_SERVED = true;
 		}
+		else if (request.getAction().equals("viewButton"))
+		{
+			List<Measurement> selectedMeasurements = getSelectedMeasurements(db, request);
+			req.getRequest().getSession().setAttribute("selectedMeasurements", selectedMeasurements);
+			response.sendRedirect(req.getAppLocation() + "/molgenis.do?__target=main&select=jqGridViewProtocol");
+		}
 
 		// else if ("SaveSelectionSubmit".equals(request.getAction())) {
 		//
@@ -369,6 +360,28 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		// request.getAction().length());
 		// this.deleteShoppingItem(measurementName);
 		// }
+	}
+
+	private List<Measurement> getSelectedMeasurements(Database db, Tuple request) throws DatabaseException
+	{
+
+		List<Measurement> measurements = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+				Operator.EQUALS, selectedInvestigation));
+
+		List<Measurement> selectedMeasurements = new ArrayList<Measurement>();
+
+		for (Measurement m : measurements)
+		{
+			for (String fieldName : request.getFieldNames())
+			{
+				if (fieldName.startsWith(Measurement.class.getSimpleName() + m.getId()))
+				{
+					selectedMeasurements.add(m);
+				}
+			}
+		}
+
+		return selectedMeasurements;
 	}
 
 	@Override
