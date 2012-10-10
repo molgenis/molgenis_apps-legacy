@@ -46,6 +46,7 @@ public class JQGridView extends HtmlWidget
 	private static final int DEFAULT_MAX_VISIBLE_COLUMN_COUNT = 5;
 	private JQGridSearchOptions searchOptions;
 	private int maxVisibleColumnCount = DEFAULT_MAX_VISIBLE_COLUMN_COUNT;
+	private JQGridViewCallback callback;
 
 	/**
 	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
@@ -98,6 +99,11 @@ public class JQGridView extends HtmlWidget
 				return table;
 			}
 		});
+
+		if (hostController instanceof JQGridViewCallback)
+		{
+			callback = (JQGridViewCallback) hostController;
+		}
 	}
 
 	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table,
@@ -140,6 +146,10 @@ public class JQGridView extends HtmlWidget
 			switch (operation)
 			{
 				case LOAD_CONFIG:
+					if (callback != null)
+					{
+						callback.beforeLoadConfig((MolgenisRequest) request, tupleTable);
+					}
 					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 					break;
 				case HIDE_COLUMN:
@@ -272,7 +282,6 @@ public class JQGridView extends HtmlWidget
 					break;
 
 				case ADD_RECORD:
-
 
 					if (!(tupleTable instanceof EditableTupleTable))
 
