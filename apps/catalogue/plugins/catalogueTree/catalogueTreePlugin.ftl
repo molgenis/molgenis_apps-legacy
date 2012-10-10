@@ -273,7 +273,7 @@
 				var variableID = listOfVariables[i];
 				
 				//$('#' + uniqueID + '>span').trigger('click');
-		
+		var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
 				if($('#' + uniqueID + '_row').length == 0){
 					
 					var label = $('#' + variableID).parent().text();
