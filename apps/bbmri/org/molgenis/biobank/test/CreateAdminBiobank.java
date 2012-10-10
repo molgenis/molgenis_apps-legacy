@@ -4,9 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
+
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
@@ -16,13 +16,25 @@ import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
 
+public class CreateAdminBiobank {
+	
+	/**
+	 * Test: Create a new biobank.
+		1. Login as admin (user: BbmriAdmin)
+		2. Go to Admin Biobank 
+		3. Click on the add icon
+		4. Fill in the form and click on save
+		5. Verify that the biobank is present in the list
+		6. Log out and log in as a non-admin user (user: É.)
+		7. Go to Admin Biobank
+		8. Verify that the biobank created in 4. is visible.
+	 */
 
-
-public class TestBiobankData
-{
+	private final String PAGE_LOAD_TIME_OUT = "60000";
+	
 	SeleniumServer server;
 	HttpCommandProcessor proc;
-	Selenium selenium;
+	private Selenium selenium;
 	
 	@BeforeSuite(alwaysRun = true)
 	public void setupBeforeSuite(ITestContext context) {
@@ -56,51 +68,43 @@ public class TestBiobankData
 	
 	@Test
 	public void TestBiobankData() throws FileNotFoundException, SQLException, IOException, Exception {
-		selenium.open("");
-		selenium.waitForPageToLoad("2000");
-		//Thread.sleep(30000);
-		//Assert.assertEquals(selenium.getTitle(), "Catalogue of Dutch biobanks");
-		Assert.assertEquals(selenium.getTitle(), "MOLGENIS load page");
-
-		
-		
-		//update database 
-		/*
-		new Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
-		
-		Database db = DatabaseFactory.create("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
-		
-		MolgenisUser u = new MolgenisUser();
-		u.setName("bbmri");
-		u.setPassword("bbmri");
-		u.setSuperuser(true);
-		u.setFirstname("Margreet");
-		u.setLastname(" Brandsma");
-		u.setEmailaddress("m.brandsma@bbmri.nl");
-		
-		db.add(u);
-		*/
-		
-		//login
-		
+		selenium.open("/molgenis_apps/molgenis.do");
+		selenium.waitForPageToLoad("3000");
 		selenium.open("/molgenis_apps/molgenis.do?__target=main&select=SimpleUserLogin");
-		selenium.waitForPageToLoad("20000");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		
 		selenium.type("username", "admin");
 		selenium.type("password", "admin");
 		selenium.click("id=Login");
 		selenium.waitForPageToLoad("10000");
-		//Thread.sleep(1000);
 	
-		//Browse to Biobank 
-		selenium.open("/molgenis_apps/molgenis.do?__target=main&select=BiobankOverview"); 
+		selenium.open("/molgenis_apps/molgenis.do?__target=main&select=Admin"); 
+		selenium.open("/molgenis_apps/molgenis.do?__target=DataViews&select=AdminCohorts"); 
+
 		selenium.waitForPageToLoad("30000");
 		
-		//add a new record
-		selenium.click("id=Cohorts_edit_new");
-		selenium.waitForPopUp("molgenis_edit_new", "3000");
+		selenium.click("id=AdminCohorts_edit_new");
+		selenium.waitForPopUp("AdminCohorts_edit_new", "3000");
+		selenium.selectWindow("AdminCohorts_edit_new");
+	
+		selenium.focus("id=owns");
+		selenium.type("id=owns", "AllUsers");
+		selenium.select("id=owns", "label=AllUsers");
+		
+		selenium.focus("id=Biobank_Category");
+		selenium.type("id=Biobank_Category", "A. Core Biobanks, DNA available");
+		selenium.select("Biobank_Category","A. Core Biobanks, DNA available");  
+	//	selenium.select("id=Biobank_Category","label=B. Supporting biobanks (DNA not yet available)"); 
+	//	selenium.select("Biobank_Category","A. Core Biobanks, DNA available");  //
+	//	selenium.select("SubCategory","A. Core Biobanks, DNA available");
+		
+		selenium.focus("id=Approved");
+		selenium.select("id=Approved", "label=yes");
+		selenium.click("id=Add");
 		
 		Thread.sleep(10000);
 
 	}
+	
+
 }
