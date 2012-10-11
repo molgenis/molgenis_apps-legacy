@@ -284,8 +284,8 @@ $(document).ready(function() {
 							<button id="addColumn" style="float:left;height:18px;margin-left:4px"></button>
 						</div>
     				</td>
-    				<td align="center">
-        				<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" style="table-layout:auto;" style="width:100%">
+    				<td align="center" style="width:200px">
+        				<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" style="table-layout:auto; width:100%">
             				<tbody>
                 				<tr>
                 					<td class="first_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
@@ -294,7 +294,7 @@ $(document).ready(function() {
                     				<td class="prev_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-prev"></span>
                     				</td>
-                    				<td dir="ltr" style="font-size:10px">
+                    				<td dir="ltr" style="font-size:10px" align="center">
 										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="1" /> of <span class="total-column-pages"></span>
 									</td>
                     				<td class="next_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
