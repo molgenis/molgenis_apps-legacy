@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -23,12 +24,15 @@ import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
@@ -41,14 +45,15 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 
-public class PhenotypeViewer extends PluginModel<Entity>
+public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCallback
 {
 
 	/**
@@ -102,33 +107,12 @@ public class PhenotypeViewer extends PluginModel<Entity>
 		report = null;
 	}
 
-	// public void uploadNewFileAction(Database db, Tuple request) {
-	// STATUS = "showMatrix";
-	// }
-	//
-	// public void uploadFile(Database db, Tuple request) {
-	//
-	// resetVariables();
-	//
-	// STATUS = "CheckFile";
-	//
-	// String fileName = request.getString("uploadFileName");
-	//
-	// File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-	//
-	// File templateMapping = new File(tmpDir.getAbsolutePath()
-	// + "/tempalteMapping.xls");
-	//
-	// tempalteFilePath = templateMapping.getAbsolutePath();
-	//
-	// checkHeaders(db, request, fileName);
-	// }
-
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
 	{
 
 		if (out != null)
 		{
+
 			if (request.getAction().equals("download_json_test"))
 			{
 
@@ -199,6 +183,11 @@ public class PhenotypeViewer extends PluginModel<Entity>
 				writer.write(json.toString());
 				writer.flush();
 				writer.close();
+
+			}
+			else if (request.getAction().equals("download_json_removeMessage"))
+			{
+				importMessage = null;
 			}
 		}
 		else
@@ -259,11 +248,8 @@ public class PhenotypeViewer extends PluginModel<Entity>
 				table.setTargetString("target");
 				table.setInvestigation(investigationName);
 				// add editable decorator
+				tableChecker(db, table);
 
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
-
-				tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
 			}
 			catch (Exception e)
 			{
@@ -322,6 +308,14 @@ public class PhenotypeViewer extends PluginModel<Entity>
 			STATUS = "showMatrix";
 
 			importUploadFile(db, request);
+
+			ProtocolTable table = new ProtocolTable(db, investigationName);
+
+			table.setTargetString(table.getTargetString());
+			// add editable decorator
+
+			// check which table to show
+			tableChecker(db, table);
 
 		}
 		else if (request.getAction().equals("uploadMapping"))
@@ -427,11 +421,6 @@ public class PhenotypeViewer extends PluginModel<Entity>
 		}
 	}
 
-	public List<String> getProjects()
-	{
-		return projects;
-	}
-
 	private void importUploadFile(Database db, Tuple request) throws DatabaseException, TableException
 	{
 
@@ -496,6 +485,8 @@ public class PhenotypeViewer extends PluginModel<Entity>
 					listOfTargets.add(inv);
 				}
 			}
+
+			List<String> ingoredColumn = new ArrayList<String>();
 
 			// new columns are added.
 			if (newFeatures.size() > 0)
@@ -572,6 +563,10 @@ public class PhenotypeViewer extends PluginModel<Entity>
 
 						addedColumns.add(feature);
 					}
+					else
+					{
+						ingoredColumn.add(feature);
+					}
 				}
 			}
 
@@ -597,7 +592,8 @@ public class PhenotypeViewer extends PluginModel<Entity>
 
 						String eachColumn = field.getName();
 
-						if (!eachColumn.equals(targetString))
+						if (!eachColumn.equals(targetString)
+								&& !ingoredColumn.contains(eachColumn + "_" + investigationName))
 						{
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
@@ -608,8 +604,6 @@ public class PhenotypeViewer extends PluginModel<Entity>
 							listOfValues.add(ov);
 						}
 					}
-					System.out.println();
-
 				}
 				else
 				{
@@ -686,11 +680,6 @@ public class PhenotypeViewer extends PluginModel<Entity>
 			}
 
 			db.add(listOfPA);
-			for (Measurement v : listOfFeatures)
-			{
-				System.out.println(v.getName() + v.getLabel());
-				System.out.println();
-			}
 			db.add(listOfValues);
 
 			// Add the features to the catalogue node
@@ -708,26 +697,16 @@ public class PhenotypeViewer extends PluginModel<Entity>
 
 			db.commitTx();
 
-			importMessage = "Your import has been successful! You can know upload a new file";
-
-			// create table
-			ProtocolTable table = new ProtocolTable(db, investigationName);
-			table.setTargetString(targetString);
-			table.setInvestigation(investigationName);
-			// add editable decorator
-
-			// check which table to show
-			tableView = new JQGridView("test", this, table);
-
-			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+			importMessage = "success";
 
 		}
 		catch (DatabaseException e)
 		{
 
-			importMessage = "It fails to import the file, please check your file please! \n " + e.getMessage();
-			e.printStackTrace();
 			db.rollbackTx();
+			importMessage = "It fails to import the file, please check your file please!</br>"
+					+ e.getMessage().toString();
+			e.printStackTrace();
 		}
 	}
 
@@ -735,43 +714,48 @@ public class PhenotypeViewer extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 
-		if (tableView == null)
+		try
 		{
-			try
+
+			projects.clear();
+			List<Investigation> listProjects = new ArrayList<Investigation>();
+			listProjects = db.find(Investigation.class);
+
+			int index = 0;
+
+			for (Investigation i : listProjects)
 			{
-				if (db.find(Investigation.class).size() > 0)
+				projects.add(i.getName());
+				if (index == 0 && investigationName == null)
 				{
-					List<Investigation> listProjects = new ArrayList<Investigation>();
-					listProjects = db.find(Investigation.class);
-
-					for (Investigation i : listProjects)
-					{
-						projects.add(i.getName());
-					}
-
-					investigationName = projects.get(0);
-
-					// p = db.query(Protocol.class).eq(Protocol.NAME,
-					// "stageCatalogue").find().get(0);
-					if (db.find(Protocol.class).size() > 0)
-					{
-						// create table
-						ProtocolTable table = new ProtocolTable(db, investigationName);
-
-						table.setTargetString(table.getTargetString());
-						// add editable decorator
-
-						// check which table to show
-						tableChecker(db, table);
-
-					}
+					investigationName = i.getName();
+					index++;
 				}
 			}
-			catch (Exception e)
+
+			if (db.find(Investigation.class).size() > 0)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// p = db.query(Protocol.class).eq(Protocol.NAME,
+				// "stageCatalogue").find().get(0);
+				if (db.find(Protocol.class).size() > 0)
+				{
+					// create table
+					ProtocolTable table = new ProtocolTable(db, investigationName);
+
+					table.setTargetString(table.getTargetString());
+					// add editable decorator
+
+					// check which table to show
+					tableChecker(db, table);
+
+				}
 			}
+
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -891,13 +875,48 @@ public class PhenotypeViewer extends PluginModel<Entity>
 
 	}
 
-	public void reload_preview_grid(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException
+	@Override
+	// from JQGridViewCallback
+	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable)
 	{
-		// handle requests for the table named 'test'
+		HttpSession session = request.getRequest().getSession();
+		@SuppressWarnings("unchecked")
+		List<Measurement> selectedMeasurements = (List<Measurement>) session.getAttribute("selectedMeasurements");
 
-		System.out.println();
+		if (selectedMeasurements != null)
+		{
+			try
+			{
+				for (final Field field : tupleTable.getAllColumns())
+				{
+					Measurement measurement = Iterables.find(selectedMeasurements, new Predicate<Measurement>()
+					{
+						@Override
+						public boolean apply(Measurement m)
+						{
+							return m.getName().equals(field.getName() + "_" + investigationName);
+						}
 
+					}, null);
+
+					if (measurement == null)
+					{
+						tupleTable.hideColumn(field.getName());
+					}
+					else
+					{
+						tupleTable.showColumn(field.getName());
+					}
+				}
+
+				session.removeAttribute("selectedMeasurements");
+			}
+			catch (TableException e)
+			{
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public class mappingClass
@@ -1054,6 +1073,11 @@ public class PhenotypeViewer extends PluginModel<Entity>
 	public String getLoadingMatrix()
 	{
 		return loadingMatrix;
+	}
+
+	public List<String> getProjects()
+	{
+		return projects;
 	}
 
 	@Override

@@ -1,7 +1,29 @@
 <#macro plugins_importDataWizard_bioshareImportWizard screen>
+	
+	<style>
+		input.text,textarea { 
+			width:95%; 
+			padding: .4em; 
+			margin-bottom:12px; 
+			display:block;
+		}
+		legend {
+			font-size:20px;
+		}
+		fieldset {
+			margin-bottom:12px;
+		}
+	</style>
 	<script type="text/javascript">
 		
 		$(document).ready(function(){
+			
+			//Check if there are any studies or prediction models loaded
+			if($('#menuForCorhortStudies >span').children().length == 0){
+				$('#statusMessage').append("<div style=\"font-size:12px\">"
+					+ "There is no cohort study in the database, an example PREVEND study has been shown</div>");
+				$('#statusMessage').effect('bounce');
+			}
 			
 			//Initialize the buttonset in the accordion
 			$('#menu').buttonset();
@@ -14,6 +36,26 @@
 	        $('#accordion').accordion({
 	            icons : icons,
 	            heightStyle : 'content'
+	        });
+	        
+	        //Initialize the addStudyDialog
+	        $('#addStudyForm').dialog({
+	        	autoOpen : false,
+	        	modal : true,
+	        	title : "New study",
+	        	height : 400,
+	        	width : 700,
+	        	buttons : {
+	        		"add" : function(){
+	        			listOfInfo = collectStudyInfo();
+	        			$.ajax("${screen.getUrl()}&__action=download_json_addNewStudy&studyInfo="
+	        				+JSON.stringify(listOfInfo)).done(function(status){
+	        			});
+	        		},
+	        		"cancel" : function(){
+	        			$(this).dialog('close');
+	        		}
+	        	}
 	        });
 	        
 	        //Initialize the the study that is used to show the information
@@ -29,11 +71,13 @@
 	        		$('#accordion div').height(100);
 	        	}
 	        	if($('#accordion').is(':visible')){
-	        		$('#advancedOption span').addClass('ui-icon-gear');
+	        		$('#advancedOption span').eq(0).addClass('ui-icon-gear');
+	        		$('#advancedOption span').eq(1).addClass('ui-icon-triangle-1-s');
 	        		$('#advancedOption span').removeClass('ui-icon-close');
 	        		$('#accordion').fadeOut();
 	        	}else{
-	        		$('#advancedOption span').removeClass('ui-icon-gear');
+	        		$('#advancedOption span').eq(0).removeClass('ui-icon-gear');
+	        		$('#advancedOption span').eq(1).removeClass('ui-icon-triangle-1-s');
 	        		$('#advancedOption span').addClass('ui-icon-close');
 	        		$('#accordion').fadeIn();
 	        	}
@@ -80,20 +124,11 @@
 					}).show();
 					
 				});
-				//width = $(this).parent().next().children('span').width();
-				//height = $(this).parent().next().children('span').height();
-				//text = $(this).parent().next().children('span').hide();
-				//$(this).parent().next().children('textarea').val(text.text().replace(/\t|\n/g,""));
-				//$(this).parent().next().children('textarea').css({
-				//	'height' : height,
-				//	'width' : width
-				//}).show();
-				
 				//Save the changes
 				$(this).siblings('[name="saveStudy"]').click(function(){
 					//Save changes for header
 					$(this).hide();
-					if($(this).parent().children('div').lengt > 0){
+					if($(this).parent().children('div:first-child').children('span').length > 0){
 						value = $(this).parent().children('div').eq(0).children('input').val();
 						$(this).parent().find('div').eq(0).children('span').text(value).show();
 						$(this).parent().find('div').eq(0).children('input').hide();
@@ -107,8 +142,19 @@
 					});
 				});
 			});
+			
+			//Click add new study
+			$('#addNewStudy').click(function(){
+				$('#addStudyForm').dialog('open');			
+			});
 		});
 		
+		function collectStudyInfo(){
+			array = {};
+			array["study"] = "prevend";
+			array["studyYear"] = "1990";
+			return array;
+		}
 	</script>
 	<form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -126,41 +172,81 @@
 			</div>
 			<div style="height:470px" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 				<div id="controlButtons">
-					<div id="advancedOption" style="cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="view other studies">
-						<span class="ui-icon ui-icon-gear"></span>
+					<div id="advancedOption" style="cursor:pointer;height:18px;width:38px;float:left" class="ui-state-default ui-corner-all" title="view other studies">
+						<span style="float:left" class="ui-icon ui-icon-gear"></span>
+						<span style="float:left" class="ui-icon ui-icon-triangle-1-s"></span>
 					</div>
 					<div id="addNewStudy" style="cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="add a new study">
 						<span class="ui-icon ui-icon-plus"></span>
 					</div>
+					<!--
 					<div id="editStudyAll" style="cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="edit the study">
 						<span class="ui-icon ui-icon-pencil"></span>
 					</div>
+					-->
 				</div>
 				</br>
 				<div id="accordion" style="display:none;position:absolute;width:200px;">
+				    <h3 style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Validation study</h3>
+				    <div id="menuForPredictionModels">
+				    	<span style="position:absolute;left:0px;">
+				    	</span>
+				    </div>
 				    <h3 style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Prediction Model</h3>
-				    <div id="selectMenu">
-				        <span id="menu" style="position:absolute;left:0px;">
+				    <div id="menuForCorhortStudies">
+				        <span style="position:absolute;left:0px;">
+							<#if screen.getlistOfCohortStudies()??>
+								<#list screen.getlistOfCohortStudies() as study>
+									<input type="radio" id="${study}" name="summary" checked="checked"/>
+									<label style="font-size:12px;width:195px" for="${study}">${study}</label></br>
+								</#list>
+							</#if>
+							<!--
 							<input type="radio" id="predictionModel" name="summary" checked="checked"/>
 							<label style="font-size:12px;width:195px" for="predictionModel">Prediction model</label></br>
 							<input type="radio" id="validationStudy" name="summary">
 							<label style="font-size:12px;width:195px" for="validationStudy">Validation study</label>
+							-->
 						</span>
 				    </div>
-				    <h3 style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Validation study</h3>
-				    <div>
-				    	Hello world!
-				    </div>
 				    <h3 style="font-size:16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Study comparison</h3>
-				    <div>
+				    <div id="menuForStudyComparison">
 				    	Hello world!
 				    </div>
 				</div>
-				
+				<div id="addStudyForm" style="display:none">
+					<fieldset>
+						<legend class="ui-widget-content ui-corner-all">Study information</legend>
+				        <label for="studyNameInput">Study name</label>
+				        <input type="text" name="studyNameInput" id="studyNameInput" class="text ui-widget-content ui-corner-all" />
+				        <label for="studyDescriptionInput">Study description</label>
+				        <textarea style="height:100px" name="studyDescriptionInput" id="studyDescriptionInput" class="text ui-widget-content ui-corner-all"></textarea>
+				    </fieldset>
+				    <fieldset>
+						<legend class="ui-widget-content ui-corner-all">General information</legend>
+				        <label for="launchYearInput">Launched year</label>
+				        <input type="text" name="launchYearInput" id="launchYearInput" class="text ui-widget-content ui-corner-all" />
+				        <label for="countryOfStudyInput">Country of study</label>
+				        <input type="text" name="countryOfStudyInput" id="countryOfStudyInput" class="text ui-widget-content ui-corner-all" />
+				        <label for="studyDesginInput">Study design</label>
+				        <textarea name="studyDesginInput" id="studyDesginInput" class="text ui-widget-content ui-corner-all" ></textarea>
+				    </fieldset>
+				    <fieldset>
+						<legend class="ui-widget-content ui-corner-all">Individual information</legend>
+				        <label for="numberOfParticipantsInput">Number of participants</label>
+				        <input type="text" name="numberOfParticipantsInput" id="numberOfParticipantsInput" class="text ui-widget-content ui-corner-all" />
+				        <label for="ageGroupInput">Age group</label>
+				        <input type="text" name="ageGroupInput" id="ageGroupInput" class="text ui-widget-content ui-corner-all" />
+				        <label for="ethnicGroupInput">Ethnic group</label>
+				        <input type="text" name="ethnicGroupInput" id="ethnicGroupInput" class="text ui-widget-content ui-corner-all" />
+				    </fieldset>
+				</div>
 				<div id="studyDescription" style="height:100%">
-					
 					<div style="height:15%">
-						<img src="res/img/BioshareHeader.png" style="position:relative;top:-16px;left:70%;height:80px;width:240px">
+						<fieldset id="statusMessage" style="width:300px;height:60%" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+							<legend style="font-style:italic;">Message</legend>
+						</fieldset>
+						<img src="res/img/BioshareHeader.png" style="position:relative;top:-95px;left:70%;height:80px;width:240px">
 					</div>
 					<div style="height:80%;width:100%;margin-left:auto;margin-right:auto" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 						<div id="studyName" style="width:100%;height:40%;font-size:14px;" class="editable">
@@ -225,6 +311,7 @@
 							</div>
 							<div style="padding:4px">Number of participants: <span id="numberOfParticipants" name="numberOfParticipants">8592</span><textarea style="display:none"></textarea></div>
 							<div style="padding:4px">Age: <span id="ageGround" name="ageGround">15 to 75</span><textarea style="display:none"></textarea></div>
+							<div style="padding:4px">Ethnic group: <span id="ethnicGroup" name="ethnicGroup">Caussian</span><textarea style="display:none"></textarea></div>
 						</div>
 					</div>
 				</div>

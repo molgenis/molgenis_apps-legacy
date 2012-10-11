@@ -149,6 +149,11 @@ public abstract class AbstractTupleTable implements TupleTable
 
 		int colCount = columns.size();
 
+		if (getColOffset() > colCount)
+		{
+			setColOffset(colCount);
+		}
+
 		if (isFirstColumnFixed())
 		{
 			columns.remove(0);
