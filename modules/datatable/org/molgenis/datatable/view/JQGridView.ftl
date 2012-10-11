@@ -107,7 +107,7 @@ $.fn.extend({
 					
        				//Put the columnpager in the grid toolbar
        				var toolbar = $('#t_' + options.tableId);
-       				toolbar.css({"height" : "30px", "padding" : "4px", "width" : "848px"});//Style of the toolbar where all paging widges are
+       				toolbar.css({"height" : "30px", "width" : "100%"});//Style of the toolbar where all paging widges are
         			columnPager.appendTo(toolbar);
 					
 					if (config.hiddenColumns.length == 0) {
@@ -177,8 +177,9 @@ $.fn.extend({
        			grid.closest("div.ui-jqgrid-view")
        				.find("div.ui-jqgrid-hdiv table.ui-jqgrid-htable tr.ui-jqgrid-labels > th.ui-th-column > div.ui-jqgrid-sortable")
     				.each(function (index) {
+    				
     					if (!config.firstColumnFixed || index > 0) {
-        					$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
+        					$('<button>').css({"width" : "16px", "height": "16px", "position" : "absolute", "top" : "50%", "margin-top" : "-8px","left" : "100%", "margin-left" : "-18px" }).appendTo(this).button({
             					icons: { primary: "ui-icon-circle-close" },
             					text: false,
             					label: 'Hide column'
