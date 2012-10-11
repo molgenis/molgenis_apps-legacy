@@ -11,17 +11,17 @@ getFile ${McWorksheet}
 inputs "${studyMerlinChrDat}"
 inputs "${McWorksheet}"
 alloutputsexist \
-"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
-"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
+	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
+	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
 
 #Chunk chromosomes into pieces containing ~2500 markers
 
 cd ${studyMerlinChrDir}
 
 ${chunkChromosomeBin} \
--d ${studyMerlinChrDat} \
--n ${chunkSize} \
--o ${chunkOverlap}
+	-d ${studyMerlinChrDat} \
+	-n ${chunkSize} \
+	-o ${chunkOverlap}
 
 returnCode=$?
 

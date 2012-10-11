@@ -12,7 +12,7 @@ alloutputsexist \
 ${projectImputationJobsDir}/check_for_submission.txt
 
 
-<#if autostart == "TRUE">
+
 
 #Call compute to generate phasing jobs
 module load jdk/${javaversion}
@@ -39,10 +39,23 @@ then
 	
 	echo -e "\nJob generation succesful!\n\n"
 
-	cd ${projectImputationJobsDir}
-	sh submit.sh
+	<#if autostart == "TRUE">
+		cd ${projectImputationJobsDir}
+		sh submit.sh
+	
+		touch ${projectImputationJobsDir}/check_for_submission.txt
 
-	touch ${projectImputationJobsDir}/check_for_submission.txt
+	<#elseif autostart == "FALSE">
+	
+		echo "No autostart selected"
+		
+		echo "You can submit your jobs using the following command:"
+		echo "cd ${projectImputationJobsDir}"
+		echo "sh submit.sh"
+		
+		
+	</#if>
+
 
 	tar czf ${projectImputationJobsDirTarGz} ${projectImputationJobsDir}
 	putFile ${projectImputationJobsDirTarGz}
@@ -55,13 +68,4 @@ else
 
 fi
 
-<#elseif autostart == "FALSE">
-
-	echo "No autostart selected"
-	
-	echo "You can run Molgenis Compute executing the following command:"
-	
-	
-	
-</#if>
 

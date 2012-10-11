@@ -10,16 +10,16 @@ getFile ${concatWorksheetsJar}
 
 inputs "${ssvQuoted(finalChunkChrWorkSheet)}"
 alloutputsexist \
-"${projectPhasingJobsDir}/check_for_submission.txt" \
-"${concattedChunkWorksheet}" \
-"${projectPhasingJobsDirTarGz}"
+	"${projectPhasingJobsDir}/check_for_submission.txt" \
+	"${concattedChunkWorksheet}" \
+	"${projectPhasingJobsDirTarGz}"
 
 
 module load jdk/${javaversion}
 
 java -jar ${concatWorksheetsJar} \
-${tmpConcattedChunkWorksheet} \
-${ssvQuoted(finalChunkChrWorkSheet)}
+	${tmpConcattedChunkWorksheet} \
+	${ssvQuoted(finalChunkChrWorkSheet)}
 
 #Get return code from last program call
 returnCode=$?
@@ -42,7 +42,7 @@ else
 fi
 
 
-<#if autostart == "TRUE">
+
 
 #Call compute to generate phasing jobs
 
@@ -68,10 +68,20 @@ then
 	
 	echo -e "\nJob generation succesful!\n\n"
 
-	cd ${projectPhasingJobsDir}
-	sh submit.sh
-	
-	touch ${projectPhasingJobsDir}/check_for_submission.txt
+	<#if autostart == "TRUE">
+		cd ${projectPhasingJobsDir}
+		sh submit.sh
+		touch ${projectPhasingJobsDir}/check_for_submission.txt
+	<#elseif autostart == "FALSE">
+
+		echo "No autostart selected"
+		
+		echo "You can submit your jobs using the following command:"
+		echo "cd ${projectPhasingJobsDir}"
+		echo "sh submit.sh"
+		
+		
+	</#if>
 
 	tar czf ${projectPhasingJobsDirTarGz} ${projectPhasingJobsDir}
 	putFile ${projectPhasingJobsDirTarGz}
@@ -84,13 +94,5 @@ else
 
 fi
 
-<#elseif autostart == "FALSE">
 
-	echo "No autostart selected"
-	
-	echo "You can run Molgenis Compute executing the following command:"
-	
-	
-	
-</#if>
 
