@@ -18,7 +18,13 @@
 			}
 		});
 		
-		$('#uploadFileForm').dialog({ autoOpen: false, width:600});
+		$('#uploadFileForm').dialog({ 
+			autoOpen: false, 
+			width:400,
+			height:300,
+			title:"upload a csv file",
+			modal:true
+		});
 		
 		$('#uploadFileForm').parent().appendTo($('form[name="${screen.name}"]'));
 		
@@ -383,41 +389,27 @@
 			</div>
 			<input type="button" id="uploadFileButton" style="font-size:0.6em;color:#03406A;" value="upload" />
 			<div id="uploadFileForm">
-				<table>
-					<tr><td style="font-size:10px;">
-						<fieldset style="border-radius:0.2em;width:300px">
-				            <label >Data type</label><br>
-				            <input type="radio" name="uploadFileType" value="Pheno" checked>Pheno<br>
-				            <input type="radio" name="uploadFileType" value="Geno">Geno<br> 
-					    </fieldset>
-					    <br>
-					    <fieldset style="border-radius:0.2em; font-size:10px">
-				        	<label for="project"> Select the project:&nbsp;&nbsp;</label>
-								<select name="project" id="project" style="margin-right:5px"> 
-								<option value=""/>
-									<#list screen.projects as project>
-									<option value="${project}">${project}</option>			
-									</#list>
-								</select>
-							<br />
-				        	<input style="font-size:10px" id="createNewInvest" type="checkbox" name="createNewInvest">Create new project
-			           		<input type="text" id="newInvestigation" name="newInvestigation" disabled="disabled"/>
-			            </fieldset>
-			            <br>
-					    <fieldset style="border-radius:0.2em; width:300px">
-							<label >Upload a csv file</label><br>
-					    	<input type="file" id="uploadFileName" name="uploadFileName" style="font-size:12px"/> 
-					    </fieldset>
-			            <fieldset style="border-radius:0.2em;">
-				            <input id="fileUploadNext" type="button" style="font-size:1.0em;color:#03406A" value="Next" />
-				            <input id="fileUploadCancel" type="button" style="font-size:1.0em;color:#03406A" value="Cancel"/>
-			            </fieldset>
-			    	</td><td style="font-size:13px">
-				    	<div id="explanationForm">
-				    		Please upload a file for Phenotype or Genotypic data matrix
-				    	</div>
-			    	</td></tr>
-		    	</table>
+				<fieldset style="border-radius:0.2em;width:90%;font-size:12px">
+		        	<label for="project"> Select the project:&nbsp;&nbsp;</label>
+						<select name="project" id="project" style="margin-right:5px"> 
+						<option value=""/>
+							<#list screen.projects as project>
+							<option value="${project}">${project}</option>			
+							</#list>
+						</select>
+					<br />
+		        	<input style="font-size:10px" id="createNewInvest" type="checkbox" name="createNewInvest">Create new project
+	           		<input type="text" id="newInvestigation" name="newInvestigation" disabled="disabled"/>
+	            </fieldset>
+			    <fieldset style="border-radius:0.2em;width:90%;font-size:12px">
+					<label >Upload a csv file</label><br>
+			    	<input type="file" id="uploadFileName" name="uploadFileName" style="font-size:12px"/> 
+			    </fieldset>
+	            <fieldset style="border-radius:0.2em;width:300px;">
+		            <input id="fileUploadNext" type="button" style="font-size:0.5em;color:#03406A" value="Next" />
+		            <input id="fileUploadCancel" type="button" style="font-size:0.5em;color:#03406A" value="Cancel"/>
+	            </fieldset>
+			    	
 		    	<#if screen.getUploadFileErrorMessage()??>
 					<script>
 						$('#messageForm').empty();
@@ -430,8 +422,8 @@
 				<#if screen.getImportMessage()??>
 					<script>
 						$('#messageForm').empty();
-						errorMessage = "<p style=\"color:red\"><i>${screen.getImportMessage()}</i></p>" + 
-							"<input type=\"button\" id=\"closeErrorMessage\" value=\"Close\" />";
+						errorMessage = "<p style=\"color:red\"><i>${screen.getImportMessage()}</br>" + 
+							"<input type=\"button\" id=\"closeErrorMessage\" value=\"Close\" /></i></p>";
 						$('#messageForm').append(errorMessage);
 						$('#closeErrorMessage').click(function(){$('#messageForm').empty();});
 					</script>
