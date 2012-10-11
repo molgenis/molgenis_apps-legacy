@@ -421,6 +421,20 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 					}
 				}
 
+				if (rowHeaders.size() != listOfExistingValues.size()) {
+
+					for (String oldTarget : rowHeaders) {
+						if (!targetToProtocolApplication.containsKey(oldTarget)) {
+							ProtocolApplication pa = new ProtocolApplication();
+							pa.setName("pa" + oldTarget);
+							pa.setInvestigation_Name(investigationName);
+							pa.setProtocol_Name(investigationName);
+							targetToProtocolApplication.put(oldTarget,
+									pa.getName());
+							listOfPA.add(pa);
+						}
+					}
+				}
 			}
 
 			// new rows are added
@@ -511,7 +525,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 
 						listOfFeatures.add(m);
 
-						addedColumns.add(feature);
+						addedColumns.add(feat);
 					} else {
 						ingoredColumn.add(feature);
 					}
@@ -730,17 +744,14 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 			// check the existing variables in measurements
 			// EXTRA: added the projectname to the measurementLABEL
 			for (Field field : csvTable.getAllColumns()) {
-				hashMeasurement.put(field.getName() + "_" + projectName,
-						field.getName());
-				newFeatures.put(field.getName() + "_" + projectName,
-						field.getName());
 
+				if (!field.getName().equals(targetString)) {
+					hashMeasurement.put(field.getName() + "_" + projectName,
+							field.getName());
+					newFeatures.put(field.getName() + "_" + projectName,
+							field.getName());
+				}
 			}
-
-			// We remove the first column because it is the target string
-			// not features
-			hashMeasurement.remove(targetString);
-			newFeatures.remove(targetString);
 
 			// LABEL!!
 			// We query these entire list of columns and see whether they
