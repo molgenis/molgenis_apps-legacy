@@ -23,12 +23,15 @@ import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
@@ -46,9 +49,11 @@ import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 
-public class PhenotypeViewer extends PluginModel<Entity>
+public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCallback
 {
 
 	/**
@@ -898,6 +903,44 @@ public class PhenotypeViewer extends PluginModel<Entity>
 
 		System.out.println();
 
+	}
+
+	@Override
+	// from JQGridViewCallback
+	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable)
+	{
+		@SuppressWarnings("unchecked")
+		List<Measurement> selectedMeasurements = (List<Measurement>) request.getRequest().getSession()
+				.getAttribute("selectedMeasurements");
+
+		if (selectedMeasurements != null)
+		{
+			try
+			{
+				for (final Field field : tupleTable.getAllColumns())
+				{
+					Measurement measurement = Iterables.find(selectedMeasurements, new Predicate<Measurement>()
+					{
+						@Override
+						public boolean apply(Measurement m)
+						{
+							return m.getName().equals(field.getName() + "_" + investigationName);
+						}
+
+					}, null);
+
+					if (measurement == null)
+					{
+						tupleTable.hideColumn(field.getName());
+					}
+				}
+			}
+			catch (TableException e)
+			{
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public class mappingClass
