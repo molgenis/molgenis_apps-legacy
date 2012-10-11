@@ -118,33 +118,38 @@ public class bioshareWelcomeScreenPlugin extends
 
 		HashMap<String, String> featuresForStudies = new HashMap<String, String>();
 
-		featuresForStudies.put("studyName_catalogueStudy", "Study name");
-		featuresForStudies.put("studyDescription_catalogueStudy",
+		featuresForStudies.put("studyName_catalogueCohortStudy", "Study name");
+		featuresForStudies.put("studyDescription_catalogueCohortStudy",
 				"Study description");
-		featuresForStudies.put("launchYear_catalogueStudy", "Launched year");
-		featuresForStudies.put("countryOfStudy_catalogueStudy",
+		featuresForStudies.put("launchYear_catalogueCohortStudy",
+				"Launched year");
+		featuresForStudies.put("countryOfStudy_catalogueCohortStudy",
 				"Country of study");
-		featuresForStudies.put("numberOfParticipants_catalogueStudy",
+		featuresForStudies.put("studyDesign_catalogueCohortStudy",
+				"Study design");
+		featuresForStudies.put("numberOfParticipants_catalogueCohortStudy",
 				"Number of participants");
-		featuresForStudies.put("ageGroun_catalogueStudy", "Age group");
-		featuresForStudies.put("ethnicGroup_catalogueStudy", "Ethnic group");
+		featuresForStudies.put("ageGroup_catalogueCohortStudy", "Age group");
+		featuresForStudies.put("ethnicGroup_catalogueCohortStudy",
+				"Ethnic group");
 		// Pre-load the metadata that is used to describe the cohort studies.
 		preLoadData(db, "catalogueCohortStudy", "studyCharacteristic",
 				featuresForStudies);
 
 		// Pre-load the metadata that is used to describe the prediction model.
 		featuresForStudies.clear();
-		featuresForStudies.put("predictionModelName_catalogueStudy",
+		featuresForStudies.put("predictionModelName_cataloguePredictionModel",
 				"Prediction model");
-		featuresForStudies.put("numberOfPredictors_catalogueStudy",
+		featuresForStudies.put("numberOfPredictors_cataloguePredictionModel",
 				"Number of predictors");
-		featuresForStudies.put("statisticalModel_catalogueStudy",
+		featuresForStudies.put("statisticalModel_cataloguePredictionModel",
 				"Statistical model");
-		featuresForStudies.put("diseasePrediction_catalogueStudy",
+		featuresForStudies.put("diseasePrediction_cataloguePredictionModel",
 				"Predicted disease");
-		featuresForStudies.put("discrimination_catalogueStudy",
+		featuresForStudies.put("discrimination_cataloguePredictionModel",
 				"Discrimination");
-		featuresForStudies.put("calibration_catalogueStudy", "Calibration");
+		featuresForStudies.put("calibration_cataloguePredictionModel",
+				"Calibration");
 		// Pre-load the metadata that is used to describe the cohort studies.
 		preLoadData(db, "cataloguePredictionModel",
 				"predictionModelCharacteristic", featuresForStudies);
