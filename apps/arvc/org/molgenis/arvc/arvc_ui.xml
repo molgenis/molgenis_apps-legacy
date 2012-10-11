@@ -4,7 +4,7 @@
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
 <molgenis name="arvc" label="ARVC Database">
-	<plugin name="MolgenisHeader" type="org.molgenis.arvc.ui.Header"/>
+	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Header"/>
 	<menu name="View" startswith="SearchPlugin">
 		<plugin name="SearchPlugin" type="org.molgenis.arvc.ui.Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
