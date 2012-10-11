@@ -23,12 +23,15 @@ import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
@@ -41,14 +44,16 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 
-public class PhenotypeViewer extends PluginModel<Entity> {
+public class PhenotypeViewer extends PluginModel<Entity> implements
+		JQGridViewCallback {
 
 	/**
 	 * 
@@ -103,6 +108,7 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 			throws Exception {
 
 		if (out != null) {
+
 			if (request.getAction().equals("download_json_test")) {
 
 				tableView.handleRequest(db, request, out);
@@ -164,6 +170,10 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 				writer.write(json.toString());
 				writer.flush();
 				writer.close();
+
+			} else if (request.getAction()
+					.equals("download_json_removeMessage")) {
+				importMessage = null;
 			}
 		} else {
 			this.handleRequest(db, request);
@@ -263,6 +273,14 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 
 			importUploadFile(db, request);
 
+			ProtocolTable table = new ProtocolTable(db, investigationName);
+
+			table.setTargetString(table.getTargetString());
+			// add editable decorator
+
+			// check which table to show
+			tableChecker(db, table);
+
 		} else if (request.getAction().equals("uploadMapping")) {
 
 			try {
@@ -354,10 +372,6 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 			tableView.handleRequest(db, request, null);
 			loadingMatrix = "Loading the matrix";
 		}
-	}
-
-	public List<String> getProjects() {
-		return projects;
 	}
 
 	private void importUploadFile(Database db, Tuple request)
@@ -536,8 +550,6 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 							listOfValues.add(ov);
 						}
 					}
-					System.out.println();
-
 				} else {
 
 					// Add values for new columns only
@@ -612,10 +624,6 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 			}
 
 			db.add(listOfPA);
-			for (Measurement v : listOfFeatures) {
-				System.out.println(v.getName() + v.getLabel());
-				System.out.println();
-			}
 			db.add(listOfValues);
 
 			// Add the features to the catalogue node
@@ -632,7 +640,7 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 
 			db.commitTx();
 
-			importMessage = "Your import has been successful! You can know upload a new file";
+			importMessage = "success";
 
 		} catch (DatabaseException e) {
 
@@ -647,6 +655,7 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 	public void reload(Database db) {
 
 		try {
+
 			projects.clear();
 			List<Investigation> listProjects = new ArrayList<Investigation>();
 			listProjects = db.find(Investigation.class);
@@ -655,32 +664,29 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 
 			for (Investigation i : listProjects) {
 				projects.add(i.getName());
-				if (index == 0) {
+				if (index == 0 && investigationName == null) {
 					investigationName = i.getName();
 					index++;
 				}
 			}
 
-			if (tableView == null) {
+			if (db.find(Investigation.class).size() > 0) {
+				// p = db.query(Protocol.class).eq(Protocol.NAME,
+				// "stageCatalogue").find().get(0);
+				if (db.find(Protocol.class).size() > 0) {
+					// create table
+					ProtocolTable table = new ProtocolTable(db,
+							investigationName);
 
-				if (db.find(Investigation.class).size() > 0) {
-					// p = db.query(Protocol.class).eq(Protocol.NAME,
-					// "stageCatalogue").find().get(0);
-					if (db.find(Protocol.class).size() > 0) {
-						// create table
-						ProtocolTable table = new ProtocolTable(db,
-								investigationName);
+					table.setTargetString(table.getTargetString());
+					// add editable decorator
 
-						table.setTargetString(table.getTargetString());
-						// add editable decorator
+					// check which table to show
+					tableChecker(db, table);
 
-						// check which table to show
-						tableChecker(db, table);
-
-					}
 				}
-
 			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -794,12 +800,36 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 
 	}
 
-	public void reload_preview_grid(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException {
-		// handle requests for the table named 'test'
+	@Override
+	// from JQGridViewCallback
+	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable) {
+		@SuppressWarnings("unchecked")
+		List<Measurement> selectedMeasurements = (List<Measurement>) request
+				.getRequest().getSession().getAttribute("selectedMeasurements");
 
-		System.out.println();
+		if (selectedMeasurements != null) {
+			try {
+				for (final Field field : tupleTable.getAllColumns()) {
+					Measurement measurement = Iterables.find(
+							selectedMeasurements, new Predicate<Measurement>() {
+								@Override
+								public boolean apply(Measurement m) {
+									return m.getName().equals(
+											field.getName() + "_"
+													+ investigationName);
+								}
 
+							}, null);
+
+					if (measurement == null) {
+						tupleTable.hideColumn(field.getName());
+					}
+				}
+			} catch (TableException e) {
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public class mappingClass {
@@ -935,6 +965,10 @@ public class PhenotypeViewer extends PluginModel<Entity> {
 
 	public String getLoadingMatrix() {
 		return loadingMatrix;
+	}
+
+	public List<String> getProjects() {
+		return projects;
 	}
 
 	@Override

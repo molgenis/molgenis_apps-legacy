@@ -388,7 +388,7 @@
 				</#if>
 			</div>
 			<input type="button" id="uploadFileButton" style="font-size:0.6em;color:#03406A;" value="upload" />
-			<div id="uploadFileForm">
+			<div id="uploadFileForm" style="display:none">
 				<fieldset style="border-radius:0.2em;width:90%;font-size:12px">
 		        	<label for="project"> Select the project:&nbsp;&nbsp;</label>
 						<select name="project" id="project" style="margin-right:5px"> 
@@ -422,10 +422,18 @@
 				<#if screen.getImportMessage()??>
 					<script>
 						$('#messageForm').empty();
-						errorMessage = "<p style=\"color:red\"><i>${screen.getImportMessage()}</br>" + 
-							"<input type=\"button\" id=\"closeErrorMessage\" value=\"Close\" /></i></p>";
+						if("${screen.getImportMessage()}" == "success"){
+							errorMessage = "<p style=\"color:green\"><i>Your import has been successful! You can know upload a new file</br>"
+						}else{
+							errorMessage = "<p style=\"color:red\"><i>${screen.getImportMessage()}</br>"
+						}
+						
+						errorMessage += "<input type=\"button\" id=\"closeErrorMessage\" value=\"Close\" /></i></p>";
 						$('#messageForm').append(errorMessage);
-						$('#closeErrorMessage').click(function(){$('#messageForm').empty();});
+						$('#closeErrorMessage').click(function(){
+							$('#messageForm').empty();
+							$.ajax("${screen.getUrl()}&__action=download_json_removeMessage").done();
+						});
 					</script>
 				</#if>
 			</div>
