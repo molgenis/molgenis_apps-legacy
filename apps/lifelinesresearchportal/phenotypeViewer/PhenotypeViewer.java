@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -527,6 +528,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 
 						addedColumns.add(feat);
 					} else {
+
 						ingoredColumn.add(feature);
 					}
 				}
@@ -814,9 +816,10 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 	@Override
 	// from JQGridViewCallback
 	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable) {
+		HttpSession session = request.getRequest().getSession();
 		@SuppressWarnings("unchecked")
-		List<Measurement> selectedMeasurements = (List<Measurement>) request
-				.getRequest().getSession().getAttribute("selectedMeasurements");
+		List<Measurement> selectedMeasurements = (List<Measurement>) session
+				.getAttribute("selectedMeasurements");
 
 		if (selectedMeasurements != null) {
 			try {
@@ -834,8 +837,12 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 
 					if (measurement == null) {
 						tupleTable.hideColumn(field.getName());
+					} else {
+						tupleTable.showColumn(field.getName());
 					}
 				}
+
+				session.removeAttribute("selectedMeasurements");
 			} catch (TableException e) {
 				e.printStackTrace();
 			}
