@@ -78,7 +78,6 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					// enable the Browse Data menu (minus Inspector and matrix removal)
 					"app.ui.InvestigationsFormController",
 					"app.ui.DatasFormController",
-					"app.ui.OverviewPlugin",
 					"app.ui.ManagerPlugin",
 					
 					// needed to query elements for investigation overview
@@ -109,12 +108,6 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					
 					"app.ui.ProbesFormController",
 					"org.molgenis.xgap.Probe",
-					
-					"app.ui.ProbeSetsFormController",
-					"org.molgenis.xgap.ProbeSet",
-					
-					"app.ui.SNPsFormController",
-					"org.molgenis.xgap.SNP",
 					
 					"app.ui.SamplesFormController",
 					"org.molgenis.xgap.Sample",

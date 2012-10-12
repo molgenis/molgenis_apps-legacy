@@ -7,6 +7,7 @@
 		<entity name="CustomLabelFeature">
 			<description>Stores the features users use to custom-label their targets.</description>
 			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="name" nillable="true" unique="true"/>
 			<field name="userId" type="xref" xref_entity="MolgenisUser" nillable="false" unique="true" />
 			<field name="featureId" type="xref" xref_entity="Measurement" nillable="false" />
 		</entity>

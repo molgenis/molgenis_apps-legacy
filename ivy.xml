@@ -25,6 +25,7 @@
 		<dependency org="org.seleniumhq.selenium" name="selenium-server"
 			rev="2.19.0" />
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.0" />
+		
 		<dependency org="org.apache.poi" name="poi" rev="3.8" />
 		<dependency org="org.apache.poi" name="poi-ooxml" rev="3.8" />
 
@@ -65,6 +66,6 @@
 		
 		<dependency org="org.apache.lucene" name="lucene-core" rev="3.0.2" />
 		<dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.0.2" />
-		
+	
 	</dependencies>
 </ivy-module>

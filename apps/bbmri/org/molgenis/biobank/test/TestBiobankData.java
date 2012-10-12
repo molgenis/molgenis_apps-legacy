@@ -4,10 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.molgenis.Molgenis;
-import org.molgenis.auth.MolgenisUser;
-import org.molgenis.biobank.BbmriUpdateDatabase;
-import org.molgenis.framework.db.Database;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -15,8 +11,6 @@ import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-
-import app.DatabaseFactory;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
