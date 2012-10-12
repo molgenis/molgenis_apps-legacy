@@ -366,7 +366,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity> {
 							Protocol.class,
 							new QueryRule(Protocol.INVESTIGATION_NAME,
 									Operator.EQUALS, inv.getName())).size() > 0) {
-						if (count == 0) {
+						if (count == 0 && getSelectedInvestigation() == null) {
 
 							this.setSelectedInvestigation(inv.getName());
 							count++;
