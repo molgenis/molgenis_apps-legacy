@@ -764,7 +764,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 	{
 		tableView = new JQGridView("test", this, table);
 		String selectedInv = "";
-		String selectInvestigationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
+		String selectInvestigationHTML = "<select id=\"selectInvestigation\" class=\"ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
 
 		for (String inv : projects)
 		{
