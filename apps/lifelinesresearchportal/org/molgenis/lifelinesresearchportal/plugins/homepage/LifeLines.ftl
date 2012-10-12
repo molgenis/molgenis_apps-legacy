@@ -44,7 +44,7 @@
 			</#if>
 			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
 			<br><br>
-			<h3>Welcome to the LifeLines Research Platform<#if screen.studyInfo??> for study ${screen.studyInfo}</#if></h3>
+			<h3>Welcome to the Molgenis Research Platform<#if screen.studyInfo??> for study ${screen.studyInfo}</#if></h3>
 			<br /><br />
 			This Research Platform is based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data<br />
 			For manuals and more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>
