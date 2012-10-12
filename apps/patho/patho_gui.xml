@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="org.molgenis.patho" label="Pathogenecity Database v0.1">
+<molgenis name="patho" label="Pathogenecity Database v0.1">
 	<plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader" />
 	<menu name="PathoDataTables" label="Data Tables" position="left">
 		<form name="PathoSeqFeatures" label="SeqCharacteristics" entity="SequenceCharacteristic">
