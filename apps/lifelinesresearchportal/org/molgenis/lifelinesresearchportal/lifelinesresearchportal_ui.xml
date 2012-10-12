@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<molgenis name="xqtl_lifelines" label="LifeLines Research Portal and Catalog">
+<molgenis name="researchportal" label="Research Portal and Catalog">
 	<plugin name="molgenis_header"
 		type="org.molgenis.lifelinesresearchportal.plugins.header.MolgenisHeader" />
 	<menu name="main">
