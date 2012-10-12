@@ -107,7 +107,7 @@ $.fn.extend({
 					
        				//Put the columnpager in the grid toolbar
        				var toolbar = $('#t_' + options.tableId);
-       				toolbar.css({"height" : "30px", "padding" : "4px", "width" : "848px"});//Style of the toolbar where all paging widges are
+       				toolbar.css({"height" : "30px", "width" : "100%"});//Style of the toolbar where all paging widges are
         			columnPager.appendTo(toolbar);
 					
 					if (config.hiddenColumns.length == 0) {
@@ -177,8 +177,9 @@ $.fn.extend({
        			grid.closest("div.ui-jqgrid-view")
        				.find("div.ui-jqgrid-hdiv table.ui-jqgrid-htable tr.ui-jqgrid-labels > th.ui-th-column > div.ui-jqgrid-sortable")
     				.each(function (index) {
+    				
     					if (!config.firstColumnFixed || index > 0) {
-        					$('<button>').css({"float" : "right", "height": "17px"}).appendTo(this).button({
+        					$('<button>').css({"width" : "16px", "height": "16px", "position" : "absolute", "top" : "50%", "margin-top" : "-8px","left" : "100%", "margin-left" : "-18px" }).appendTo(this).button({
             					icons: { primary: "ui-icon-circle-close" },
             					text: false,
             					label: 'Hide column'
@@ -283,8 +284,8 @@ $(document).ready(function() {
 							<button id="addColumn" style="float:left;height:18px;margin-left:4px"></button>
 						</div>
     				</td>
-    				<td align="center">
-        				<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" style="table-layout:auto;" style="width:100%">
+    				<td align="center" style="width:200px">
+        				<table class="ui-pg-table" cellspacing="0" cellpadding="0" border="0" style="table-layout:auto; width:100%">
             				<tbody>
                 				<tr>
                 					<td class="first_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
@@ -293,8 +294,8 @@ $(document).ready(function() {
                     				<td class="prev_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-prev"></span>
                     				</td>
-                    				<td dir="ltr">
-										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="2" /> of <span class="total-column-pages"></span>
+                    				<td dir="ltr" style="font-size:10px" align="center">
+										Columns <input class="colpager-input ui-pg-input" type="text" role="textbox" value="1" maxlength="7" size="1" /> of <span class="total-column-pages"></span>
 									</td>
                     				<td class="next_columnpager hoverable ui-pg-button ui-corner-all" style="cursor: default;">
                         				<span class="ui-icon ui-icon-seek-next"></span>

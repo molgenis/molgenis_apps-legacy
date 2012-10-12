@@ -34,6 +34,7 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
+import org.molgenis.xgap.Gene;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
@@ -124,6 +125,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.setReport(null);
 					this.model.setQtls(null);
 					this.model.setCartView(false);
+					this.model.setProbeToGene(null);
 				}
 				
 				if (action.equals("gotoSearch"))
@@ -139,20 +141,14 @@ public class QtlFinder2 extends PluginModel<Entity>
 				
 				if(action.equals("plotShoppingCart"))
 				{
-					if(this.model.getShoppingCart().size() == 0)
-					{
-						throw new Exception("Your shopping cart is empty!");
-					}
-					else if(this.model.getShoppingCart().size() > 500)
-					{
-						throw new Exception("You cannot plot more than 500 items.");
-					}
+					plotFromShoppingCart(db);
 					
-					this.model.setCartView(false);
-					
-					QTLMultiPlotResult res = multiplot(new ArrayList<Entity>(this.model.getShoppingCart().values()), db);
-					this.model.setReport(null);
-					this.model.setMultiplot(res);
+					StringBuilder permaLink = new StringBuilder();
+					for (Entity e : this.model.getShoppingCart().values()) {
+						permaLink.append(e.get(ObservableFeature.ID) + ",");
+					}
+					permaLink.deleteCharAt(permaLink.length()-1);
+					this.model.setPermaLink(permaLink.toString());
 				}
 				
 				if(action.equals("emptyShoppingCart"))
@@ -240,10 +236,69 @@ public class QtlFinder2 extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
+		//special case: no action, but plot from 
+		else
+		{
+			String permaLinkIds = request.getString("p");
+			if(permaLinkIds != null)
+			{
+				try
+				{
+					Map<String, Entity> hits = new HashMap<String, Entity>();
+					
+					//special special: WormBaseID is given (only 1 for the moment
+					if(permaLinkIds.length() == "WBGene00000000".length() && permaLinkIds.startsWith("WBGene"))
+					{
+						hits = query(db.getClassForName("ObservationElement"), db, permaLinkIds, 100);
+						hits = genesToProbes(db, 100, hits);
+					}
+					else{
+						String[] ids = permaLinkIds.split(",");
+						Class<? extends Entity> entityClass =  db.getClassForName("ObservationElement");
+						List<? extends Entity> findIds = db.find(entityClass, new QueryRule(ObservationElement.ID, Operator.IN, ids));
+						findIds = db.load((Class)ObservationElement.class, findIds);
+						for(Entity e : findIds)
+						{
+							hits.put(e.get(ObservationElement.NAME).toString(), e);
+						}
+					}
+					
+					this.model.setShoppingCart(hits);
+					this.model.setHits(hits);
+					this.model.setPermaLink(permaLinkIds);
+					plotFromShoppingCart(db);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+				}
+			}
+		}
 	}
 	
 	
 	private Map<String, Entity> genesToProbes(Database db, int limit, Map<String, Entity> hits) throws DatabaseException{
+		
+		//keep a list of genes for which the probes are shown to make the GO term info box
+		Map<String, Gene> probeToGene = new HashMap<String, Gene>();
+		
+		//additional: include the Gene objects for the shopping cart view so they are not lost on next search action
+		//(when switching back to the shopping cart view after a new search)
+		//find out if there is a ProbeToGene list already:
+		if(this.model.getProbeToGene() != null && this.model.getProbeToGene().size() > 0){
+			//if so, iterate over shopping cart and get a (possible) probe
+			for(Entity e : this.model.getShoppingCart().values())
+			{
+				String probeName = e.get(ObservationElement.NAME).toString();
+				//if the the ProbeToGene list contains the shopping cart item (probe name), add it to the new ProbeToGene list
+				if(this.model.getProbeToGene().containsKey(probeName))
+				{
+					probeToGene.put(probeName, this.model.getProbeToGene().get(probeName));
+				}
+			}
+		}
+		
 		Map<String, Entity> result = new HashMap<String, Entity>();
 		int nrOfResults = 0;
 		
@@ -268,6 +323,10 @@ public class QtlFinder2 extends PluginModel<Entity>
 				{
 					result.put(p.getName(), p);
 					//System.out.println("GENE2PROBE SEARCH HIT: " +p.getName());
+					
+					//store the gene hit that belongs with this probe
+					probeToGene.put(p.getName(), (Gene)e);
+					
 					nrOfResults++;
 					if(nrOfResults == limit)
 					{
@@ -288,6 +347,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 				}
 			}
 		}
+		
+		this.model.setProbeToGene(probeToGene);
 		
 		return result;
 	}
@@ -343,6 +404,24 @@ public class QtlFinder2 extends PluginModel<Entity>
 		}
 		
 		return hits;
+	}
+	
+	private void plotFromShoppingCart(Database db) throws Exception
+	{
+		if(this.model.getShoppingCart().size() == 0)
+		{
+			throw new Exception("Your shopping cart is empty!");
+		}
+		else if(this.model.getShoppingCart().size() > 500)
+		{
+			throw new Exception("You cannot plot more than 500 items.");
+		}
+		
+		this.model.setCartView(false);
+		
+		QTLMultiPlotResult res = multiplot(new ArrayList<Entity>(this.model.getShoppingCart().values()), db);
+		this.model.setReport(null);
+		this.model.setMultiplot(res);
 	}
 	
 	private QTLMultiPlotResult multiplot(List<Entity> entities, Database db) throws Exception

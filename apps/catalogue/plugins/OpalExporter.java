@@ -11,6 +11,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Category;
@@ -27,25 +28,34 @@ public class OpalExporter {
 
 	public static void main(String args[]) throws Exception {
 
-		new OpalExporter();
+		new OpalExporter(args);
 	}
 
-	public OpalExporter() throws Exception {
+	public OpalExporter(String args[]) throws Exception {
 
 		db = DatabaseFactory.create();
 
-		investigationName = "LifeLines";
+		if (args.length > 0) {
+			investigationName = args[0];
+		} else {
+			investigationName = "LifeLines";
+		}
 
 		WorkbookSettings ws = new WorkbookSettings();
 
 		ws.setLocale(new Locale("en", "EN"));
 
-		// File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-		// File mappingResult = new File(tmpDir + File.separator +
-		// "OpalInput.xls");
+		String filePath = "";
 
-		File mappingResult = new File("/Users/pc_iverson/Desktop/OpalInput.xls");
+		if (args.length > 2) {
+			filePath = args[2];
+		} else {
+			filePath = tmpDir.getAbsolutePath() + "/OpalInput.xls";
+		}
+
+		File mappingResult = new File(filePath);
 
 		WritableWorkbook workbook = Workbook.createWorkbook(mappingResult, ws);
 
@@ -71,9 +81,23 @@ public class OpalExporter {
 		int rowIndex = 1;
 		int categoryRowIndex = 1;
 
-		for (Protocol p : db.find(Protocol.class,
-				new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
-						investigationName))) {
+		Query<Protocol> queryRules = db.query(Protocol.class);
+
+		for (int i = 0; i < args.length; i++) {
+
+			if (i == 0) {
+				queryRules.addRules(new QueryRule(Protocol.INVESTIGATION_NAME,
+						Operator.EQUALS, investigationName));
+			} else if (i == 1) {
+				queryRules.addRules(new QueryRule(Protocol.NAME,
+						Operator.EQUALS, args[i]));
+			} else {
+				break;
+			}
+		}
+
+		for (Protocol p : queryRules.find()) {
+
 			if (p.getFeatures_Name().size() > 0) {
 
 				List<Measurement> listOfMeasurements = db.find(
@@ -84,7 +108,8 @@ public class OpalExporter {
 
 					variableSheet.addCell(new Label(0, rowIndex, p.getName()));
 
-					variableSheet.addCell(new Label(1, rowIndex, m.getName()));
+					variableSheet.addCell(new Label(1, rowIndex, m.getName()
+							.toLowerCase()));
 
 					String dataType = m.getDataType();
 					if (dataType.equals("string")) {
@@ -99,10 +124,13 @@ public class OpalExporter {
 
 					variableSheet.addCell(new Label(2, rowIndex, dataType));
 
-					String unit = "";
-					if (m.getUnit_Name() != null)
-						unit = m.getUnit_Name();
-					variableSheet.addCell(new Label(3, rowIndex, unit));
+					if (m.getUnit_Name() != null) {
+						String unit = m.getUnit_Name();
+						variableSheet.addCell(new Label(3, rowIndex, unit));
+					}
+					if (m.getDescription() != null)
+						variableSheet.addCell(new Label(4, rowIndex, m
+								.getDescription()));
 
 					rowIndex++;
 
@@ -116,8 +144,9 @@ public class OpalExporter {
 						for (Category c : listOfCategorys) {
 							categorySheet.addCell(new Label(0,
 									categoryRowIndex, p.getName()));
-							categorySheet.addCell(new Label(1,
-									categoryRowIndex, m.getName()));
+							categorySheet
+									.addCell(new Label(1, categoryRowIndex, m
+											.getName().toLowerCase()));
 							categorySheet.addCell(new Label(2,
 									categoryRowIndex, c.getName()));
 							categorySheet.addCell(new Label(3,

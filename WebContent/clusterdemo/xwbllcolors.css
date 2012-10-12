@@ -22,29 +22,30 @@
 	color: #000000;
 }
 
-/**shade header*/
+/**shade header, old 03406A*/
 .shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
-	background: #03406A;
+	background: #4F81BD;
 	color: #FFFFFF;
 }
 
-/**highlight*/
+/**highlight, old: 65A5D1*/
 .highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
-	background: #65A5D1;
+	background: #ADC8E1;
 	
 }
 
+/**old 03406A and 65A5D1 */
 .submenuitem{
-	h: expression(onmouseover=new Function("this.style.backgroundColor='#03406A'; this.style.color='#fff';"),
-                       onmouseout=new Function("this.style.backgroundColor='#65A5D1'; this.style.color='black';"));	
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#4F81BD'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#ADC8E1'; this.style.color='black';"));	
 	/*ie hack for td.submenuitem:hover*/
 	
 }
 
-/**shade borders*/
+/**shade borders, old 03406A*/
 .shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
 {
-	border-color: #03406A;
+	border-color: #4F81BD;
 	
 }
 
@@ -53,12 +54,14 @@
 	color: #FFFFFF;
 }
 
+/** old: FF9973 */
 .matrixRowColor0,.form_listrow0 {
-	background: #FF9973;
+	background: #CCC;
 }
 
+/** old FFDB73 */
 .matrixRowColor1,.form_listrow1 {
-	background: #FFDB73;
+	background: #ADC8E1;
 }
 
 .matrixRowColorEmpty {
