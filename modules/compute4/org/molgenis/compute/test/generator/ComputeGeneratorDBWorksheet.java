@@ -197,10 +197,11 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 				}
 
 				// construct taskName
+                String lala = work.getList("McId").get(0)+ "_" +System.nanoTime();
 
-				String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
-						+ parameters.get("line_number");
-
+                String taskName = workflowElement.getName() + "_" + lala;
+//               String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
+//						+ parameters.get("line_number");
 
                 if(taskName.contains("impute2_s05"))
                 {
