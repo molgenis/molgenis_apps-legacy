@@ -4,9 +4,6 @@
 
 getFile ${studyInputPedMapChr}.map
 getFile ${studyInputPedMapChr}.ped
-putFile ${studyPedMapChr}.map
-putFile ${studyPedMapChr}.ped
-
 
 inputs "${studyInputPedMapChr}.map"
 inputs "${studyInputPedMapChr}.ped"
@@ -22,3 +19,6 @@ awk '{$2=$1"_"$4; print $0}' ${studyInputPedMapChr}.map > ${studyPedMapChr}.map
 cp ${studyInputPedMapChr}.ped ${studyPedMapChr}.ped
 
 #Becarefull of phenotype field in ped files. Might crash later on -9
+
+putFile ${studyPedMapChr}.map
+putFile ${studyPedMapChr}.ped

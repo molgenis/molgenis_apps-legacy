@@ -8,12 +8,7 @@ getFile "${imputationToolGeneticaLibrariesJar}"
 
 getFile "${studyPedMapChr}.map"
 getFile "${studyPedMapChr}.ped"
-putFile "${studyTriTyperChrDir}/GenotypeMatrix.dat"
-putFile "${studyTriTyperChrDir}/Individuals.txt"
-putFile "${studyTriTyperChrDir}/PhenotypeInformation.txt"
-putFile "${studyTriTyperChrDir}/SNPMappings.txt"
-putFile "${studyTriTyperChrDir}/SNPsHash.txt"
-putFile "${studyTriTyperChrDir}/SNPs.txt"
+
 
 
 inputs "${studyPedMapChr}.map"
@@ -22,7 +17,6 @@ alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat" \
 "${studyTriTyperChrDir}/Individuals.txt" \
 "${studyTriTyperChrDir}/PhenotypeInformation.txt" \
 "${studyTriTyperChrDir}/SNPMappings.txt" \
-"${studyTriTyperChrDir}/SNPsHash.txt" \
 "${studyTriTyperChrDir}/SNPs.txt"
 
 
@@ -52,7 +46,12 @@ then
 
 	mv ${studyTriTyperChrTempDir} ${studyTriTyperChrDir}
 
-	
+    putFile "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+    putFile "${studyTriTyperChrDir}/Individuals.txt"
+    putFile "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+    putFile "${studyTriTyperChrDir}/SNPMappings.txt"
+    putFile "${studyTriTyperChrDir}/SNPs.txt"
+
 else
   
 	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n"

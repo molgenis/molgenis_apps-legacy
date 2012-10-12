@@ -3,6 +3,7 @@ package org.molgenis.compute.test.executor;
 import app.DatabaseFactory;
 import org.molgenis.compute.runtime.ComputeHost;
 import org.molgenis.compute.runtime.ComputeTask;
+import org.molgenis.compute.test.sysexecutor.SysCommandExecutor;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -21,9 +22,11 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 {
     public static final String BACK_END_GRID = "grid";
     public static final String BACK_END_CLUSTER = "cluster";
+    public static final String BACK_END_LOCALHOST = "localhost";
 
 
     private ExecutionHost host = null;
+    SysCommandExecutor localExecutor = new SysCommandExecutor();
 
     //actual start pilots here
     public void executeTasks(String backend)
@@ -66,6 +69,8 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                     host.submitPilotGrid();
                 else if (backend.equalsIgnoreCase(BACK_END_CLUSTER))
                     host.submitPilotCluster();
+                else if (backend.equalsIgnoreCase(BACK_END_LOCALHOST))
+                    submitPilotLocalhost();
             }
             catch (IOException e)
             {
@@ -82,6 +87,29 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                 e.printStackTrace();
             }
         }
+    }
+
+    private void submitPilotLocalhost() throws IOException
+    {
+        String str = System.nanoTime() + "";
+
+        String command = "sh /Users/georgebyelas/Development/molgenis_modules/maverick_demo/maverick.sh " +str;
+    	System.out.println(">>> " + command);
+
+        try
+        {
+            localExecutor.runCommand(command);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        String cmdError = localExecutor.getCommandError();
+        String cmdOutput = localExecutor.getCommandOutput();
+
+        System.out.println(cmdError);
+      	System.out.println(cmdOutput);
     }
 
     private int evaluateTasks(Database db, List<ComputeTask> generatedTasks)

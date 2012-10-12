@@ -4,9 +4,6 @@
 
 getFile ${imputationResultDir}/chr_${chr}
 getFile ${preparedStudyDir}/chr${chr}.sample
-putFile ${imputationResultDir}/chr_${chr}.ped
-putFile ${imputationResultDir}/chr_${chr}.map
-
 
 inputs "${imputationResultDir}/chr_${chr}"
 inputs "${preparedStudyDir}/chr${chr}.sample"
@@ -37,6 +34,8 @@ then
 	mv ${imputationResultDir}/~chr_${chr}.ped ${imputationResultDir}/chr_${chr}.ped
 	mv ${imputationResultDir}/~chr_${chr}.map ${imputationResultDir}/chr_${chr}.map
 
+    putFile ${imputationResultDir}/chr_${chr}.ped
+    putFile ${imputationResultDir}/chr_${chr}.map
 	
 else
   
@@ -45,3 +44,4 @@ else
 	exit 1
 
 fi
+

@@ -5,12 +5,7 @@
 getFile ${imputationResultDir}/chr_${chr}.map
 getFile ${hg19ToHg18chainfile}
 getFile ${imputationResultDir}/chr_${chr}.ped
-putFile ${convertB36ChrHg19Bed}
-putFile ${convertB36ChrHg18Bed}
-putFile ${convertB36unmapped}
-putFile ${b36conversionPedMapResultDir}/chr_${chr}.map
-putFile ${b36conversionPedMapResultDir}/chr_${chr}.ped
-putFile ${convertB36unmappedSNPs}
+
 
 inputs "${imputationResultDir}/chr_${chr}.map"
 inputs "${hg19ToHg18chainfile}"
@@ -60,3 +55,10 @@ ${plinkseqBin} \
 awk '{sub("chr","",$1);print $1,$4,0,$2}' OFS="\t" \
 ${convertB36ChrHg18Bed} \
 > ${b36conversionPedMapResultDir}/chr_${chr}.map
+
+putFile ${convertB36ChrHg19Bed}
+putFile ${convertB36ChrHg18Bed}
+putFile ${convertB36unmapped}
+putFile ${b36conversionPedMapResultDir}/chr_${chr}.map
+putFile ${b36conversionPedMapResultDir}/chr_${chr}.ped
+putFile ${convertB36unmappedSNPs}

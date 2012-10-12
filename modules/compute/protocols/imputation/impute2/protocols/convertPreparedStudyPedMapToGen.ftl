@@ -4,13 +4,11 @@
 
 getFile ${preparedStudyDir}/chr${chr}.ped
 getFile ${preparedStudyDir}/chr${chr}.map
-putFile ${preparedStudyDir}/chr${chr}.gen
-putFile ${preparedStudyDir}/chr${chr}.sample
-
-
+getFile ${studyPedMapChr}.ped
 
 inputs "${preparedStudyDir}/chr${chr}.ped"
 inputs "${preparedStudyDir}/chr${chr}.map"
+inputs "${studyPedMapChr}.ped"
 alloutputsexist "${preparedStudyDir}/chr${chr}.gen" \
 "${preparedStudyDir}/chr${chr}.sample"
 
@@ -25,7 +23,7 @@ ${gtoolBin} -P \
 awk '
     BEGIN { print "ID_1 ID_2 missing sex phenotype"; print "0 0 0 D P"}    
     {print $2,$1,"0",$5,$6}
-' OFS=" " ${preparedStudyDir}/chr${chr}.ped \
+' OFS=" " ${studyPedMapChr}.ped \
 > ${preparedStudyDir}/~chr${chr}.sample
 
 
@@ -40,6 +38,8 @@ then
 	mv ${preparedStudyDir}/~chr${chr}.gen ${preparedStudyDir}/chr${chr}.gen
 	mv ${preparedStudyDir}/~chr${chr}.sample ${preparedStudyDir}/chr${chr}.sample
 
+    putFile ${preparedStudyDir}/chr${chr}.gen
+    putFile ${preparedStudyDir}/chr${chr}.sample
 	
 else
   

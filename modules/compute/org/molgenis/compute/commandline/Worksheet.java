@@ -72,7 +72,7 @@ public class Worksheet
 	 */
 	private void fillWorksheet()
 	{
-		Map<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new TreeMap<String, String>();
 
 		// novel worksheet that combines user worksheet with parameters
 		List<Tuple> worksheet = new ArrayList<Tuple>();
@@ -186,7 +186,7 @@ public class Worksheet
 		 */
 
 		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]
-		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String, ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
+		Map<String, Map<String, ArrayList<Object>>> wsset = new TreeMap<String, Map<String, ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
 
 		for (Tuple t : worksheet)
 		{
@@ -209,7 +209,7 @@ public class Worksheet
 			else
 			{
 				// intialize tupleset: each field gets empty List of objects
-				tupleset = new HashMap<String, ArrayList<Object>>();
+				tupleset = new TreeMap<String, ArrayList<Object>>();
 				for (String field : t.getFields())
 				{
 					tupleset.put(field, new ArrayList<Object>());
@@ -235,7 +235,7 @@ public class Worksheet
 			tupleset = wsset.get(key);
 
 			// this is bizarre:
-			Map<String, Object> m = new HashMap<String, Object>();
+			Map<String, Object> m = new TreeMap<String, Object>();
 			for (String field : tupleset.keySet())
 			{
 				m.put(field, tupleset.get(field));
@@ -261,8 +261,8 @@ public class Worksheet
 	private static Set<String> reduceFieldSet(List<ComputeParameter> parameterlist, List<String> targets)
 	{
 		// Let R and L be two sets. R contains 'reduce' parameters, L contains 'list' parameters.
-		Set<String> reduceParams = new HashSet<String>();
-		Set<String> listParams = new HashSet<String>();
+		Set<String> reduceParams = new TreeSet<String>();
+		Set<String> listParams = new TreeSet<String>();
 
 		// (i) put targets in R
 		for (String t : targets)
@@ -319,12 +319,12 @@ public class Worksheet
 		}
 
 		// (v) for each parameter cp that is not in R and not in L, determine the 'set' of parameters it refers to. Put (cp, set) in map.
-		Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> map = new TreeMap<String, Set<String>>();
 		for (ComputeParameter cp : parameterlist)
 		{
 			if (!reduceParams.contains(cp.getName()) && !listParams.contains(cp.getName()))
 			{
-				Set<String> set = new HashSet<String>();
+				Set<String> set = new TreeSet<String>();
 				for (ComputeParameter cp2 : parameterlist)
 				{
 					if (cp.getDefaultValue().contains("${" + cp2.getName() + "}"))
@@ -385,7 +385,7 @@ public class Worksheet
 		// (vii) check: are all parameters in "R u L"?
 		// print("R: " + R);
 		// print("L: " + L);
-		Set<String> allp = new HashSet<String>();
+		Set<String> allp = new TreeSet<String>();
 		for (ComputeParameter cp : parameterlist)
 		{
 			allp.add(cp.getName());
@@ -574,7 +574,7 @@ public class Worksheet
 	{
 		if (ws1.size() != ws2.size())
 		{
-			Set<String> lineNumbers = new HashSet();
+			Set<String> lineNumbers = new TreeSet();
 			for (Tuple t1 : ws1)
 			{
 				System.out.println(t1.getString("line_number"));

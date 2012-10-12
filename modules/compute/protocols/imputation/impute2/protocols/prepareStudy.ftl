@@ -16,11 +16,6 @@ getFile ${referenceTriTyperDir}/Individuals.txt
 getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
 getFile ${referenceTriTyperDir}/SNPMappings.txt
 getFile ${referenceTriTyperDir}/SNPs.txt
-putFile ${preparedStudyDir}/chr${chr}.dat
-putFile ${preparedStudyDir}/chr${chr}.map
-putFile ${preparedStudyDir}/chr${chr}.markersbeagleformat
-putFile ${preparedStudyDir}/chr${chr}.ped
-putFile ${preparedStudyDir}/exportlog.txt
 
 inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
 inputs "${studyTriTyperChrDir}/Individuals.txt"
@@ -67,6 +62,11 @@ then
 
 	mv ${preparedStudyTempDir} ${preparedStudyDir}
 
+    putFile ${preparedStudyDir}/chr${chr}.dat
+    putFile ${preparedStudyDir}/chr${chr}.map
+    putFile ${preparedStudyDir}/chr${chr}.markersbeagleformat
+    putFile ${preparedStudyDir}/chr${chr}.ped
+    putFile ${preparedStudyDir}/exportlog.txt
 	
 else
   
