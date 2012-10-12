@@ -433,7 +433,7 @@
 												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value = "${invName}"
 													 style="display:none" onclick="__action.value='cohortSelect';"/>
 										</#list>
-									<#else>
+									<#elseif (screen.getArrayInvestigations()?size > 0)>
 										Catalog: 
 										<#assign invName = screen.getArrayInvestigations()[0]> ${invName}
 									</#if>
