@@ -1,7 +1,7 @@
-#FOREACH organizer
+#FOREACH group
 
 echo "Dear ${organizer},"
-echo "Please organize activities for the ${age} group."
+echo "Please organize activities for the ${group} group."
 echo "List of guests:"
 <#list guest as g>
 	echo "${g}"
