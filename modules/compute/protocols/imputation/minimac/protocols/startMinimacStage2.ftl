@@ -1,14 +1,15 @@
 #MOLGENIS walltime=05:00:00 nodes=1 cores=1 mem=4
 
+#FOREACH McScripts
 
 getFile ${concatWorksheetsJar}
 
-<#list finalChunkChrWorkSheet as chunkFile>
+<#list finalChunkChrWorksheet as chunkFile>
 	getFile ${chunkFile}
 </#list>
 
 
-inputs "${ssvQuoted(finalChunkChrWorkSheet)}"
+inputs "${ssvQuoted(finalChunkChrWorksheet)}"
 alloutputsexist \
 	"${projectPhasingJobsDir}/check_for_submission.txt" \
 	"${concattedChunkWorksheet}" \
@@ -19,7 +20,7 @@ module load jdk/${javaversion}
 
 java -jar ${concatWorksheetsJar} \
 	${tmpConcattedChunkWorksheet} \
-	${ssvQuoted(finalChunkChrWorkSheet)}
+	${ssvQuoted(finalChunkChrWorksheet)}
 
 #Get return code from last program call
 returnCode=$?

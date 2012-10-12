@@ -14,10 +14,10 @@ getFile ${studyPedMapChr}.ped
 inputs "${studyPedMapChr}.map"
 inputs "${studyPedMapChr}.ped"
 alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat" \
-"${studyTriTyperChrDir}/Individuals.txt" \
-"${studyTriTyperChrDir}/PhenotypeInformation.txt" \
-"${studyTriTyperChrDir}/SNPMappings.txt" \
-"${studyTriTyperChrDir}/SNPs.txt"
+	"${studyTriTyperChrDir}/Individuals.txt" \
+	"${studyTriTyperChrDir}/PhenotypeInformation.txt" \
+	"${studyTriTyperChrDir}/SNPMappings.txt" \
+	"${studyTriTyperChrDir}/SNPs.txt"
 
 
 if [ -d ${studyTriTyperChrDir} ]
@@ -31,9 +31,9 @@ module load jdk/${javaversion}
 mkdir -p ${studyTriTyperChrTempDir}
 
 java -jar ${imputationToolJar} \
---mode pmtt \
---in ${studyPedMapChrDir} \
---out ${studyTriTyperChrTempDir}
+	--mode pmtt \
+	--in ${studyPedMapChrDir} \
+	--out ${studyTriTyperChrTempDir}
 
 
 #Get return code from last program call
