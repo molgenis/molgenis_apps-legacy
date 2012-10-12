@@ -72,13 +72,13 @@
 			<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
 				<tr>
 					<td align="center">
-						<a target="_blank" href="http://www.molgenis.org/"><img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis"></a>
-						<a target="_blank" href="http://wiki.gcc.rug.nl/"><img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"></a>
-						<a target="_blank" href="http://www.rug.nl/"><img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG"></a><br>
-						<a target="_blank" href="http://www.xgap.org/"><img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP"></a>
-						<a target="_blank" href="http://www.umcg.nl/"><img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG"></a>
-						<a target="_blank" href="http://www.rug.nl/target/index"><img src="clusterdemo/logos/targetlogo.jpg" width="100px" height="55px" alt="logo Target"></a>
-						<a target="_blank" href="http://tcc.umcg.nl/"><img src="clusterdemo/logos/tcc_logo.gif" width="100px" height="92px" alt="logo TCC"></a>
+						<a target="_blank" href="http://www.molgenis.org/"><img src="clusterdemo/logos/molgenis_logo.png" width="75" height="50" alt="logo Molgenis"></a>
+						<a target="_blank" href="http://wiki.gcc.rug.nl/"><img src="clusterdemo/logos/gcc_logo.png" width="300" height="50" alt="logo GCC"></a>
+						<a target="_blank" href="http://www.rug.nl/"><img src="clusterdemo/logos/rug_logo.png" width="150" height="50" alt="logo RUG"></a><br>
+						<a target="_blank" href="http://www.xgap.org/"><img src="clusterdemo/logos/xgap_logo.png" width="75" height="50" alt="logo XGAP"></a>
+						<a target="_blank" href="http://www.umcg.nl/"><img src="clusterdemo/logos/umcg_logo.png" width="150" height="50" alt="logo UMCG"></a>
+						<a target="_blank" href="http://www.rug.nl/target/index"><img src="clusterdemo/logos/targetlogo.jpg" width="100" height="55" alt="logo Target"></a>
+						<a target="_blank" href="http://tcc.umcg.nl/"><img src="clusterdemo/logos/tcc_logo.gif" width="100" height="92" alt="logo TCC"></a>
 					</td>
 				</tr>
 			</table>
