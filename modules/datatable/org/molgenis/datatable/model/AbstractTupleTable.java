@@ -49,6 +49,12 @@ public abstract class AbstractTupleTable implements TupleTable
 	{
 		try
 		{
+			// If the first column is fixed, it can not be hidden
+			if (isFirstColumnFixed() && getAllColumns().get(0).getName().equals(columnName))
+			{
+				return;
+			}
+
 			getColumnByName(columnName).setHidden(true);
 		}
 		catch (TableException e)
@@ -142,6 +148,11 @@ public abstract class AbstractTupleTable implements TupleTable
 		List<Field> columns = getVisibleColumns();
 
 		int colCount = columns.size();
+
+		if (getColOffset() > colCount)
+		{
+			setColOffset(colCount);
+		}
 
 		if (isFirstColumnFixed())
 		{

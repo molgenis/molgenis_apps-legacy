@@ -1,4 +1,4 @@
-package updateMatrixImporter;
+package phenotypeViewer;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -23,15 +24,19 @@ import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -40,14 +45,16 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 
-public class UpdateMatrixImporter extends PluginModel<Entity> {
+public class PhenotypeViewer extends PluginModel<Entity> implements
+		JQGridViewCallback {
 
 	/**
 	 * 
@@ -60,22 +67,29 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	private CsvTable csvTable = null;
 	private JQGridView tableView = null;
 	private String STATUS = "showMatrix";
-	private final String investigationName = "LifeLines";
+	private String investigationName = null;
 	private String tempalteFilePath = null;
 	private String jsonForMapping = null;
 	private List<String> listOfProtocols = new ArrayList<String>();
-	private List<String> colHeaders = new ArrayList<String>();
-	private List<String> newFeatures = new ArrayList<String>();
+	// private List<String> colHeaders = new ArrayList<String>();
 	private List<String> rowHeaders = new ArrayList<String>();
 	private List<String> newTargets = new ArrayList<String>();
+	private List<String> projects = new ArrayList<String>();
+	private HashMap<String, String> hashMeasurement = new HashMap<String, String>();
+	private HashMap<String, String> newFeatures = new HashMap<String, String>();
+
+	private String projectName = "";
+
 	private String importMessage = null;
 
-	public UpdateMatrixImporter(String name, ScreenController<?> parent) {
+	public PhenotypeViewer(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
 	public void resetVariables() {
-		colHeaders.clear();
+		// colHeaders.clear();
+		projects.clear();
+		hashMeasurement.clear();
 		newFeatures.clear();
 		rowHeaders.clear();
 		newTargets.clear();
@@ -88,36 +102,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		jsonForMapping = null;
 		importMessage = null;
 		csvTable = null;
-		tableView = null;
 		report = null;
 	}
-
-	// public void uploadNewFileAction(Database db, Tuple request) {
-	// STATUS = "showMatrix";
-	// }
-	//
-	// public void uploadFile(Database db, Tuple request) {
-	//
-	// resetVariables();
-	//
-	// STATUS = "CheckFile";
-	//
-	// String fileName = request.getString("uploadFileName");
-	//
-	// File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-	//
-	// File templateMapping = new File(tmpDir.getAbsolutePath()
-	// + "/tempalteMapping.xls");
-	//
-	// tempalteFilePath = templateMapping.getAbsolutePath();
-	//
-	// checkHeaders(db, request, fileName);
-	// }
 
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws Exception {
 
 		if (out != null) {
+
 			if (request.getAction().equals("download_json_test")) {
 
 				tableView.handleRequest(db, request, out);
@@ -130,7 +122,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					// the
 					// table
 					if (newTargets.size() > 0) {// If there are new records,
-						// show new records only
+												// show new records only
 						String targetString = csvTable.getAllColumns().get(0)
 								.getName();
 
@@ -163,6 +155,26 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					writer.close();
 				}
 
+			} else if (request.getAction().equals(
+					"download_json_reloadGridByInves")) {
+				investigationName = request.getString("investigation");
+				ProtocolTable table = new ProtocolTable(db, investigationName);
+				table.setTargetString("target");
+				table.setInvestigation(investigationName);
+				// add editable decorator
+
+				JSONObject json = new JSONObject();
+				// check which table to show
+				json.put("result", tableChecker(db, table).getHtml());
+
+				PrintWriter writer = new PrintWriter(out);
+				writer.write(json.toString());
+				writer.flush();
+				writer.close();
+
+			} else if (request.getAction()
+					.equals("download_json_removeMessage")) {
+				importMessage = null;
 			}
 		} else {
 			this.handleRequest(db, request);
@@ -175,6 +187,19 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
 		if (request.getAction().equals("uploadFile")) {
+
+			// If the checkbox is checked
+			if (request.getBool("createNewInvest") != null) {
+				projectName = request.getString("newInvestigation");
+				Investigation inv = new Investigation();
+				inv.setName(projectName);
+				db.add(inv);
+
+			} else {
+				projectName = request.getString("project");
+
+			}
+			investigationName = projectName;
 
 			resetVariables();
 
@@ -194,22 +219,15 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		} else if (request.getAction().equals("showMatrix")) {
 
 			STATUS = "showMatrix";
-
-			Protocol p;
 			try {
-				p = db.query(Protocol.class)
-						.eq(Protocol.NAME, "stageCatalogue").find().get(0);
 
 				// create table
-				ProtocolTable table = new ProtocolTable(db, p);
-				table.setTargetString("Pa_Id");
+				ProtocolTable table = new ProtocolTable(db, investigationName);
+				table.setTargetString("target");
+				table.setInvestigation(investigationName);
 				// add editable decorator
+				tableChecker(db, table);
 
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
-
-				tableView
-						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -224,7 +242,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				// If there are no new records and columns at all, show all the
 				// table
 				if (newTargets.size() > 0) {// If there are new records,
-					// show new records only
+											// show new records only
 					String targetString = csvTable.getAllColumns().get(0)
 							.getName();
 
@@ -255,6 +273,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			STATUS = "showMatrix";
 
 			importUploadFile(db, request);
+
+			ProtocolTable table = new ProtocolTable(db, investigationName);
+
+			table.setTargetString(table.getTargetString());
+			// add editable decorator
+
+			// check which table to show
+			tableChecker(db, table);
 
 		} else if (request.getAction().equals("uploadMapping")) {
 
@@ -369,9 +395,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			String targetString = allColumns.get(0).getName();
 
 			String existingColumn = null;
-
-			for (String eachHeader : colHeaders) {
-				if (!newFeatures.contains(eachHeader)) {
+			// for (String eachHeader :colHeaders))
+			for (String eachHeader : hashMeasurement.keySet()) {
+				if (!newFeatures.containsKey(eachHeader)) {
 					existingColumn = eachHeader;
 					break;
 				}
@@ -396,6 +422,20 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					}
 				}
 
+				if (rowHeaders.size() != listOfExistingValues.size()) {
+
+					for (String oldTarget : rowHeaders) {
+						if (!targetToProtocolApplication.containsKey(oldTarget)) {
+							ProtocolApplication pa = new ProtocolApplication();
+							pa.setName("pa" + oldTarget);
+							pa.setInvestigation_Name(investigationName);
+							pa.setProtocol_Name(investigationName);
+							targetToProtocolApplication.put(oldTarget,
+									pa.getName());
+							listOfPA.add(pa);
+						}
+					}
+				}
 			}
 
 			// new rows are added
@@ -409,13 +449,19 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				}
 			}
 
+			List<String> ingoredColumn = new ArrayList<String>();
+
 			// new columns are added.
 			if (newFeatures.size() > 0) {
 
-				for (String feature : newFeatures) {
+				for (String feature : newFeatures.keySet()) {
+					int length = investigationName.length();
 
-					String identifier = feature.replaceAll(" ", "_");
-
+					String feat = feature.substring(0, (feature.length()
+							- length - 1));
+					String identifier = feat.replaceAll(" ", "_");
+					// Check if there the checkboxes are checked (if the new
+					// measurement should be added)
 					if (request.getBool(identifier + "_check") != null) {
 
 						Measurement m = new Measurement();
@@ -424,12 +470,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 								+ "_dataType");
 
 						m.setName(feature);
+						m.setLabel(newFeatures.get(feature));
 						m.setInvestigation_Name(investigationName);
 						m.setDataType(dataType);
 
 						String protocolTable = request.getString(identifier
 								+ "_protocolTable");
 
+						// Put the new features in the corresponding protocols
 						if (!featureToProtocolTable.containsKey(protocolTable)) {
 
 							List<String> features = new ArrayList<String>();
@@ -478,7 +526,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 						listOfFeatures.add(m);
 
-						addedColumns.add(feature);
+						addedColumns.add(feat);
+					} else {
+
+						ingoredColumn.add(feature);
 					}
 				}
 			}
@@ -491,7 +542,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				if (newTargets.contains(targetName)) {
 
 					ProtocolApplication pa = new ProtocolApplication();
-					pa.setProtocol_Name("TestProtocol");
+					// FIXME: the hard coded protocol name would be fixed
+					pa.setProtocol_Name(investigationName);
+
 					pa.setName("pa_" + row.getString(targetString));
 					pa.setInvestigation_Name(investigationName);
 					listOfPA.add(pa);
@@ -500,17 +553,19 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 						String eachColumn = field.getName();
 
-						if (!eachColumn.equals(targetString)) {
+						if (!eachColumn.equals(targetString)
+								&& !ingoredColumn.contains(eachColumn + "_"
+										+ investigationName)) {
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
-							ov.setFeature_Name(eachColumn);
+							ov.setFeature_Name(eachColumn + "_"
+									+ investigationName);
 							ov.setValue(row.getString(eachColumn));
 							ov.setInvestigation_Name(investigationName);
 							ov.setProtocolApplication_Name(pa.getName());
 							listOfValues.add(ov);
 						}
 					}
-
 				} else {
 
 					// Add values for new columns only
@@ -519,7 +574,8 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 						for (String eachNewColumn : addedColumns) {
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
-							ov.setFeature_Name(eachNewColumn);
+							ov.setFeature_Name(eachNewColumn + "_"
+									+ investigationName);
 							ov.setValue(row.getString(eachNewColumn));
 							ov.setInvestigation_Name(investigationName);
 							ov.setProtocolApplication_Name(targetToProtocolApplication
@@ -529,6 +585,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					}
 				}
 			}
+
+			// Dependency, have to add the categories to database first before
+			// adding the measurements
 			if (listOfCategories.keySet().size() > 0) {
 				for (Category c : db.find(Category.class, new QueryRule(
 						Category.NAME, Operator.IN, new ArrayList<String>(
@@ -559,9 +618,31 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			}
 
 			db.add(listOfFeatures);
+
+			if (db.find(
+					Protocol.class,
+					new QueryRule(Protocol.NAME, Operator.EQUALS,
+							investigationName)).size() == 0) {
+				Protocol protocolInvest = new Protocol();
+				protocolInvest.setName(investigationName);
+				protocolInvest.setInvestigation_Name(investigationName);
+
+				List<Integer> measurementIDs = new ArrayList<Integer>();
+
+				for (Measurement m : db.find(Measurement.class, new QueryRule(
+						Measurement.INVESTIGATION_NAME, Operator.EQUALS,
+						investigationName))) {
+					measurementIDs.add(m.getId());
+				}
+
+				protocolInvest.setFeatures_Id(measurementIDs);
+				db.add(protocolInvest);
+			}
+
 			db.add(listOfPA);
 			db.add(listOfValues);
 
+			// Add the features to the catalogue node
 			for (Protocol p : db.find(Protocol.class, new QueryRule(
 					Protocol.NAME, Operator.IN, new ArrayList<String>(
 							featureToProtocolTable.keySet())))) {
@@ -575,54 +656,79 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			db.commitTx();
 
-			importMessage = "Your import has been successful! You can know upload a new file";
-
-			Protocol p = db.query(Protocol.class)
-					.eq(Protocol.NAME, "stageCatalogue").find().get(0);
-
-			// create table
-			ProtocolTable table = new ProtocolTable(db, p);
-			table.setTargetString("Pa_Id");
-			// add editable decorator
-
-			// check which table to show
-			tableView = new JQGridView("test", this, table);
-
-			tableView
-					.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+			importMessage = "success";
 
 		} catch (DatabaseException e) {
 
-			importMessage = "It fails to import the file, please check your file please!";
-			e.printStackTrace();
 			db.rollbackTx();
+			importMessage = "It fails to import the file, please check your file please!</br>"
+					+ e.getMessage().toString();
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void reload(Database db) {
 
-		if (tableView == null) {
-			Protocol p;
-			try {
-				p = db.query(Protocol.class)
-						.eq(Protocol.NAME, "stageCatalogue").find().get(0);
+		try {
 
-				// create table
-				ProtocolTable table = new ProtocolTable(db, p);
-				table.setTargetString("Pa_Id");
-				// add editable decorator
+			projects.clear();
+			List<Investigation> listProjects = new ArrayList<Investigation>();
+			listProjects = db.find(Investigation.class);
 
-				// check which table to show
-				tableView = new JQGridView("test", this, table);
+			int index = 0;
 
-				tableView
-						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			for (Investigation i : listProjects) {
+				projects.add(i.getName());
+				if (index == 0 && investigationName == null) {
+					investigationName = i.getName();
+					index++;
+				}
+			}
+
+			if (db.find(Investigation.class).size() > 0) {
+				// p = db.query(Protocol.class).eq(Protocol.NAME,
+				// "stageCatalogue").find().get(0);
+				if (db.find(Protocol.class).size() > 0) {
+					// create table
+					ProtocolTable table = new ProtocolTable(db,
+							investigationName);
+
+					table.setTargetString(table.getTargetString());
+					// add editable decorator
+
+					// check which table to show
+					tableChecker(db, table);
+
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public JQGridView tableChecker(Database db, ProtocolTable table) {
+		tableView = new JQGridView("test", this, table);
+		String selectedInv = "";
+		String selectInvestigationHTML = "<select id=\"selectInvestigation\" class=\"ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
+
+		for (String inv : projects) {
+			if (inv.equals(investigationName)) {
+				selectedInv = inv;
+				selectInvestigationHTML += "<option selected=\"selected\">"
+						+ selectedInv + "</option>";
+			} else {
+
+				selectInvestigationHTML += "<option>" + inv + "</option>";
 			}
 		}
+
+		selectInvestigationHTML += "</select>";
+		tableView.setLabel("Select project: " + selectInvestigationHTML);
+		return tableView;
 
 	}
 
@@ -634,25 +740,35 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			csvTable = new CsvTable(file);
 
+			// TODO: User should decide which column is the target
 			String targetString = csvTable.getAllColumns().get(0).getName();
 
 			// check the existing variables in measurements
+			// EXTRA: added the projectname to the measurementLABEL
 			for (Field field : csvTable.getAllColumns()) {
-				colHeaders.add(field.getName());
-				newFeatures.add(field.getName());
+
+				if (!field.getName().equals(targetString)) {
+					hashMeasurement.put(field.getName() + "_" + projectName,
+							field.getName());
+					newFeatures.put(field.getName() + "_" + projectName,
+							field.getName());
+				}
 			}
 
-			colHeaders.remove(0);
-			newFeatures.remove(0);
-
+			// LABEL!!
+			// We query these entire list of columns and see whether they
+			// already existed in the database
 			List<Measurement> colHeadersMeasurement = db.find(
-					Measurement.class, new QueryRule(Measurement.NAME,
-							Operator.IN, colHeaders));
+					Measurement.class,
+					new QueryRule(Measurement.NAME, Operator.IN,
+							new ArrayList<String>(hashMeasurement.keySet())));
 
+			// we remove the existing features from the new feature hashmap.
 			for (Measurement m : colHeadersMeasurement) {
-				if (colHeaders.contains(m.getName())) {
+				if (newFeatures.containsKey(m.getName())) {
 					newFeatures.remove(m.getName());
 				}
+
 			}
 
 			// check the existing records
@@ -671,12 +787,16 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				}
 			}
 
-			colHeaders.removeAll(newFeatures);
+			for (String existingFeature : newFeatures.keySet()) {
+
+				hashMeasurement.remove(existingFeature);
+
+			}
 
 			rowHeaders.removeAll(newTargets);
 
 			report = new Gson().toJson(ReportUploadStatus
-					.createReportUploadStatus(colHeaders, newFeatures,
+					.createReportUploadStatus(hashMeasurement, newFeatures,
 							rowHeaders, newTargets));
 
 			for (Protocol p : db.find(Protocol.class, new QueryRule(
@@ -693,12 +813,41 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 	}
 
-	public void reload_preview_grid(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException {
-		// handle requests for the table named 'test'
+	@Override
+	// from JQGridViewCallback
+	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable) {
+		HttpSession session = request.getRequest().getSession();
+		@SuppressWarnings("unchecked")
+		List<Measurement> selectedMeasurements = (List<Measurement>) session
+				.getAttribute("selectedMeasurements");
 
-		System.out.println();
+		if (selectedMeasurements != null) {
+			try {
+				for (final Field field : tupleTable.getAllColumns()) {
+					Measurement measurement = Iterables.find(
+							selectedMeasurements, new Predicate<Measurement>() {
+								@Override
+								public boolean apply(Measurement m) {
+									return m.getName().equals(
+											field.getName() + "_"
+													+ investigationName);
+								}
 
+							}, null);
+
+					if (measurement == null) {
+						tupleTable.hideColumn(field.getName());
+					} else {
+						tupleTable.showColumn(field.getName());
+					}
+				}
+
+				session.removeAttribute("selectedMeasurements");
+			} catch (TableException e) {
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public class mappingClass {
@@ -764,11 +913,13 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		List<String> newTargets;
 
 		public static ReportUploadStatus createReportUploadStatus(
-				List<String> colHeaders, List<String> newFeatures,
-				List<String> rowHeaders, List<String> newTargets) {
+				HashMap<String, String> hashMeasurements,
+				HashMap<String, String> newFeatures, List<String> rowHeaders,
+				List<String> newTargets) {
 			ReportUploadStatus instance = new ReportUploadStatus();
-			instance.colHeaders = colHeaders;
-			instance.newFeatures = newFeatures;
+			instance.colHeaders = new ArrayList<String>(
+					hashMeasurements.values());
+			instance.newFeatures = new ArrayList<String>(newFeatures.values());
 			instance.rowHeaders = rowHeaders;
 			instance.newTargets = newTargets;
 			return instance;
@@ -784,7 +935,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	}
 
 	public String getTableView() {
-		return tableView.getHtml();
+		if (tableView != null) {
+			return tableView.getHtml();
+		}
+		return "";
 	}
 
 	public List<String> getFeatureDataTypes() throws Exception {
@@ -831,15 +985,19 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		return loadingMatrix;
 	}
 
+	public List<String> getProjects() {
+		return projects;
+	}
+
 	@Override
 	public String getViewTemplate() {
 		// TODO Auto-generated method stub
-		return "updateMatrixImporter/UpdateMatrixImporter.ftl";
+		return "phenotypeViewer/PhenotypeViewer.ftl";
 	}
 
 	@Override
 	public String getViewName() {
 		// TODO Auto-generated method stub
-		return "UpdateMatrixImporter";
+		return "PhenotypeViewer";
 	}
 }
