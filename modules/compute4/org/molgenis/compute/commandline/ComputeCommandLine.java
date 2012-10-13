@@ -512,7 +512,8 @@ public class ComputeCommandLine {
 		try {
 			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile,
 					this.parametersfile)) {
-				String sourcepath = f.toString();
+
+				String sourcepath = f.getCanonicalPath();
 
 				// make this part windows compentible
 				String fileSeparatorPatternString;
