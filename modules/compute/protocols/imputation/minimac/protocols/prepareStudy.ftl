@@ -17,11 +17,11 @@ getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
 getFile ${referenceTriTyperDir}/SNPMappings.txt
 getFile ${referenceTriTyperDir}/SNPs.txt
 
-inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
-inputs "${studyTriTyperChrDir}/Individuals.txt"
-inputs "${studyTriTyperChrDir}/PhenotypeInformation.txt"
-inputs "${studyTriTyperChrDir}/SNPMappings.txt"
-inputs "${studyTriTyperChrDir}/SNPs.txt"
+#inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+#inputs "${studyTriTyperChrDir}/Individuals.txt"
+#inputs "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+#inputs "${studyTriTyperChrDir}/SNPMappings.txt"
+#inputs "${studyTriTyperChrDir}/SNPs.txt"
 inputs "${referenceTriTyperDir}/GenotypeMatrix.dat"
 inputs "${referenceTriTyperDir}/Individuals.txt"
 inputs "${referenceTriTyperDir}/PhenotypeInformation.txt"

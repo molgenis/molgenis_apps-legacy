@@ -2,11 +2,11 @@
 
 #FOREACH project,chr
 
-getFile ${studyPedMapChr}.map
-getFile ${studyPedMapChr}.ped
+getFile ${preparedStudyDir}/chr${chr}.map
+getFile ${preparedStudyDir}/chr${chr}.ped
 
-inputs ${studyPedMapChr}.map
-inputs ${studyPedMapChr}.ped
+inputs ${preparedStudyDir}/chr${chr}.map
+inputs ${preparedStudyDir}/chr${chr}.ped
 
 
 alloutputsexist \
@@ -20,12 +20,12 @@ mkdir -p ${studyMerlinChrDir}
 gawk '
 	BEGIN {$1="CHROMOSOME";$2="MARKER";$3="POSITION";print $0}
 	{$2=$1":"$4;print $1,$2,$4}
-' OFS="\t" ${studyPedMapChr}.map > ${studyMerlinChrMap}
+' OFS="\t" ${preparedStudyDir}/chr${chr}.map > ${studyMerlinChrMap}
 
-gawk 'BEGIN {print "T","pheno";}{print "M",$1":"$4}' ${studyPedMapChr}.map > ${studyMerlinChrDat}
+gawk 'BEGIN {print "T","pheno";}{print "M",$1":"$4}' ${preparedStudyDir}/chr${chr}.map > ${studyMerlinChrDat}
 
 #Copy ped file
-cp  ${studyPedMapChr}.ped ${studyMerlinChrPed}
+cp  ${preparedStudyDir}/chr${chr}.ped ${studyMerlinChrPed}
 
 
 
