@@ -16,32 +16,33 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.dto.FeatureDTO;
-import org.molgenis.pheno.dto.IndividualDTO;
+import org.molgenis.pheno.dto.ObservationElementDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 import org.molgenis.pheno.dto.ProtocolApplicationDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.pheno.ui.form.ApplyProtocolForm;
-import org.molgenis.pheno.ui.form.IndividualForm;
+import org.molgenis.pheno.ui.form.ObservationTargetForm;
 import org.molgenis.pheno.ui.form.SelectProtocolForm;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
-public class IndividualViewer extends EasyPluginController<IndividualViewerModel>
+public class ObservationElementViewer extends EasyPluginController<ObservationElementViewerModel>
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 8333436730236052413L;
 
 	private ScreenView view;
 	
-	public IndividualViewer(String name, ScreenController<?> parent)
+	public ObservationElementViewer(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new IndividualViewerModel(this));
+		this.setModel(new ObservationElementViewerModel(this));
 		this.getModel().setAction("show");
 		this.setView(new FreemarkerView("show.ftl", getModel()));
 	}
@@ -70,12 +71,10 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 			}
 			else if ("select".equals(request.getAction()))
 			{
-				this.setView(new FreemarkerView("select.ftl", getModel()));
 				this.handleSelect(db, request);
 			}
 			else if ("add".equals(request.getAction()))
 			{
-				this.setView(new FreemarkerView("add.ftl", getModel()));
 				this.handleAdd(db, request);
 			}
 			else if ("edit".equals(request.getAction()))
@@ -88,7 +87,6 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 			}
 			else if ("update".equals(request.getAction()))
 			{
-				this.setView(new FreemarkerView("edit.ftl", getModel()));
 				this.handleUpdate(db, request);
 			}
 		}
@@ -108,7 +106,9 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	 */
 	private void handleSelect(Database db, Tuple request) throws HtmlInputException
 	{
-		PhenoService phenoService         = new PhenoService(db);
+		this.setView(new FreemarkerView("select.ftl", getModel()));
+
+		final PhenoService phenoService   = new PhenoService(db);
 		List<ProtocolDTO> protocolDTOList = phenoService.findProtocols();
 
 		SelectProtocolForm form           = new SelectProtocolForm();
@@ -123,19 +123,30 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	 */
 	private void handleAdd(Database db, Tuple request) throws HtmlInputException
 	{
-		PhenoService phenoService = new PhenoService(db);
-		ProtocolDTO protocolDTO   = phenoService.findProtocol(request.getInt("Protocol"));
-
-		ApplyProtocolForm form    = new ApplyProtocolForm();
-		this.populateApplyProtocolForm(form, protocolDTO);
-		
-		this.getModel().setProtocolDTO(protocolDTO);
-		this.getModel().setApplyProtocolForm(form);
+		try
+		{
+			this.setView(new FreemarkerView("add.ftl", getModel()));
+	
+			final PhenoService phenoService = new PhenoService(db);
+			ProtocolDTO protocolDTO         = phenoService.findProtocol(request.getInt("Protocol"));
+	
+			ApplyProtocolForm form          = new ApplyProtocolForm();
+			this.populateApplyProtocolForm(form, protocolDTO);
+			
+			this.getModel().setProtocolDTO(protocolDTO);
+			this.getModel().setApplyProtocolForm(form);
+		}
+		catch (Exception e)
+		{
+			String message = "Please select a protocol.";
+			this.getModel().getMessages().add(new ScreenMessage(message, false));
+			this.handleSelect(db, request);
+		}
 	}
 
 	private void populateSelectProtocolForm(SelectProtocolForm selectProtocolForm, List<ProtocolDTO> protocolDTOList)
 	{
-		selectProtocolForm.get("__target").setValue(this.getName());
+		((HiddenInput) selectProtocolForm.get("__target")).setValue(this.getName());
 
 		List<ValueLabel> protocolOptions = new ArrayList<ValueLabel>();
 		protocolOptions.add(new ValueLabel("", "Select a Protocol"));
@@ -148,7 +159,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 
 	private void populateApplyProtocolForm(ApplyProtocolForm applyProtocolForm, ProtocolDTO protocolDTO) throws HtmlInputException
 	{
-		applyProtocolForm.get("__target").setValue(this.getName());
+		((HiddenInput) applyProtocolForm.get("__target")).setValue(this.getName());
 
 		for (FeatureDTO featureDTO : protocolDTO.getFeatureDTOList())
 		{
@@ -171,10 +182,10 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	{
 		this.setView(new FreemarkerView("show.ftl", getModel()));
 
-		this.loadIndividualDetailsVO(db);
+		this.loadObservationElementDTO(db);
 
 		List<ObservedValueDTO> insertList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList    = request.getFields();
+		List<String> parameterNameList    = request.getFieldNames();
 
 		PhenoService phenoService         = new PhenoService(db);
 
@@ -202,7 +213,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 
 				ObservedValueDTO observedValueDTO  = new ObservedValueDTO();
 				observedValueDTO.setValue(request.getString(parameterName));
-				observedValueDTO.setTargetId(this.getModel().getIndividualDTO().getIndividualId());
+				observedValueDTO.setTargetId(this.getModel().getObservationElementDTO().getObservationElementId());
 				observedValueDTO.setProtocolApplicationId(paId);
 				FeatureDTO featureDTO              = new FeatureDTO();
 				featureDTO.setFeatureId(Integer.parseInt(featureIdString));
@@ -225,10 +236,10 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	{
 		this.setView(new FreemarkerView("edit.ftl", getModel()));
 
-		this.loadIndividualDetailsVO(db);
+		this.loadObservationElementDTO(db);
 
 		List<ObservedValueDTO> updateList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList    = request.getFields();
+		List<String> parameterNameList    = request.getFieldNames();
 
 		PhenoService phenoService = new PhenoService(db);
 
@@ -249,86 +260,88 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	}
 
 	/**
-	 * Load details for Individual in parent form
+	 * Load details for ObservationElement in parent form
 	 * @param db
 	 */
-	private IndividualDTO loadIndividualDetailsVO(Database db)
+	private ObservationElementDTO loadObservationElementDTO(Database db)
 	{
-		ScreenController<?> parentController = this.getParent();
-		FormModel<Individual> parentForm     = (FormModel<Individual>) ((FormController) parentController).getModel();
+		ScreenController<?> parentController     = this.getParent();
+		@SuppressWarnings("unchecked")
+		FormModel<ObservationElement> parentForm = ((FormController<ObservationElement>) parentController).getModel();
 		
 		if (parentForm.getRecords().size() == 0)
 			return null;
 
-		Individual individual                = parentForm.getRecords().get(0);
+		ObservationElement observationElement       = parentForm.getRecords().get(0);
 		
-		PhenoService phenoService            = new PhenoService(db);
-		IndividualDTO individualDetailsVO    = phenoService.findPhenotypeDetails(individual.getId());
+		PhenoService phenoService                   = new PhenoService(db);
+		ObservationElementDTO observationElementDTO = phenoService.findPhenotypeDetails(observationElement);
 		
-		return individualDetailsVO;
+		return observationElementDTO;
 	}
 
 	/**
-	 * Populate the IndividualForm with widgets for the measurements
-	 * @param individualForm
-	 * @param individualDetailsDTO
+	 * Populate the TargetForm with widgets for the measurements
+	 * @param targetForm
+	 * @param observationElementDTO
 	 * @throws HtmlInputException
 	 */
-	private void populateIndividualForm(IndividualForm individualForm, IndividualDTO individualDetailsDTO) throws HtmlInputException
+	@SuppressWarnings("unchecked")
+	private void populateTargetForm(ObservationTargetForm targetForm, ObservationElementDTO observationElementDTO) throws HtmlInputException
 	{
-		individualForm.get("__target").setValue(this.getName());
+		targetForm.get("__target").setValue(this.getName());
 
-		for (ProtocolDTO protocolDTO : individualDetailsDTO.getProtocolList())
+		for (ProtocolDTO protocolDTO : observationElementDTO.getProtocolList())
 		{
 			// create form input widgets
 			// name of each widget conforms with "Protocol" + Protocol.id + ".Feature" + Measurement.id
-//			for (FeatureDTO featureDTO : protocolDTO.getFeatureDTOList())
-//			{
-//				String fieldType = featureDTO.getFeatureType();
-//				String fieldKey  = featureDTO.getFeatureKey();
-//				
-//				individualForm.add(MolgenisFieldTypes.createInput(fieldType, fieldKey, ""));
-//			}
+			for (FeatureDTO featureDTO : protocolDTO.getFeatureDTOList())
+			{
+				String fieldType = featureDTO.getFeatureType();
+				String fieldKey  = featureDTO.getFeatureKey();
+				
+				targetForm.add(MolgenisFieldTypes.createInput(fieldType, fieldKey, ""));
+			}
 			
 			// set values for the input widgets
 			// if present, name is changed to "ObservedValue" + ObservedValue.id
 			// key of the widget inside the form remains unchanged
-			if (individualDetailsDTO.getObservedValues().containsKey(protocolDTO.getProtocolKey()))
+			if (observationElementDTO.getObservedValues().containsKey(protocolDTO.getProtocolKey()))
 			{
-				List<String> protocolApplicationKeyList = Arrays.asList(individualDetailsDTO.getObservedValues().get(protocolDTO.getProtocolKey()).keySet().toArray(new String[0]));
+				List<String> protocolApplicationKeyList = Arrays.asList(observationElementDTO.getObservedValues().get(protocolDTO.getProtocolKey()).keySet().toArray(new String[0]));
 				
 				for (String protocolApplicationKey : protocolApplicationKeyList)
 				{
-					List<ObservedValueDTO> observedValueDTOList = individualDetailsDTO.getObservedValues().get(protocolDTO.getProtocolKey()).get(protocolApplicationKey);
+					List<ObservedValueDTO> observedValueDTOList = observationElementDTO.getObservedValues().get(protocolDTO.getProtocolKey()).get(protocolApplicationKey);
 					
 					for (ObservedValueDTO observedValueDTO : observedValueDTOList)
 					{
 						String fieldType = observedValueDTO.getFeatureDTO().getFeatureType();
 //						String fieldKey  = protocolApplicationKey + "." + observedValueDTO.getFeatureDTO().getFeatureKey();
 						String fieldName = "ObservedValue" + observedValueDTO.getObservedValueId();
-						individualForm.add(MolgenisFieldTypes.createInput(fieldType, fieldName, ""));
-						individualForm.get(fieldName).setName(fieldName);
-						individualForm.get(fieldName).setValue(observedValueDTO.getValue());
+						targetForm.add(MolgenisFieldTypes.createInput(fieldType, fieldName, ""));
+						targetForm.get(fieldName).setName(fieldName);
+						targetForm.get(fieldName).setValue(observedValueDTO.getValue());
 					}
 				}
 			}
 		}
 
-		this.getModel().setIndividualForm(individualForm);
+		this.getModel().setObservationTargetForm(targetForm);
 	}
 
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		IndividualDTO individualDetailsVO = this.loadIndividualDetailsVO(db);
+		ObservationElementDTO observationElementDTO = this.loadObservationElementDTO(db);
 		
-		if (individualDetailsVO != null)
+		if (observationElementDTO != null)
 		{
-			IndividualForm individualForm     = new IndividualForm();
-			this.populateIndividualForm(individualForm, individualDetailsVO);
+			ObservationTargetForm targetForm     = new ObservationTargetForm();
+			this.populateTargetForm(targetForm, observationElementDTO);
 		
-			this.getModel().setIndividualDTO(individualDetailsVO);
-			this.getModel().setIndividualForm(individualForm);
+			this.getModel().setObservationElementDTO(observationElementDTO);
+			this.getModel().setObservationTargetForm(targetForm);
 			
 			PhenoService phenoService         = new PhenoService(db);
 			this.getModel().setProtocolDTOList(phenoService.findProtocols());

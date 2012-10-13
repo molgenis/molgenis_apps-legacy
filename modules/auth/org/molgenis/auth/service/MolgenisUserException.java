@@ -1,6 +1,6 @@
 package org.molgenis.auth.service;
 
-public class MolgenisUserException extends Exception
+public class MolgenisUserException extends RuntimeException
 {
 
 	private static final long serialVersionUID = -8400330400566838323L;

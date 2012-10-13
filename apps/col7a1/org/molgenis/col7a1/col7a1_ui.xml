@@ -4,7 +4,7 @@
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
 <molgenis name="col7a1" label="International dystrophic eb Patient Registry">
-	<plugin name="MolgenisHeader" type="org.molgenis.col7a1.ui.Header"/>
+	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Header"/>
 	<menu name="View" startswith="SearchPlugin">
 		<plugin name="SearchPlugin" type="org.molgenis.col7a1.ui.Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
@@ -37,7 +37,8 @@
 				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
 			</form>
 			<form name="News" entity="MolgenisNews"/>
-			<form name="Paragraph" entity="Paragraph" label="Content Management"/>
+			<form name="Header" entity="Header" label="CMS / Header"/>
+			<form name="Paragraph" entity="Paragraph" label="CMS / Start page"/>
 			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
 			<!-- <form name="FrontEndElement" entity="FrontEndElement" label="Front End Elements"/> -->
 		</menu>
