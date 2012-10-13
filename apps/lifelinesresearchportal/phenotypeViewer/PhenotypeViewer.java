@@ -53,8 +53,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 
-public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCallback
-{
+public class PhenotypeViewer extends PluginModel<Entity> implements
+		JQGridViewCallback {
 
 	/**
 	 * 
@@ -82,13 +82,11 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	private String importMessage = null;
 
-	public PhenotypeViewer(String name, ScreenController<?> parent)
-	{
+	public PhenotypeViewer(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
-	public void resetVariables()
-	{
+	public void resetVariables() {
 		// colHeaders.clear();
 		projects.clear();
 		hashMeasurement.clear();
@@ -107,39 +105,32 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 		report = null;
 	}
 
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
-	{
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
+			throws Exception {
 
-		if (out != null)
-		{
+		if (out != null) {
 
-			if (request.getAction().equals("download_json_test"))
-			{
+			if (request.getAction().equals("download_json_test")) {
 
 				tableView.handleRequest(db, request, out);
 
-			}
-			else if (request.getAction().equals("download_json_loadPreview"))
-			{
+			} else if (request.getAction().equals("download_json_loadPreview")) {
 
-				if (csvTable != null)
-				{
+				if (csvTable != null) {
 
 					// If there are no new records and columns at all, show all
 					// the
 					// table
-					if (newTargets.size() > 0)
-					{// If there are new records,
-						// show new records only
-						String targetString = csvTable.getAllColumns().get(0).getName();
+					if (newTargets.size() > 0) {// If there are new records,
+												// show new records only
+						String targetString = csvTable.getAllColumns().get(0)
+								.getName();
 
 						List<Tuple> newRecords = new ArrayList<Tuple>();
 
-						for (Tuple tuple : csvTable.getRows())
-						{
+						for (Tuple tuple : csvTable.getRows()) {
 							String targetName = tuple.getString(targetString);
-							if (newTargets.contains(targetName))
-							{
+							if (newTargets.contains(targetName)) {
 								newRecords.add(tuple);
 							}
 						}
@@ -148,9 +139,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 						tableView = new JQGridView("test", this, table);
 
-					}
-					else
-					{
+					} else {
 
 						tableView = new JQGridView("test", this, csvTable);
 					}
@@ -166,9 +155,8 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 					writer.close();
 				}
 
-			}
-			else if (request.getAction().equals("download_json_reloadGridByInves"))
-			{
+			} else if (request.getAction().equals(
+					"download_json_reloadGridByInves")) {
 				investigationName = request.getString("investigation");
 				ProtocolTable table = new ProtocolTable(db, investigationName);
 				table.setTargetString("target");
@@ -184,14 +172,11 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 				writer.flush();
 				writer.close();
 
-			}
-			else if (request.getAction().equals("download_json_removeMessage"))
-			{
+			} else if (request.getAction()
+					.equals("download_json_removeMessage")) {
 				importMessage = null;
 			}
-		}
-		else
-		{
+		} else {
 			this.handleRequest(db, request);
 		}
 
@@ -199,23 +184,15 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
-	{
+	public void handleRequest(Database db, Tuple request) throws Exception {
 
-		if (request.getAction().equals("uploadFile"))
-		{
+		if (request.getAction().equals("uploadFile")) {
 
 			// If the checkbox is checked
-			if (request.getBool("createNewInvest") != null)
-			{
+			if (request.getBool("createNewInvest") != null) {
 				projectName = request.getString("newInvestigation");
-				Investigation inv = new Investigation();
-				inv.setName(projectName);
-				db.add(inv);
-
-			}
-			else
-			{
+				createInvestigation(projectName, db);
+			} else {
 				projectName = request.getString("project");
 
 			}
@@ -229,19 +206,17 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-			File templateMapping = new File(tmpDir.getAbsolutePath() + "/tempalteMapping.xls");
+			File templateMapping = new File(tmpDir.getAbsolutePath()
+					+ "/tempalteMapping.xls");
 
 			tempalteFilePath = templateMapping.getAbsolutePath();
 
 			checkHeaders(db, request, fileName);
 
-		}
-		else if (request.getAction().equals("showMatrix"))
-		{
+		} else if (request.getAction().equals("showMatrix")) {
 
 			STATUS = "showMatrix";
-			try
-			{
+			try {
 
 				// create table
 				ProtocolTable table = new ProtocolTable(db, investigationName);
@@ -250,36 +225,29 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 				// add editable decorator
 				tableChecker(db, table);
 
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-		}
-		else if (request.getAction().equals("previewFileAction"))
-		{
+		} else if (request.getAction().equals("previewFileAction")) {
 
 			STATUS = "previewFile";
 
-			if (csvTable != null)
-			{
+			if (csvTable != null) {
 
 				// If there are no new records and columns at all, show all the
 				// table
-				if (newTargets.size() > 0)
-				{// If there are new records,
-					// show new records only
-					String targetString = csvTable.getAllColumns().get(0).getName();
+				if (newTargets.size() > 0) {// If there are new records,
+											// show new records only
+					String targetString = csvTable.getAllColumns().get(0)
+							.getName();
 
 					List<Tuple> newRecords = new ArrayList<Tuple>();
 
-					for (Tuple tuple : csvTable.getRows())
-					{
+					for (Tuple tuple : csvTable.getRows()) {
 						String targetName = tuple.getString(targetString);
-						if (newTargets.contains(targetName))
-						{
+						if (newTargets.contains(targetName)) {
 							newRecords.add(tuple);
 						}
 					}
@@ -288,22 +256,16 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 					tableView = new JQGridView("test", this, table);
 
-				}
-				else
-				{
+				} else {
 
 					tableView = new JQGridView("test", this, csvTable);
 				}
 			}
-		}
-		else if (request.getAction().equals("previousStepSummary"))
-		{
+		} else if (request.getAction().equals("previousStepSummary")) {
 
 			STATUS = "CheckFile";
 
-		}
-		else if (request.getAction().equals("importUploadFile"))
-		{
+		} else if (request.getAction().equals("importUploadFile")) {
 
 			STATUS = "showMatrix";
 
@@ -317,12 +279,9 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 			// check which table to show
 			tableChecker(db, table);
 
-		}
-		else if (request.getAction().equals("uploadMapping"))
-		{
+		} else if (request.getAction().equals("uploadMapping")) {
 
-			try
-			{
+			try {
 				mappingMessage = null;
 
 				String mappingFileName = request.getString("mappingForColumns");
@@ -331,30 +290,26 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 				mappingClass allMappings = new mappingClass();
 
-				for (Tuple tuple : mappingTable.getRows())
-				{
+				for (Tuple tuple : mappingTable.getRows()) {
 
 					String variableName = tuple.getString("variable");
 					String dataType = tuple.getString("datatype");
 					String category = tuple.getString("category");
 					String code = tuple.getString("code");
 					String table = tuple.getString("table");
-					allMappings.addMapping(variableName, dataType, table, category, code);
+					allMappings.addMapping(variableName, dataType, table,
+							category, code);
 
 				}
 
 				jsonForMapping = new Gson().toJson(allMappings.getMapping());
 
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				mappingMessage = "There are errors in your mapping file, please check your mapping file!";
 				e.printStackTrace();
 			}
 
-		}
-		else if (request.getAction().equals("downloadTemplate"))
-		{
+		} else if (request.getAction().equals("downloadTemplate")) {
 
 			WorkbookSettings ws = new WorkbookSettings();
 
@@ -362,9 +317,11 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-			File mappingResult = new File(tmpDir + File.separator + "template.xls");
+			File mappingResult = new File(tmpDir + File.separator
+					+ "template.xls");
 
-			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult, ws);
+			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult,
+					ws);
 
 			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
@@ -390,9 +347,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			httpResponse.sendRedirect(redirectURL);
 
-		}
-		else if (request.getAction().equals("showNewRecordsOnly"))
-		{
+		} else if (request.getAction().equals("showNewRecordsOnly")) {
 
 			STATUS = "previewFile";
 
@@ -400,11 +355,9 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			List<Tuple> newRecords = new ArrayList<Tuple>();
 
-			for (Tuple tuple : csvTable.getRows())
-			{
+			for (Tuple tuple : csvTable.getRows()) {
 				String targetName = tuple.getString(targetString);
-				if (newTargets.contains(targetName))
-				{
+				if (newTargets.contains(targetName)) {
 					newRecords.add(tuple);
 				}
 			}
@@ -413,19 +366,40 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			tableView = new JQGridView("test", this, table);
 
-		}
-		else
-		{
+		} else {
 			tableView.handleRequest(db, request, null);
 			loadingMatrix = "Loading the matrix";
 		}
 	}
 
-	private void importUploadFile(Database db, Tuple request) throws DatabaseException, TableException
-	{
+	/**
+	 * Create investigation if it doesn't exist in the database
+	 * 
+	 * @param investigationName
+	 * @param db
+	 * @throws DatabaseException
+	 */
+	private void createInvestigation(String investigationName, Database db)
+			throws DatabaseException {
+		if (investigationName == null || investigationName.isEmpty())
+			return;
 
-		try
-		{
+		QueryRule queryRule = new QueryRule(Investigation.NAME,
+				Operator.EQUALS, investigationName);
+		List<Investigation> investigationList = db.find(Investigation.class,
+				queryRule);
+		if (investigationList == null || investigationList.isEmpty()) {
+			Investigation inv = new Investigation();
+			inv.setName(investigationName);
+			db.add(inv);
+		}
+
+	}
+
+	private void importUploadFile(Database db, Tuple request)
+			throws DatabaseException, TableException {
+
+		try {
 			db.beginTx();
 
 			List<Individual> listOfTargets = new ArrayList<Individual>();
@@ -443,10 +417,8 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			String existingColumn = null;
 			// for (String eachHeader :colHeaders))
-			for (String eachHeader : hashMeasurement.keySet())
-			{
-				if (!newFeatures.containsKey(eachHeader))
-				{
+			for (String eachHeader : hashMeasurement.keySet()) {
+				if (!newFeatures.containsKey(eachHeader)) {
 					existingColumn = eachHeader;
 					break;
 				}
@@ -454,31 +426,43 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			HashMap<String, String> targetToProtocolApplication = new HashMap<String, String>();
 
-			if (rowHeaders.size() > 0 && existingColumn != null)
-			{
+			if (rowHeaders.size() > 0 && existingColumn != null) {
 
 				Query<ObservedValue> query = db.query(ObservedValue.class);
 
-				query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, rowHeaders));
-				query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, existingColumn));
+				query.addRules(new QueryRule(ObservedValue.TARGET_NAME,
+						Operator.IN, rowHeaders));
+				query.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
+						Operator.EQUALS, existingColumn));
 				List<ObservedValue> listOfExistingValues = query.find();
 
-				if (listOfExistingValues.size() > 0)
-				{
-					for (ObservedValue ov : query.find())
-					{
-						targetToProtocolApplication.put(ov.getTarget_Name(), ov.getProtocolApplication_Name());
+				if (listOfExistingValues.size() > 0) {
+					for (ObservedValue ov : query.find()) {
+						targetToProtocolApplication.put(ov.getTarget_Name(),
+								ov.getProtocolApplication_Name());
 					}
 				}
 
+				if (rowHeaders.size() != listOfExistingValues.size()) {
+
+					for (String oldTarget : rowHeaders) {
+						if (!targetToProtocolApplication.containsKey(oldTarget)) {
+							ProtocolApplication pa = new ProtocolApplication();
+							pa.setName("pa" + oldTarget);
+							pa.setInvestigation_Name(investigationName);
+							pa.setProtocol_Name(investigationName);
+							targetToProtocolApplication.put(oldTarget,
+									pa.getName());
+							listOfPA.add(pa);
+						}
+					}
+				}
 			}
 
 			// new rows are added
-			if (newTargets.size() > 0)
-			{
+			if (newTargets.size() > 0) {
 
-				for (String targetName : newTargets)
-				{
+				for (String targetName : newTargets) {
 					Individual inv = new Individual();
 					inv.setName(targetName);
 					inv.setInvestigation_Name(investigationName);
@@ -489,70 +473,72 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 			List<String> ingoredColumn = new ArrayList<String>();
 
 			// new columns are added.
-			if (newFeatures.size() > 0)
-			{
+			if (newFeatures.size() > 0) {
 
-				for (String feature : newFeatures.keySet())
-				{
+				for (String feature : newFeatures.keySet()) {
 					int length = investigationName.length();
 
-					String feat = feature.substring(0, (feature.length() - length - 1));
+					String feat = feature.substring(0, (feature.length()
+							- length - 1));
 					String identifier = feat.replaceAll(" ", "_");
 					// Check if there the checkboxes are checked (if the new
 					// measurement should be added)
-					if (request.getBool(identifier + "_check") != null)
-					{
+					if (request.getBool(identifier + "_check") != null) {
 
 						Measurement m = new Measurement();
 
-						String dataType = request.getString(identifier + "_dataType");
+						String dataType = request.getString(identifier
+								+ "_dataType");
 
 						m.setName(feature);
 						m.setLabel(newFeatures.get(feature));
 						m.setInvestigation_Name(investigationName);
 						m.setDataType(dataType);
 
-						String protocolTable = request.getString(identifier + "_protocolTable");
+						String protocolTable = request.getString(identifier
+								+ "_protocolTable");
 
 						// Put the new features in the corresponding protocols
-						if (!featureToProtocolTable.containsKey(protocolTable))
-						{
+						if (!featureToProtocolTable.containsKey(protocolTable)) {
 
 							List<String> features = new ArrayList<String>();
 							features.add(feature);
 							featureToProtocolTable.put(protocolTable, features);
 
-						}
-						else
-						{
-							List<String> features = featureToProtocolTable.get(protocolTable);
-							if (!features.contains(feature))
-							{
+						} else {
+							List<String> features = featureToProtocolTable
+									.get(protocolTable);
+							if (!features.contains(feature)) {
 								features.add(feature);
-								featureToProtocolTable.put(protocolTable, features);
+								featureToProtocolTable.put(protocolTable,
+										features);
 							}
 						}
 
-						if (dataType.equals("categorical"))
-						{
+						if (dataType.equals("categorical")) {
 
 							List<String> categoryNameClean = new ArrayList<String>();
 
-							for (String eachCategory : request.getStringList(identifier + "_categoryString"))
-							{
+							for (String eachCategory : request
+									.getStringList(identifier
+											+ "_categoryString")) {
 
-								String standardName = eachCategory.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+								String standardName = eachCategory.replaceAll(
+										"[^(a-zA-Z0-9_\\s)]", " ").trim();
 
-								if (!listOfCategories.containsKey(standardName.toLowerCase()))
-								{
+								if (!listOfCategories.containsKey(standardName
+										.toLowerCase())) {
 
-									String code = eachCategory.split("=")[0].trim();
-									String codeLabel = eachCategory.split("=")[1].trim();
+									String code = eachCategory.split("=")[0]
+											.trim();
+									String codeLabel = eachCategory.split("=")[1]
+											.trim();
 									Category c = new Category();
 									c.setCode_String(code);
 									c.setDescription(codeLabel);
 									c.setName(standardName);
-									listOfCategories.put(standardName.toLowerCase(), c);
+									listOfCategories.put(
+											standardName.toLowerCase(), c);
 								}
 								categoryNameClean.add(standardName);
 							}
@@ -561,23 +547,20 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 						listOfFeatures.add(m);
 
-						addedColumns.add(feature);
-					}
-					else
-					{
+						addedColumns.add(feat);
+					} else {
+
 						ingoredColumn.add(feature);
 					}
 				}
 			}
 
-			for (Tuple row : csvTable.getRows())
-			{
+			for (Tuple row : csvTable.getRows()) {
 
 				String targetName = row.getString(targetString);
 
 				// Add values for new records only
-				if (newTargets.contains(targetName))
-				{
+				if (newTargets.contains(targetName)) {
 
 					ProtocolApplication pa = new ProtocolApplication();
 					// FIXME: the hard coded protocol name would be fixed
@@ -587,39 +570,37 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 					pa.setInvestigation_Name(investigationName);
 					listOfPA.add(pa);
 
-					for (Field field : allColumns)
-					{
+					for (Field field : allColumns) {
 
 						String eachColumn = field.getName();
 
 						if (!eachColumn.equals(targetString)
-								&& !ingoredColumn.contains(eachColumn + "_" + investigationName))
-						{
+								&& !ingoredColumn.contains(eachColumn + "_"
+										+ investigationName)) {
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
-							ov.setFeature_Name(eachColumn + "_" + investigationName);
+							ov.setFeature_Name(eachColumn + "_"
+									+ investigationName);
 							ov.setValue(row.getString(eachColumn));
 							ov.setInvestigation_Name(investigationName);
 							ov.setProtocolApplication_Name(pa.getName());
 							listOfValues.add(ov);
 						}
 					}
-				}
-				else
-				{
+				} else {
 
 					// Add values for new columns only
-					if (addedColumns.size() > 0)
-					{
+					if (addedColumns.size() > 0) {
 
-						for (String eachNewColumn : addedColumns)
-						{
+						for (String eachNewColumn : addedColumns) {
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(row.getString(targetString));
-							ov.setFeature_Name(eachNewColumn + "_" + investigationName);
+							ov.setFeature_Name(eachNewColumn + "_"
+									+ investigationName);
 							ov.setValue(row.getString(eachNewColumn));
 							ov.setInvestigation_Name(investigationName);
-							ov.setProtocolApplication_Name(targetToProtocolApplication.get(ov.getTarget_Name()));
+							ov.setProtocolApplication_Name(targetToProtocolApplication
+									.get(ov.getTarget_Name()));
 							listOfValues.add(ov);
 						}
 					}
@@ -628,31 +609,29 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			// Dependency, have to add the categories to database first before
 			// adding the measurements
-			if (listOfCategories.keySet().size() > 0)
-			{
-				for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
-						new ArrayList<String>(listOfCategories.keySet()))))
-				{
+			if (listOfCategories.keySet().size() > 0) {
+				for (Category c : db.find(Category.class, new QueryRule(
+						Category.NAME, Operator.IN, new ArrayList<String>(
+								listOfCategories.keySet())))) {
 					listOfCategories.remove(c.getName().toLowerCase());
 				}
 			}
 
-			List<Category> uniqueCategories = new ArrayList<Category>(listOfCategories.values());
+			List<Category> uniqueCategories = new ArrayList<Category>(
+					listOfCategories.values());
 
 			db.add(listOfTargets);
 			db.add(uniqueCategories);
 
-			for (Measurement m : listOfFeatures)
-			{
+			for (Measurement m : listOfFeatures) {
 
-				if (m.getCategories_Name().size() > 0)
-				{
+				if (m.getCategories_Name().size() > 0) {
 
 					List<Integer> listOfCategoryID = new ArrayList<Integer>();
 
-					for (Category c : db.find(Category.class,
-							new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name())))
-					{
+					for (Category c : db
+							.find(Category.class, new QueryRule(Category.NAME,
+									Operator.IN, m.getCategories_Name()))) {
 						listOfCategoryID.add(c.getId());
 					}
 					m.setCategories_Id(listOfCategoryID);
@@ -661,17 +640,19 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			db.add(listOfFeatures);
 
-			if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, investigationName)).size() == 0)
-			{
+			if (db.find(
+					Protocol.class,
+					new QueryRule(Protocol.NAME, Operator.EQUALS,
+							investigationName)).size() == 0) {
 				Protocol protocolInvest = new Protocol();
 				protocolInvest.setName(investigationName);
 				protocolInvest.setInvestigation_Name(investigationName);
 
 				List<Integer> measurementIDs = new ArrayList<Integer>();
 
-				for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
-						Operator.EQUALS, investigationName)))
-				{
+				for (Measurement m : db.find(Measurement.class, new QueryRule(
+						Measurement.INVESTIGATION_NAME, Operator.EQUALS,
+						investigationName))) {
 					measurementIDs.add(m.getId());
 				}
 
@@ -682,26 +663,24 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 			db.add(listOfPA);
 			db.add(listOfValues);
 
-			// Add the features to the catalogue node
-			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, new ArrayList<String>(
-					featureToProtocolTable.keySet()))))
-			{
-				List<Integer> oldFeatures = p.getFeatures_Id();
-				for (Measurement m : listOfFeatures)
-				{
-					oldFeatures.add(m.getId());
+			if (featureToProtocolTable.size() > 0) {
+				// Add the features to the catalogue node
+				for (Protocol p : db.find(Protocol.class, new QueryRule(
+						Protocol.NAME, Operator.IN, new ArrayList<String>(
+								featureToProtocolTable.keySet())))) {
+					List<Integer> oldFeatures = p.getFeatures_Id();
+					for (Measurement m : listOfFeatures) {
+						oldFeatures.add(m.getId());
+					}
+					p.setFeatures_Id(oldFeatures);
+					db.update(p);
 				}
-				p.setFeatures_Id(oldFeatures);
-				db.update(p);
 			}
-
 			db.commitTx();
 
 			importMessage = "success";
 
-		}
-		catch (DatabaseException e)
-		{
+		} catch (DatabaseException e) {
 
 			db.rollbackTx();
 			importMessage = "It fails to import the file, please check your file please!</br>"
@@ -711,11 +690,9 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 	}
 
 	@Override
-	public void reload(Database db)
-	{
+	public void reload(Database db) {
 
-		try
-		{
+		try {
 
 			projects.clear();
 			List<Investigation> listProjects = new ArrayList<Investigation>();
@@ -723,24 +700,21 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			int index = 0;
 
-			for (Investigation i : listProjects)
-			{
+			for (Investigation i : listProjects) {
 				projects.add(i.getName());
-				if (index == 0 && investigationName == null)
-				{
+				if (index == 0 && investigationName == null) {
 					investigationName = i.getName();
 					index++;
 				}
 			}
 
-			if (db.find(Investigation.class).size() > 0)
-			{
+			if (db.find(Investigation.class).size() > 0) {
 				// p = db.query(Protocol.class).eq(Protocol.NAME,
 				// "stageCatalogue").find().get(0);
-				if (db.find(Protocol.class).size() > 0)
-				{
+				if (db.find(Protocol.class).size() > 0) {
 					// create table
-					ProtocolTable table = new ProtocolTable(db, investigationName);
+					ProtocolTable table = new ProtocolTable(db,
+							investigationName);
 
 					table.setTargetString(table.getTargetString());
 					// add editable decorator
@@ -751,30 +725,24 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 				}
 			}
 
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	public JQGridView tableChecker(Database db, ProtocolTable table)
-	{
+	public JQGridView tableChecker(Database db, ProtocolTable table) {
 		tableView = new JQGridView("test", this, table);
 		String selectedInv = "";
-		String selectInvestigationHTML = "<select id=\"selectInvestigation\" class=\"ui-pg-selbox ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
+		String selectInvestigationHTML = "<select id=\"selectInvestigation\" class=\"ui-widget-content ui-corner-all\" onChange=\"updateInvestigation()\">";
 
-		for (String inv : projects)
-		{
-			if (inv.equals(investigationName))
-			{
+		for (String inv : projects) {
+			if (inv.equals(investigationName)) {
 				selectedInv = inv;
-				selectInvestigationHTML += "<option selected=\"selected\">" + selectedInv + "</option>";
-			}
-			else
-			{
+				selectInvestigationHTML += "<option selected=\"selected\">"
+						+ selectedInv + "</option>";
+			} else {
 
 				selectInvestigationHTML += "<option>" + inv + "</option>";
 			}
@@ -786,13 +754,11 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	}
 
-	public void checkHeaders(Database db, Tuple request, String filePath)
-	{
+	public void checkHeaders(Database db, Tuple request, String filePath) {
 
 		File file = new File(filePath);
 
-		try
-		{
+		try {
 
 			csvTable = new CsvTable(file);
 
@@ -801,54 +767,49 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			// check the existing variables in measurements
 			// EXTRA: added the projectname to the measurementLABEL
-			for (Field field : csvTable.getAllColumns())
-			{
-				hashMeasurement.put(field.getName() + "_" + projectName, field.getName());
-				newFeatures.put(field.getName() + "_" + projectName, field.getName());
+			for (Field field : csvTable.getAllColumns()) {
 
+				if (!field.getName().equals(targetString)) {
+					hashMeasurement.put(field.getName() + "_" + projectName,
+							field.getName());
+					newFeatures.put(field.getName() + "_" + projectName,
+							field.getName());
+				}
 			}
-
-			// We remove the first column because it is the target string
-			// not features
-			hashMeasurement.remove(targetString);
-			newFeatures.remove(targetString);
 
 			// LABEL!!
 			// We query these entire list of columns and see whether they
 			// already existed in the database
-			List<Measurement> colHeadersMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME,
-					Operator.IN, new ArrayList<String>(hashMeasurement.keySet())));
+			List<Measurement> colHeadersMeasurement = db.find(
+					Measurement.class,
+					new QueryRule(Measurement.NAME, Operator.IN,
+							new ArrayList<String>(hashMeasurement.keySet())));
 
 			// we remove the existing features from the new feature hashmap.
-			for (Measurement m : colHeadersMeasurement)
-			{
-				if (newFeatures.containsKey(m.getName()))
-				{
+			for (Measurement m : colHeadersMeasurement) {
+				if (newFeatures.containsKey(m.getName())) {
 					newFeatures.remove(m.getName());
 				}
 
 			}
 
 			// check the existing records
-			for (Tuple tuple : csvTable.getRows())
-			{
+			for (Tuple tuple : csvTable.getRows()) {
 				rowHeaders.add(tuple.getString(targetString));
 				newTargets.add(tuple.getString(targetString));
 			}
 
-			List<ObservationTarget> rowHeadersTarget = db.find(ObservationTarget.class, new QueryRule(
-					ObservationTarget.NAME, Operator.IN, rowHeaders));
+			List<ObservationTarget> rowHeadersTarget = db.find(
+					ObservationTarget.class, new QueryRule(
+							ObservationTarget.NAME, Operator.IN, rowHeaders));
 
-			for (ObservationTarget ot : rowHeadersTarget)
-			{
-				if (rowHeaders.contains(ot.getName()))
-				{
+			for (ObservationTarget ot : rowHeadersTarget) {
+				if (rowHeaders.contains(ot.getName())) {
 					newTargets.remove(ot.getName());
 				}
 			}
 
-			for (String existingFeature : newFeatures.keySet())
-			{
+			for (String existingFeature : newFeatures.keySet()) {
 
 				hashMeasurement.remove(existingFeature);
 
@@ -856,18 +817,17 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 			rowHeaders.removeAll(newTargets);
 
-			report = new Gson().toJson(ReportUploadStatus.createReportUploadStatus(hashMeasurement, newFeatures,
-					rowHeaders, newTargets));
+			report = new Gson().toJson(ReportUploadStatus
+					.createReportUploadStatus(hashMeasurement, newFeatures,
+							rowHeaders, newTargets));
 
-			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
-					investigationName)))
-			{
+			for (Protocol p : db.find(Protocol.class, new QueryRule(
+					Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+					investigationName))) {
 				listOfProtocols.add(p.getName());
 			}
 
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			STATUS = "showMatrix";
 			uploadFileErrorMessage = "There are errors in your file, please upload before check";
 			e.printStackTrace();
@@ -877,95 +837,80 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	@Override
 	// from JQGridViewCallback
-	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable)
-	{
+	public void beforeLoadConfig(MolgenisRequest request, TupleTable tupleTable) {
 		HttpSession session = request.getRequest().getSession();
 		@SuppressWarnings("unchecked")
-		List<Measurement> selectedMeasurements = (List<Measurement>) session.getAttribute("selectedMeasurements");
+		List<Measurement> selectedMeasurements = (List<Measurement>) session
+				.getAttribute("selectedMeasurements");
 
-		if (selectedMeasurements != null)
-		{
-			try
-			{
-				for (final Field field : tupleTable.getAllColumns())
-				{
-					Measurement measurement = Iterables.find(selectedMeasurements, new Predicate<Measurement>()
-					{
-						@Override
-						public boolean apply(Measurement m)
-						{
-							return m.getName().equals(field.getName() + "_" + investigationName);
-						}
+		if (selectedMeasurements != null) {
+			try {
+				for (final Field field : tupleTable.getAllColumns()) {
+					Measurement measurement = Iterables.find(
+							selectedMeasurements, new Predicate<Measurement>() {
+								@Override
+								public boolean apply(Measurement m) {
+									return m.getName().equals(
+											field.getName() + "_"
+													+ investigationName);
+								}
 
-					}, null);
+							}, null);
 
-					if (measurement == null)
-					{
+					if (measurement == null) {
 						tupleTable.hideColumn(field.getName());
-					}
-					else
-					{
+					} else {
 						tupleTable.showColumn(field.getName());
 					}
 				}
 
 				session.removeAttribute("selectedMeasurements");
-			}
-			catch (TableException e)
-			{
+			} catch (TableException e) {
 				e.printStackTrace();
 			}
 
 		}
 	}
 
-	public class mappingClass
-	{
+	public class mappingClass {
 
 		HashMap<String, eachMapping> allMappings = null;
 
-		public mappingClass()
-		{
+		public mappingClass() {
 			allMappings = new HashMap<String, eachMapping>();
 		}
 
-		public void addMapping(String variableName, String dataType, String table, String category, String code)
-		{
+		public void addMapping(String variableName, String dataType,
+				String table, String category, String code) {
 
-			if (allMappings.containsKey(variableName))
-			{
+			if (allMappings.containsKey(variableName)) {
 				allMappings.get(variableName).addCategory(category, code);
-			}
-			else
-			{
-				if (variableName != null)
-				{
-					eachMapping newMapping = new eachMapping(variableName, dataType, table, category, code);
+			} else {
+				if (variableName != null) {
+					eachMapping newMapping = new eachMapping(variableName,
+							dataType, table, category, code);
 					allMappings.put(variableName, newMapping);
 				}
 			}
 		}
 
-		public int getSize()
-		{
+		public int getSize() {
 			return allMappings.size();
 		}
 
-		public List<eachMapping> getMapping()
-		{
+		public List<eachMapping> getMapping() {
 			return new ArrayList<eachMapping>(allMappings.values());
 		}
 
-		private class eachMapping
-		{
+		private class eachMapping {
 
 			private String variableName;
 			private String dataType;
 			private String table;
 			private Map<String, String> listOfCategories;
 
-			private eachMapping(String variableName, String dataType, String table, String category, String code)
-			{
+			private eachMapping(String variableName, String dataType,
+					String table, String category, String code) {
 
 				this.variableName = variableName;
 				this.dataType = dataType;
@@ -974,16 +919,14 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 				this.listOfCategories.put(code, category);
 			}
 
-			private void addCategory(String category, String code)
-			{
+			private void addCategory(String category, String code) {
 
 				this.listOfCategories.put(code, category);
 			}
 		}
 	}
 
-	public static class ReportUploadStatus
-	{
+	public static class ReportUploadStatus {
 
 		boolean success = true;
 		List<String> colHeaders;
@@ -991,11 +934,13 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 		List<String> rowHeaders;
 		List<String> newTargets;
 
-		public static ReportUploadStatus createReportUploadStatus(HashMap<String, String> hashMeasurements,
-				HashMap<String, String> newFeatures, List<String> rowHeaders, List<String> newTargets)
-		{
+		public static ReportUploadStatus createReportUploadStatus(
+				HashMap<String, String> hashMeasurements,
+				HashMap<String, String> newFeatures, List<String> rowHeaders,
+				List<String> newTargets) {
 			ReportUploadStatus instance = new ReportUploadStatus();
-			instance.colHeaders = new ArrayList<String>(hashMeasurements.values());
+			instance.colHeaders = new ArrayList<String>(
+					hashMeasurements.values());
 			instance.newFeatures = new ArrayList<String>(newFeatures.values());
 			instance.rowHeaders = rowHeaders;
 			instance.newTargets = newTargets;
@@ -1003,93 +948,77 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 		}
 	}
 
-	public String getReport()
-	{
+	public String getReport() {
 		return report;
 	}
 
-	public String getSTATUS()
-	{
+	public String getSTATUS() {
 		return STATUS;
 	}
 
-	public String getTableView()
-	{
-		if (tableView != null)
-		{
+	public String getTableView() {
+		if (tableView != null) {
 			return tableView.getHtml();
 		}
 		return "";
 	}
 
-	public List<String> getFeatureDataTypes() throws Exception
-	{
+	public List<String> getFeatureDataTypes() throws Exception {
 
 		List<String> dataTypes = new ArrayList<String>();
-		for (ValueLabel label : Measurement.class.newInstance().getDataTypeOptions())
-		{
+		for (ValueLabel label : Measurement.class.newInstance()
+				.getDataTypeOptions()) {
 			dataTypes.add(label.getLabel());
 		}
 
 		return dataTypes;
 	}
 
-	public List<String> getProtocolTables() throws Exception
-	{
+	public List<String> getProtocolTables() throws Exception {
 
 		return listOfProtocols;
 	}
 
-	public String getTempalteFilePath()
-	{
+	public String getTempalteFilePath() {
 		return tempalteFilePath;
 	}
 
-	public String getUrl()
-	{
+	public String getUrl() {
 		return "molgenis.do?__target=" + this.getName();
 	}
 
-	public String getJsonForMapping()
-	{
+	public String getJsonForMapping() {
 		return jsonForMapping;
 	}
 
-	public String getUploadFileErrorMessage()
-	{
+	public String getUploadFileErrorMessage() {
 		return uploadFileErrorMessage;
 	}
 
-	public String getMappingMessage()
-	{
+	public String getMappingMessage() {
 		return mappingMessage;
 	}
 
-	public String getImportMessage()
-	{
+	public String getImportMessage() {
 		return importMessage;
 	}
 
-	public String getLoadingMatrix()
-	{
+	public String getLoadingMatrix() {
 		return loadingMatrix;
 	}
 
-	public List<String> getProjects()
-	{
+	public List<String> getProjects() {
 		return projects;
 	}
 
 	@Override
-	public String getViewTemplate()
-	{
+	public String getViewTemplate() {
 		// TODO Auto-generated method stub
 		return "phenotypeViewer/PhenotypeViewer.ftl";
 	}
 
 	@Override
-	public String getViewName()
-	{
+	public String getViewName() {
 		// TODO Auto-generated method stub
 		return "PhenotypeViewer";
 	}

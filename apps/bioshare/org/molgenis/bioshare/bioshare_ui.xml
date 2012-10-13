@@ -10,7 +10,7 @@
 		
 		<menu name="dataManagement" label="Data management" position="top_left" startswith="CatalogueTreePlugin">
 			<plugin name="bioshareImportWizard" type="plugins.importDataWizard.bioshareImportWizard" label="import wizard" />
-			<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
+			<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin" label="Search variables" />
 			<plugin name="CatalogueTreePluginNew" type="plugins.catalogueTreeNewVersion.catalogueTreePluginNew" label="Tree developing" />
 			<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 				<menu name="InvestigationMenu">
@@ -18,17 +18,15 @@
 					<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
 						<form name="ProtocolDocuments" entity="ProtocolDocument" />
 					</form>
-					<form name="PermittedValues" entity="Category" />
-					<form name="ontologyterm" entity="OntologyTerm" label="Ontology Term"/>
+					<form name="observationTarget" entity="ObservationTarget" label="Targets" />
+					<form name="observedValue" entity="ObservedValue" label="Values"/>
 				</menu>
 			</form>
 		</menu>
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
-			
 			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
 			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
 			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
-			
 			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>
 		</menu>
 

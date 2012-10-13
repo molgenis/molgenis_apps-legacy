@@ -244,15 +244,25 @@ public class QtlFinder2 extends PluginModel<Entity>
 			{
 				try
 				{
-					String[] ids = permaLinkIds.split(",");
-					Class<? extends Entity> entityClass =  db.getClassForName("ObservationElement");
-					List<? extends Entity> findIds = db.find(entityClass, new QueryRule(ObservationElement.ID, Operator.IN, ids));
-					findIds = db.load((Class)ObservationElement.class, findIds);
 					Map<String, Entity> hits = new HashMap<String, Entity>();
-					for(Entity e : findIds)
+					
+					//special special: WormBaseID is given (only 1 for the moment
+					if(permaLinkIds.length() == "WBGene00000000".length() && permaLinkIds.startsWith("WBGene"))
 					{
-						hits.put(e.get(ObservationElement.NAME).toString(), e);
+						hits = query(db.getClassForName("ObservationElement"), db, permaLinkIds, 100);
+						hits = genesToProbes(db, 100, hits);
 					}
+					else{
+						String[] ids = permaLinkIds.split(",");
+						Class<? extends Entity> entityClass =  db.getClassForName("ObservationElement");
+						List<? extends Entity> findIds = db.find(entityClass, new QueryRule(ObservationElement.ID, Operator.IN, ids));
+						findIds = db.load((Class)ObservationElement.class, findIds);
+						for(Entity e : findIds)
+						{
+							hits.put(e.get(ObservationElement.NAME).toString(), e);
+						}
+					}
+					
 					this.model.setShoppingCart(hits);
 					this.model.setHits(hits);
 					this.model.setPermaLink(permaLinkIds);
