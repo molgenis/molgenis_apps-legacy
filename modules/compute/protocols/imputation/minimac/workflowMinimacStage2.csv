@@ -1,3 +1,3 @@
 name,protocol_name,PreviousSteps_name
 prePhasingMachStage2_s00,phaseChunk,
-prePhasingMachStage2_s01,startMinimacStage3,phaseChunk
+prePhasingMachStage2_s01,startMinimacStage3,prePhasingMachStage2_s00

@@ -1,6 +1,6 @@
 #MOLGENIS walltime=05:00:00 nodes=1 cores=1 mem=4
 
-#FOREACH McScripts
+#FOREACH autostart
 
 getFile ${concatWorksheetsJar}
 
@@ -43,7 +43,7 @@ else
 fi
 
 
-
+workflowMinimacStage2=`readlink -fn ${McProtocols}/../workflowMinimacStage2.csv`
 
 #Call compute to generate phasing jobs
 
@@ -51,13 +51,13 @@ mkdir -p ${projectPhasingJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
--worksheet=${concattedChunkWorksheet} \
--parameters=${McParameters} \
--workflow=${McProtocols}/../workflowMinimacStage2.csv \
--protocols=${McProtocols}/ \
--templates=${McTemplates}/ \
--scripts=${projectPhasingJobsDir}/ \
--id=${McId}
+-worksheet="${concattedChunkWorksheet}" \
+-parameters="${McParameters}" \
+-workflow="$workflowMinimacStage2" \
+-protocols="${McProtocols}/" \
+-templates="${McTemplates}/" \
+-scripts="${projectPhasingJobsDir}/" \
+-id="${McId}"
 
 
 #Get return code from last program call

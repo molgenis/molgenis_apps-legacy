@@ -9,26 +9,24 @@ getFile ${studyMerlinChrPed}
 
 inputs "${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat"
 inputs "${studyMerlinChrPed}"
+
 alloutputsexist \
-"${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate" \
-"${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" \
-"${studyChunkChrDir}/chunk${chunk}-chr${chr}.rec" \
-"${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log"
+	"${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate" \
+	"${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" \
+	"${studyChunkChrDir}/chunk${chunk}-chr${chr}.rec" \
+	"${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log"
 
 
 mkdir -p ${studyChunkChrDir}
 
 ${machBin} \
--d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
--p ${studyMerlinChrPed} \
---prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
---rounds ${phasingRounds} \
---states ${phasingStates} \
---phase \
-2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
-
-###REMOVED --sample ${phasingHaplotypeSampling} from command
-###If used files with extension *.sample1, *.sample6, *.sample11, *.sample16 etc are created
+	-d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
+	-p ${studyMerlinChrPed} \
+	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
+	--rounds ${phasingRounds} \
+	--states ${phasingStates} \
+	--phase \
+	2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
 
 if [ $returnCode -eq 0 ]
 then
