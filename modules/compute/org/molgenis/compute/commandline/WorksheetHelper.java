@@ -105,7 +105,7 @@ public class WorksheetHelper
 		// TODO TODO TODO
 		if (iterationLevel.equals(LibraryLane.class))
 		{
-			Map<String, NgsSample> uniqueSamples = new TreeMap<String, NgsSample>();
+			Map<String, NgsSample> uniqueSamples = new LinkedMap<String, NgsSample>();
 
 			for (Tuple t : worksheet)
 			{
@@ -280,7 +280,7 @@ public class WorksheetHelper
 	private <E extends ObservationElement> Map<Integer, E> createMap(
 			List<E> entities)
 	{
-		Map<Integer, E> entityMap = new TreeMap<Integer, E>();
+		Map<Integer, E> entityMap = new LinkedMap<Integer, E>();
 		for (E e : entities)
 		{
 			entityMap.put(e.getId(), e);
