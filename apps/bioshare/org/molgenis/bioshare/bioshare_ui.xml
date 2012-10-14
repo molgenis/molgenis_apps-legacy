@@ -20,6 +20,7 @@
 					</form>
 					<form name="observationTarget" entity="ObservationTarget" label="Targets" />
 					<form name="observedValue" entity="ObservedValue" label="Values"/>
+					<form name="studyDescription" entity="StudyDescription" label="Study description"/>
 				</menu>
 			</form>
 		</menu>
