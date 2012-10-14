@@ -10,11 +10,14 @@ getFile ${McWorksheet}
 
 inputs "${studyMerlinChrDat}"
 inputs "${McWorksheet}"
-alloutputsexist \
-	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
-	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
 
-#Chunk chromosomes into pieces containing ~2500 markers
+
+#!!!!
+#alloutputsexist \
+#	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
+$	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
+
+#Chunk chromosomes into pieces containing ~${chunkSize} markers
 
 cd ${studyMerlinChrDir}
 

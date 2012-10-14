@@ -42,9 +42,6 @@ else
 
 fi
 
-
-workflowMinimacStage2=`readlink -fn ${McProtocols}/../workflowMinimacStage2.csv`
-
 #Call compute to generate phasing jobs
 
 mkdir -p ${projectPhasingJobsDir}
@@ -53,7 +50,7 @@ mkdir -p ${projectPhasingJobsDir}
 sh ${McDir}/molgenis_compute.sh \
 -worksheet="${concattedChunkWorksheet}" \
 -parameters="${McParameters}" \
--workflow="$workflowMinimacStage2" \
+-workflow="${McProtocols}/../workflowMinimacStage2.csv" \
 -protocols="${McProtocols}/" \
 -templates="${McTemplates}/" \
 -scripts="${projectPhasingJobsDir}/" \
@@ -68,6 +65,8 @@ if [ $returnCode -eq 0 ]
 then
 	
 	echo -e "\nJob generation succesful!\n\n"
+	
+	perl -pi -e "s/sleep 8/sleep 0/" ${projectPhasingJobsDir}/submit.sh
 
 	<#if autostart == "TRUE">
 		cd ${projectPhasingJobsDir}

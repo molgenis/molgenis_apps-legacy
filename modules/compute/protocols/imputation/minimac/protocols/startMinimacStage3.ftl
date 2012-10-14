@@ -21,13 +21,13 @@ mkdir -p ${projectImputationJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
--worksheet=${concattedChunkWorksheet} \
--parameters=${McParameters} \
--workflow=${McProtocols}/../workflowMinimacStage3.csv \
--protocols=${McProtocols}/ \
--templates=${McTemplates}/ \
--scripts=${projectImputationJobsDir}/ \
--id=${McId}
+-worksheet="${concattedChunkWorksheet}" \
+-parameters="${McParameters}" \
+-workflow="${McProtocols}/../workflowMinimacStage3.csv" \
+-protocols="${McProtocols}/" \
+-templates="${McTemplates}/" \
+-scripts="${projectImputationJobsDir}/" \
+-id="${McId}"
 
 
 #Get return code from last program call
@@ -38,6 +38,8 @@ if [ $returnCode -eq 0 ]
 then
 	
 	echo -e "\nJob generation succesful!\n\n"
+
+	perl -pi -e "s/sleep 8/sleep 0/" ${projectImputationJobsDir}/submit.sh
 
 	<#if autostart == "TRUE">
 		cd ${projectImputationJobsDir}

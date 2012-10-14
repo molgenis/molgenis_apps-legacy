@@ -22,16 +22,24 @@ mkdir -p ${studyChunkChrDir}
 ${machBin} \
 	-d ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat \
 	-p ${studyMerlinChrPed} \
-	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr} \
+	--prefix ${studyChunkChrDir}/~chunk${chunk}-chr${chr} \
 	--rounds ${phasingRounds} \
 	--states ${phasingStates} \
 	--phase \
 	2>&1 | tee -a ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
 
+#Get return code from last program call
+returnCode=$?
+
 if [ $returnCode -eq 0 ]
 then
 	
 	echo -e "\nMoving temp files to final files\n\n"
+
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.erate ${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.gz ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.rec ${studyChunkChrDir}/chunk${chunk}-chr${chr}.rec
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}-mach.log ${studyChunkChrDir}/chunk${chunk}-chr${chr}-mach.log
 
 	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.erate
 	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz

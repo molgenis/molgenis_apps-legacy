@@ -1,25 +1,25 @@
-#MOLGENIS walltime=96:00:00 nodes=1 cores=4 mem=4
+#MOLGENIS walltime=96:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr,chunk
 
-getFile ${minimacOmpBin}
+getFile ${minimacBin}
 
 getFile ${referenceChrVcfGz}
 getFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz
 getFile ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps
 
-inputs "${referenceChrVcfGz}" \
-inputs "${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" \
+inputs "${referenceChrVcfGz}" 
+inputs "${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" 
 inputs "${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps"
 
-${minimacOmpBin} \
---cpus 4 \
---refHaps ${referenceChrVcfGz} \
---vcfReference \
---haps ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz \
---snps ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps \
---prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed \
->& ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log &
+${minimacBin} \
+	--refHaps ${referenceChrVcfGz} \
+	--vcfReference \
+	--haps ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz \
+	--snps ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps \
+	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed \
+	--autoClip ${studyMerlinChrDir}/autoChunk-chr20.dat \
+	2>&1 | tee ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 
 #########################################
 ##############FIX THIS LATER#############
