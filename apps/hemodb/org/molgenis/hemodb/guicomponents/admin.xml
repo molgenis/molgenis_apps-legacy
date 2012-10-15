@@ -28,8 +28,7 @@
 			<form label="Job table" name="Jobs" entity="Job">
 				<form name="Subjobs" entity="Subjob" />
 			</form>
-			<plugin label="ROnline" name="ROnline"
-				type="plugins.ronline.ROnline" />
+			<plugin label="ROnline" name="ROnline" type="plugins.ronline.ROnline" />
 		</menu>
 	</menu>
 </molgenis>
