@@ -1,20 +1,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
 
-<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
-<script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
-<script src="jquery/development-bundle/ui/jquery.ui.datepicker.js" type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js"
+	type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery.ui.dialog.js"
+	type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery.ui.datepicker.js"
+	type="text/javascript"></script>
 
-<link rel="stylesheet" type="text/css" media="screen" href="http://trirand.com/blog/jqgrid/themes/redmond/jquery-ui-1.8.1.custom.css">
-<link rel="stylesheet" type="text/css" media="screen" href="http://trirand.com/blog/jqgrid/themes/ui.jqgrid.css">
-<link rel="stylesheet" type="text/css" media="screen" href="http://trirand.com/blog/jqgrid/themes/ui.multiselect.css">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="http://trirand.com/blog/jqgrid/themes/redmond/jquery-ui-1.8.1.custom.css">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="http://trirand.com/blog/jqgrid/themes/ui.jqgrid.css">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="http://trirand.com/blog/jqgrid/themes/ui.multiselect.css">
 
-<script type="text/javascript" src="http://static.jstree.com/v.1.0pre/jquery.jstree.js"></script>
+<script type="text/javascript"
+	src="http://static.jstree.com/v.1.0pre/jquery.jstree.js"></script>
 
 <script type="text/javascript"><!--
 var url = "jqGrid"
@@ -193,41 +201,40 @@ $(function() {
 </head>
 <body>
 
-<!--
+	<!--
     <p>Date: <input type="text" id="datepicker"></p>
 -->
-<div id="tree" class="tree">
-
-</div>
+	<div id="tree" class="tree"></div>
 
 
-<div>
-    <button id="getSelected">load data</button>
-</div>
-    
+	<div>
+		<button id="getSelected">load data</button>
+	</div>
 
-<table id="list"></table>
-<div id="pager"></div>
-       
-<button id="exportData">export data</button>
-    
-<div id="dialog-form" title="Export data">
-	<form>
-	<fieldset>
-            <label >File type</label><br>
-            <input type="radio" name="exportType" value="Excel" checked>Excel<br>
-            <input type="radio" name="exportType" value="Spss">Spss<br> 
-            <input type="radio" name="exportType" value="Csv">Csv<br> 
-            <label>Export option</label><br>
-            <input type="radio" name="exportSelection" value="All" checked>All<br>
-            <input type="radio" name="exportSelection" value="Grid">Grid<br> 
-	</fieldset>
-	</form>
-</div>
-   
-    
-<!--<table id="grps"></table>
+
+	<table id="list"></table>
+	<div id="pager"></div>
+
+	<button id="exportData">export data</button>
+
+	<div id="dialog-form" title="Export data">
+		<form>
+			<fieldset>
+				<label>File type</label><br> <input type="radio"
+					name="exportType" value="Excel" checked>Excel<br> <input
+					type="radio" name="exportType" value="Spss">Spss<br> <input
+					type="radio" name="exportType" value="Csv">Csv<br> <label>Export
+					option</label><br> <input type="radio" name="exportSelection"
+					value="All" checked>All<br> <input type="radio"
+					name="exportSelection" value="Grid">Grid<br>
+			</fieldset>
+		</form>
+	</div>
+
+
+	<!--<table id="grps"></table>
 <div id="pgrps"></div>
     
---></body>
+-->
+</body>
 </html>

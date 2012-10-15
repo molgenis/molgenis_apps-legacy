@@ -3,7 +3,7 @@ body {
 	font-family: verdana;
 }
 
-/**5DA55B*/ 
+/**5DA55B*/
 
 /**color of title*/
 .colorOfTitle,#subheader,#separator {
@@ -15,43 +15,48 @@ body {
 }
 
 /**overall background*/
-.overallBackground,.matrixRowColorEmpty,body,#header,#navigation,#information,#footer {
+.overallBackground,.matrixRowColorEmpty,body,#header,#navigation,#information,#footer
+	{
 	background: white;
 	border-top-color: #d95a14;
 }
 
 /**matrix inner table and cells*/
-.tableBorder,.matrixTableCell{
+.tableBorder,.matrixTableCell {
 	border-color: white;
 }
 
 /**highlight background*/
-.highlightBackground,.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+.highlightBackground,.formscreen,.form_new,.form_filter,.embedtable,.popup,.form_new,.form_filter
+	{
 	background: #F8FAFB;
 }
 
 /**shade header*/
-.shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+.shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header,td.submenuitem:hover
+	{
 	background: #d95a14;
 }
 
 /**highlight*/
-.highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
+.highlight,.leftNavigationNotSelected,.navigationNotSelected,.form_menu,.submenuitem
+	{
 	background: white;
 	border: none;
 	color: #2142FD;
 }
 
-.submenuitem{
-	h: expression(onmouseover=new Function("this.style.backgroundColor='#5B82A4'; this.style.color='#fff';"),
-                       onmouseout=new Function("this.style.backgroundColor='#BDCDDA'; this.style.color='black';"));	
+.submenuitem {
+	h: expression(onmouseover =   new Function("this.style.backgroundColor='#5B82A4'; this.style.color='#fff';"
+		), onmouseout=new
+		Function("this.style.backgroundColor='#BDCDDA'; this.style.color='black';"
+		) );
 	/*ie hack for td.submenuitem:hover*/
-	
 }
 
 /**shade borders*/
-.shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
-{
+.shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup,.form_menu
+	{
 	border-color: #d95a14;
 }
 
@@ -64,31 +69,30 @@ body {
 	background: #CACACA;
 }
 
-.matrixRowColor1,.form_listrow1 {
-	/*background: #BCD6DA;*/
+.matrixRowColor1,.form_listrow1 { /*background: #BCD6DA;*/
 	background: #EEEEEE;
 }
 
 .form_listrow2 {
 	background: #DDDDDD;
 }
-	
-input, select {
+
+input,select {
 	color: #666666;
 	background: #DDDDDD;
 }
 
 .pd1 {
 	background: #d95a14;
-	border-color:#000000;
+	border-color: #000000;
 }
 
 .pd2 {
 	background: #6dcbfe;
-	border-color:#000000;
+	border-color: #000000;
 }
 
 .pd3 {
 	background: #d95a14;
-	border-color:#000000;
+	border-color: #000000;
 }

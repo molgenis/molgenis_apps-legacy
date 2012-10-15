@@ -18,14 +18,13 @@ body {
 	margin-left: 197px;
 }
 
-td,select,input,li {
-/*
+td,select,input,li { /*
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 12px;
 	color: #333;
 */
 	font-family: verdana;
-    font-size: 10pt;
+	font-size: 10pt;
 }
 
 code {
