@@ -59,4 +59,25 @@
 	    </java>
 	</target>
 	
+	<target name="compile">
+		
+			<pathconvert property="app_src" refid="app.class.path" pathsep=":">
+				<map from="${basedir}/" to="" />
+			</pathconvert>
+			<fail unless="app_src">app.class.path is not set. Did you use the right build_xyz.xml?</fail>
+
+			<echo message="compile :${output_src}:${app_src}" />
+	
+			<!-- compile the generated results, use fork to run it with its own memory settings -->
+			<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
+			<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true">
+				<classpath refid="molgenis.classpath" />
+				
+				<exclude name="**/BinaryTupleTable.java" />
+				<exclude name="**/JQGridPlugin_xQTL.java" />
+				<exclude name="**/JQGridPluginPedMap.java" />
+			</javac>
+
+		</target>
+	
 </project>

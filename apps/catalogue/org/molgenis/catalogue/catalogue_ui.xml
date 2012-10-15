@@ -5,37 +5,47 @@
 
 	<menu name="main" position="top_left" startswith="catalogueWelcomeScreen">
 
-		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
+		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin"
+			label="Welcome" />
 
-		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin" label="Search variables" />
+		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin"
+			label="Search variables" />
 
 		<!-- plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
-		<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
+		<form name="investigation" entity="Investigation" label="Study details"
+			compact_view="name,description" hide_fields="accession">
 			<menu name="InvestigationMenu">
-				<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
-				<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
+				<form name="measurement" entity="Measurement" label="Measurements"
+					hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+				<form name="protocol" entity="Protocol" label="Protocols"
+					compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
 					<form name="ProtocolDocuments" entity="ProtocolDocument" />
 				</form>
 				<form name="PermittedValues" entity="Category" />
-				<form name="ontologyterm" entity="OntologyTerm" label="Ontology Term"/>
+				<form name="ontologyterm" entity="OntologyTerm" label="Ontology Term" />
 			</menu>
 		</form>
-		
-		<plugin name="MySelectionsEditPlugin" type="plugins.data.MySelectionsEditPlugin" label="Edit My Selections"/>
+
+		<plugin name="MySelectionsEditPlugin" type="plugins.data.MySelectionsEditPlugin"
+			label="Edit My Selections" />
 
 
-		<form name="MySelections" entity="ShoppingCart" label="My selections" view_type="list">
-			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"	readonly="true" hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+		<form name="MySelections" entity="ShoppingCart" label="My selections"
+			view_type="list">
+			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"
+				readonly="true"
+				hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
 		</form>
-
 		<plugin name="Request" type="plugins.requestData.LifeLinesRequest" label="Submit data request" />
 		<menu name="Admin">
-			
+
 			<form name="Requests" entity="LifeLinesRequest" />
 			<menu name="ImportData" label="Import Data">
-				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter" label="Biobank Importer" />
-				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"	label="Batch Upload" />
+				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter"
+					label="Biobank Importer" />
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+					label="Batch Upload" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
