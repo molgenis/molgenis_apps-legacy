@@ -4,9 +4,11 @@
 
 getFile ${preparedStudyDir}/chr${chr}.map
 getFile ${preparedStudyDir}/chr${chr}.ped
+getFile ${studyPedMapChr}.ped
 
 inputs ${preparedStudyDir}/chr${chr}.map
 inputs ${preparedStudyDir}/chr${chr}.ped
+inputs ${studyPedMapChr}.ped
 
 
 alloutputsexist \
@@ -24,10 +26,8 @@ gawk '
 
 gawk 'BEGIN {print "T","pheno";}{print "M",$1":"$4}' ${preparedStudyDir}/chr${chr}.map > ${studyMerlinChrDat}
 
-#Copy ped file
-cp  ${preparedStudyDir}/chr${chr}.ped ${studyMerlinChrPed}
-
-
+#Create merlin ped from genotypes outputed by imputation tool but use fam id, sample id and phenodata from original pedmap
+paste <(awk '{print $1,$2,$3,$4,$5,$6}' ${studyPedMapChr}.ped) <(awk '{for(i=7;i<NF;i++) $(i-6) = $i;print $0}' ${preparedStudyDir}/chr${chr}.ped) -d ' ' > ${studyMerlinChrPed}
 
 putFile ${studyMerlinChrMap}
 putFile ${studyMerlinChrDat}
