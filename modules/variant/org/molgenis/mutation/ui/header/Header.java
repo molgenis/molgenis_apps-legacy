@@ -19,7 +19,7 @@ import org.molgenis.mutation.service.CmsServiceException;
 
 public class Header extends EasyPluginController<HeaderModel> {
 	private static final long serialVersionUID = 5933871906981851063L;
-	private CmsService cmsService;
+	private transient CmsService cmsService;
 
 	public Header(String name, ScreenController<?> parent) {
 		super(name, parent);

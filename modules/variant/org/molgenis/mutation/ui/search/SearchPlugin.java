@@ -47,10 +47,10 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
 	private static final long serialVersionUID = 651270609185006020L;
 	
-	private CmsService cmsService;
-	private PhenoService phenoService;
-	private SearchService searchService;
-	private StatisticsService statisticsService;
+	private transient CmsService cmsService;
+	private transient PhenoService phenoService;
+	private transient SearchService searchService;
+	private transient StatisticsService statisticsService;
 
 	public SearchPlugin(String name, ScreenController<?> parent)
 	{
