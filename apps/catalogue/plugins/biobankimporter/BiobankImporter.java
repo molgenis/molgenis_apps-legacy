@@ -88,11 +88,11 @@ public class BiobankImporter extends PluginModel<Entity>
 
 	private Integer startingRowIndex = 0;
 
-	private Boolean multipleSheets = true;
+	private Boolean multipleSheets = false;
 
 	private Boolean multipleValue = false;
 
-	private Boolean sheetImportProtocol = true;
+	private Boolean sheetImportProtocol = false;
 
 	public BiobankImporter(String name, ScreenController<?> parent)
 	{
@@ -593,12 +593,12 @@ public class BiobankImporter extends PluginModel<Entity>
 
 			startingRowIndex--;
 
-			if (request.getBool("multipleSheets") != null)
+			if (request.getBool("multipleSheets") != null && request.getBool("multipleSheets") == true)
 			{
 				multipleSheets = request.getBool("multipleSheets");
 			}
 
-			if (request.getBool("sheetImportProtocol") != null)
+			if (request.getBool("sheetImportProtocol") != null && request.getBool("sheetImportProtocol") == true)
 			{
 				sheetImportProtocol = request.getBool("sheetImportProtocol");
 			}
