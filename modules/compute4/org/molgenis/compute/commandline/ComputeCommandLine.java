@@ -209,18 +209,15 @@ public class ComputeCommandLine
 					for (int i = 0; i < size; i++)
 					{
 						String jobName = previousWfe.getName();
-
-						for (String target : wfeProtocol.getIterateOver_Name())
-						{
-							// if (work.getObject(target) instanceof List) {
-							// replace target by number
-							jobName += "_" + work.getList(target).get(i);
-							// jobName += "_XXX" + i;
-							// } else {
-							// System.out.println("test2");
-							// jobName += "_" + i;// work.getString(target);
-							// jobName += "_YYY";
-							// }
+						for (String target : wfeProtocol.getIterateOver_Name()) {
+							if (work.getObject(target) instanceof List) {
+								// replace target by number
+								jobName += "_" + work.getList(target).get(i);
+								// jobName += "_XXX" + i;
+							} else {
+								jobName += "_" + i;// work.getString(target);
+								// jobName += "_YYY";
+							}
 
 						}
 						dependencies.add(stepnr(previousWfe.getName()) + jobName);
@@ -327,6 +324,7 @@ public class ComputeCommandLine
 		return stepnr(wfe.getName()) + jobName;
 	}
 
+<<<<<<< HEAD
 	private String createJobNameId(WorkflowElement wfe, int i)
 	{
 
@@ -337,6 +335,10 @@ public class ComputeCommandLine
 	public String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException,
 			TemplateException
 	{
+=======
+	public String filledtemplate(String scripttemplate, Tuple work,
+			String jobname) throws IOException, TemplateException {
+>>>>>>> 29c6373b710e13b15b45a1d023cb77cdac73da9f
 		// first create map
 		Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -512,8 +514,12 @@ public class ComputeCommandLine
 
 				// make this part windows compentible
 				String fileSeparatorPatternString;
+<<<<<<< HEAD
 				if (File.separator == "/")
 				{
+=======
+				if (File.separator.equalsIgnoreCase("/")) {
+>>>>>>> 29c6373b710e13b15b45a1d023cb77cdac73da9f
 					fileSeparatorPatternString = "/";
 				}
 				else
