@@ -68,6 +68,19 @@
 	            icons : icons,
 	            heightStyle : 'content'
 	        });
+	        //Bind the event to the header inside the accordion
+	        $('#accordion div').prev().click(function(){
+	        	
+	        	if($(this).next().attr('id') == "menuForCorhortStudies"){
+	        		$('#descriptionForStudy').show();
+	        		$('#descriptionForPredictionModel').hide();
+	        	}else if($(this).next().attr('id') == "menuForPredictionModels"){
+	        		$('#descriptionForStudy').hide();
+	        		$('#descriptionForPredictionModel').show();
+	        	}else{
+	        	
+	        	}
+	        });
 	        
 	        //Initialize the addStudyDialog
 	        $('#addStudyForm').dialog({
@@ -355,7 +368,7 @@
 						</div>
 						<img src="res/img/BioshareHeader.png" style="position:relative;top:-60px;left:70%;height:80px;width:240px">
 					</div>
-					<div style="height:80%;width:100%;margin-left:auto;margin-right:auto" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+					<div id="panelForStudy" style="height:80%;width:100%;margin-left:auto;margin-right:auto" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 						<div id="studyNameInfo" style="width:100%;height:40%;font-size:14px;" class="editable">
 							<div style="height:20%;font-size:24px;color:grey;font-style:italic" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 								<div style="float:left">Study name: 
@@ -419,6 +432,72 @@
 							<div style="padding:4px">Number of participants: <span id="numberOfParticipants" name="numberOfParticipants">8592</span><textarea style="height:12px;display:none"></textarea></div>
 							<div style="padding:4px">Age: <span id="ageGroup" name="ageGroup">15 to 75</span><textarea style="height:12px;display:none"></textarea></div>
 							<div style="padding:4px">Ethnic group: <span id="ethnicGroup" name="ethnicGroup">Caussian</span><textarea style="height:12px;display:none"></textarea></div>
+						</div>
+					</div>
+				</div>
+				<div id="descriptionForPredictionModel" style="display:none;height:100%">
+					<div style="height:15%;">
+						<div style="height:60%;">
+							<fieldset id="statusMessage"style="width:400px;display:none" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+								<legend style="font-style:italic;">Message</legend>
+								<span></span>
+							</fieldset>
+						</div>
+						<img src="res/img/BioshareHeader.png" style="position:relative;top:-60px;left:70%;height:80px;width:240px">
+					</div>
+					<div id="panelForPredictionModel" style="height:80%;width:100%;margin-left:auto;margin-right:auto" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+						<div id="predictionModelInfo" style="width:100%;height:40%;font-size:14px;" class="editable">
+							<div style="height:20%;font-size:24px;color:grey;font-style:italic" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+								<div style="float:left">Prediction model: 
+									<span id="predictionModelNamw" name="predictionModelNamw">KORA</span>
+									<input type="text" style="display:none" size="12" />
+								</div>
+								<div name="saveStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="save changes">
+									<span class="ui-icon ui-icon-disk"></span>
+								</div>
+								<div name="editStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="edit the study">
+									<span class="ui-icon ui-icon-pencil"></span>
+								</div>
+							</div>
+							<div align="justify" style="float:left;padding:4px;height:75%;width:100%;overflow:auto">
+								<span id="predictionModelDescription" name="predictionModelDescription" >
+									The KORA prediction model.
+								</span>
+								<textarea style="height:300px;display:none"></textarea>
+							</div>
+						</div>
+						<div id="generalInformation" style="float:left;width:40%;height:58%;font-size:14px;overflow:auto" class="editable ui-widget-content ui-corner-bottom">
+							<div style="text-align:center;height:20px" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+								<div style="float:left;">General information</div>
+								<div name="saveStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="save changes">
+									<span class="ui-icon ui-icon-disk"></span>
+								</div>
+								<div name="editStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="edit the study">
+									<span class="ui-icon ui-icon-pencil"></span>
+								</div>
+							</div>
+							<div align="justify" style="padding:4px">Number of predictors: <span id="numberOfPredictors" name="numberOfPredictors">8</span><textarea style="height:12px;display:none"></textarea></div>
+							<div align="justify" style="padding:4px">Country of study: <span id="statisticalModel" name="statisticalModel">Logistic</span><textarea style="height:12px;display:none"></textarea></div>
+							<div align="justify" style="padding:4px;height:55%;overflow:auto">Formula:
+								<span id="formula" name="formula">
+								<!-- Think what to fill in -->
+								</span>
+								<textarea style="height:150px;display:none"></textarea>
+							</div>
+						</div>
+						<div id="individualInformation" style="float:left;width:59.5%;height:58%;font-size:14px;overflow:auto" class="editable ui-widget-content ui-corner-bottom">
+							<div style="text-align:center;height:20px" class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+								<div style="float:left;">Model statistics</div>
+								<div name="saveStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="save changes">
+									<span class="ui-icon ui-icon-disk"></span>
+								</div>
+								<div name="editStudy" style="display:none;cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="edit the study">
+									<span class="ui-icon ui-icon-pencil"></span>
+								</div>
+							</div>
+							<div style="padding:4px">Discrimination <span id="descrimination" name="descrimination">0.879</span><textarea style="height:12px;display:none"></textarea></div>
+							<div style="padding:4px">Calibration <span id="calibration" name="calibration">0.0002</span><textarea style="height:12px;display:none"></textarea></div>
+							<!-- <div style="padding:4px">Ethnic group: <span id="ethnicGroup" name="ethnicGroup">Caussian</span><textarea style="height:12px;display:none"></textarea></div> -->
 						</div>
 					</div>
 				</div>
