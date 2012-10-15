@@ -164,7 +164,7 @@ It should be used via 'import' plus passing of properties
 
 	</target>
 	
-	<target name="test" depends="cb,findbugs" />
+	<target name="test" depends="cb" />
 	
 	<target name="testng">
 		
@@ -197,26 +197,7 @@ It should be used via 'import' plus passing of properties
 		</junitreport-->
 
 	</target>
-	
-	<!-- findbugs -->
-	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="molgenis.classpath"/>
-  	<property name="findbugs.home" value="${molgenis.dir}/lib/findbugs-2.0.1" />
- 
-	<target name="findbugs">
-		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
-			<map from="${basedir}/" to="" />
-		</pathconvert>
 		
-   		<findbugs home="${findbugs.home}"
-       		output="xml:withMessages" outputFile="${basedir}/dist/findbugs.xml"
-       		jvmargs="-Xms1024M -Xmx1024M ">
-      		<sourcePath path="${molgenis.dir}/src" />
-      		<sourcePath path="${app_src}" />
-       		<class location="${build.molgenis.dir}" />
-       		<class location="${build.molgenis_apps.dir}" />
-   		</findbugs>
-	</target>
-	
 	<!--  cobertura -->
 	<property name="cb.file" location="${basedir}/dist/cobertura.ser" />
 	<path id="cb.classpath">

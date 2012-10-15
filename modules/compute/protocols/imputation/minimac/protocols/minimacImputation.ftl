@@ -12,18 +12,23 @@ inputs "${referenceChrVcfGz}"
 inputs "${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" 
 inputs "${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps"
 
+alloutputsexist \
+${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.dose \
+${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.erate \
+${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info \
+${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info.draft \
+${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.rec \
+${imputationResultDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
+
+
 ${minimacBin} \
 	--refHaps ${referenceChrVcfGz} \
 	--vcfReference \
 	--haps ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz \
 	--snps ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps \
 	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed \
-	--autoClip ${studyMerlinChrDir}/autoChunk-chr20.dat \
+	--autoClip ${studyMerlinChrDir}/autoChunk-chr${chr}.dat \
 	2>&1 | tee ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
-
-#########################################
-##############FIX THIS LATER#############
-#########################################
 
 
 #Get return code from last program call
@@ -32,13 +37,20 @@ returnCode=$?
 
 if [ $returnCode -eq 0 ]
 then
-	
-	echo -e "\nMoving temp files to final files\n\n"
 
-	#mv ${tmpFinalChunkChrWorksheet} ${finalChunkChrWorksheet}
+	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.dose ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.dose
+	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.erate ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.erate
+	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info
+	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info.draft ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info.draft
+	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.rec ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.rec
+	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 
-	#putFile ${finalChunkChrWorksheet}
-	
+	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.dose
+	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.erate
+	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info
+	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info.draft
+	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.rec
+	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 	
 else
   
