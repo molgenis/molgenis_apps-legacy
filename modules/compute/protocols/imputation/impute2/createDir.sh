@@ -77,8 +77,6 @@ srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/byelas/tools/Imputat
 srmcp -server_mode=passive file:///$HOME/impute2-test-run/tools/ImputationTool-20120912/ImputationTool.jar \
 srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/byelas/tools/ImputationTool-20120912/ImputationTool.jar
 
-##
-
 srmmkdir srm://srm.grid.sara.nl/pnfs/grid.sara.nl/data/bbmri.nl/byelas/tools//python_scripts
 
 srmcp -server_mode=passive file:///$HOME/impute2-test-run/tools/python_scripts/calculateBeagleR2ForImpute2Results.py \

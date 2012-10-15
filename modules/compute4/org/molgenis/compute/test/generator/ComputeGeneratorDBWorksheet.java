@@ -203,11 +203,6 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator
 //               String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
 //						+ parameters.get("line_number");
 
-                if(taskName.contains("impute2_s05"))
-                {
-                    int i = 0;
-                }
-
 				String script = createScript(template, work, taskName, workflowElementsList, parameterList,
 						protocolsDir);
 

@@ -1,0 +1,6 @@
+Name, defaultValue, description, dataType, hasOne_name
+message, Hello, , ,
+project, , , ,
+planetType, , , , project
+planet, , , , planetType
+greetingsFile, GreetingTo${planet}.txt, , ,
