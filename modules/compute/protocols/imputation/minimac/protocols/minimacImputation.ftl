@@ -13,12 +13,12 @@ inputs "${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz"
 inputs "${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps"
 
 alloutputsexist \
-${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.dose \
-${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.erate \
-${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info \
-${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info.draft \
-${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.rec \
-${imputationResultDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
+${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.dose \
+${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.erate \
+${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info \
+${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info.draft \
+${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.rec \
+${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 
 
 ${minimacBin} \
@@ -26,9 +26,9 @@ ${minimacBin} \
 	--vcfReference \
 	--haps ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz \
 	--snps ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps \
-	--prefix ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed \
+	--prefix ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed \
 	--autoClip ${studyMerlinChrDir}/autoChunk-chr${chr}.dat \
-	2>&1 | tee ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
+	2>&1 | tee ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed-minimac.log
 
 
 #Get return code from last program call
@@ -38,19 +38,19 @@ returnCode=$?
 if [ $returnCode -eq 0 ]
 then
 
-	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.dose ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.dose
-	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.erate ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.erate
-	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info
-	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info.draft ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info.draft
-	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.rec ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.rec
-	mv ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed.dose ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.dose
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed.erate ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.erate
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed.info ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed.info.draft ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info.draft
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed.rec ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.rec
+	mv ${studyChunkChrDir}/~chunk${chunk}-chr${chr}.imputed-minimac.log ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 
-	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.dose
-	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.erate
-	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info
-	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.info.draft
-	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed.rec
-	putFile ${imputationResultDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.dose
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.erate
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.info.draft
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed.rec
+	putFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 	
 else
   
