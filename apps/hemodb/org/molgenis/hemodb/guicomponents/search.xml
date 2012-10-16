@@ -3,6 +3,6 @@
 
 		<plugin label="Explore experiments" name="DatasetExplorer"
 			type="plugins.datasetexplorer.DatasetExplorer" group="biologist" />
-					
+
 	</menu>
 </molgenis>
