@@ -322,7 +322,7 @@ It should be used via 'import' plus passing of properties
 	</target>
 	-->
 
-	<target name="update-eclipse" depends="download-jars">
+	<target name="update-eclipse">
 
 		<echo>Restoring .classpath from template file ${basedir}/.classpath.template.xml</echo>
 		<copy file="${basedir}/.classpath.template.xml" tofile="${basedir}/.classpath" overwrite="true" />
@@ -368,6 +368,8 @@ It should be used via 'import' plus passing of properties
 			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}" />
 		</xmltask>
 
+		<antcall target="download-jars"/>
+		
 	</target>
 
 	<target name="generate-compile" depends="generate,compile" />
@@ -459,7 +461,7 @@ It should be used via 'import' plus passing of properties
 	<target name="download-jars">
 		<echo message="installing ivy.." />
 		<mkdir dir="WebContent/WEB-INF/lib" />
-		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0-rc1/ivy-2.0.0-rc1.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
+		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0/ivy-2.0.0.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
 		<path id="ivy.lib.path">
 			<fileset dir="${lib.dir}" includes="ivy.jar"/>
 		</path>
