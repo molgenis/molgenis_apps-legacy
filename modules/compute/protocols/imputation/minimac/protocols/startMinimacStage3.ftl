@@ -8,8 +8,8 @@ getFile ${concattedChunkWorksheet}
 
 inputs "${concattedChunkWorksheet}"
 alloutputsexist \
-"${projectImputationJobsDirTarGz}" \
-${projectImputationJobsDir}/check_for_submission.txt
+	"${projectImputationJobsDirTarGz}" \
+	${projectImputationJobsDir}/check_for_submission.txt
 
 
 
@@ -21,13 +21,13 @@ mkdir -p ${projectImputationJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
--worksheet="${concattedChunkWorksheet}" \
--parameters="${McParameters}" \
--workflow="${McProtocols}/../workflowMinimacStage3.csv" \
--protocols="${McProtocols}/" \
--templates="${McTemplates}/" \
--scripts="${projectImputationJobsDir}/" \
--id="${McId}"
+	-worksheet="${concattedChunkWorksheet}" \
+	-parameters="${McParameters}" \
+	-workflow="${McProtocols}/../workflowMinimacStage3.csv" \
+	-protocols="${McProtocols}/" \
+	-templates="${McTemplates}/" \
+	-scripts="${projectImputationJobsDir}/" \
+	-id="${McId}"
 
 
 #Get return code from last program call
