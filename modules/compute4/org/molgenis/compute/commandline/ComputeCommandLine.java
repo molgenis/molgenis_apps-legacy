@@ -210,14 +210,14 @@ public class ComputeCommandLine
 					{
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name()) {
-							if (work.getObject(target) instanceof List) {
-								// replace target by number
-								jobName += "_" + work.getList(target).get(i);
-								// jobName += "_XXX" + i;
-							} else {
-								jobName += "_" + i;// work.getString(target);
-								// jobName += "_YYY";
-							}
+							// if (work.getList(target).size() > 1) {
+							// replace target by number
+							jobName += "_" + work.getList(target).get(i);
+							// jobName += "_XXX" + i;
+							// } else {
+							// jobName += "_" + i;// work.getString(target);
+							// jobName += "_YYY";
+							// }
 
 						}
 						dependencies.add(stepnr(previousWfe.getName()) + jobName);

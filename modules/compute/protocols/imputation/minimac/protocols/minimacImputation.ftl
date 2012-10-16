@@ -4,11 +4,11 @@
 
 getFile ${minimacBin}
 
-getFile ${referenceChrVcfGz}
+getFile ${referenceChrVcf}
 getFile ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz
 getFile ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps
 
-inputs "${referenceChrVcfGz}" 
+inputs "${referenceChrVcf}" 
 inputs "${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz" 
 inputs "${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps"
 
@@ -22,7 +22,7 @@ ${studyChunkChrDir}/chunk${chunk}-chr${chr}.imputed-minimac.log
 
 
 ${minimacBin} \
-	--refHaps ${referenceChrVcfGz} \
+	--refHaps ${referenceChrVcf} \
 	--vcfReference \
 	--haps ${studyChunkChrDir}/chunk${chunk}-chr${chr}.gz \
 	--snps ${studyMerlinChrDir}/chunk${chunk}-chr${chr}.dat.snps \
