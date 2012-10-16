@@ -213,7 +213,10 @@ public class ComputeCommandLine
 						{
 							// if (work.getList(target).size() > 1) {
 							// replace target by number
-							jobName += "_" + work.getList(target).get(i);
+
+							int i_fix = Math.min(work.getList(target).size() - 1, i);
+							jobName += "_" + work.getList(target).get(i_fix);
+
 							// jobName += "_XXX" + i;
 							// } else {
 							// jobName += "_" + i;// work.getString(target);
