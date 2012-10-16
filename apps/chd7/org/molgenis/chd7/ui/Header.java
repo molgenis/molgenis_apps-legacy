@@ -1,11 +1,11 @@
-/* Date:        February 5, 2010
+/* Date:        March 17, 2011
  * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
+ * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
  * 
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.col7a1.ui;
+package org.molgenis.chd7.ui;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -14,11 +14,11 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 
 /**
- * Header specific for col7a1
+ * Header for CHD7
  */
 public class Header extends EasyPluginController<HeaderModel>
 {
-	private static final long serialVersionUID = 5933871906981851063L;
+	private static final long serialVersionUID = 6224612078995632056L;
 
 	public Header(String name, ScreenController<?> parent)
 	{
@@ -48,7 +48,7 @@ public class Header extends EasyPluginController<HeaderModel>
 		headers += String.format(cssFormat, "res/displaytag/css/displaytag.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
-		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
+		headers += String.format(cssFormat, "res/css/chd7/colors.css");
 		headers += String.format(cssFormat, "res/css/col7a1/data.css");
 		//headers += String.format(cssFormat, "res/css/main.css");
 		//headers += String.format(cssFormat, "res/css/menu.css");

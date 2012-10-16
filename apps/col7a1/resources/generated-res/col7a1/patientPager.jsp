@@ -133,30 +133,23 @@
 				<c:otherwise>
 	&nbsp;
 	</c:otherwise>
-			</c:choose>
-		</div>
-	</display:column>
-	<display:column media="html" title="Reference">
-		<div class="unwrapped">
-			<c:choose>
-				<c:when test="${fn:length(current.publicationDTOList) > 0}">
-					<c:forEach var="publicationDTO"
-						items="${current.publicationDTOList}">
-						<a href="${current.pubmedURL}${publicationDTO.pubmedId}"
-							title="${publicationDTO.title}" target="_new"><c:out
-								value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}" /></a>
-						<br />
-					</c:forEach>
-				</c:when>
-				<c:otherwise>
-					<c:out value="Unpublished" />
-					<br />
-					<c:out
-						value="${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}" />
-				</c:otherwise>
-			</c:choose>
-		</div>
-	</display:column>
+	</c:choose>
+</div>
+</display:column>
+<display:column media="html" title="Reference">
+<div>
+	<c:choose>
+	<c:when test="${fn:length(current.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a><br/>
+	</c:forEach>
+	</c:when>
+	<c:otherwise>
+	<c:out value="Unpublished, ${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
+	</c:otherwise>
+	</c:choose>
+</div>
+</display:column>
 
 	<display:column media="csv excel pdf" title="cDNA change 1">
 		<c:out value="${current.variantDTOList[0].cdnaNotation}"
