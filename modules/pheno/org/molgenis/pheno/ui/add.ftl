@@ -28,8 +28,8 @@ ${model.applyProtocolForm.__target}
 </#list>
 </table>
 </p>
-<@action name="show" label="Back to List mode"/>
-<@action name="insert" label="Save"/>
+${model.applyProtocolForm.show}
+${model.applyProtocolForm.insert}
 </form>
 
 			</div>
