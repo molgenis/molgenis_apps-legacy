@@ -39,16 +39,13 @@
 			});
 			
 			$('#cancelPredictor').button().click(function(){
-				$('#defineVariablePanel').fadeOut();
-				$('#defineVariablePanel input[type="text"]').val('');
-				$('#dataTypeOfPredictor option:first-child').attr('selected',true);
-				$('#categoryOfPredictor').attr('disabled', true);
+				cancelAddPredictorPanel();
 			});
 			
 			$('#addPredictor').button().click(function(){
 				
-				message = "You have added a new predictor";
-				success = true;
+				message = ""
+				success = "";
 				
 				if( $('#selectPredictionModel option').length == 0){
 					message = "Please define a prediction model first!";
@@ -57,30 +54,9 @@
 					message = "The name of predictor cannot be empty!";
 					success = false;
 				}else{
-					name = $('#nameOfPredictor').val();
-					description = $('#descriptionOfPredictor').val();
-					dataType = $('#dataTypeOfPredictor').val();
-					categories = $('#categoryOfPredictor').val();
-					unit = $('#unitOfPredictor').val();
-					buildingBlocks = $('#buildingBlocks').val();
-					
-					//add the data to table
-					newRow = "<tr id=\"" + name + "\" name=\"" + name + "\">";
-					newRow += "<td name=\"name\">" + name + "</td>";
-					newRow += "<td name=\"description\">" + description + "</td>";
-					newRow += "<td name=\"dataType\">" + dataType + "</td>";
-					newRow += "<td name=\"unit\">" + unit + "</td>";
-					newRow += "<td name=\"category\">" + categories + "</td>";
-					newRow += "<td name=\"buildingBlocks\">" + buildingBlocks + "</td>";
-					newRow += "</tr>";
-					
-					$('#showPredictorPanel table tr:last-child').after(newRow);
-					
-					$('#showPredictorPanel table tr:last-child').css({
-						'vertical-align':'middle',
-						'text-align':'center',
-						'font-size':'16px',
-					});
+					result = insertNewRow();
+					message = result["message"];
+					success = result["success"];
 				}
 				showMessage(message, success);
 			});
@@ -123,6 +99,108 @@
 				}
 			});
 		});
+		
+		function cancelAddPredictorPanel(){
+			$('#defineVariablePanel').fadeOut();
+			$('#defineVariablePanel input[type="text"]').val('');
+			$('#dataTypeOfPredictor option:first-child').attr('selected',true);
+			$('#categoryOfPredictor').attr('disabled', true);
+		}
+		
+		function insertNewRow(){
+			
+			name = $('#nameOfPredictor').val();
+			
+			message = {};
+			
+			if($('#' + name).length == 0){
+			
+				description = $('#descriptionOfPredictor').val();
+				dataType = $('#dataTypeOfPredictor').val();
+				categories = $('#categoryOfPredictor').val();
+				unit = $('#unitOfPredictor').val();
+				buildingBlocks = $('#buildingBlocks').val();
+				
+				//add the data to table
+				identifier = name.replace(/\s/g,"_");
+				
+				newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\">";
+				newRow += "<td name=\"name\"><span style=\"margin:10px;float:left;\">" + name + "</span>";
+				newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;\" "
+						+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
+						+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
+						+ "</div></td>"
+				newRow += "<td name=\"description\">" + description + "</td>";
+				newRow += "<td name=\"dataType\">" + dataType + "</td>";
+				newRow += "<td name=\"unit\">" + unit + "</td>";
+				
+				addedCategory = "";
+				
+				if(categories.split(",").length > 1){
+					blocks = categories.split(",");
+					addedCategory = createMultipleSelect(blocks);
+				}
+				
+				newRow += "<td name=\"category\">" + addedCategory + "</td>";
+				
+				selectBlocks = "";
+				
+				if(buildingBlocks.split(",").length > 1){
+					blocks = buildingBlocks.split(",");
+					selectBlocks = createMultipleSelect(blocks);
+				}
+				
+				newRow += "<td name=\"buildingBlocks\">" + selectBlocks + "</td>";
+				newRow += "</tr>";
+				
+				$('#showPredictorPanel table tr:last-child').after(newRow);
+				
+				$('td[name="buildingBlocks"] >select').chosen();
+				
+				$('td[name="category"] >select').chosen();
+				
+				$('#' + identifier + '_remove').click(function(){
+					$(this).parents('tr').eq(0).remove();
+				});
+				
+				$('#showPredictorPanel table tr:last-child').css({
+					'vertical-align':'middle',
+					'text-align':'center',
+					'font-size':'16px',
+				});
+				
+				message["message"] = "You successfully added a new predictor!";
+				message["success"] = true;
+				cancelAddPredictorPanel();
+			}else{
+				message["message"] = "Predictor already existed!";
+				message["success"] = false;
+			}
+			
+			return message;
+		}
+		
+		function uniqueElements(anArray){
+			var result = [];
+	       $.each(anArray, function(i,v){
+	           if ($.inArray(v, result) == -1) result.push(v);
+	       });
+	       return result;
+		}
+		
+		function createMultipleSelect(listOfTerms){
+			
+			listOfTerms = uniqueElements(listOfTerms);
+			
+			selectBlocks = "<select multiple=\"true\" style=\"width:90%;\">";
+			
+			for(var i = 0; i < listOfTerms.length; i++){
+				selectBlocks += "<option selected=\"selected\">" + listOfTerms[i] + "</option>";
+			}
+			selectBlocks += "</select>"
+			
+			return selectBlocks;
+		}
 		
 		function showMessage(message, success){
 			
