@@ -18,6 +18,9 @@
 			$('#selectPredictionModel').chosen().change(function(){
 				selected = $('#selectPredictionModel').val();
 				$('#selectedPrediction >span').empty().text(selected);
+				
+				//Fill out summary panel
+				$('#summaryPanel').fadeIn().draggable();
 			});
 			
 			if($('#selectPredictionModel option').length == 0){
@@ -66,7 +69,7 @@
 			});
 			
 			$('#addShowSummary').click(function(){
-				$('#summaryPanel').fadeIn();
+				$('#summaryPanel').fadeIn().draggable();
 			});
 			
 			//Add a new prediction model in the dropdown menu
@@ -77,25 +80,47 @@
 						message = "The prediction model already existed!";
 						showMessage(message, false);
 					}else{
+						message = "";
+						success = "";
+						$.ajax({
+							url : "${screen.getUrl()}&__action=download_json_newPredictionModel&name=" + selected,
+							async: false,
+						}).done(function(status){
+							message = status["message"];
+							success= status["success"];
+						});
 						element = "<option name=\"" + selected + "\" selected=\"selected\">" + selected + "</option>";
 						$('#selectPredictionModel').append(element);
 						$('#selectPredictionModel').trigger("liszt:updated");
 						$('#addPredictionModel').val('');
 						$('#selectedPrediction >span').empty().text(selected);
-						message = "You successfully added a new prediction model</br>Please define the predictors";
-						showMessage(message, true);
+						//message = "You successfully added a new prediction model</br>Please define the predictors";
+						showMessage(message, success);
 					}
+					$('#summaryPanel').fadeIn().draggable();
 				}
 			});
 			//Remove a prediction model in the dropdown menu
 			$('#removeModelButton').click(function(){
 				if($('#selectPredictionModel option').length > 0){
-					$('#selectPredictionModel option').filter(':selected').remove();
-					$('#selectPredictionModel').trigger("liszt:updated");
+					
 					selected = $('#selectPredictionModel').val();
-					$('#selectedPrediction >span').empty().text(selected);
-					message = "You successfully removed a prediction model!";
-					showMessage(message, true);
+					
+					$.ajax({
+						url : "${screen.getUrl()}&__action=download_json_removePredictionModel&name=" + selected,
+						async: false,
+					}).done(function(status){
+						message = status["message"];
+						success= status["success"];
+					});
+					if(success == true){
+						$('#selectPredictionModel option').filter(':selected').remove();
+						$('#selectPredictionModel').trigger("liszt:updated");
+						selected = $('#selectPredictionModel').val();
+						$('#selectedPrediction >span').empty().text(selected);
+					}
+					//message = "You successfully removed a prediction model!";
+					showMessage(message, success);
 				}
 			});
 		});
@@ -265,7 +290,7 @@
 								</div>
 							</div>
 						</div>
-						<fieldset id="statusMessage" style="width:275px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+						<fieldset id="statusMessage" style="display:none;width:275px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 							<legend style="font-style:italic;">
 								Status
 							</legend>
@@ -339,8 +364,8 @@
 									<input id="addPredictor" type="button" value="add" style="float:right;font-size:12px"/>
 								</div>
 							</div>
-							<div id="summaryPanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;left:20px;height:200px;width:40%;margin:5px;">
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:20%;width:100%;">
+							<div id="summaryPanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;left:20px;height:200px;width:40%;margin:5px;margin-top:120px">
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="cursor:pointer;height:20%;width:100%;">
 									<span style="margin:10px;font-size:28px;font-style:italic;">Summary</span>
 									<div id="closeSummary" style="cursor:pointer;height:16px;width:16px;float:right;margin:10px;" class="ui-state-default ui-corner-all" title="add a new predictor">
 										<span class="ui-icon ui-icon-circle-close"></span>
