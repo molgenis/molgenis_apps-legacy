@@ -27,12 +27,14 @@
 				<form name="BiobankCoordinator" entity="BiobankCoordinator"
 					view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
-				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
 				<form name="OntologyTerm" entity="OntologyTerm" />
 				<form name="BiobankDataType" entity="BiobankDataType" />
 				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole" />
 				<form name="ChangeLog" entity="ChangeLog" />
+				<form name="Protocol"  entity="Protocol" />
+				<form name="Individual"  entity="Individual" />
+				<form name="Measurement"  entity="Measurement" />
 			</menu>
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
