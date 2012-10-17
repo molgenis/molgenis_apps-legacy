@@ -25,7 +25,8 @@
 			</form>
 		</menu>
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
-			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
+			<plugin name="Harmonization" type="plugins.harmonization.Harmonization" label="Matching parameters"/>
+			<!-- <plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/> -->
 			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
 			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
 			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>
