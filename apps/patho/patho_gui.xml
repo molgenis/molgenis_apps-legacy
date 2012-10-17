@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="patho" label="Pathogenecity Database v0.1">
 	<plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader" />
@@ -6,22 +7,20 @@
         	<form name="PathoSeqRelationPerFeature" label="SequenceRelations" entity="SequenceRelation" />
 			<plugin name="SequenceCharacteristicViewer" type="org.molgenis.pheno.ui.ObservationElementViewer" label="ObservedValues"/>
 		</form>
-<!--
-		<form name="PathoSeqFeatures" label="SeqFeatures" entity="SeqFeature">
-			<form name="PathoSeqRelationPerFeature" label="SeqRelations"
-				entity="SeqRelation" />
-		</form>
-		<form name="PathoSeqRelation" label="SeqRelations" entity="SeqRelation" />
--->
+		<!-- <form name="PathoSeqFeatures" label="SeqFeatures" entity="SeqFeature"> 
+			<form name="PathoSeqRelationPerFeature" label="SeqRelations" entity="SeqRelation" 
+			/> </form> <form name="PathoSeqRelation" label="SeqRelations" entity="SeqRelation" 
+			/> -->
 		<form name="PathoMeasurements" label="Measurements" entity="Measurement" />
 		<form name="PathoSpecies" label="Species" entity="Species" />
 		<form name="OntologyTerm" label="Ontology Terms" entity="OntologyTerm" />
 		<form name="PathoBuilds" label="Genome builds" entity="GenomeBuild" />
 		<form name="PathoChromosomes" label="Chromosomes" entity="Chromosome" />
 		<form name="PathoPanels" label="Panels" entity="Panel" />
-		<form name="PathoProtocols" label="Protocols" entity="Protocol"/>
+		<form name="PathoProtocols" label="Protocols" entity="Protocol" />
 		<form name="PathoIndividuals" label="Individuals" entity="Individual">
 			<plugin name="IndividualViewer" type="org.molgenis.pheno.ui.ObservationElementViewer" label="ObservedValues"/>
+>>>>>>> 719e563546276d9374b93b017682920d483a41f3
 		</form>
 		<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
 	</menu>

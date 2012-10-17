@@ -7,8 +7,10 @@
 		<plugin label="Excel" name="ExcelWizard"
 			type="plugins.genericwizard.GenericWizard" group="biologist" />
 		<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
-		<form name="Files" entity="InvestigationFile" label="Files" header="Navigate files" group="biologist">
-			<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" group="biologist" />
+		<form name="Files" entity="InvestigationFile" label="Files"
+			header="Navigate files" group="biologist">
+			<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager"
+				group="biologist" />
 		</form>
 	</menu>
 </molgenis>

@@ -5,8 +5,10 @@
 		<plugin label="Home" name="Home" type="org.molgenis.hemodb.header.HomePage" />
 		<plugin label="Login" name="UserLogin"
 			type="plugins.autohidelogin.AutoHideLogin" />
-		<include file="apps/hemodb/org/molgenis/hemodb/guicomponents/browsedata.xml" />
-		<include file="apps/hemodb/org/molgenis/hemodb/guicomponents/importdata.xml" />
+		<include
+			file="apps/hemodb/org/molgenis/hemodb/guicomponents/browsedata.xml" />
+		<include
+			file="apps/hemodb/org/molgenis/hemodb/guicomponents/importdata.xml" />
 		<include file="apps/hemodb/org/molgenis/hemodb/guicomponents/tools.xml" />
 		<include file="apps/hemodb/org/molgenis/hemodb/guicomponents/admin.xml" />
 	</menu>
