@@ -1,5 +1,7 @@
 #MOLGENIS walltime=06:00:00 nodes=1 cores=1 mem=1
 
+#FOREACH referenceName,chr
+
 inputs ${chrVcfReferenceIntermediateFile}
 alloutputsexist ${chrVcfReferenceFile}
 
@@ -23,3 +25,17 @@ else
 	exit 1
 
 fi
+
+#Md5sum and gzip *.vcf & *.vcf.vcfidx
+cd ${vcfReferenceFolder}
+
+echo "Starting md5sum for chr${chr}"
+
+md5sum chr${chr}.vcf > ${chrVcfReferenceFileMd5}
+md5sum chr${chr}.vcf.vcfidx > ${chrVcfReferenceFileIdxMd5}
+
+echo "Starting gzipping for chr${chr}"
+gzip -c ${chrVcfReferenceFile} > ${chrVcfReferenceFileGz}
+gzip -c ${chrVcfReferenceFileIdx} > ${chrVcfReferenceFileIdxGz}
+
+echo "Done with chr${chr}"
