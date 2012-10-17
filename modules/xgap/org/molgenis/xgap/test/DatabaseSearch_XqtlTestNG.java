@@ -16,6 +16,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.DetectOS;
+import org.molgenis.util.Entity;
 import org.molgenis.xgap.Metabolite;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
@@ -46,10 +47,10 @@ public class DatabaseSearch_XqtlTestNG
 		// System.out.println("s4 " + db.getMetaData().getEntities(true,
 		// true).size());
 		//
-		// for(Entity e : db.getMetaData().getEntities(false, false))
-		// {
-		// System.out.println("F/F: " + e.getName());
-		// }
+//		 for(org.molgenis.model.elements.Entity e : db.getMetaData().getEntities(false, false))
+//		 {
+//		 System.out.println("F/F: " + e.getName());
+//		 }
 		//
 		// for(Entity e : db.getMetaData().getEntities(true, false))
 		// {
@@ -66,12 +67,10 @@ public class DatabaseSearch_XqtlTestNG
 		// System.out.println("T/T: " + e.getName());
 		// }
 
-		Assert.assertEquals(db.getMetaData().getEntities(false, false).size(), 65);
-		Assert.assertEquals(db.getMetaData().getEntities(true, false).size(), 72);
-		Assert.assertEquals(db.getMetaData().getEntities(false, true).size(), 72); // coincidentally
-																					// the
-																					// same!
-		Assert.assertEquals(db.getMetaData().getEntities(true, true).size(), 81);
+		Assert.assertEquals(db.getMetaData().getEntities(false, false).size(), 66);
+		Assert.assertEquals(db.getMetaData().getEntities(true, false).size(), 73);
+		Assert.assertEquals(db.getMetaData().getEntities(false, true).size(), 73);
+		Assert.assertEquals(db.getMetaData().getEntities(true, true).size(), 82);
 	}
 
 	@Test
