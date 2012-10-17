@@ -170,7 +170,7 @@ public class CsvTable extends AbstractTupleTable
 	{
 		if (csvFile != null)
 		{
-			csv = new CsvFileReader(new FileInputStream(csvFile));
+			csv = new CsvFileReader(csvFile);
 			countStream = new FileInputStream(csvFile);
 		}
 		else
