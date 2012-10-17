@@ -147,7 +147,8 @@ public class CsvTable extends AbstractTupleTable
 
 		if (getLimit() > 0 || getOffset() > 0 || getColOffset() > 0 || getColLimit() > 0)
 		{
-			return new TupleIterator(csv, getLimit(), getOffset(), getColLimit(), getColOffset());
+			// offset + 1 to skip the header
+			return new TupleIterator(csv, getLimit(), getOffset() + 1, getColLimit(), getColOffset());
 		}
 		return csv.iterator();
 	}
