@@ -6,24 +6,22 @@
 			width:200px;
 			margin-right:15px;
 		}
+		td{
+			vertical-align:middle;
+			font-size:16px;
+		}
 	</style>
 	<script>
 		$(document).ready(function(){
 			
 			//Styling for the dropDown box
 			$('#selectPredictionModel').chosen().change(function(){
-				
 				selected = $('#selectPredictionModel').val();
 				$('#selectedPrediction >span').empty().text(selected);
 			});
 			
 			if($('#selectPredictionModel option').length == 0){
-				//element = "<p style=\"color:red;\">There are no prediction models in database, add one first</p>";
-				//$('#statusMessage >div').empty().append(element);
-				//$('#statusMessage').effect('bounce').delay(2000).fadeOut();
-				
 				message = "There are no prediction models in database, add one first";
-				
 				showMessage(message, false);
 			}
 			
@@ -31,14 +29,68 @@
 				$('#defineVariablePanel').fadeIn();
 			});
 			
+			$('#dataTypeOfPredictor').change(function(){
+				
+				if($('#dataTypeOfPredictor').val() == "category"){
+					$('#categoryOfPredictor').attr('disabled', false);
+				}else{
+					$('#categoryOfPredictor').attr('disabled', true);
+				}
+			});
+			
 			$('#cancelPredictor').button().click(function(){
 				$('#defineVariablePanel').fadeOut();
 				$('#defineVariablePanel input[type="text"]').val('');
-				$('#dataType option:first-child').attr('selected','selected');
+				$('#dataTypeOfPredictor option:first-child').attr('selected',true);
+				$('#categoryOfPredictor').attr('disabled', true);
 			});
 			
 			$('#addPredictor').button().click(function(){
 				
+				message = "You have added a new predictor";
+				success = true;
+				
+				if( $('#selectPredictionModel option').length == 0){
+					message = "Please define a prediction model first!";
+					success = false;
+				}else if($('#nameOfPredictor').val() == ""){
+					message = "The name of predictor cannot be empty!";
+					success = false;
+				}else{
+					name = $('#nameOfPredictor').val();
+					description = $('#descriptionOfPredictor').val();
+					dataType = $('#dataTypeOfPredictor').val();
+					categories = $('#categoryOfPredictor').val();
+					unit = $('#unitOfPredictor').val();
+					buildingBlocks = $('#buildingBlocks').val();
+					
+					//add the data to table
+					newRow = "<tr id=\"" + name + "\" name=\"" + name + "\">";
+					newRow += "<td name=\"name\">" + name + "</td>";
+					newRow += "<td name=\"description\">" + description + "</td>";
+					newRow += "<td name=\"dataType\">" + dataType + "</td>";
+					newRow += "<td name=\"unit\">" + unit + "</td>";
+					newRow += "<td name=\"category\">" + categories + "</td>";
+					newRow += "<td name=\"buildingBlocks\">" + buildingBlocks + "</td>";
+					newRow += "</tr>";
+					
+					$('#showPredictorPanel table tr:last-child').after(newRow);
+					
+					$('#showPredictorPanel table tr:last-child').css({
+						'vertical-align':'middle',
+						'text-align':'center',
+						'font-size':'16px',
+					});
+				}
+				showMessage(message, success);
+			});
+			
+			$('#closeSummary').click(function(){
+				$('#summaryPanel').fadeOut();
+			});
+			
+			$('#addShowSummary').click(function(){
+				$('#summaryPanel').fadeIn();
 			});
 			
 			//Add a new prediction model in the dropdown menu
@@ -143,10 +195,7 @@
 								Please choose an existing prediction model or add a new prediction model 
 							</div>
 						</fieldset>
-						<div class="ui-corner-all" style="margin-top:20px;width:100%;height:60%;float:left;background:#DDDDDD;border:1px solid #BBBBBB;">
-							<div id="addPredictorButton" style="cursor:pointer;height:16px;width:16px;float:left;margin:10px;" class="ui-state-default ui-corner-all" title="add a new predictor">
-								<span class="ui-icon ui-icon-circle-plus"></span>
-							</div>
+						<div class="ui-corner-all" style="margin-top:20px;width:100%;height:60%;float:left;">
 							<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:280px;width:400px;float:left;margin:5px;">
 								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:14%;width:100%;">
 									<span style="margin:10px;font-size:28px;font-style:italic;">Define a predictor</span>
@@ -157,7 +206,7 @@
 											<span style="display:block;font-size:12px;margin:5px;">Name: </span>
 										</td>
 										<td>
-											<input name="nameOfPredictors" class="predictorInput" type="text"/>
+											<input id="nameOfPredictor" class="predictorInput" type="text"/>
 										</td>
 									</tr>
 									<tr>
@@ -165,7 +214,7 @@
 											<span style="display:block;font-size:12px;margin:5px;">Description: </span>
 										</td>
 										<td>
-											<input name="descriptionOfPredictors" class="predictorInput" type="text"/>
+											<input id="descriptionOfPredictor" class="predictorInput" type="text"/>
 										</td>
 									</tr>
 									<tr>
@@ -173,7 +222,7 @@
 											<span style="display:block;font-size:12px;margin:5px;">Data type: </span>
 										</td>
 										<td>
-											<select id="dataType" class="predictorInput" style="width:205px">
+											<select id="dataTypeOfPredictor" class="predictorInput" style="width:205px">
 												<option>string</option>
 												<option>category</option>
 												<option>integer</option>
@@ -186,7 +235,7 @@
 											<span style="display:block;font-size:12px;margin:5px;">Categories: </span>
 										</td>
 										<td>
-											<input id="categoryOfPredictors" class="predictorInput" type="text"/>
+											<input id="categoryOfPredictor" class="predictorInput" type="text" disabled="disabled"/>
 										</td>
 									</tr>
 									<tr>
@@ -194,7 +243,7 @@
 											<span style="display:block;font-size:12px;margin:5px;">Unit: </span>
 										</td>
 										<td>
-											<input id="unitOfPredictors" class="predictorInput" type="text"/>
+											<input id="unitOfPredictor" class="predictorInput" type="text"/>
 										</td>
 									</tr>
 									<tr>
@@ -212,11 +261,14 @@
 									<input id="addPredictor" type="button" value="add" style="float:right;font-size:12px"/>
 								</div>
 							</div>
-							<div class="ui-corner-all ui-widget-content" style="position:absolute;right:20px;height:200px;width:40%;margin:5px;">
+							<div id="summaryPanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;left:20px;height:200px;width:40%;margin:5px;">
 								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:20%;width:100%;">
 									<span style="margin:10px;font-size:28px;font-style:italic;">Summary</span>
+									<div id="closeSummary" style="cursor:pointer;height:16px;width:16px;float:right;margin:10px;" class="ui-state-default ui-corner-all" title="add a new predictor">
+										<span class="ui-icon ui-icon-circle-close"></span>
+									</div>
 								</div>
-								<table style="margin-top:10px;margin-left:2px;width:100%;">
+								<table id="summaryPredictorTable" style="margin-top:10px;margin-left:2px;width:100%;">
 									<tr>
 										<td style="margin-right:10px;">
 											<span style="display:block;font-size:12px;margin:5px;">Selected prediction model</span>
@@ -250,6 +302,42 @@
 										</td>
 									</tr>
 								</table>
+							</div>
+							
+							<div id="showPredictorPanel" style="height:100%;width:100%;float:right;">
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:10%;width:100%;">
+									<span style="margin:10px;font-size:24px;font-style:italic;">Predictor summary</span>
+									<div id="addShowSummary" style="cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:2px;" class="ui-state-default ui-corner-all" title="show summary">
+										<span class="ui-icon ui-icon-comment"></span>
+									</div>
+									<div id="addPredictorButton" style="cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-right:2px;" class="ui-state-default ui-corner-all" title="add a new predictor">
+										<span class="ui-icon ui-icon-circle-plus"></span>
+									</div>
+								</div>
+								<div class="ui-tabs-nav ui-widget-content ui-corner-all" style="height:100%;width:100%;">
+									<table class="ui-corner-all ui-widget-content" style="width:100%;margin-top:3%;border-bottom:1px solid #AAAAAA;">
+										<tr style="width:100%;height:50px;font-size:14px;font-style:italic;">
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:10%;">
+												name
+											</th>
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
+												description
+											</th>
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:10%;">
+												data type
+											</th>
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:10%;">
+												unit
+											</th>
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
+												category
+											</th>
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
+												building blocks
+											</th>
+										</tr>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>
