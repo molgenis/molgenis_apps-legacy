@@ -1,6 +1,5 @@
 package org.molgenis.auth.service;
 
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -16,20 +15,28 @@ import org.molgenis.auth.vo.MolgenisUserSearchCriteriaVO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MolgenisUserService
 {
 	private Database db                                    = null;
 	private static MolgenisUserService molgenisUserService = null;
-	//TODO: Danny: Use or loose
-	//private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
 
-	// private constructor, use singleton instance
-	private MolgenisUserService(Database db)
+	public MolgenisUserService()
+	{
+	}
+
+	public MolgenisUserService(Database db)
 	{
 		this.db = db;
 	}
-	
+
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
+
 	/**
 	 * Get an instance of MolgenisUserService
 	 * @param JDBCDatabase object
@@ -37,13 +44,12 @@ public class MolgenisUserService
 	 */
 	public static MolgenisUserService getInstance(Database db)
 	{
-		//if (molgenisUserService == null)
-			molgenisUserService = new MolgenisUserService(db);
+		molgenisUserService = new MolgenisUserService(db);
 		
 		return molgenisUserService;
 	}
 
-	public List<MolgenisUser> find(MolgenisUserSearchCriteriaVO criteria) throws DatabaseException, ParseException
+	public List<MolgenisUser> find(MolgenisUserSearchCriteriaVO criteria) throws DatabaseException
 	{
 		Query<MolgenisUser> query = this.db.query(MolgenisUser.class);
 		
@@ -82,7 +88,7 @@ public class MolgenisUserService
 		return roleIdList;
 	}
 
-	public void insert(MolgenisUser user) throws DatabaseException, IOException
+	public void insert(MolgenisUser user) throws DatabaseException
 	{
 		if (StringUtils.isEmpty(user.getPassword()))
 			user.setPassword(UUID.randomUUID().toString());
@@ -100,24 +106,19 @@ public class MolgenisUserService
 		}
 	}
 
-	public void update(MolgenisUser user) throws DatabaseException, IOException
+	public void update(MolgenisUser user) throws DatabaseException
 	{
 		try
 		{
-		//not possible: already in transaction
-		//jpa-jdbc difference?
-		//	this.db.beginTx();
 			this.db.update(user);
-		//	this.db.commitTx();
 		}
 		catch (DatabaseException e)
 		{
-		//	this.db.rollbackTx();
 			throw e;
 		}
 	}
 	
-	public void checkPassword(String userName, String oldPwd, String newPwd1, String newPwd2) throws MolgenisUserException, DatabaseException, ParseException, NoSuchAlgorithmException
+	public void checkPassword(String userName, String oldPwd, String newPwd1, String newPwd2) throws MolgenisUserException, DatabaseException, NoSuchAlgorithmException
 	{
 		if (StringUtils.isEmpty(oldPwd) || StringUtils.isEmpty(newPwd1) || StringUtils.isEmpty(newPwd2))
 			throw new MolgenisUserException("Passwords empty");
@@ -135,5 +136,15 @@ public class MolgenisUserService
 		PasswordHasher hasher    = new PasswordHasher();
 		if (!StringUtils.equals(user.getPassword(), hasher.toMD5(oldPwd)))
 			throw new MolgenisUserException("Wrong password");
+	}
+	
+	public String findAdminEmail() throws DatabaseException
+	{
+		List<MolgenisUser> adminList = this.db.query(MolgenisUser.class).equals(MolgenisUser.SUPERUSER, true).find();
+		
+		if (adminList.size() < 1)
+			throw new MolgenisUserException("No admin found in database");
+		
+		return adminList.get(0).getEmail();
 	}
 }

@@ -3,7 +3,12 @@
 <input type="hidden" name="select" value="SearchPlugin">
 <input type="hidden" name="__action" value="init">
 <input type="hidden" name="expertSearch" value="0">
-<a href="javascript:document.forms.Home.submit();"><img src="res/img/col7a1/header.png" width="800" border="0"/></a>
+<table>
+<tr>
+<td><a href="javascript:document.forms.Home.submit();"><img src="res/img/chd7/umcg_logo.gif" width="50" border="0"/></a></td>
+<td><h2>CHD7 Database</h2></td>
+</tr>
+</table>
 </form>
 <div class="printbox">
 	<a href="javascript:window.print();"><img src="res/img/print.png"></a>

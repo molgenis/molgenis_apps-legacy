@@ -58,6 +58,8 @@
 		<unjar src="${mlibs}quartz-1.6.0.jar" dest="${zipme}" overwrite="false"/><!-- Scheduling -->
 		<unjar src="${mlibs}gson-2.2.1.jar" dest="${zipme}" overwrite="false"/><!-- GSON for XrefService-->
 		<unjar src="${mlibs}tjws-1.98.jar" dest="${zipme}" overwrite="false"/><!-- Webserver -->
+		<unjar src="${mlibs}apache-poi-3.8.2/poi-3.8-20120326.jar" dest="${zipme}" overwrite="false"/><!-- Webserver -->
+		<unjar src="${mlibs}commons-email-1.2.jar" dest="${zipme}" overwrite="false"/><!-- Webserver -->
 		<!-- Application jars -->
 		<unjar src="${alibs}axis-jaxrpc.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}axis.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
