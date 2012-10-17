@@ -2,37 +2,43 @@ package org.molgenis.omicsconnect.plugins.ontocat;
 
 import java.util.List;
 
-import org.json.simple.JSONArray;
+import org.json.JSONArray;
 
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyTerm;
 
 //mac shift o 
 
-public class OntoCatModel {
+public class OntoCatModel
+{
 	private List<Ontology> ontologies;
 	private List<OntologyTerm> results;
 	JSONArray jsonarray;
 	String jsonstring;
 	private List<OntologyTerm> ontoresults;
 
-	public List<OntologyTerm> getOntoresults() {
+	public List<OntologyTerm> getOntoresults()
+	{
 		return ontoresults;
 	}
 
-	public void setOntoresults(List<OntologyTerm> ontoresults) {
+	public void setOntoresults(List<OntologyTerm> ontoresults)
+	{
 		this.ontoresults = ontoresults;
 	}
 
-	public String getJsonstring() {
+	public String getJsonstring()
+	{
 		return jsonstring;
 	}
 
-	public void setJsonstring(String jsonstring) {
+	public void setJsonstring(String jsonstring)
+	{
 		this.jsonstring = jsonstring;
 	}
 
-	public JSONArray getJsonarray() {
+	public JSONArray getJsonarray()
+	{
 		return jsonarray;
 	}
 
@@ -40,23 +46,28 @@ public class OntoCatModel {
 	// this.jsonArray = jsonArray;
 	// }
 
-	public List<Ontology> getOntologies() {
+	public List<Ontology> getOntologies()
+	{
 		return ontologies;
 	}
 
-	public void setOntologies(List<Ontology> ontologies) {
+	public void setOntologies(List<Ontology> ontologies)
+	{
 		this.ontologies = ontologies;
 	}
 
-	public List<OntologyTerm> getResults() {
+	public List<OntologyTerm> getResults()
+	{
 		return results;
 	}
 
-	public void setResults(List<OntologyTerm> results) {
+	public void setResults(List<OntologyTerm> results)
+	{
 		this.results = results;
 	}
 
-	public void setJsonarray(JSONArray jsonarray) {
+	public void setJsonarray(JSONArray jsonarray)
+	{
 		// TODO Auto-generated method stub
 		this.jsonarray = jsonarray;
 	}

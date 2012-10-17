@@ -519,9 +519,9 @@ public class SearchService extends MolgenisVariantService
 
 		result.put("variation", this.findMutationsByCdnaNotation(term));
 
-		result.put("PID", this.findMutationsByPatientIdentifier(term));
+		result.put("PID", this.findMutationsByPatientIdentifier(StringUtils.upperCase(term)));
 
-		MutationSummaryDTO tmp = this.findMutationByIdentifier(term);
+		MutationSummaryDTO tmp = this.findMutationByIdentifier(StringUtils.upperCase(term));
 		if (tmp != null)
 		{
 			result.put("MID", new ArrayList<MutationSummaryDTO>());

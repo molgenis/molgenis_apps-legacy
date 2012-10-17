@@ -13,9 +13,10 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.dto.IndividualDTO;
 import org.molgenis.pheno.dto.FeatureDTO;
+import org.molgenis.pheno.dto.ObservationElementDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 import org.molgenis.pheno.dto.ProtocolApplicationDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
@@ -43,50 +44,70 @@ public class PhenoService
 	{
 		this.db = db;
 	}
-	
+
 	/**
-	 * Find phenotypic details (ObservedValue) for an Individual
+	 * Find phenotypic details (ObservedValue) for an ObservationElement
 	 * @param id
-	 * @return IndividualDetailsDTO
+	 * @return ObservationElementDTO
 	 * @throws PhenoServiceException
 	 */
-	public IndividualDTO findPhenotypeDetails(final Integer id) throws PhenoServiceException
+	public ObservationElementDTO findPhenotypeDetails(final Integer id) throws PhenoServiceException
 	{
 		try
 		{
-			IndividualDTO individualDetailsDTO = new IndividualDTO();
-			individualDetailsDTO.setIndividualId(id);
-			individualDetailsDTO.setObservedValues(new HashMap<String, HashMap<String, List<ObservedValueDTO>>>());
+			ObservationElement o = this.db.findById(ObservationElement.class, id);
+			return this.findPhenotypeDetails(o);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new PhenoServiceException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Find phenotypic details (ObservedValue) for an ObservationElement
+	 * @param ObservationElement
+	 * @return ObservationElementDTO
+	 * @throws PhenoServiceException
+	 */
+	public ObservationElementDTO findPhenotypeDetails(final ObservationElement observationElement) throws PhenoServiceException
+	{
+		try
+		{
+			ObservationElementDTO observationElementDTO = new ObservationElementDTO();
+			observationElementDTO.setObservationElementId(observationElement.getId());
+			observationElementDTO.setObservedValues(new HashMap<String, HashMap<String, List<ObservedValueDTO>>>());
 
 			List<Protocol> protocolList        = this.db.query(Protocol.class).find();
-			individualDetailsDTO.setProtocolList(this.protocolListToProtocolDTOList(protocolList));
+			observationElementDTO.setProtocolList(this.protocolListToProtocolDTOList(protocolList));
 
 			for (Protocol protocol : protocolList)
 			{
 				if (CollectionUtils.isEmpty(protocol.getFeatures_Id()))
 					continue;
 
-				List<ObservedValue> observedValueList = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, id).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
+				List<ObservedValue> observedValueList = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, observationElement.getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
 				
 				if (observedValueList.size() == 0)
 					continue;
 
 				String protocolKey = "Protocol" + protocol.getId();
 
-				if (!individualDetailsDTO.getObservedValues().containsKey(protocolKey))
+				if (!observationElementDTO.getObservedValues().containsKey(protocolKey))
 				{
-					individualDetailsDTO.getObservedValues().put(protocolKey, new HashMap<String, List<ObservedValueDTO>>());
+					observationElementDTO.getObservedValues().put(protocolKey, new HashMap<String, List<ObservedValueDTO>>());
 				}
 
 				for (ObservedValue observedValue : observedValueList)
 				{
 					String protocolApplicationKey = "ProtocolApplication" + observedValue.getProtocolApplication_Id();
 
-					if (!individualDetailsDTO.getObservedValues().get(protocolKey).containsKey(protocolApplicationKey))
+					if (!observationElementDTO.getObservedValues().get(protocolKey).containsKey(protocolApplicationKey))
 					{
-						individualDetailsDTO.getObservedValues().get(protocolKey).put(protocolApplicationKey, new ArrayList<ObservedValueDTO>());
+						observationElementDTO.getObservedValues().get(protocolKey).put(protocolApplicationKey, new ArrayList<ObservedValueDTO>());
 					}
-					individualDetailsDTO.getObservedValues().get(protocolKey).get(protocolApplicationKey).add(this.observedValueToObservedValueDTO(observedValue));
+					observationElementDTO.getObservedValues().get(protocolKey).get(protocolApplicationKey).add(this.observedValueToObservedValueDTO(observedValue));
 				}
 			}
 
@@ -102,7 +123,7 @@ public class PhenoService
 //				individualDetailsDTO.getObservedValues().get(key).add(observedValueToObservedValueDTO(observedValue));
 //			}
 
-			return individualDetailsDTO;
+			return observationElementDTO;
 		}
 		catch (Exception e)
 		{

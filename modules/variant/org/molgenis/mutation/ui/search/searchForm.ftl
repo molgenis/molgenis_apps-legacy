@@ -13,7 +13,7 @@ ${model.textWelcome}
 
 <#if model.geneDTO.symbol == "COL7A1">
 <p>
-The database currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
+The registry is a work in progress. It currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
 </p>
 <#elseif model.geneDTO.symbol == "MYO5B">
 <p>
