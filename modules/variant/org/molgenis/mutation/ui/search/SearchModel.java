@@ -23,7 +23,7 @@ import org.molgenis.mutation.ui.search.form.ShowMutationForm;
 import org.molgenis.mutation.ui.search.form.SimpleSearchForm;
 import org.molgenis.mutation.ui.search.form.ToExpertSearchForm;
 import org.molgenis.mutation.ui.search.form.ToSimpleSearchForm;
-import org.molgenis.pheno.dto.IndividualDTO;
+import org.molgenis.pheno.dto.ObservationElementDTO;
 
 public class SearchModel extends EasyPluginModel
 {
@@ -62,7 +62,7 @@ public class SearchModel extends EasyPluginModel
 	private ProteinDomainDTO proteinDomainDTO;
 	private List<ProteinDomainDTO> proteinDomainList;
 	private PatientSummaryDTO patientSummaryVO;
-	private IndividualDTO individualDTO;
+	private ObservationElementDTO individualDTO;
 	private Map<String, String> patientSummaryVOHash;
 	private String rawOutput; // for output from included sources
 
@@ -386,11 +386,11 @@ public class SearchModel extends EasyPluginModel
 		this.patientSummaryVO = patientSummaryVO;
 	}
 
-	public IndividualDTO getIndividualDTO() {
+	public ObservationElementDTO getIndividualDTO() {
 		return individualDTO;
 	}
 
-	public void setIndividualDTO(IndividualDTO individualDTO) {
+	public void setIndividualDTO(ObservationElementDTO individualDTO) {
 		this.individualDTO = individualDTO;
 	}
 
@@ -476,7 +476,6 @@ public class SearchModel extends EasyPluginModel
 
 	public SearchModel(SearchPlugin controller) {
 		super(controller);
-		// TODO Auto-generated constructor stub
 	}
 
 }
