@@ -10,8 +10,9 @@
 package org.molgenis.mutation.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
-public class GeneDTO implements Serializable
+public class GeneDTO implements Comparable<GeneDTO>, Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 8448620183887771179L;
@@ -28,6 +29,7 @@ public class GeneDTO implements Serializable
 	private String genomeBuild;
 	private String orientation;
 	private String symbol;
+	private List<ProteinDomainDTO> proteinDomainDTOList;
 
 	//constructors
 	public GeneDTO()
@@ -226,6 +228,29 @@ public class GeneDTO implements Serializable
 
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
+	}
+
+	public List<ProteinDomainDTO> getProteinDomainDTOList()
+	{
+		return proteinDomainDTOList;
+	}
+
+	public void setProteinDomainDTOList(List<ProteinDomainDTO> proteinDomainDTOList)
+	{
+		this.proteinDomainDTOList = proteinDomainDTOList;
+	}
+
+	@Override
+	public int compareTo(GeneDTO geneDTO)
+	{
+		if ("F".equals(this.orientation))
+		{
+			return this.getBpStart().compareTo(geneDTO.getBpStart());
+		}
+		else
+		{
+			return -1 * this.getBpEnd().compareTo(geneDTO.getBpEnd());
+		}
 	}
 }
 

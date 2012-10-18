@@ -206,14 +206,32 @@ public class MolgenisVariantService
 	}
 
 	/**
-	 * Convert a SequenceCharacteristic into a GeneDTO
-	 * @param SequenceCharacteristic gene
+	 * Convert a list of Genes into a list of GeneDTOs
+	 * @param geneList
+	 * @return geneDTOList
+	 */
+	public List<GeneDTO> geneListToGeneDTOList(final List<Gene> geneList)
+	{
+		List<GeneDTO> geneDTOList = new ArrayList<GeneDTO>();
+
+		for (Gene gene : geneList)
+		{
+			geneDTOList.add(this.geneToGeneDTO(gene));
+		}
+		
+		return geneDTOList;
+	}
+
+	/**
+	 * Convert a Gene into a GeneDTO
+	 * @param Gene gene
 	 * @return GeneDTO
 	 */
 	public GeneDTO geneToGeneDTO(final Gene gene)
 	{
 		GeneDTO geneDTO = new GeneDTO();
 
+		geneDTO.setId(gene.getId());
 		geneDTO.setLength(gene.getSeqlen());
 		geneDTO.setName(gene.getName());
 		geneDTO.setNuclSequence(gene.getResidues());
@@ -248,6 +266,12 @@ public class MolgenisVariantService
 				geneDTO.setGenomeBuild(observedValue.getValue());
 		}
 
+		// Query and sort the protein domains
+		List<ProteinDomain> proteinDomainList       = Arrays.asList(gene.getGeneProteinDomainCollection().toArray(new ProteinDomain[0]));
+		List<ProteinDomainDTO> proteinDomainDTOList = proteinDomainListToProteinDomainDTOList(proteinDomainList);
+		Collections.sort(proteinDomainDTOList);
+		geneDTO.setProteinDomainDTOList(proteinDomainDTOList);
+		
 		return geneDTO;
 	}
 
@@ -397,7 +421,7 @@ public class MolgenisVariantService
 	{
 		ExonDTO exonDTO = new ExonDTO();
 		exonDTO.setId(exon.getId());
-		exonDTO.setIsIntron("intron".equals(exon.getFeatureType().getName()) ? true : false);
+		exonDTO.setIsIntron(exon.getIsIntron());
 		exonDTO.setLength(exon.getSeqlen());
 		exonDTO.setName(exon.getName());
 		if (exon.getSeqlen() != null && exon.getSeqlen() % 3 == 0)
@@ -1320,23 +1344,34 @@ public class MolgenisVariantService
 	{
 		try
 		{
-//			List<SequenceCharacteristic> exonList = this.db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.FEATURETYPE, this.ontologyTermCache.get("exon")).or().equals(SequenceCharacteristic.FEATURETYPE, this.ontologyTermCache.get("intron")).find();
-//			List<ExonDTO> exonDTOList             = this.sequenceCharacteristicListToExonDTOList(exonList);
 			List<Exon> exonList       = this.db.query(Exon.class).find();
 			List<ExonDTO> exonDTOList = this.exonListToExonDTOList(exonList);
 			
 			Collections.sort(exonDTOList);
-//			
-//			int cdnaPos = 1;
-//			for (ExonDTO exonDTO : exonDTOList)
-//			{
-//				int cdnaStart = cdnaPos;
-//				int lengthm1  = exonDTO.getGdnaStart() - exonDTO.getGdnaEnd();
-//				int cdnaEnd   = cdnaStart + lengthm1;
-//				System.out.println("INSERT INTO SequenceRelation (SequenceFeature, Feature, SequenceTarget, Target, relationType, strand, fmin, fmax) VALUES (" + exonDTO.getId() + ", " + exonDTO.getId() + ", 166, 166, 6, '1', " + cdnaStart + ", " + cdnaEnd + ");");
-//				cdnaPos += lengthm1 + 1;
-//			}
+
 			return exonDTOList;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Get all genes sorted by their gDNA position
+	 * @return list of GeneDTO's
+	 */
+	public List<GeneDTO> findAllGenes()
+	{
+		try
+		{
+			List<Gene> geneList = this.db.query(Gene.class).find();
+			List<GeneDTO> geneDTOList = this.geneListToGeneDTOList(geneList);
+			
+			Collections.sort(geneDTOList);
+			
+			return geneDTOList;
 		}
 		catch (Exception e)
 		{
