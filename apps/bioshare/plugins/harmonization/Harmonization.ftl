@@ -19,6 +19,7 @@
 				selected = $('#selectPredictionModel').val();
 				$('#selectedPrediction >span').empty().text(selected);
 				
+				showPredictors(selected);
 				//Fill out summary panel
 				$('#summaryPanel').fadeIn().draggable();
 			});
@@ -26,6 +27,9 @@
 			if($('#selectPredictionModel option').length == 0){
 				message = "There are no prediction models in database, add one first";
 				showMessage(message, false);
+			}else{
+				selected = $('#selectPredictionModel').val();
+				showPredictors(selected);
 			}
 			
 			$('#addPredictorButton').click(function(){
@@ -34,7 +38,7 @@
 			
 			$('#dataTypeOfPredictor').change(function(){
 				
-				if($('#dataTypeOfPredictor').val() == "category"){
+				if($('#dataTypeOfPredictor').val() == "categorical"){
 					$('#categoryOfPredictor').attr('disabled', false);
 				}else{
 					$('#categoryOfPredictor').attr('disabled', true);
@@ -134,75 +138,101 @@
 		
 		function insertNewRow(){
 			
-			name = $('#nameOfPredictor').val();
-			
 			message = {};
+			message["message"] = "You successfully added a new predictor!";
+			message["success"] = true;
 			
-			if($('#' + name).length == 0){
+			if($('#' + $('#nameOfPredictor').val()).length == 0){
 			
-				description = $('#descriptionOfPredictor').val();
-				dataType = $('#dataTypeOfPredictor').val();
-				categories = $('#categoryOfPredictor').val();
-				unit = $('#unitOfPredictor').val();
-				buildingBlocks = $('#buildingBlocks').val();
+				data = {};
+				data["selected"] = $('#selectPredictionModel').val();
+				data["name"] = $('#nameOfPredictor').val();
+				data["description"] = $('#descriptionOfPredictor').val();
+				data["dataType"] = $('#dataTypeOfPredictor').val();
+				data["category"] = $('#categoryOfPredictor').val();
+				data["unit"] = $('#unitOfPredictor').val();
+				data["buildingBlocks"] = $('#buildingBlocks').val();
 				
-				//add the data to table
-				identifier = name.replace(/\s/g,"_");
-				
-				newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\">";
-				newRow += "<td name=\"name\"><span style=\"margin:10px;float:left;\">" + name + "</span>";
-				newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;\" "
-						+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
-						+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
-						+ "</div></td>"
-				newRow += "<td name=\"description\">" + description + "</td>";
-				newRow += "<td name=\"dataType\">" + dataType + "</td>";
-				newRow += "<td name=\"unit\">" + unit + "</td>";
-				
-				addedCategory = "";
-				
-				if(categories.split(",").length > 1){
-					blocks = categories.split(",");
-					addedCategory = createMultipleSelect(blocks);
-				}
-				
-				newRow += "<td name=\"category\">" + addedCategory + "</td>";
-				
-				selectBlocks = "";
-				
-				if(buildingBlocks.split(",").length > 1){
-					blocks = buildingBlocks.split(",");
-					selectBlocks = createMultipleSelect(blocks);
-				}
-				
-				newRow += "<td name=\"buildingBlocks\">" + selectBlocks + "</td>";
-				newRow += "</tr>";
-				
-				$('#showPredictorPanel table tr:last-child').after(newRow);
-				
-				$('td[name="buildingBlocks"] >select').chosen();
-				
-				$('td[name="category"] >select').chosen();
-				
-				$('#' + identifier + '_remove').click(function(){
-					$(this).parents('tr').eq(0).remove();
+				$.ajax({
+					url : "${screen.getUrl()}&__action=download_json_addPredictor&data=" + JSON.stringify(data),
+					async: false,
+				}).done(function(status){
+					message["message"] = status["message"];
+					message["success"] = status["success"];
 				});
 				
-				$('#showPredictorPanel table tr:last-child').css({
-					'vertical-align':'middle',
-					'text-align':'center',
-					'font-size':'16px',
-				});
+				if(message["success"] == true){
+					
+					insertRowInTable(data);
+				}
 				
-				message["message"] = "You successfully added a new predictor!";
-				message["success"] = true;
-				cancelAddPredictorPanel();
 			}else{
 				message["message"] = "Predictor already existed!";
 				message["success"] = false;
 			}
 			
 			return message;
+		}
+		
+		function insertRowInTable(data){
+			
+			name = data["name"];
+			description = data["description"];
+			dataType = data["dataType"];
+			categories = data["category"];
+			unit = data["unit"];
+			buildingBlocks = data["buildingBlocks"];
+			
+			//add the data to table
+			identifier = name.replace(/\s/g,"_");
+			
+			newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\">";
+			newRow += "<td name=\"name\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
+			newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
+					+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
+					+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
+					+ "</div></td>"
+			newRow += "<td name=\"description\">" + description + "</td>";
+			newRow += "<td name=\"dataType\">" + dataType + "</td>";
+			newRow += "<td name=\"unit\">" + unit + "</td>";
+			
+			addedCategory = "";
+			
+			if(categories != ""){
+				blocks = categories.split(",");
+				addedCategory = createMultipleSelect(blocks);
+			}
+			
+			newRow += "<td name=\"category\">" + addedCategory + "</td>";
+			
+			selectBlocks = "";
+			
+			if(buildingBlocks != ""){
+				blocks = buildingBlocks.split(",");
+				selectBlocks = createMultipleSelect(blocks);
+			}
+			
+			newRow += "<td name=\"buildingBlocks\">" + selectBlocks + "</td>";
+			newRow += "</tr>";
+			
+			$('#showPredictorPanel table tr:last-child').after(newRow);
+			
+			$('td[name="buildingBlocks"] >select').chosen();
+			
+			$('td[name="category"] >select').chosen();
+			
+			$('#' + identifier + '_remove').click(function(){
+				removePredictor($(this).attr('id'));
+				$(this).parents('tr').eq(0).remove();
+			});
+			
+			$('#showPredictorPanel table tr:last-child').css({
+				'vertical-align':'middle',
+				'text-align':'center',
+				'font-size':'16px',
+			});
+			
+			cancelAddPredictorPanel();
 		}
 		
 		function uniqueElements(anArray){
@@ -225,6 +255,34 @@
 			selectBlocks += "</select>"
 			
 			return selectBlocks;
+		}
+		
+		function removePredictor(identifier){
+			
+			predictor = $('#' + identifier).parents('tr').eq(0).attr('name');
+			selected = $('#selectPredictionModel').val();
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_removePredictors&name=" 
+					+ predictor + "&predictionModel=" + selected,
+				async: false,
+			}).done(function(status){
+				message = status["message"];
+				success = status["success"];
+				showMessage(message, success);
+			});
+		}
+		
+		function showPredictors(predictionModelName){
+		
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_showPredictors&name=" + predictionModelName,
+				async: false,
+			}).done(function(status){
+				
+				$.each(status, function(predictor, Info){
+					insertRowInTable(Info);
+				});
+			});
 		}
 		
 		function showMessage(message, success){
@@ -326,10 +384,9 @@
 										</td>
 										<td>
 											<select id="dataTypeOfPredictor" class="predictorInput" style="width:205px">
-												<option>string</option>
-												<option>category</option>
-												<option>integer</option>
-												<option>decimal</option>
+												<#list screen.getDataTypes() as dataType>
+													<option>${dataType}</option>
+												</#list>
 											</select>
 										</td>
 									</tr>
@@ -420,13 +477,13 @@
 								<div class="ui-tabs-nav ui-widget-content ui-corner-all" style="height:100%;width:100%;">
 									<table class="ui-corner-all ui-widget-content" style="width:100%;margin-top:3%;border-bottom:1px solid #AAAAAA;">
 										<tr style="width:100%;height:50px;font-size:14px;font-style:italic;">
-											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:10%;">
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:12%;">
 												name
 											</th>
 											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
 												description
 											</th>
-											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:10%;">
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:8%;">
 												data type
 											</th>
 											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:10%;">
