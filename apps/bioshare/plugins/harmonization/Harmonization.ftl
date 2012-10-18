@@ -193,7 +193,7 @@
 			newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
 			newRow += "</tr>";
 			
-			$('#showPredictorPanel table tr:last-child').after(newRow);
+			$('#showPredictorPanel table tr:first-child').after(newRow);
 			
 			$('td[name="buildingBlocks"] >select').chosen();
 			
