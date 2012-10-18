@@ -124,15 +124,15 @@
 			buildingBlocks = data["buildingBlocks"];
 			identifier = data["identifier"];
 			
-			newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\">";
-			newRow += "<td name=\"name\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
+			newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"border-bottom:1px dotted #AAAAAA;\">";
+			newRow += "<td name=\"name\" style=\"border-right:1px dotted #AAAAAA;\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
 			newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
 					+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 					+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
 					+ "</div></td>"
-			newRow += "<td name=\"description\">" + description + "</td>";
-			newRow += "<td name=\"dataType\">" + dataType + "</td>";
-			newRow += "<td name=\"unit\">" + unit + "</td>";
+			newRow += "<td name=\"description\" style=\"border-right:1px dotted #AAAAAA;\">" + description + "</td>";
+			newRow += "<td name=\"dataType\" style=\"border-right:1px dotted #AAAAAA;\">" + dataType + "</td>";
+			newRow += "<td name=\"unit\" style=\"border-right:1px dotted #AAAAAA;\">" + unit + "</td>";
 			
 			addedCategory = "";
 			
@@ -141,7 +141,7 @@
 				addedCategory = createMultipleSelect(blocks);
 			}
 			
-			newRow += "<td name=\"category\">" + addedCategory + "</td>";
+			newRow += "<td name=\"category\" style=\"border-right:1px dotted #AAAAAA;\">" + addedCategory + "</td>";
 			
 			selectBlocks = "";
 			
@@ -150,7 +150,7 @@
 				selectBlocks = createMultipleSelect(blocks);
 			}
 			
-			newRow += "<td name=\"buildingBlocks\">" + selectBlocks + "</td>";
+			newRow += "<td name=\"buildingBlocks\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
 			newRow += "</tr>";
 			
 			$('#showPredictorPanel table tr:last-child').after(newRow);
@@ -249,7 +249,7 @@
 		
 		function removePredictor(identifier){
 			
-			predictor = $('#' + identifier).parents('tr').eq(0).attr('name');
+			predictor = $('#' + identifier).parents('td').eq(0).text();
 			selected = $('#selectPredictionModel').val();
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_removePredictors&name=" 
@@ -529,7 +529,7 @@
 										<span class="ui-icon ui-icon-circle-plus"></span>
 									</div>
 								</div>
-								<div class="ui-tabs-nav ui-widget-content ui-corner-all" style="height:100%;width:100%;">
+								<div class="ui-tabs-nav ui-widget-content ui-corner-all" style="height:100%;width:100%;overflow:auto;">
 									<table class="ui-corner-all ui-widget-content" style="width:100%;margin-top:3%;border-bottom:1px solid #AAAAAA;">
 										<tr style="width:100%;height:50px;font-size:14px;font-style:italic;">
 											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:12%;">
