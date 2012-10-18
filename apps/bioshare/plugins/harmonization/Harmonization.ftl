@@ -10,6 +10,9 @@
 			vertical-align:middle;
 			font-size:16px;
 		}
+		button >span {
+	 		font-size:12px;
+	 	}
 	</style>
 	<script>
 		$(document).ready(function(){
@@ -30,6 +33,7 @@
 			}else{
 				selected = $('#selectPredictionModel').val();
 				showPredictors(selected);
+				$('#selectedPrediction span').text(selected);
 				$('#summaryPanel').fadeIn().draggable();
 			}
 			
@@ -40,6 +44,26 @@
 				}else{
 					$('#categoryOfPredictor').attr('disabled', true);
 				}
+			});
+			
+			$('#defineFormulaPanel').dialog({
+				autoOpen : false,
+				title : "Formula",
+				height: 300,
+            	width: 400,
+            	modal: true,
+            	buttons: {
+	                Update: function() {
+	                	defineFormula();
+	                },
+	                Cancel: function() {
+	                    $( this ).dialog( "close" );
+	                }
+            	},
+			});
+			
+			$('#defineFormula').button().click(function(){
+				$('#defineFormulaPanel').dialog('open');
 			});
 			
 			$('#addPredictorButton').click(function(){
@@ -125,14 +149,14 @@
 			identifier = data["identifier"];
 			
 			newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"border-bottom:1px dotted #AAAAAA;\">";
-			newRow += "<td name=\"name\" style=\"border-right:1px dotted #AAAAAA;\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
+			newRow += "<td name=\"name\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
 			newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
 					+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 					+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
 					+ "</div></td>"
-			newRow += "<td name=\"description\" style=\"border-right:1px dotted #AAAAAA;\">" + description + "</td>";
-			newRow += "<td name=\"dataType\" style=\"border-right:1px dotted #AAAAAA;\">" + dataType + "</td>";
-			newRow += "<td name=\"unit\" style=\"border-right:1px dotted #AAAAAA;\">" + unit + "</td>";
+			newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + description + "</td>";
+			newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + dataType + "</td>";
+			newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + unit + "</td>";
 			
 			addedCategory = "";
 			
@@ -141,7 +165,7 @@
 				addedCategory = createMultipleSelect(blocks);
 			}
 			
-			newRow += "<td name=\"category\" style=\"border-right:1px dotted #AAAAAA;\">" + addedCategory + "</td>";
+			newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + addedCategory + "</td>";
 			
 			selectBlocks = "";
 			
@@ -150,7 +174,7 @@
 				selectBlocks = createMultipleSelect(blocks);
 			}
 			
-			newRow += "<td name=\"buildingBlocks\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
+			newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
 			newRow += "</tr>";
 			
 			$('#showPredictorPanel table tr:last-child').after(newRow);
@@ -276,6 +300,7 @@
 				$('#numberOfPredictors').val(status["numberOfPredictors"]);
 				$('#buildingBlocksDefined').val(status["buildingBlocksDefined"]);
 				$('#formula').val(status["formula"]);
+				$('#showFormula').val(status["formula"]);
 				delete status["selected"];
 				delete status["numberOfPredictors"];
 				delete status["buildingBlocksDefined"]; 
@@ -284,6 +309,26 @@
 				$.each(status, function(predictor, Info){
 					populateRowInTable(Info);
 				});
+			});
+		}
+		
+		function defineFormula(){
+		
+			selected = $('#selectPredictionModel').val();
+			data = {};
+			data["selected"] = selected;
+			data["formula"] = $('#showFormula').val();
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_defineFormula&data=" + JSON.stringify(data),
+				async: false,
+			}).done(function(status){
+				message = status["message"];
+				success = status["success"];
+				showMessage(message, success);
+				if(success == true){
+					$('#formula').val($('#showFormula').val());
+					$('#defineFormulaPanel').dialog('close');
+				}
 			});
 		}
 		
@@ -376,6 +421,11 @@
 							<div id="selectedPrediction" style="height:30px;padding-left:10px;">
 								Selected prediction model:
 								<span style="font-size:25px;font-style:italic;"></span>
+								<input type="button" id="defineFormula" value="formula" style="cursor:pointer;font-size:12px;height:25px;width:60px;float:right;margin-top:4px;margin-right:20px;" />
+								<div id="defineFormulaPanel" style="display:none;">
+									<textarea id="showFormula" style="width:90%;height:90%;font-size:12px;">
+									</textarea>
+								</div>
 							</div>
 							<hr/>
 							<div style="float:left;width:43%;margin-left:10px;">

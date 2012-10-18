@@ -324,6 +324,27 @@ public class Harmonization extends PluginModel<Entity>
 					status.put("formula", cp.getScriptTemplate());
 
 				}
+				else if ("download_json_defineFormula".equals(request.getAction()))
+				{
+					JSONObject data = new JSONObject(request.getString("data"));
+
+					ComputeProtocol cp = db.find(ComputeProtocol.class,
+							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, data.getString("selected"))).get(0);
+
+					if (cp.getScriptTemplate().equals(data.getString("formula").trim())
+							|| cp.getScriptTemplate().equals(""))
+					{
+						status.put("message", "The formula has not changed!");
+						status.put("success", false);
+					}
+					else
+					{
+						cp.setScriptTemplate(data.getString("formula"));
+						db.update(cp);
+						status.put("message", "You successfully updated the formula in database!");
+						status.put("success", true);
+					}
+				}
 
 				db.commitTx();
 			}
