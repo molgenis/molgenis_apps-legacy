@@ -18,7 +18,7 @@
 			$('#selectPredictionModel').chosen().change(function(){
 				selected = $('#selectPredictionModel').val();
 				$('#selectedPrediction >span').empty().text(selected);
-				
+				$('#showPredictorPanel table tr:gt(0)').remove();
 				showPredictors(selected);
 				//Fill out summary panel
 				$('#summaryPanel').fadeIn().draggable();
@@ -30,11 +30,8 @@
 			}else{
 				selected = $('#selectPredictionModel').val();
 				showPredictors(selected);
+				$('#summaryPanel').fadeIn().draggable();
 			}
-			
-			$('#addPredictorButton').click(function(){
-				$('#defineVariablePanel').fadeIn();
-			});
 			
 			$('#dataTypeOfPredictor').change(function(){
 				
@@ -45,27 +42,16 @@
 				}
 			});
 			
-			$('#cancelPredictor').button().click(function(){
-				cancelAddPredictorPanel();
+			$('#addPredictorButton').click(function(){
+				$('#defineVariablePanel').fadeIn();
 			});
 			
 			$('#addPredictor').button().click(function(){
-				
-				message = ""
-				success = "";
-				
-				if( $('#selectPredictionModel option').length == 0){
-					message = "Please define a prediction model first!";
-					success = false;
-				}else if($('#nameOfPredictor').val() == ""){
-					message = "The name of predictor cannot be empty!";
-					success = false;
-				}else{
-					result = insertNewRow();
-					message = result["message"];
-					success = result["success"];
-				}
-				showMessage(message, success);
+				addPredictor();
+			});
+			
+			$('#cancelPredictor').button().click(function(){
+				cancelAddPredictorPanel();
 			});
 			
 			$('#closeSummary').click(function(){
@@ -78,63 +64,13 @@
 			
 			//Add a new prediction model in the dropdown menu
 			$('#addModelButton').click(function(){
-				if($('#addPredictionModel').val() != ""){
-					selected = $('#addPredictionModel').val();
-					if($('#selectPredictionModel').find("option[name=\"" + selected +"\"]").length > 0){
-						message = "The prediction model already existed!";
-						showMessage(message, false);
-					}else{
-						message = "";
-						success = "";
-						$.ajax({
-							url : "${screen.getUrl()}&__action=download_json_newPredictionModel&name=" + selected,
-							async: false,
-						}).done(function(status){
-							message = status["message"];
-							success= status["success"];
-						});
-						element = "<option name=\"" + selected + "\" selected=\"selected\">" + selected + "</option>";
-						$('#selectPredictionModel').append(element);
-						$('#selectPredictionModel').trigger("liszt:updated");
-						$('#addPredictionModel').val('');
-						$('#selectedPrediction >span').empty().text(selected);
-						//message = "You successfully added a new prediction model</br>Please define the predictors";
-						showMessage(message, success);
-					}
-					$('#summaryPanel').fadeIn().draggable();
-				}
+				addNewPredictionModel();
 			});
 			//Remove a prediction model in the dropdown menu
 			$('#removeModelButton').click(function(){
-				if($('#selectPredictionModel option').length > 0){
-					
-					selected = $('#selectPredictionModel').val();
-					
-					$.ajax({
-						url : "${screen.getUrl()}&__action=download_json_removePredictionModel&name=" + selected,
-						async: false,
-					}).done(function(status){
-						message = status["message"];
-						success= status["success"];
-					});
-					if(success == true){
-						$('#selectPredictionModel option').filter(':selected').remove();
-						$('#selectPredictionModel').trigger("liszt:updated");
-						selected = $('#selectPredictionModel').val();
-						$('#selectedPrediction >span').empty().text(selected);
-					}
-					//message = "You successfully removed a prediction model!";
-					showMessage(message, success);
-				}
+				removePredictionModel();
 			});
 		});
-		
-		function cancelAddPredictorPanel(){
-			$('#defineVariablePanel').fadeOut();
-			$('#defineVariablePanel input[type="text"]').val('');
-			$('#dataTypeOfPredictor option:first-child').attr('selected',true);
-			$('#categoryOfPredictor').attr('disabled', true);
-		}
 		
 		function insertNewRow(){
 			
@@ -152,6 +88,9 @@
 				data["category"] = $('#categoryOfPredictor').val();
 				data["unit"] = $('#unitOfPredictor').val();
 				data["buildingBlocks"] = $('#buildingBlocks').val();
+				//add the data to table
+				identifier = data["name"].replace(/\s/g,"_");
+				data["identifier"] = identifier;
 				
 				$.ajax({
 					url : "${screen.getUrl()}&__action=download_json_addPredictor&data=" + JSON.stringify(data),
@@ -159,11 +98,12 @@
 				}).done(function(status){
 					message["message"] = status["message"];
 					message["success"] = status["success"];
+					message["identifier"] = data["identifier"];
 				});
 				
 				if(message["success"] == true){
 					
-					insertRowInTable(data);
+					populateRowInTable(data);
 				}
 				
 			}else{
@@ -174,7 +114,7 @@
 			return message;
 		}
 		
-		function insertRowInTable(data){
+		function populateRowInTable(data){
 			
 			name = data["name"];
 			description = data["description"];
@@ -182,9 +122,7 @@
 			categories = data["category"];
 			unit = data["unit"];
 			buildingBlocks = data["buildingBlocks"];
-			
-			//add the data to table
-			identifier = name.replace(/\s/g,"_");
+			identifier = data["identifier"];
 			
 			newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\">";
 			newRow += "<td name=\"name\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
@@ -198,7 +136,7 @@
 			
 			addedCategory = "";
 			
-			if(categories != ""){
+			if(categories != "" && categories != null){
 				blocks = categories.split(",");
 				addedCategory = createMultipleSelect(blocks);
 			}
@@ -207,7 +145,7 @@
 			
 			selectBlocks = "";
 			
-			if(buildingBlocks != ""){
+			if(buildingBlocks != "" && buildingBlocks != null){
 				blocks = buildingBlocks.split(",");
 				selectBlocks = createMultipleSelect(blocks);
 			}
@@ -235,26 +173,78 @@
 			cancelAddPredictorPanel();
 		}
 		
-		function uniqueElements(anArray){
-			var result = [];
-	       $.each(anArray, function(i,v){
-	           if ($.inArray(v, result) == -1) result.push(v);
-	       });
-	       return result;
+		function addNewPredictionModel(){
+			
+			if($('#addPredictionModel').val() != ""){
+				selected = $('#addPredictionModel').val();
+				if($('#selectPredictionModel').find("option[name=\"" + selected +"\"]").length > 0){
+					message = "The prediction model already existed!";
+					showMessage(message, false);
+				}else{
+					message = "";
+					success = "";
+					$.ajax({
+						url : "${screen.getUrl()}&__action=download_json_newPredictionModel&name=" + selected,
+						async: false,
+					}).done(function(status){
+						message = status["message"];
+						success= status["success"];
+					});
+					element = "<option name=\"" + selected + "\" selected=\"selected\">" + selected + "</option>";
+					$('#selectPredictionModel').append(element);
+					$('#selectPredictionModel').trigger("liszt:updated");
+					$('#addPredictionModel').val('');
+					$('#selectedPrediction >span').empty().text(selected);
+					//message = "You successfully added a new prediction model</br>Please define the predictors";
+					showMessage(message, success);
+				}
+			}
 		}
 		
-		function createMultipleSelect(listOfTerms){
+		function removePredictionModel(){
 			
-			listOfTerms = uniqueElements(listOfTerms);
-			
-			selectBlocks = "<select multiple=\"true\" style=\"width:90%;\">";
-			
-			for(var i = 0; i < listOfTerms.length; i++){
-				selectBlocks += "<option selected=\"selected\">" + listOfTerms[i] + "</option>";
+			if($('#selectPredictionModel option').length > 0){
+				selected = $('#selectPredictionModel').val();
+				
+				$.ajax({
+					url : "${screen.getUrl()}&__action=download_json_removePredictionModel&name=" + selected,
+					async: false,
+				}).done(function(status){
+					message = status["message"];
+					success= status["success"];
+				});
+				if(success == true){
+					$('#selectPredictionModel option').filter(':selected').remove();
+					$('#selectPredictionModel').trigger("liszt:updated");
+					selected = $('#selectPredictionModel').val();
+					$('#selectedPrediction >span').empty().text(selected);
+				}
+				//message = "You successfully removed a prediction model!";
+				showMessage(message, success);
 			}
-			selectBlocks += "</select>"
+		}
+		
+		function addPredictor(){
+		
+			message = ""
+			success = "";
 			
-			return selectBlocks;
+			if( $('#selectPredictionModel option').length == 0){
+				message = "Please define a prediction model first!";
+				success = false;
+			}else if($('#nameOfPredictor').val() == ""){
+				message = "The name of predictor cannot be empty!";
+				success = false;
+			}else{
+				result = insertNewRow();
+				message = result["message"];
+				success = result["success"];
+				predictor = result["identifier"];
+				if(success == true){
+					summaryAddOne(predictor);
+				}
+			}
+			showMessage(message, success);
 		}
 		
 		function removePredictor(identifier){
@@ -269,6 +259,9 @@
 				message = status["message"];
 				success = status["success"];
 				showMessage(message, success);
+				if(success == true){
+					summaryRemoveOne(identifier);
+				}
 			});
 		}
 		
@@ -279,16 +272,78 @@
 				async: false,
 			}).done(function(status){
 				
+				$('#selectedPredictionModelName').val(status["selected"]);
+				$('#numberOfPredictors').val(status["numberOfPredictors"]);
+				$('#buildingBlocksDefined').val(status["buildingBlocksDefined"]);
+				$('#formula').val(status["formula"]);
+				delete status["selected"];
+				delete status["numberOfPredictors"];
+				delete status["buildingBlocksDefined"]; 
+				delete status["formula"];  
+				
 				$.each(status, function(predictor, Info){
-					insertRowInTable(Info);
+					populateRowInTable(Info);
 				});
 			});
+		}
+		
+		//Make the add predictor panel disappear
+		function cancelAddPredictorPanel(){
+			
+			$('#defineVariablePanel').fadeOut();
+			$('#defineVariablePanel input[type="text"]').val('');
+			$('#dataTypeOfPredictor option:first-child').attr('selected',true);
+			$('#categoryOfPredictor').attr('disabled', true);
+		}
+		
+		//Create list with unique elements
+		function uniqueElements(anArray){
+			var result = [];
+	       $.each(anArray, function(i,v){
+	           if ($.inArray(v, result) == -1) result.push(v);
+	       });
+	       return result;
+		}
+		
+		//Create a jquery chosen multiple select element
+		function createMultipleSelect(listOfTerms){
+			
+			listOfTerms = uniqueElements(listOfTerms);
+			
+			selectBlocks = "<select multiple=\"true\" style=\"width:90%;\">";
+			
+			for(var i = 0; i < listOfTerms.length; i++){
+				selectBlocks += "<option selected=\"selected\">" + listOfTerms[i] + "</option>";
+			}
+			selectBlocks += "</select>"
+			
+			return selectBlocks;
+		}
+		
+		function summaryAddOne(identifier){
+			
+			numberOfPredcitors = $('#numberOfPredictors').val();
+			buildingBlocksDefine = $('#buildingBlocksDefined').val();
+			$('#numberOfPredictors').val(++numberOfPredcitors);
+			if($('#' + identifier + ' td:last-child >select').length > 0){
+				++buildingBlocksDefine
+			}
+			$('#buildingBlocksDefined').val(buildingBlocksDefine);
+		}
+		
+		function summaryRemoveOne(identifier){
+			numberOfPredcitors = $('#numberOfPredictors').val();
+			buildingBlocksDefine = $('#buildingBlocksDefined').val();
+			$('#numberOfPredictors').val(--numberOfPredcitors);
+			if($('#' + identifier + ' td:last-child >select').length > 0){
+				--buildingBlocksDefine;
+			}
+			$('#buildingBlocksDefined').val(buildingBlocksDefine);
 		}
 		
 		function showMessage(message, success){
 			
 			element = "";
-			
 			if(success == true){
 				element = "<p style=\"color:green;\">";
 			}else{

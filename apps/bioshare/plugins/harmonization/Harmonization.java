@@ -276,9 +276,12 @@ public class Harmonization extends PluginModel<Entity>
 						{
 							JSONObject jsonForPredictor = new JSONObject();
 							jsonForPredictor.put("name", eachPredictor.getLabel());
-							jsonForPredictor.put("description", eachPredictor.getDescription());
+							jsonForPredictor.put("identifier", eachPredictor.getLabel().replaceAll(" ", "_"));
+							jsonForPredictor.put("description", (eachPredictor.getDescription() == null ? ""
+									: eachPredictor.getDescription()));
 							jsonForPredictor.put("dataType", eachPredictor.getDataType());
-							jsonForPredictor.put("unit", eachPredictor.getUnit_Name());
+							jsonForPredictor.put("unit",
+									(eachPredictor.getUnit_Name() == null ? "" : eachPredictor.getUnit_Name()));
 
 							String categories = "";
 
@@ -300,16 +303,26 @@ public class Harmonization extends PluginModel<Entity>
 						query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, cp.getFeatures_Name()));
 						query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
 
+						// Count how many variables have defined buildingBlocks
+						int definedBlocks = 0;
 						for (ObservedValue ov : query.find())
 						{
 							if (status.has(ov.getTarget_Name()))
 							{
+								definedBlocks++;
 								JSONObject json = (JSONObject) status.get(ov.getTarget_Name());
 								json.put("buildingBlocks", ov.getValue());
 								status.put(ov.getTarget_Name(), json);
 							}
 						}
+						status.put("buildingBlocksDefined", definedBlocks);
+
 					}
+					// Meta-data for the summary
+					status.put("selected", predictionModel);
+					status.put("numberOfPredictors", cp.getFeatures_Name().size());
+					status.put("formula", cp.getScriptTemplate());
+
 				}
 
 				db.commitTx();
