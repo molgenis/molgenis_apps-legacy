@@ -11,7 +11,8 @@
 			type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
 		<plugin name="OntoCat"
 			type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat" />
-
+		<plugin label="Upload" name="ExcelWizard"
+			type="plugins.genericwizard.GenericWizard" />
 		<form name="Characteristics" entity="Characteristic" />
 		<form name="Panels" entity="Panel" />
 		<form name="Citations" entity="Citation" />
