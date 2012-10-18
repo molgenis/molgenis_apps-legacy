@@ -16,6 +16,7 @@ import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -93,13 +94,17 @@ public class Harmonization extends PluginModel<Entity>
 
 					if (cp.getFeatures_Name().size() > 0)
 					{
-						List<Measurement> listOfFeatures = db.find(Measurement.class, new QueryRule(Measurement.NAME,
-								Operator.IN, cp.getFeatures_Name()));
-						db.remove(listOfFeatures);
+						for (Measurement m : db.find(Measurement.class,
+								new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
+						{
+							this.removePredictor(m.getLabel(), nameOfModel, db);
+						}
 					}
+
 					db.remove(cp);
 
 					status.put("message", "You successfully removed a prediction model from the database!");
+
 					status.put("success", true);
 
 				}
@@ -140,10 +145,8 @@ public class Harmonization extends PluginModel<Entity>
 
 						List<Category> newCategories = new ArrayList<Category>();
 
-						for (int i = 0; i < categoryElements.length; i++)
+						for (String eachCategory : removeDuplicate(categoryElements))
 						{
-							String eachCategory = categoryElements[i];
-
 							String uniqueName = eachCategory.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
 
 							String codeAndString[] = eachCategory.split("=");
@@ -197,6 +200,7 @@ public class Harmonization extends PluginModel<Entity>
 					}
 
 					status.put("message", "You successfully added a new predictor!");
+
 					status.put("success", true);
 
 				}
@@ -206,60 +210,10 @@ public class Harmonization extends PluginModel<Entity>
 
 					String predictionModel = request.getString("predictionModel");
 
-					Measurement m = db.find(Measurement.class,
-							new QueryRule(Measurement.NAME, Operator.EQUALS, predictor + "_" + predictionModel)).get(0);
-
-					ComputeProtocol cp = db.find(ComputeProtocol.class,
-							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
-
-					cp.getFeatures_Id().remove(m.getId());
-					cp.getFeatures_Name().remove(m.getName());
-
-					db.update(cp);
-
-					Query<ObservedValue> query = db.query(ObservedValue.class);
-
-					query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, m.getName()));
-					query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
-
-					if (query.find().size() > 0)
-					{
-						db.remove(query.find());
-					}
-
-					String unit = m.getUnit_Name();
-
-					List<String> categories = m.getCategories_Name();
-
-					db.remove(m);
-
-					// Check if unit is used by other measurements
-					if (unit != null && !unit.equals(""))
-					{
-						if (db.find(Measurement.class, new QueryRule(Measurement.UNIT_NAME, Operator.EQUALS, unit))
-								.size() == 0)
-						{
-							OntologyTerm ot = db.find(OntologyTerm.class,
-									new QueryRule(OntologyTerm.NAME, Operator.EQUALS, unit)).get(0);
-							db.remove(ot);
-						}
-					}
-					// Check if categories are used by other measurements
-					if (categories.size() > 0)
-					{
-						for (String category : categories)
-						{
-							if (db.find(Measurement.class,
-									new QueryRule(Measurement.CATEGORIES_NAME, Operator.EQUALS, category)).size() == 0)
-							{
-								Category c = db.find(Category.class,
-										new QueryRule(Category.NAME, Operator.EQUALS, category)).get(0);
-								db.remove(c);
-							}
-						}
-					}
+					this.removePredictor(predictor, predictionModel, db);
 
 					status.put("message", "You successfully deleted the predictor: " + predictor);
+
 					status.put("success", true);
 				}
 				else if ("download_json_showPredictors".equals(request.getAction()))
@@ -388,6 +342,78 @@ public class Harmonization extends PluginModel<Entity>
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
+	{
+
+		Measurement m = db.find(Measurement.class,
+				new QueryRule(Measurement.NAME, Operator.EQUALS, predictor + "_" + predictionModel)).get(0);
+
+		ComputeProtocol cp = db.find(ComputeProtocol.class,
+				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
+
+		cp.getFeatures_Id().remove(m.getId());
+		cp.getFeatures_Name().remove(m.getName());
+
+		db.update(cp);
+
+		Query<ObservedValue> query = db.query(ObservedValue.class);
+
+		query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, m.getName()));
+		query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
+
+		if (query.find().size() > 0)
+		{
+			db.remove(query.find());
+		}
+
+		String unit = m.getUnit_Name();
+
+		List<String> categories = m.getCategories_Name();
+
+		db.remove(m);
+
+		// Check if unit is used by other measurements
+		if (unit != null && !unit.equals(""))
+		{
+			if (db.find(Measurement.class, new QueryRule(Measurement.UNIT_NAME, Operator.EQUALS, unit)).size() == 0)
+			{
+				OntologyTerm ot = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, unit))
+						.get(0);
+				db.remove(ot);
+			}
+		}
+		// Check if categories are used by other measurements
+		if (categories.size() > 0)
+		{
+			for (String category : categories)
+			{
+				if (db.find(Measurement.class, new QueryRule(Measurement.CATEGORIES_NAME, Operator.EQUALS, category))
+						.size() == 0)
+				{
+					Category c = db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, category))
+							.get(0);
+					db.remove(c);
+				}
+			}
+		}
+	}
+
+	public List<String> removeDuplicate(String... elements)
+	{
+		List<String> uniqueList = new ArrayList<String>();
+
+		for (String eachElement : elements)
+		{
+
+			if (!uniqueList.contains(eachElement.trim()))
+			{
+				uniqueList.add(eachElement.trim());
+			}
+		}
+
+		return uniqueList;
 	}
 
 	public List<String> getDataTypes()

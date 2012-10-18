@@ -21,7 +21,7 @@
 			$('#selectPredictionModel').chosen().change(function(){
 				selected = $('#selectPredictionModel').val();
 				$('#selectedPrediction >span').empty().text(selected);
-				$('#showPredictorPanel table tr:gt(0)').remove();
+				
 				showPredictors(selected);
 				//Fill out summary panel
 				$('#summaryPanel').fadeIn().draggable();
@@ -34,7 +34,6 @@
 				selected = $('#selectPredictionModel').val();
 				showPredictors(selected);
 				$('#selectedPrediction span').text(selected);
-				$('#summaryPanel').fadeIn().draggable();
 			}
 			
 			$('#dataTypeOfPredictor').change(function(){
@@ -55,6 +54,22 @@
             	buttons: {
 	                Update: function() {
 	                	defineFormula();
+	                },
+	                Cancel: function() {
+	                    $( this ).dialog( "close" );
+	                }
+            	},
+			});
+			
+			$('#confirmWindow').dialog({
+				autoOpen : false,
+				title : "Warning",
+				height: 300,
+            	width: 500,
+            	modal: true,
+            	buttons: {
+	                Confirm: function() {
+	                	removePredictionModel();
 	                },
 	                Cancel: function() {
 	                    $( this ).dialog( "close" );
@@ -92,7 +107,7 @@
 			});
 			//Remove a prediction model in the dropdown menu
 			$('#removeModelButton').click(function(){
-				removePredictionModel();
+				$('#confirmWindow').dialog('open');
 			});
 		});
 		
@@ -109,9 +124,10 @@
 				data["name"] = $('#nameOfPredictor').val();
 				data["description"] = $('#descriptionOfPredictor').val();
 				data["dataType"] = $('#dataTypeOfPredictor').val();
-				data["category"] = $('#categoryOfPredictor').val();
 				data["unit"] = $('#unitOfPredictor').val();
-				data["buildingBlocks"] = $('#buildingBlocks').val();
+				data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","));
+				data["buildingBlocks"] = uniqueElementToString($('#buildingBlocks').val().split(","));
+				
 				//add the data to table
 				identifier = data["name"].replace(/\s/g,"_");
 				data["identifier"] = identifier;
@@ -214,12 +230,14 @@
 						message = status["message"];
 						success= status["success"];
 					});
-					element = "<option name=\"" + selected + "\" selected=\"selected\">" + selected + "</option>";
-					$('#selectPredictionModel').append(element);
-					$('#selectPredictionModel').trigger("liszt:updated");
-					$('#addPredictionModel').val('');
-					$('#selectedPrediction >span').empty().text(selected);
-					//message = "You successfully added a new prediction model</br>Please define the predictors";
+					if(success == true){
+						element = "<option name=\"" + selected + "\" selected=\"selected\">" + selected + "</option>";
+						$('#selectPredictionModel').append(element);
+						$('#selectPredictionModel').trigger("liszt:updated");
+						$('#addPredictionModel').val('');
+						$('#selectedPrediction >span').empty().text(selected);
+						showPredictors(selected);
+					}
 					showMessage(message, success);
 				}
 			}
@@ -238,12 +256,13 @@
 					success= status["success"];
 				});
 				if(success == true){
+					$('#confirmWindow').dialog('close');
 					$('#selectPredictionModel option').filter(':selected').remove();
 					$('#selectPredictionModel').trigger("liszt:updated");
 					selected = $('#selectPredictionModel').val();
 					$('#selectedPrediction >span').empty().text(selected);
+					showPredictors(selected);
 				}
-				//message = "You successfully removed a prediction model!";
 				showMessage(message, success);
 			}
 		}
@@ -290,7 +309,7 @@
 		}
 		
 		function showPredictors(predictionModelName){
-		
+			
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_showPredictors&name=" + predictionModelName,
 				async: false,
@@ -306,9 +325,13 @@
 				delete status["buildingBlocksDefined"]; 
 				delete status["formula"];  
 				
+				$('#showPredictorPanel table tr:gt(0)').remove();
+				
 				$.each(status, function(predictor, Info){
 					populateRowInTable(Info);
 				});
+				
+				$('#summaryPanel').fadeIn().draggable();
 			});
 		}
 		
@@ -350,6 +373,21 @@
 	       return result;
 		}
 		
+		function uniqueElementToString(anArray){
+			
+			unique = uniqueElements(anArray);
+			
+			backToString = "";
+			
+			for(var i = 0; i < unique.length; i++){
+				backToString += unique[i] + ",";
+			}
+			
+			backToString = backToString.substring(0, backToString.length - 1);
+			
+			return backToString;
+		}
+		
 		//Create a jquery chosen multiple select element
 		function createMultipleSelect(listOfTerms){
 			
@@ -389,14 +427,17 @@
 		function showMessage(message, success){
 			
 			element = "";
+			
 			if(success == true){
 				element = "<p style=\"color:green;\">";
 			}else{
 				element = "<p style=\"color:red;\">";
 			}
+			
 			element += message + "</p>";
 			
 			$('#statusMessage >div').empty().append(element);
+			
 			$('#statusMessage').effect('bounce').delay(2000).fadeOut();
 		}
 	</script>
@@ -441,6 +482,11 @@
 								</div>
 								<div id="removeModelButton" style="cursor:pointer;height:18px;width:18px;float:left" class="ui-state-default ui-corner-all" title="remove">
 									<span class="ui-icon ui-icon-trash"></span>
+								</div>
+								<div id="confirmWindow" style="display:none;">
+									<p>
+										WARN: All data for this prediction model will be deleted! It is not repairable!
+									</p>
 								</div>
 							</div>
 							<div style="border-left:1px solid black;float:left;height:41%;top:-8px;position:relative;">
