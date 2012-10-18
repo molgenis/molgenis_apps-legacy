@@ -1,20 +1,8 @@
 package org.molgenis.compute.commandline;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.compute.design.ComputeParameter;
@@ -24,9 +12,8 @@ import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.*;
+import java.util.*;
 
 //import nl.vu.psy.rite.exceptions.RiteException;
 //import nl.vu.psy.rite.operations.Recipe;
