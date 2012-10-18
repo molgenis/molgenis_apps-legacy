@@ -155,7 +155,8 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 
         try
         {
-            host = new ExecutionHost(dbHost.getHostName(), dbHost.getHostUsername(), dbHost.getHostPassword(), 22);
+            System.out.println("OLD VERSION IS USED IN THIS CASE");
+            host = new ExecutionHost(dbHost.getHostName(), "", "", 22);
         }
         catch (IOException e)
         {

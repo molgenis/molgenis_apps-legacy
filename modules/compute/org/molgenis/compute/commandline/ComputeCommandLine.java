@@ -37,7 +37,7 @@ public class ComputeCommandLine {
 	protected ComputeBundle computeBundle;
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
-	protected Hashtable<String, Object> userValues = new Hashtable<String, Object>();
+	protected Linkedtable<String, Object> userValues = new Linkedtable<String, Object>();
 	private List<ComputeJob> jobs = new ArrayList<ComputeJob>();
 	private Worksheet worksheet;
 
@@ -85,7 +85,7 @@ public class ComputeCommandLine {
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
 		// create hash of all workflow elements (needed for dependencies)
-		Map<String, WorkflowElement> wfeMap = new HashMap<String, WorkflowElement>();
+		Map<String, WorkflowElement> wfeMap = new LinkedMap<String, WorkflowElement>();
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements()) {
 			wfeMap.put(wfe.getName(), wfe);
 		}
@@ -190,7 +190,7 @@ public class ComputeCommandLine {
 					}
 
 					// we calculate dependencies
-					Set<String> dependencies = new HashSet<String>();
+					Set<String> dependencies = new LinkedSet<String>();
 					for (int i = 0; i < size; i++) {
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name()) {
@@ -287,7 +287,7 @@ public class ComputeCommandLine {
 
 	private String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException, TemplateException {
 		// first create map
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new LinkedMap<String, Object>();
 
 		// add the helper
 		parameters.put("freemarkerHelper", new FreemarkerHelper(this.computeBundle));

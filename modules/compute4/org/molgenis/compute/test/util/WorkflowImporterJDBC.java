@@ -100,7 +100,8 @@ public class WorkflowImporterJDBC
                     parameter.setDataType("string");
                 else
                     parameter.setDataType(dataType);
-                parameter.setWorkflow(workflow);
+                //TODO
+                //parameter.setWorkflow(workflow);
 
                 if (hasOne_name != null)
                 {

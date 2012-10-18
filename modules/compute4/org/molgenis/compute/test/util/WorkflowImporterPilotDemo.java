@@ -102,7 +102,6 @@ public class WorkflowImporterPilotDemo
                     parameter.setDataType("string");
                 else
                     parameter.setDataType(dataType);
-                parameter.setWorkflow(workflow);
 
                 if (hasOne_name != null)
                 {

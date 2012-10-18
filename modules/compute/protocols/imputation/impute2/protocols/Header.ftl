@@ -9,7 +9,7 @@
 #PBS -o ${jobname}.out
 
 <#elseif scheduler == "SGE">
-#!/bin/bash
+#$ -S /bin/bash
 #$ -N ${jobname}
 #$ -q ${clusterQueue}
 #$ -p ${cores}

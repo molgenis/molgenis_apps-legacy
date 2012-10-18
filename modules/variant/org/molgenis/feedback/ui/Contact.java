@@ -18,6 +18,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
@@ -94,7 +95,7 @@ public class Contact extends EasyPluginController<ContactModel>
 	private void populateContactForm()
 	{
 		this.getModel().setContactForm(new ContactForm());
-		this.getModel().getContactForm().get("select").setValue(this.getName());
-		this.getModel().getContactForm().get("__target").setValue(this.getName());
+		((HiddenInput) this.getModel().getContactForm().get("select")).setValue(this.getName());
+		((HiddenInput) this.getModel().getContactForm().get("__target")).setValue(this.getName());
 	}
 }

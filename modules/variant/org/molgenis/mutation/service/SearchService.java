@@ -691,11 +691,11 @@ public class SearchService extends MolgenisVariantService
 	}
 
 
-	public List<PatientSummaryDTO> findPatientsByExonNumber(final int exonNumber)
-	{
-		// TODO Auto-generated method stub
-		return new ArrayList<PatientSummaryDTO>();
-	}
+//	public List<PatientSummaryDTO> findPatientsByExonNumber(final int exonNumber)
+//	{
+//		// TODO Auto-generated method stub
+//		return new ArrayList<PatientSummaryDTO>();
+//	}
 
 
 	public List<PatientSummaryDTO> findPatientsByObservedValue(final String value)
@@ -724,6 +724,7 @@ public class SearchService extends MolgenisVariantService
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public List<PatientSummaryDTO> findPatientsByMeasurement(final String featureName)
 	{
 		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.feature f JOIN ov.target p WHERE p.__Type = 'Patient' AND f.name = :name AND ov.value IN ('yes', 'true')";
