@@ -31,7 +31,6 @@ import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.BatchForm;
 import org.molgenis.variant.Patient;
-import org.molgenis.util.SimpleEmailService;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 

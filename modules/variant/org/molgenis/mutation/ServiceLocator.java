@@ -36,10 +36,10 @@ public class ServiceLocator
     {
     	if (context == null)
     	{
-//    		context = new org.springframework.context.support.ClassPathXmlApplicationContext();
-    		context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
-    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).scan("org.molgenis");
-    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).refresh();
+    		context = new org.springframework.context.support.ClassPathXmlApplicationContext();
+//    		context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
+//    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).scan("org.molgenis");
+//    		((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).refresh();
     	}
         return instance;
     }
