@@ -1,4 +1,4 @@
-<project>
+<project name="phenoflow">
 	<!-- this name is used to name the war file -->
 	<property name="app_name" value="phenoflow" />
 

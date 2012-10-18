@@ -55,7 +55,7 @@ public class ServiceLocator
 
     public synchronized void shutdown()
     {
-        ((org.springframework.context.annotation.AnnotationConfigApplicationContext) this.getContext()).close();
+//        ((org.springframework.context.annotation.AnnotationConfigApplicationContext) this.getContext()).close();
     }
 
     public final CmsService getCmsService()
