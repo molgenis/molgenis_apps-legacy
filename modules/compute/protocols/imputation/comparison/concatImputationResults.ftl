@@ -5,7 +5,7 @@ getFile ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py
 
 inputs "${impute2ResultsBinsLocation}"
 
-python ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py ${impute2ResultsBinsLocation} 500 ${resultsDir}/OUTPUT.gprobs
+python ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py ${impute2ResultsBinsLocation} 500 ${chr} ${resultsDir}/OUTPUT.gprobs
 
 putFile ${resultsDir}/OUTPUT.gprobs
 
