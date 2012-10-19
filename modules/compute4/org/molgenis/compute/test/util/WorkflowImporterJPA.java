@@ -24,10 +24,13 @@ public class WorkflowImporterJPA
 {
 	private File parametersFile, workflowFile, protocolsDir;
 
-
+    //workaround
+    private String[] sharedProtocols = {"CustomSubmit.sh.ftl", "Footer.ftl", "Header.ftl", "Macros.ftl", "Helpers.ftl"};
+    private Vector<String> shared = new Vector<String>();
 
 	public static void main(String[] args)
 	{
+
 		if (args.length == 3)
 		{
 			System.out.println("*** START WORKFLOW IMPORT");
@@ -51,6 +54,10 @@ public class WorkflowImporterJPA
 	private void process(String parametersFileName, String workflowFileName, String protocolsDirName)
 			throws DatabaseException
 	{
+        //ignore shared protocols
+        for(int i = 0; i < sharedProtocols.length; i++)
+            shared.add(sharedProtocols[i]);
+
         Vector<ComputeParameter> oldParameters = new Vector<ComputeParameter>();
 
 		// self-explanatory code
@@ -77,7 +84,7 @@ public class WorkflowImporterJPA
 			// create one requirement which we use for all protocols (for
 			// testing)
 			ComputeRequirement requirement = new ComputeRequirement();
-			requirement.setName("InHouseRequirement");
+			requirement.setName("InHouseRequirement"+ System.nanoTime());
 			requirement.setCores(1);
 			requirement.setNodes(1);
 			requirement.setMem("test");
@@ -109,10 +116,9 @@ public class WorkflowImporterJPA
                     String defaultValue = row.getString("defaultValue");
 
                     value = new ComputeParameterDefaultValue();
-                    value.setComputeParameter(parameter);
                     value.setWorkflow(workflow);
                     value.setDefaultValue(defaultValue);
-
+                    addDefault = true;
                 }
 
 				String dataType = row.getString("dataType");
@@ -129,9 +135,21 @@ public class WorkflowImporterJPA
                 parameters.add(parameter);
 
                 if(parameterNotExist( db, parameter))
+                {
     				db.add(parameter);
+                    if(addDefault)
+                        value.setComputeParameter(parameter);
+                }
                 else
+                {
                     oldParameters.add(parameter);
+                    if(addDefault)
+                    {
+                        ComputeParameter dbParameter = db.find(ComputeParameter.class,
+                                new QueryRule(ComputeParameter.NAME, QueryRule.Operator.EQUALS, parameter.getName())).get(0);
+                        value.setComputeParameter(dbParameter);
+                    }
+                }
 
                 if(addDefault)
                     db.add(value);
@@ -154,7 +172,10 @@ public class WorkflowImporterJPA
 				}
 
                 if(!oldParameters.contains(parameter))
+                {
     				parameter.setHasOne(vecParameters);
+                    db.update(parameter);
+                }
                 else
                 {
                     boolean correct = checkHasOneNotCorrectness(db, parameter, vecParameters);
@@ -167,7 +188,7 @@ public class WorkflowImporterJPA
                 }
 			}
 
-			db.update(parameters);
+			//db.update(parameters);
 
 			// add protocols
 			Vector<ComputeProtocol> protocols = new Vector<ComputeProtocol>();
@@ -179,6 +200,12 @@ public class WorkflowImporterJPA
 					String fName = files[i];
 
 					String protocolName = fName;
+
+                    int workflowNumber = db.query(Workflow.class).find().size();
+                    if(workflowNumber > 1)
+                        if(shared.contains(fName))
+                            continue;
+
 
 					// Don't remove extension while importing as two files, say
 					// a.x and a.y, may have the same name 'a' but a different
@@ -274,6 +301,7 @@ public class WorkflowImporterJPA
 		}
 
 	}
+
 
     private boolean checkHasOneNotCorrectness(Database db, ComputeParameter parameter, Vector<ComputeParameter> vecParameters) throws DatabaseException
     {
