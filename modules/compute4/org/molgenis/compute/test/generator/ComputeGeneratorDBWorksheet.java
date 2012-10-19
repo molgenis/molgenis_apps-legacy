@@ -20,6 +20,7 @@ import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
+import org.molgenis.compute.runtime.ComputeParameterDefaultValue;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.compute.test.temp.Target;
 import org.molgenis.framework.db.Database;
@@ -115,7 +116,42 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 	 */
 	public void generateTasks(Workflow workflow, List<ComputeParameter> pList, List<Tuple> worksheet)
     {
-		List<ComputeParameter> parameterList = pList;
+        List<ComputeParameter> parameterList = pList;
+        try
+        {
+            db = DatabaseFactory.create();
+
+        }
+        catch (DatabaseException e)
+        {
+            e.printStackTrace();
+        }
+
+
+        //here, substitute default values of compute parameters with actual one for workflow
+        for(ComputeParameter parameter : parameterList)
+        {
+            if(parameter.getDefaultValue() != null)
+            {
+                try
+                {
+                    List<ComputeParameterDefaultValue> defaultValues = db.query(ComputeParameterDefaultValue.class)
+                            .equals(ComputeParameterDefaultValue.COMPUTEPARAMETER_NAME, parameter.getName())
+                            .equals(ComputeParameterDefaultValue.WORKFLOW_NAME, workflow.getName()).find();
+
+                    if(defaultValues.size() > 0)
+                    {
+                        String value = defaultValues.get(0).getDefaultValue();
+                        parameter.setDefaultValue(value);
+                    }
+                }
+                catch (DatabaseException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
 		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
 
 		// Put protocols in a temporary directory to enable a protocol to
@@ -131,14 +167,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 
 		File protocolsDir = new File(protocolsDirName);
 
-		try {
-			db = DatabaseFactory.create();
-			saveProtocolsInDir(db, protocolsDir);
-
-			db.beginTx();
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
+		saveProtocolsInDir(db, protocolsDir);
 
 		// I guess, we should also add line_number as a 'ComputeParameter'...
 		ComputeParameter line_number = new ComputeParameter();
@@ -232,10 +261,14 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 			}
 		}
 
-		try {
+		try
+        {
+            db.beginTx();
 			db.add(tasks);
 			db.commitTx();
-		} catch (DatabaseException e) {
+		}
+        catch (DatabaseException e)
+        {
 			e.printStackTrace();
 		}
 
