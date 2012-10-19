@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
 import org.molgenis.datatable.model.ProtocolTable;
-import org.molgenis.datatable.model.TableException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Tuple;

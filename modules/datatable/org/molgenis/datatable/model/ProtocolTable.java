@@ -10,12 +10,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.molgenis.datatable.view.MolgenisUpdateDatabase;
+import org.molgenis.datatable.util.MolgenisUpdateDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.EditableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
@@ -26,6 +29,8 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+
+import app.DatabaseFactory;
 
 /**
  * Wrap one Protocol EAV model in a TupleTable so that you can query this
@@ -642,5 +647,28 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		this.investigationName = investigationName;
 
 	}
+	
+	/**
+	 * very bad: bypasses all security and connection management
+	 */
+	private Database db;
+	 public void setDb(Database db)
+	 {
+	 if (db == null) throw new
+	 NullPointerException("database cannot be null in setDb(db)");
+	 this.db = db;
+	 }
+	 public Database getDb()
+	 {
+	 try
+	 {
+	 db = DatabaseFactory.create();
+	 }
+	 catch (DatabaseException e)
+	 {
+	 throw new RuntimeException(e);
+	 }
+	 return this.db;
+	 }
 
 }

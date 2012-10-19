@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.tupletable.FilterableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -140,13 +142,6 @@ public class EditableTableDecorator implements FilterableTupleTable
 	public void setColOffset(int offset)
 	{
 		decoratedTable.setColOffset(offset);
-	}
-
-	@Override
-	@Deprecated
-	public void setDb(Database db)
-	{
-		decoratedTable.setDb(db);
 	}
 
 	@Override

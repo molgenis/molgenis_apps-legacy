@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.molgenis.datatable.model.JdbcTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.pheno.Individual;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;

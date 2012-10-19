@@ -2,8 +2,8 @@ package org.molgenis.datatable.test;
 
 import java.util.List;
 
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

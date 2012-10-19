@@ -1,4 +1,4 @@
-package org.molgenis.datatable.model;
+package matrix.datatable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,6 +8,9 @@ import java.util.List;
 import matrix.DataMatrixInstance;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;

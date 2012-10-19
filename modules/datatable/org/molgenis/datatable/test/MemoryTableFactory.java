@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.datatable.model.MemoryTable;
-import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 

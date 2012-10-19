@@ -1,11 +1,12 @@
-package org.molgenis.datatable.test;
+package matrix.datatable;
 
 import java.io.File;
 import java.util.Iterator;
 
-import org.molgenis.datatable.model.PedMapTupleTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
+import matrix.datatable.PedMapTupleTable;
+
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
