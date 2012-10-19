@@ -1,6 +1,7 @@
 package plugins.importwizard;
 
 import java.io.File;
+import java.util.List;
 
 import app.ImportWizardExcelPrognosis;
 
@@ -11,6 +12,7 @@ public class ImportWizardModel
 	private File currentFile;
 	private ImportWizardExcelPrognosis iwep;
 	private boolean importSuccess;
+	private List<String> dataSetSheetNames;
 
 	public String getWhichScreen()
 	{
@@ -50,6 +52,16 @@ public class ImportWizardModel
 	public void setImportSuccess(boolean importSuccess)
 	{
 		this.importSuccess = importSuccess;
+	}
+
+	public List<String> getDataSetSheetNames()
+	{
+		return dataSetSheetNames;
+	}
+
+	public void setDataSetSheetNames(List<String> dataSetSheetNames)
+	{
+		this.dataSetSheetNames = dataSetSheetNames;
 	}
 
 }

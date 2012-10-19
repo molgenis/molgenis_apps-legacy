@@ -235,7 +235,7 @@
 				description="DataSet this ValueSet is part of." />
 			<field name="Target" type="xref" xref_entity="Characteristic"
 				description="References the target for which this data was recorded. For example 'individual1'." />
-			<field name="Time" type="datetime" description="Time of this observationSet" />
+			<field name="Time" type="datetime" description="Time of this observationSet" nillable="true" />
 			<unique fields="partOfDataSet,Target,Time" description="No single secondary key" />
 		</entity>
 		<entity name="ObservedValue" implements="Autoid">
