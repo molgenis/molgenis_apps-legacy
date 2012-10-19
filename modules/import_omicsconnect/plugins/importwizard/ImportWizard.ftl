@@ -14,6 +14,7 @@
 	<#assign endFont = "</font>">
 	
 	<#assign greenBg = "<font style=\"background-color: #52D017\">"> <#--successmess: 52D017-->
+	<#assign orangeBg = "<font style=\"background-color: #FFA500\">">
 	<#assign redBg = "<font style=\"background-color: red; color: white; font-weight:bold\">">
 		
 <!-- this shows a title and border -->
@@ -36,7 +37,7 @@
 <#--begin your plugin-->
 
 <#if !model.getWhichScreen()?exists || model.getWhichScreen() == "one">
-<h2>Data import wizard Type Dennis</h2>
+<h2>Data import wizard</h2>
 <div style="height: 10px;">&nbsp;</div>
 
 <i>Upload Excel file with your data</i>
@@ -77,7 +78,9 @@
 		<td>Import order</td>
 		<td>Sheet name</td>
 		<td>Importable fields</td>
+		<td>Missing fields</td>
 		<td>Unknown fields</td>
+		<td>Optional fields</td>
 	</tr>
 <#assign count = 1>
 <#list model.iwep.importOrder as sheet>
@@ -86,8 +89,9 @@
 		<td>${sheet}</td>
 		
 		<td><#if model.iwep.fieldsImportable[sheet]?size gt 0><#list model.iwep.fieldsImportable[sheet] as field>${greenBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="errormessage">No importable fields</p></#if></td>
-		
+		<td><#if model.iwep.fieldsMissing[sheet]?size gt 0><#list model.iwep.fieldsMissing[sheet] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No missing fields</p></#if></td>
 		<td><#if model.iwep.fieldsUnknown[sheet]?size gt 0><#list model.iwep.fieldsUnknown[sheet] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No unknown fields</p></#if></td>
+		<td><#if model.iwep.fieldsOptional[sheet]?size gt 0><#list model.iwep.fieldsOptional[sheet] as field>${orangeBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No optional fields</p></#if></td>
 	</tr>
 <#assign count = count+1>
 </#list>
