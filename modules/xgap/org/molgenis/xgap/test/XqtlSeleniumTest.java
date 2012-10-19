@@ -606,7 +606,7 @@ public class XqtlSeleniumTest
 				clickAndWait("id=Utilities_tab_button");
 				clickAndWait("id=Tools_tab_button");
 				Assert.assertTrue(selenium.isTextPresent("Format names*Rename duplicates"));
-				Assert.assertFalse(selenium.isTextPresent("KEGG converter"));
+				//Assert.assertFalse(selenium.isTextPresent("KEGG converter"));
 				Assert.assertFalse(selenium.isTextPresent("ROnline"));
 
 				//login as bioinformatician and see if the correct tabs are visible
@@ -625,7 +625,7 @@ public class XqtlSeleniumTest
 				
 				clickAndWait("id=Utilities_tab_button");
 				clickAndWait("id=Tools_tab_button");
-				Assert.assertTrue(selenium.isTextPresent("Format names*Rename duplicates*KEGG converter"));
+				Assert.assertTrue(selenium.isTextPresent("Format names*Rename duplicates"));
 				
 				//log back in as admin
 				clickAndWait("link=Logout");

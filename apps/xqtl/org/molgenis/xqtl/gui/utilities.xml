@@ -18,8 +18,8 @@
 				type="plugins.help.naming.NamingPlugin" group="biologist" />
 			<plugin label="Rename duplicates" name="DuplicateRenaming"
 				type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
-			<plugin label="KEGG converter" name="KeggConverter"
-				type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
+			<!--plugin label="KEGG converter" name="KeggConverter"
+				type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" /-->
 		</menu>
 	</menu>
 </molgenis>
