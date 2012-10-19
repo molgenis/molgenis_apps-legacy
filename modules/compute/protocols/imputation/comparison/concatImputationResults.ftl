@@ -4,6 +4,7 @@ getFile ${impute2ResultsBinsLocation}
 
 inputs "${impute2ResultsBinsLocation}"
 
-`python -c 'from operator import setitem; names = {}; [setitem(names, x[1], x[2]) for x in [line.split() for line in open("${impute2ResultsBinsLocation}")]]; files = str.join(" ", [names["chr${chr}_1_5000000_samples_" + str(i) + "_" + str(i+500-1)] + " 500" for i in range(0,5000,500)]); print "python ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py " + files + " ${resultsDir}/OUTPUT.gprobs"'`
+python ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py ${impute2ResultsBinsLocation} 500 ${resultsDir}/OUTPUT.gprobs
 
 putFile ${resultsDir}/OUTPUT.gprobs
+
