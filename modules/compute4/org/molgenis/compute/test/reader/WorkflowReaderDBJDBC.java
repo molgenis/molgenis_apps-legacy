@@ -1,6 +1,7 @@
 package org.molgenis.compute.test.reader;
 
 import app.DatabaseFactory;
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
@@ -52,6 +53,12 @@ public class WorkflowReaderDBJDBC implements WorkflowReader
         {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public List<ComputeParameter> getParameters()
+    {
+        //TODO: we do not use JDBC workflow reader - otherwise it should be implemented
         return null;
     }
 }

@@ -1,10 +1,13 @@
 package org.molgenis.compute.test.reader;
 
 import app.DatabaseFactory;
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,6 +31,26 @@ public class WorkflowReaderDBJPA implements WorkflowReader
 
             db.close();
             return w;
+        }
+        catch (DatabaseException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<ComputeParameter> getParameters()
+    {
+        Database db = null;
+        try
+        {
+            db = DatabaseFactory.create();
+            db.beginTx();
+
+            //Workflow w = db.query(Workflow.class).find().get(0);
+            List<ComputeParameter> parameters = db.query(ComputeParameter.class).find();
+            db.close();
+            return parameters;
         }
         catch (DatabaseException e)
         {

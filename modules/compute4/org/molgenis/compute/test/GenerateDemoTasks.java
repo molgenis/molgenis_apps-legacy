@@ -1,11 +1,5 @@
 package org.molgenis.compute.test;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.velocity.util.StringUtils;
 import org.molgenis.compute.commandline.WorksheetHelper;
 import org.molgenis.compute.commandline.options.Options;
@@ -16,6 +10,12 @@ import org.molgenis.compute.test.generator.ComputeGeneratorDBWorksheet;
 import org.molgenis.compute.test.reader.WorkflowReader;
 import org.molgenis.compute.test.reader.WorkflowReaderDBJPA;
 import org.molgenis.util.Tuple;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class GenerateDemoTasks
 {
@@ -28,13 +28,17 @@ public class GenerateDemoTasks
 
 		// read a workflow
 		Workflow workflow = reader.getWorkflow("lspilot1_workflow_grid.csv");
-
+        List<ComputeParameter> parameters = reader.getParameters();
 		// Get command line parameters and add them to workflow
-		addCommandLineParameters(args, workflow);
+		addCommandLineParameters(args, parameters);
 
 		// get worksheet from commmand line parameters
 		String worksheetFile = null;
-		for (ComputeParameter cp : workflow.getWorkflowComputeParameterCollection())
+        //TODO HERE
+
+
+
+        for (ComputeParameter cp : parameters)
 		{
 			if (cp.getName().equalsIgnoreCase("McWorksheet")) worksheetFile = cp.getDefaultValue();
 		}
@@ -53,12 +57,12 @@ public class GenerateDemoTasks
 		// generate ComputeTasks
 		ComputeGenerator generator = new ComputeGeneratorDBWorksheet();
 		// generator.generateWithTuple(workflow, worksheet, null);
-		generator.generateTasks(workflow, worksheet);
+		generator.generateTasks(workflow, parameters, worksheet);
 
 		System.out.println("... generated");
 	}
 
-	private static void addCommandLineParameters(String[] args, Workflow workflow)
+	private static void addCommandLineParameters(String[] args, List<ComputeParameter> parameters)
 	{
 		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
 
@@ -89,7 +93,7 @@ public class GenerateDemoTasks
 		while (it.hasNext())
 		{
 			String name = it.next();
-			workflow.getWorkflowComputeParameterCollection().add(
+			parameters.add(
 					createComputeParameter("Mc" + StringUtils.firstLetterCaps(name), opt.getSet().getOption(name)
 							.getResultValue(0)));
 		}
