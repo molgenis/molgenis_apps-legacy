@@ -65,7 +65,7 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 			// }
 
 			// create table
-			ProtocolTable table = new ProtocolTable(db, "ChaoRoan");
+			ProtocolTable table = new ProtocolTable("ChaoRoan");
 			table.setTargetString(target);
 			table.setFirstColumnFixed(true);
 			// add editable decorator

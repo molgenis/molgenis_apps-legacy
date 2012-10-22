@@ -34,7 +34,7 @@ public class TestProtocolTable
 
 		Protocol protocol = db.query(Protocol.class).eq(Protocol.NAME, "TestProtocol").find().get(0);
 
-		table = new ProtocolTable(db, protocol);
+		table = new ProtocolTable(protocol);
 		table.setTargetString(targetString);
 	}
 

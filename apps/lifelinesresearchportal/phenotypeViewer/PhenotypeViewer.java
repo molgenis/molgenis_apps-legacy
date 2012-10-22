@@ -158,7 +158,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 			} else if (request.getAction().equals(
 					"download_json_reloadGridByInves")) {
 				investigationName = request.getString("investigation");
-				ProtocolTable table = new ProtocolTable(db, investigationName);
+				ProtocolTable table = new ProtocolTable(investigationName);
 				table.setTargetString("target");
 				table.setInvestigation(investigationName);
 				// add editable decorator
@@ -219,7 +219,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 			try {
 
 				// create table
-				ProtocolTable table = new ProtocolTable(db, investigationName);
+				ProtocolTable table = new ProtocolTable(investigationName);
 				table.setTargetString("target");
 				table.setInvestigation(investigationName);
 				// add editable decorator
@@ -271,7 +271,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 
 			importUploadFile(db, request);
 
-			ProtocolTable table = new ProtocolTable(db, investigationName);
+			ProtocolTable table = new ProtocolTable(investigationName);
 
 			table.setTargetString(table.getTargetString());
 			// add editable decorator
@@ -713,8 +713,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 				// "stageCatalogue").find().get(0);
 				if (db.find(Protocol.class).size() > 0) {
 					// create table
-					ProtocolTable table = new ProtocolTable(db,
-							investigationName);
+					ProtocolTable table = new ProtocolTable(investigationName);
 
 					table.setTargetString(table.getTargetString());
 					// add editable decorator

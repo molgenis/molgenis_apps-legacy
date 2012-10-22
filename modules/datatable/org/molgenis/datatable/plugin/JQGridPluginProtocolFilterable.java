@@ -31,7 +31,7 @@ public class JQGridPluginProtocolFilterable extends EasyPluginController<JQGridP
 		{
 			// only this line changed ...
 			final Protocol p = db.query(Protocol.class).eq(Protocol.NAME, "TestProtocol").find().get(0);
-			tableView = new JQGridView("test", this, new ProtocolTable(db, p));
+			tableView = new JQGridView("test", this, new ProtocolTable(p));
 			tableView.setLabel("<b>Table:</b>Testing using the FilterableProtocolTable");
 		}
 		catch (final Exception e)
