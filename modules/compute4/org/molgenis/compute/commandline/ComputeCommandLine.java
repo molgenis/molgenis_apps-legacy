@@ -266,11 +266,6 @@ public class ComputeCommandLine
 		 */
 	}
 
-	private boolean lessOrEqualThan(int min, int wt_h, int wt_m, int wt_s)
-	{
-		return (wt_h < min || (wt_h == min && wt_m == 0 && wt_s == 0));
-	}
-
 	private String addHeaderFooter(String scripttemplate, String interpreter)
 	{
 		// THIS SHOULD BE REPLACED WITH TEMPLATES:
@@ -399,7 +394,6 @@ public class ComputeCommandLine
 
 	public static void main(String[] args)
 	{
-
 		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
 
 		opt.getSet().addOption("parameters", false, Options.Separator.EQUALS);
