@@ -92,6 +92,22 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	@Override
 	public List<Field> getAllColumns() throws TableException
 	{
+		try
+		{
+			if(getDb().getConnection().isClosed())
+			{
+				throw new TableException("getRows(): Connection is closed!");
+			}
+		}
+		catch (SQLException e1)
+		{
+			throw new TableException(e1);
+		}
+		catch (DatabaseException e1)
+		{
+			throw new TableException(e1);
+		}
+		
 		if (columns.size() == 0)
 		{
 			try
@@ -234,9 +250,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 							break;
 						}
 					}
-					// if (currentMeasurement == null) {
-					// System.out.println();
-					// }
 					if (currentMeasurement != null)
 					{
 
@@ -280,13 +293,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 			}
 
-			System.out.println("GOING TO RETURN:");
-			for(Tuple t : result)
-			{
-				System.out.println(t.toString());
-			}
-			
-			
 			return result;
 		}
 		catch (Exception e)
@@ -389,7 +395,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 					}
 				}
 			}
-			System.out.println("");
 		}
 
 		// one column is defined by ObservedValue.Investigation,
@@ -422,7 +427,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		sql += " WHERE ProtocolApplication.Investigation=" + invID;
 
-		System.out.println(sql);
+		//System.out.println(sql);
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
