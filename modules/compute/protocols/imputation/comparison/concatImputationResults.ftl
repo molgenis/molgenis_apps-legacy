@@ -17,7 +17,7 @@ getFile ${gprobsBinsDir}/chr1_4500_4999
 inputs "${impute2ResultsBinsLocation}"
 
 mkdir -p ${resultsDir}
-python ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py ${impute2ResultsBinsLocation} 500 ${chr} ${resultsDir}/OUTPUT.gprobs
+python ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py ${impute2ResultsBinsLocation} 500 10 ${chr} ${resultsDir}/OUTPUT.gprobs
 
 putFile ${resultsDir}/OUTPUT.gprobs
 
