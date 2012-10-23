@@ -15,8 +15,8 @@ import org.molgenis.framework.db.MapperDecorator;
 
 public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extends MapperDecorator<E>
 {
-	//JDBCMapper is the generate thing
-	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
+	// JDBCMapper is the generate thing
+	// TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public DBIndexUpdateDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
@@ -26,23 +26,22 @@ public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extend
 	public int add(List<E> entities) throws DatabaseException
 	{
 		/**
-		 * On each DB update add the records in Lucene Index. 
+		 * On each DB update add the records in Lucene Index.
 		 */
 		// add your pre-processing here, e.g.
 		// for (org.molgenis.bbmri.Biobank e : entities)
 		// {
-		//  	e.setTriggeredField("Before add called!!!");
+		// e.setTriggeredField("Before add called!!!");
 		// }
 
-		//call AddDocument() from DBIndexPlugin.java
+		// call AddDocument() from DBIndexPlugin.java
 		System.out.println("**************Coming from DBIndexUpdateDecorator");
 		System.out.println(entities);
 
-		//plugins.LuceneIndex.AdminIndexes.updateIndex(entities);
+		// plugins.LuceneIndex.AdminIndexes.updateIndex(entities);
 
-		
-		//disabled because path breaks on server.
-		//plugins.LuceneIndex.AdminIndexes.updateIndex(entities);
+		// disabled because path breaks on server.
+		// plugins.LuceneIndex.AdminIndexes.updateIndex(entities);
 
 		// here we call the standard 'add'
 		int count = super.add(entities);
@@ -60,7 +59,7 @@ public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extend
 		// add your pre-processing here, e.g.
 		// for (org.molgenis.bbmri.Biobank e : entities)
 		// {
-		// 		e.setTriggeredField("Before update called!!!");
+		// e.setTriggeredField("Before update called!!!");
 		// }
 
 		// here we call the standard 'update'
@@ -81,9 +80,9 @@ public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extend
 		int count = super.remove(entities);
 
 		// add your post-processing here, e.g.
-		// if(true) throw new SQLException("Because of a post trigger the remove is cancelled.");
+		// if(true) throw new
+		// SQLException("Because of a post trigger the remove is cancelled.");
 
 		return count;
 	}
 }
-

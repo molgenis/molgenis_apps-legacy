@@ -6,15 +6,18 @@ import org.molgenis.framework.db.DatabaseException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GffService {
+public class GffService
+{
 	private Database db;
 
-	//@Autowired
-	public void setDatabase(Database db) {
+	// @Autowired
+	public void setDatabase(Database db)
+	{
 		this.db = db;
 	}
 
-	public String exportExons() throws DatabaseException {
+	public String exportExons() throws DatabaseException
+	{
 		// StringBuilder b = new StringBuilder();
 		//
 		// List<SequenceCharacteristic> geneList =

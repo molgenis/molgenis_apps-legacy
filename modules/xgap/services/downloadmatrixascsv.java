@@ -34,12 +34,12 @@ import plugins.matrix.manager.MatrixManager;
 public class downloadmatrixascsv implements MolgenisService
 {
 	private MolgenisContext mc;
-	
+
 	public downloadmatrixascsv(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	private static Logger logger = Logger.getLogger(downloadmatrixascsv.class);
 
 	@Override
@@ -50,10 +50,10 @@ public class downloadmatrixascsv implements MolgenisService
 		OutputStream out = response.getResponse().getOutputStream();
 		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
 		response.getResponse().setStatus(HttpServletResponse.SC_OK);
-		
+
 		boolean databaseIsAvailable = false;
 		Database db = null;
-		
+
 		String content = "";
 
 		try
@@ -71,19 +71,22 @@ public class downloadmatrixascsv implements MolgenisService
 		{
 			try
 			{
-				
-				//special exception for filtered content: get matrix instance from memory and do complete handle
-				if(request.getString("id").equals("inmemory"))
+
+				// special exception for filtered content: get matrix instance
+				// from memory and do complete handle
+				if (request.getString("id").equals("inmemory"))
 				{
-					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
-					content = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA)).toString();
+					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession()
+							.getAttribute("application");
+					content = ((DataMatrixInstance) molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA))
+							.toString();
 					response.getResponse().setContentLength(content.length());
 					p.print(content);
 					p.flush();
 					p.close();
 					return;
 				}
-				
+
 				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
@@ -92,15 +95,16 @@ public class downloadmatrixascsv implements MolgenisService
 
 				if (request.getString("download").equals("all"))
 				{
-					if (request.getString("stream").equals("true"))	{
-						//content += instance.toString();
+					if (request.getString("stream").equals("true"))
+					{
+						// content += instance.toString();
 						instance.toPrintStream(p);
 						p.close();
 						return;
 					}
 					else if (request.getString("stream").equals("false"))
 					{
-						content +=  instance.toString() ;
+						content += instance.toString();
 					}
 					else
 					{
@@ -144,18 +148,23 @@ public class downloadmatrixascsv implements MolgenisService
 		p.print(content);
 		p.flush();
 		p.close();
-		
+
 	}
 
 	public String displayUsage(Database db)
 	{
-		String usage = "Usage:" + "\n\n" + "Full matrix, streamed output:\n"
-				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=all&stream=true" + "\n\n"
+		String usage = "Usage:"
+				+ "\n\n"
+				+ "Full matrix, streamed output:\n"
+				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=all&stream=true"
+				+ "\n\n"
 				+ "Full matrix, buffered output:\n"
-				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=all&stream=false" + "\n\n"
+				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=all&stream=false"
+				+ "\n\n"
 				+ "Only first element of matrix (top left):\n"
 				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=some&coff=0&clim=1&roff=0&rlim=1&stream=true"
-				+ "\n\n" + "6 by 15 submatrix with a row offset of 20 and a column offset of 5:\n"
+				+ "\n\n"
+				+ "6 by 15 submatrix with a row offset of 20 and a column offset of 5:\n"
 				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=some&coff=5&clim=6&roff=20&rlim=15&stream=true"
 				+ "\n\n" + "Matrices available in this database:\n\n" + matricesFromDb(db) + "\n";
 		return usage;
@@ -180,5 +189,4 @@ public class downloadmatrixascsv implements MolgenisService
 		return res;
 	}
 
-	
 }

@@ -32,7 +32,8 @@ public class DataLoader
 		}
 		catch (Exception e)
 		{
-			result.add("Storage location is not set or invalid. Please use the system settings plugin to assign one. Exception: " + e.getMessage());
+			result.add("Storage location is not set or invalid. Please use the system settings plugin to assign one. Exception: "
+					+ e.getMessage());
 			e.printStackTrace();
 			return result;
 		}
@@ -68,9 +69,12 @@ public class DataLoader
 			result.add("Starting to load datamodel / reset db..");
 			try
 			{
-				if(resetDbWhenApplicable){
+				if (resetDbWhenApplicable)
+				{
 					new emptyDatabase(db, true);
-				}else{
+				}
+				else
+				{
 					result.add("Not executing database reset, already done? Continuing..");
 				}
 				loadDataModel = true;
@@ -110,7 +114,8 @@ public class DataLoader
 
 			try
 			{
-				Investigation inv = db.find(Investigation.class, new QueryRule("name", Operator.EQUALS, "ClusterDemo")).get(0);
+				Investigation inv = db.find(Investigation.class, new QueryRule("name", Operator.EQUALS, "ClusterDemo"))
+						.get(0);
 				result.add("Linking to investigation ClusterDemo");
 				QueryRule investigationId = new QueryRule("investigation", Operator.EQUALS, inv.getId());
 				QueryRule genoName = new QueryRule("name", Operator.EQUALS, "genotypes");
@@ -118,12 +123,12 @@ public class DataLoader
 				Data genoData = db.find(Data.class, investigationId, genoName).get(0);
 				Data phenoData = db.find(Data.class, investigationId, phenoName).get(0);
 				new AddClusterMetaModel(genoData, phenoData, db);
-				
+
 				PlinkFileManager.tagParameter("Plink_bin_params", "inputname", "hapmap1", db);
 				System.out.println("tagged plink parameters");
 				AddClusterMetaModel.tagPlinkBinaryDataSet(db);
 				System.out.println("tagged plink dataset");
-				
+
 				result.add("Complete success");
 			}
 			catch (Exception e)

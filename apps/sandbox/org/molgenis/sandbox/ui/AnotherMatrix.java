@@ -1,4 +1,3 @@
-
 package org.molgenis.sandbox.ui;
 
 import org.molgenis.framework.db.Database;
@@ -11,9 +10,9 @@ public class AnotherMatrix extends EasyPluginController<AnotherMatrixModel>
 	public AnotherMatrix(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new AnotherMatrixModel(this)); //the default model
+		this.setModel(new AnotherMatrixModel(this)); // the default model
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new AnotherMatrixView(getModel());
@@ -21,6 +20,6 @@ public class AnotherMatrix extends EasyPluginController<AnotherMatrixModel>
 
 	@Override
 	public void reload(Database db) throws Exception
-	{	
+	{
 	}
 }

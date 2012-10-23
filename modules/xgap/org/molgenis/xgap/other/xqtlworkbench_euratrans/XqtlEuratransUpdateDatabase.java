@@ -1,4 +1,5 @@
 package org.molgenis.xgap.other.xqtlworkbench_euratrans;
+
 import org.molgenis.Molgenis;
 
 public class XqtlEuratransUpdateDatabase

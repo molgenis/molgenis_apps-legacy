@@ -1,10 +1,6 @@
 //PAGING should be done using limit/offset
 //this should not be a queryrule as you can do this only 1x for row and 1x for col.
 
-
-
-
-
 package org.molgenis.matrix.component.legacy;
 
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -18,8 +14,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		//TODO reimplement using limit/offset
-		
+		// TODO reimplement using limit/offset
 
 	}
 
@@ -31,7 +26,7 @@ public class Mover<R, C, V>
 	public void moveRight(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
 
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 
 	/**
@@ -42,7 +37,7 @@ public class Mover<R, C, V>
 	public void moveDown(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
 
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 
 	/**
@@ -52,7 +47,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveUp(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 
 	/**
@@ -60,7 +55,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 
 	/**
@@ -71,7 +66,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarRight(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 
 	/**
@@ -83,7 +78,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarDown(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 
 	/**
@@ -91,6 +86,6 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarUp(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		//TODO reimplement using limit/offset
+		// TODO reimplement using limit/offset
 	}
 }

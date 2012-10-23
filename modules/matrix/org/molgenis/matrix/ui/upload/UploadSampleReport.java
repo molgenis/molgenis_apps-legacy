@@ -26,8 +26,7 @@ import org.molgenis.util.Tuple;
  * UploadSampleReportView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
-public class UploadSampleReport extends
-		EasyPluginController<UploadSampleReportModel>
+public class UploadSampleReport extends EasyPluginController<UploadSampleReportModel>
 {
 	private static final long serialVersionUID = 6754376605793548861L;
 
@@ -40,8 +39,9 @@ public class UploadSampleReport extends
 	private State state = State.UPLOAD;
 	// place where the uploaded csv is stored
 	Matrix<String, String, String> csvMatrix;
+
 	// place where the uploaded data can be viewed
-//	PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix;
+	// PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix;
 
 	public UploadSampleReport(String name, ScreenController<?> parent)
 	{
@@ -80,10 +80,10 @@ public class UploadSampleReport extends
 	{
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
-		f.add(new Paragraph("t",
-				"Done. TODO: show result."));
-		
-//		f.add(new PhenoMatrixView<LibraryLane, ObservableFeature> ("test",phenoMatrix));
+		f.add(new Paragraph("t", "Done. TODO: show result."));
+
+		// f.add(new PhenoMatrixView<LibraryLane, ObservableFeature>
+		// ("test",phenoMatrix));
 
 		f.add(new ActionInput("doReset", "back"));
 
@@ -97,9 +97,8 @@ public class UploadSampleReport extends
 
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
-		f.add(new Paragraph("t",
-				"Check here your parsed matrix. Click save if you are happy."));
-		
+		f.add(new Paragraph("t", "Check here your parsed matrix. Click save if you are happy."));
+
 		f.add(new StringMatrixView("test", csvMatrix));
 
 		f.add(new ActionInput("doReset", "back"));
@@ -116,10 +115,9 @@ public class UploadSampleReport extends
 
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
-		f
-				.add(new Paragraph(
-						"t",
-						"paste here your data matrix in CSV or TAB format. First row is column headers and has 1 value less. First column matches the names of the Targets."));
+		f.add(new Paragraph(
+				"t",
+				"paste here your data matrix in CSV or TAB format. First row is column headers and has 1 value less. First column matches the names of the Targets."));
 
 		f.add(new TextInput("csv", "paste your data here"));
 
@@ -156,12 +154,14 @@ public class UploadSampleReport extends
 		// copy the matrix into a pheno matrix and store
 		try
 		{
-//			PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix = new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
-//					LibraryLane.class, ObservableFeature.class, csvMatrix);
-//			phenoMatrix.store(db);
-//			
-//			this.phenoMatrix = new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
-//					LibraryLane.class, ObservableFeature.class, db);
+			// PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix =
+			// new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
+			// LibraryLane.class, ObservableFeature.class, csvMatrix);
+			// phenoMatrix.store(db);
+			//
+			// this.phenoMatrix = new PhenoMemoryMatrix<LibraryLane,
+			// ObservableFeature>(
+			// LibraryLane.class, ObservableFeature.class, db);
 
 			this.state = State.SAVED;
 			this.setSuccess("Pheno matrix saved succesfully");
@@ -183,6 +183,6 @@ public class UploadSampleReport extends
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		//na
+		// na
 	}
 }

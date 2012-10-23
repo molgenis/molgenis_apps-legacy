@@ -7,13 +7,13 @@ import java.util.regex.Pattern;
 public class StringConvertor implements ValueConvertor<String>
 {
 	private int stringLength = 255;
-	private Pattern nullCharPattern =  null;
-	
+	private Pattern nullCharPattern = null;
+
 	public StringConvertor()
 	{
-		
+
 	}
-	
+
 	@Override
 	public String read(String value)
 	{
@@ -46,7 +46,7 @@ public class StringConvertor implements ValueConvertor<String>
 		}
 		return result;
 	}
-	
+
 	public Pattern getNullCharPattern()
 	{
 		return nullCharPattern;

@@ -5,10 +5,7 @@ import java.util.Map;
 
 import org.molgenis.util.Entity;
 
-
-public class DatasetExplorerModel{
-
-	
-	
+public class DatasetExplorerModel
+{
 
 }

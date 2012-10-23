@@ -53,21 +53,18 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 	 * @param values
 	 * @throws MatrixException
 	 * @throws FileNotFoundException
-	 * @throws DataFormatException 
-	 * @throws IOException 
+	 * @throws DataFormatException
+	 * @throws IOException
 	 */
-	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
-			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
-			Matrix<E, A, V> values, File file) throws MatrixException,
-			IOException, DataFormatException
+	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor, ValueConvertor<A> colConvertor,
+			ValueConvertor<V> valueConvertor, Matrix<E, A, V> values, File file) throws MatrixException, IOException,
+			DataFormatException
 	{
-		this(rowConvertor, colConvertor, valueConvertor,
-				new CsvFileReader(file));
+		this(rowConvertor, colConvertor, valueConvertor, new CsvFileReader(file));
 	}
 
-	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
-			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
-			Matrix<E, A, V> values, CsvReader reader) throws MatrixException
+	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor, ValueConvertor<A> colConvertor,
+			ValueConvertor<V> valueConvertor, Matrix<E, A, V> values, CsvReader reader) throws MatrixException
 	{
 		super(values);
 		this.rowConvertor = rowConvertor;
@@ -87,10 +84,8 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 	 * @throws FileNotFoundException
 	 * @throws MatrixException
 	 */
-	public CsvMemoryMatrix(final ValueConvertor<E> rowConvertor,
-			final ValueConvertor<A> colConvertor,
-			final ValueConvertor<V> valueConvertor, CsvReader csvReader)
-			throws MatrixException
+	public CsvMemoryMatrix(final ValueConvertor<E> rowConvertor, final ValueConvertor<A> colConvertor,
+			final ValueConvertor<V> valueConvertor, CsvReader csvReader) throws MatrixException
 	{
 		// put the rownames and colnames in parent
 		try
@@ -106,30 +101,24 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 
 			// load colNames
 			final List<A> colNames = new ArrayList<A>();
-			for (String s : csvReader.colnames().subList(1,
-					csvReader.colnames().size()))
+			for (String s : csvReader.colnames().subList(1, csvReader.colnames().size()))
 				colNames.add(this.colConvertor.read(s));
 
 			// load values
-			final V[][] values = this.create(rowNames.size(), colNames.size(),
-					valueConvertor.getValueType());
+			final V[][] values = this.create(rowNames.size(), colNames.size(), valueConvertor.getValueType());
 			csvReader.reset();
-			
+
 			int line_number = 0;
 			for (Tuple tuple : csvReader)
 			{
 				for (int col = 0; col < tuple.size() - 1; col++)
 				{
-					if (col >= colNames.size()) throw new MatrixException(
-							"new " + this.getClass().getSimpleName()
-									+ "() failed: csv row longer than colnames");
-					if ((line_number - 1) >= rowNames.size()) throw new MatrixException(
-							"new "
-									+ this.getClass().getSimpleName()
-									+ "() failed:csv rowcount longer than rownames");
+					if (col >= colNames.size()) throw new MatrixException("new " + this.getClass().getSimpleName()
+							+ "() failed: csv row longer than colnames");
+					if ((line_number - 1) >= rowNames.size()) throw new MatrixException("new "
+							+ this.getClass().getSimpleName() + "() failed:csv rowcount longer than rownames");
 
-					values[line_number - 1][col] = valueConvertor.read(tuple
-							.getString(col + 1));
+					values[line_number - 1][col] = valueConvertor.read(tuple.getString(col + 1));
 				}
 
 			}
@@ -159,8 +148,7 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 			writer.writeValue(this.rowConvertor.write(rowName));
 			for (V value : getRowByName(rowName))
 			{
-				if (writer instanceof CsvWriter) ((CsvWriter) writer)
-						.writeSeparator();
+				if (writer instanceof CsvWriter) ((CsvWriter) writer).writeSeparator();
 				writer.writeValue(this.valueConvertor.write(value));
 			}
 			writer.writeEndOfLine();

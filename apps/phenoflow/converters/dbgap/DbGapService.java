@@ -27,7 +27,6 @@ import converters.dbgap.jaxb.Study;
 import converters.dbgap.jaxb.data_dict.Data_Dict;
 import converters.dbgap.jaxb.var_report.Var_Report;
 
-
 /**
  * Used primarily from the DbGapToPheno to access dbGaP ftp and download data
  */
@@ -44,7 +43,7 @@ public class DbGapService
 	{
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		document = builder.parse(url.openStream());
-		if(cache != null && !cache.exists()) throw new IOException("cache folder "+cache+" doesn't exist");
+		if (cache != null && !cache.exists()) throw new IOException("cache folder " + cache + " doesn't exist");
 		fileCache = cache;
 	}
 
@@ -163,7 +162,8 @@ public class DbGapService
 	{
 		for (Data_Dict d : listDictionaries())
 		{
-			//System.out.println("testing "+ d.study_id +" = "+s.id + " having "+d.url);
+			// System.out.println("testing "+ d.study_id +" = "+s.id +
+			// " having "+d.url);
 			if (s.id.equals(d.study_id) && s.version.equals(d.study_version))
 			{
 				Data_Dict loaded = loadDictionary(d);
@@ -182,8 +182,8 @@ public class DbGapService
 	{
 		for (Var_Report r : listVariableReports())
 		{
-			//System.out.println("testing "+ r.study_id +" againsts "+s.id);
-			if (r.study_id.equals(s.id) &&  s.version.equals(r.study_version))
+			// System.out.println("testing "+ r.study_id +" againsts "+s.id);
+			if (r.study_id.equals(s.id) && s.version.equals(r.study_version))
 			{
 				Var_Report loaded = loadVariableReport(r);
 				loaded.description = r.description;
@@ -222,12 +222,13 @@ public class DbGapService
 	{
 		System.out.println("loadVariableReport from " + r.url);
 		URL url = r.url;
-		if(fileCache != null)
+		if (fileCache != null)
 		{
-			File cachedFile = new File(fileCache.getAbsolutePath() +"\\" + new File(new File(r.url.getFile()).getName()));
-			if(!cachedFile.exists()) downloadFile(r.url, cachedFile);
+			File cachedFile = new File(fileCache.getAbsolutePath() + "\\"
+					+ new File(new File(r.url.getFile()).getName()));
+			if (!cachedFile.exists()) downloadFile(r.url, cachedFile);
 			url = cachedFile.toURI().toURL();
-			
+
 		}
 		JAXBContext jaxbContext = JAXBContext.newInstance("converters.dbgap.jaxb.var_report");
 		Unmarshaller m = jaxbContext.createUnmarshaller();
@@ -238,10 +239,11 @@ public class DbGapService
 	{
 		System.out.println("loadDictionary from " + d.url);
 		URL url = d.url;
-		if(fileCache != null)
+		if (fileCache != null)
 		{
-			File cachedFile = new File(fileCache.getAbsolutePath() +"\\" + new File(new File(d.url.getFile()).getName()));
-			if(!cachedFile.exists()) downloadFile(d.url, cachedFile);
+			File cachedFile = new File(fileCache.getAbsolutePath() + "\\"
+					+ new File(new File(d.url.getFile()).getName()));
+			if (!cachedFile.exists()) downloadFile(d.url, cachedFile);
 			url = cachedFile.toURI().toURL();
 		}
 		JAXBContext jaxbContext = JAXBContext.newInstance("converters.dbgap.jaxb.data_dict");
@@ -249,7 +251,7 @@ public class DbGapService
 		return (Data_Dict) m.unmarshal(url.openStream());
 
 	}
-	
+
 	public static void downloadFile(URL url, File destination) throws IOException
 	{
 		System.out.println("downloading " + url + " to " + destination);
@@ -289,8 +291,8 @@ public class DbGapService
 				ioe.printStackTrace();
 			}
 		}
-		
-		//because of NCBI abuse rules
+
+		// because of NCBI abuse rules
 		try
 		{
 			Thread.sleep(500);
@@ -299,7 +301,6 @@ public class DbGapService
 		{
 			e.printStackTrace();
 		}
-
 
 	}
 

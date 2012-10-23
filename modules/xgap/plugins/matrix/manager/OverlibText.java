@@ -11,9 +11,11 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationElement;
 
-public class OverlibText {
-	
-	public static Map<String, ObservationElement> getObservationElements(Database db, List<String> names, String type) throws DatabaseException
+public class OverlibText
+{
+
+	public static Map<String, ObservationElement> getObservationElements(Database db, List<String> names, String type)
+			throws DatabaseException
 	{
 		Class subClass = db.getClassForName(type);
 		Map<String, ObservationElement> res = new HashMap<String, ObservationElement>();
@@ -23,15 +25,21 @@ public class OverlibText {
 		{
 			found.add(el.getName());
 		}
-		for(String name : names){
-			if(found.contains(name)){
-				for(ObservationElement o : obsvElem){
-					if(o.getName().equals(name)){
+		for (String name : names)
+		{
+			if (found.contains(name))
+			{
+				for (ObservationElement o : obsvElem)
+				{
+					if (o.getName().equals(name))
+					{
 						res.put(name, o);
 						break;
 					}
 				}
-			}else{
+			}
+			else
+			{
 				res.put(name, null);
 			}
 		}

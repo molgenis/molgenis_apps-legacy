@@ -13,13 +13,13 @@ public class Section
 {
 	@XmlAttribute
 	String id;
-	
+
 	@XmlAttribute
 	String name;
-	
-	@XmlElement(name="tool")
+
+	@XmlElement(name = "tool")
 	List<ToolFile> toolFiles = new ArrayList<ToolFile>();
-		
+
 	public String getId()
 	{
 		return id;
@@ -50,15 +50,13 @@ public class Section
 		this.toolFiles = toolFiles;
 	}
 
-
-
 	public String toString()
 	{
 		String result = "";
-		for(ToolFile t: toolFiles)
+		for (ToolFile t : toolFiles)
 		{
-			result += "\n\t"+t.toString();
+			result += "\n\t" + t.toString();
 		}
-		return String.format("Section(name=%s id=%s%s\n)",name,id,result);
+		return String.format("Section(name=%s id=%s%s\n)", name, id, result);
 	}
 }

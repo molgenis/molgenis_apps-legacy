@@ -28,7 +28,8 @@ public class ParamRepeat implements Input
 	public String toString()
 	{
 		String inputs_string = "";
-		for(Input i: inputs) inputs_string+="\n\t"+i.toString();
-		return String.format("ParamRepeat(name='%s',title='%s'%s)",name,title,inputs_string);
+		for (Input i : inputs)
+			inputs_string += "\n\t" + i.toString();
+		return String.format("ParamRepeat(name='%s',title='%s'%s)", name, title, inputs_string);
 	}
 }

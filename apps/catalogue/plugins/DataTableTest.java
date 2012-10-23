@@ -31,7 +31,7 @@ public class DataTableTest extends EasyPluginController<DataTableTestModel>
 	{
 		return new FreemarkerView("DataTableTestView.ftl", getModel());
 	}
-	
+
 	EntityDataTable table;
 
 	/**

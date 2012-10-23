@@ -12,9 +12,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Toolbox
 {
-	@XmlElement(name="section")
-	List<Section> sections = new ArrayList<Section>();	
-	
+	@XmlElement(name = "section")
+	List<Section> sections = new ArrayList<Section>();
+
 	public List<Section> getSections()
 	{
 		return sections;
@@ -28,7 +28,8 @@ public class Toolbox
 	public String toString()
 	{
 		String result = "";
-		for(Section s: sections) result += "\t"+s.toString().replace("\n", "\n\t")+"\n";
-		return String.format("Toolbox(\n%s)",result);
+		for (Section s : sections)
+			result += "\t" + s.toString().replace("\n", "\n\t") + "\n";
+		return String.format("Toolbox(\n%s)", result);
 	}
 }

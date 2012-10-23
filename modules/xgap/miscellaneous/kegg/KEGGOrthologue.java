@@ -1,6 +1,5 @@
 package miscellaneous.kegg;
 
-
 public class KEGGOrthologue
 {
 	String sourceEntry;
@@ -27,6 +26,7 @@ public class KEGGOrthologue
 	{
 		this.targetEntry = targetEntry;
 	}
+
 	// public SSDBRelation getSSDBRelation()
 	// {
 	// return SSDBRelation;

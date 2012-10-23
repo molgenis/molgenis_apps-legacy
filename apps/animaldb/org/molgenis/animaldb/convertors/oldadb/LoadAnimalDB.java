@@ -61,50 +61,19 @@ public class LoadAnimalDB
 		}
 
 		// Add some measurements that we'll need
-		ct.makeMeasurement(invName, "OldAnimalDBAnimalID", "String", null,
-				null, false, "string",
-				"To set an animal's ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(invName, "OldAnimalDBAnimalCustomID", "String",
-				null, null, false, "string",
-				"To set an animal's Custom ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(invName, "OldAnimalDBLocationID", "String", null,
-				null, false, "string",
-				"To set a location's ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(
-				invName,
-				"OldAnimalDBLitterID",
-				"String",
-				null,
-				null,
-				false,
-				"string",
-				"To link an animal to a litter with this ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(invName, "OldAnimalDBExperimentID", "String", null,
-				null, false, "string",
-				"To set an experiment's ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(
-				invName,
-				"OldAnimalDBDecApplicationID",
-				"String",
-				null,
-				null,
-				false,
-				"string",
-				"To link an experiment to a DEC application with this ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(
-				invName,
-				"OldAnimalDBBroughtinDate",
-				"Datetime",
-				null,
-				null,
-				true,
-				"datetime",
+		ct.makeMeasurement(invName, "OldAnimalDBAnimalID", "String", null, null, false, "string",
+				"To set an animal's ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBAnimalCustomID", "String", null, null, false, "string",
+				"To set an animal's Custom ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBLocationID", "String", null, null, false, "string",
+				"To set a location's ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBLitterID", "String", null, null, false, "string",
+				"To link an animal to a litter with this ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBExperimentID", "String", null, null, false, "string",
+				"To set an experiment's ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBDecApplicationID", "String", null, null, false, "string",
+				"To link an experiment to a DEC application with this ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBBroughtinDate", "Datetime", null, null, true, "datetime",
 				"To set a target's date of arrival in the system/ on the location in the old version of AnimalDB.",
 				userName);
 		ct.makeMeasurement(
@@ -117,26 +86,10 @@ public class LoadAnimalDB
 				"string",
 				"To store Experiment remarks about the animal, from the Experimental manipulation event, from the old version of AnimalDB.",
 				userName);
-		ct.makeMeasurement(
-				invName,
-				"OldAnimalDBPresetID",
-				"String",
-				null,
-				null,
-				false,
-				"string",
-				"To link a targetgroup to a preset this ID in the old version of AnimalDB.",
-				userName);
-		ct.makeMeasurement(
-				invName,
-				"OldAnimalDBRemarks",
-				"String",
-				null,
-				null,
-				false,
-				"string",
-				"To store remarks about the animal in the animal table, from the old version of AnimalDB.",
-				userName);
+		ct.makeMeasurement(invName, "OldAnimalDBPresetID", "String", null, null, false, "string",
+				"To link a targetgroup to a preset this ID in the old version of AnimalDB.", userName);
+		ct.makeMeasurement(invName, "OldAnimalDBRemarks", "String", null, null, false, "string",
+				"To store remarks about the animal in the animal table, from the old version of AnimalDB.", userName);
 	}
 
 	public void convertFromZip(String filename) throws Exception
@@ -150,10 +103,8 @@ public class LoadAnimalDB
 		while (entries.hasMoreElements())
 		{
 			ZipEntry entry = (ZipEntry) entries.nextElement();
-			copyInputStream(
-					zipFile.getInputStream(entry),
-					new BufferedOutputStream(new FileOutputStream(path
-							+ entry.getName())));
+			copyInputStream(zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
 		// Run convertor steps
 		populateAnimal(path + "oldanimals.csv");
@@ -199,8 +150,7 @@ public class LoadAnimalDB
 			String oldlocid = tuple.getString("location");
 			String oldlitterid = tuple.getString("litter");
 
-			ObservationTarget newAnimal = ct.createIndividual(invName, name,
-					userName);
+			ObservationTarget newAnimal = ct.createIndividual(invName, name, userName);
 			db.add(newAnimal);
 
 			// Init lists that we can later add to the DB at once
@@ -210,23 +160,17 @@ public class LoadAnimalDB
 			String animalType = "A. Gewoon dier"; // safe assumption that this
 													// holds for all animals in
 													// OldADB
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetAnimalType", "AnimalType", name,
-					animalType, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetAnimalType",
+					"AnimalType", name, animalType, null));
 			// WeanDate
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetWeanDate", "WeanDate", name,
-					weandate, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanDate",
+					"WeanDate", name, weandate, null));
 			// OldAnimalDBID
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetOldAnimalDBAnimalID",
-					"OldAnimalDBAnimalID", name, oldanimalid, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetOldAnimalDBAnimalID", "OldAnimalDBAnimalID", name, oldanimalid, null));
 			// OldAnimalDB customID
-			valuesToAddList
-					.add(ct.createObservedValueWithProtocolApplication(invName,
-							now, null, "SetOldAnimalDBAnimalCustomID",
-							"OldAnimalDBAnimalCustomID", name,
-							oldanimalcustomid, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetOldAnimalDBAnimalCustomID", "OldAnimalDBAnimalCustomID", name, oldanimalcustomid, null));
 			// Sex
 			String sexName = null;
 			if (oldsex.equals("M"))
@@ -241,8 +185,8 @@ public class LoadAnimalDB
 			{
 				sexName = "UnknownSex";
 			}
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetSex", "Sex", name, null, sexName));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetSex", "Sex",
+					name, null, sexName));
 			// Species
 			String speciesName = null;
 			if (oldspecies == 1)
@@ -269,9 +213,8 @@ public class LoadAnimalDB
 			{
 				speciesName = "Brown rat";
 			}
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetSpecies", "Species", name, null,
-					speciesName));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetSpecies",
+					"Species", name, null, speciesName));
 			// Background
 			String backgroundName = null;
 			if (!background.equals("NULL"))
@@ -285,13 +228,11 @@ public class LoadAnimalDB
 					backgroundName = "C57BL/6J";
 				}
 			}
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetBackground", "Background", name,
-					null, backgroundName));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetBackground",
+					"Background", name, null, backgroundName));
 			// Litter
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetOldAnimalDBLitterID",
-					"OldAnimalDBLitterID", name, oldlitterid, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetOldAnimalDBLitterID", "OldAnimalDBLitterID", name, oldlitterid, null));
 			// Source
 			String newsourceName = null;
 			if (source == 1)
@@ -310,17 +251,14 @@ public class LoadAnimalDB
 			{
 				newsourceName = "Kweek dierfysiologie";
 			}
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetSource", "Source", name, null,
-					newsourceName));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetSource",
+					"Source", name, null, newsourceName));
 			// Location
 			if (!oldlocid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBAnimalID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldlocid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldlocid));
 				List<ObservedValue> valueList = q.find();
 				for (ObservedValue locValue : valueList)
 				{
@@ -329,10 +267,8 @@ public class LoadAnimalDB
 					String newlocName = locValue.getTarget_Name();
 					try
 					{
-						valuesToAddList.add(ct
-								.createObservedValueWithProtocolApplication(
-										invName, now, null, "SetLocation",
-										"Location", name, null, newlocName));
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+								"SetLocation", "Location", name, null, newlocName));
 						break;
 					}
 					catch (Exception le)
@@ -342,18 +278,14 @@ public class LoadAnimalDB
 				}
 			}
 			// Participantgroup
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetParticipantGroup",
-					"ParticipantGroup", name, "Chrono- en gedragsbiologie",
-					null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetParticipantGroup", "ParticipantGroup", name, "Chrono- en gedragsbiologie", null));
 			// OldAnimalDBRemarks
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetOldAnimalDBRemarks",
-					"OldAnimalDBRemarks", name, remarks, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetOldAnimalDBRemarks", "OldAnimalDBRemarks", name, remarks, null));
 			// ResponsibleResearcher
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetResponsibleResearcher",
-					"ResponsibleResearcher", name, "Ate Boerema", null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetResponsibleResearcher", "ResponsibleResearcher", name, "Ate Boerema", null));
 
 			// Add everything to DB
 			db.add(valuesToAddList);
@@ -375,23 +307,19 @@ public class LoadAnimalDB
 
 			// Make location and set OldAnimalDBLocationID
 			ct.makeLocation(invName, name, userName);
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now,
-					null, "SetOldAnimalDBLocationID", "OldAnimalDBLocationID",
-					name, Integer.toString(oldlocationid), null));
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetOldAnimalDBLocationID",
+					"OldAnimalDBLocationID", name, Integer.toString(oldlocationid), null));
 			// SetSublocationOf
 			if (!inloc.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBLocationID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						inloc));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBLocationID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, inloc));
 				List<ObservedValue> valueList = q.find();
 				ObservedValue tmpValue = valueList.get(0);
 				String newLocationName = tmpValue.getTarget_Name();
-				db.add(ct.createObservedValueWithProtocolApplication(invName,
-						now, null, "SetSublocationOf", "Location", name, null,
-						newLocationName));
+				db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetSublocationOf",
+						"Location", name, null, newLocationName));
 			}
 
 		}
@@ -405,19 +333,16 @@ public class LoadAnimalDB
 		for (Tuple tuple : reader)
 		{
 			Date now = new Date();
-			SimpleDateFormat dbFormat = new SimpleDateFormat(
-					"yyyy-MM-dd HH:mm:ss", Locale.US);
-			SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat(
-					"yyyy-MM-dd", Locale.US);
+			SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+			SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 			// Init lists that we can later add to the DB at once
 			List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 			// Name
 			String name = tuple.getString("customlitterid");
 			ct.makePanel(invName, name, userName);
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetTypeOfGroup", "TypeOfGroup", name,
-					"Litter", null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
+					"TypeOfGroup", name, "Litter", null));
 			// pairstartdate -> time
 			String pairStartDateString = tuple.getString("pairstartdate");
 			Date pairStartDate = null;
@@ -435,54 +360,41 @@ public class LoadAnimalDB
 			// Parentgroup
 			String pgName = "Parentgroup" + name;
 			ct.makePanel(invName, pgName, userName);
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
-					pgName, "Parentgroup", null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
+					"TypeOfGroup", pgName, "Parentgroup", null));
 			// Link litter to parentgroup
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, pairStartDate, pairEndDate, "SetParentgroup",
-					"Parentgroup", name, null, pgName));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, pairStartDate, pairEndDate,
+					"SetParentgroup", "Parentgroup", name, null, pgName));
 			// mother -> via Parentgroup
 			String motherName = tuple.getString("mother");
 			if (!motherName.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBAnimalID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						motherName));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, motherName));
 				List<ObservedValue> valueList = q.find();
 				ObservedValue tmpValue = valueList.get(0);
 				String newmotherName = tmpValue.getTarget_Name();
-				valuesToAddList.add(ct
-						.createObservedValueWithProtocolApplication(invName,
-								pairStartDate, pairEndDate,
-								"SetParentgroupMother", "ParentgroupMother",
-								pgName, null, newmotherName));
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, pairStartDate, pairEndDate,
+						"SetParentgroupMother", "ParentgroupMother", pgName, null, newmotherName));
 			}
 			// father -> via Parentgroup
 			String fatherName = tuple.getString("father");
 			if (!fatherName.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBAnimalID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						fatherName));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, fatherName));
 				List<ObservedValue> valueList = q.find();
 				ObservedValue tmpValue = valueList.get(0);
 				String newfatherName = tmpValue.getTarget_Name();
-				valuesToAddList.add(ct
-						.createObservedValueWithProtocolApplication(invName,
-								pairStartDate, pairEndDate,
-								"SetParentgroupFather", "ParentgroupFather",
-								pgName, null, newfatherName));
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, pairStartDate, pairEndDate,
+						"SetParentgroupFather", "ParentgroupFather", pgName, null, newfatherName));
 			}
 			// birthsize -> Size
 			Integer birthsize = tuple.getInt("birthsize");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetSize", "Size", name,
-					birthsize.toString(), null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetSize", "Size",
+					name, birthsize.toString(), null));
 			// birthday -> DateOfBirth
 			String birthDayString = tuple.getString("birthday");
 			Date birthDayDate = null;
@@ -496,40 +408,32 @@ public class LoadAnimalDB
 				birthDayDate = dbFormat.parse(birthDayString);
 				birthDayString = newDateOnlyFormat.format(birthDayDate);
 			}
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetDateOfBirth", "DateOfBirth", name,
-					birthDayString, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetDateOfBirth",
+					"DateOfBirth", name, birthDayString, null));
 			// numberweaned -> WeanSize
 			String weanSize = tuple.getString("numberweaned");
 			if (!weanSize.equals("NULL"))
 			{
-				valuesToAddList.add(ct
-						.createObservedValueWithProtocolApplication(invName,
-								now, null, "SetWeanSize", "WeanSize", name,
-								weanSize, null));
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSize",
+						"WeanSize", name, weanSize, null));
 			}
 			// remarks -> OldAnimalDBRemarks
 			String remarks = tuple.getString("remarks");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetOldAnimalDBRemarks",
-					"OldAnimalDBRemarks", name, remarks, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+					"SetOldAnimalDBRemarks", "OldAnimalDBRemarks", name, remarks, null));
 			// Link animals to litters
 			String oldlitterid = tuple.getString("litterid");
 			if (!oldlitterid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBLitterID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldlitterid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBLitterID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldlitterid));
 				List<ObservedValue> valueList = q.find();
 				for (ObservedValue litterValue : valueList)
 				{
 					String animalName = litterValue.getTarget_Name();
-					valuesToAddList.add(ct
-							.createObservedValueWithProtocolApplication(
-									invName, now, null, "SetLitter", "Litter",
-									animalName, null, name));
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLitter",
+							"Litter", animalName, null, name));
 				}
 			}
 
@@ -552,36 +456,32 @@ public class LoadAnimalDB
 			// Name
 			String name = tuple.getString("title");
 			ct.makePanel(invName, name, userName);
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetTypeOfGroup", "TypeOfGroup", name,
-					"Experiment", null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
+					"TypeOfGroup", name, "Experiment", null));
 
 			// Make protocol application to use with all the values
-			ProtocolApplication app = ct.createProtocolApplication(invName,
-					"SetDecSubprojectSpecs");
+			ProtocolApplication app = ct.createProtocolApplication(invName, "SetDecSubprojectSpecs");
 			db.add(app);
 			String paName = app.getName();
 
 			// experimentid
 			String oldexperimentid = tuple.getString("experimentid");
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "OldAnimalDBExperimentID", name, oldexperimentid,
-					null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "OldAnimalDBExperimentID", name,
+					oldexperimentid, null));
 			// decapplication
 			String decapp = tuple.getString("decapplication");
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "OldAnimalDBDecApplicationID", name, decapp, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "OldAnimalDBDecApplicationID", name,
+					decapp, null));
 			// experimentnr
 			String experimentnr = tuple.getString("experimentnr");
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "ExperimentNr", name, experimentnr, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "ExperimentNr", name, experimentnr,
+					null));
 			// pdfdecsubprojectapplication
 			String pdfdec = tuple.getString("pdfdecsubprojectapplication");
 			if (!pdfdec.equals("NULL"))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName, paName,
-						now, null, "DecSubprojectApplicationPdf", name, pdfdec,
-						null));
+				valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "DecSubprojectApplicationPdf",
+						name, pdfdec, null));
 			}
 			String codeValue = "";
 			// concern (lookup)
@@ -594,16 +494,14 @@ public class LoadAnimalDB
 			{
 				codeValue = "B. Gezondheid/voed. nee";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "Concern", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "Concern", name, codeValue, null));
 			// goal (lookup)
 			int goal = tuple.getInt("goal");
 			if (goal == 37)
 			{
 				codeValue = "E. Wetensch.vraag m.b.t.: and. wetenschappelijke vraag";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "Goal", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "Goal", name, codeValue, null));
 			// specialtechn (lookup)
 			int specialtechn = tuple.getInt("specialtechn");
 			if (specialtechn == 1)
@@ -614,24 +512,22 @@ public class LoadAnimalDB
 			{
 				codeValue = "B. Doden zonder voorafgaande handelingen";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "SpecialTechn", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "SpecialTechn", name, codeValue,
+					null));
 			// lawprovisions (lookup)
 			int lawprovisions = tuple.getInt("lawprovisions");
 			if (lawprovisions == 1)
 			{
 				codeValue = "A. Geen wettelijke bepaling";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "LawDef", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "LawDef", name, codeValue, null));
 			// toxres (lookup)
 			int toxres = tuple.getInt("toxres");
 			if (toxres == 1)
 			{
 				codeValue = "A. Geen toxicologisch onderzoek";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "ToxRes", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "ToxRes", name, codeValue, null));
 			// anaesthesia (lookup)
 			int anaesthesia = tuple.getInt("anaesthesia");
 			if (anaesthesia == 1)
@@ -642,8 +538,8 @@ public class LoadAnimalDB
 			{
 				codeValue = "D. Is wel toegepast";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "Anaesthesia", name, codeValue, null));
+			valuesToAddList.add(ct
+					.createObservedValue(invName, paName, now, null, "Anaesthesia", name, codeValue, null));
 			// painmanagement (lookup)
 			int painmanagement = tuple.getInt("painmanagement");
 			if (painmanagement == 1)
@@ -654,8 +550,8 @@ public class LoadAnimalDB
 			{
 				codeValue = "D. Is wel toegepast";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "PainManagement", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "PainManagement", name, codeValue,
+					null));
 			// animalendstatus (lookup)
 			int animalendstatus = tuple.getInt("animalendstatus");
 			if (animalendstatus == 1)
@@ -666,12 +562,12 @@ public class LoadAnimalDB
 			{
 				codeValue = "C. Na einde proef in leven gelaten";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "AnimalEndStatus", name, codeValue, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "AnimalEndStatus", name, codeValue,
+					null));
 			// remarks
 			String remarks = tuple.getString("remarks");
-			valuesToAddList.add(ct.createObservedValue(invName, paName, now,
-					null, "OldAnimalDBRemarks", name, remarks, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, now, null, "OldAnimalDBRemarks", name, remarks,
+					null));
 
 			// Add everything to DB
 			db.add(valuesToAddList);
@@ -693,20 +589,16 @@ public class LoadAnimalDB
 			String name = tuple.getString("projecttitle");
 			String decName = "DEC project: " + name;
 			ct.makePanel(invName, decName, userName);
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(
-					invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
-					decName, "DecApplication", null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
+					"TypeOfGroup", decName, "DecApplication", null));
 
 			// Make protocol application to use with all the values
-			ProtocolApplication app = ct.createProtocolApplication(invName,
-					"SetDecProjectSpecs");
+			ProtocolApplication app = ct.createProtocolApplication(invName, "SetDecProjectSpecs");
 			db.add(app);
 			String paName = app.getName();
 
-			SimpleDateFormat csvFormat = new SimpleDateFormat("yyyy-MM-dd",
-					Locale.US);
-			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat(
-					"dd-MM-yyyy", Locale.US);
+			SimpleDateFormat csvFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 			// applicationstartdate -> time
 			String appStartDateString = tuple.getString("applicationstartdate");
 			String appStartDateStringMolgenis = "";
@@ -714,8 +606,7 @@ public class LoadAnimalDB
 			if (!appStartDateString.equals("NULL"))
 			{
 				appStartDate = csvFormat.parse(appStartDateString);
-				appStartDateStringMolgenis = dateOnlyFormat
-						.format(appStartDate);
+				appStartDateStringMolgenis = dateOnlyFormat.format(appStartDate);
 			}
 			// applicationenddate -> endtime
 			String appEndDateString = tuple.getString("applicationenddate");
@@ -727,55 +618,47 @@ public class LoadAnimalDB
 				appEndDateStringMolgenis = dateOnlyFormat.format(appEndDate);
 			}
 			// StartDate
-			valuesToAddList.add(ct.createObservedValue(invName, paName,
-					appStartDate, appEndDate, "StartDate", decName,
+			valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate, "StartDate", decName,
 					appStartDateStringMolgenis, null));
 			// EndDate
-			valuesToAddList.add(ct.createObservedValue(invName, paName,
-					appStartDate, appEndDate, "EndDate", decName,
+			valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate, "EndDate", decName,
 					appEndDateStringMolgenis, null));
 			// Link experiments to DEC applications
 			String olddecappid = tuple.getString("decapplicationid");
 			if (!olddecappid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBDecApplicationID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						olddecappid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBDecApplicationID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, olddecappid));
 				List<ObservedValue> valueList = q.find();
 				for (ObservedValue expValue : valueList)
 				{
 					String experimentName = expValue.getTarget_Name();
-					valuesToAddList.add(ct.createObservedValue(invName, paName,
-							appStartDate, appEndDate, "DecApplication",
-							experimentName, null, decName));
+					valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate,
+							"DecApplication", experimentName, null, decName));
 				}
 			}
 			// decnr
 			String decnr = tuple.getString("decnr");
-			valuesToAddList.add(ct.createObservedValue(invName, paName,
-					appStartDate, appEndDate, "DecNr", decName, decnr, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate, "DecNr", decName,
+					decnr, null));
 			// decapplicant
 			String decapplicant = tuple.getString("decapplicant");
-			valuesToAddList.add(ct.createObservedValue(invName, paName,
-					appStartDate, appEndDate, "DecApplicantId", decName,
-					decapplicant, null));
+			valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate, "DecApplicantId",
+					decName, decapplicant, null));
 			// pdfdecapplication
 			String pdfdec = tuple.getString("pdfdecapplication");
 			if (!pdfdec.equals("NULL"))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName, paName,
-						appStartDate, appEndDate, "DecApplicationPdf", decName,
-						pdfdec, null));
+				valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate,
+						"DecApplicationPdf", decName, pdfdec, null));
 			}
 			// pdfdecapproval
 			pdfdec = tuple.getString("pdfdecapproval");
 			if (!pdfdec.equals("NULL"))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName, paName,
-						appStartDate, appEndDate, "DecApprovalPdf", decName,
-						pdfdec, null));
+				valuesToAddList.add(ct.createObservedValue(invName, paName, appStartDate, appEndDate, "DecApprovalPdf",
+						decName, pdfdec, null));
 			}
 
 			// Add everything to DB
@@ -795,10 +678,8 @@ public class LoadAnimalDB
 			if (!oldexpid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBExperimentID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldexpid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBExperimentID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldexpid));
 				List<ObservedValue> valueList = q.find();
 				newexpName = valueList.get(0).getTarget_Name();
 			}
@@ -808,10 +689,8 @@ public class LoadAnimalDB
 			if (!oldanimalid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBAnimalID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldanimalid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldanimalid));
 				List<ObservedValue> valueList = q.find();
 				newanimalName = valueList.get(0).getTarget_Name();
 			}
@@ -865,8 +744,7 @@ public class LoadAnimalDB
 					anaesthesia = "D. Is wel toegepast";
 				}
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-					Locale.US);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 			// entrydate
 			String entrydateString = tuple.getString("entrydate");
 			Date entryDate = null;
@@ -924,8 +802,7 @@ public class LoadAnimalDB
 				}
 			}
 			// expexperimentendstatus
-			String expexperimentendstatus = tuple
-					.getString("expexperimentendstatus");
+			String expexperimentendstatus = tuple.getString("expexperimentendstatus");
 			if (!expexperimentendstatus.equals("NULL"))
 			{
 				if (expexperimentendstatus.equals("1"))
@@ -942,8 +819,7 @@ public class LoadAnimalDB
 				}
 			}
 			// actexperimentendstatus
-			String actexperimentendstatus = tuple
-					.getString("actexperimentendstatus");
+			String actexperimentendstatus = tuple.getString("actexperimentendstatus");
 			if (!actexperimentendstatus.equals("NULL"))
 			{
 				if (actexperimentendstatus.equals("1"))
@@ -964,45 +840,34 @@ public class LoadAnimalDB
 			List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 
 			// Apply protocol 'in subproject'
-			ProtocolApplication app = ct.createProtocolApplication(invName,
-					"AnimalInSubproject");
+			ProtocolApplication app = ct.createProtocolApplication(invName, "AnimalInSubproject");
 			db.add(app);
 			String protappName = app.getName();
-			valuesToAddList.add(ct.createObservedValue(invName, protappName,
-					entryDate, exitDate, "Experiment", newanimalName, null,
-					newexpName));
-			valuesToAddList.add(ct.createObservedValue(invName, protappName,
-					entryDate, exitDate, "SourceTypeSubproject", newanimalName,
-					source, null));
-			valuesToAddList.add(ct.createObservedValue(invName, protappName,
-					entryDate, exitDate, "PainManagement", newanimalName,
-					painmanagement, null));
-			valuesToAddList.add(ct.createObservedValue(invName, protappName,
-					entryDate, exitDate, "Anaesthesia", newanimalName,
-					anaesthesia, null));
-			valuesToAddList.add(ct.createObservedValue(invName, protappName,
-					entryDate, exitDate, "ExpectedDiscomfort", newanimalName,
-					expdiscomfortlevel, null));
-			valuesToAddList.add(ct.createObservedValue(invName, protappName,
-					entryDate, exitDate, "ExpectedAnimalEndStatus",
-					newanimalName, expexperimentendstatus, null));
+			valuesToAddList.add(ct.createObservedValue(invName, protappName, entryDate, exitDate, "Experiment",
+					newanimalName, null, newexpName));
+			valuesToAddList.add(ct.createObservedValue(invName, protappName, entryDate, exitDate,
+					"SourceTypeSubproject", newanimalName, source, null));
+			valuesToAddList.add(ct.createObservedValue(invName, protappName, entryDate, exitDate, "PainManagement",
+					newanimalName, painmanagement, null));
+			valuesToAddList.add(ct.createObservedValue(invName, protappName, entryDate, exitDate, "Anaesthesia",
+					newanimalName, anaesthesia, null));
+			valuesToAddList.add(ct.createObservedValue(invName, protappName, entryDate, exitDate, "ExpectedDiscomfort",
+					newanimalName, expdiscomfortlevel, null));
+			valuesToAddList.add(ct.createObservedValue(invName, protappName, entryDate, exitDate,
+					"ExpectedAnimalEndStatus", newanimalName, expexperimentendstatus, null));
 
 			// If applicable, apply protocol 'from subproject'
 			if (exitDate != null)
 			{
-				app = ct.createProtocolApplication(invName,
-						"AnimalFromSubproject");
+				app = ct.createProtocolApplication(invName, "AnimalFromSubproject");
 				db.add(app);
 				protappName = app.getName();
-				valuesToAddList.add(ct.createObservedValue(invName,
-						protappName, exitDate, null, "FromExperiment",
+				valuesToAddList.add(ct.createObservedValue(invName, protappName, exitDate, null, "FromExperiment",
 						newanimalName, null, newexpName));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						protappName, exitDate, null, "ActualDiscomfort",
+				valuesToAddList.add(ct.createObservedValue(invName, protappName, exitDate, null, "ActualDiscomfort",
 						newanimalName, actdiscomfortlevel, null));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						protappName, exitDate, null, "ActualAnimalEndStatus",
-						newanimalName, actexperimentendstatus, null));
+				valuesToAddList.add(ct.createObservedValue(invName, protappName, exitDate, null,
+						"ActualAnimalEndStatus", newanimalName, actexperimentendstatus, null));
 			}
 
 			// Add everything to DB
@@ -1022,14 +887,12 @@ public class LoadAnimalDB
 			String name = tuple.getString("name");
 			// add the group in the newAnimaldb
 			ct.makePanel(invName, name, userName);
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now,
-					null, "SetTypeOfGroup", "TypeOfGroup", name, "Selection",
-					null));
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
+					name, "Selection", null));
 			// link the OldAnimalDBPResetID to the newly created group
 			String oldpresetid = tuple.getString("presetid");
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now,
-					null, "SetOldAnimalDBPresetID", "OldAnimalDBPresetID",
-					name, oldpresetid, null));
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetOldAnimalDBPresetID",
+					"OldAnimalDBPresetID", name, oldpresetid, null));
 		}
 	}
 
@@ -1048,10 +911,8 @@ public class LoadAnimalDB
 			if (!oldanimalid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBAnimalID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldanimalid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldanimalid));
 				List<ObservedValue> valueList = q.find();
 				newanimalName = valueList.get(0).getTarget_Name();
 			}
@@ -1061,16 +922,13 @@ public class LoadAnimalDB
 			if (!oldpresetid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBPresetID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldpresetid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBPresetID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldpresetid));
 				List<ObservedValue> valueList = q.find();
 				newgroupName = valueList.get(0).getTarget_Name();
 			}
 			// add animal to selection group
-			db.add(ct.addObservationTargetToPanel(invName, newanimalName, now,
-					newgroupName));
+			db.add(ct.addObservationTargetToPanel(invName, newanimalName, now, newgroupName));
 		}
 	}
 
@@ -1090,10 +948,8 @@ public class LoadAnimalDB
 			if (!oldanimalid.equals("NULL"))
 			{
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-						Operator.EQUALS, "OldAnimalDBAnimalID"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS,
-						oldanimalid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldanimalid));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() > 0)
 				{
@@ -1104,12 +960,9 @@ public class LoadAnimalDB
 			if (newanimalName != null)
 			{
 				// date
-				SimpleDateFormat dbFormat = new SimpleDateFormat(
-						"yyyy-MM-dd HH:mm:ss", Locale.US);
-				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat(
-						"yyyy-MM-dd", Locale.US);
-				SimpleDateFormat newDateTimeFormat = new SimpleDateFormat(
-						"yyyy-MM-dd HH:mm:ss", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+				SimpleDateFormat newDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 				String dateString = tuple.getString("date");
 				Date eventDate = null;
 				if (!dateString.equals("NULL"))
@@ -1122,26 +975,18 @@ public class LoadAnimalDB
 					// Set the status and add the events
 					// NB: the csv file must be Ascending data sorted,
 					// otherwise errors can occur!
-					if (eventType.equals("Born")
-							|| eventType.equals("BroughtIn"))
+					if (eventType.equals("Born") || eventType.equals("BroughtIn"))
 					{
 						// Check if there is already an Active value:
-						Query<ObservedValue> activeQuery = db
-								.query(ObservedValue.class);
-						activeQuery.addRules(new QueryRule(
-								ObservedValue.TARGET_NAME, Operator.EQUALS,
-								newanimalName));
-						activeQuery.addRules(new QueryRule(
-								ObservedValue.FEATURE, Operator.EQUALS,
-								"Active"));
+						Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
+						activeQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, newanimalName));
+						activeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, "Active"));
 						activeQuery.sortDESC(ObservedValue.TIME);
-						List<ObservedValue> activeValueList = activeQuery
-								.find();
+						List<ObservedValue> activeValueList = activeQuery.find();
 						if (activeValueList.size() > 0)
 						{
 							ObservedValue activeValue = activeValueList.get(0);
-							Date existingActiveStartdate = activeValue
-									.getTime();
+							Date existingActiveStartdate = activeValue.getTime();
 							// Compare dates and take the more recent one
 							// (Probably this will be the BroughtIn one
 							// which should be later than Born)
@@ -1154,67 +999,39 @@ public class LoadAnimalDB
 						else
 						{
 							// make one
-							valuesToAddList
-									.add(ct.createObservedValueWithProtocolApplication(
-											invName, eventDate, null,
-											"SetActive", "Active",
-											newanimalName, "Alive", null));
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+									"SetActive", "Active", newanimalName, "Alive", null));
 						}
 						if (eventType.equals("Born"))
 						{
 							// Set the date of birth based on the
 							// oldanimaldb "Born" event
-							valuesToAddList
-									.add(ct.createObservedValueWithProtocolApplication(
-											invName,
-											eventDate,
-											null,
-											"SetDateOfBirth",
-											"DateOfBirth",
-											newanimalName,
-											newDateOnlyFormat.format(eventDate),
-											null));
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+									"SetDateOfBirth", "DateOfBirth", newanimalName,
+									newDateOnlyFormat.format(eventDate), null));
 						}
 						else
 						{
 							// Set the broughtinevent based on the
 							// oldanimaldb "Broughtin" event
-							valuesToAddList
-									.add(ct.createObservedValueWithProtocolApplication(
-											invName,
-											eventDate,
-											null,
-											"SetOldAnimalDBBroughtinDate",
-											"OldAnimalDBBroughtinDate",
-											newanimalName,
-											newDateOnlyFormat.format(eventDate),
-											null));
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+									"SetOldAnimalDBBroughtinDate", "OldAnimalDBBroughtinDate", newanimalName,
+									newDateOnlyFormat.format(eventDate), null));
 						}
 					}
 					if (eventType.equals("Died"))
 					{
 						// Set the date of death based on the oldanimaldb
 						// "Died" event
-						valuesToAddList.add(ct
-								.createObservedValueWithProtocolApplication(
-										invName, eventDate, null,
-										"SetDeathDate", "DeathDate",
-										newanimalName,
-										newDateOnlyFormat.format(eventDate),
-										null));
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+								"SetDeathDate", "DeathDate", newanimalName, newDateOnlyFormat.format(eventDate), null));
 						// Report as dead/removed by setting the endtime of
 						// the most recent Active value
-						Query<ObservedValue> activeQuery = db
-								.query(ObservedValue.class);
-						activeQuery.addRules(new QueryRule(
-								ObservedValue.TARGET_NAME, Operator.EQUALS,
-								newanimalName));
-						activeQuery.addRules(new QueryRule(
-								ObservedValue.FEATURE_NAME, Operator.EQUALS,
-								"Active"));
+						Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
+						activeQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, newanimalName));
+						activeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 						activeQuery.sortDESC(ObservedValue.TIME);
-						List<ObservedValue> activeValueList = activeQuery
-								.find();
+						List<ObservedValue> activeValueList = activeQuery.find();
 						if (activeValueList.size() > 0)
 						{
 							ObservedValue activeValue = activeValueList.get(0);
@@ -1225,14 +1042,10 @@ public class LoadAnimalDB
 						// If still in DEC subproject at time of death, end
 						// that
 						Query<ObservedValue> q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET_NAME,
-								Operator.EQUALS, newanimalName));
-						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-								Operator.EQUALS, "Experiment"));
-						q.addRules(new QueryRule(ObservedValue.TIME,
-								Operator.LESS_EQUAL, eventDate));
-						q.addRules(new QueryRule(ObservedValue.ENDTIME,
-								Operator.EQUALS, null));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, newanimalName));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
+						q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, eventDate));
+						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 						List<ObservedValue> valueList = q.find();
 						if (valueList.size() == 1) // Safe assumption:
 													// animal can only be in
@@ -1251,49 +1064,32 @@ public class LoadAnimalDB
 					// oldanimaldb "Cleaned" event
 					if (eventType.equals("Cleaned"))
 					{
-						valuesToAddList.add(ct
-								.createObservedValueWithProtocolApplication(
-										invName, eventDate, null,
-										"SetCageCleanDate", "CageCleanDate",
-										newanimalName,
-										newDateTimeFormat.format(eventDate),
-										null));
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+								"SetCageCleanDate", "CageCleanDate", newanimalName,
+								newDateTimeFormat.format(eventDate), null));
 					}
 					// Set the weandate based on the oldanimaldb "Wean"
 					// event
 					if (eventType.equals("Wean"))
 					{
-						valuesToAddList.add(ct
-								.createObservedValueWithProtocolApplication(
-										invName, eventDate, null,
-										"SetWeanDate", "Weandate",
-										newanimalName,
-										newDateOnlyFormat.format(eventDate),
-										null));
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+								"SetWeanDate", "Weandate", newanimalName, newDateOnlyFormat.format(eventDate), null));
 					}
 					// Set the Remark application based on the oldanimaldb
 					// "Remark" event
 					if (eventType.equals("Remark"))
 					{
-						valuesToAddList.add(ct
-								.createObservedValueWithProtocolApplication(
-										invName, eventDate, null, "SetRemark",
-										"Remark", newanimalName, eventDetails,
-										null));
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+								"SetRemark", "Remark", newanimalName, eventDetails, null));
 					}
 					// set the OldAnimalDBExperimentalManipulationRemark
 					// based on oldanimaldb Experimental manipulation
 					// events.
 					if (eventType.equals("ExperimentalManipulation"))
 					{
-						valuesToAddList
-								.add(ct.createObservedValueWithProtocolApplication(
-										invName,
-										eventDate,
-										null,
-										"SetOldAnimalDBExperimentalManipulationRemark",
-										"OldAnimalDBExperimentalManipulationRemark",
-										newanimalName, eventDetails, null));
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null,
+								"SetOldAnimalDBExperimentalManipulationRemark",
+								"OldAnimalDBExperimentalManipulationRemark", newanimalName, eventDetails, null));
 					}
 
 					// Set the location and moved events based on
@@ -1309,8 +1105,7 @@ public class LoadAnimalDB
 		}
 	}
 
-	public static final void copyInputStream(InputStream in, OutputStream out)
-			throws IOException
+	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
 	{
 		byte[] buffer = new byte[1024];
 		int len;

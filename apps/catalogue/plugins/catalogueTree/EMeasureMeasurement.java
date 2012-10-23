@@ -3,9 +3,11 @@ package plugins.catalogueTree;
 import org.molgenis.framework.db.Database;
 import org.molgenis.pheno.Measurement;
 
-public class EMeasureMeasurement {
+public class EMeasureMeasurement
+{
 
-	public String addXML(Measurement m, Database db) throws Exception {
+	public String addXML(Measurement m, Database db) throws Exception
+	{
 		StringBuffer out = new StringBuffer();
 
 		out.append("\t<subjectOf>\n" + "\t\t<measureAttribute>");
@@ -16,12 +18,11 @@ public class EMeasureMeasurement {
 		String codeDatatype = "dunno";
 		String codeSystemDatatype = "TBD";
 		String displayNameDatatype = "This should be the mappingsname";
-		out.append("<code code=\"" + code + "\" codeSystem=\"" + codeSystem
-				+ "\"" + " displayName=\"" + displayName + "\" />");
+		out.append("<code code=\"" + code + "\" codeSystem=\"" + codeSystem + "\"" + " displayName=\"" + displayName
+				+ "\" />");
 
-		out.append("<value xsi:type=\"" + datatype + "\" code=\""
-				+ codeDatatype + "\" codeSystem=\"" + codeSystemDatatype + "\""
-				+ " displayName=\"" + displayNameDatatype + "\" />");
+		out.append("<value xsi:type=\"" + datatype + "\" code=\"" + codeDatatype + "\" codeSystem=\""
+				+ codeSystemDatatype + "\"" + " displayName=\"" + displayNameDatatype + "\" />");
 
 		// List<OntologyTerm> otList = db.find(OntologyTerm.class, new
 		// QueryRule(OntologyTerm.ID, Operator.IN,

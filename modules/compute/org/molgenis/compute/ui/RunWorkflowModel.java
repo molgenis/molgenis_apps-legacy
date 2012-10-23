@@ -23,17 +23,17 @@ public class RunWorkflowModel extends EasyPluginModel
 	List<WorkflowElement> elements;
 	List<ComputeProtocol> protocols;
 
-    protected List<NgsSample> getSamples()
-    {
-        return samples;
-    }
+	protected List<NgsSample> getSamples()
+	{
+		return samples;
+	}
 
-    protected void setSamples(List<NgsSample> samples)
-    {
-        this.samples = samples;
-    }
+	protected void setSamples(List<NgsSample> samples)
+	{
+		this.samples = samples;
+	}
 
-    List<NgsSample> samples;
+	List<NgsSample> samples;
 
 	public RunWorkflowModel(RunWorkflow controller)
 	{

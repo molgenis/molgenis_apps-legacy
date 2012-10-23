@@ -2,7 +2,6 @@ package org.molgenis.matrix.component.legacy;
 
 import java.util.List;
 
-
 // TODO merge this with the rendere as it is MatrixMetadata
 // J: in the original design we wanted to keep this seperate.
 // A RenderableMatrix is created by the logic in MatrixRenderer
@@ -53,7 +52,5 @@ public interface SourceMatrix<R, C, V>
 	 * filter.
 	 */
 	public int getTotalNumberOfCols();
-
-
 
 }

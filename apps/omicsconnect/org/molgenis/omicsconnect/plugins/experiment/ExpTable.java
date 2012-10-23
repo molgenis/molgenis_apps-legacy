@@ -7,7 +7,6 @@
 
 package org.molgenis.omicsconnect.plugins.experiment;
 
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -27,7 +26,7 @@ public class ExpTable extends PluginModel<Entity>
 	private static final long serialVersionUID = 1L;
 
 	private ExpTableModel model = new ExpTableModel();
-	
+
 	public ExpTableModel getMyModel()
 	{
 		return model;
@@ -49,7 +48,7 @@ public class ExpTable extends PluginModel<Entity>
 	{
 		return "org/molgenis/omicsconnect/plugins/experiment/ExpTable.ftl";
 	}
-	
+
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
@@ -57,24 +56,25 @@ public class ExpTable extends PluginModel<Entity>
 			String action = request.getString("__action");
 			try
 			{
-			
-				if (action.equals("LoadStudies")){
-					
-					//set studies get db object so you can query
+
+				if (action.equals("LoadStudies"))
+				{
+
+					// set studies get db object so you can query
 					model.setStudies(db.find(Study.class));
 					model.setPanels(null);
 					// Get the ID of the chromosome.
-					
-				
+
 				}
-				
-				if (action.equals("LoadPanels")){
-					//set studies get db object so you can query
+
+				if (action.equals("LoadPanels"))
+				{
+					// set studies get db object so you can query
 					model.setPanels(db.find(Panel.class));
 					model.setStudies(null);
-					
+
 				}
-				
+
 			}
 			catch (Exception e)
 			{
@@ -83,24 +83,23 @@ public class ExpTable extends PluginModel<Entity>
 			}
 		}
 	}
-	
-	
-	
+
 	@Override
 	public void reload(Database db)
 	{
-			
-			//set studies get db object so you can query
-			try {
-				model.setStudies(db.find(Study.class));
-			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			
-			}
-		
-		
+
+		// set studies get db object so you can query
+		try
+		{
+			model.setStudies(db.find(Study.class));
+		}
+		catch (DatabaseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+
+		}
 
 	}
 

@@ -27,7 +27,7 @@ public class UploadTest
 
 		Logger logger = Logger.getLogger(getClass().getSimpleName());
 		logger.shutdown();
-		
+
 		// get database, filehandler, and computeresource to handle commandline
 		// calls
 		Database db = DatabaseFactory.create("handwritten/apps/org/molgenis/xgap/xgap.properties");

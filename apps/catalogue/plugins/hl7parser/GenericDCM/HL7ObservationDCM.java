@@ -5,7 +5,6 @@
 
 package plugins.hl7parser.GenericDCM;
 
-
 import java.util.ArrayList;
 
 import javax.xml.xpath.XPath;
@@ -18,21 +17,21 @@ import org.w3c.dom.NodeList;
 import plugins.hl7parser.HL7OntologyTerm;
 
 /**
- *
+ * 
  * @author roankanninga
  */
-public class HL7ObservationDCM {
+public class HL7ObservationDCM
+{
 
 	private Node measurement;
 	private XPath xpath;
-	private String displayName = ""; //measurementName
+	private String displayName = ""; // measurementName
 	private String originalText = ""; // measurementDescription
-	private String value = ""; //measurementDatatype
+	private String value = ""; // measurementDatatype
 	private String id = ""; //
 	private String repeatNumberHigh = ""; //
 	private String repeatNumberLow = ""; //
 	public ArrayList<HL7OntologyTerm> hl7OntologyTermObservation;
-	
 
 	private static final String OBSERVATION_NAME = "urn:hl7-org:v3:code/@displayName";
 	private static final String OBSERVATION_ONTOLOGYCODE = "urn:hl7-org:v3:code";
@@ -42,8 +41,8 @@ public class HL7ObservationDCM {
 	private static final String OBSERVATION_REPEATNUMBER_LOW = "urn:hl7-org:v3:repeatNumber/urn:hl7-org:v3:low/@value";
 	private static final String OBSERVATION_REPEATNUMBER_HIGH = "urn:hl7-org:v3:repeatNumber/urn:hl7-org:v3:high/@value";
 
-
-	public HL7ObservationDCM (Node measurement, XPath xpath) throws Exception{
+	public HL7ObservationDCM(Node measurement, XPath xpath) throws Exception
+	{
 		this.measurement = measurement;
 		this.xpath = xpath;
 		readOriginalText();
@@ -51,92 +50,109 @@ public class HL7ObservationDCM {
 		readID();
 		readDisplayName();
 		readRepeatNumber();
-		
-		NodeList ontologyTermCode = (NodeList) xpath.evaluate(OBSERVATION_ONTOLOGYCODE, measurement, XPathConstants.NODESET);
-		
+
+		NodeList ontologyTermCode = (NodeList) xpath.evaluate(OBSERVATION_ONTOLOGYCODE, measurement,
+				XPathConstants.NODESET);
+
 		hl7OntologyTermObservation = new ArrayList<HL7OntologyTerm>();
-		for(int i = 1; i < ontologyTermCode.getLength(); i++){
+		for (int i = 1; i < ontologyTermCode.getLength(); i++)
+		{
 			HL7OntologyTerm ot = new HL7OntologyTerm(ontologyTermCode.item(i), xpath);
 			hl7OntologyTermObservation.add(ot);
 		}
 
 	}
 
-	public void readDisplayName() throws Exception{
+	public void readDisplayName() throws Exception
+	{
 
 		Node nameNode = (Node) xpath.evaluate(OBSERVATION_NAME, measurement, XPathConstants.NODE);
 
 		this.displayName = nameNode.getNodeValue();
 	}
-	public void readID() throws Exception{
+
+	public void readID() throws Exception
+	{
 
 		Node nameNode = (Node) xpath.evaluate(OBSERVATION_ID, measurement, XPathConstants.NODE);
 
 		this.id = nameNode.getNodeValue();
 	}
 
-	public void readRepeatNumber() throws Exception{
+	public void readRepeatNumber() throws Exception
+	{
 
 		Node nameNode1 = (Node) xpath.evaluate(OBSERVATION_REPEATNUMBER_LOW, measurement, XPathConstants.NODE);
-		Node nameNode2 = (Node) xpath.evaluate(OBSERVATION_REPEATNUMBER_HIGH, measurement, XPathConstants.NODE);       
-		if(nameNode1 != null){
+		Node nameNode2 = (Node) xpath.evaluate(OBSERVATION_REPEATNUMBER_HIGH, measurement, XPathConstants.NODE);
+		if (nameNode1 != null)
+		{
 			this.repeatNumberLow = nameNode1.getNodeValue();
 		}
-		if(nameNode2 != null){
+		if (nameNode2 != null)
+		{
 			this.repeatNumberHigh = nameNode2.getNodeValue();
 		}
 	}
 
-	public void readOriginalText() throws Exception{
+	public void readOriginalText() throws Exception
+	{
 
 		Node nameNode = (Node) xpath.evaluate(OBSERVATION_DESCRIPTION, measurement, XPathConstants.NODE);
-		if(nameNode != null){
+		if (nameNode != null)
+		{
 			this.originalText = nameNode.getNodeValue();
 		}
 	}
 
-	public void readValue()throws Exception{
-		try{
+	public void readValue() throws Exception
+	{
+		try
+		{
 
 			Node nameNode = (Node) xpath.evaluate(OBSERVATION_DATATYPE, measurement, XPathConstants.NODE);
 			NamedNodeMap attr = nameNode.getAttributes();
 			Node xsitype = attr.getNamedItem("xsi:type");
 			this.value = xsitype.getNodeValue();
-		}catch (Exception e){
+		}
+		catch (Exception e)
+		{
 			this.value = "NO DATATYPE";
 		}
 	}
 
-	public String getDisplayName() {
+	public String getDisplayName()
+	{
 		return displayName;
 	}
 
-	public String getOriginalText() {
+	public String getOriginalText()
+	{
 		return originalText;
 	}
 
-	public String getValue() {
+	public String getValue()
+	{
 		return value;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return id;
 	}
 
-	public String getRepeatNumberHigh() {
+	public String getRepeatNumberHigh()
+	{
 		return repeatNumberHigh;
 	}
 
-	public String getRepeatNumberLow() {
+	public String getRepeatNumberLow()
+	{
 		return repeatNumberLow;
 	}
 
-	public ArrayList<HL7OntologyTerm> getHl7OntologyTerms() {
+	public ArrayList<HL7OntologyTerm> getHl7OntologyTerms()
+	{
 		return hl7OntologyTermObservation;
 	}
-
-
-
-
 
 }

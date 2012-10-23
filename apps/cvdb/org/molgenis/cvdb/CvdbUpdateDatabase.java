@@ -1,4 +1,5 @@
 package org.molgenis.cvdb;
+
 import org.molgenis.Molgenis;
 
 //import cmdline.CmdLineException;

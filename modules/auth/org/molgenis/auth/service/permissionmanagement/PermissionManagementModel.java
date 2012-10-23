@@ -13,39 +13,47 @@ package org.molgenis.auth.service.permissionmanagement;
 import org.molgenis.auth.MolgenisRole;
 
 /**
- * This is a class that Jessica introduced to keep permission management variables in.
- * It is not to be confused with PermissionManagementPluginModel, which is the model
- * class for the MVC structure that Morris introduced on May 7th 2011.
+ * This is a class that Jessica introduced to keep permission management
+ * variables in. It is not to be confused with PermissionManagementPluginModel,
+ * which is the model class for the MVC structure that Morris introduced on May
+ * 7th 2011.
  */
-public class PermissionManagementModel {
+public class PermissionManagementModel
+{
 
-	//Danny: This was crashing freemarker, if we can't reach the database we 
-	//still need to have a default role so we don't blow up the template
-    private MolgenisRole role = new MolgenisRole();
-    private String action = "init";
-    private int permId = 0;
+	// Danny: This was crashing freemarker, if we can't reach the database we
+	// still need to have a default role so we don't blow up the template
+	private MolgenisRole role = new MolgenisRole();
+	private String action = "init";
+	private int permId = 0;
 
-    public void setRole(MolgenisRole molgenisRole) {
-    	this.role = molgenisRole;
-    }
+	public void setRole(MolgenisRole molgenisRole)
+	{
+		this.role = molgenisRole;
+	}
 
-    public MolgenisRole getRole() {
-    	return role;
-    }
+	public MolgenisRole getRole()
+	{
+		return role;
+	}
 
-	public void setAction(String action) {
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
 
-	public String getAction() {
+	public String getAction()
+	{
 		return action;
 	}
 
-	public void setPermId(int permId) {
+	public void setPermId(int permId)
+	{
 		this.permId = permId;
 	}
 
-	public int getPermId() {
+	public int getPermId()
+	{
 		return permId;
 	}
 }

@@ -9,53 +9,60 @@ import matrix.AbstractDataMatrixInstance;
 import org.molgenis.data.Data;
 import org.molgenis.pheno.ObservationElement;
 
-public class MatrixManagerModel {
+public class MatrixManagerModel
+{
 
 	private HashMap<String, String> allOperators;
 	private HashMap<String, String> valueOperators;
-	
+
 	private Data selectedData;
 	private Browser browser;
-	
+
 	private String colHeader;
 	private String rowHeader;
 	private Map<String, ObservationElement> rowObsElem;
 	private Map<String, ObservationElement> colObsElem;
-	
+
 	private List<String> rowHeaderAttr;
 	private List<String> colHeaderAttr;
-	
+
 	private boolean hasBackend;
 	private boolean uploadMode;
-	
+
 	private String uploadTextAreaContent;
 	private String filter;
 	private String selectedFilterDiv;
-	
+
 	private String tmpImgName;
 	private int selectedWidth;
 	private int selectedHeight;
-	
-	public String renderRow(String name, String screenName){
+
+	public String renderRow(String name, String screenName)
+	{
 		ObservationElement o = rowObsElem.get(name);
-		if(o == null){
+		if (o == null)
+		{
 			return name;
-		}else{
+		}
+		else
+		{
 			return AbstractDataMatrixInstance.render(o, screenName);
 		}
 	}
-	
-	public String renderCol(String name, String screenName){
+
+	public String renderCol(String name, String screenName)
+	{
 		ObservationElement o = colObsElem.get(name);
-		if(o == null){
+		if (o == null)
+		{
 			return name;
-		}else{
+		}
+		else
+		{
 			return AbstractDataMatrixInstance.render(o, screenName);
 		}
 	}
-	
-	
-	
+
 	public String getSelectedFilterDiv()
 	{
 		return selectedFilterDiv;
@@ -126,8 +133,6 @@ public class MatrixManagerModel {
 		this.colHeaderAttr = colHeaderAttr;
 	}
 
-
-
 	public HashMap<String, String> getAllOperators()
 	{
 		return allOperators;
@@ -152,62 +157,90 @@ public class MatrixManagerModel {
 	{
 		return selectedData;
 	}
+
 	public void setSelectedData(Data selectedData)
 	{
 		this.selectedData = selectedData;
 	}
-	public String getUploadTextAreaContent() {
+
+	public String getUploadTextAreaContent()
+	{
 		return uploadTextAreaContent;
 	}
-	public void setUploadTextAreaContent(String uploadTextAreaContent) {
+
+	public void setUploadTextAreaContent(String uploadTextAreaContent)
+	{
 		this.uploadTextAreaContent = uploadTextAreaContent;
 	}
-	public boolean isHasBackend() {
+
+	public boolean isHasBackend()
+	{
 		return hasBackend;
 	}
-	public void setHasBackend(boolean hasBackend) {
+
+	public void setHasBackend(boolean hasBackend)
+	{
 		this.hasBackend = hasBackend;
 	}
-	public boolean isUploadMode() {
+
+	public boolean isUploadMode()
+	{
 		return uploadMode;
 	}
-	public void setUploadMode(boolean uploadMode) {
+
+	public void setUploadMode(boolean uploadMode)
+	{
 		this.uploadMode = uploadMode;
 	}
 
-	public Browser getBrowser() {
+	public Browser getBrowser()
+	{
 		return browser;
 	}
-	public void setBrowser(Browser browser) {
+
+	public void setBrowser(Browser browser)
+	{
 		this.browser = browser;
 	}
-	public String getColHeader() {
+
+	public String getColHeader()
+	{
 		return colHeader;
 	}
-	public void setColHeader(String colHeader) {
+
+	public void setColHeader(String colHeader)
+	{
 		this.colHeader = colHeader;
 	}
-	public String getRowHeader() {
+
+	public String getRowHeader()
+	{
 		return rowHeader;
 	}
-	public void setRowHeader(String rowHeader) {
+
+	public void setRowHeader(String rowHeader)
+	{
 		this.rowHeader = rowHeader;
 	}
+
 	public Map<String, ObservationElement> getRowObsElem()
 	{
 		return rowObsElem;
 	}
+
 	public void setRowObsElem(Map<String, ObservationElement> rowObsElem)
 	{
 		this.rowObsElem = rowObsElem;
 	}
+
 	public Map<String, ObservationElement> getColObsElem()
 	{
 		return colObsElem;
 	}
+
 	public void setColObsElem(Map<String, ObservationElement> colObsElem)
 	{
 		this.colObsElem = colObsElem;
 	}
-	
+
 }

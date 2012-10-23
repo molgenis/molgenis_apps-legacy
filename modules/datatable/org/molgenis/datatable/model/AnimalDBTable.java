@@ -417,28 +417,29 @@ public class AnimalDBTable extends AbstractFilterableTupleTable implements Edita
 
 		return hashMeasurementsWithCategories;
 	}
-	
+
 	/**
 	 * very bad: bypasses all security and connection management
 	 */
 	private Database db;
-	 public void setDb(Database db)
-	 {
-	 if (db == null) throw new
-	 NullPointerException("database cannot be null in setDb(db)");
-	 this.db = db;
-	 }
-	 public Database getDb()
-	 {
-	 try
-	 {
-	 db = DatabaseFactory.create();
-	 }
-	 catch (DatabaseException e)
-	 {
-	 throw new RuntimeException(e);
-	 }
-	 return this.db;
-	 }
+
+	public void setDb(Database db)
+	{
+		if (db == null) throw new NullPointerException("database cannot be null in setDb(db)");
+		this.db = db;
+	}
+
+	public Database getDb()
+	{
+		try
+		{
+			db = DatabaseFactory.create();
+		}
+		catch (DatabaseException e)
+		{
+			throw new RuntimeException(e);
+		}
+		return this.db;
+	}
 
 }

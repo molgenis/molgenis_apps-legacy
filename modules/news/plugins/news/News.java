@@ -20,10 +20,11 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class News extends PluginModel<Entity> 
+public class News extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5732318216660565455L;
-	private static final int NUM_NEWS = 5; // how many news to be shown in right box?
+	private static final int NUM_NEWS = 5; // how many news to be shown in right
+											// box?
 	private String action = "init";
 	private NewsService newsService;
 	private List<MolgenisNews> news = new ArrayList<MolgenisNews>();
@@ -61,15 +62,15 @@ public class News extends PluginModel<Entity>
 			}
 			else if ("all".equals(this.action))
 			{
-				this.news     = this.newsService.getAllNews();
+				this.news = this.newsService.getAllNews();
 			}
 			else
 			{
-				this.action   = "init";
+				this.action = "init";
 				this.reload(db);
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			logger.error(e.toString());
 		}
@@ -81,27 +82,29 @@ public class News extends PluginModel<Entity>
 		this.newsService = NewsService.getInstance(db);
 		try
 		{
-			if ("init".equals(this.action))
-				this.news = this.newsService.getAllNews(News.NUM_NEWS);
+			if ("init".equals(this.action)) this.news = this.newsService.getAllNews(News.NUM_NEWS);
 		}
 		catch (Exception e)
 		{
 			logger.error(e.toString());
 		}
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{
-//		return true;
-		try {
+		// return true;
+		try
+		{
 			return this.getLogin().canRead(this);
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
+
 	public String getAction()
 	{
 		return this.action;
@@ -111,7 +114,7 @@ public class News extends PluginModel<Entity>
 	{
 		return this.news;
 	}
-	
+
 	public MolgenisNews getNewsItem()
 	{
 		return this.newsItem;

@@ -172,7 +172,6 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 
 				try
 				{
-
 					// KEGGGene sourceGene =
 					// KEGGTools.getKeggGene(sourceOrganism + ":" + id);
 					// KEGGOrthologue orthology =
@@ -184,7 +183,6 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 					// "\n";
 					// outputAdvanced += id + "\t" +
 					// targetGene.toStringMedium("\t");
-
 				}
 				catch (Exception e)
 				{

@@ -1,4 +1,5 @@
 package org.molgenis.chd7;
+
 import org.molgenis.Molgenis;
 
 /**

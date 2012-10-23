@@ -10,34 +10,34 @@ import org.molgenis.util.Tuple;
 public class ShowResultsScreen extends PluginModel
 {
 	private static final long serialVersionUID = 7479201455882238849L;
-	/**IN parameters*/
+	/** IN parameters */
 	private String outputR;
 	private List<Tuple> indPerSlide;
 	private List<Tuple> indPerCondition;
 	private String imageLink;
-	private String indXCondLink;			// Individuals per Condition
-	private String indXSlideLink;			// Individuals per Slide
-	
+	private String indXCondLink; // Individuals per Condition
+	private String indXSlideLink; // Individuals per Slide
+
 	public ShowResultsScreen(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request )
+	public void handleRequest(Database db, Tuple request)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void reload(Database db)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-//GETTERS AND SETTERS
+	// GETTERS AND SETTERS
 	public List<Tuple> getIndPerSlide()
 	{
 		return indPerSlide;
@@ -57,62 +57,73 @@ public class ShowResultsScreen extends PluginModel
 	{
 		this.indPerCondition = indPerCondition;
 	}
-	
-	public String getImageLink() {
+
+	public String getImageLink()
+	{
 		return imageLink;
 	}
 
-	public void setImageLink(String imageLink) {
+	public void setImageLink(String imageLink)
+	{
 		this.imageLink = imageLink;
 	}
 
 	/**
 	 * @return the designParameters
 	 */
-	public DesignParameters getDesignParameters() {
-		return ((MainScreen)this.getParent()).getScreen1().getDesignParameters();
+	public DesignParameters getDesignParameters()
+	{
+		return ((MainScreen) this.getParent()).getScreen1().getDesignParameters();
 	}
-
 
 	/**
 	 * @return the outputR
 	 */
-	public String getOutputR() {
+	public String getOutputR()
+	{
 		return outputR;
 	}
 
 	/**
-	 * @param outputR the outputR to set
+	 * @param outputR
+	 *            the outputR to set
 	 */
-	public void setOutputR(String outputR) {
+	public void setOutputR(String outputR)
+	{
 		this.outputR = outputR;
 	}
 
 	/**
 	 * @return the indXCondLink
 	 */
-	public String getIndXCondLink() {
+	public String getIndXCondLink()
+	{
 		return indXCondLink;
 	}
 
 	/**
-	 * @param indXCondLink the indXCondLink to set
+	 * @param indXCondLink
+	 *            the indXCondLink to set
 	 */
-	public void setIndXCondLink(String indXCondLink) {
+	public void setIndXCondLink(String indXCondLink)
+	{
 		this.indXCondLink = indXCondLink;
 	}
 
 	/**
 	 * @return the indXSlideLink
 	 */
-	public String getIndXSlideLink() {
+	public String getIndXSlideLink()
+	{
 		return indXSlideLink;
 	}
 
 	/**
-	 * @param indXSlideLink the indXSlideLink to set
+	 * @param indXSlideLink
+	 *            the indXSlideLink to set
 	 */
-	public void setIndXSlideLink(String indXSlideLink) {
+	public void setIndXSlideLink(String indXSlideLink)
+	{
 		this.indXSlideLink = indXSlideLink;
 	}
 
@@ -129,6 +140,5 @@ public class ShowResultsScreen extends PluginModel
 		// TODO Auto-generated method stub
 		return "org/molgenis/designgg/ShowResultsScreen.ftl";
 	}
-
 
 }

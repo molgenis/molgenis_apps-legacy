@@ -15,14 +15,14 @@ import org.molgenis.pheno.Panel;
 
 public class DataSet implements ExampleData
 {
-	public Map<String, Panel> panels = new LinkedHashMap<String,Panel>();
-	public Map<String, Individual> individuals = new LinkedHashMap<String,Individual>();
-	public Map<String, Measurement> measurements = new LinkedHashMap<String,Measurement>();
+	public Map<String, Panel> panels = new LinkedHashMap<String, Panel>();
+	public Map<String, Individual> individuals = new LinkedHashMap<String, Individual>();
+	public Map<String, Measurement> measurements = new LinkedHashMap<String, Measurement>();
 	public List<ObservedValue> values = new ArrayList<ObservedValue>();
-	
+
 	public void addPanel(String name)
 	{
-		if(panels.get(name) == null)
+		if (panels.get(name) == null)
 		{
 			Panel p = new Panel();
 			p.setName(name);
@@ -32,7 +32,7 @@ public class DataSet implements ExampleData
 
 	public void addIndividual(String name)
 	{
-		if(individuals.get(name) == null)
+		if (individuals.get(name) == null)
 		{
 			Individual i = new Individual();
 			i.setName(name);
@@ -41,14 +41,14 @@ public class DataSet implements ExampleData
 	}
 
 	public void addValue(Individual individual, String measurement, String value)
-	{		
-		if(measurements.get(measurement) == null)
+	{
+		if (measurements.get(measurement) == null)
 		{
 			Measurement m = new Measurement();
 			m.setName(measurement);
 			measurements.put(measurement, m);
 		}
-		
+
 		ObservedValue v = new ObservedValue();
 		v.setTarget_Name(individual.getName());
 		v.setFeature_Name(measurement);
@@ -63,6 +63,6 @@ public class DataSet implements ExampleData
 		db.add(new ArrayList(this.individuals.values()));
 		db.add(new ArrayList(this.panels.values()));
 		db.add(this.values);
-		
+
 	}
 }

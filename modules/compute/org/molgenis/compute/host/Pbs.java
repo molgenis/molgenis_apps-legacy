@@ -37,11 +37,11 @@ public class Pbs extends AbstractComputeHost implements ComputeHost
 	public void submit(Job job) throws IOException
 	{
 		String path = getWorkingDir() + ("".equals(this.getWorkingDir()) ? "" : "/") + job.getName();
-		
-		//set error paths relative to job dir
-		job.setOutput_path(path +".out");
-		job.setError_path(path +".err");
-		
+
+		// set error paths relative to job dir
+		job.setOutput_path(path + ".out");
+		job.setError_path(path + ".err");
+
 		// set defaults
 		if (job.getWalltime() == null) job.setWalltime("00:30:00");
 		if (job.getMem() == null) job.setMem("2gb");
@@ -72,7 +72,7 @@ public class Pbs extends AbstractComputeHost implements ComputeHost
 		this.uploadStringToFile(script, filename, getWorkingDir());
 
 		// start the script
-		SshResult result = this.executeCommand("qsub " + path +".sh");
+		SshResult result = this.executeCommand("qsub " + path + ".sh");
 
 		// check for errors in submission
 		if (result.getStdErr() != null && !result.getStdErr().trim().equals("")) throw new IOException(
@@ -84,12 +84,13 @@ public class Pbs extends AbstractComputeHost implements ComputeHost
 		this.jobs.put(id, job);
 	}
 
-    public void submitPilot(Job job) throws IOException
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+	public void submitPilot(Job job) throws IOException
+	{
+		// To change body of implemented methods use File | Settings | File
+		// Templates.
+	}
 
-    /**
+	/**
 	 * Remove the job remotely and remove from local list of jobs.
 	 * 
 	 * @param job

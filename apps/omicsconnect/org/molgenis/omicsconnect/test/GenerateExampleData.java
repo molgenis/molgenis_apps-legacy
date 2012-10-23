@@ -23,11 +23,11 @@ public class GenerateExampleData
 	{
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		
+
 		int noColumns = 1000;
-		
+
 		int noRows = 1000;
-		
+
 		Database db = DatabaseFactory.create();
 		try
 		{
@@ -47,7 +47,7 @@ public class GenerateExampleData
 			{
 				ObservableFeature f = new ObservableFeature();
 				f.setIdentifier("f" + i + "test");
-				f.setName("test feature "+i);
+				f.setName("test feature " + i);
 				fList.add(f);
 			}
 			db.add(fList);
@@ -67,7 +67,7 @@ public class GenerateExampleData
 			{
 				Individual f = new Individual();
 				f.setIdentifier("i" + i + "test");
-				f.setName("feature "+i);
+				f.setName("feature " + i);
 				iList.add(f);
 			}
 			db.add(iList);

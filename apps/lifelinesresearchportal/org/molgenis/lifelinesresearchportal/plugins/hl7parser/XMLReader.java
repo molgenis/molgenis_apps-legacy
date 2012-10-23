@@ -32,40 +32,47 @@ import org.w3c.dom.NodeList;
 
 import app.DatabaseFactory;
 
-public class XMLReader {
+public class XMLReader
+{
 
 	Node node = null;
 	Database db = null;
 	Investigation inv = null;
 
-	public static void main(String args[]) {
+	public static void main(String args[])
+	{
 
 		XMLReader test = new XMLReader();
-		try {
+		try
+		{
 			test.run();
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	public Node nodeFunction(String xmlCode, String molgenisCode) {
-		if (node.getNodeName().equals(xmlCode)) {
-			if (!xmlCode.equals("")) {
-				System.out.println(molgenisCode
-						+ ""
-						+ node.getAttributes().getNamedItem(xmlCode)
-								.getNodeValue());
+	public Node nodeFunction(String xmlCode, String molgenisCode)
+	{
+		if (node.getNodeName().equals(xmlCode))
+		{
+			if (!xmlCode.equals(""))
+			{
+				System.out.println(molgenisCode + "" + node.getAttributes().getNamedItem(xmlCode).getNodeValue());
 			}
 			return node;
 		}
 		return node;
 	}
 
-	public void run() throws DatabaseException {
+	public void run() throws DatabaseException
+	{
 
-		try {
+		try
+		{
 
 			// Get a fresh new database object
 			this.db = DatabaseFactory.create();
@@ -79,10 +86,8 @@ public class XMLReader {
 
 			inv.setName("HL7Test");
 
-			if (db.find(
-					Investigation.class,
-					new QueryRule(Investigation.NAME, Operator.EQUALS,
-							"HL7Test")).size() == 0) {
+			if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "HL7Test")).size() == 0)
+			{
 				db.add(inv);
 			}
 
@@ -99,18 +104,17 @@ public class XMLReader {
 			// MeasurementName and its fields!
 
 			NodeList nodeLst = doc.getElementsByTagName("organizer");
-			for (int i = 0; i < nodeLst.getLength(); i++) {
+			for (int i = 0; i < nodeLst.getLength(); i++)
+			{
 
 				// Get each "organizer" entity
 				Node eachNode = nodeLst.item(i);
 
 				// Probably the List size is 1 cos there is only one code entity
 				// in the direct child of the organizer entity
-				List<String> protocolNameNode = getAttributeFromEntity(
-						eachNode, "code", "code", 1);
+				List<String> protocolNameNode = getAttributeFromEntity(eachNode, "code", "code", 1);
 
-				List<Node> measurementNode = getChildNodes(eachNode,
-						"observation", 2);
+				List<Node> measurementNode = getChildNodes(eachNode, "observation", 2);
 
 				transformToMeasurement(protocolNameNode.get(0), measurementNode);
 
@@ -119,7 +123,9 @@ public class XMLReader {
 			// commit all the changes in the database
 			db.commitTx();
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 
 			// if anything goes wrong, roll back to the previous state
 			db.rollbackTx();
@@ -136,8 +142,8 @@ public class XMLReader {
 	 * @param measurementNode
 	 * @throws DatabaseException
 	 */
-	private void transformToMeasurement(String protocolName,
-			List<Node> measurementNode) throws DatabaseException {
+	private void transformToMeasurement(String protocolName, List<Node> measurementNode) throws DatabaseException
+	{
 
 		List<String> listOfMeasurementName = new ArrayList<String>();
 
@@ -149,16 +155,14 @@ public class XMLReader {
 
 		List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
 
-		for (Node eachNode : measurementNode) {
+		for (Node eachNode : measurementNode)
+		{
 
-			List<String> nameOfMeasurement = getAttributeFromEntity(eachNode,
-					"code", "code", 1);
+			List<String> nameOfMeasurement = getAttributeFromEntity(eachNode, "code", "code", 1);
 
-			List<String> description = getAttributeFromEntity(eachNode,
-					"originalText", "", 2);
+			List<String> description = getAttributeFromEntity(eachNode, "originalText", "", 2);
 
-			List<String> dataType = getAttributeFromEntity(eachNode, "value",
-					"xsi:type", 1);
+			List<String> dataType = getAttributeFromEntity(eachNode, "value", "xsi:type", 1);
 
 			Measurement m = new Measurement();
 
@@ -166,11 +170,16 @@ public class XMLReader {
 
 			m.setDescription(description.get(0));
 
-			if (dataType.get(0).equals("INT")) {
+			if (dataType.get(0).equals("INT"))
+			{
 				m.setDataType("int");
-			} else if (dataType.get(0).equals("ST")) {
+			}
+			else if (dataType.get(0).equals("ST"))
+			{
 				m.setDataType("string");
-			} else if (dataType.get(0).equals("TS")) {
+			}
+			else if (dataType.get(0).equals("TS"))
+			{
 				m.setDataType("datetime");
 			}
 
@@ -184,27 +193,28 @@ public class XMLReader {
 
 		}
 
-		db.update(listOfMeasurements, DatabaseAction.ADD_IGNORE_EXISTING,
-				Measurement.NAME);
+		db.update(listOfMeasurements, DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
 
-		listOfMeasurements = db.find(Measurement.class, new QueryRule(
-				Measurement.NAME, Operator.IN, listOfMeasurementName));
+		listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+				listOfMeasurementName));
 
 		List<Integer> listOfMeasurementId = new ArrayList<Integer>();
 
-		for (Measurement m : listOfMeasurements) {
+		for (Measurement m : listOfMeasurements)
+		{
 			listOfMeasurementId.add(m.getId());
 		}
 
 		p.setFeatures_Id(listOfMeasurementId);
 
-		if (db.find(Protocol.class,
-				new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName))
-				.size() == 0) {
+		if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName)).size() == 0)
+		{
 
 			db.add(p);
 
-		} else {
+		}
+		else
+		{
 			db.update(p);
 		}
 	}
@@ -218,25 +228,30 @@ public class XMLReader {
 	 * @param level
 	 * @return
 	 */
-	public List<Node> getChildNodes(Node currentEntity, String subNodeName,
-			int level) {
+	public List<Node> getChildNodes(Node currentEntity, String subNodeName, int level)
+	{
 
 		List<Node> listOfSubNodes = new ArrayList<Node>();
 
-		for (int x = 0; x < currentEntity.getChildNodes().getLength(); x++) {
+		for (int x = 0; x < currentEntity.getChildNodes().getLength(); x++)
+		{
 
 			Node subNode = currentEntity.getChildNodes().item(x);
 
-			if (level == 1) {
+			if (level == 1)
+			{
 
-				if (subNode.getNodeName().equals(subNodeName)) {
+				if (subNode.getNodeName().equals(subNodeName))
+				{
 
 					listOfSubNodes.add(subNode);
 					// System.out.println(subNode.getAttributes().getNamedItem(attributeName).getNodeValue());
 					// System.out.println(subNode.getTextContent());
 				}
 
-			} else {
+			}
+			else
+			{
 				int nextLevel = level - 1;
 				List<Node> temp = getChildNodes(subNode, subNodeName, nextLevel);
 				listOfSubNodes.addAll(temp);
@@ -256,31 +271,37 @@ public class XMLReader {
 	 * @param level
 	 * @return
 	 */
-	public List<String> getAttributeFromEntity(Node currentEntity,
-			String subNodeName, String attributeName, int level) {
+	public List<String> getAttributeFromEntity(Node currentEntity, String subNodeName, String attributeName, int level)
+	{
 
 		List<String> listOfSubNodes = new ArrayList<String>();
 
-		for (int x = 0; x < currentEntity.getChildNodes().getLength(); x++) {
+		for (int x = 0; x < currentEntity.getChildNodes().getLength(); x++)
+		{
 
 			Node subNode = currentEntity.getChildNodes().item(x);
 
-			if (level == 1) {
+			if (level == 1)
+			{
 
-				if (subNode.getNodeType() == Node.ELEMENT_NODE) {
+				if (subNode.getNodeType() == Node.ELEMENT_NODE)
+				{
 
 					Element element = (Element) subNode;
 
-					if (element.getNodeName().equals(subNodeName)) {
+					if (element.getNodeName().equals(subNodeName))
+					{
 
-						if (attributeName.equals("")) {
+						if (attributeName.equals(""))
+						{
 
 							listOfSubNodes.add(element.getTextContent());
 
-						} else if (element.hasAttribute(attributeName)) {
+						}
+						else if (element.hasAttribute(attributeName))
+						{
 
-							listOfSubNodes.add(element
-									.getAttribute(attributeName));
+							listOfSubNodes.add(element.getAttribute(attributeName));
 
 							// System.out.println("The attribute is " +
 							// element.getAttribute(attributeName));
@@ -289,10 +310,11 @@ public class XMLReader {
 					}
 				}
 
-			} else {
+			}
+			else
+			{
 				int nextLevel = level - 1;
-				List<String> temp = getAttributeFromEntity(subNode,
-						subNodeName, attributeName, nextLevel);
+				List<String> temp = getAttributeFromEntity(subNode, subNodeName, attributeName, nextLevel);
 				listOfSubNodes.addAll(temp);
 			}
 		}

@@ -22,7 +22,7 @@ public class Test
 	{
 		this.params = params;
 	}
-	
+
 	@XmlElement
 	public TestOutput output;
 
@@ -35,12 +35,13 @@ public class Test
 	{
 		this.output = output;
 	}
-	
+
 	public String toString()
 	{
 		String result = "";
-		for(TestParam p: params) result += "\t"+p.toString()+"\n";
-		result+="\t"+output.toString()+"\n";
-		return "Test(\n"+result+")";
+		for (TestParam p : params)
+			result += "\t" + p.toString() + "\n";
+		result += "\t" + output.toString() + "\n";
+		return "Test(\n" + result + ")";
 	}
 }
