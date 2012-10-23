@@ -16,7 +16,6 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
@@ -351,6 +350,5 @@ public class QueryTable extends AbstractFilterableTupleTable
 		// TODO Auto-generated method stub
 
 	}
-
 
 }
