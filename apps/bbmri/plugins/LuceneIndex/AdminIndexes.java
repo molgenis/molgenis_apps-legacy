@@ -38,7 +38,6 @@ import uk.ac.ebi.ontocat.OntologyServiceException;
 import uk.ac.ebi.ontocat.OntologyTerm;
 import uk.ac.ebi.ontocat.file.FileOntologyService;
 
-
 public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 {
 	/**
@@ -49,41 +48,41 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	LuceneConfiguration LC = new LuceneConfiguration();
 	private String InputToken = "lung disease";
 
-
-	public static final Map<String , String> ontologyNamesMap = new HashMap<String, String>() {/**
+	public static final Map<String, String> ontologyNamesMap = new HashMap<String, String>()
+	{
+		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		LuceneConfiguration LC = new LuceneConfiguration();
 
-	{
-        put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human-phenotype-ontology_v1294.obo", "Human Phenotype Ontology");
-        put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human_disease_v1.251.obo", "Human Disease");
- 		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "Thesaurus_10_03.owl", "NCI Thesaurus");
- 		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "mesh.obo", "MeSH");
-	}};
-
+		{
+			put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human-phenotype-ontology_v1294.obo",
+					"Human Phenotype Ontology");
+			put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human_disease_v1.251.obo", "Human Disease");
+			put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "Thesaurus_10_03.owl", "NCI Thesaurus");
+			put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "mesh.obo", "MeSH");
+		}
+	};
 
 	public static void main(String[] args) throws Exception
 	{
-		
-		OntoCatIndexPlugin p = new OntoCatIndexPlugin("x",null);
-		
+
+		OntoCatIndexPlugin p = new OntoCatIndexPlugin("x", null);
 
 		p.buildIndexOntocat();
 		List<String> ontologies = new ArrayList<String>();
-		//ontologies.add("Human Phenotype Ontology");
+		// ontologies.add("Human Phenotype Ontology");
 		ontologies.add("Human Disease");
 		ontologies.add("NCI Thesaurus");
-		//ontologies.add("MeSH");
-		
+		// ontologies.add("MeSH");
+
 		p.setInputToken("cystic lung disease");
 		p.setStatus("x");
-		//p.SearchIndexOntocat("asthma", ontologies);
-				
+		// p.SearchIndexOntocat("asthma", ontologies);
+
 	}
-	
-	
+
 	public AdminIndexes(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -104,568 +103,701 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		
-		//LuceneConfiguration LC = new LuceneConfiguration();
 
-		if ("CreateLuceneIndex".equals(request.getAction())) {
+		// LuceneConfiguration LC = new LuceneConfiguration();
 
-			String tmp =  System.getProperty("java.io.tmpdir");
+		if ("CreateLuceneIndex".equals(request.getAction()))
+		{
+
+			String tmp = System.getProperty("java.io.tmpdir");
 			System.setProperty("java.io.tmpdir.indexdir", tmp + "indexdir/");
 			String IndexDir = System.getProperty("java.io.tmpdir.indexdir");
 			System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + IndexDir);
-			
-			//if  (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"))) {
-			if  (!this.DirectoryhasContents(IndexDir)) {
-				//this.setStatus("<h4> Index already exists in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")  + "</h4>" ) ;
-				this.setStatus("<h4> Index already exists in " + IndexDir  + "</h4>" ) ;
 
-			} else {
+			// if
+			// (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")))
+			// {
+			if (!this.DirectoryhasContents(IndexDir))
+			{
+				// this.setStatus("<h4> Index already exists in " +
+				// LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY") + "</h4>"
+				// ) ;
+				this.setStatus("<h4> Index already exists in " + IndexDir + "</h4>");
+
+			}
+			else
+			{
 				this.createIndex(db);
-			}		
+			}
 		}
-		if ("DeleteLuceneIndex".equals(request.getAction())) {
+		if ("DeleteLuceneIndex".equals(request.getAction()))
+		{
 			this.deleteIndex();
 		}
-		
-		/** Unfortunately most of the times this option is not successful through the UI 
-		 *  In order to build the index check (Properties) the run Configurations of this file- set -Xms1024M -Xmx1024M
-		 *  and run in server. Pleasy also check the terms on which the search in the ontologies is build. By default two ontologies are inserted 
-		 *  	ontologies.add("Human Disease"); and 	ontologies.add("NCI Thesaurus");
-		 *  and the input is p.setInputToken("cystic lung disease"); 
+
+		/**
+		 * Unfortunately most of the times this option is not successful through
+		 * the UI In order to build the index check (Properties) the run
+		 * Configurations of this file- set -Xms1024M -Xmx1024M and run in
+		 * server. Pleasy also check the terms on which the search in the
+		 * ontologies is build. By default two ontologies are inserted
+		 * ontologies.add("Human Disease"); and ontologies.add("NCI Thesaurus");
+		 * and the input is p.setInputToken("cystic lung disease");
 		 * */
-		
-		if ("CreateOntocatLuceneIndex".equals(request.getAction())) {
-			String tmp =  System.getProperty("java.io.tmpdir");
+
+		if ("CreateOntocatLuceneIndex".equals(request.getAction()))
+		{
+			String tmp = System.getProperty("java.io.tmpdir");
 			System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
 			String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
 			System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
-			
-			//if  (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"))) {
-			if  (!this.DirectoryhasContents(OntocatIndexdir)) {
-				//this.setStatus("<h4> Index on Ontocat already created in directory " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY") + "</h4>");
+
+			// if
+			// (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY")))
+			// {
+			if (!this.DirectoryhasContents(OntocatIndexdir))
+			{
+				// this.setStatus("<h4> Index on Ontocat already created in directory "
+				// + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY") +
+				// "</h4>");
 				this.setStatus("<h4> Index on Ontocat already created in directory " + OntocatIndexdir + "</h4>");
-			} 
-			else {
-					try {
-						this.buildIndexOntocat();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+			}
+			else
+			{
+				try
+				{
+					this.buildIndexOntocat();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
-		
-		if ("DeleteOntocatIndex".equals(request.getAction())) {
+
+		if ("DeleteOntocatIndex".equals(request.getAction()))
+		{
 			this.DeleteOntocatIndex();
 		}
-		
+
 	}
 
-	
-	public void buildIndex(Database db) throws Exception {
-		
-		IndexWriter writer=null;
-		//StandardAnalyzer analyzer = null;
-		PorterStemAnalyzer analyzer = null;
-		File file = null; 
+	public void buildIndex(Database db) throws Exception
+	{
 
-		String tmp =  System.getProperty("java.io.tmpdir");
+		IndexWriter writer = null;
+		// StandardAnalyzer analyzer = null;
+		PorterStemAnalyzer analyzer = null;
+		File file = null;
+
+		String tmp = System.getProperty("java.io.tmpdir");
 		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
 		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
 		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
-		
-		try{
+
+		try
+		{
 			System.out.println("Start indexing ... ");
 			/**
 			 * get a reference to index directory file
 			 */
-			
-			//LuceneConfiguration LC = new LuceneConfiguration();
-			//file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+
+			// LuceneConfiguration LC = new LuceneConfiguration();
+			// file = new
+			// File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
 			file = new File(Indexdir);
-			
+
 			analyzer = new PorterStemAnalyzer();
-			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			writer = new IndexWriter( FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-			
-			String fullText = null ;
+			// analyzer = new StandardAnalyzer(Version.LUCENE_30);
+			writer = new IndexWriter(FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+
+			String fullText = null;
 
 			List<Class<? extends Entity>> classList = db.getEntityClasses();
-			for (Class<? extends Entity> aClass : classList) {	
-				for(Entity e: (List<? extends Entity>)db.find(aClass)) {
-		
+			for (Class<? extends Entity> aClass : classList)
+			{
+				for (Entity e : (List<? extends Entity>) db.find(aClass))
+				{
+
 					Document document1 = null;
-					document1 = new Document(); 
-					fullText  = aClass.getName();
-					
-					//System.out.println("[DEBUG]"+fullText);
-					
-					for(String fieldName: e.getFields()) {
-	
-						Field ClassName = new Field("className", aClass.getName().toString(), Field.Store.YES, Field.Index.ANALYZED);
-						
+					document1 = new Document();
+					fullText = aClass.getName();
+
+					// System.out.println("[DEBUG]"+fullText);
+
+					for (String fieldName : e.getFields())
+					{
+
+						Field ClassName = new Field("className", aClass.getName().toString(), Field.Store.YES,
+								Field.Index.ANALYZED);
+
 						document1.add(ClassName);
-					    System.out.println("the classes that are included in the index " + aClass.getName().toString());
-						
-						if (e.get(fieldName) != null) {
-							
-							Field InsertFieldValue = new Field(fieldName, e.get(fieldName).toString(), Field.Store.YES, Field.Index.ANALYZED);
-							
-							if(e instanceof InvestigationElement)
+						System.out.println("the classes that are included in the index " + aClass.getName().toString());
+
+						if (e.get(fieldName) != null)
+						{
+
+							Field InsertFieldValue = new Field(fieldName, e.get(fieldName).toString(), Field.Store.YES,
+									Field.Index.ANALYZED);
+
+							if (e instanceof InvestigationElement)
 							{
 
-								if (((InvestigationElement)e).getInvestigation_Name()==null) {
+								if (((InvestigationElement) e).getInvestigation_Name() == null)
+								{
 									System.out.println("Investigation Element is null");
-								} else {
-									Field investigationNameField = new Field("investigationNameField", ((InvestigationElement)e).getInvestigation_Name(), Field.Store.YES, Field.Index.NO);
+								}
+								else
+								{
+									Field investigationNameField = new Field("investigationNameField",
+											((InvestigationElement) e).getInvestigation_Name(), Field.Store.YES,
+											Field.Index.NO);
 									document1.add(investigationNameField);
 								}
 							}
-							
+
 							document1.add(InsertFieldValue);
-							System.out.println("All : 1st (" + fieldName + ")as InsertFieldValue inserted in Index" + InsertFieldValue.toString());
-	
-							//this is the same as InsertFieldValue. Though if you remove it , the field is not included and search does not work.
-							fullText = fullText + " " +  e.get(fieldName).toString();
-	
+							System.out.println("All : 1st (" + fieldName + ")as InsertFieldValue inserted in Index"
+									+ InsertFieldValue.toString());
+
+							// this is the same as InsertFieldValue. Though if
+							// you remove it , the field is not included and
+							// search does not work.
+							fullText = fullText + " " + e.get(fieldName).toString();
+
 							Field fullTextField = new Field("fulltext", fullText, Field.Store.NO, Field.Index.ANALYZED);
 							document1.add(fullTextField);
-							System.out.println("All : FULLTEXT ( fulltext as anotherField inserted in Index" + fullTextField.toString());		
+							System.out.println("All : FULLTEXT ( fulltext as anotherField inserted in Index"
+									+ fullTextField.toString());
 						}
-						//writer.addDocument(document1); //this produces multiple entries in the index
-					}		
+						// writer.addDocument(document1); //this produces
+						// multiple entries in the index
+					}
 					writer.addDocument(document1);
-				}			
+				}
 			}
-			//optimize the index
+			// optimize the index
 			System.out.println("Optimizing index");
 			writer.optimize();
-		}catch(Exception e){
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-		}finally{
-			try {
-				if (writer != null) {
+		}
+		finally
+		{
+			try
+			{
+				if (writer != null)
+				{
 					writer.close();
 					System.out.println("Closed writer");
 				}
 				System.out.println("Finished indexing");
-			} catch(Exception ex){
+			}
+			catch (Exception ex)
+			{
 				ex.printStackTrace();
 			}
 		}
-   }
+	}
 
 	/**
-     * Add one document to the Lucene index
+	 * Add one document to the Lucene index
+	 * 
 	 * @param <E>
-     */
-    public static <E extends org.molgenis.bbmri.Biobank> void updateIndex(List<E> entities ){
-        /**
-         * reopen the index in order to add new db record
-         */
-    	
-    	
-    	
-		IndexWriter writer=null;
+	 */
+	public static <E extends org.molgenis.bbmri.Biobank> void updateIndex(List<E> entities)
+	{
+		/**
+		 * reopen the index in order to add new db record
+		 */
+
+		IndexWriter writer = null;
 		PorterStemAnalyzer analyzer = null;
-		File file = null; 
+		File file = null;
 
-		String tmp =  System.getProperty("java.io.tmpdir");
+		String tmp = System.getProperty("java.io.tmpdir");
 		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
 		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
 		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
 
+		System.out.println("Start updating index ... ");
+		/**
+		 * get a reference to index directory file
+		 */
 
+		// LuceneConfiguration LC = new LuceneConfiguration();
+		// file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		file = new File(Indexdir);
 
-			System.out.println("Start updating index ... ");
-			/**
-			 * get a reference to index directory file
-			 */
-			
-			//LuceneConfiguration LC = new LuceneConfiguration();
-			//file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
-			file = new File(Indexdir);
+		// Either public StandardAnalyzer(Version matchVersion, File stopwords)
+		// can be used in order to add a STOP WORD file
+		// analyzer = new StandardAnalyzer(Version.LUCENE_30);
+		analyzer = new PorterStemAnalyzer();
+		try
+		{
+			writer = new IndexWriter(FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
-			// Either  public StandardAnalyzer(Version matchVersion, File stopwords) can be used in order to add a STOP WORD file
-			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			analyzer = new PorterStemAnalyzer();
-			try {
-					writer = new IndexWriter( FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-				
-	
-					String fullText = null ;
-					Document document1 = null;
-					document1 = new Document(); 
-					
-					Class<? extends Entity> aClass =  (Class<? extends Entity>) entities.getClass();
-					
-					System.out.println("AddDBIndexRecors" + aClass);
-				
-					fullText  = aClass.getName();  
-					
-					ListIterator<E> l  = entities.listIterator();
-					
-					while (l.hasNext()) {
-				
-				}
-				//The entities are in the form : [elementData][0][_gwaPlatform]
-				//for (i=0; i< entities[elementData].length() )
-				//for(String fieldName: ((Biobank) entities).getFields()) { //produces exception : java.util.ArrayList? cannot be cast to org.molgenis.bbmri.Biobank[edit] 
-				while (l.hasNext()) {
-					Vector<String> VfieldName = l.next().getFields();
-					System.out.println("@Entities"+l.next().get__Type().toString());
+			String fullText = null;
+			Document document1 = null;
+			document1 = new Document();
 
-					for (String fieldName : VfieldName) {
-						System.out.println("@VfieldName"+fieldName);
+			Class<? extends Entity> aClass = (Class<? extends Entity>) entities.getClass();
 
-						Field ClassName = new Field("className", aClass.getName().toString(), Field.Store.YES, Field.Index.ANALYZED);
-						
-						document1.add(ClassName);					 
-						System.out.println("The new classes that are included in the index by the decorator  " + aClass.getName().toString());
-			
-						if (fieldName != null) {
-							
-							Field InsertFieldValue = new Field(fieldName, fieldName.toString(), Field.Store.YES, Field.Index.ANALYZED);
-			
-							if(entities instanceof InvestigationElement) {
-								if (((InvestigationElement)entities).getInvestigation_Name()==null) {
-									System.out.println("Investigation Element is null");
-								} else {
-									Field investigationNameField = new Field("investigationNameField", ((InvestigationElement)entities).getInvestigation_Name(), Field.Store.YES, Field.Index.NO);
-									document1.add(investigationNameField);
-								}
-							}	
-							document1.add(InsertFieldValue);
-							System.out.println("from DBUpdateDecorator  All : 1st (" + fieldName + ")as InsertFieldValue inserted in Index" + InsertFieldValue.toString());
-							//this is the same as InsertFieldValue. Though if you remove it , the field is not included and search does not work.
-							fullText = fullText + " " +  fieldName.toString();
-							
-							Field fullTextField = new Field("fulltext", fullText, Field.Store.NO, Field.Index.ANALYZED);
-							document1.add(fullTextField);
-							System.out.println("All : FULLTEXT ( fulltext as anotherField inserted in Index" + fullTextField.toString());
-		
-						}
-					}
-				
-					writer.addDocument(document1);
-					System.out.println("Optimizing index");
-					writer.optimize();
-				}
-			} catch (CorruptIndexException e1) {
-				e1.printStackTrace();
-			} catch (LockObtainFailedException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			System.out.println("AddDBIndexRecors" + aClass);
+
+			fullText = aClass.getName();
+
+			ListIterator<E> l = entities.listIterator();
+
+			while (l.hasNext())
+			{
+
 			}
-    }
-    
-		
-	public void createIndex(Database db) {
-		this.setStatus("Start indexing ");
-		try {
-			this.buildIndex(db);
-		} catch (Exception e) {
-			e.printStackTrace();	
-		}		
-		//LuceneConfiguration LC = new LuceneConfiguration();
+			// The entities are in the form : [elementData][0][_gwaPlatform]
+			// for (i=0; i< entities[elementData].length() )
+			// for(String fieldName: ((Biobank) entities).getFields()) {
+			// //produces exception : java.util.ArrayList? cannot be cast to
+			// org.molgenis.bbmri.Biobank[edit]
+			while (l.hasNext())
+			{
+				Vector<String> VfieldName = l.next().getFields();
+				System.out.println("@Entities" + l.next().get__Type().toString());
 
-		String tmp =  System.getProperty("java.io.tmpdir");
+				for (String fieldName : VfieldName)
+				{
+					System.out.println("@VfieldName" + fieldName);
+
+					Field ClassName = new Field("className", aClass.getName().toString(), Field.Store.YES,
+							Field.Index.ANALYZED);
+
+					document1.add(ClassName);
+					System.out.println("The new classes that are included in the index by the decorator  "
+							+ aClass.getName().toString());
+
+					if (fieldName != null)
+					{
+
+						Field InsertFieldValue = new Field(fieldName, fieldName.toString(), Field.Store.YES,
+								Field.Index.ANALYZED);
+
+						if (entities instanceof InvestigationElement)
+						{
+							if (((InvestigationElement) entities).getInvestigation_Name() == null)
+							{
+								System.out.println("Investigation Element is null");
+							}
+							else
+							{
+								Field investigationNameField = new Field("investigationNameField",
+										((InvestigationElement) entities).getInvestigation_Name(), Field.Store.YES,
+										Field.Index.NO);
+								document1.add(investigationNameField);
+							}
+						}
+						document1.add(InsertFieldValue);
+						System.out.println("from DBUpdateDecorator  All : 1st (" + fieldName
+								+ ")as InsertFieldValue inserted in Index" + InsertFieldValue.toString());
+						// this is the same as InsertFieldValue. Though if you
+						// remove it , the field is not included and search does
+						// not work.
+						fullText = fullText + " " + fieldName.toString();
+
+						Field fullTextField = new Field("fulltext", fullText, Field.Store.NO, Field.Index.ANALYZED);
+						document1.add(fullTextField);
+						System.out.println("All : FULLTEXT ( fulltext as anotherField inserted in Index"
+								+ fullTextField.toString());
+
+					}
+				}
+
+				writer.addDocument(document1);
+				System.out.println("Optimizing index");
+				writer.optimize();
+			}
+		}
+		catch (CorruptIndexException e1)
+		{
+			e1.printStackTrace();
+		}
+		catch (LockObtainFailedException e1)
+		{
+			e1.printStackTrace();
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
+		}
+	}
+
+	public void createIndex(Database db)
+	{
+		this.setStatus("Start indexing ");
+		try
+		{
+			this.buildIndex(db);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		// LuceneConfiguration LC = new LuceneConfiguration();
+
+		String tmp = System.getProperty("java.io.tmpdir");
 		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
 		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
 		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
 
-		
-		//this.setStatus("<h4>Finished indexing. Index created in </h4>" + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
-		this.setStatus("<h4>Finished indexing. Index created in </h4>" + Indexdir );
+		// this.setStatus("<h4>Finished indexing. Index created in </h4>" +
+		// LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		this.setStatus("<h4>Finished indexing. Index created in </h4>" + Indexdir);
 
 	}
 
-	
 	@Override
-	public void reload(Database db){
+	public void reload(Database db)
+	{
 		this.setStatus("");
 
 	}
-	
-	public void setStatus(String status) {
+
+	public void setStatus(String status)
+	{
 		Status = status;
 	}
 
-	public String getStatus() {
+	public String getStatus()
+	{
 		return Status;
 	}
-	
-	public void setInputToken(String inputToken) {
+
+	public void setInputToken(String inputToken)
+	{
 		InputToken = inputToken;
 	}
 
-	public String getInputToken() {
+	public String getInputToken()
+	{
 		return InputToken;
 	}
-	
+
 	/**
-	 * The function deletes the DB index . The path is retrieved through LuceneConfiguration index . 
-	 * The variable in LuceneIndexConfiguration files defines if the program runs at mac or pc, in order to use the proper directory separators.  
+	 * The function deletes the DB index . The path is retrieved through
+	 * LuceneConfiguration index . The variable in LuceneIndexConfiguration
+	 * files defines if the program runs at mac or pc, in order to use the
+	 * proper directory separators.
 	 */
-	public void deleteIndex() {
+	public void deleteIndex()
+	{
 		String msWin;
-		//String indexDir;
-		
-		String tmp =  System.getProperty("java.io.tmpdir");
+		// String indexDir;
+
+		String tmp = System.getProperty("java.io.tmpdir");
 		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
 		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
 		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
-		
+
 		LuceneConfiguration LC = new LuceneConfiguration();
-		//System.out.println("coming from deleteLuceneIndex" + (LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")));
+		// System.out.println("coming from deleteLuceneIndex" +
+		// (LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")));
 		System.out.println("coming from deleteLuceneIndex" + Indexdir);
 
 		msWin = LC.GetLuceneConfiguration("msWin");
-		//indexDir = LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY");
+		// indexDir = LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY");
 
-		//this.setStatus("<h4>About to delete the contents of the DB index "+ indexDir +"</h4>");
-		this.setStatus("<h4>About to delete the contents of the DB index "+ Indexdir +"</h4>");
+		// this.setStatus("<h4>About to delete the contents of the DB index "+
+		// indexDir +"</h4>");
+		this.setStatus("<h4>About to delete the contents of the DB index " + Indexdir + "</h4>");
 
-		//browse to  the index directory
-		//deleteDirContents( indexDir, 0, msWin);
-		deleteDirContents( Indexdir, 0, msWin);
-	   	
-		//this.setStatus("<h4>Contents of index directory  "+ indexDir + " deleted </h4>");
-		this.setStatus("<h4>Contents of index directory  "+ Indexdir + " deleted </h4>");
+		// browse to the index directory
+		// deleteDirContents( indexDir, 0, msWin);
+		deleteDirContents(Indexdir, 0, msWin);
+
+		// this.setStatus("<h4>Contents of index directory  "+ indexDir +
+		// " deleted </h4>");
+		this.setStatus("<h4>Contents of index directory  " + Indexdir + " deleted </h4>");
 
 	}
-	
-	private  void deleteDirContents(String fname, int deep, String msWin) {
-		
+
+	private void deleteDirContents(String fname, int deep, String msWin)
+	{
+
 		String DirSeparator = null;
 		String FileName = null;
-		
+
 		File dir = new File(fname);
 		String[] chld = dir.list();
-		
-		if (msWin.compareTo("\"false\"") ==  0){
+
+		if (msWin.compareTo("\"false\"") == 0)
+		{
 			DirSeparator = "/";
 			System.out.println("Hi, I am a mac");
-		} else  if (msWin.compareTo("\"true\"") ==  0) {
-			DirSeparator = "\\";	
+		}
+		else if (msWin.compareTo("\"true\"") == 0)
+		{
+			DirSeparator = "\\";
 			System.out.println("Hi, I am a pc");
 		}
-		
-		if (dir.isFile()) {
-			System.out.println("dirlist" + dir.getName());	
+
+		if (dir.isFile())
+		{
+			System.out.println("dirlist" + dir.getName());
 			return;
-		} else if (dir.isDirectory()) {	
+		}
+		else if (dir.isDirectory())
+		{
 			System.out.println(fname.substring(fname.lastIndexOf(DirSeparator)));
-			for (int i = 0; i < chld.length; i++) {
+			for (int i = 0; i < chld.length; i++)
+			{
 				FileName = fname + DirSeparator + chld[i];
 				File subFile = new File(FileName);
-				
-				deleteDirContents(FileName ,0, msWin );
-				System.out.println("deleting " + fname +  DirSeparator + chld[i] );
-				//deleting every file
-				if (!subFile.canWrite()) throw new IllegalArgumentException("Delete: write protected: " + FileName);
-				else this.setStatus("<h4>I can delete "+FileName+ "</h4>");
-				
-				// If it is a directory, make sure it is empty - This shouldn't be reached : index does not contains directories.
-			    if (subFile.isDirectory()) {
-			      String[] files = subFile.list();
-			      if (files.length > 0)  throw new IllegalArgumentException("Delete: directory not empty: " + FileName);
-			    }
-			    
-			    // Attempt to delete it
-			    boolean success = subFile.delete();
 
-			    if (!success) throw new IllegalArgumentException("Delete: deletion failed");
+				deleteDirContents(FileName, 0, msWin);
+				System.out.println("deleting " + fname + DirSeparator + chld[i]);
+				// deleting every file
+				if (!subFile.canWrite()) throw new IllegalArgumentException("Delete: write protected: " + FileName);
+				else
+					this.setStatus("<h4>I can delete " + FileName + "</h4>");
+
+				// If it is a directory, make sure it is empty - This shouldn't
+				// be reached : index does not contains directories.
+				if (subFile.isDirectory())
+				{
+					String[] files = subFile.list();
+					if (files.length > 0) throw new IllegalArgumentException("Delete: directory not empty: " + FileName);
+				}
+
+				// Attempt to delete it
+				boolean success = subFile.delete();
+
+				if (!success) throw new IllegalArgumentException("Delete: deletion failed");
 
 			}
 		}
-			 
+
 	}
-	
-	public  boolean DirectoryhasContents(String directory) {
-		File dir=new File(directory);
+
+	public boolean DirectoryhasContents(String directory)
+	{
+		File dir = new File(directory);
 		boolean exists = dir.exists();
-		
-		if (exists==false)	{
-			System.out.println("The directory "+directory+"does not exists. Creating directory. ");
+
+		if (exists == false)
+		{
+			System.out.println("The directory " + directory + "does not exists. Creating directory. ");
 			boolean success = (new File(directory)).mkdir();
-		    if (success) {
-		      System.out.println("Directory: " + directory + " created");
-		    }
+			if (success)
+			{
+				System.out.println("Directory: " + directory + " created");
+			}
 		}
-		
+
 		boolean isEmpty = false;
 
 		System.out.println("checking " + dir.getAbsolutePath());
 		System.out.println("isEmpty: " + isEmpty);
-		if (dir.exists() && dir.isDirectory()) {
-			if(dir.list().length == 0) {
+		if (dir.exists() && dir.isDirectory())
+		{
+			if (dir.list().length == 0)
+			{
 				this.setStatus("<h4> The directory is empty</h4> ");
 				System.out.println("The directory is empty.");
 				return true;
-			} else {
-				//File[] files = dir.listFiles();
-				this.setStatus("<h4> The directory is NOT empty or does not exists .</h4> ");
-		    	System.out.println("The directory is NOT empty or does not exists .");
 			}
-		} else {
+			else
+			{
+				// File[] files = dir.listFiles();
+				this.setStatus("<h4> The directory is NOT empty or does not exists .</h4> ");
+				System.out.println("The directory is NOT empty or does not exists .");
+			}
+		}
+		else
+		{
 			return false;
 		}
 		return false;
 	}
 
 	/**
-	 * The function deletes the DB index . The path is retrieved through LuceneConfiguration index . 
-	 * The variable in LuceneIndexConfiguration files defines if the program runs at mac or pc, in order to use the proper directory separators.  
+	 * The function deletes the DB index . The path is retrieved through
+	 * LuceneConfiguration index . The variable in LuceneIndexConfiguration
+	 * files defines if the program runs at mac or pc, in order to use the
+	 * proper directory separators.
 	 */
-	public void DeleteOntocatIndex() {
+	public void DeleteOntocatIndex()
+	{
 		String msWin;
-		//String OntoIndexDir;
-		
-		String tmp =  System.getProperty("java.io.tmpdir");
+		// String OntoIndexDir;
+
+		String tmp = System.getProperty("java.io.tmpdir");
 		System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
 		String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
 		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
 
-		
 		LuceneConfiguration LC = new LuceneConfiguration();
-		//System.out.println("coming from deleteOntocatIndex" + (LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY")));
-		System.out.println("coming from deleteOntocatIndex" + OntocatIndexdir );
+		// System.out.println("coming from deleteOntocatIndex" +
+		// (LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY")));
+		System.out.println("coming from deleteOntocatIndex" + OntocatIndexdir);
 
-		
 		msWin = LC.GetLuceneConfiguration("msWin");
-		//OntoIndexDir = LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY");
+		// OntoIndexDir =
+		// LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY");
 
-		//this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntoIndexDir +"</h4>");
-		this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntocatIndexdir +"</h4>");
+		// this.setStatus("<h4>About to delete the contents of the Ontocat index "+
+		// OntoIndexDir +"</h4>");
+		this.setStatus("<h4>About to delete the contents of the Ontocat index " + OntocatIndexdir + "</h4>");
 
-		//browse to  the index directory
-		//deleteDirContents( OntoIndexDir, 0, msWin);
-		deleteDirContents( OntocatIndexdir, 0, msWin);
-		
-		//this.setStatus("<h4>Contents of index directory  "+ OntoIndexDir + " deleted </h4>");
-		this.setStatus("<h4>Contents of index directory  "+ OntocatIndexdir + " deleted </h4>");
+		// browse to the index directory
+		// deleteDirContents( OntoIndexDir, 0, msWin);
+		deleteDirContents(OntocatIndexdir, 0, msWin);
+
+		// this.setStatus("<h4>Contents of index directory  "+ OntoIndexDir +
+		// " deleted </h4>");
+		this.setStatus("<h4>Contents of index directory  " + OntocatIndexdir + " deleted </h4>");
 
 	}
-	
+
 	/**
-	 * The function creates an index on ontocat returned data. The data is ontology name, term, synonyms + children
-	 * @throws OntologyServiceException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * The function creates an index on ontocat returned data. The data is
+	 * ontology name, term, synonyms + children
+	 * 
+	 * @throws OntologyServiceException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	public void buildIndexOntocat() throws Exception {
-	     try {
-	       
-	    /**An IndexWriter creates and maintains an index.
-	    * analyzer isn't used
-	    */
-	   LuceneConfiguration LC = new LuceneConfiguration();
-	 
-	   IndexWriter writer=null;
-	   StandardAnalyzer analyzer = null;
-	   File file = null;
-	   
-	   String tmp =  System.getProperty("java.io.tmpdir");
-	   System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
-	   String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
-	   System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
-	   
-	   try {
-		   System.out.println("Start Indexing Ontocat results") ;
-		  // this.setStatus("Starting indexing Ontocat results in " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
-		   this.setStatus("Starting indexing Ontocat results in " + OntocatIndexdir );
-	
-		   //file = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
-		   file = new File(OntocatIndexdir);
+	public void buildIndexOntocat() throws Exception
+	{
+		try
+		{
 
-		   analyzer = new StandardAnalyzer(Version.LUCENE_30);
-		   writer = new IndexWriter(FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
-		    
-		   for (String ontology_file: ontologyNamesMap.keySet()){
-			   say("now " + writer.getReader().numDocs() + " terms indexed");
-			
-			   File file1 = new File(ontology_file);
-			   OntologyService os = new FileOntologyService(file1.toURI());
-			   
-			   Ontology onto = os.getOntologies().get(0);
-			   String label = ontologyNamesMap.get(ontology_file);
-			   Set<OntologyTerm> all_terms = new HashSet<OntologyTerm>();
-			   all_terms = os.getAllTerms(onto.getOntologyAccession());
-			   
-			   for(OntologyTerm term: all_terms)
-			   {
-				   /**
-				    * getting the term with ontology label inside the index
-				    * for each term we use a separate Document
-				    */
-				   
-			       Document document = new Document();
-			       Field termField = new Field("term", term.getLabel().toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED);
-			       document.add(termField);
-			       //Field ontologyAccessionField = new Field("ontologyAccession", accss, Field.Store.YES, Field.Index.NOT_ANALYZED);
-			       //document.add(ontologyAccessionField);
-			       Field ontologyLabelField = new Field("ontologyLabel", label, Field.Store.YES, Field.Index.NOT_ANALYZED);
-			       document.add(ontologyLabelField);
-	
-			       /**
-			        * searching for synonyms and children in ontology, writing them to "expansion" with delimiters ";"
-			        */
-			       List<OntologyTerm> children = new ArrayList<OntologyTerm>();
-			       List<String> syns = new ArrayList <String>();
-			       String expansion = "";
-			       
-			       syns = os.getSynonyms(term);
-			       for (String s : syns){
-			    	   if (term.getLabel().toLowerCase() != s){ //if it doesn't already exists 
-				    	   s = "\"" + s.toLowerCase() + "\"";
-				    	   if (! expansion.contains(s))
-				    		   expansion += ";" + s;
-			    	   }
-			       }
-		
-			       children = os.getChildren(term);
-			       for (OntologyTerm t : children){
-			    	   String t_str = "\"" + t.getLabel().toLowerCase() + "\"";
-			    	   if (! expansion.contains(t_str))
-			    		   expansion += ";" + t_str;
-			        }
-			        Field expansionField = new Field("expansion", expansion.trim(),Field.Store.YES, Field.Index.NO);
-			        document.add(expansionField);
-			            
-			        //adding a Document to a IndexWriter
-			        writer.addDocument(document);	
-			    } 
-	
-		    }
-		    /**
-		     * optimize the index
-		     */
-		    System.out.println(": Optimizing Index :" );
-		    this.setStatus("Optimizing Ontocat Index" );
-		    writer.optimize();	
-	   } catch (Exception e) {
-		   e.printStackTrace();
-	   } finally {
-		    try {
-			    if(writer!=null)	
-			    	System.out.println(writer.getReader().numDocs());
-			    writer.close();
-			    System.out.println("Finished indexing Ontocat") ;
-			    this.setStatus("Ontocat Indexing finished") ;
-			}catch(Exception ex){
-			 	 ex.printStackTrace();
+			/**
+			 * An IndexWriter creates and maintains an index. analyzer isn't
+			 * used
+			 */
+			LuceneConfiguration LC = new LuceneConfiguration();
+
+			IndexWriter writer = null;
+			StandardAnalyzer analyzer = null;
+			File file = null;
+
+			String tmp = System.getProperty("java.io.tmpdir");
+			System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
+			String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
+			System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
+
+			try
+			{
+				System.out.println("Start Indexing Ontocat results");
+				// this.setStatus("Starting indexing Ontocat results in " +
+				// LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+				this.setStatus("Starting indexing Ontocat results in " + OntocatIndexdir);
+
+				// file = new
+				// File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+				file = new File(OntocatIndexdir);
+
+				analyzer = new StandardAnalyzer(Version.LUCENE_30);
+				writer = new IndexWriter(FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+
+				for (String ontology_file : ontologyNamesMap.keySet())
+				{
+					say("now " + writer.getReader().numDocs() + " terms indexed");
+
+					File file1 = new File(ontology_file);
+					OntologyService os = new FileOntologyService(file1.toURI());
+
+					Ontology onto = os.getOntologies().get(0);
+					String label = ontologyNamesMap.get(ontology_file);
+					Set<OntologyTerm> all_terms = new HashSet<OntologyTerm>();
+					all_terms = os.getAllTerms(onto.getOntologyAccession());
+
+					for (OntologyTerm term : all_terms)
+					{
+						/**
+						 * getting the term with ontology label inside the index
+						 * for each term we use a separate Document
+						 */
+
+						Document document = new Document();
+						Field termField = new Field("term", term.getLabel().toLowerCase(), Field.Store.YES,
+								Field.Index.NOT_ANALYZED);
+						document.add(termField);
+						// Field ontologyAccessionField = new
+						// Field("ontologyAccession", accss, Field.Store.YES,
+						// Field.Index.NOT_ANALYZED);
+						// document.add(ontologyAccessionField);
+						Field ontologyLabelField = new Field("ontologyLabel", label, Field.Store.YES,
+								Field.Index.NOT_ANALYZED);
+						document.add(ontologyLabelField);
+
+						/**
+						 * searching for synonyms and children in ontology,
+						 * writing them to "expansion" with delimiters ";"
+						 */
+						List<OntologyTerm> children = new ArrayList<OntologyTerm>();
+						List<String> syns = new ArrayList<String>();
+						String expansion = "";
+
+						syns = os.getSynonyms(term);
+						for (String s : syns)
+						{
+							if (term.getLabel().toLowerCase() != s)
+							{ // if it doesn't already exists
+								s = "\"" + s.toLowerCase() + "\"";
+								if (!expansion.contains(s)) expansion += ";" + s;
+							}
+						}
+
+						children = os.getChildren(term);
+						for (OntologyTerm t : children)
+						{
+							String t_str = "\"" + t.getLabel().toLowerCase() + "\"";
+							if (!expansion.contains(t_str)) expansion += ";" + t_str;
+						}
+						Field expansionField = new Field("expansion", expansion.trim(), Field.Store.YES, Field.Index.NO);
+						document.add(expansionField);
+
+						// adding a Document to a IndexWriter
+						writer.addDocument(document);
+					}
+
+				}
+				/**
+				 * optimize the index
+				 */
+				System.out.println(": Optimizing Index :");
+				this.setStatus("Optimizing Ontocat Index");
+				writer.optimize();
 			}
-	    }
-	  } catch (Exception e) {
-		  e.printStackTrace();
-	  }
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					if (writer != null) System.out.println(writer.getReader().numDocs());
+					writer.close();
+					System.out.println("Finished indexing Ontocat");
+					this.setStatus("Ontocat Indexing finished");
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
-	
-	public void say(String whatTosay){
+
+	public void say(String whatTosay)
+	{
 		System.out.println(whatTosay);
 	}
-	
-	
-	
+
 }

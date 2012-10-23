@@ -1,6 +1,5 @@
 package org.molgenis.wormqtl;
 
-
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
@@ -15,8 +14,9 @@ public class WormqtlGenerate
 		{
 			FileUtils.deleteDirectory(new File("hsqldb"));
 			new Molgenis("apps/wormqtl/org/molgenis/wormqtl/wormqtl.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

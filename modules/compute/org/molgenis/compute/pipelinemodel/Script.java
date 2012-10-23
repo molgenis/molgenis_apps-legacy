@@ -14,267 +14,257 @@ import java.util.Vector;
 //data - the listing of the script
 public abstract class Script implements Serializable
 {
-    private String ID = null;
+	private String ID = null;
 
-    private String localname = null;
-    private String remotename = null;
+	private String localname = null;
+	private String remotename = null;
 
-    private byte[] scriptData = null;
+	private byte[] scriptData = null;
 
-    private String remoteDir = null;
+	private String remoteDir = null;
 
-    private boolean isFinished = false;
-    private boolean isStarted = false;
+	private boolean isFinished = false;
+	private boolean isStarted = false;
 
-    private Timer countdown = new Timer();
+	private Timer countdown = new Timer();
 
-    private int maxRunTime = 180; // 3 minutes for testing hello world
+	private int maxRunTime = 180; // 3 minutes for testing hello world
 
-    public boolean isExpired()
-    {
-        return expired;
-    }
+	public boolean isExpired()
+	{
+		return expired;
+	}
 
-    private boolean expired = false;
+	private boolean expired = false;
 
-    public void setExpired(boolean b)
-    {
-        System.out.println("... execution time is expired");
-        this.expired = b;
-    }
+	public void setExpired(boolean b)
+	{
+		System.out.println("... execution time is expired");
+		this.expired = b;
+	}
 
-    public enum Status
-    {
-        IDLE
-                {
-                    public String toString()
-                    {
-                        return "waiting";
-                    }
-                },
+	public enum Status
+	{
+		IDLE
+		{
+			public String toString()
+			{
+				return "waiting";
+			}
+		},
 
+		WAITING
+		{
+			public String toString()
+			{
+				return "waiting";
+			}
+		},
 
-        WAITING
-                {
-                    public String toString()
-                    {
-                        return "waiting";
-                    }
-                },
+		SCHEDULED
+		{
+			public String toString()
+			{
+				return "scheduled";
+			}
+		},
+		RUNNING
+		{
+			public String toString()
+			{
+				return "running";
+			}
+		},
+		DONE_SUCCESS
+		{
+			public String toString()
+			{
+				return "done success";
+			}
+		},
+		DONE_FAILED
+		{
+			public String toString()
+			{
+				return "failed";
+			}
+		}
 
-        SCHEDULED
-                {
-                    public String toString()
-                    {
-                        return "scheduled";
-                    }
-                },
-        RUNNING
-                {
-                    public String toString()
-                    {
-                        return "running";
-                    }
-                },
-        DONE_SUCCESS
-                {
-                    public String toString()
-                    {
-                        return "done success";
-                    }
-                },
-        DONE_FAILED
-                {
-                    public String toString()
-                    {
-                        return "failed";
-                    }
-                }
+	}
 
+	private Status status = Status.IDLE;
 
-    }
+	private boolean hasAdditionalFiles = false;
+	private Vector<FileToSaveRemotely> filesToSaveRemotely = new Vector();
 
-    private Status status = Status.IDLE;
+	private boolean isShort = false;
 
-    private boolean hasAdditionalFiles = false;
-    private Vector<FileToSaveRemotely> filesToSaveRemotely = new Vector();
+	public Script(String scriptID, String outputRemoteLocation, byte[] bytes)
+	{
+		this.ID = scriptID;
+		this.remotename = ID + ".sh";
+		this.remoteDir = outputRemoteLocation;
+		this.scriptData = bytes;
+	}
 
-    private boolean isShort = false;
+	public String getID()
+	{
+		return ID;
+	}
 
-    public Script(String scriptID, String outputRemoteLocation, byte[] bytes)
-    {
-        this.ID = scriptID;
-        this.remotename = ID + ".sh";
-        this.remoteDir = outputRemoteLocation;
-        this.scriptData = bytes;
-    }
+	public void setID(String ID)
+	{
+		this.ID = ID;
+	}
 
-    public String getID()
-    {
-        return ID;
-    }
+	// todo delete
+	public Script(String localname, String remotename)
+	{
+		this.localname = localname;
+		this.remotename = remotename;
 
-    public void setID(String ID)
-    {
-        this.ID = ID;
-    }
+		try
+		{
+			this.scriptData = getFileAsBytes(localname);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-    //todo delete
-    public Script(String localname, String remotename)
-    {
-        this.localname = localname;
-        this.remotename = remotename;
+	// todo delete
+	public Script(String remotename, byte[] scriptListing)
+	{
+		this.remotename = remotename;
+		this.scriptData = scriptListing;
+	}
 
-        try
-        {
-            this.scriptData = getFileAsBytes(localname);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
+	public String getLocalname()
+	{
+		return localname;
+	}
 
-    //todo delete
-    public Script(String remotename, byte[] scriptListing)
-    {
-        this.remotename = remotename;
-        this.scriptData = scriptListing;
-    }
+	public String getRemotename()
+	{
+		return remotename;
+	}
 
+	private final byte[] getFileAsBytes(String filename) throws IOException
+	{
 
-    public String getLocalname()
-    {
-        return localname;
-    }
+		File file = new File(filename);
 
-    public String getRemotename()
-    {
-        return remotename;
-    }
+		final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+		final byte[] bytes = new byte[(int) file.length()];
+		bis.read(bytes);
+		bis.close();
+		return bytes;
+	}
 
-    private final byte[] getFileAsBytes(String filename) throws IOException
-    {
+	public byte[] getScriptData()
+	{
+		return scriptData;
+	}
 
-        File file = new File(filename);
+	public String getRemoteDir()
+	{
+		return remoteDir;
+	}
 
-        final BufferedInputStream bis = new BufferedInputStream(
-                new FileInputStream(file));
-        final byte[] bytes = new byte[(int) file.length()];
-        bis.read(bytes);
-        bis.close();
-        return bytes;
-    }
+	public void setRemoteDir(String remoteDir)
+	{
+		this.remoteDir = remoteDir;
+	}
 
-    public byte[] getScriptData()
-    {
-        return scriptData;
-    }
+	public boolean isHasAdditionalFiles()
+	{
+		return hasAdditionalFiles;
+	}
 
-    public String getRemoteDir()
-    {
-        return remoteDir;
-    }
+	public void setHasAdditionalFiles(boolean hasAdditionalFiles)
+	{
+		this.hasAdditionalFiles = hasAdditionalFiles;
+	}
 
-    public void setRemoteDir(String remoteDir)
-    {
-        this.remoteDir = remoteDir;
-    }
+	public void addFileToTransfer(FileToSaveRemotely file)
+	{
+		filesToSaveRemotely.add(file);
+	}
 
-    public boolean isHasAdditionalFiles()
-    {
-        return hasAdditionalFiles;
-    }
+	public FileToSaveRemotely getFileToSaveRemotely(int i)
+	{
+		return filesToSaveRemotely.elementAt(i);
+	}
 
-    public void setHasAdditionalFiles(boolean hasAdditionalFiles)
-    {
-        this.hasAdditionalFiles = hasAdditionalFiles;
-    }
+	public boolean isShort()
+	{
+		return isShort;
+	}
 
-    public void addFileToTransfer(FileToSaveRemotely file)
-    {
-        filesToSaveRemotely.add(file);
-    }
+	public void setShort(boolean aShort)
+	{
+		isShort = aShort;
+	}
 
-    public FileToSaveRemotely getFileToSaveRemotely(int i)
-    {
-        return filesToSaveRemotely.elementAt(i);
-    }
+	public int getNumberFileToSaveRemotely()
+	{
+		return filesToSaveRemotely.size();
+	}
 
-    public boolean isShort()
-    {
-        return isShort;
-    }
+	public boolean isFinished()
+	{
+		return isFinished;
+	}
 
-    public void setShort(boolean aShort)
-    {
-        isShort = aShort;
-    }
+	public void setFinished(boolean finished)
+	{
+		isFinished = finished;
+	}
 
-    public int getNumberFileToSaveRemotely()
-    {
-        return filesToSaveRemotely.size();
-    }
+	public boolean isStarted()
+	{
+		return isStarted;
+	}
 
-    public boolean isFinished()
-    {
-        return isFinished;
-    }
+	public void setStarted(boolean started)
+	{
+		isStarted = started;
+		start();
+	}
 
-    public void setFinished(boolean finished)
-    {
-        isFinished = finished;
-    }
+	@Override
+	public String toString()
+	{
+		return "Script{" + "ID='" + ID + '\'' + ", localname='" + localname + '\'' + ", remotename='" + remotename
+				+ '\'' + ", scriptData=" + new String(scriptData) + ", remoteDir='" + remoteDir + '\''
+				+ ", hasAdditionalFiles=" + hasAdditionalFiles + ", filesToSaveRemotely=" + filesToSaveRemotely + '}';
+	}
 
-    public boolean isStarted()
-    {
-        return isStarted;
-    }
+	public abstract String getSubmitCommand();
 
-    public void setStarted(boolean started)
-    {
-        isStarted = started;
-        start();
-    }
+	public abstract String getMonitoringCommand();
 
-    @Override
-    public String toString()
-    {
-        return "Script{" +
-                "ID='" + ID + '\'' +
-                ", localname='" + localname + '\'' +
-                ", remotename='" + remotename + '\'' +
-                ", scriptData=" + new String(scriptData) +
-                ", remoteDir='" + remoteDir + '\'' +
-                ", hasAdditionalFiles=" + hasAdditionalFiles +
-                ", filesToSaveRemotely=" + filesToSaveRemotely +
-                '}';
-    }
+	public Status getStatus()
+	{
+		return status;
+	}
 
-    public abstract String getSubmitCommand();
+	public void setStatus(Status status)
+	{
+		this.status = status;
+	}
 
-    public abstract String getMonitoringCommand();
+	private void start()
+	{
 
-    public Status getStatus()
-    {
-        return status;
-    }
-
-    public void setStatus(Status status)
-    {
-        this.status = status;
-    }
-
-    private void start()
-    {
-
-        isStarted = true;
-        countdown.schedule(new TimerTask()
-        {
-            public void run()
-            {
-                setExpired(true);
-            }
-        }, maxRunTime * 1000);
-    }
+		isStarted = true;
+		countdown.schedule(new TimerTask()
+		{
+			public void run()
+			{
+				setExpired(true);
+			}
+		}, maxRunTime * 1000);
+	}
 }

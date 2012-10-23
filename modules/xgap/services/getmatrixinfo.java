@@ -20,20 +20,21 @@ import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class getmatrixinfo  implements MolgenisService {
+public class getmatrixinfo implements MolgenisService
+{
 
-	//TODO: Danny: unused, but i guess we do want to use it
-	//private static Logger logger = Logger.getLogger(getmatrixinfo.class);
-	
+	// TODO: Danny: unused, but i guess we do want to use it
+	// private static Logger logger = Logger.getLogger(getmatrixinfo.class);
+
 	private DataMatrixHandler dmh;
-	
+
 	private MolgenisContext mc;
-	
+
 	public getmatrixinfo(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -43,11 +44,14 @@ public class getmatrixinfo  implements MolgenisService {
 		boolean setupSuccess = false;
 		Database db = null;
 		DataMatrixInstance instance = null;
-		
-		try {
+
+		try
+		{
 			db = request.getDatabase();
 			databaseIsAvailable = true;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			PrintWriter out = response.getResponse().getWriter();
 			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
@@ -56,20 +60,24 @@ public class getmatrixinfo  implements MolgenisService {
 			out.close();
 		}
 
-		if (databaseIsAvailable) {
-			try {
+		if (databaseIsAvailable)
+		{
+			try
+			{
 				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				List<Data> dataList = db.find(Data.class, q);
-				if (dataList.size() != 1) {
-					throw new Exception("Datamatrix for ID " + matrixId
-							+ " was not found.");
+				if (dataList.size() != 1)
+				{
+					throw new Exception("Datamatrix for ID " + matrixId + " was not found.");
 				}
 				Data data = dataList.get(0);
 				dmh = new DataMatrixHandler(db);
 				instance = dmh.createInstance(data, db);
 				setupSuccess = true;
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				PrintWriter out = response.getResponse().getWriter();
 				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
@@ -79,11 +87,13 @@ public class getmatrixinfo  implements MolgenisService {
 			}
 		}
 
-		if (setupSuccess) {
+		if (setupSuccess)
+		{
 			PrintWriter out = response.getResponse().getWriter();
 			response.getResponse().setContentType("text/plain");
-			try {
-				
+			try
+			{
+
 				out.println("matrix info");
 				out.println("name = " + instance.getData().getName());
 				out.println("numberofcols = " + instance.getNumberOfCols());
@@ -92,33 +102,42 @@ public class getmatrixinfo  implements MolgenisService {
 				out.println("rownames = " + "TODO");
 				out.print("\n\n");
 				out.close();
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
-			} finally {
+			}
+			finally
+			{
 				out.close();
 			}
 		}
 	}
 
-	public void displayUsage(PrintWriter out, Database db) {
-		String usage = "Downloadable  matrices available in this database:\n\n"
-				+ matricesFromDb(db) + "\n";
+	public void displayUsage(PrintWriter out, Database db)
+	{
+		String usage = "Downloadable  matrices available in this database:\n\n" + matricesFromDb(db) + "\n";
 		out.print(usage);
 	}
 
-	public String matricesFromDb(Database db) {
+	public String matricesFromDb(Database db)
+	{
 		String res = "";
-		try {
+		try
+		{
 			List<Data> dataList = db.find(Data.class);
-			for (Data data : dataList) {
-				if (!dmh.findSource(data, db)
-						.equals("null")) {
+			for (Data data : dataList)
+			{
+				if (!dmh.findSource(data, db).equals("null"))
+				{
 					res += data.toString() + "\n";
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			res += "An error occurred when retrieving matrix information:\n\n";
 			res += e.getMessage();
 		}

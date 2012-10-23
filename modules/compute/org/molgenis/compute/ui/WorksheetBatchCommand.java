@@ -94,15 +94,12 @@ public class WorksheetBatchCommand extends SimpleCommand
 	{
 		return null;
 	}
-	
-	
+
 	public void findVariants(Database db, Tuple request) throws Exception
 	{
 		print("WE ARE IN FINDVARIANTS!");
-//		getModel().setSuccess("Clean successful");
+		// getModel().setSuccess("Clean successful");
 	}
-	
-	
 
 	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
@@ -167,8 +164,9 @@ public class WorksheetBatchCommand extends SimpleCommand
 					{
 						if (wf.getName().equalsIgnoreCase(request.getAction()))
 						{
-							print("Starting workflow " + request.getAction() + " for ID " + worksheetID) ;
-//							processing.processSingleWorksheet(db, request, w, wf);
+							print("Starting workflow " + request.getAction() + " for ID " + worksheetID);
+							// processing.processSingleWorksheet(db, request, w,
+							// wf);
 							workflowFound = true;
 						}
 					}
@@ -177,8 +175,9 @@ public class WorksheetBatchCommand extends SimpleCommand
 				{
 					e.printStackTrace();
 				}
-				
-				if (!workflowFound) {
+
+				if (!workflowFound)
+				{
 					print("Workflow " + request.getAction() + " not found!");
 				}
 			}

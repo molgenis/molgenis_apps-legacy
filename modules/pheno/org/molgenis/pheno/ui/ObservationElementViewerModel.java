@@ -12,7 +12,8 @@ import org.molgenis.pheno.ui.form.ApplyProtocolForm;
 import org.molgenis.pheno.ui.form.SelectProtocolForm;
 import org.molgenis.pheno.ui.form.ObservationTargetForm;
 
-public class ObservationElementViewerModel extends EasyPluginModel {
+public class ObservationElementViewerModel extends EasyPluginModel
+{
 	private static final long serialVersionUID = 2545649822397395528L;
 	private String action;
 	private Integer id;
@@ -23,88 +24,109 @@ public class ObservationElementViewerModel extends EasyPluginModel {
 	private List<ProtocolDTO> protocolDTOList;
 	private ApplyProtocolForm applyProtocolForm;
 
-	public ObservationElementViewerModel(ObservationElementViewer controller) {
+	public ObservationElementViewerModel(ObservationElementViewer controller)
+	{
 		super(controller);
 	}
 
-	public String getAction() {
+	public String getAction()
+	{
 		return action;
 	}
 
-	public void setAction(String action) {
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
 
-	public Integer getId() {
+	public Integer getId()
+	{
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Integer id)
+	{
 		this.id = id;
 	}
 
-	public ObservationElementDTO getObservationElementDTO() {
+	public ObservationElementDTO getObservationElementDTO()
+	{
 		return observationElementDTO;
 	}
 
-	public void setObservationElementDTO(
-			ObservationElementDTO observationElementDTO) {
+	public void setObservationElementDTO(ObservationElementDTO observationElementDTO)
+	{
 		this.observationElementDTO = observationElementDTO;
 	}
 
-	public ObservationTargetForm getObservationTargetForm() {
+	public ObservationTargetForm getObservationTargetForm()
+	{
 		return observationTargetForm;
 	}
 
-	public void setObservationTargetForm(ObservationTargetForm observationTargetForm) {
+	public void setObservationTargetForm(ObservationTargetForm observationTargetForm)
+	{
 		this.observationTargetForm = observationTargetForm;
 	}
 
-	public ProtocolDTO getProtocolDTO() {
+	public ProtocolDTO getProtocolDTO()
+	{
 		return protocolDTO;
 	}
 
-	public void setProtocolDTO(ProtocolDTO protocolDTO) {
+	public void setProtocolDTO(ProtocolDTO protocolDTO)
+	{
 		this.protocolDTO = protocolDTO;
 	}
 
-	public SelectProtocolForm getSelectProtocolForm() {
+	public SelectProtocolForm getSelectProtocolForm()
+	{
 		return selectProtocolForm;
 	}
 
-	public void setSelectProtocolForm(SelectProtocolForm protocolForm) {
+	public void setSelectProtocolForm(SelectProtocolForm protocolForm)
+	{
 		this.selectProtocolForm = protocolForm;
 	}
 
-	public List<ProtocolDTO> getProtocolDTOList() {
+	public List<ProtocolDTO> getProtocolDTOList()
+	{
 		return protocolDTOList;
 	}
 
-	public void setProtocolDTOList(List<ProtocolDTO> protocolDTOList) {
+	public void setProtocolDTOList(List<ProtocolDTO> protocolDTOList)
+	{
 		this.protocolDTOList = protocolDTOList;
 	}
 
-	public ApplyProtocolForm getApplyProtocolForm() {
+	public ApplyProtocolForm getApplyProtocolForm()
+	{
 		return applyProtocolForm;
 	}
 
-	public void setApplyProtocolForm(ApplyProtocolForm applyProtocolForm) {
+	public void setApplyProtocolForm(ApplyProtocolForm applyProtocolForm)
+	{
 		this.applyProtocolForm = applyProtocolForm;
 	}
 
-	public Input<?> createIndividualInput(String name) {
+	public Input<?> createIndividualInput(String name)
+	{
 		return this.observationTargetForm.get(name);
 	}
 
-	public Input<?> createProtocolInput(String name) {
+	public Input<?> createProtocolInput(String name)
+	{
 		return this.applyProtocolForm.get(name);
 	}
 
-	public boolean isEditable() {
-		try {
-			return this.getController().getApplicationController().getLogin()
-					.canWrite(ObservedValue.class);
-		} catch (DatabaseException e) {
+	public boolean isEditable()
+	{
+		try
+		{
+			return this.getController().getApplicationController().getLogin().canWrite(ObservedValue.class);
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 		return false;

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ListUtils {
+public class ListUtils
+{
 
 	/**
 	 * Splits a list into smaller sublists. The original list remains unmodified
@@ -24,20 +25,20 @@ public class ListUtils {
 	 * @throws NullPointerException
 	 *             if arguments original or listImplementation are null
 	 */
-	public static final <T> List<List<T>> split(final List<T> original,
-			final int maxListSize,
-			final Class<? extends List> listImplementation) {
-		if (maxListSize <= 0) {
-			throw new IllegalArgumentException(
-					"maxListSize must be greater than zero");
+	public static final <T> List<List<T>> split(final List<T> original, final int maxListSize,
+			final Class<? extends List> listImplementation)
+	{
+		if (maxListSize <= 0)
+		{
+			throw new IllegalArgumentException("maxListSize must be greater than zero");
 		}
 
 		final T[] elements = (T[]) original.toArray();
-		final int maxChunks = (int) Math.ceil(elements.length
-				/ (double) maxListSize);
+		final int maxChunks = (int) Math.ceil(elements.length / (double) maxListSize);
 
 		final List<List<T>> lists = new ArrayList<List<T>>(maxChunks);
-		for (int i = 0; i < maxChunks; i++) {
+		for (int i = 0; i < maxChunks; i++)
+		{
 			final int from = i * maxListSize;
 			final int to = Math.min(from + maxListSize, elements.length);
 			final T[] range = Arrays.copyOfRange(elements, from, to);
@@ -60,21 +61,26 @@ public class ListUtils {
 	 *            The max amount of element a sublist can hold.
 	 * @return A list of sublists
 	 */
-	public static final <T> List<List<T>> split(final List<T> original,
-			final int maxListSize) {
+	public static final <T> List<List<T>> split(final List<T> original, final int maxListSize)
+	{
 		return split(original, maxListSize, ArrayList.class);
 	}
 
-	private static <T> List<T> createSublist(final T[] elements,
-			final Class<? extends List> listImplementation) {
+	private static <T> List<T> createSublist(final T[] elements, final Class<? extends List> listImplementation)
+	{
 		List<T> sublist;
 		final List<T> asList = Arrays.asList(elements);
-		try {
+		try
+		{
 			sublist = listImplementation.newInstance();
 			sublist.addAll(asList);
-		} catch (final InstantiationException e) {
+		}
+		catch (final InstantiationException e)
+		{
 			sublist = asList;
-		} catch (final IllegalAccessException e) {
+		}
+		catch (final IllegalAccessException e)
+		{
 			sublist = asList;
 		}
 

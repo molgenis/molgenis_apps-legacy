@@ -16,28 +16,30 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class GenePlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
 	private String action = "init";
 	private List<String> geneList;
 	private CommonService ct = CommonService.getInstance();
-	
+
 	public GenePlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	public String getCustomHtmlHeaders()
-    {
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
-	
-	public List<String> getGeneList() {
+	}
+
+	public List<String> getGeneList()
+	{
 		return geneList;
 	}
-	public void setGeneList(List<String> geneList) {
+
+	public void setGeneList(List<String> geneList)
+	{
 		this.geneList = geneList;
 	}
 
@@ -67,28 +69,36 @@ public class GenePlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
-		try {
+		try
+		{
 			action = request.getString("__action");
-			
-			if (action.equals("Add")) {
+
+			if (action.equals("Add"))
+			{
 				//
 			}
-			
-			if (action.equals("Import")) {
+
+			if (action.equals("Import"))
+			{
 				//
 			}
-			
-			if (action.equals("addGene")) {
+
+			if (action.equals("addGene"))
+			{
 				String geneName = request.getString("name");
-				if (geneName != null) {
+				if (geneName != null)
+				{
 					ct.makeCategory(geneName, geneName, "GeneModification");
 				}
 				this.setSuccess("Gene modification successfully added");
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				this.setError(e.getMessage());
 			}
 		}
@@ -97,19 +107,23 @@ public class GenePlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		
+
 		// Populate gene list
-		try {
+		try
+		{
 			this.geneList = ct.getAllCodesForFeatureAsStrings("GeneModification");
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading gene list";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.setError(message);
 			e.printStackTrace();
 		}
 	}
-	
+
 }

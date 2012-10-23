@@ -1,6 +1,5 @@
 package org.molgenis.gscf;
 
-
 import org.molgenis.Molgenis;
 
 public class GscfDBUpdateDatabase

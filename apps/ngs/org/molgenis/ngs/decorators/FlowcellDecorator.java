@@ -17,36 +17,36 @@ import org.molgenis.framework.db.MapperDecorator;
 
 public class FlowcellDecorator<E extends org.molgenis.ngs.Flowcell> extends MapperDecorator<E>
 {
-	//Mapper is the generate thing
+	// Mapper is the generate thing
 	public FlowcellDecorator(Mapper generatedMapper)
 	{
 		super(generatedMapper);
 	}
 
-	private void fourDigits(List<E> entities) {
-		
-		
+	private void fourDigits(List<E> entities)
+	{
+
 		for (org.molgenis.ngs.Flowcell e : entities)
 		{
 			String run = e.getRun();
 			for (int i = 0; i < 4 - e.getRun().length(); i++)
 				run = "0" + run;
-			
+
 			e.setRun(run);
 		}
-		
+
 	}
-	
+
 	public int add(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here, e.g.
 		// for (org.molgenis.ngs.Flowcell e : entities)
 		// {
-		//  	e.setTriggeredField("Before add called!!!");
+		// e.setTriggeredField("Before add called!!!");
 		// }
 
 		fourDigits(entities);
-		
+
 		// here we call the standard 'add'
 		int count = super.add(entities);
 
@@ -56,18 +56,17 @@ public class FlowcellDecorator<E extends org.molgenis.ngs.Flowcell> extends Mapp
 		return count;
 	}
 
-	
 	public int update(List<E> entities) throws DatabaseException
 	{
 
 		// add your pre-processing here, e.g.
 		// for (org.molgenis.ngs.Flowcell e : entities)
 		// {
-		// 		e.setTriggeredField("Before update called!!!");
+		// e.setTriggeredField("Before update called!!!");
 		// }
 
 		fourDigits(entities);
-		
+
 		// here we call the standard 'update'
 		int count = super.update(entities);
 
@@ -77,7 +76,6 @@ public class FlowcellDecorator<E extends org.molgenis.ngs.Flowcell> extends Mapp
 		return count;
 	}
 
-	
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
@@ -86,9 +84,9 @@ public class FlowcellDecorator<E extends org.molgenis.ngs.Flowcell> extends Mapp
 		int count = super.remove(entities);
 
 		// add your post-processing here, e.g.
-		// if(true) throw new SQLException("Because of a post trigger the remove is cancelled.");
+		// if(true) throw new
+		// SQLException("Because of a post trigger the remove is cancelled.");
 
 		return count;
 	}
 }
-

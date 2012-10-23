@@ -27,12 +27,12 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	public String	sourceOrganism;
-	public String	targetOrganism;
-	public String	input;
+	public String sourceOrganism;
+	public String targetOrganism;
+	public String input;
 
-	public String	outputSimple		= "";
-	public String	outputAdvanced	= "";
+	public String outputSimple = "";
+	public String outputAdvanced = "";
 
 	public String getSourceOrganism()
 	{
@@ -121,13 +121,13 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 			String outputAdvanced = "source" + "\t" + KEGGGene.toStringMediumHeader("\t");
 
 			String input = request.getString("inputIdList");
-			
-			if(input == null)
+
+			if (input == null)
 			{
-				//shoudl throw/display exception
+				// shoudl throw/display exception
 				return;
 			}
-			
+
 			input = input.replace(" ", "");
 			String[] ids = input.split("\\r?\\n");
 
@@ -137,15 +137,16 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 				try
 				{
 					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-	
+
 					outputSimple += id + "\t" + sourceGene.getEntry() + "\n";
 					outputAdvanced += id + "\t" + sourceGene.toStringMedium("\t");
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
 			}
-			
+
 			this.setOutputSimple(outputSimple);
 			this.setOutputAdvanced(outputAdvanced);
 		}
@@ -156,13 +157,13 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 			String outputAdvanced = "source" + "\t" + KEGGGene.toStringMediumHeader("\t");
 
 			String input = request.getString("inputIdList");
-			
-			if(input == null)
+
+			if (input == null)
 			{
-				//shoudl throw/display exception
+				// shoudl throw/display exception
 				return;
 			}
-			
+
 			input = input.replace(" ", "");
 			String[] ids = input.split("\\r?\\n");
 
@@ -178,13 +179,16 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 					KEGGGene targetGene = KEGGTools.getKeggGene(orthology.getTargetEntry());
 
 					outputSimple += id + "\t" + orthology.getTargetEntry() + "\n";
-					// outputAdvanced += id + "\t" + orthology.getTargetEntry() + "\t" +
-					// sourceGene.getDefinition() + "\t" + targetGene.getDefinition() +
+					// outputAdvanced += id + "\t" + orthology.getTargetEntry()
+					// + "\t" +
+					// sourceGene.getDefinition() + "\t" +
+					// targetGene.getDefinition() +
 					// "\n";
 
 					outputAdvanced += id + "\t" + targetGene.toStringMedium("\t");
 
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -205,7 +209,7 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 		// Query q = db.query(Experiment.class);
 		// q.like("name", "test");
 		// List<Experiment> recentExperiments = q.find();
-		//			
+		//
 		// //do something
 		// }
 		// catch(Exception e)

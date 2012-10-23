@@ -41,7 +41,10 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 	private String niceNotation;
 	private List<ProtocolDTO> protocolDTOList;
 	private String observedValue;
-	/* Hash for ObservedValues: Key: "Protocol" + id (because of freemarker issues), Value: List of ObservedValue's */
+	/*
+	 * Hash for ObservedValues: Key: "Protocol" + id (because of freemarker
+	 * issues), Value: List of ObservedValue's
+	 */
 	private Map<String, List<ObservedValueDTO>> observedValueDTOHash;
 
 	public MutationSummaryDTO()
@@ -80,197 +83,310 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 		this.type = "";
 	}
 
-	public Integer getId() {
+	public Integer getId()
+	{
 		return id;
 	}
-	public void setId(Integer id) {
+
+	public void setId(Integer id)
+	{
 		this.id = id;
 	}
-	public String getIdentifier() {
+
+	public String getIdentifier()
+	{
 		return identifier;
 	}
-	public void setIdentifier(String identifier) {
+
+	public void setIdentifier(String identifier)
+	{
 		this.identifier = identifier;
 	}
-	public String getCdnaNotation() {
+
+	public String getCdnaNotation()
+	{
 		return cdnaNotation;
 	}
-	public void setCdnaNotation(String cdnaNotation) {
+
+	public void setCdnaNotation(String cdnaNotation)
+	{
 		this.cdnaNotation = cdnaNotation;
 	}
-	public String getGdnaNotation() {
+
+	public String getGdnaNotation()
+	{
 		return gdnaNotation;
 	}
-	public void setGdnaNotation(String gdnaNotation) {
+
+	public void setGdnaNotation(String gdnaNotation)
+	{
 		this.gdnaNotation = gdnaNotation;
 	}
-	public String getAaNotation() {
+
+	public String getAaNotation()
+	{
 		return aaNotation;
 	}
-	public void setAaNotation(String aaNotation) {
+
+	public void setAaNotation(String aaNotation)
+	{
 		this.aaNotation = aaNotation;
 	}
-	public Integer getExonId() {
+
+	public Integer getExonId()
+	{
 		return exonId;
 	}
-	public void setExonId(Integer exonId) {
+
+	public void setExonId(Integer exonId)
+	{
 		this.exonId = exonId;
 	}
-	public Integer getExonNumber() {
+
+	public Integer getExonNumber()
+	{
 		return exonNumber;
 	}
-	public void setExonNumber(Integer exonNumber) {
+
+	public void setExonNumber(Integer exonNumber)
+	{
 		this.exonNumber = exonNumber;
 	}
-	public String getExonName() {
+
+	public String getExonName()
+	{
 		return exonName;
 	}
-	public void setExonName(String exonName) {
+
+	public void setExonName(String exonName)
+	{
 		this.exonName = exonName;
 	}
-	public List<String> getProteinDomainNameList() {
+
+	public List<String> getProteinDomainNameList()
+	{
 		return proteinDomainNameList;
 	}
-	public void setProteinDomainNameList(List<String> proteinDomainNameList) {
+
+	public void setProteinDomainNameList(List<String> proteinDomainNameList)
+	{
 		this.proteinDomainNameList = proteinDomainNameList;
 	}
-	public String getType() {
+
+	public String getType()
+	{
 		return type;
 	}
-	public void setType(String type) {
+
+	public void setType(String type)
+	{
 		this.type = type;
 	}
-	public String getConsequence() {
+
+	public String getConsequence()
+	{
 		return consequence;
 	}
 
-	public void setConsequence(String consequence) {
+	public void setConsequence(String consequence)
+	{
 		this.consequence = consequence;
 	}
 
-	public String getInheritance() {
+	public String getInheritance()
+	{
 		return inheritance;
 	}
-	public void setInheritance(String inheritance) {
+
+	public void setInheritance(String inheritance)
+	{
 		this.inheritance = inheritance;
 	}
-	public Boolean getReportedSNP() {
+
+	public Boolean getReportedSNP()
+	{
 		return reportedSNP;
 	}
-	public void setReportedSNP(Boolean reportedSNP) {
+
+	public void setReportedSNP(Boolean reportedSNP)
+	{
 		this.reportedSNP = reportedSNP;
 	}
-	public String getPathogenicity() {
+
+	public String getPathogenicity()
+	{
 		return pathogenicity;
 	}
-	public void setPathogenicity(String pathogenicity) {
+
+	public void setPathogenicity(String pathogenicity)
+	{
 		this.pathogenicity = pathogenicity;
 	}
-	public List<PatientSummaryDTO> getPatientSummaryDTOList() {
+
+	public List<PatientSummaryDTO> getPatientSummaryDTOList()
+	{
 		return patientSummaryDTOList;
 	}
-	public void setPatientSummaryDTOList(List<PatientSummaryDTO> patientSummaryDTOList) {
+
+	public void setPatientSummaryDTOList(List<PatientSummaryDTO> patientSummaryDTOList)
+	{
 		this.patientSummaryDTOList = patientSummaryDTOList;
 	}
-	public List<String> getPhenotypeNameList() {
+
+	public List<String> getPhenotypeNameList()
+	{
 		return phenotypeNameList;
 	}
-	public void setPhenotypeNameList(List<String> phenotypeNameList) {
+
+	public void setPhenotypeNameList(List<String> phenotypeNameList)
+	{
 		this.phenotypeNameList = phenotypeNameList;
 	}
-	public List<PublicationDTO> getPublicationDTOList() {
+
+	public List<PublicationDTO> getPublicationDTOList()
+	{
 		return publicationDTOList;
 	}
-	public void setPublicationDTOList(List<PublicationDTO> publicationDTOList) {
+
+	public void setPublicationDTOList(List<PublicationDTO> publicationDTOList)
+	{
 		this.publicationDTOList = publicationDTOList;
 	}
-	public String getNiceNotation() {
+
+	public String getNiceNotation()
+	{
 		return niceNotation;
 	}
-	public void setNiceNotation(String niceNotation) {
+
+	public void setNiceNotation(String niceNotation)
+	{
 		this.niceNotation = niceNotation;
 	}
-	public List<ProtocolDTO> getProtocolDTOList() {
+
+	public List<ProtocolDTO> getProtocolDTOList()
+	{
 		return protocolDTOList;
 	}
-	public void setProtocolDTOList(List<ProtocolDTO> protocolDTOList) {
+
+	public void setProtocolDTOList(List<ProtocolDTO> protocolDTOList)
+	{
 		this.protocolDTOList = protocolDTOList;
 	}
-	public String getObservedValue() {
+
+	public String getObservedValue()
+	{
 		return observedValue;
 	}
 
-	public void setObservedValue(String observedValue) {
+	public void setObservedValue(String observedValue)
+	{
 		this.observedValue = observedValue;
 	}
 
-	public Map<String, List<ObservedValueDTO>> getObservedValueDTOHash() {
+	public Map<String, List<ObservedValueDTO>> getObservedValueDTOHash()
+	{
 		return observedValueDTOHash;
 	}
-	public void setObservedValueDTOHash(
-			Map<String, List<ObservedValueDTO>> observedValueDTOHash) {
+
+	public void setObservedValueDTOHash(Map<String, List<ObservedValueDTO>> observedValueDTOHash)
+	{
 		this.observedValueDTOHash = observedValueDTOHash;
 	}
-	public String getCodonChange() {
+
+	public String getCodonChange()
+	{
 		return codonChange;
 	}
-	public void setCodonChange(String codonChange) {
+
+	public void setCodonChange(String codonChange)
+	{
 		this.codonChange = codonChange;
 	}
-	public String getPubmedURL() {
-	    return pubmedURL;
+
+	public String getPubmedURL()
+	{
+		return pubmedURL;
 	}
-	public void setPubmedURL(String pubmedURL) {
-	    this.pubmedURL = pubmedURL;
+
+	public void setPubmedURL(String pubmedURL)
+	{
+		this.pubmedURL = pubmedURL;
 	}
-	public Integer getCdnaStart() {
+
+	public Integer getCdnaStart()
+	{
 		return cdnaStart;
 	}
-	public void setCdnaStart(Integer cdnaStart) {
+
+	public void setCdnaStart(Integer cdnaStart)
+	{
 		this.cdnaStart = cdnaStart;
 	}
-	public Integer getCdnaEnd() {
+
+	public Integer getCdnaEnd()
+	{
 		return cdnaEnd;
 	}
-	public void setCdnaEnd(Integer cdnaEnd) {
+
+	public void setCdnaEnd(Integer cdnaEnd)
+	{
 		this.cdnaEnd = cdnaEnd;
 	}
-	public Integer getGdnaStart() {
+
+	public Integer getGdnaStart()
+	{
 		return gdnaStart;
 	}
-	public void setGdnaStart(Integer gdnaStart) {
+
+	public void setGdnaStart(Integer gdnaStart)
+	{
 		this.gdnaStart = gdnaStart;
 	}
-	public Integer getGdnaEnd() {
+
+	public Integer getGdnaEnd()
+	{
 		return gdnaEnd;
 	}
-	public void setGdnaEnd(Integer gdnaEnd) {
+
+	public void setGdnaEnd(Integer gdnaEnd)
+	{
 		this.gdnaEnd = gdnaEnd;
 	}
-	public String getMrnaNotation() {
+
+	public String getMrnaNotation()
+	{
 		return mrnaNotation;
 	}
-	public void setMrnaNotation(String mrnaNotation) {
+
+	public void setMrnaNotation(String mrnaNotation)
+	{
 		this.mrnaNotation = mrnaNotation;
 	}
-	public Integer getAaStart() {
+
+	public Integer getAaStart()
+	{
 		return aaStart;
 	}
-	public void setAaStart(Integer aaStart) {
+
+	public void setAaStart(Integer aaStart)
+	{
 		this.aaStart = aaStart;
 	}
-	public Integer getAaEnd() {
+
+	public Integer getAaEnd()
+	{
 		return aaEnd;
 	}
-	public void setAaEnd(Integer aaEnd) {
+
+	public void setAaEnd(Integer aaEnd)
+	{
 		this.aaEnd = aaEnd;
 	}
 
 	@Override
 	public int compareTo(MutationSummaryDTO mutationSummaryVO)
 	{
-		if (this.getCdnaStart() == null || mutationSummaryVO.getCdnaStart() == null)
-			return 0;
+		if (this.getCdnaStart() == null || mutationSummaryVO.getCdnaStart() == null) return 0;
 
 		return this.getCdnaStart().compareTo(mutationSummaryVO.getCdnaStart());
 	}

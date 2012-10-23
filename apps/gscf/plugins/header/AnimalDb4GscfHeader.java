@@ -13,7 +13,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
  * includes the header logo as well as the top level menu items for
@@ -46,13 +45,13 @@ public class AnimalDb4GscfHeader extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		//static
+		// static
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		//static
+		// static
 	}
 
 	@Override
@@ -60,8 +59,9 @@ public class AnimalDb4GscfHeader extends PluginModel<Entity>
 	{
 		return true;
 	}
-	
-	public boolean isLoggedIn() {
+
+	public boolean isLoggedIn()
+	{
 		return this.getLogin().isAuthenticated();
 	}
 }

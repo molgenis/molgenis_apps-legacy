@@ -12,7 +12,7 @@ import java.io.RandomAccessFile;
 public interface ValueConvertor<E>
 {
 	public E read(String value);
-	
+
 	public String write(E value);
 
 	public Class<E> getValueType();

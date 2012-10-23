@@ -16,19 +16,21 @@ import org.molgenis.mutation.service.GffService;
 
 public class GffServlet implements MolgenisService
 {
-	public GffServlet(@SuppressWarnings("unused") MolgenisContext mc)
+	public GffServlet(@SuppressWarnings("unused")
+	MolgenisContext mc)
 	{
 	}
 
 	@Override
-	public void handleRequest(MolgenisRequest req, MolgenisResponse resp) throws ParseException, DatabaseException, IOException
+	public void handleRequest(MolgenisRequest req, MolgenisResponse resp) throws ParseException, DatabaseException,
+			IOException
 	{
 		HttpServletResponse response = resp.getResponse();
 
 		response.setContentType("text/plain");
-		
+
 		String type = req.getString("type");
-		
+
 		GffService gffService = ServiceLocator.instance().getGffService();
 
 		String result = "";

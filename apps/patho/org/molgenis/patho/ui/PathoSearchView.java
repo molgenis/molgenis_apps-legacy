@@ -35,8 +35,7 @@ public class PathoSearchView implements ScreenView
 		form.add(new Newline());
 
 		// provide a search box
-		SelectInput chromosomes = new SelectInput("chromosome",
-				model.getSelectedChrId());
+		SelectInput chromosomes = new SelectInput("chromosome", model.getSelectedChrId());
 		chromosomes.setOptions(model.getChromosomes(), model.getChromosomes());
 		chromosomes.setNillable(false);
 		form.add(chromosomes);
@@ -64,8 +63,7 @@ public class PathoSearchView implements ScreenView
 
 			for (SequenceVariant v : model.getVariants())
 			{
-				ObservedValue alleleCount = model.getAlleleCounts().get(
-						v.getName());
+				ObservedValue alleleCount = model.getAlleleCounts().get(v.getName());
 				int row = table.addRow(v.getName());
 
 				table.setCell(0, row, alleleCount.getTarget_Name());

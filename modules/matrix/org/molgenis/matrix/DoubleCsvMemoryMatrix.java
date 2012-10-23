@@ -6,17 +6,13 @@ import org.molgenis.util.CsvReader;
 
 public class DoubleCsvMemoryMatrix extends CsvMemoryMatrix<String, String, Double>
 {
-	public DoubleCsvMemoryMatrix(Matrix<String,String,Double> matrix) throws MatrixException
+	public DoubleCsvMemoryMatrix(Matrix<String, String, Double> matrix) throws MatrixException
 	{
-		super(new StringConvertor(),
-				new StringConvertor(),
-				new DoubleConvertor(), null);
+		super(new StringConvertor(), new StringConvertor(), new DoubleConvertor(), null);
 	}
-	
-	public DoubleCsvMemoryMatrix(Matrix<String,String,Double> matrix, CsvReader reader) throws MatrixException
+
+	public DoubleCsvMemoryMatrix(Matrix<String, String, Double> matrix, CsvReader reader) throws MatrixException
 	{
-		super(new StringConvertor(),
-				new StringConvertor(),
-				new DoubleConvertor(), matrix, reader);
+		super(new StringConvertor(), new StringConvertor(), new DoubleConvertor(), matrix, reader);
 	}
 }

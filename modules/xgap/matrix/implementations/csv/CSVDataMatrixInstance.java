@@ -198,9 +198,9 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 				{
 					for (int col = 1; col <= tuple.size(); col++)
 					{
-						if (colIndicesList.contains(col-1))
+						if (colIndicesList.contains(col - 1))
 						{
-							elements[row][col-1] = tuple.getObject(col);
+							elements[row][col - 1] = tuple.getObject(col);
 						}
 					}
 				}
@@ -232,7 +232,8 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	@Override
 	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int startRow, int numRows, int startCol, int numCols)
 			throws Exception
-	{;
+	{
+		;
 		AbstractDataMatrixInstance<Object> result = null;
 		final Object[][] elements = new Object[numRows][numCols];
 

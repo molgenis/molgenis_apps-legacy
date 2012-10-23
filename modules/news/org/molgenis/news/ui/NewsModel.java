@@ -14,9 +14,11 @@ import org.molgenis.news.MolgenisNews;
 
 public class NewsModel extends EasyPluginModel
 {
-	private static final long serialVersionUID = 1L; //a system veriable that is needed by tomcat
-	protected final int NUM_NEWS               = 5; // how many news to be shown in "top news" mode?
-	private String action                      = "init";
+	private static final long serialVersionUID = 1L; // a system veriable that
+														// is needed by tomcat
+	protected final int NUM_NEWS = 5; // how many news to be shown in "top news"
+										// mode?
+	private String action = "init";
 	private List<MolgenisNews> allNews;
 	private List<MolgenisNews> topNews;
 	private MolgenisNews newsItem;
@@ -60,7 +62,7 @@ public class NewsModel extends EasyPluginModel
 	{
 		return this.action;
 	}
-	
+
 	public void setAction(String action)
 	{
 		this.action = action;

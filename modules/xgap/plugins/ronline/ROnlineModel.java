@@ -5,43 +5,52 @@ import java.util.List;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class ROnlineModel {
+public class ROnlineModel
+{
 
 	private String test;
 	private String loc;
 	private RProcess rp;
 	private List<String> results;
 	private Long timeOut;
-	
-	public List<String> getResults() {
+
+	public List<String> getResults()
+	{
 		return results;
 	}
 
-	public void setResults(List<String> results) {
+	public void setResults(List<String> results)
+	{
 		this.results = results;
 	}
 
-	public RProcess getRp() {
+	public RProcess getRp()
+	{
 		return rp;
 	}
 
-	public void setRp(RProcess rp) {
+	public void setRp(RProcess rp)
+	{
 		this.rp = rp;
 	}
 
-	public String getTest() {
+	public String getTest()
+	{
 		return test;
 	}
 
-	public void setTest(String test) {
+	public void setTest(String test)
+	{
 		this.test = test;
 	}
 
-	public String getLoc() {
+	public String getLoc()
+	{
 		return loc;
 	}
 
-	public void setLoc(String loc) {
+	public void setLoc(String loc)
+	{
 		this.loc = loc;
 	}
 

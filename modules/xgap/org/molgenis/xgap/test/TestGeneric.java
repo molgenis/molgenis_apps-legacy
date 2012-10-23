@@ -7,14 +7,17 @@ import generic.Utils;
 
 import org.testng.annotations.Test;
 
-public class TestGeneric {
+public class TestGeneric
+{
 	@Test
-	public void testWebserver(){
+	public void testWebserver()
+	{
 		org.testng.Assert.assertEquals(true, true);
 	}
-	
+
 	@Test
-	void CommandExecutor(){
+	void CommandExecutor()
+	{
 		org.testng.Assert.assertEquals(true, true);
 		CommandExecutor c = new CommandExecutor("cd tests");
 		c.addCommand("R CMD BATCH test.R");
@@ -22,23 +25,27 @@ public class TestGeneric {
 		c.clearCommands();
 		org.testng.Assert.assertEquals(c.getCommands().size(), 0);
 	}
-	
+
 	@Test
-	void JavaCompiler(){
+	void JavaCompiler()
+	{
 		JavaCompiler compiler = new JavaCompiler();
 		CompileUnit c = compiler.newCompileUnit();
 		c.addDependency("c:/test");
-		org.testng.Assert.assertEquals(c.getDependencies(), "build;src;c:/test");	
+		org.testng.Assert.assertEquals(c.getDependencies(), "build;src;c:/test");
 	}
-	
+
 	@Test
-	void OpenBrowser(){
+	void OpenBrowser()
+	{
 		org.testng.Assert.assertEquals(true, true);
 	}
-	
+
 	@Test
-	void Utils(){
-		double[] doubles = {1.0, 5.9, 10.56};
+	void Utils()
+	{
+		double[] doubles =
+		{ 1.0, 5.9, 10.56 };
 		org.testng.Assert.assertEquals(Utils.printDoubleArray(doubles), "1.0 5.9 10.56 ");
 		org.testng.Assert.assertEquals(Utils.firstLetterUpperCase("wow"), "Wow");
 		org.testng.Assert.assertEquals(Utils.firstLetterUpperCase("Tetsing"), "Tetsing");

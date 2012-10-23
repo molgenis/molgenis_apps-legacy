@@ -10,15 +10,19 @@ import org.molgenis.util.Tuple;
 
 public class MainScreen extends PluginModel
 {
-	/**subsequent steps of the program*/
-	static enum Steps {ask_parameters, calculate_design, show_results};
+	/** subsequent steps of the program */
+	static enum Steps
+	{
+		ask_parameters, calculate_design, show_results
+	};
+
 	private String sessionId;
 	private String imagePath;
-	private boolean bInvalidateSession = false;		// To signal MolgenisServlet 
-	
+	private boolean bInvalidateSession = false; // To signal MolgenisServlet
+
 	private AskParametersScreen screen1;
 	private CalculateDesignScreen screen2;
-	
+
 	public AskParametersScreen getScreen1()
 	{
 		return screen1;
@@ -31,98 +35,107 @@ public class MainScreen extends PluginModel
 
 	private ShowResultsScreen screen3;
 	private int autoRefresh;
-	
+
 	private int selectedScreen = -1;
 
 	public MainScreen(String string, ScreenController<?> parent)
 	{
 		super("Main", parent);
-		
-		//initialize the screens
+
+		// initialize the screens
 		screen1 = new AskParametersScreen(Steps.ask_parameters.name(), this);
 		screen2 = new CalculateDesignScreen(Steps.calculate_design.name(), this);
 		screen3 = new ShowResultsScreen(Steps.show_results.name(), this);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 	@Override
 	public ScreenModel getSelected()
 	{
-		//returns the active screen. This depend on the status of the program
-		//if(screen2.getIndPerCondition() != null && screen2.getIndPerSlide() != null)
-		if( screen2.calculationDone() )
+		// returns the active screen. This depend on the status of the program
+		// if(screen2.getIndPerCondition() != null && screen2.getIndPerSlide()
+		// != null)
+		if (screen2.calculationDone())
 		{
 			this.selectedScreen = 3;
 			this.autoRefresh = 0;
-			screen3.setIndPerCondition(	screen2.getIndPerCondition());
-			screen3.setIndPerSlide(		screen2.getIndPerSlide());
-			screen3.setImageLink(		screen2.getImageLink());
-			screen3.setIndXCondLink(	screen2.getIndXCondLink());
-			screen3.setIndXSlideLink(	screen2.getIndXSlideLink()); 
-			screen3.setOutputR(			screen2.getOutputR());
+			screen3.setIndPerCondition(screen2.getIndPerCondition());
+			screen3.setIndPerSlide(screen2.getIndPerSlide());
+			screen3.setImageLink(screen2.getImageLink());
+			screen3.setIndXCondLink(screen2.getIndXCondLink());
+			screen3.setIndXSlideLink(screen2.getIndXSlideLink());
+			screen3.setOutputR(screen2.getOutputR());
 			return screen3;
 		}
-		else if(screen1.isBReady2Go()){
+		else if (screen1.isBReady2Go())
+		{
 			this.selectedScreen = 2;
 			this.autoRefresh = 60;
 			screen2.setImagePath(this.getImagePath());
 			screen2.reload(null);
 			return screen2;
-		}else{
-		  this.selectedScreen = 1;
-		  this.autoRefresh = 0;
-		  return screen1;
 		}
-
-	}
-	
-	public void changeState(){
-		//returns the active screen. This depend on the status of the program
-		//if(screen2.getIndPerCondition() != null && screen2.getIndPerSlide() != null)
-		if( screen2.calculationDone() ){
-			this.selectedScreen = 3;
-		}else if(screen1.isBReady2Go()){
-			this.selectedScreen = 2;
-		}else{
-		  this.selectedScreen = 1;
-		}
-
-	}
-	
-	@Override
-	public void handleRequest( Database db, Tuple request )
-	{
-		//super.handleRequest(db, request);
-		
-		if("back".equals(request.getString("__action")))
+		else
 		{
-			if(getSelected().equals(screen3))
+			this.selectedScreen = 1;
+			this.autoRefresh = 0;
+			return screen1;
+		}
+
+	}
+
+	public void changeState()
+	{
+		// returns the active screen. This depend on the status of the program
+		// if(screen2.getIndPerCondition() != null && screen2.getIndPerSlide()
+		// != null)
+		if (screen2.calculationDone())
+		{
+			this.selectedScreen = 3;
+		}
+		else if (screen1.isBReady2Go())
+		{
+			this.selectedScreen = 2;
+		}
+		else
+		{
+			this.selectedScreen = 1;
+		}
+
+	}
+
+	@Override
+	public void handleRequest(Database db, Tuple request)
+	{
+		// super.handleRequest(db, request);
+
+		if ("back".equals(request.getString("__action")))
+		{
+			if (getSelected().equals(screen3))
 			{
-				//TODO This two maybe can be removed
-				screen2.setIndPerCondition(null);//this is back to first
-				screen2.setIndPerCondition(null);//this is back to first				
-				
-				screen2.setBCalculationDone(false);
-				screen2.setBCalculationFail(false);
-				screen2.setBCooking(false);				
-				screen1.setDesignParameters(null);
-				screen1.setBArgumentsOK(true);
-				screen1.setBReady2Go(false);	
-				setBInvalidateSession(true);
-			}
-			
-			if(getSelected().equals(screen2))
-			{				
+				// TODO This two maybe can be removed
+				screen2.setIndPerCondition(null);// this is back to first
+				screen2.setIndPerCondition(null);// this is back to first
 
 				screen2.setBCalculationDone(false);
 				screen2.setBCalculationFail(false);
 				screen2.setBCooking(false);
 				screen1.setDesignParameters(null);
 				screen1.setBArgumentsOK(true);
-				screen1.setBReady2Go(false);				
-				setBInvalidateSession(true); 
+				screen1.setBReady2Go(false);
+				setBInvalidateSession(true);
+			}
+
+			if (getSelected().equals(screen2))
+			{
+
+				screen2.setBCalculationDone(false);
+				screen2.setBCalculationFail(false);
+				screen2.setBCooking(false);
+				screen1.setDesignParameters(null);
+				screen1.setBArgumentsOK(true);
+				screen1.setBReady2Go(false);
+				setBInvalidateSession(true);
 			}
 			this.selectedScreen = -1;
 		}
@@ -138,22 +151,22 @@ public class MainScreen extends PluginModel
 		this.autoRefresh = autoRefresh;
 	}
 
-	public String getSessionId() {
+	public String getSessionId()
+	{
 		return sessionId;
 	}
 
-	public void setSessionId(String sessionId) 
+	public void setSessionId(String sessionId)
 	{
 		this.sessionId = sessionId;
 		screen2.setSessionId(sessionId);
 	}
 
-	public String getImagePath() {
+	public String getImagePath()
+	{
 		return imagePath;
 	}
 
-	
-	
 	public int getSelectedScreen()
 	{
 		return selectedScreen;
@@ -164,15 +177,16 @@ public class MainScreen extends PluginModel
 		this.selectedScreen = selectedScreen;
 	}
 
-	public void setImagePath(String imagePath) {
-		
+	public void setImagePath(String imagePath)
+	{
+
 		this.imagePath = imagePath;
-		
+
 		// We create the directory to store session files.
-		File sessionDir = new File( imagePath + File.separator + getSessionId() );
-		sessionDir.mkdir();		
+		File sessionDir = new File(imagePath + File.separator + getSessionId());
+		sessionDir.mkdir();
 	}
-	
+
 	@Override
 	public String getLabel()
 	{
@@ -182,14 +196,17 @@ public class MainScreen extends PluginModel
 	/**
 	 * @return the bInvalidateSession
 	 */
-	public boolean isBInvalidateSession() {
+	public boolean isBInvalidateSession()
+	{
 		return bInvalidateSession;
 	}
 
 	/**
-	 * @param invalidateSession the bInvalidateSession to set
+	 * @param invalidateSession
+	 *            the bInvalidateSession to set
 	 */
-	public void setBInvalidateSession(boolean invalidateSession) {
+	public void setBInvalidateSession(boolean invalidateSession)
+	{
 		bInvalidateSession = invalidateSession;
 	}
 
@@ -197,9 +214,9 @@ public class MainScreen extends PluginModel
 	public void reload(Database db)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
 	public String getViewName()
 	{
@@ -212,7 +229,7 @@ public class MainScreen extends PluginModel
 	{
 		return "org/molgenis/designgg/MainScreen.ftl";
 	}
-	
+
 	public String getCustomHtmlHeaders()
 	{
 		return "<link href=\"res/css/designgg.css\" rel=\"stylesheet\" type=\"text/css\"/>";

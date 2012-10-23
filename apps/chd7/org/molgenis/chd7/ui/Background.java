@@ -27,12 +27,12 @@ public class Background extends EasyPluginController<BackgroundModel>
 		super(name, parent);
 		this.setModel(new BackgroundModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Background.ftl", getModel());
 	}
-	
+
 	@Override
 	public void reload(Database db)
 	{
@@ -41,16 +41,16 @@ public class Background extends EasyPluginController<BackgroundModel>
 			StatisticsService statisticsService = ServiceLocator.instance().getStatisticsService();
 			statisticsService.setDatabase(db);
 
-//			this.getModel().setNumPathogenicMutations(statisticsService.getNumMutationsByPathogenicity("pathogenic"));
-//			this.getModel().setNumPathogenicPatients(statisticsService.getNumPatientsByPathogenicity("pathogenic"));
-//			this.getModel().setNumUnclassifiedMutations(statisticsService.getNumMutationsByPathogenicity("unclassified variant"));
-//			this.getModel().setNumUnclassifiedPatients(statisticsService.getNumPatientsByPathogenicity("unclassified variant"));
-//			this.getModel().setNumBenignMutations(statisticsService.getNumMutationsByPathogenicity("benign"));
+			// this.getModel().setNumPathogenicMutations(statisticsService.getNumMutationsByPathogenicity("pathogenic"));
+			// this.getModel().setNumPathogenicPatients(statisticsService.getNumPatientsByPathogenicity("pathogenic"));
+			// this.getModel().setNumUnclassifiedMutations(statisticsService.getNumMutationsByPathogenicity("unclassified variant"));
+			// this.getModel().setNumUnclassifiedPatients(statisticsService.getNumPatientsByPathogenicity("unclassified variant"));
+			// this.getModel().setNumBenignMutations(statisticsService.getNumMutationsByPathogenicity("benign"));
 			this.getModel().setNumPatientsUnpub(statisticsService.getNumUnpublishedPatients());
 		}
 		catch (Exception e)
 		{
-			//...
+			// ...
 		}
 	}
 }

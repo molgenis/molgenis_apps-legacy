@@ -15,14 +15,17 @@ public class MyCOL7A1VO implements Serializable
 	{
 		return login;
 	}
+
 	public void setLogin(Login login)
 	{
 		this.login = login;
 	}
+
 	public LimitOffsetPager<PatientSummaryVO> getPager()
 	{
 		return pager;
 	}
+
 	public void setPager(LimitOffsetPager<PatientSummaryVO> pager)
 	{
 		this.pager = pager;

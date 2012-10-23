@@ -13,8 +13,10 @@ import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.ui.EasyPluginModel;
 
 /**
- * AllPublicationsModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
+ * AllPublicationsModel takes care of all state and it can have helper methods
+ * to query the database. It should not contain layout or application logic
+ * which are solved in View and Controller.
+ * 
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
 public class AllPublicationsModel extends EasyPluginModel
@@ -29,27 +31,33 @@ public class AllPublicationsModel extends EasyPluginModel
 		super(controller);
 	}
 
-	public String getPublicationPager() {
+	public String getPublicationPager()
+	{
 		return publicationPager;
 	}
 
-	public void setPublicationPager(String publicationPager) {
+	public void setPublicationPager(String publicationPager)
+	{
 		this.publicationPager = publicationPager;
 	}
 
-	public List<PublicationVO> getPublicationVOList() {
+	public List<PublicationVO> getPublicationVOList()
+	{
 		return publicationVOList;
 	}
 
-	public void setPublicationVOList(List<PublicationVO> publicationVOList) {
+	public void setPublicationVOList(List<PublicationVO> publicationVOList)
+	{
 		this.publicationVOList = publicationVOList;
 	}
 
-	public String getRawOutput() {
+	public String getRawOutput()
+	{
 		return rawOutput;
 	}
 
-	public void setRawOutput(String rawOutput) {
+	public void setRawOutput(String rawOutput)
+	{
 		this.rawOutput = rawOutput;
 	}
 }

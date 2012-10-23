@@ -47,10 +47,11 @@ public class DatabaseSearch_XqtlTestNG
 		// System.out.println("s4 " + db.getMetaData().getEntities(true,
 		// true).size());
 		//
-//		 for(org.molgenis.model.elements.Entity e : db.getMetaData().getEntities(false, false))
-//		 {
-//		 System.out.println("F/F: " + e.getName());
-//		 }
+		// for(org.molgenis.model.elements.Entity e :
+		// db.getMetaData().getEntities(false, false))
+		// {
+		// System.out.println("F/F: " + e.getName());
+		// }
 		//
 		// for(Entity e : db.getMetaData().getEntities(true, false))
 		// {

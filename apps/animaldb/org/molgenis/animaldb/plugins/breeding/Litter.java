@@ -5,7 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Litter {
+public class Litter
+{
 	private int id;
 	private String name;
 	private Date birthDate;
@@ -17,99 +18,150 @@ public class Litter {
 	private String remarks;
 	private String status;
 	private String line = "";
-	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	// private SimpleDateFormat dateTimeFormat = new
+	// SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-	
-	public void setId(int id) {
+
+	public void setId(int id)
+	{
 		this.id = id;
 	}
-	public int getId() {
+
+	public int getId()
+	{
 		return id;
 	}
-	public void setName(String name) {
+
+	public void setName(String name)
+	{
 		this.name = name;
 	}
-	public String getName() {
+
+	public String getName()
+	{
 		return name;
 	}
-	public void setBirthDate(String birthDate) throws ParseException {
-		if (birthDate != null) {
-			try {
+
+	public void setBirthDate(String birthDate) throws ParseException
+	{
+		if (birthDate != null)
+		{
+			try
+			{
 				this.birthDate = dateOnlyFormat.parse(birthDate);
-			} catch (ParseException e) {
-				//this.birthDate = dateTimeFormat.parse(birthDate);
 			}
-		} else {
+			catch (ParseException e)
+			{
+				// this.birthDate = dateTimeFormat.parse(birthDate);
+			}
+		}
+		else
+		{
 			this.birthDate = null;
 		}
 	}
-	public String getBirthDate() {
+
+	public String getBirthDate()
+	{
 		if (birthDate == null) return "";
 		return dateOnlyFormat.format(birthDate);
 	}
-	public void setWeanDate(String weanDate) throws ParseException {
-		if (weanDate != null) {
-			try {
+
+	public void setWeanDate(String weanDate) throws ParseException
+	{
+		if (weanDate != null)
+		{
+			try
+			{
 				this.weanDate = dateOnlyFormat.parse(weanDate);
-			} catch (ParseException e) {
-				//this.weanDate = dateTimeFormat.parse(weanDate);
 			}
-		} else {
+			catch (ParseException e)
+			{
+				// this.weanDate = dateTimeFormat.parse(weanDate);
+			}
+		}
+		else
+		{
 			this.weanDate = null;
 		}
 	}
-	public String getWeanDate() {
+
+	public String getWeanDate()
+	{
 		if (weanDate == null) return "";
 		return dateOnlyFormat.format(weanDate);
 	}
-	public void setSize(int size) {
+
+	public void setSize(int size)
+	{
 		this.size = size;
 	}
-	public String getSize() {
+
+	public String getSize()
+	{
 		if (size == -1) return "";
 		return Integer.toString(size);
 	}
-	public void setSizeApproximate(String isSizeApproximate) {
+
+	public void setSizeApproximate(String isSizeApproximate)
+	{
 		this.isSizeApproximate = isSizeApproximate;
 	}
-	public String getIsSizeApproximate() {
+
+	public String getIsSizeApproximate()
+	{
 		return isSizeApproximate;
 	}
-	public void setWeanSize(int weanSize) {
+
+	public void setWeanSize(int weanSize)
+	{
 		this.weanSize = weanSize;
 	}
-	public String getWeanSize() {
+
+	public String getWeanSize()
+	{
 		if (weanSize == -1) return "";
 		return Integer.toString(weanSize);
 	}
-	public void setParentgroup(String parentgroup) {
+
+	public void setParentgroup(String parentgroup)
+	{
 		this.parentgroup = parentgroup;
 	}
-	
-	public String getParentgroup() {
+
+	public String getParentgroup()
+	{
 		if (parentgroup == null) return "";
 		return parentgroup;
 	}
-	public String getRemarks() {
+
+	public String getRemarks()
+	{
 		return remarks;
 	}
-	public void setRemarks(String remarks) {
+
+	public void setRemarks(String remarks)
+	{
 		this.remarks = remarks;
 	}
-	
-	public String getStatus() {
+
+	public String getStatus()
+	{
 		return status;
 	}
-	
-	public void setStatus(String status) {
+
+	public void setStatus(String status)
+	{
 		this.status = status;
 	}
-	
-	public String getLine() {
+
+	public String getLine()
+	{
 		return line;
 	}
-	
-	public void setLine(String line) {
+
+	public void setLine(String line)
+	{
 		this.line = line;
 	}
 }

@@ -1,6 +1,5 @@
 package org.molgenis.pheno;
 
-
 import org.molgenis.Molgenis;
 
 public class PhenoGenerate
@@ -10,8 +9,9 @@ public class PhenoGenerate
 		try
 		{
 			new Molgenis("apps/pheno/org/molgenis/pheno/pheno.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

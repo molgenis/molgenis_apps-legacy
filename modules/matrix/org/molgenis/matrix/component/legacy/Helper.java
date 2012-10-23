@@ -7,7 +7,8 @@ import org.molgenis.matrix.component.legacy.SomeColType;
 
 public class Helper
 {
-	public static List<SomeColType> getSomeColumns(){
+	public static List<SomeColType> getSomeColumns()
+	{
 		List<SomeColType> result = new ArrayList<SomeColType>();
 		result.add(new SomeColType(1, "MYB28", "nc23435", "65721", 324546, "3"));
 		result.add(new SomeColType(2, "HOX3", "nc768783", "76834", 78564, "X"));
@@ -18,8 +19,9 @@ public class Helper
 		result.add(new SomeColType(7, "RAS", "nc7485", "452737", 854315, "2"));
 		return result;
 	}
-	
-	public static List<SomeRowType> getSomeRows(){
+
+	public static List<SomeRowType> getSomeRows()
+	{
 		List<SomeRowType> result = new ArrayList<SomeRowType>();
 		result.add(new SomeRowType(56, "Laura", "Roslin", "Amsterdam", 1968));
 		result.add(new SomeRowType(57, "Karl", "Agathon", "Rotterdam", 1972));
@@ -29,7 +31,7 @@ public class Helper
 		result.add(new SomeRowType(61, "Gaius", "Baltar", "Delft", 1954));
 		result.add(new SomeRowType(62, "Saul", "Tigh", "Amsterdam", 1912));
 		result.add(new SomeRowType(63, "Sharon", "Agathon", "Delft", 1923));
-		
+
 		return result;
 	}
 }

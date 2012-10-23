@@ -57,10 +57,12 @@ public class Run
 			if (ortho != null)
 			{
 				// print the definition of this gene
-				System.out.println("Best ortholog in " +targetOrganism + " is: ");
+				System.out.println("Best ortholog in " + targetOrganism + " is: ");
 				System.out.println(KEGGGene.toStringFullHeader("; "));
 				System.out.println(KEGGTools.getKeggGene(ortho).toStringFull("; "));
-			}else{
+			}
+			else
+			{
 				System.out.println("No ortholog could be found.");
 			}
 			System.out.println("*****");

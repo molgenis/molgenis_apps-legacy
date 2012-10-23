@@ -1,6 +1,5 @@
 package org.molgenis.gcc;
 
-
 import org.molgenis.Molgenis;
 
 public class GccUpdateDatabase
