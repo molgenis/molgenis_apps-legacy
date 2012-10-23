@@ -20,8 +20,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
 import org.json.JSONObject;
-import org.molgenis.datatable.model.CsvTable;
-import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -31,6 +29,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.impl.CsvTable;
+import org.molgenis.framework.tupletable.impl.MemoryTable;
 import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.tupletable.view.JQGridViewCallback;
 import org.molgenis.framework.ui.PluginModel;
