@@ -105,7 +105,7 @@ public class ImportPhenotypesGoNL
 				d.addValue(d.individuals.get(id), meas, i.getString(meas));
 			}
 		}
-		
+
 		// parse sheet a
 		TupleReader l = new ExcelReader(input, "L");
 

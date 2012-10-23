@@ -47,7 +47,7 @@ public class SampleReport extends EasyPluginController<SampleReport>
 		{
 			writer.setHeaders(rows.get(0).getFields());
 			writer.writeHeader();
-			
+
 			for (Tuple r : rows)
 			{
 				writer.writeRow(r);
