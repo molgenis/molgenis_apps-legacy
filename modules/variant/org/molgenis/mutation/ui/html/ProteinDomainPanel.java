@@ -21,19 +21,14 @@ public class ProteinDomainPanel extends HtmlInput<ProteinDomainDTO> implements S
 	// private final double SCALE_FACTOR = 0.003;
 	private final double SCALE_FACTOR = 0.1;
 	private ProteinDomainDTO proteinDomainDTO;
-	private String baseUrl = "";
+	private String baseUrl;
 
-	// public ProteinDomainPanel()
-	// {
-	// this("", "");
-	// }
-
-	// public ProteinDomainPanel(String name, String label)
-	// {
-	// super(name, label);
-	// this.setLabel(label);
-	// }
-
+	public ProteinDomainPanel(ProteinDomainDTO proteinDomainDTO, String baseUrl)
+	{
+		this.proteinDomainDTO = proteinDomainDTO;
+		this.baseUrl          = baseUrl;
+	}
+	
 	@Override
 	public String toHtml()
 	{
@@ -68,15 +63,4 @@ public class ProteinDomainPanel extends HtmlInput<ProteinDomainDTO> implements S
 
 		return result.toString();
 	}
-
-	public void setProteinDomainDTO(ProteinDomainDTO proteinDomainDTO)
-	{
-		this.proteinDomainDTO = proteinDomainDTO;
-	}
-
-	public void setBaseUrl(String baseUrl)
-	{
-		this.baseUrl = baseUrl;
-	}
-
 }

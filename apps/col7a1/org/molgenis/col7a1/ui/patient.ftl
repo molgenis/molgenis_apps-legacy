@@ -31,7 +31,7 @@ ${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute},
 </table>
 
 <p>
-[<a href="javascript:back();">Back to results</a>]
+[<a href="javascript:window.history.back();" onclick="javascript:window.history.back();">Back to results</a>]
 </p>
 <p>
 [<a href="#">Back to top</a>]
