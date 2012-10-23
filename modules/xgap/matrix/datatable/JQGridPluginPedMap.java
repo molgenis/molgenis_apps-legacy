@@ -1,19 +1,18 @@
-package org.molgenis.datatable.plugin;
+package matrix.datatable;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.molgenis.datatable.model.PedMapTupleTable;
-import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.JQGridView;
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.view.JQGridView;
+import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;

@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.molgenis.datatable.model.AbstractFilterableTupleTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 import org.testng.annotations.BeforeClass;

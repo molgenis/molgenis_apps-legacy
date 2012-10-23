@@ -2,11 +2,10 @@ package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
 
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.test.MemoryTableFactory;
-import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;

@@ -8,10 +8,14 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+
+import app.DatabaseFactory;
 
 /**
  * Wrap an Entity (that is stored in a database) into a TupleTable
@@ -114,4 +118,28 @@ public class EntityTable extends AbstractFilterableTupleTable {
 			throw new TableException(e);
 		}
 	}
+
+	
+	/**
+	 * very bad: bypasses all security and connection management
+	 */
+	private Database db;
+	 public void setDb(Database db)
+	 {
+	 if (db == null) throw new
+	 NullPointerException("database cannot be null in setDb(db)");
+	 this.db = db;
+	 }
+	 public Database getDb()
+	 {
+	 try
+	 {
+	 db = DatabaseFactory.create();
+	 }
+	 catch (DatabaseException e)
+	 {
+	 throw new RuntimeException(e);
+	 }
+	 return this.db;
+	 }
 }
