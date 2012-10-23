@@ -36,7 +36,7 @@ public class Header extends EasyPluginController<HeaderModel> {
 	@Override
 	public String getCustomHtmlHeaders() {
 		String cssFormat = "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"%s\">\n";
-		String jsFormat = "<script src=\"%s\" type=\"text/javascript\" language=\"javascript\"></script>";
+//		String jsFormat = "<script src=\"%s\" type=\"text/javascript\" language=\"javascript\"></script>";
 		String headers = "";
 
 		// cp res/css/colors.css generated-res/css
