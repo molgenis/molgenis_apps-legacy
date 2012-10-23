@@ -28,14 +28,13 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 	{
 		this.addCopyToHistory(entities, false);
 	}
-	
+
 	private void addCopyToHistoryRemoved(List<E> entities) throws DatabaseException
 	{
 		this.addCopyToHistory(entities, true);
 	}
 
-	private void addCopyToHistory(List<E> entities, boolean markAsRemoved)
-			throws DatabaseException
+	private void addCopyToHistory(List<E> entities, boolean markAsRemoved) throws DatabaseException
 	{
 		try
 		{
@@ -63,12 +62,12 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 		}
 	}
 
-
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		for(Task t: entities) t.setOwner(this.getDatabase().getLogin().getUserId());
-		
+		for (Task t : entities)
+			t.setOwner(this.getDatabase().getLogin().getUserId());
+
 		int count = super.add(entities);
 
 		addCopyToHistory(entities);
@@ -79,11 +78,11 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		for(Task t: entities)
+		for (Task t : entities)
 		{
 			t.setOwner(this.getDatabase().getLogin().getUserId());
 		}
-		
+
 		// here we call the standard 'update'
 		int count = super.update(entities);
 
@@ -95,7 +94,8 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		for(Task t: entities) t.setOwner(this.getDatabase().getLogin().getUserId());
+		for (Task t : entities)
+			t.setOwner(this.getDatabase().getLogin().getUserId());
 
 		// here we call the standard 'remove'
 		int count = super.remove(entities);

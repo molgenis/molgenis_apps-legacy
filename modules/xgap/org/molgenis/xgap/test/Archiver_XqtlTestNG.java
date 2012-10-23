@@ -50,7 +50,7 @@ public class Archiver_XqtlTestNG
 	@BeforeClass
 	public void setup() throws Exception
 	{
-		//cleanup before we start
+		// cleanup before we start
 		XqtlSeleniumTest.deleteDatabase();
 		db = DatabaseFactory.create();
 
@@ -65,8 +65,8 @@ public class Archiver_XqtlTestNG
 			// Good: DatabaseException was thrown
 			// FIXME: only because this is the first test to be run?
 		}
-		
-		//setup database tables
+
+		// setup database tables
 		String report = ResetXgapDb.reset(db, true);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 		StorageHandler sh = new StorageHandler(db);
@@ -77,7 +77,7 @@ public class Archiver_XqtlTestNG
 		sh.validateFileStorage(db);
 		Assert.assertTrue(sh.hasValidFileStorage(db));
 	}
-	
+
 	@AfterClass(alwaysRun = true)
 	public void cleanupAfterClass() throws InterruptedException, Exception
 	{

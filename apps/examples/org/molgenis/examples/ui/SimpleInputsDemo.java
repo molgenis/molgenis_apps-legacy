@@ -58,7 +58,7 @@ public class SimpleInputsDemo extends EasyPluginController
 		view.add(new CustomHtml(themeSwitch).setLabel("changeJqueryTheme"));
 
 		view.add(new BoolInput("BoolInput").setLabel("BoolInput").setValue(false).setNillable(true));
-		
+
 		view.add(new StringInput("StringInput"));
 
 		view.add(new StringInput("RequiredInput").setNillable(false));

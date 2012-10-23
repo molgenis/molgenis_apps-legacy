@@ -12,7 +12,6 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 
-
 public class Helper
 {
 	public static HashMap<String, String> getExampleCSVs(List<Entity> entities) throws MolgenisModelException
@@ -25,12 +24,13 @@ public class Helper
 			for (Field f : entity.getAllFields())
 			{
 				ArrayList<String> col = new ArrayList<String>();
-//				System.out.println("NAME " + f.getName());
-//				System.out.println("expr1 " + !f.isAuto());
-//				System.out.println("expr2 " + !(f.getType().equals("xref") && f.getXrefLabelNames().get(0).equals("name") && f
-//						.getXrefEntityName().equals("Investigation")));
-//				System.out.println("expr3 " + !f.isNillable());
-				
+				// System.out.println("NAME " + f.getName());
+				// System.out.println("expr1 " + !f.isAuto());
+				// System.out.println("expr2 " + !(f.getType().equals("xref") &&
+				// f.getXrefLabelNames().get(0).equals("name") && f
+				// .getXrefEntityName().equals("Investigation")));
+				// System.out.println("expr3 " + !f.isNillable());
+
 				if (!f.isAuto()
 						&& !(f.getType().equals("xref") && f.getXrefLabelNames().get(0).equals("name") && f
 								.getXrefEntityName().equals("Investigation")) && !f.isNillable())
@@ -66,22 +66,25 @@ public class Helper
 						col.add("TODO");
 						col.add("TODO");
 					}
-					//System.out.println("ADDING COL: " + col.toString());
-					if(col.size() > maxColSize){
+					// System.out.println("ADDING COL: " + col.toString());
+					if (col.size() > maxColSize)
+					{
 						maxColSize = col.size();
 					}
 					columns.add(col);
 				}
 			}
-			//'transpose' and concat
+			// 'transpose' and concat
 			String exampleCsv = "";
 			for (int i = 0; i < maxColSize; i++)
 			{
 				for (int col = 0; col < columns.size(); col++)
 				{
-					if(i < columns.get(col).size()){
+					if (i < columns.get(col).size())
+					{
 						exampleCsv += columns.get(col).get(i);
-						if(col < (columns.size()-1)){
+						if (col < (columns.size() - 1))
+						{
 							exampleCsv += "\t";
 						}
 					}
@@ -89,7 +92,7 @@ public class Helper
 				exampleCsv += "\n";
 			}
 			exampleCsvs.put(entity.getName(), exampleCsv);
-			//System.out.println("exampleCsv: " + exampleCsv);
+			// System.out.println("exampleCsv: " + exampleCsv);
 			exampleCsv = "";
 		}
 		return exampleCsvs;

@@ -8,16 +8,23 @@ public class PhenotypeSearchCriteriaVO implements Serializable
 	Integer phenotypeId;
 	String name;
 
-	public Integer getPhenotypeId() {
+	public Integer getPhenotypeId()
+	{
 		return phenotypeId;
 	}
-	public void setPhenotypeId(Integer phenotypeId) {
+
+	public void setPhenotypeId(Integer phenotypeId)
+	{
 		this.phenotypeId = phenotypeId;
 	}
-	public String getName() {
+
+	public String getName()
+	{
 		return name;
 	}
-	public void setName(String name) {
+
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 }

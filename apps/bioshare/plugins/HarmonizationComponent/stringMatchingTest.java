@@ -9,9 +9,11 @@ import uk.ac.ebi.ontocat.OntologyServiceException;
 import uk.ac.ebi.ontocat.OntologyTerm;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
-public class stringMatchingTest {
+public class stringMatchingTest
+{
 
-	public static void main(String[] args) throws OntologyServiceException {
+	public static void main(String[] args) throws OntologyServiceException
+	{
 
 		String query = "parent diabetes";
 		String testString = "father diabetes";
@@ -21,14 +23,13 @@ public class stringMatchingTest {
 		// FileOntologyService os = new FileOntologyService(new URI(
 		// "http://www.ebi.ac.uk/efo"), "EFO");
 		List<Ontology> list = os.getOntologies();
-		for (OntologyTerm ot : os.searchAll("adipocyte",
-				SearchOptions.INCLUDE_PROPERTIES)) {
-			System.out.println("The matched term is from " + ot.getOntology()
-					+ ". the ontology accession is " + ot.getAccession()
-					+ ", the term is " + ot.getLabel());
-			for (OntologyTerm childTerm : os.getChildren(ot)) {
-				System.out.println("------->The subClass is "
-						+ childTerm.getLabel());
+		for (OntologyTerm ot : os.searchAll("adipocyte", SearchOptions.INCLUDE_PROPERTIES))
+		{
+			System.out.println("The matched term is from " + ot.getOntology() + ". the ontology accession is "
+					+ ot.getAccession() + ", the term is " + ot.getLabel());
+			for (OntologyTerm childTerm : os.getChildren(ot))
+			{
+				System.out.println("------->The subClass is " + childTerm.getLabel());
 			}
 			System.out.println();
 		}

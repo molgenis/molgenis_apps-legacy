@@ -34,7 +34,8 @@ import freemarker.template.TemplateException;
 //import nl.vu.psy.rite.operations.implementations.bash.BashOperation;
 //import nl.vu.psy.rite.persistence.mongo.MongoRecipeStore;
 
-public class ComputeCommandLine {
+public class ComputeCommandLine
+{
 	protected ComputeBundle computeBundle;
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
@@ -42,7 +43,8 @@ public class ComputeCommandLine {
 	private List<ComputeTask> tasks = new ArrayList<ComputeTask>();
 	private Worksheet worksheet;
 
-	private void generateJobs() throws Exception {
+	private void generateJobs() throws Exception
+	{
 		computeBundle = new ComputeBundleFromDirectory(this);
 
 		//
@@ -88,12 +90,14 @@ public class ComputeCommandLine {
 
 		// create hash of all workflow elements (needed for dependencies)
 		Map<String, WorkflowElement> wfeMap = new HashMap<String, WorkflowElement>();
-		for (WorkflowElement wfe : computeBundle.getWorkflowElements()) {
+		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
+		{
 			wfeMap.put(wfe.getName(), wfe);
 		}
 
 		// process workflow elements
-		for (WorkflowElement wfe : computeBundle.getWorkflowElements()) {
+		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
+		{
 			print("Starting generation of workflow element: " + wfe.getName());
 
 			// get protocol and find its targets
@@ -105,7 +109,8 @@ public class ComputeCommandLine {
 			// fold and reduce worksheet
 			// String[] targets = parseHeaderElement(FOREACH, scripttemplate);
 			List<String> targets = protocol.getIterateOver_Name();
-			if (0 == targets.size()) {
+			if (0 == targets.size())
+			{
 				targets.add("line_number");
 			}
 
@@ -124,7 +129,8 @@ public class ComputeCommandLine {
 			// System.out.println(">>> " + documentation);
 			// System.out.println(">>> " + filledtemplate.toString());
 
-			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet, this.computeBundle.getComputeParameters(), targets);
+			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet,
+					this.computeBundle.getComputeParameters(), targets);
 			// Worksheet.reduceTargets(targets);
 			// print("folded worksheet: " + this.worksheet.folded.size() + ":" +
 			// this.worksheet.folded.toString());
@@ -133,7 +139,8 @@ public class ComputeCommandLine {
 
 			// each element of reduced worksheet produces one
 			// protocolApplication (i.e. a script)
-			for (Tuple work : folded) {
+			for (Tuple work : folded)
+			{
 				// fill template with work and put in script
 				ComputeTask job = new ComputeTask();
 				job.setName(this.createJobName(wfe, work));
@@ -142,7 +149,8 @@ public class ComputeCommandLine {
 				// if walltime, cores, mem not specified in protocol, then use
 				// value from worksheet
 
-				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol.getWalltime());
+				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol
+						.getWalltime());
 				// job.setWalltime(walltime);
 				work.set("walltime", walltime);
 
@@ -152,8 +160,10 @@ public class ComputeCommandLine {
 				// FIXME: Here I make queue dependent on walltime and memory per
 				// node..., which is specifically for Millipede..
 				// This you can find out on the cluster
-				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
-				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol.getMem().toString());
+				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores"))
+						: protocol.getCores());
+				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
+						.getMem().toString());
 				// int m = Integer.parseInt(mem); // memory in GB?
 				// queue = (4 < m && 2 < cores ? "quads" : "nodes");
 
@@ -175,7 +185,8 @@ public class ComputeCommandLine {
 				work.set("mem", mem + "gb");
 				// done with FIXME
 
-				job.setInterpreter(protocol.getScriptInterpreter() == null ? worksheet.getdefaultvalue("interpreter") : protocol.getScriptInterpreter());
+				job.setInterpreter(protocol.getScriptInterpreter() == null ? worksheet.getdefaultvalue("interpreter")
+						: protocol.getScriptInterpreter());
 
 				// set jobname. If a job starts/completes, we put this in a
 				// logfile
@@ -187,16 +198,20 @@ public class ComputeCommandLine {
 				// job.getName());
 
 				// retrieve previousSteps
-				for (String previousStep : wfe.getPreviousSteps_Name()) {
+				for (String previousStep : wfe.getPreviousSteps_Name())
+				{
 					// get the WorkflowElement of previous step
 					WorkflowElement previousWfe = wfeMap.get(previousStep);
 
-					ComputeProtocol wfeProtocol = findProtocol(previousWfe.getProtocol_Name(), computeBundle.getComputeProtocols());
+					ComputeProtocol wfeProtocol = findProtocol(previousWfe.getProtocol_Name(),
+							computeBundle.getComputeProtocols());
 
 					// see how long the list is
 					int size = 1;
-					for (String target : wfeProtocol.getIterateOver_Name()) {
-						if (work.getObject(target) instanceof List) {
+					for (String target : wfeProtocol.getIterateOver_Name())
+					{
+						if (work.getObject(target) instanceof List)
+						{
 							size = work.getList(target).size();
 							// BUG? What if user puts lists of different length
 							// in worksheet?
@@ -206,12 +221,14 @@ public class ComputeCommandLine {
 
 					// we calculate dependencies
 					Set<String> dependencies = new HashSet<String>();
-					for (int i = 0; i < size; i++) {
+					for (int i = 0; i < size; i++)
+					{
 						String jobName = previousWfe.getName();
-						for (String target : wfeProtocol.getIterateOver_Name()) {
+						for (String target : wfeProtocol.getIterateOver_Name())
+						{
 							if (work.getObject(target) instanceof List)
-								// replace target by number
-								jobName += "_" + work.getList(target).get(i);
+							// replace target by number
+							jobName += "_" + work.getList(target).get(i);
 							// jobName += "_XXX" + i;
 							else
 								jobName += "_" + work.getString(target);
@@ -258,11 +275,13 @@ public class ComputeCommandLine {
 		 */
 	}
 
-	private boolean lessOrEqualThan(int min, int wt_h, int wt_m, int wt_s) {
+	private boolean lessOrEqualThan(int min, int wt_h, int wt_m, int wt_s)
+	{
 		return (wt_h < min || (wt_h == min && wt_m == 0 && wt_s == 0));
 	}
 
-	private String addHeaderFooter(String scripttemplate, String interpreter) {
+	private String addHeaderFooter(String scripttemplate, String interpreter)
+	{
 		// THIS SHOULD BE REPLACED WITH TEMPLATES:
 
 		String ls = System.getProperty("line.separator");
@@ -278,12 +297,15 @@ public class ComputeCommandLine {
 		return (scripttemplate);
 	}
 
-	private String stepnr(String wfeName) {
+	private String stepnr(String wfeName)
+	{
 		// retrieve step number of wfeName in total workflow
 
 		List<WorkflowElement> workflow = computeBundle.getWorkflowElements();
-		for (int i = 0; i < workflow.size(); i++) {
-			if (wfeName.equalsIgnoreCase(workflow.get(i).getName())) {
+		for (int i = 0; i < workflow.size(); i++)
+		{
+			if (wfeName.equalsIgnoreCase(workflow.get(i).getName()))
+			{
 				return ("s" + (i < 10 ? "0" : "") + i + "_");
 			}
 		}
@@ -291,7 +313,8 @@ public class ComputeCommandLine {
 		return null;
 	}
 
-	private String createJobName(WorkflowElement wfe, Tuple tuple) {
+	private String createJobName(WorkflowElement wfe, Tuple tuple)
+	{
 		String jobName = wfe.getName();
 		ComputeProtocol wfeProtocol = findProtocol(wfe.getProtocol_Name(), computeBundle.getComputeProtocols());
 
@@ -309,7 +332,9 @@ public class ComputeCommandLine {
 		return stepnr(wfe.getName()) + jobName;
 	}
 
-	public String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException, TemplateException {
+	public String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException,
+			TemplateException
+	{
 		// first create map
 		Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -318,7 +343,8 @@ public class ComputeCommandLine {
 		parameters.put("parameters", work);
 		parameters.put("workflowElements", this.computeBundle.getWorkflowElements());
 
-		for (String field : work.getFields()) {
+		for (String field : work.getFields())
+		{
 			parameters.put(field, work.getObject(field));
 		}
 
@@ -349,10 +375,11 @@ public class ComputeCommandLine {
 		return filledtemplate.toString();
 	}
 
-	private ComputeProtocol findProtocol(String protocol_name, List<ComputeProtocol> protocollist) {
-		for (ComputeProtocol c : protocollist) {
-			if (c.getName().equalsIgnoreCase(protocol_name))
-				return c;
+	private ComputeProtocol findProtocol(String protocol_name, List<ComputeProtocol> protocollist)
+	{
+		for (ComputeProtocol c : protocollist)
+		{
+			if (c.getName().equalsIgnoreCase(protocol_name)) return c;
 		}
 		return null;
 	}
@@ -373,7 +400,8 @@ public class ComputeCommandLine {
 	// return elements;
 	// }
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
 
 		opt.getSet().addOption("parameters", false, Options.Separator.EQUALS);
@@ -399,14 +427,17 @@ public class ComputeCommandLine {
 		// boolean isCorrect = opt.check();
 		boolean isCorrect = opt.check(opt.getSet().getSetName(), false, false);
 
-		if (!isCorrect) {
+		if (!isCorrect)
+		{
 			System.out.println(opt.getCheckErrors());
 
 			// Location of scripts on backend currently not used on cluster
 			// If this changes re-enable:
 			// "-grid|cluster=<LocationOfScriptsOnBackend(Grid or Cluster)>\n" +
-			System.out.println("command line format:\n" + "-worksheet=<InputWorksheet.csv>\n" + "-parameters=<InputParameters.csv>\n" + "-workflow=<InputWorkflow.csv>\n"
-					+ "-protocols=<InputProtocolsDir>\n" + "-templates=<InputTemplatesDir>\n" + "-scripts=<OutputScriptsDir>\n" + "-id=<ScriptGenerationID>\n");
+			System.out.println("command line format:\n" + "-worksheet=<InputWorksheet.csv>\n"
+					+ "-parameters=<InputParameters.csv>\n" + "-workflow=<InputWorkflow.csv>\n"
+					+ "-protocols=<InputProtocolsDir>\n" + "-templates=<InputTemplatesDir>\n"
+					+ "-scripts=<OutputScriptsDir>\n" + "-id=<ScriptGenerationID>\n");
 			System.exit(1);
 		}
 
@@ -451,12 +482,15 @@ public class ComputeCommandLine {
 
 		ccl.workingdir = new File(".");
 
-		try {
+		try
+		{
 			ccl.generateJobs();
 			ccl.copyWorksheetAndWorkflow();
 			ccl.generateScripts();
 			// ccl.generateRite();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -464,9 +498,12 @@ public class ComputeCommandLine {
 		System.exit(0);
 	}
 
-	private void copyWorksheetAndWorkflow() {
-		try {
-			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile, this.parametersfile)) {
+	private void copyWorksheetAndWorkflow()
+	{
+		try
+		{
+			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile, this.parametersfile))
+			{
 				String sourcepath = f.toString();
 				String[] filenamelist = sourcepath.split(File.separator);
 				String filename = filenamelist[filenamelist.length - 1];
@@ -474,17 +511,21 @@ public class ComputeCommandLine {
 				// filename));
 				String destinationpath = new String(this.outputdir + File.separator + filename);
 				destinationpath = destinationpath.replaceAll(File.separator + "+", File.separator);
-				if (!destinationpath.equals(sourcepath)) {
+				if (!destinationpath.equals(sourcepath))
+				{
 					FileUtils.copyFile(f, new File(this.outputdir + File.separator + filename));
 				}
 			}
-		} catch (IOException e1) {
+		}
+		catch (IOException e1)
+		{
 			e1.printStackTrace();
 		}
 
 	}
 
-	private String getworkflowfilename() {
+	private String getworkflowfilename()
+	{
 		String[] workflowfilenamelist = this.workflowfile.toString().split(File.separator);
 		String f = workflowfilenamelist[workflowfilenamelist.length - 1];
 
@@ -522,7 +563,8 @@ public class ComputeCommandLine {
 	/* } */
 
 	/** Convert all compute jobs into scripts + submit.sh */
-	private void generateScripts() {
+	private void generateScripts()
+	{
 		new File(outputdir).mkdirs();
 
 		// extra: custom
@@ -532,7 +574,8 @@ public class ComputeCommandLine {
 
 		String result = new FreemarkerView(this.protocoldir + File.separator + "CustomSubmit.sh.ftl", params).render();
 
-		try {
+		try
+		{
 			FileUtils.write(new File(outputdir + File.separator + "submitCustom.sh"), result);
 
 			// and produce submit.sh
@@ -561,20 +604,24 @@ public class ComputeCommandLine {
 			cmd = "export PBS_O_WORKDIR=${DIR}";
 			submitWriterLocal.println(cmd);
 
-			for (ComputeTask job : this.tasks) {
+			for (ComputeTask job : this.tasks)
+			{
 				// create submit in submit.sh
 				String dependency = "";
-				if (job.getPrevSteps_Name().size() > 0) {
+				if (job.getPrevSteps_Name().size() > 0)
+				{
 					dependency = "-W depend=afterok";
 
-					for (String previous : job.getPrevSteps_Name()) {
+					for (String previous : job.getPrevSteps_Name())
+					{
 						dependency += ":$" + previous;
 					}
 				}
 
 				// do stuff for submit.sh
 				submitWriter.println("#" + job.getName());
-				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " " + job.getName() + ".sh)");
+				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " "
+						+ job.getName() + ".sh)");
 				submitWriter.println("echo $" + job.getName());
 				submitWriter.println("sleep 8");
 
@@ -596,17 +643,22 @@ public class ComputeCommandLine {
 			submitWriter.close();
 			submitWriterLocal.close();
 
-		} catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	private static void print(String string) {
+	private static void print(String string)
+	{
 		System.out.println(">> " + string);
 	}
 }

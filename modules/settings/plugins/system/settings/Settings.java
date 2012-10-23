@@ -22,7 +22,7 @@ public class Settings<E extends Entity> extends PluginModel<E>
 
 	private static final long serialVersionUID = 4037475429590054858L;
 	private Report report;
-	
+
 	private StorageHandler sh;
 
 	public Report getReport()
@@ -79,7 +79,7 @@ public class Settings<E extends Entity> extends PluginModel<E>
 	public void reload(Database db)
 	{
 		sh = new StorageHandler(db);
-		
+
 		try
 		{
 			report = sh.getReport();

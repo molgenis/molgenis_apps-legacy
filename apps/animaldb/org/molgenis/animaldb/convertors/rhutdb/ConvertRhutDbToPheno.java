@@ -53,16 +53,12 @@ public class ConvertRhutDbToPheno
 	private List<ObservedValue> valuesToAddList;
 	private List<Panel> panelsToAddList;
 	private Map<String, String> appMap;
-	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm",
-			Locale.US);
-	private SimpleDateFormat dobFormat = new SimpleDateFormat("d-M-y",
-			Locale.US);
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
+	private SimpleDateFormat dobFormat = new SimpleDateFormat("d-M-y", Locale.US);
 	// private SimpleDateFormat expDbFormat = new
 	// SimpleDateFormat("yyyy-M-d H:mm:ss", Locale.US);
-	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat(
-			"yyyy-MM-dd", Locale.US);
-	private SimpleDateFormat yearOnlyFormat = new SimpleDateFormat("yyyy",
-			Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	private SimpleDateFormat yearOnlyFormat = new SimpleDateFormat("yyyy", Locale.US);
 	private Map<String, String> sourceMap;
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
@@ -108,53 +104,18 @@ public class ConvertRhutDbToPheno
 
 		// Add some measurements that we'll need
 		measurementsToAddList = new ArrayList<Measurement>();
-		measurementsToAddList.add(ct.createMeasurement(invName,
-				"OldRhutDbAnimalId", "String", null, null, false, "string",
-				"To set an animal's ID in Roelof Hut's old DB.", userName));
-		measurementsToAddList
-				.add(ct.createMeasurement(
-						invName,
-						"OldRhutDbLitterId",
-						"String",
-						null,
-						null,
-						false,
-						"string",
-						"To link an animal to a litter with this ID in the old version of Roelof Hut's DB.",
-						userName));
-		measurementsToAddList
-				.add(ct.createMeasurement(
-						invName,
-						"OldRhutDbSampleDate",
-						"Datetime",
-						null,
-						null,
-						false,
-						"datetime",
-						"To set the date that an animal was sampled in the old version of Roelof Hut's DB.",
-						userName));
-		measurementsToAddList
-				.add(ct.createMeasurement(
-						invName,
-						"OldRhutDbSampleNr",
-						"Number",
-						null,
-						null,
-						false,
-						"int",
-						"To set the sample number in the old version of Roelof Hut's DB.",
-						userName));
-		measurementsToAddList
-				.add(ct.createMeasurement(
-						invName,
-						"OldRhutDbExperimentId",
-						"Number",
-						null,
-						null,
-						false,
-						"int",
-						"To set the experiment's ID in the old version of Roelof Hut's DB.",
-						userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbAnimalId", "String", null, null, false,
+				"string", "To set an animal's ID in Roelof Hut's old DB.", userName));
+		measurementsToAddList.add(ct
+				.createMeasurement(invName, "OldRhutDbLitterId", "String", null, null, false, "string",
+						"To link an animal to a litter with this ID in the old version of Roelof Hut's DB.", userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbSampleDate", "Datetime", null, null, false,
+				"datetime", "To set the date that an animal was sampled in the old version of Roelof Hut's DB.",
+				userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbSampleNr", "Number", null, null, false,
+				"int", "To set the sample number in the old version of Roelof Hut's DB.", userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbExperimentId", "Number", null, null, false,
+				"int", "To set the experiment's ID in the old version of Roelof Hut's DB.", userName));
 
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
@@ -193,23 +154,19 @@ public class ConvertRhutDbToPheno
 		createLine("unknown");
 	}
 
-	private void createLine(String lineName) throws DatabaseException,
-			IOException, ParseException
+	private void createLine(String lineName) throws DatabaseException, IOException, ParseException
 	{
 		panelsToAddList.add(ct.createPanel(invName, lineName, userName));
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
 		Date now = new Date();
-		valuesToAddList.add(ct.createObservedValue(invName,
-				appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 				lineName, "Line", null));
 		// Set the source of the line (always 'Kweek chronobiologie')
-		valuesToAddList.add(ct.createObservedValue(invName,
-				appMap.get("SetSource"), now, null, "Source", lineName, null,
-				"Kweek chronobiologie"));
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source", lineName,
+				null, "Kweek chronobiologie"));
 		// Set the species of the line (always 'House mouse')
-		valuesToAddList.add(ct.createObservedValue(invName,
-				appMap.get("SetSpecies"), now, null, "Species", lineName, null,
-				"House mouse"));
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species", lineName,
+				null, "House mouse"));
 		lineNamesList.add(lineName);
 	}
 
@@ -224,10 +181,8 @@ public class ConvertRhutDbToPheno
 		while (entries.hasMoreElements())
 		{
 			ZipEntry entry = (ZipEntry) entries.nextElement();
-			copyInputStream(
-					zipFile.getInputStream(entry),
-					new BufferedOutputStream(new FileOutputStream(path
-							+ entry.getName())));
+			copyInputStream(zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
 		// Run convertor steps
 		populateProtocolApplication();
@@ -252,8 +207,7 @@ public class ConvertRhutDbToPheno
 		logger.debug("Animals successfully added");
 
 		// Make entry in name prefix table with highest animal nr.
-		List<NamePrefix> prefixList = db.query(NamePrefix.class)
-				.eq(NamePrefix.TARGETTYPE, "animal")
+		List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal")
 				.eq(NamePrefix.PREFIX, "mm_").find();
 		if (prefixList.size() == 1)
 		{
@@ -304,11 +258,9 @@ public class ConvertRhutDbToPheno
 		int batchSize = 1000;
 		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += batchSize)
 		{
-			int valueEnd = Math.min(valuesToAddList.size(), valueStart
-					+ batchSize);
+			int valueEnd = Math.min(valuesToAddList.size(), valueStart + batchSize);
 			db.add(valuesToAddList.subList(valueStart, valueEnd));
-			logger.debug("Values " + valueStart + " through " + valueEnd
-					+ " successfully added");
+			logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
 		}
 
 		ct.makeObservationTargetNameMap(userName, true);
@@ -322,24 +274,20 @@ public class ConvertRhutDbToPheno
 		CsvFileReader reader = new CsvFileReader(file);
 		for (Tuple tuple : reader)
 		{
-			String animalName = "mm_"
-					+ ct.prependZeros(Integer.toString(highestNr++), 6);
+			String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividual(invName, animalName,
-					userName);
+			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 			animalsToAddList.add(newAnimal);
 
 			// ID -> OldRhutDbAnimalId
 			String oldAnimalId = tuple.getString("ID");
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetOldRhutDbAnimalId"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbAnimalId"), now, null,
 					"OldRhutDbAnimalId", animalName, oldAnimalId, null));
 			animalMap.put(oldAnimalId, animalName);
 
 			// Species (always Mus musculus)
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSpecies"), now, null, "Species", animalName,
-					null, "House mouse"));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species",
+					animalName, null, "House mouse"));
 
 			// litter nr -> OldRhutDbLitterId + AnimalType (if -1 then
 			// animaltype=GMO, if 0 then animaltype=WT (Gewoon dier))
@@ -355,16 +303,14 @@ public class ConvertRhutDbToPheno
 			}
 			animalNameList.add(animalName);
 			litterMap.put(litterId, animalNameList);
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetOldRhutDbLitterId"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbLitterId"), now, null,
 					"OldRhutDbLitterId", animalName, litterId, null));
 			String animalType = "B. Transgeen dier";
 			if (litterId != null && litterId.equals("0"))
 			{
 				animalType = "A. Gewoon dier";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetAnimalType"), now, null, "AnimalType",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, null, "AnimalType",
 					animalName, animalType, null));
 
 			// Sex -> Sex (0 = female, 1 = male)
@@ -380,8 +326,7 @@ public class ConvertRhutDbToPheno
 				{
 					sexName = "Male";
 				}
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetSex"), now, null, "Sex", animalName,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSex"), now, null, "Sex", animalName,
 						null, sexName));
 			}
 
@@ -399,18 +344,14 @@ public class ConvertRhutDbToPheno
 				{
 					backgroundName = "C57BL/6j";
 				}
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetBackground"), now, null, "Background",
-						animalName, null, backgroundName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), now, null,
+						"Background", animalName, null, backgroundName));
 			}
 
 			// Genotyped as -> Genotype (GeneModification + GeneState)
 			String genotype = tuple.getString("Genotyped as");
 			// if empty, try Genotype column (stored as background)
-			if (genotype == null
-					&& background != null
-					&& (background.contains("Cry") || background
-							.contains("Per")))
+			if (genotype == null && background != null && (background.contains("Cry") || background.contains("Per")))
 			{
 				genotype = background;
 			}
@@ -428,12 +369,10 @@ public class ConvertRhutDbToPheno
 					geneName += " KO";
 					geneState = genotype.substring(index1 + 1, index1 + 4);
 					if (geneState.equals("-/+")) geneState = "+/-";
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype1"), now, null,
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), now, null,
 							"GeneModification", animalName, geneName, null));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype1"), now, null, "GeneState",
-							animalName, geneState, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), now, null,
+							"GeneState", animalName, geneState, null));
 				}
 				int index2 = genotype.indexOf("2");
 				if (index2 != -1)
@@ -442,12 +381,10 @@ public class ConvertRhutDbToPheno
 					geneName += " KO";
 					geneState = genotype.substring(index2 + 1, index2 + 4);
 					if (geneState.equals("-/+")) geneState = "+/-";
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype2"), now, null,
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), now, null,
 							"GeneModification", animalName, geneName, null));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype2"), now, null, "GeneState",
-							animalName, geneState, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), now, null,
+							"GeneState", animalName, geneState, null));
 				}
 			}
 
@@ -469,16 +406,14 @@ public class ConvertRhutDbToPheno
 				remDate = dbFormat.parse(remDateString);
 				removalDateMap.put(animalName, remDate);
 			}
-			activeMap.put(animalName, ct.createObservedValue(invName,
-					appMap.get("SetActive"), startDate, remDate, "Active",
-					animalName, state, null));
+			activeMap.put(animalName, ct.createObservedValue(invName, appMap.get("SetActive"), startDate, remDate,
+					"Active", animalName, state, null));
 
 			// rem cause -> Removal
 			String removal = tuple.getString("rem cause");
 			if (removal != null && remDate != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetRemoval"), remDate, null, "Removal",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemoval"), remDate, null, "Removal",
 						animalName, removal, null));
 			}
 
@@ -492,8 +427,7 @@ public class ConvertRhutDbToPheno
 				if (source.contains("Arjen")) sourceName = defaultSourceName;
 				if (source.contains("arlan")) sourceName = "Harlan";
 				if (source.contains("Jackson")) sourceName = "JacksonCharlesRiver";
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetSource"), now, null, "Source",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 						animalName, null, sourceName));
 				sourceMap.put(animalName, sourceName);
 				if (source.toUpperCase().contains("DOB"))
@@ -508,23 +442,18 @@ public class ConvertRhutDbToPheno
 						{
 							year = "200" + year;
 						}
-						String dobDateString = m.group(1) + "-" + m.group(2)
-								+ "-" + year;
+						String dobDateString = m.group(1) + "-" + m.group(2) + "-" + year;
 						Date dobDate = dobFormat.parse(dobDateString);
 						dobDateString = newDateOnlyFormat.format(dobDate);
-						valuesToAddList
-								.add(ct.createObservedValue(invName,
-										appMap.get("SetDateOfBirth"), remDate,
-										null, "DateOfBirth", animalName,
-										dobDateString, null));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), remDate,
+								null, "DateOfBirth", animalName, dobDateString, null));
 					}
 				}
 			}
 			else
 			{
 				// Default source:
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetSource"), now, null, "Source",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 						animalName, null, defaultSourceName));
 			}
 
@@ -535,8 +464,7 @@ public class ConvertRhutDbToPheno
 				if (earmark.equals("R")) earmark = "1 r";
 				if (earmark.equals("L")) earmark = "1 l";
 				if (earmark.equals("RL")) earmark = "1 r 1 l";
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetEarmark"), now, null, "Earmark",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetEarmark"), now, null, "Earmark",
 						animalName, earmark, null));
 			}
 
@@ -544,8 +472,7 @@ public class ConvertRhutDbToPheno
 			String sampleDate = tuple.getString("sample date");
 			if (sampleDate != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetOldRhutDbSampleDate"), now, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbSampleDate"), now, null,
 						"OldRhutDbSampleDate", animalName, sampleDate, null));
 			}
 
@@ -553,8 +480,7 @@ public class ConvertRhutDbToPheno
 			String sampleNr = tuple.getString("sample nr");
 			if (sampleNr != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetOldRhutDbSampleNr"), now, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbSampleNr"), now, null,
 						"OldRhutDbSampleNr", animalName, sampleNr, null));
 			}
 
@@ -564,8 +490,7 @@ public class ConvertRhutDbToPheno
 			// Cage nr -> SKIP (not filled in)
 
 			// ResponsibleResearcher
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetResponsibleResearcher"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), now, null,
 					"ResponsibleResearcher", animalName, "Roelof Hut", null));
 		}
 	}
@@ -658,8 +583,7 @@ public class ConvertRhutDbToPheno
 					lineName = genFather;
 				}
 			}
-			else if (genFather.equals("C57BL/6j")
-					|| genMother.equals("C57BL/6j"))
+			else if (genFather.equals("C57BL/6j") || genMother.equals("C57BL/6j"))
 			{
 				if (genFather.equals("C57BL/6j"))
 				{
@@ -700,42 +624,30 @@ public class ConvertRhutDbToPheno
 			parentgroupNrMap.put(lineName, parentgroupNr);
 			String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-			panelsToAddList.add(ct.createPanel(invName, parentgroupName,
-					userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
+			panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					parentgroupName, "Parentgroup", null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetActive"), now, null, "Active",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
 					parentgroupName, "Active", null));
 			// Link parents to parentgroup (if known)
 			if (motherName != null)
 			{
-				valuesToAddList
-						.add(ct.createObservedValue(invName,
-								appMap.get("SetParentgroupMother"), now, null,
-								"ParentgroupMother", parentgroupName, null,
-								motherName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), now, null,
+						"ParentgroupMother", parentgroupName, null, motherName));
 			}
 			if (fatherName != null)
 			{
-				valuesToAddList
-						.add(ct.createObservedValue(invName,
-								appMap.get("SetParentgroupFather"), now, null,
-								"ParentgroupFather", parentgroupName, null,
-								fatherName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), now, null,
+						"ParentgroupFather", parentgroupName, null, fatherName));
 			}
 			// Set line of parentgroup
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetLine"), now, null, "Line", parentgroupName,
-					null, lineName));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
+					parentgroupName, null, lineName));
 			// Set source of parentgroup
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSource"), now, null, "Source",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 					parentgroupName, null, defaultSourceName));
 			// Set StartDate
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetStartDate"), now, null, "StartDate",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetStartDate"), now, null, "StartDate",
 					parentgroupName, startDate, null));
 
 			// Make a litter and set birth, wean and genotype dates + sizes
@@ -748,54 +660,39 @@ public class ConvertRhutDbToPheno
 			String litterNrPart = ct.prependZeros("" + litterNr, 6);
 			String litterName = "LT_" + lineName + "_" + litterNrPart;
 			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetDateOfBirth"), now, null, "DateOfBirth",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null, "DateOfBirth",
 					litterName, dob, null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetWeanDate"), now, null, "WeanDate",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
 					litterName, weanDate, null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetGenotypeDate"), now, null, "GenotypeDate",
-					litterName, weanDate, null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSize"), now, null, "Size", litterName,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), now, null,
+					"GenotypeDate", litterName, weanDate, null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSize"), now, null, "Size", litterName,
 					Integer.toString(nrBorn), null));
-			valuesToAddList
-					.add(ct.createObservedValue(invName,
-							appMap.get("SetWeanSize"), now, null, "WeanSize",
-							litterName,
-							Integer.toString(femWeaned + maleWeaned), null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetWeanSizeMale"), now, null, "WeanSizeMale",
-					litterName, Integer.toString(maleWeaned), null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetWeanSizeFemale"), now, null,
-					"WeanSizeFemale", litterName, Integer.toString(femWeaned),
-					null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
+					litterName, Integer.toString(femWeaned + maleWeaned), null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeMale"), now, null,
+					"WeanSizeMale", litterName, Integer.toString(maleWeaned), null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), now, null,
+					"WeanSizeFemale", litterName, Integer.toString(femWeaned), null));
 			// Set Remark
 			if (remark != null && !remark.equals(""))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetRemark"), now, null, "Remark",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
 						litterName, remark, null));
 			}
 			// Set line also on litter
 			if (!lineName.equals("unknown"))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetLine"), now, null, "Line", litterName,
-						null, lineName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
+						litterName, null, lineName));
 			}
 			// Set source also on litter
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSource"), now, null, "Source", litterName,
-					null, defaultSourceName));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
+					litterName, null, defaultSourceName));
 			// Link litter to parentgroup
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetParentgroup"), now, null, "Parentgroup",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), now, null, "Parentgroup",
 					litterName, null, parentgroupName));
 
 			// Find animals that came out of this litter, using 'litter' as
@@ -805,16 +702,13 @@ public class ConvertRhutDbToPheno
 				for (String animalName : litterMap.get(litter))
 				{
 					// Link animal to litter
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetLitter"), now, null, "Litter",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), now, null, "Litter",
 							animalName, null, litterName));
 					// Set parents also on animal, using the Mother and
 					// Father measurements
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetMother"), now, null, "Mother",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), now, null, "Mother",
 							animalName, null, motherName));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetFather"), now, null, "Father",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), now, null, "Father",
 							animalName, null, fatherName));
 					// Set birth date, line also on animal
 					// Get Active value from map; every animal has one
@@ -825,13 +719,11 @@ public class ConvertRhutDbToPheno
 					}
 					activeMap.remove(animalName);
 					valuesToAddList.add(activeValue);
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetDateOfBirth"), now, null,
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
 							"DateOfBirth", animalName, dob, null));
 					if (!lineName.equals("unknown"))
 					{
-						valuesToAddList.add(ct.createObservedValue(invName,
-								appMap.get("SetLine"), now, null, "Line",
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
 								animalName, null, lineName));
 					}
 				}
@@ -880,36 +772,28 @@ public class ConvertRhutDbToPheno
 			{
 				addedDecApps.add(project);
 				panelsToAddList.add(ct.createPanel(invName, project, userName));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
-						project, "DecApplication", null));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetDecProjectSpecs"), now, null, "DecNr",
-						project, decNr, null));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetDecProjectSpecs"), now, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null,
+						"TypeOfGroup", project, "DecApplication", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), now, null,
+						"DecNr", project, decNr, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), now, null,
 						"DecTitle", project, subproject, null));
 			}
 			// Make a DEC subproject
 			panelsToAddList.add(ct.createPanel(invName, subproject, userName));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					subproject, "Experiment", null));
 			// Link to DEC app
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetDecSubprojectSpecs"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), now, null,
 					"DecApplication", subproject, null, project));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetDecSubprojectSpecs"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), now, null,
 					"ExperimentNr", subproject, expNr, null));
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetDecSubprojectSpecs"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), now, null,
 					"ExperimentTitle", subproject, subproject, null));
 			// Exp. -> OldRhutDbExperimentId (on the DEC subproject) +
 			// store in map for later linking of animals to subprojects
 			String oldId = tuple.getString("Exp.");
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetOldRhutDbExperimentId"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbExperimentId"), now, null,
 					"OldRhutDbExperimentId", subproject, oldId, null));
 			decMap.put(oldId, subproject);
 			alternativeDecMap.put(decNr + expNr, subproject);
@@ -931,8 +815,7 @@ public class ConvertRhutDbToPheno
 			{
 				resId = researcherMap.get(res);
 			}
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetDecProjectSpecs"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), now, null,
 					"DecApplicantId", project, resId.toString(), null));
 			// DECStartDate -> StartDate (on both)
 			String startDateString = tuple.getString("DECStartDate");
@@ -944,10 +827,8 @@ public class ConvertRhutDbToPheno
 				// existing value
 				if (projectStartDateMap.containsKey(project))
 				{
-					ObservedValue startDateVal = projectStartDateMap
-							.get(project);
-					Date storedStartDate = newDateOnlyFormat.parse(startDateVal
-							.getValue());
+					ObservedValue startDateVal = projectStartDateMap.get(project);
+					Date storedStartDate = newDateOnlyFormat.parse(startDateVal.getValue());
 					if (startDate.before(storedStartDate))
 					{
 						startDateVal.setValue(startDateString);
@@ -956,14 +837,12 @@ public class ConvertRhutDbToPheno
 				}
 				else
 				{
-					ObservedValue startDateVal = ct.createObservedValue(
-							invName, appMap.get("SetDecProjectSpecs"), now,
+					ObservedValue startDateVal = ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), now,
 							null, "StartDate", project, startDateString, null);
 					projectStartDateMap.put(project, startDateVal);
 				}
 				// Always set on subproject
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetDecSubprojectSpecs"), now, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), now, null,
 						"StartDate", subproject, startDateString, null));
 			}
 			// DECEndDate -> EndDate (on both)
@@ -977,8 +856,7 @@ public class ConvertRhutDbToPheno
 				if (projectEndDateMap.containsKey(project))
 				{
 					ObservedValue endDateVal = projectEndDateMap.get(project);
-					Date storedEndDate = newDateOnlyFormat.parse(endDateVal
-							.getValue());
+					Date storedEndDate = newDateOnlyFormat.parse(endDateVal.getValue());
 					if (endDate.after(storedEndDate))
 					{
 						endDateVal.setValue(endDateString);
@@ -987,14 +865,12 @@ public class ConvertRhutDbToPheno
 				}
 				else
 				{
-					ObservedValue endDateVal = ct.createObservedValue(invName,
-							appMap.get("SetDecProjectSpecs"), now, null,
-							"EndDate", project, endDateString, null);
+					ObservedValue endDateVal = ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), now,
+							null, "EndDate", project, endDateString, null);
 					projectEndDateMap.put(project, endDateVal);
 				}
 				// Always set on subproject
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetDecSubprojectSpecs"), now, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), now, null,
 						"EndDate", subproject, endDateString, null));
 			}
 			// Room . -> skip
@@ -1052,8 +928,7 @@ public class ConvertRhutDbToPheno
 			}
 			// Treatment -> skip
 
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("AnimalInSubproject"), startDate, endDate,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), startDate, endDate,
 					"Experiment", animal, null, subproject));
 			// SourceTypeSubproject
 			String sourceName = sourceMap.get(animal);
@@ -1085,16 +960,11 @@ public class ConvertRhutDbToPheno
 			// Check for reuse in the year of this experiment
 			String startOfExpYear = yearOnlyFormat.format(startDate) + "-01-01";
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.TARGET_NAME,
-					Operator.EQUALS, animal));
-			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-					Operator.EQUALS, "Experiment"));
-			q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.NOT,
-					subproject));
-			q.addRules(new QueryRule(ObservedValue.ENDTIME,
-					Operator.GREATER_EQUAL, startOfExpYear));
-			q.addRules(new QueryRule(ObservedValue.ENDTIME,
-					Operator.LESS_EQUAL, newDateOnlyFormat.format(startDate)));
+			q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animal));
+			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
+			q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.NOT, subproject));
+			q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfExpYear));
+			q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS_EQUAL, newDateOnlyFormat.format(startDate)));
 			if (q.find().size() == 1)
 			{
 				sourceType = "Hergebruik eerste maal in het registratiejaar";
@@ -1103,14 +973,12 @@ public class ConvertRhutDbToPheno
 			{
 				sourceType = "Hergebruik tweede, derde enz. maal in het registratiejaar";
 			}
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("AnimalInSubproject"), endDate, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), endDate, null,
 					"SourceTypeSubproject", animal, sourceType, null));
 
 			if (endDate != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("AnimalFromSubproject"), endDate, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalFromSubproject"), endDate, null,
 						"FromExperiment", animal, null, subproject));
 			}
 		}
@@ -1163,24 +1031,20 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("AnimalFromSubproject");
 	}
 
-	public void makeProtocolApplication(String protocolName)
-			throws ParseException, DatabaseException, IOException
+	public void makeProtocolApplication(String protocolName) throws ParseException, DatabaseException, IOException
 	{
 		makeProtocolApplication(protocolName, protocolName);
 	}
 
-	public void makeProtocolApplication(String protocolName,
-			String protocolLabel) throws ParseException, DatabaseException,
-			IOException
+	public void makeProtocolApplication(String protocolName, String protocolLabel) throws ParseException,
+			DatabaseException, IOException
 	{
-		ProtocolApplication app = ct.createProtocolApplication(invName,
-				protocolName);
+		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
 	}
 
-	public static final void copyInputStream(InputStream in, OutputStream out)
-			throws IOException
+	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
 	{
 		byte[] buffer = new byte[1024];
 		int len;
@@ -1202,8 +1066,7 @@ public class ConvertRhutDbToPheno
 		{
 			return "WT";
 		}
-		if (gene.toLowerCase().contains("per")
-				&& gene.toLowerCase().contains("cry"))
+		if (gene.toLowerCase().contains("per") && gene.toLowerCase().contains("cry"))
 		{
 			return "PerCry";
 		}

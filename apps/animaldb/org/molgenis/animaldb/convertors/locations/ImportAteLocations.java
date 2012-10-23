@@ -29,8 +29,7 @@ public class ImportAteLocations
 
 	public void doImport(String filename) throws Exception
 	{
-		final String investigationName = ct.getOwnUserInvestigationNames(
-				userName).get(0);
+		final String investigationName = ct.getOwnUserInvestigationNames(userName).get(0);
 
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -57,9 +56,8 @@ public class ImportAteLocations
 			newLoc.setName(floor + "." + room);
 			newLoc.setInvestigation_Name(investigationName);
 			db.add(newLoc);
-			db.add(ct.createObservedValueWithProtocolApplication(
-					investigationName, new Date(), null, "SetSublocationOf",
-					"Location", newLoc.getName(), null, buildingName));
+			db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
+					"SetSublocationOf", "Location", newLoc.getName(), null, buildingName));
 		}
 	}
 

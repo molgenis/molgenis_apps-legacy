@@ -58,7 +58,7 @@ public class InvestigationPager extends PluginModel<Investigation>
 		//
 		// //get the "__action" parameter from the UI
 		// String action = request.getAction();
-		//		
+		//
 		// if( action.equals("do_add") )
 		// {
 		// Experiment e = new Experiment();
@@ -83,11 +83,10 @@ public class InvestigationPager extends PluginModel<Investigation>
 		{
 			if (pagerModel == null)
 			{
-				pagerModel = new LimitOffsetPager<Investigation>(Investigation.class,
-						Investigation.NAME);
+				pagerModel = new LimitOffsetPager<Investigation>(Investigation.class, Investigation.NAME);
 				pagerView = new PagerHtmlInput("pager", pagerModel);
 			}
-			//refresh count
+			// refresh count
 			int count = pagerModel.getCount(db);
 			System.out.println("count");
 

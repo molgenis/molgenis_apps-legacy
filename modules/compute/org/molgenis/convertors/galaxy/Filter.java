@@ -9,24 +9,25 @@ public class Filter
 {
 	@XmlAttribute
 	String type;
-	
+
 	@XmlAttribute
 	String name;
-	
+
 	@XmlAttribute
 	String value;
-	
+
 	@XmlAttribute
 	String key;
-	
+
 	@XmlAttribute
 	String column;
-	
+
 	@XmlAttribute
-	String ref; //reference to a param
-	
+	String ref; // reference to a param
+
 	public String toString()
 	{
-		return String.format("Filter(type='%s' name='%s' value='%s' column='%s', key='%s', ref='%s')", type, name, value, column,key, ref);
+		return String.format("Filter(type='%s' name='%s' value='%s' column='%s', key='%s', ref='%s')", type, name,
+				value, column, key, ref);
 	}
 }

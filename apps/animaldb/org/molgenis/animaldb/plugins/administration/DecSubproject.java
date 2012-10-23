@@ -1,6 +1,7 @@
 package org.molgenis.animaldb.plugins.administration;
 
-public class DecSubproject extends DecEntity {
+public class DecSubproject extends DecEntity
+{
 	private int decExpListId;
 	private String experimentNr;
 	private String experimentTitle;
@@ -17,108 +18,166 @@ public class DecSubproject extends DecEntity {
 	private String decApplication;
 	private String decSubprojectBudget;
 	private int nrOfAnimals;
-	
+
 	public void setDecExpListId(int decExpListId)
 	{
 		this.decExpListId = decExpListId;
 	}
+
 	public int getDecExpListId()
 	{
 		return decExpListId;
 	}
-	
-	public void setNrOfAnimals(int nrOfAnimals) {
+
+	public void setNrOfAnimals(int nrOfAnimals)
+	{
 		this.nrOfAnimals = nrOfAnimals;
 	}
-	public int getNrOfAnimals() {
+
+	public int getNrOfAnimals()
+	{
 		return nrOfAnimals;
 	}
-	public void setExperimentNr(String experimentNr) {
+
+	public void setExperimentNr(String experimentNr)
+	{
 		this.experimentNr = experimentNr;
 	}
-	public String getExperimentNr() {
+
+	public String getExperimentNr()
+	{
 		return experimentNr;
 	}
-	public void setExperimentTitle(String experimentTitle) {
+
+	public void setExperimentTitle(String experimentTitle)
+	{
 		this.experimentTitle = experimentTitle;
 	}
-	public String getExperimentTitle() {
+
+	public String getExperimentTitle()
+	{
 		return experimentTitle;
 	}
-	public void setDecSubprojectApplicationPDF(
-			String decSubprojectApplicationPDF) {
+
+	public void setDecSubprojectApplicationPDF(String decSubprojectApplicationPDF)
+	{
 		this.decSubprojectApplicationPDF = decSubprojectApplicationPDF;
 	}
-	public String getDecSubprojectApplicationPDF() {
+
+	public String getDecSubprojectApplicationPDF()
+	{
 		return decSubprojectApplicationPDF;
 	}
-	public void setConcern(String concern) {
+
+	public void setConcern(String concern)
+	{
 		this.concern = concern;
 	}
-	public String getConcern() {
+
+	public String getConcern()
+	{
 		return concern;
 	}
-	public void setGoal(String goal) {
+
+	public void setGoal(String goal)
+	{
 		this.goal = goal;
 	}
-	public String getGoal() {
+
+	public String getGoal()
+	{
 		return goal;
 	}
-	public void setSpecialTechn(String specialTechn) {
+
+	public void setSpecialTechn(String specialTechn)
+	{
 		this.specialTechn = specialTechn;
 	}
-	public String getSpecialTechn() {
+
+	public String getSpecialTechn()
+	{
 		return specialTechn;
 	}
-	public void setLawDef(String lawDef) {
+
+	public void setLawDef(String lawDef)
+	{
 		this.lawDef = lawDef;
 	}
-	public String getLawDef() {
+
+	public String getLawDef()
+	{
 		return lawDef;
 	}
-	public void setToxRes(String toxRes) {
+
+	public void setToxRes(String toxRes)
+	{
 		this.toxRes = toxRes;
 	}
-	public String getToxRes() {
+
+	public String getToxRes()
+	{
 		return toxRes;
 	}
-	public void setAnaesthesia(String anaesthesia) {
+
+	public void setAnaesthesia(String anaesthesia)
+	{
 		this.anaesthesia = anaesthesia;
 	}
-	public String getAnaesthesia() {
+
+	public String getAnaesthesia()
+	{
 		return anaesthesia;
 	}
-	public void setPainManagement(String painManagement) {
+
+	public void setPainManagement(String painManagement)
+	{
 		this.painManagement = painManagement;
 	}
-	public String getPainManagement() {
+
+	public String getPainManagement()
+	{
 		return painManagement;
 	}
-	public void setAnimalEndStatus(String animalEndStatus) {
+
+	public void setAnimalEndStatus(String animalEndStatus)
+	{
 		this.animalEndStatus = animalEndStatus;
 	}
-	public String getAnimalEndStatus() {
+
+	public String getAnimalEndStatus()
+	{
 		return animalEndStatus;
 	}
-	public void setRemarks(String remarks) {
+
+	public void setRemarks(String remarks)
+	{
 		this.remarks = remarks;
 	}
-	public String getRemarks() {
-		if (remarks == null) {
+
+	public String getRemarks()
+	{
+		if (remarks == null)
+		{
 			return "";
 		}
 		return remarks;
 	}
-	public void setDecApplication(String decApplication) {
+
+	public void setDecApplication(String decApplication)
+	{
 		this.decApplication = decApplication;
 	}
-	public String getDecApplication() {
+
+	public String getDecApplication()
+	{
 		return decApplication;
 	}
+
 	public String getDecSubprojectBudget()
 	{
 		return decSubprojectBudget;
 	}
+
 	public void setDecSubprojectBudget(String decSubprojectBudget)
 	{
 		this.decSubprojectBudget = decSubprojectBudget;

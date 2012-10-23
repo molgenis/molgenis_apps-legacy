@@ -32,11 +32,11 @@ public class PathoSearchModel extends EasyPluginModel
 	private int selectedChrId;
 	private int selectedFrom;
 	private int selectedTo;
-	
+
 	// results
 	private int count;
 	private List<SequenceVariant> variants;
-	private Map<String,ObservedValue> alleleCounts;
+	private Map<String, ObservedValue> alleleCounts;
 
 	public PathoSearchModel(PathoSearch controller)
 	{
@@ -93,12 +93,12 @@ public class PathoSearchModel extends EasyPluginModel
 		this.count = count;
 	}
 
-	protected Map<String,ObservedValue> getAlleleCounts()
+	protected Map<String, ObservedValue> getAlleleCounts()
 	{
 		return alleleCounts;
 	}
 
-	protected void setAlleleCounts(Map<String,ObservedValue> alleleCounts)
+	protected void setAlleleCounts(Map<String, ObservedValue> alleleCounts)
 	{
 		this.alleleCounts = alleleCounts;
 	}
@@ -112,7 +112,5 @@ public class PathoSearchModel extends EasyPluginModel
 	{
 		this.variants = variants;
 	}
-	
-	
 
 }

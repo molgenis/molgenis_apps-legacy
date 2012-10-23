@@ -24,7 +24,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class SpeciesPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
@@ -34,21 +33,24 @@ public class SpeciesPlugin extends PluginModel<Entity>
 	private Map<Integer, String> latinNameMap;
 	private Map<Integer, String> vwaNameMap;
 	private CommonService ct = CommonService.getInstance();
-	
+
 	public SpeciesPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	public String getCustomHtmlHeaders()
-    {
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
-	
-	public List<ObservationTarget> getSpeciesList() {
+	}
+
+	public List<ObservationTarget> getSpeciesList()
+	{
 		return speciesList;
 	}
-	public void setSpeciesList(List<ObservationTarget> speciesList) {
+
+	public void setSpeciesList(List<ObservationTarget> speciesList)
+	{
 		this.speciesList = speciesList;
 	}
 
@@ -73,25 +75,30 @@ public class SpeciesPlugin extends PluginModel<Entity>
 	{
 		this.action = action;
 	}
-	
-	public String getDutchName(int speciesId) {
+
+	public String getDutchName(int speciesId)
+	{
 		return dutchNameMap.get(speciesId);
 	}
-	
-	public String getLatinName(int speciesId) {
+
+	public String getLatinName(int speciesId)
+	{
 		return latinNameMap.get(speciesId);
 	}
-	
-	public String getVwaName(int speciesId) {
+
+	public String getVwaName(int speciesId)
+	{
 		return vwaNameMap.get(speciesId);
 	}
-	
-	private String getSpeciesName(Database db, int speciesId, String measurementName) throws DatabaseException {
-		
+
+	private String getSpeciesName(Database db, int speciesId, String measurementName) throws DatabaseException
+	{
+
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, measurementName));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, speciesId));
-		if (q.find().size() == 1) {
+		if (q.find().size() == 1)
+		{
 			return q.find().get(0).getValue();
 		}
 		return "";
@@ -101,24 +108,31 @@ public class SpeciesPlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
-		try {
+		try
+		{
 			action = request.getString("__action");
-			
-			if (action.equals("Add")) {
+
+			if (action.equals("Add"))
+			{
 				//
 			}
-			
-			if (action.equals("Import")) {
+
+			if (action.equals("Import"))
+			{
 				//
 			}
-			
-			if (action.equals("addSpecies")) {
+
+			if (action.equals("addSpecies"))
+			{
 				//
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				this.setError(e.getMessage());
 			}
 		}
@@ -127,29 +141,34 @@ public class SpeciesPlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		
+
 		// Populate species list and property maps
-		try {
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			this.speciesList = ct.getAllMarkedPanels("Species", investigationNames);
-			
+
 			dutchNameMap = new HashMap<Integer, String>();
 			latinNameMap = new HashMap<Integer, String>();
 			vwaNameMap = new HashMap<Integer, String>();
-			for (ObservationTarget species : speciesList) {
+			for (ObservationTarget species : speciesList)
+			{
 				dutchNameMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "DutchSpecies"));
 				latinNameMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "LatinSpecies"));
 				vwaNameMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "VWASpecies"));
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading species";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.setError(message);
 			e.printStackTrace();
 		}
 	}
-	
+
 }

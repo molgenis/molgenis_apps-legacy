@@ -476,7 +476,7 @@ public class CalculateDesignScreen extends PluginModel
 			File workingFile = workingDir.getLocalpath();
 
 			FileUtils.deleteDirectory(workingFile);
-			
+
 			workingFile.delete();
 			workingFile.mkdirs();
 

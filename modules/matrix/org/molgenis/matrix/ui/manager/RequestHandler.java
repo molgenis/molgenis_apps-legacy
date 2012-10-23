@@ -4,56 +4,72 @@ import java.io.PrintWriter;
 
 import org.molgenis.util.Tuple;
 
+public class RequestHandler
+{
 
-public class RequestHandler {
-	
-	public static void handle(MatrixManagerModel screenModel, Tuple request, PrintWriter out) throws Exception {
+	public static void handle(MatrixManagerModel screenModel, Tuple request, PrintWriter out) throws Exception
+	{
 		String action = request.getString("__action");
-		if (action.equals("download_visible")) {
+		if (action.equals("download_visible"))
+		{
 			throw new UnsupportedOperationException("Download visible to csv not supported");
-			//screenModel.getBrowser().getModel().getSubMatrix().writeToCsvWriter(out);
-			//FIXME: close 'out'?
+			// screenModel.getBrowser().getModel().getSubMatrix().writeToCsvWriter(out);
+			// FIXME: close 'out'?
 		}
-		else if (action.equals("download_all")) {
+		else if (action.equals("download_all"))
+		{
 			throw new UnsupportedOperationException("Download all to csv not supported");
-			//screenModel.getBrowser().getModel().getInstance().writeToCsvWriter(out);
-			//FIXME: close 'out'?
+			// screenModel.getBrowser().getModel().getInstance().writeToCsvWriter(out);
+			// FIXME: close 'out'?
 		}
-		else if (action.equals("refresh")) {
-			//screenModel.setSelectedData(null);
+		else if (action.equals("refresh"))
+		{
+			// screenModel.setSelectedData(null);
 		}
-		else if (action.equals("changeSubmatrixSize")) {
+		else if (action.equals("changeSubmatrixSize"))
+		{
 			screenModel.getBrowser().update();
 		}
-		else if (action.startsWith("filter")) {
+		else if (action.startsWith("filter"))
+		{
 			screenModel.getBrowser().applyFilters(request);
-			//TODO: Save filters in screenModel !!
+			// TODO: Save filters in screenModel !!
 		}
-		else if (action.equals("moveRight")) {
+		else if (action.equals("moveRight"))
+		{
 			screenModel.getBrowser().moveRight();
 		}
-		else if (action.equals("moveLeft")) {
+		else if (action.equals("moveLeft"))
+		{
 			screenModel.getBrowser().moveLeft();
 		}
-		else if (action.equals("moveDown")) {
+		else if (action.equals("moveDown"))
+		{
 			screenModel.getBrowser().moveDown();
 		}
-		else if (action.equals("moveUp")) {
+		else if (action.equals("moveUp"))
+		{
 			screenModel.getBrowser().moveUp();
 		}
-		else if (action.equals("moveFarRight")) {
+		else if (action.equals("moveFarRight"))
+		{
 			screenModel.getBrowser().moveFarRight();
 		}
-		else if (action.equals("moveFarLeft")) {
+		else if (action.equals("moveFarLeft"))
+		{
 			screenModel.getBrowser().moveFarLeft();
 		}
-		else if (action.equals("moveFarDown")) {
+		else if (action.equals("moveFarDown"))
+		{
 			screenModel.getBrowser().moveFarDown();
 		}
-		else if (action.equals("moveFarUp")) {
+		else if (action.equals("moveFarUp"))
+		{
 			screenModel.getBrowser().moveFarUp();
-		}else{
-			throw new Exception("Action '"+action+"' unknown.");
+		}
+		else
+		{
+			throw new Exception("Action '" + action + "' unknown.");
 		}
 	}
 

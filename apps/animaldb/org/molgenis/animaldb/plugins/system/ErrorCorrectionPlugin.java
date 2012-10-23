@@ -25,22 +25,22 @@ import org.molgenis.util.Tuple;
 public class ErrorCorrectionPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -366762636959036651L;
-	//private CommonService ct = CommonService.getInstance();
+	// private CommonService ct = CommonService.getInstance();
 	private List<ObservedValue> valueList = new ArrayList<ObservedValue>();
 	private List<DeletedObservedValue> deletedValueList = new ArrayList<DeletedObservedValue>();
 	private int offset = 0;
 	private int limit = 10;
 	private int nrOfValues;
-	
+
 	public ErrorCorrectionPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	public String getCustomHtmlHeaders()
-    {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">\n";
-    }
+	{
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">\n";
+	}
 
 	@Override
 	public String getViewName()
@@ -61,28 +61,35 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 		{
 			String action = request.getString("__action");
 			Date now = new Date();
-			
-			if (action.equals("moveUpEnd")) {
+
+			if (action.equals("moveUpEnd"))
+			{
 				offset = 0;
 			}
-			if (action.equals("moveUp")) {
+			if (action.equals("moveUp"))
+			{
 				offset = Math.max(0, offset - limit);
 			}
-			if (action.equals("moveDown")) {
+			if (action.equals("moveDown"))
+			{
 				offset = Math.min(nrOfValues - limit, offset + limit);
 			}
-			if (action.equals("moveDownEnd")) {
+			if (action.equals("moveDownEnd"))
+			{
 				offset = nrOfValues - limit;
 			}
-			
-			if (action.equals("deleteValues")) {
+
+			if (action.equals("deleteValues"))
+			{
 				List<ObservedValue> removalList = new ArrayList<ObservedValue>();
 				List<DeletedObservedValue> addList = new ArrayList<DeletedObservedValue>();
-				for (int i = 0; i < valueList.size(); i++) {
-					if (request.getBool(Integer.toString(i)) != null) {
+				for (int i = 0; i < valueList.size(); i++)
+				{
+					if (request.getBool(Integer.toString(i)) != null)
+					{
 						ObservedValue val = valueList.get(i);
 						removalList.add(val);
-						
+
 						DeletedObservedValue delVal = new DeletedObservedValue();
 						delVal.setEndtime(val.getEndtime());
 						delVal.setFeature_Id(val.getFeature_Id());
@@ -101,15 +108,18 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 				db.remove(removalList);
 				db.add(addList);
 			}
-			
-			if (action.equals("undeleteValues")) {
+
+			if (action.equals("undeleteValues"))
+			{
 				List<DeletedObservedValue> removalList = new ArrayList<DeletedObservedValue>();
 				List<ObservedValue> addList = new ArrayList<ObservedValue>();
-				for (int i = 0; i < deletedValueList.size(); i++) {
-					if (request.getBool(Integer.toString(i)) != null) {
+				for (int i = 0; i < deletedValueList.size(); i++)
+				{
+					if (request.getBool(Integer.toString(i)) != null)
+					{
 						DeletedObservedValue val = deletedValueList.get(i);
 						removalList.add(val);
-						
+
 						ObservedValue addVal = new ObservedValue();
 						addVal.setEndtime(val.getEndtime());
 						addVal.setFeature_Id(val.getFeature_Id());
@@ -126,8 +136,10 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 				db.remove(removalList);
 				db.add(addList);
 			}
-			
-		} catch(Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			this.setError("Error: " + e.getMessage());
 			e.printStackTrace();
 		}
@@ -139,7 +151,8 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 		try
 		{
 			this.nrOfValues = db.query(ObservedValue.class).count();
-			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).limit(limit).offset(offset).find();
+			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).limit(limit).offset(offset)
+					.find();
 			this.deletedValueList = db.query(DeletedObservedValue.class).sortDESC(DeletedObservedValue.TIME).find();
 		}
 		catch (DatabaseException e)
@@ -169,28 +182,34 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 		this.deletedValueList = deletedValueList;
 	}
 
-	public int getOffset() {
+	public int getOffset()
+	{
 		return offset;
 	}
 
-	public void setOffset(int offset) {
+	public void setOffset(int offset)
+	{
 		this.offset = offset;
 	}
 
-	public int getLimit() {
+	public int getLimit()
+	{
 		return limit;
 	}
 
-	public void setLimit(int limit) {
+	public void setLimit(int limit)
+	{
 		this.limit = limit;
 	}
 
-	public int getNrOfValues() {
+	public int getNrOfValues()
+	{
 		return nrOfValues;
 	}
 
-	public void setNrOfValues(int nrOfValues) {
+	public void setNrOfValues(int nrOfValues)
+	{
 		this.nrOfValues = nrOfValues;
 	}
-	
+
 }

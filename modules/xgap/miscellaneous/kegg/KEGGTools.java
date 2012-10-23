@@ -18,36 +18,38 @@ import keggapi.SSDBRelation;
 
 public class KEGGTools
 {
-	
+
 	private static int MAX_RETRIES = 5;
 	private static int CUR_RETRIES = 0;
 
 	/**
-	 * Finds closest orthologous gene. 1) Find KO entry. If this has one gene, use
-	 * this gene and return. 2) If there is no KO entry, search in the SSDB, find
-	 * the closest gene and return. 3) If there are multiple genes in the KO
-	 * entry, save this list and search in SSDB. The closest gene encountered in
-	 * SSDB that is also present in the KO list will be selected. If there are
-	 * none found in SSDB, select the first one in the KO list and return with a
-	 * warning.
+	 * Finds closest orthologous gene. 1) Find KO entry. If this has one gene,
+	 * use this gene and return. 2) If there is no KO entry, search in the SSDB,
+	 * find the closest gene and return. 3) If there are multiple genes in the
+	 * KO entry, save this list and search in SSDB. The closest gene encountered
+	 * in SSDB that is also present in the KO list will be selected. If there
+	 * are none found in SSDB, select the first one in the KO list and return
+	 * with a warning.
 	 * 
 	 * @param sourceEntry
-	 *          KEGG identifier. Format: organism:number. For example:
-	 *          <b>tca:659936</b>.
+	 *            KEGG identifier. Format: organism:number. For example:
+	 *            <b>tca:659936</b>.
 	 * @param targetOrganism
-	 *          KEGG organism code. For example: <b>hsa</b>, <b>sce</b> or
-	 *          <b>cel</b>.
+	 *            KEGG organism code. For example: <b>hsa</b>, <b>sce</b> or
+	 *            <b>cel</b>.
 	 * @return <b>KEGGOrthologue</b> object, containing source and target KEGG
 	 *         identifiers, and an <b>SSDBRelation</b> when SSDB is used.
 	 * @throws RemoteException
 	 * @throws ServiceException
 	 */
-	public static KEGGOrthologue getClosestOrthologue(String sourceEntry, String targetOrganism) throws RemoteException, ServiceException
+	public static KEGGOrthologue getClosestOrthologue(String sourceEntry, String targetOrganism)
+			throws RemoteException, ServiceException
 	{
 		KEGGOrthologue result = new KEGGOrthologue();
 		result.setSourceEntry(sourceEntry);
 
-		// If the function is called by getting an entry code as 'null', save time
+		// If the function is called by getting an entry code as 'null', save
+		// time
 		// by exiting the functions here.
 		if (sourceEntry.split(":")[1].equals("null"))
 		{
@@ -68,7 +70,8 @@ public class KEGGTools
 			// Proceed with SSDB
 			SSDBSearch = true;
 
-		} else if (koRes.length == 1)
+		}
+		else if (koRes.length == 1)
 		{
 			// Ene KO entry found
 			// Get genes from KO
@@ -80,12 +83,14 @@ public class KEGGTools
 				// Proceed with SSDB
 				SSDBSearch = true;
 
-			} else if (koGenes.length == 1)
+			}
+			else if (koGenes.length == 1)
 			{
 				// One gene found, return
 				result.setTargetEntry(koGenes[0].getEntry_id());
 				return result;
-			} else
+			}
+			else
 			{
 				// Multiple genes found. Add them to a list.
 				// Proceed with SSDB
@@ -96,11 +101,13 @@ public class KEGGTools
 					multiKOGenes.add(d.getEntry_id());
 				}
 			}
-		} else
+		}
+		else
 		{
 			// Multiple KO entries found
 			// Try to build the list
-			// If the list contains more than one or zero elements, proceed with SSDB,
+			// If the list contains more than one or zero elements, proceed with
+			// SSDB,
 			// else return the one element.
 
 			for (String s : koRes)
@@ -115,11 +122,13 @@ public class KEGGTools
 			if (multiKOGenes.size() == 0)
 			{
 				SSDBSearch = true;
-			} else if (multiKOGenes.size() == 1)
+			}
+			else if (multiKOGenes.size() == 1)
 			{
 				result.setTargetEntry(multiKOGenes.get(0));
 				return result;
-			} else
+			}
+			else
 			{
 				SSDBSearch = true;
 			}
@@ -152,11 +161,13 @@ public class KEGGTools
 							result.setTargetEntry(res[find].getGenes_id2());
 							result.setSSDBRelation(res[find]);
 							return result;
-						} else
+						}
+						else
 						{
 							// SSDB gene not in list, keep searching
 						}
-					} else
+					}
+					else
 					{
 						result.setTargetEntry(res[find].getGenes_id2());
 						result.setSSDBRelation(res[find]);
@@ -168,26 +179,30 @@ public class KEGGTools
 			// Nothing found, but there are genes in the multiKOGenes list
 			if (multiKOGenes.size() > 0)
 			{
-				System.out.println("WARNING: Entries in KO gene list but not found in SSDB, picking first non-pseudogene from KO list.");
+				System.out
+						.println("WARNING: Entries in KO gene list but not found in SSDB, picking first non-pseudogene from KO list.");
 				result.setTargetEntry(pickNonPseudogene(multiKOGenes, serv));
 				return result;
 			}
 		}
 
-		//System.out.println("WARNING: Last return statement used. Nothing found.");
+		// System.out.println("WARNING: Last return statement used. Nothing found.");
 		return result;
 	}
 
-	private static String pickNonPseudogene(ArrayList<String> geneIdList, KEGGPortType serv) throws RemoteException, ServiceException
+	private static String pickNonPseudogene(ArrayList<String> geneIdList, KEGGPortType serv) throws RemoteException,
+			ServiceException
 	{
 		if (geneIdList.size() == 0)
 		{
 			System.out.println("WARNING: Empty geneIDList, returning NULL.");
 			return null;
-		} else if (geneIdList.size() == 1)
+		}
+		else if (geneIdList.size() == 1)
 		{
 			return geneIdList.get(0);
-		} else
+		}
+		else
 		{
 
 			for (String geneId : geneIdList)
@@ -201,7 +216,7 @@ public class KEGGTools
 					return geneId;
 				}
 			}
-			
+
 			System.out.println("WARNING: Forced to pick a KO gene that is described as PSEUDOGENE.");
 			return geneIdList.get(0);
 		}
@@ -223,15 +238,16 @@ public class KEGGTools
 	/**
 	 * 
 	 * @param sourceEntry
-	 *          KEGG identifier. Format: organism:number. For example:
-	 *          <b>tca:659936</b>.
+	 *            KEGG identifier. Format: organism:number. For example:
+	 *            <b>tca:659936</b>.
 	 * 
-	 * @return <b>KEGGGene</b> object containing most information about this KEGG gene entry in a structured way.
+	 * @return <b>KEGGGene</b> object containing most information about this
+	 *         KEGG gene entry in a structured way.
 	 * @throws RemoteException
 	 * @throws ServiceException
 	 */
 	public static KEGGGene getKeggGene(String organismGeneIdentifier) throws RemoteException, ServiceException
-	{		
+	{
 		KEGGLocator locator = new KEGGLocator();
 		KEGGPortType serv = locator.getKEGGPort();
 		String bget = serv.bget(organismGeneIdentifier);
@@ -259,7 +275,8 @@ public class KEGGTools
 				{
 					recordByAttributes.put(attribute, s);
 				}
-			} else
+			}
+			else
 			{
 				recordByAttributes.put(attribute, recordByAttributes.get(attribute) + s);
 			}
@@ -283,10 +300,12 @@ public class KEGGTools
 			if (key.equals("ENTRY"))
 			{
 				kg.setEntry(targetOrgCode + ":" + recordByAttributes.get(key).split("\n")[0].split(" ")[0]);
-			} else if (key.equals("NAME"))
+			}
+			else if (key.equals("NAME"))
 			{
 				kg.setName(recordByAttributes.get(key));
-			} else if (key.equals("DEFINITION"))
+			}
+			else if (key.equals("DEFINITION"))
 			{
 				String concat = "";
 				for (String line : recordByAttributes.get(key).split("\n"))
@@ -294,7 +313,8 @@ public class KEGGTools
 					concat += line;
 				}
 				kg.setDefinition(concat);
-			} else if (key.equals("DBLINKS"))
+			}
+			else if (key.equals("DBLINKS"))
 			{
 				for (String s : recordByAttributes.get(key).split("\n"))
 				{
@@ -307,7 +327,8 @@ public class KEGGTools
 						kg.setNCBIGeneID(s.replace("NCBI-GeneID: ", ""));
 					}
 				}
-			} else if (key.equals("NTSEQ"))
+			}
+			else if (key.equals("NTSEQ"))
 			{
 				// ignore first line, concat rest
 				String[] split = recordByAttributes.get(key).split("\n");
@@ -318,7 +339,8 @@ public class KEGGTools
 				}
 				kg.setNTSeq(res);
 
-			} else if (key.equals("AASEQ"))
+			}
+			else if (key.equals("AASEQ"))
 			{
 				// ignore first line, concat rest
 				String[] split = recordByAttributes.get(key).split("\n");
@@ -347,17 +369,22 @@ public class KEGGTools
 		Map<String, String> res = new HashMap<String, String>();
 		try
 		{
-			for (String s : serv.get_pathways_by_genes(new String[] { entry }))
+			for (String s : serv.get_pathways_by_genes(new String[]
+			{ entry }))
 			{
 				res.put(s, trim(serv.btit(s)));
 			}
 		}
-		catch(Exception e){
+		catch (Exception e)
+		{
 			CUR_RETRIES++;
-			System.out.println("Caught exception at try "+CUR_RETRIES+"..");
-			if(CUR_RETRIES == MAX_RETRIES+1){
-				System.out.println("Maximum amount of retries ("+MAX_RETRIES+" reached, exiting..");
-			}else{
+			System.out.println("Caught exception at try " + CUR_RETRIES + "..");
+			if (CUR_RETRIES == MAX_RETRIES + 1)
+			{
+				System.out.println("Maximum amount of retries (" + MAX_RETRIES + " reached, exiting..");
+			}
+			else
+			{
 				return getPathways(entry, serv);
 			}
 		}

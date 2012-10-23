@@ -11,7 +11,7 @@ public class XWBLLUpdateDatabaseJPA
 
 	/**
 	 * @param args
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
 	public static void main(String[] args) throws DatabaseException
 	{

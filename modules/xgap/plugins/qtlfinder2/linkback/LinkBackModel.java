@@ -1,6 +1,5 @@
 package plugins.qtlfinder2.linkback;
 
-
 public class LinkBackModel
 {
 
@@ -15,5 +14,5 @@ public class LinkBackModel
 	{
 		this.id = id;
 	}
-	
+
 }

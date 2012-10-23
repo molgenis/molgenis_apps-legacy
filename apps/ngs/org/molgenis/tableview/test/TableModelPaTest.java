@@ -29,8 +29,8 @@ public class TableModelPaTest
 		for (int i = 1; i < 50; i++)
 		{
 			ObservableFeature f = new ObservableFeature();
-			f.setIdentifier(name+"_col" + i);
-			//f.setObservedCharacteristic_Id(1);
+			f.setIdentifier(name + "_col" + i);
+			// f.setObservedCharacteristic_Id(1);
 			features.add(f);
 		}
 		db.add(features);
@@ -55,7 +55,7 @@ public class TableModelPaTest
 			paList.add(pa);
 		}
 		db.add(paList);
-		
+
 		// value
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
 		int count = 0;
@@ -67,7 +67,7 @@ public class TableModelPaTest
 				ObservedValue v = new ObservedValue();
 				v.setFeature_Id(f.getId());
 				v.setProtocolApplication(pa.getId());
-				v.setValue(f.getIdentifier()+"_value_"+count);
+				v.setValue(f.getIdentifier() + "_value_" + count);
 				v.setCharacteristic_Id(1);
 				values.add(v);
 			}

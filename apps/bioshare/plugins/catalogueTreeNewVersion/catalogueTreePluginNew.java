@@ -25,7 +25,8 @@ import org.molgenis.util.Tuple;
 
 //import org.molgenis.util.XlsWriter;
 
-public class catalogueTreePluginNew extends PluginModel<Entity> {
+public class catalogueTreePluginNew extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = -3520012368180455984L;
 
@@ -39,69 +40,76 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	private String investigationName = "Prevend";
 	final private String predictionModel = "Prediction Model";
 
-	public catalogueTreePluginNew(String name, ScreenController<?> parent) {
+	public catalogueTreePluginNew(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
-	public String getCustomHtmlHeaders() {
+	public String getCustomHtmlHeaders()
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">";
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "plugins_catalogueTreeNewVersion_catalogueTreePluginNew";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/catalogueTreeNewVersion/catalogueTreePluginNew.ftl";
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request)
+	{
 
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
-			throws Exception {
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	{
 
-		if (out == null) {
+		if (out == null)
+		{
 
 			this.handleRequest(db, request);
 
-		} else {
+		}
+		else
+		{
 
-			if ("download_json_loadingTree".equals(request.getAction())) {
+			if ("download_json_loadingTree".equals(request.getAction()))
+			{
 
-				if (topProtocols.size() == 0) {
+				if (topProtocols.size() == 0)
+				{
 					topProtocols = getTopProtocols(investigationName, db);
 				}
 
 				int increment = topProtocols.size() / 5;
 
-				int upperLimit = topProtocols.size() < (loadingProcess + 1)
-						* increment ? topProtocols.size()
+				int upperLimit = topProtocols.size() < (loadingProcess + 1) * increment ? topProtocols.size()
 						: (loadingProcess + 1) * increment;
 
-				for (int i = loadingProcess * increment; i < upperLimit; i++) {
+				for (int i = loadingProcess * increment; i < upperLimit; i++)
+				{
 
 					String protocolName = topProtocols.get(i);
 
 					JQueryTreeViewElement childTree = null;
 
-					if (!protocolsAndMeasurementsinTree
-							.containsKey(protocolName)) {
+					if (!protocolsAndMeasurementsinTree.containsKey(protocolName))
+					{
 
 						Protocol protocol = nameToProtocol.get(protocolName);
 						// The tree first time is being created.
-						childTree = new JQueryTreeViewElement(protocolName,
-								Protocol.class.getSimpleName()
-										+ protocol.getId().toString(),
-								protocolsTree);
+						childTree = new JQueryTreeViewElement(protocolName, Protocol.class.getSimpleName()
+								+ protocol.getId().toString(), protocolsTree);
 
-						protocolsAndMeasurementsinTree.put(
-								protocolName.replaceAll(" ", "_"), childTree);
+						protocolsAndMeasurementsinTree.put(protocolName.replaceAll(" ", "_"), childTree);
 
 					}
 					createNodesForChild(childTree, db);
@@ -113,9 +121,12 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				json.put("result", loadingProcess);
 
-				if (loadingProcess == 5) {
+				if (loadingProcess == 5)
+				{
 					json.put("status", true);
-				} else {
+				}
+				else
+				{
 					json.put("status", false);
 				}
 
@@ -127,14 +138,14 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				writer.close();
 
-			} else if (request.getAction().equals("download_json_refreshModel")) {
+			}
+			else if (request.getAction().equals("download_json_refreshModel"))
+			{
 
 				String selectedModel = request.getString("selectedModel");
 
-				Protocol p = db.find(
-						Protocol.class,
-						new QueryRule(Protocol.NAME, Operator.EQUALS,
-								selectedModel)).get(0);
+				Protocol p = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, selectedModel)).get(
+						0);
 
 				JSONObject json = new JSONObject();
 
@@ -148,15 +159,14 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				writer.close();
 
-			} else if (request.getAction().equals(
-					"download_json_showInformation")) {
+			}
+			else if (request.getAction().equals("download_json_showInformation"))
+			{
 
-				System.out.println("showVariableInformation------------"
-						+ request);
+				System.out.println("showVariableInformation------------" + request);
 				String nodeIdentifier = request.getString("variableName");
 
-				JQueryTreeViewElement node = protocolsAndMeasurementsinTree
-						.get(nodeIdentifier);
+				JQueryTreeViewElement node = protocolsAndMeasurementsinTree.get(nodeIdentifier);
 
 				PrintWriter writer = new PrintWriter(out);
 				JSONObject jsonVariableInformation = new JSONObject();
@@ -167,13 +177,17 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				writer.flush();
 				writer.close();
 
-			} else if ("download_json_toggleNode".equals(request.getAction())) {
+			}
+			else if ("download_json_toggleNode".equals(request.getAction()))
+			{
 
 				String nodeIdentifier = request.getString("nodeIdentifier");
 
 				protocolsAndMeasurementsinTree.get(nodeIdentifier).toggleNode();
 
-			} else if ("download_json_clearSearch".equals(request.getAction())) {
+			}
+			else if ("download_json_clearSearch".equals(request.getAction()))
+			{
 
 				String tree = protocolsTree.toHtml();
 
@@ -189,7 +203,9 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				writer.close();
 
-			} else if ("download_json_search".equals(request.getAction())) {
+			}
+			else if ("download_json_search".equals(request.getAction()))
+			{
 
 				String searchToken = request.getString("searchToken");
 
@@ -201,15 +217,14 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				{
 					query = db.query(Measurement.class);
 
-					query.addRules(new QueryRule(
-							Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-							investigationName));
-					query.addRules(new QueryRule(Measurement.NAME,
-							Operator.LIKE, searchToken));
+					query.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
+					query.addRules(new QueryRule(Measurement.NAME, Operator.LIKE, searchToken));
 
-					for (Measurement m : query.find()) {
+					for (Measurement m : query.find())
+					{
 						System.out.println(findNodes.get(m.getName()));
-						if (findNodes.get(m.getName()) != null) {
+						if (findNodes.get(m.getName()) != null)
+						{
 							listOfNodes.addAll(findNodes.get(m.getName()));
 						}
 					}
@@ -218,15 +233,14 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				{
 					query = db.query(Measurement.class);
 
-					query.addRules(new QueryRule(
-							Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-							investigationName));
-					query.addRules(new QueryRule(Measurement.DESCRIPTION,
-							Operator.LIKE, searchToken));
+					query.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
+					query.addRules(new QueryRule(Measurement.DESCRIPTION, Operator.LIKE, searchToken));
 
-					for (Measurement m : query.find()) {
+					for (Measurement m : query.find())
+					{
 						System.out.println(findNodes.get(m.getName()));
-						if (findNodes.get(m.getName()) != null) {
+						if (findNodes.get(m.getName()) != null)
+						{
 							listOfNodes.addAll(findNodes.get(m.getName()));
 						}
 					}
@@ -235,15 +249,15 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 				{
 					Query<Protocol> queryProtocol = db.query(Protocol.class);
 
-					queryProtocol.addRules(new QueryRule(
-							Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+					queryProtocol.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
 							investigationName));
-					queryProtocol.addRules(new QueryRule(Protocol.NAME,
-							Operator.LIKE, searchToken));
+					queryProtocol.addRules(new QueryRule(Protocol.NAME, Operator.LIKE, searchToken));
 
-					for (Protocol p : queryProtocol.find()) {
+					for (Protocol p : queryProtocol.find())
+					{
 						System.out.println(findNodes.get(p.getName()));
-						if (findNodes.get(p.getName()) != null) {
+						if (findNodes.get(p.getName()) != null)
+						{
 							listOfNodes.addAll(findNodes.get(p.getName()));
 						}
 					}
@@ -265,18 +279,20 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 				System.out.println("The searching token is " + searchToken);
 
-			} else if ("download_json_getChildren".equals(request.getAction())) {
+			}
+			else if ("download_json_getChildren".equals(request.getAction()))
+			{
 
 				String nodeIdentifier = request.getString("nodeIdentifier");
 
-				JQueryTreeViewElement node = protocolsAndMeasurementsinTree
-						.get(nodeIdentifier);
+				JQueryTreeViewElement node = protocolsAndMeasurementsinTree.get(nodeIdentifier);
 
 				node.toggleNode();
 
 				String addedNodes = "";
 
-				for (JQueryTreeViewElement child : node.getChildren()) {
+				for (JQueryTreeViewElement child : node.getChildren())
+				{
 
 					addedNodes += child.toHtml(null);
 				}
@@ -299,28 +315,33 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 		return Show.SHOW_MAIN;
 	}
 
-	private String searchForInTree(JQueryTreeViewElement parentNode,
-			List<JQueryTreeViewElement> listOfNodes) {
+	private String searchForInTree(JQueryTreeViewElement parentNode, List<JQueryTreeViewElement> listOfNodes)
+	{
 
 		String returnString = "";
 
 		boolean parentCollapse = parentNode.isCollapsed();
 		parentNode.setCollapsed(false);
 
-		for (JQueryTreeViewElement childNode : parentNode.getChildren()) {
+		for (JQueryTreeViewElement childNode : parentNode.getChildren())
+		{
 
-			if (listOfNodes.contains(childNode)) {
+			if (listOfNodes.contains(childNode))
+			{
 				boolean collapse = childNode.isCollapsed();
 				childNode.setCollapsed(false);
 				returnString += childNode.toHtml();
 				childNode.setCollapsed(collapse);
 
-			} else {
+			}
+			else
+			{
 				returnString += searchForInTree(childNode, listOfNodes);
 			}
 		}
 
-		if (!returnString.equals("")) {
+		if (!returnString.equals(""))
+		{
 			returnString = parentNode.toHtml(returnString);
 		}
 
@@ -329,38 +350,42 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 		return returnString;
 	}
 
-	private void createNodesForChild(JQueryTreeViewElement parentNode,
-			Database db) throws DatabaseException {
+	private void createNodesForChild(JQueryTreeViewElement parentNode, Database db) throws DatabaseException
+	{
 
-		if (nameToProtocol.containsKey(parentNode.getLabel())) {
+		if (nameToProtocol.containsKey(parentNode.getLabel()))
+		{
 
 			Protocol p = nameToProtocol.get(parentNode.getLabel());
 
 			String parentName = p.getName();
 			// Check subProtocols
-			for (String subProtocolName : p.getSubprotocols_Name()) {
+			for (String subProtocolName : p.getSubprotocols_Name())
+			{
 
 				JQueryTreeViewElement childTree = null;
 
 				String uniqueName = parentName + "_" + subProtocolName;
 
-				if (!protocolsAndMeasurementsinTree.containsKey(uniqueName)) {
+				if (!protocolsAndMeasurementsinTree.containsKey(uniqueName))
+				{
 
 					Protocol protocol = nameToProtocol.get(subProtocolName);
 					// The tree first time is being created.
-					childTree = new JQueryTreeViewElement(uniqueName,
-							subProtocolName, Protocol.class.getSimpleName()
-									+ protocol.getId().toString(), parentNode);
+					childTree = new JQueryTreeViewElement(uniqueName, subProtocolName, Protocol.class.getSimpleName()
+							+ protocol.getId().toString(), parentNode);
 
-					protocolsAndMeasurementsinTree.put(
-							uniqueName.replaceAll(" ", "_"), childTree);
+					protocolsAndMeasurementsinTree.put(uniqueName.replaceAll(" ", "_"), childTree);
 				}
 
 				List<JQueryTreeViewElement> treeNodes = null;
-				if (findNodes.containsKey(subProtocolName)) {
+				if (findNodes.containsKey(subProtocolName))
+				{
 					treeNodes = findNodes.get(subProtocolName);
 
-				} else {
+				}
+				else
+				{
 					treeNodes = new ArrayList<JQueryTreeViewElement>();
 				}
 				treeNodes.add(childTree);
@@ -371,15 +396,14 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 			// There are not subprotocols, therefore check features of this
 			// protocol
-			if (p.getFeatures_Name().size() > 0) {
+			if (p.getFeatures_Name().size() > 0)
+			{
 
-				for (Measurement feature : db.find(
-						Measurement.class,
-						new QueryRule(Measurement.NAME, Operator.IN, p
-								.getFeatures_Name()))) {
+				for (Measurement feature : db.find(Measurement.class,
+						new QueryRule(Measurement.NAME, Operator.IN, p.getFeatures_Name())))
+				{
 
-					String labelName = (feature.getLabel() != null ? feature
-							.getLabel() : feature.getName());
+					String labelName = (feature.getLabel() != null ? feature.getLabel() : feature.getName());
 
 					String featureName = feature.getName();
 
@@ -387,29 +411,29 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 					String uniqueName = parentName + "_" + featureName;
 
-					if (!protocolsAndMeasurementsinTree.containsKey(uniqueName)) {
+					if (!protocolsAndMeasurementsinTree.containsKey(uniqueName))
+					{
 
-						childTree = new JQueryTreeViewElement(uniqueName,
-								labelName, Measurement.class.getSimpleName()
-										+ feature.getId().toString(),
-								parentNode);
+						childTree = new JQueryTreeViewElement(uniqueName, labelName, Measurement.class.getSimpleName()
+								+ feature.getId().toString(), parentNode);
 
 						childTree.setIsbottom(true);
 
-						String htmlValue = htmlTableForTreeInformation(db,
-								feature, featureName);
+						String htmlValue = htmlTableForTreeInformation(db, feature, featureName);
 
 						childTree.setHtmlValue(htmlValue);
 
-						protocolsAndMeasurementsinTree.put(
-								uniqueName.replaceAll(" ", "_"), childTree);
+						protocolsAndMeasurementsinTree.put(uniqueName.replaceAll(" ", "_"), childTree);
 
 					}
 					List<JQueryTreeViewElement> treeNodes = null;
-					if (findNodes.containsKey(featureName)) {
+					if (findNodes.containsKey(featureName))
+					{
 						treeNodes = findNodes.get(featureName);
 
-					} else {
+					}
+					else
+					{
 						treeNodes = new ArrayList<JQueryTreeViewElement>();
 					}
 					treeNodes.add(childTree);
@@ -421,7 +445,8 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 
 		loadingProcess = 0;
 		topProtocols.clear();
@@ -430,42 +455,45 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 		nameToProtocol.clear();
 		protocolsAndMeasurementsinTree.clear();
 
-		try {
+		try
+		{
 
 			// Create the first node of the tree
-			protocolsTree = new JQueryTreeViewElement("Study_"
-					+ investigationName, "", null);
+			protocolsTree = new JQueryTreeViewElement("Study_" + investigationName, "", null);
 
 			protocolsTree.setLabel("Study: " + investigationName);
 
-			protocolsAndMeasurementsinTree.put(protocolsTree.getName()
-					.replaceAll(" ", "_"), protocolsTree);
+			protocolsAndMeasurementsinTree.put(protocolsTree.getName().replaceAll(" ", "_"), protocolsTree);
 
 			// Collect the information for prediction models
-			if (db.find(
-					Investigation.class,
-					new QueryRule(Investigation.NAME, Operator.EQUALS,
-							predictionModel)).size() > 0) {
+			if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, predictionModel))
+					.size() > 0)
+			{
 
-				for (Protocol p : db.find(Protocol.class, new QueryRule(
-						Protocol.INVESTIGATION_NAME, Operator.EQUALS,
-						predictionModel))) {
+				for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+						predictionModel)))
+				{
 					listOfProtocols.add(p.getName());
 				}
 
-			} else {
+			}
+			else
+			{
 				Investigation inv = new Investigation();
 				inv.setName(predictionModel);
 				db.add(inv);
 			}
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	public String htmlTableForTreeInformation(Database db,
-			Measurement measurement, String nodeName) throws DatabaseException {
+	public String htmlTableForTreeInformation(Database db, Measurement measurement, String nodeName)
+			throws DatabaseException
+	{
 
 		List<String> categoryNames = measurement.getCategories_Name();
 
@@ -475,42 +503,44 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 
 		String displayName = measurement.getName();
 
-		if (measurement.getLabel() != null
-				&& !measurement.getLabel().equals("")) {
+		if (measurement.getLabel() != null && !measurement.getLabel().equals(""))
+		{
 			displayName = measurement.getLabel();
 		}
 
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
 		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
 				+ nodeName + "_table'>";
-		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\""
-				+ nodeName
-				+ "_itemName\"style=\"cursor:pointer\">"
-				+ displayName + "</td></tr>";
+		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName
+				+ "_itemName\"style=\"cursor:pointer\">" + displayName + "</td></tr>";
 
-		if (categoryNames.size() > 0) {
+		if (categoryNames.size() > 0)
+		{
 
-			List<Category> listOfCategory = db.find(Category.class,
-					new QueryRule(Category.NAME, Operator.IN, categoryNames));
+			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
+					categoryNames));
 
-			htmlValue += "<tr id='"
-					+ nodeName
-					+ "_category'><td  class='box-body-label'>Category:</td><td><table>";
+			htmlValue += "<tr id='" + nodeName + "_category'><td  class='box-body-label'>Category:</td><td><table>";
 
 			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
 
-			for (Category c : listOfCategory) {
+			for (Category c : listOfCategory)
+			{
 
 				String codeString = c.getCode_String();
 
-				if (!codeString.equals("")) {
+				if (!codeString.equals(""))
+				{
 					codeString += " = ";
 				}
-				if (!c.getIsMissing()) {
+				if (!c.getIsMissing())
+				{
 					htmlValue += "<tr><td>";
 					htmlValue += codeString + c.getDescription();
 					htmlValue += "</td></tr>";
-				} else {
+				}
+				else
+				{
 					missingCategory += "<tr><td>";
 					missingCategory += codeString + c.getDescription();
 					missingCategory += "</td></tr>";
@@ -522,37 +552,36 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 			htmlValue += missingCategory + "</table>";
 		}
 
-		htmlValue += "<tr id='"
-				+ nodeName
-				+ "_description'><td class='box-body-label'>Description:</td><td>"
-				+ (measurementDescription == null ? "not provided"
-						: measurementDescription) + "</td></tr>";
+		htmlValue += "<tr id='" + nodeName + "_description'><td class='box-body-label'>Description:</td><td>"
+				+ (measurementDescription == null ? "not provided" : measurementDescription) + "</td></tr>";
 
-		htmlValue += "<tr id='" + nodeName
-				+ "_dataType'><td class='box-body-label'>Data type:</th><td>"
+		htmlValue += "<tr id='" + nodeName + "_dataType'><td class='box-body-label'>Data type:</th><td>"
 				+ measurementDataType + "</td></tr>";
 
-		Query<ObservedValue> queryDetailInformation = db
-				.query(ObservedValue.class);
+		Query<ObservedValue> queryDetailInformation = db.query(ObservedValue.class);
 
-		queryDetailInformation.addRules(new QueryRule(
-				ObservedValue.TARGET_NAME, Operator.EQUALS, measurement
-						.getName()));
+		queryDetailInformation
+				.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
 
-		if (!queryDetailInformation.find().isEmpty()) {
+		if (!queryDetailInformation.find().isEmpty())
+		{
 
-			for (ObservedValue ov : queryDetailInformation.find()) {
+			for (ObservedValue ov : queryDetailInformation.find())
+			{
 
 				String featureName = ov.getFeature_Name();
 				String value = ov.getValue();
 
-				if (featureName.startsWith("SOP")) {
-					htmlValue += "<tr><td class='box-body-label'>"
-							+ featureName + "</td><td><a href=" + value + ">"
+				if (featureName.startsWith("SOP"))
+				{
+					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td><a href=" + value + ">"
 							+ value + "</a></td></tr>";
-				} else {
+				}
+				else
+				{
 
-					if (featureName.startsWith("display name")) {
+					if (featureName.startsWith("display name"))
+					{
 						featureName = "display name";
 					}
 				}
@@ -564,41 +593,50 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 		return htmlValue;
 	}
 
-	public List<String> getTopProtocols(String investigationName, Database db)
-			throws DatabaseException {
+	public List<String> getTopProtocols(String investigationName, Database db) throws DatabaseException
+	{
 
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
 
-		for (Protocol p : db.find(Protocol.class,
-				new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
-						investigationName))) {
+		for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+				investigationName)))
+		{
 
-			if (!p.getName().equalsIgnoreCase("generic")) {
+			if (!p.getName().equalsIgnoreCase("generic"))
+			{
 
 				List<String> subNames = p.getSubprotocols_Name();
 
 				// keep a record of each protocol in a hashmap. Later on we
 				// could reference to the Protocol by name
-				if (!nameToProtocol.containsKey(p.getName())) {
+				if (!nameToProtocol.containsKey(p.getName()))
+				{
 					nameToProtocol.put(p.getName(), p);
 				}
 
-				if (!subNames.isEmpty()) {
+				if (!subNames.isEmpty())
+				{
 
-					if (!topProtocols.contains(p.getName())) {
+					if (!topProtocols.contains(p.getName()))
+					{
 						topProtocols.add(p.getName());
 					}
-					for (String subProtocol : subNames) {
-						if (!middleProtocols.contains(subProtocol)) {
+					for (String subProtocol : subNames)
+					{
+						if (!middleProtocols.contains(subProtocol))
+						{
 							middleProtocols.add(subProtocol);
 						}
 					}
 
-				} else {
+				}
+				else
+				{
 
-					if (!bottomProtocols.contains(p.getName())) {
+					if (!bottomProtocols.contains(p.getName()))
+					{
 						bottomProtocols.add(p.getName());
 					}
 				}
@@ -607,22 +645,28 @@ public class catalogueTreePluginNew extends PluginModel<Entity> {
 			topProtocols.removeAll(middleProtocols);
 		}
 
-		if (topProtocols.size() == 0) {
+		if (topProtocols.size() == 0)
+		{
 			return bottomProtocols;
-		} else {
+		}
+		else
+		{
 			return topProtocols;
 		}
 	}
 
-	public String getTreeView() {
+	public String getTreeView()
+	{
 		return protocolsTree.toHtml(null);
 	}
 
-	public String getUrl() {
+	public String getUrl()
+	{
 		return "molgenis.do?__target=" + this.getName();
 	}
 
-	public List<String> getListOfProtocols() {
+	public List<String> getListOfProtocols()
+	{
 		return listOfProtocols;
 	}
 

@@ -8,83 +8,82 @@ import org.molgenis.util.SshResult;
 
 import java.io.IOException;
 
-
 //thread class for a pipeline; every pipeline runs in the separated thread
 public abstract class PipelineThreadSsh extends PipelineThread
 {
-    protected Ssh ssh = null;
+	protected Ssh ssh = null;
 
-    public PipelineThreadSsh(Pipeline pipeline)
-    {
-        this.pipeline = pipeline;
+	public PipelineThreadSsh(Pipeline pipeline)
+	{
+		this.pipeline = pipeline;
 
-        startMonitor();
-        //to monitor pipeline execution from outside
-        pipeline.setMonitor(monitor);
+		startMonitor();
+		// to monitor pipeline execution from outside
+		pipeline.setMonitor(monitor);
 
-        //set pipeline for demo purposes
-        //monitor.setPipeline(pipeline);
+		// set pipeline for demo purposes
+		// monitor.setPipeline(pipeline);
 
-        monitor.setLogFile(pipeline.getPipelinelogpath());
-        startClusterSsh();
-    }
+		monitor.setLogFile(pipeline.getPipelinelogpath());
+		startClusterSsh();
+	}
 
-    protected abstract void startMonitor();
-    protected abstract void startClusterSsh();
+	protected abstract void startMonitor();
 
-    @Override
-    protected boolean submitScript(Script script)
-    {
-        String output, error;
+	protected abstract void startClusterSsh();
 
-        for(int i = 0; i < script.getNumberFileToSaveRemotely(); i++)
-        {
-            FileToSaveRemotely aFile = script.getFileToSaveRemotely(i);
-            try
-            {
-                System.out.println(">>> uploding dependancies: " + script.getRemoteDir() + aFile.getRemoteName() );
-                ssh.uploadStringToFile(new String(aFile.getFileData()), aFile.getRemoteName(), script.getRemoteDir());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+	@Override
+	protected boolean submitScript(Script script)
+	{
+		String output, error;
 
-        try
-        {
-            System.out.println(">>> uploading script: " + script.getRemoteDir() + script.getRemotename());
-            ssh.uploadStringToFile(new String(script.getScriptData()), script.getRemotename(), script.getRemoteDir());
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+		for (int i = 0; i < script.getNumberFileToSaveRemotely(); i++)
+		{
+			FileToSaveRemotely aFile = script.getFileToSaveRemotely(i);
+			try
+			{
+				System.out.println(">>> uploding dependancies: " + script.getRemoteDir() + aFile.getRemoteName());
+				ssh.uploadStringToFile(new String(aFile.getFileData()), aFile.getRemoteName(), script.getRemoteDir());
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 
-        String command = script.getSubmitCommand();
+		try
+		{
+			System.out.println(">>> uploading script: " + script.getRemoteDir() + script.getRemotename());
+			ssh.uploadStringToFile(new String(script.getScriptData()), script.getRemotename(), script.getRemoteDir());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
-        SshResult result = null;
-        try
-        {
-            result = ssh.executeCommand(command);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+		String command = script.getSubmitCommand();
 
-        output = result.getStdOut();
-        error = result.getStdErr();
+		SshResult result = null;
+		try
+		{
+			result = ssh.executeCommand(command);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
-        boolean isError = isSubmissionError(output, error);
+		output = result.getStdOut();
+		error = result.getStdErr();
 
-        if(isError)
-            System.out.println("Error: " + error);
-        else
-            System.out.println(">>> submission successful: " + script.getID());
+		boolean isError = isSubmissionError(output, error);
 
-        return isError;
-    }
+		if (isError) System.out.println("Error: " + error);
+		else
+			System.out.println(">>> submission successful: " + script.getID());
 
-    protected abstract boolean isSubmissionError(String output, String error);
+		return isError;
+	}
+
+	protected abstract boolean isSubmissionError(String output, String error);
 }

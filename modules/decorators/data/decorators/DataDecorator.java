@@ -21,10 +21,10 @@ import org.molgenis.framework.db.MapperDecorator;
 
 public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecorator<E>
 {
-	
+
 	protected boolean strict = false;
-	
-	//new kind of constructor to work with latest DB changes
+
+	// new kind of constructor to work with latest DB changes
 	public DataDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
@@ -33,20 +33,23 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecor
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		//System.out.println("** DataDecorator - ADD");
+		// System.out.println("** DataDecorator - ADD");
 		// default check
-		if(strict){
+		if (strict)
+		{
 			System.out.println("** DataDecorator - strict");
 			NameConvention.validateEntityNamesStrict(entities);
-		}else{
+		}
+		else
+		{
 			System.out.println("** DataDecorator - loose");
 			NameConvention.validateEntityNames(entities);
 		}
-		
-		for(Data e : entities)
+
+		for (Data e : entities)
 		{
 			System.out.println(e.toString());
-			if(e.getPerformer_Id().size() == 0 && this.getDatabase().getLogin() instanceof DatabaseLogin)
+			if (e.getPerformer_Id().size() == 0 && this.getDatabase().getLogin() instanceof DatabaseLogin)
 			{
 				e.setPerformer_Id(this.getDatabase().getLogin().getUserId());
 			}
@@ -55,7 +58,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecor
 		int count = super.add(entities);
 		return count;
 	}
-	
+
 	/**
 	 * Update the MolgenisFile with the name of the Data object so filenames
 	 * stay the same as the matrix names.
@@ -63,12 +66,15 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecor
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		//System.out.println("** DataDecorator - UPDATE");
+		// System.out.println("** DataDecorator - UPDATE");
 		// default check
-		if(strict){
+		if (strict)
+		{
 			System.out.println("** DataDecorator - strict");
 			NameConvention.validateEntityNamesStrict(entities);
-		}else{
+		}
+		else
+		{
 			System.out.println("** DataDecorator - loose");
 			NameConvention.validateEntityNames(entities);
 		}
@@ -81,10 +87,13 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecor
 		for (Data dm : entities)
 		{
 			MolgenisFile mf = null;
-			try{
+			try
+			{
 				mf = dmh.findMolgenisFile(dm, this.getDatabase());
-			}catch(NullPointerException npe){
-				//backend not a file
+			}
+			catch (NullPointerException npe)
+			{
+				// backend not a file
 			}
 			if (mf != null)
 			{
@@ -113,26 +122,31 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecor
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		// System.out.println("** DataDecorator - REMOVE");
-		if(entities.size() > 1){
+		if (entities.size() > 1)
+		{
 			throw new DatabaseException("You can only remove one 'Data' at a time");
 		}
-		
-		//try to find a MolgenisFile for this Data
+
+		// try to find a MolgenisFile for this Data
 		Data dm = entities.get(0);
 		DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase());
 		MolgenisFile mf = null;
-		try{
+		try
+		{
 			mf = dmh.findMolgenisFile(dm, this.getDatabase());
-		}catch(NullPointerException npe){
-			//backend not a file
 		}
-		
-		//if there is one, throw error and do not remove Data
+		catch (NullPointerException npe)
+		{
+			// backend not a file
+		}
+
+		// if there is one, throw error and do not remove Data
 		if (mf != null)
 		{
-			throw new DatabaseException("This 'Data' still has a file source associated with it. Remove this file first.");
+			throw new DatabaseException(
+					"This 'Data' still has a file source associated with it. Remove this file first.");
 		}
-		
+
 		int count = super.remove(entities);
 		return count;
 	}

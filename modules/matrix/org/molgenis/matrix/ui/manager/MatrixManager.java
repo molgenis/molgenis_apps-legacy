@@ -22,10 +22,11 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Tuple;
 
 /**
- * MatrixManager deprecated. Use org.molgenis.matrix.component.MatrixRenderer screen component instead.
+ * MatrixManager deprecated. Use org.molgenis.matrix.component.MatrixRenderer
+ * screen component instead.
  * 
  * @author jvelde, erikroos
- *
+ * 
  */
 @Deprecated
 public class MatrixManager extends PluginModel
@@ -42,14 +43,15 @@ public class MatrixManager extends PluginModel
 	{
 		super(name, parent);
 	}
-	
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders()
-//	{
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//
-//	}
+
+	// moved overlib to molgenis core
+	// @Override
+	// public String getCustomHtmlHeaders()
+	// {
+	// return
+	// "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+	//
+	// }
 
 	@Override
 	public String getViewName()
@@ -75,12 +77,14 @@ public class MatrixManager extends PluginModel
 				if (this.model.isUploadMode())
 				{
 					// if(request.getString("inputTextArea") != null){
-					//DON'T DO THIS: BAD FOR LARGE UPLOADS -> this.getModel().setUploadTextAreaContent(request.getString("inputTextArea"));
+					// DON'T DO THIS: BAD FOR LARGE UPLOADS ->
+					// this.getModel().setUploadTextAreaContent(request.getString("inputTextArea"));
 					// }
-					//Importer.performImport(request, this.model.getSelectedData(), db);
+					// Importer.performImport(request,
+					// this.model.getSelectedData(), db);
 					// set to null to force backend check/creation of browser
 					// instance
-					//this.model.setSelectedData(null);
+					// this.model.setSelectedData(null);
 				}
 				else
 				{
@@ -115,19 +119,21 @@ public class MatrixManager extends PluginModel
 	private void createOverLibText(Database db) throws Exception
 	{
 		// System.out.println("*** createOverLibText");
-		
+
 		List<String> rowNames = new ArrayList<String>();
 		List<ObservationTarget> tmpTargetList = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
-		for (ObservationTarget tmpTarget : tmpTargetList) {
+		for (ObservationTarget tmpTarget : tmpTargetList)
+		{
 			rowNames.add(tmpTarget.getName());
 		}
-		
+
 		List<String> colNames = new ArrayList<String>();
 		List<ObservableFeature> tmpFeatureList = this.model.getBrowser().getModel().getSubMatrix().getColNames();
-		for (ObservableFeature tmpFeature : tmpFeatureList) {
+		for (ObservableFeature tmpFeature : tmpFeatureList)
+		{
 			colNames.add(tmpFeature.getName());
 		}
-		
+
 		this.model.setOverlibText(OverlibText.getOverlibText(db, rowNames, colNames));
 	}
 
@@ -147,8 +153,9 @@ public class MatrixManager extends PluginModel
 
 		// TODO: create refresh button
 		// TODO: review this 'core' logic carefully :)
-		
-		if (this.model.getBrowser() == null) {
+
+		if (this.model.getBrowser() == null)
+		{
 			try
 			{
 				logger.info("*** creating browser instance");
@@ -163,15 +170,16 @@ public class MatrixManager extends PluginModel
 				this.model.setBrowser(null);
 			}
 		}
-		
+
 		// Always create headers, so they remain up-to-date after paging etc.
 		createHeaders();
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request)
+	{
 		handleRequest(db, request, null);
-		
+
 	}
 
 }

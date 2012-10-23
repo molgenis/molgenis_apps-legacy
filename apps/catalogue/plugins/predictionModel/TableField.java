@@ -12,70 +12,70 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class TableField {
+public class TableField
+{
 
-	//Prediction prediction = null;
-	
+	// Prediction prediction = null;
+
 	public static boolean COLVALUE = true;
-	
+
 	public static boolean COLHEADER = false;
-	
-	//e.g. 'Protocol'
+
+	// e.g. 'Protocol'
 	String classType = "";
-	
-	//e.g. 'name'
+
+	// e.g. 'name'
 	String fieldName = "";
-	
+
 	int columnIndex;
-	
+
 	int[] dependentColumnIndex;
-	
+
 	Boolean vertical;
-	
-	//TableField Object = null;
-	
+
+	// TableField Object = null;
+
 	private String Relation = "";
-	
+
 	private HashMap<String, Object> nameToClass;
 
 	Protocol protocol = null;
-	
+
 	ObservedValue observedValue = null;
-	
+
 	Measurement measurement = null;
-	
+
 	Panel panel = null;
-	
+
 	Category category = null;
 
 	private TableField Target = null;
 
 	private TableField Feature = null;
-	
+
 	private Tuple defaults = new SimpleTuple();
 
 	private ProtocolApplication protocolApplication = null;
 
 	private int observationTarget = -1;
-	
+
 	private InvestigationElement entity = null;
-
-
 
 	private String relationString = null;
 
-	
-	public InvestigationElement getEntity() {
+	public InvestigationElement getEntity()
+	{
 		return entity;
 	}
 
-
-	public void setEntity(InvestigationElement entity) {
+	public void setEntity(InvestigationElement entity)
+	{
 		this.entity = entity;
 	}
 
-
-	public TableField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex) {
+	public TableField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults,
+			int... dependentColumnIndex)
+	{
 		this.fieldName = fieldName;
 		this.classType = ClassType;
 		this.columnIndex = columnIndex;
@@ -83,151 +83,166 @@ public class TableField {
 		this.defaults = defaults;
 		this.dependentColumnIndex = dependentColumnIndex;
 	}
-	
-	
-//	public TableField(String ClassType,int columnIndex, Boolean Vertical) {
-//		this.classType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.vertical = Vertical;
-//	}
-	
-//	public TableField(Panel panel, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.panel = panel;
-////		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//		
-//	}
-//	
-//	public TableField(Measurement measurement, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.measurement = measurement;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;	
-//	}
-//	public TableField(ObservedValue observedValue, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.observedValue = observedValue;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
-//	
-//	public TableField(Protocol protocol, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.protocol  = protocol;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
-//	
-//	public TableField(ProtocolApplication protocolApplication, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.protocolApplication   = protocolApplication;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
-//
-//	public TableField(Category category, String ClassType, int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.category  = category;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
 
+	// public TableField(String ClassType,int columnIndex, Boolean Vertical) {
+	// this.classType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.vertical = Vertical;
+	// }
 
-	public Tuple getDefaults() {
+	// public TableField(Panel panel, String ClassType,int columnIndex, Boolean
+	// Vertical) {
+	// this(ClassType, columnIndex, Vertical);
+	// this.panel = panel;
+	// // this.ClassType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.Vertical = Vertical;
+	//
+	// }
+	//
+	// public TableField(Measurement measurement, String ClassType,int
+	// columnIndex, Boolean Vertical) {
+	// this(ClassType, columnIndex, Vertical);
+	// this.measurement = measurement;
+	// this.ClassType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.Vertical = Vertical;
+	// }
+	// public TableField(ObservedValue observedValue, String ClassType,int
+	// columnIndex, Boolean Vertical) {
+	// this(ClassType, columnIndex, Vertical);
+	// this.observedValue = observedValue;
+	// this.ClassType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.Vertical = Vertical;
+	// }
+	//
+	// public TableField(Protocol protocol, String ClassType,int columnIndex,
+	// Boolean Vertical) {
+	// this(ClassType, columnIndex, Vertical);
+	// this.protocol = protocol;
+	// this.ClassType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.Vertical = Vertical;
+	// }
+	//
+	// public TableField(ProtocolApplication protocolApplication, String
+	// ClassType,int columnIndex, Boolean Vertical) {
+	// this(ClassType, columnIndex, Vertical);
+	// this.protocolApplication = protocolApplication;
+	// this.ClassType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.Vertical = Vertical;
+	// }
+	//
+	// public TableField(Category category, String ClassType, int columnIndex,
+	// Boolean Vertical) {
+	// this(ClassType, columnIndex, Vertical);
+	// this.category = category;
+	// this.ClassType = ClassType;
+	// this.columnIndex = columnIndex;
+	// this.Vertical = Vertical;
+	// }
+
+	public Tuple getDefaults()
+	{
 		return defaults;
 	}
 
-
-	public void setDefaults(Tuple defaults) {
+	public void setDefaults(Tuple defaults)
+	{
 		this.defaults = defaults;
 	}
 
-
-	public int[] getDependentColumnIndex() {
+	public int[] getDependentColumnIndex()
+	{
 		return dependentColumnIndex;
 	}
 
-
-	public void setDependentColumnIndex(int... dependentColumnIndex) {
+	public void setDependentColumnIndex(int... dependentColumnIndex)
+	{
 		this.dependentColumnIndex = dependentColumnIndex;
 	}
 
-
-	public void initializeHashMap(String ClassType){
+	public void initializeHashMap(String ClassType)
+	{
 	}
-	
-	public String getClassType(){
+
+	public String getClassType()
+	{
 		return classType;
 	}
-	
-	public Boolean getVertical(){
+
+	public Boolean getVertical()
+	{
 		return vertical;
 	}
-	
-	public int getColumnIndex(){
+
+	public int getColumnIndex()
+	{
 		return columnIndex;
 	}
-	
-//	public Prediction getPrediction(){
-//		return prediction;
-//	}
-	
-	public void setRelation(TableField Target, TableField Feature){
-		
+
+	// public Prediction getPrediction(){
+	// return prediction;
+	// }
+
+	public void setRelation(TableField Target, TableField Feature)
+	{
+
 		this.Target = Target;
-		this.Feature  = Feature;
+		this.Feature = Feature;
 	}
-	public TableField getTarget(){
+
+	public TableField getTarget()
+	{
 		return Target;
 	}
-	public TableField getFeature(){
+
+	public TableField getFeature()
+	{
 		return Feature;
 	}
 
-	public String getFieldName() {
+	public String getFieldName()
+	{
 		return fieldName;
 	}
 
-
-	public void setFieldName(String fieldName) {
+	public void setFieldName(String fieldName)
+	{
 		this.fieldName = fieldName;
 	}
 
-
-	public String getValueSplitter() {
+	public String getValueSplitter()
+	{
 		return "\\|";
 	}
 
-
-	public void setObservationTarget(int observationTarget) {
+	public void setObservationTarget(int observationTarget)
+	{
 		this.observationTarget = observationTarget;
 	}
-	
-	public int getObservationTarget() {
+
+	public int getObservationTarget()
+	{
 		return observationTarget;
 	}
 
+	public void setRelation(String fieldName)
+	{
 
-	public void setRelation(String fieldName) {
-		
 		this.relationString = fieldName;
-		
+
 	}
 
-
-	public String getRelationString() {
+	public String getRelationString()
+	{
 		return relationString;
 	}
 
-
-	public void setRelationString(String relationString) {
+	public void setRelationString(String relationString)
+	{
 		this.relationString = relationString;
 	}
 }

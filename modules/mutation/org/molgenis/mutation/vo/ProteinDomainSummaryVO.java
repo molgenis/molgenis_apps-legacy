@@ -13,22 +13,33 @@ public class ProteinDomainSummaryVO implements Serializable
 	private List<Exon> exons;
 	private List<Exon> allExons;
 
-	public ProteinDomain getProteinDomain() {
+	public ProteinDomain getProteinDomain()
+	{
 		return proteinDomain;
 	}
-	public void setProteinDomain(ProteinDomain proteinDomain) {
+
+	public void setProteinDomain(ProteinDomain proteinDomain)
+	{
 		this.proteinDomain = proteinDomain;
 	}
-	public List<Exon> getExons() {
+
+	public List<Exon> getExons()
+	{
 		return exons;
 	}
-	public void setExons(List<Exon> exons) {
+
+	public void setExons(List<Exon> exons)
+	{
 		this.exons = exons;
 	}
-	public List<Exon> getAllExons() {
+
+	public List<Exon> getAllExons()
+	{
 		return allExons;
 	}
-	public void setAllExons(List<Exon> allExons) {
+
+	public void setAllExons(List<Exon> allExons)
+	{
 		this.allExons = allExons;
 	}
 }

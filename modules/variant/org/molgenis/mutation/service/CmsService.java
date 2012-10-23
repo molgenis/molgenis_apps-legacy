@@ -14,7 +14,7 @@ public class CmsService
 {
 	private Database db;
 
-	//@Autowired
+	// @Autowired
 	public void setDatabase(Database db)
 	{
 		this.db = db;
@@ -25,7 +25,7 @@ public class CmsService
 		try
 		{
 			List<Header> headerList = this.db.query(Header.class).find();
-			
+
 			if (headerList.size() != 1)
 			{
 				throw new CmsServiceException("Not exactly one header found");
@@ -52,12 +52,12 @@ public class CmsService
 			throw new CmsServiceException(e.getMessage());
 		}
 	}
+
 	public String findContentByName(String name) throws DatabaseException
 	{
 		List<Paragraph> paragraphList = this.db.query(Paragraph.class).equals(Paragraph.NAME, name).find();
-		
-		if (paragraphList.size() == 1)
-			return paragraphList.get(0).getContent();
+
+		if (paragraphList.size() == 1) return paragraphList.get(0).getContent();
 		else
 			return "Add your content here";
 	}

@@ -9,9 +9,10 @@ package org.molgenis.chd7.ui;
 
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.mutation.ui.search.SearchPlugin;
+
 /**
- * Genome browser for CHD7.
- * TODO replace patientpager and mutationpager with TableView when available.
+ * Genome browser for CHD7. TODO replace patientpager and mutationpager with
+ * TableView when available.
  */
 public class Search extends SearchPlugin
 {
