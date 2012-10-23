@@ -38,9 +38,11 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.StatisticsService;
+import org.molgenis.mutation.ui.HtmlFormWrapper;
 import org.molgenis.mutation.ui.html.GenePanel;
 import org.molgenis.mutation.ui.html.GenomePanel;
 import org.molgenis.mutation.ui.html.MBrowse;
+import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -66,11 +68,12 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.searchService     = ServiceLocator.instance().getSearchService();
 		this.statisticsService = ServiceLocator.instance().getStatisticsService();
 
-		this.getModel().setPatientPager("/mutation/patientPager.jsp");
-		this.getModel().setMutationPager("/mutation/mutationPager.jsp");
+		this.getModel().setPatientPager("/res/mutation/patientPager.jsp");
+		this.getModel().setMutationPager("/res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 		this.getModel().setMutationViewer("/org/molgenis/mutation/ui/search/mutation.ftl");
-		
+		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
+
 		this.getModel().setAction("init");
 
 		MBrowse mBrowse = new MBrowse();
@@ -745,15 +748,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		else
 			((SelectInput) expertSearchForm.get("type")).setValue("Select");
 
-		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
-		consequenceOptions.add(0, new ValueLabel("", "Select"));
-		for (String consequence : phenoService.findObservedValues("consequence"))
-			consequenceOptions.add(new ValueLabel(consequence, consequence));
-		((SelectInput) expertSearchForm.get("consequence")).setOptions(consequenceOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
-			((SelectInput) expertSearchForm.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
-		else
-			((SelectInput) expertSearchForm.get("consequence")).setValue("Select");
+//		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
+//		consequenceOptions.add(0, new ValueLabel("", "Select"));
+//		for (String consequence : phenoService.findObservedValues("consequence"))
+//			consequenceOptions.add(new ValueLabel(consequence, consequence));
+//		((SelectInput) expertSearchForm.get("consequence")).setOptions(consequenceOptions);
+//		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
+//			((SelectInput) expertSearchForm.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
+//		else
+//			((SelectInput) expertSearchForm.get("consequence")).setValue("Select");
 
 		List<ValueLabel> domainOptions = new ArrayList<ValueLabel>();
 		domainOptions.add(new ValueLabel("", "Select"));
@@ -775,15 +778,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		else
 			((SelectInput) expertSearchForm.get("phenotype")).setValue("Select");
 
-		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
-		inheritanceOptions.add(0, new ValueLabel("", "Select"));
-		for (String inheritance : phenoService.findObservedValues("Inheritance"))
-			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
-		((SelectInput) expertSearchForm.get("inheritance")).setOptions(inheritanceOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
-			((SelectInput) expertSearchForm.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
-		else
-			((SelectInput) expertSearchForm.get("inheritance")).setValue("Select");
+//		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
+//		inheritanceOptions.add(0, new ValueLabel("", "Select"));
+//		for (String inheritance : phenoService.findObservedValues("Inheritance"))
+//			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
+//		((SelectInput) expertSearchForm.get("inheritance")).setOptions(inheritanceOptions);
+//		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
+//			((SelectInput) expertSearchForm.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
+//		else
+//			((SelectInput) expertSearchForm.get("inheritance")).setValue("Select");
 	}
 	
 	private void populateDisplayOptionsForm()
