@@ -12,15 +12,15 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestPedMapTable
+public class TestPedMapTable_XqtlTestNG
 {
 	TupleTable table;
 
 	@BeforeMethod
 	public void setup() throws Exception
 	{
-		table = new PedMapTupleTable(new File(TestPedMapTable.class.getResource("test.ped").getFile()), new File(
-				TestPedMapTable.class.getResource("test.map").getFile()));
+		table = new PedMapTupleTable(new File(TestPedMapTable_XqtlTestNG.class.getResource("test.ped").getFile()), new File(
+				TestPedMapTable_XqtlTestNG.class.getResource("test.map").getFile()));
 	}
 
 	@Test
