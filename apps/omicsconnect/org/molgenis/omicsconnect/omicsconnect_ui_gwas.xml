@@ -12,7 +12,7 @@
 		<plugin name="OntoCat"
 			type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat" />
 		<plugin label="Upload" name="UploadWizard"
-			type="plugins.genericwizard.GenericWizard" />
+			type="plugins.importwizard.ImportWizard" />
 		<form name="Characteristics" entity="Characteristic" />
 		<form name="Panels" entity="Panel" />
 		<form name="Citations" entity="Citation" />
