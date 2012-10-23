@@ -16,6 +16,7 @@ public class VariantDTO implements Serializable
 	private Integer aaStart;
 	private Integer exonId;
 	private String exonName;
+	private String geneName;
 	private String consequence;
 	private String inheritance;
 	private String observedValue;
@@ -73,6 +74,14 @@ public class VariantDTO implements Serializable
 	}
 	public void setExonName(String exonName) {
 		this.exonName = exonName;
+	}
+	public String getGeneName()
+	{
+		return geneName;
+	}
+	public void setGeneName(String geneName)
+	{
+		this.geneName = geneName;
 	}
 	public String getConsequence() {
 		return consequence;

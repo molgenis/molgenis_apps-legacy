@@ -28,6 +28,7 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 	private Integer exonId;
 	private Integer exonNumber;
 	private String exonName;
+	private String geneName;
 	private List<String> proteinDomainNameList;
 	private String type;
 	private String consequence;
@@ -73,7 +74,7 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 		this.pathogenicity = "";
 		this.patientSummaryDTOList = new ArrayList<PatientSummaryDTO>();
 		this.phenotypeNameList = new ArrayList<String>();
-		this.proteinDomainNameList = new ArrayList<String>();
+//		this.proteinDomainNameList = new ArrayList<String>();
 		this.publicationDTOList = new ArrayList<PublicationDTO>();
 		this.pubmedURL = "";
 		this.reportedSNP = false;
@@ -127,6 +128,14 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 	}
 	public void setExonName(String exonName) {
 		this.exonName = exonName;
+	}
+	public String getGeneName()
+	{
+		return geneName;
+	}
+	public void setGeneName(String geneName)
+	{
+		this.geneName = geneName;
 	}
 	public List<String> getProteinDomainNameList() {
 		return proteinDomainNameList;
