@@ -35,7 +35,6 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class ManageParentgroups extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
@@ -48,7 +47,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<ObservationTarget> lineList;
 	private String line = null;
 	private String remarks = null;
-	//private String pgStatus = null;
+	// private String pgStatus = null;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
 	MatrixViewer pgMatrixViewer = null;
@@ -60,88 +59,115 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private String motherMatrixViewerString;
 	private String fatherMatrixViewerString;
 	private String pgMatrixViewerString;
-	
+
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
-	public String getCustomHtmlHeaders() {
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
-				"<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n" +
-				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+
+	public String getCustomHtmlHeaders()
+	{
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+				+ "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
+				+ "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 
-	public List<String> getSelectedMotherNameList() {
+	public List<String> getSelectedMotherNameList()
+	{
 		return selectedMotherNameList;
 	}
-	public void setSelectedMotherList(List<String> selectedMotherNameList) {
+
+	public void setSelectedMotherList(List<String> selectedMotherNameList)
+	{
 		this.selectedMotherNameList = selectedMotherNameList;
 	}
 
-	public List<String> getSelectedFatherNameList() {
+	public List<String> getSelectedFatherNameList()
+	{
 		return selectedFatherNameList;
 	}
-	public void setSelectedFatherList(List<String> selectedFatherNameList) {
+
+	public void setSelectedFatherList(List<String> selectedFatherNameList)
+	{
 		this.selectedFatherNameList = selectedFatherNameList;
 	}
-	
-	public String getAnimalName(Integer id) {
-		try {
+
+	public String getAnimalName(Integer id)
+	{
+		try
+		{
 			return ct.getObservationTargetLabel(id);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return id.toString();
 		}
 	}
-	
-	public String getStartdate() {
+
+	public String getStartdate()
+	{
 		return startdate;
 	}
-	public void setStartdate(String startdate) {
+
+	public void setStartdate(String startdate)
+	{
 		this.startdate = startdate;
 	}
 
-	public void setLine(String line) {
+	public void setLine(String line)
+	{
 		this.line = line;
 	}
-	
-	public String getLine() {
+
+	public String getLine()
+	{
 		return line;
 	}
 
-	public List<ObservationTarget> getLineList() {
+	public List<ObservationTarget> getLineList()
+	{
 		return lineList;
 	}
-	public void setLineList(List<ObservationTarget> lineList) {
+
+	public void setLineList(List<ObservationTarget> lineList)
+	{
 		this.lineList = lineList;
 	}
 
-	public String getRemarks() {
+	public String getRemarks()
+	{
 		return remarks;
 	}
-	public void setRemarks(String remarks) {
+
+	public void setRemarks(String remarks)
+	{
 		this.remarks = remarks;
 	}
-	
-	public String getAction() {
+
+	public String getAction()
+	{
 		return action;
 	}
-	public void setAction(String action) {
+
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
-	
+
 	public String getMotherMatrixViewer()
 	{
 		return motherMatrixViewerString;
 	}
-	
-	public void loadMotherMatrixViewer(Database db) {
-		try {
+
+	public void loadMotherMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
@@ -152,47 +178,55 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("Species");
 			// Mother matrix viewer
 			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 					Operator.IN, investigationNames));
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
-					ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != null) {
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
-				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+					ct.getMeasurementId("Sex"), ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != null)
+			{
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
+				// Setting filter on the RELATION field with value = line would
+				// be more efficient,
+				// but gives a very un-userfriendly toString value when shown in
+				// the MatrixViewer UI
 				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
-						speciesName));
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
 			}
-			
-			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+
+			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(
+					Individual.class, Measurement.class);
 			SPMM.setDatabase(db);
-			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, 
-					true, 2, false, false, motherFilterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
+			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, true, 2, false, false, motherFilterRules,
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+							measurementsToShow));
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading mother matrix viewer";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getFatherMatrixViewer()
 	{
 		return fatherMatrixViewerString;
 	}
-	
-	public void loadFatherMatrixViewer(Database db) {
-		try {
+
+	public void loadFatherMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
@@ -203,46 +237,54 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("Species");
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 					Operator.IN, investigationNames));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
-					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != null) {
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
-				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+					ct.getMeasurementId("Sex"), ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != null)
+			{
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
+				// Setting filter on the RELATION field with value = line would
+				// be more efficient,
+				// but gives a very un-userfriendly toString value when shown in
+				// the MatrixViewer UI
 				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
-						speciesName));
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
 			}
-			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(
+					Individual.class, Measurement.class);
 			SPMF.setDatabase(db);
-			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, 
-					true, 2, false, false, fatherFilterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
+			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, true, 2, false, false, fatherFilterRules,
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+							measurementsToShow));
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading father matrix viewer";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getPgMatrixViewer()
 	{
 		return pgMatrixViewerString;
 	}
-	
-	public void loadPgMatrixViewer(Database db) {
-		try {
+
+	public void loadPgMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("StartDate");
 			measurementsToShow.add("Remark");
@@ -250,17 +292,19 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("ParentgroupMother");
 			measurementsToShow.add("ParentgroupFather");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
-					Operator.IN, investigationNames));
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
-					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
-			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, 
-					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
-					true, 0, false, false, filterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, Operator.IN,
+					investigationNames));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
+			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(Panel.class,
+					Measurement.class), true, 0, false, false, filterRules, new MatrixQueryRule(
+					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading parentgroup matrix viewer";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
@@ -279,48 +323,60 @@ public class ManageParentgroups extends PluginModel<Entity>
 	{
 		return "org/molgenis/animaldb/plugins/breeding/ManageParentgroups.ftl";
 	}
-	
-	private void AddParents(Database db, List<String> parentNameList, String protocolName, String featureName, 
-			String parentgroupName, Date eventDate) 
-			throws DatabaseException, ParseException, IOException {
-		
+
+	private void AddParents(Database db, List<String> parentNameList, String protocolName, String featureName,
+			String parentgroupName, Date eventDate) throws DatabaseException, ParseException, IOException
+	{
+
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
-		
+
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-		
-		for (String parentName : parentNameList) {
+
+		for (String parentName : parentNameList)
+		{
 			// Find the 'SetParentgroupMother'/'SetParentgroupFather' event type
-			// TODO: SetParentgroupMother/SetParentgroupFather are now plain event types with only the ParentgroupMother/ParentgroupFather feature
+			// TODO: SetParentgroupMother/SetParentgroupFather are now plain
+			// event types with only the ParentgroupMother/ParentgroupFather
+			// feature
 			// and no longer the Certain feature. Solve this!
 			// Make the event
 			ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 			db.add(app);
-			// Make 'ParentgroupMother'/'ParentgroupFather' feature-value pair and link to event
-			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, featureName, parentgroupName, 
-					null, parentName));		
+			// Make 'ParentgroupMother'/'ParentgroupFather' feature-value pair
+			// and link to event
+			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, featureName,
+					parentgroupName, null, parentName));
 			// Make 'Certain' feature-value pair and link to event
 			String valueString;
-			if (parentNameList.size() == 1) {
-				valueString = "1"; // if there's only one parent of this gender, it's certain
-			} else {
+			if (parentNameList.size() == 1)
+			{
+				valueString = "1"; // if there's only one parent of this gender,
+									// it's certain
+			}
+			else
+			{
 				valueString = "0"; // ... otherwise, not
 			}
-			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, "Certain", parentName, 
+			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, "Certain", parentName,
 					valueString, null));
 		}
 		// Add everything to DB
 		db.add(valuesToAddList);
 	}
-	
-	private void resetUserFields() {
+
+	private void resetUserFields()
+	{
 		this.selectedMotherNameList.clear();
 		this.selectedFatherNameList.clear();
 		this.setStartdate(dateOnlyFormat.format(new Date()));
 		this.setRemarks(null);
-		if (lineList.size() > 0) {
+		if (lineList.size() > 0)
+		{
 			this.setLine(lineList.get(0).getName());
-		} else {
+		}
+		else
+		{
 			this.setLine(null);
 		}
 	}
@@ -330,42 +386,52 @@ public class ManageParentgroups extends PluginModel<Entity>
 	{
 		ct.setDatabase(db);
 		action = request.getString("__action");
-		try {
-			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName())) {
+		try
+		{
+			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName()))
+			{
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewer.handleRequest(db, request);
 				motherMatrixViewerString = motherMatrixViewer.render();
-				this.setAction("addParentgroupScreen2"); // return to mother selection screen
+				this.setAction("addParentgroupScreen2"); // return to mother
+															// selection screen
 				return;
 			}
-			
-			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName())) {
+
+			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName()))
+			{
 				fatherMatrixViewer.setDatabase(db);
 				fatherMatrixViewer.handleRequest(db, request);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
-				this.setAction("addParentgroupScreen3"); // return to father selection screen
+				this.setAction("addParentgroupScreen3"); // return to father
+															// selection screen
 				return;
 			}
-			
-			if (pgMatrixViewer != null && action.startsWith(pgMatrixViewer.getName())) {
+
+			if (pgMatrixViewer != null && action.startsWith(pgMatrixViewer.getName()))
+			{
 				pgMatrixViewer.setDatabase(db);
 				pgMatrixViewer.handleRequest(db, request);
 				pgMatrixViewerString = pgMatrixViewer.render();
 				this.setAction("init"); // return to start screen
 				return;
 			}
-			
-			if (action.equals("init")) {
+
+			if (action.equals("init"))
+			{
 				// do nothing here
 			}
-			
-			if (action.equals("addParentgroupScreen1")) {
+
+			if (action.equals("addParentgroupScreen1"))
+			{
 				// do nothing here
 			}
-			
-			if (action.equals("addParentgroupScreen2")) {
+
+			if (action.equals("addParentgroupScreen2"))
+			{
 				// Save line that was set in screen 1
-				if (request.getString("line") != null) {
+				if (request.getString("line") != null)
+				{
 					this.line = request.getString("line");
 				}
 				this.setSuccess("Line " + line + " successfully set");
@@ -373,16 +439,20 @@ public class ManageParentgroups extends PluginModel<Entity>
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewerString = motherMatrixViewer.render();
 			}
-			
-			if (action.equals("addParentgroupScreen3")) {
+
+			if (action.equals("addParentgroupScreen3"))
+			{
 				String motherNames = "";
 				@SuppressWarnings("unchecked")
 				List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
 				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
+				for (ObservationElement row : rows)
+				{
+					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null)
+					{
 						String motherName = row.getName();
-						if (!this.selectedMotherNameList.contains(motherName)) {
+						if (!this.selectedMotherNameList.contains(motherName))
+						{
 							this.selectedMotherNameList.add(motherName);
 							motherNames += motherName + " ";
 						}
@@ -390,7 +460,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 					rowCnt++;
 				}
 				// Check if at least one mother selected:
-				if (this.selectedMotherNameList.size() == 0) {
+				if (this.selectedMotherNameList.size() == 0)
+				{
 					action = "addParentgroupScreen2"; // stay in current screen
 					throw new Exception("No mother(s) selected");
 				}
@@ -399,16 +470,20 @@ public class ManageParentgroups extends PluginModel<Entity>
 				fatherMatrixViewer.setDatabase(db);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
 			}
-			
-			if (action.equals("addParentgroupScreen4")) {
+
+			if (action.equals("addParentgroupScreen4"))
+			{
 				String fatherNames = "";
 				@SuppressWarnings("unchecked")
 				List<ObservationElement> rows = (List<ObservationElement>) fatherMatrixViewer.getSelection(db);
 				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
+				for (ObservationElement row : rows)
+				{
+					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null)
+					{
 						String fatherName = row.getName();
-						if (!this.selectedFatherNameList.contains(fatherName)) {
+						if (!this.selectedFatherNameList.contains(fatherName))
+						{
 							this.selectedFatherNameList.add(fatherName);
 							fatherNames += fatherName + " ";
 						}
@@ -416,19 +491,24 @@ public class ManageParentgroups extends PluginModel<Entity>
 					rowCnt++;
 				}
 				// Check if at least one father selected:
-				if (this.selectedFatherNameList.size() == 0) {
+				if (this.selectedFatherNameList.size() == 0)
+				{
 					action = "addParentgroupScreen3"; // stay in current screen
 					throw new Exception("No father(s) selected");
 				}
 				this.setSuccess("Father(s) " + fatherNames + "successfully added");
 			}
-			
-			if (action.equals("addParentgroup")) {
+
+			if (action.equals("addParentgroup"))
+			{
 				String newPgName = AddParentgroup(db, request);
 				pgMatrixViewer.setDatabase(db);
 				// Add filter on name of newly added PG:
-				pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-						Individual.NAME, Operator.EQUALS, newPgName));
+				pgMatrixViewer
+						.getMatrix()
+						.getRules()
+						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
+								newPgName));
 				pgMatrixViewer.reloadMatrix(db, null);
 				pgMatrixViewerString = pgMatrixViewer.render();
 				this.setAction("init");
@@ -437,10 +517,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 				motherMatrixViewer = null;
 				this.setSuccess("Parent group " + newPgName + " successfully added");
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += ": " + e.getMessage();
 			}
 			this.setError(message);
@@ -448,14 +531,17 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 	}
 
-	private String AddParentgroup(Database db, Tuple request) throws Exception {
+	private String AddParentgroup(Database db, Tuple request) throws Exception
+	{
 		Date now = new Date();
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 		// Save start date and remarks that were set in screen 4
-		if (request.getString("startdate") != null) {
+		if (request.getString("startdate") != null)
+		{
 			setStartdate(request.getString("startdate"));
 		}
-		if (request.getString("remarks") != null) {
+		if (request.getString("remarks") != null)
+		{
 			setRemarks(request.getString("remarks"));
 		}
 		Date eventDate = dateOnlyFormat.parse(startdate);
@@ -469,27 +555,28 @@ public class ManageParentgroups extends PluginModel<Entity>
 		// Make or update name prefix entry
 		ct.updatePrefix("parentgroup", groupPrefix, groupNr);
 		// Mark group as parent group using a special event
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetTypeOfGroup", "TypeOfGroup", groupName, "Parentgroup", null));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
+				groupName, "Parentgroup", null));
 		// Add parent(s)
 		AddParents(db, this.selectedMotherNameList, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
 		AddParents(db, this.selectedFatherNameList, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
 		// Set line
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetLine", "Line", groupName, null, line));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLine", "Line", groupName, null,
+				line));
 		// Set start date
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetStartDate", "StartDate", groupName, dbFormat.format(eventDate), null));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetStartDate", "StartDate",
+				groupName, dbFormat.format(eventDate), null));
 		// Set remarks
-		if (remarks != null) {
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-					"SetRemark", "Remark", groupName, remarks, null));
+		if (remarks != null)
+		{
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark", groupName,
+					remarks, null));
 		}
-		
-		//Add Set Active, with (start)time = entrydate and endtime = null
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetActive", "Active", 
-				groupName, "Active", null));
-		
+
+		// Add Set Active, with (start)time = entrydate and endtime = null
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetActive", "Active", groupName,
+				"Active", null));
+
 		return groupName;
 	}
 
@@ -497,38 +584,48 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		// Populate lists (do this on every reload so they keep fresh, and do it here
+		// Populate lists (do this on every reload so they keep fresh, and do it
+		// here
 		// because we need the lineList in the init part that comes after)
-		try {
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			// Populate line list
 			lineList = ct.getAllMarkedPanels("Line", investigationNames);
 			// Default selected is first line
-			if (line == null && lineList.size() > 0) {
+			if (line == null && lineList.size() > 0)
+			{
 				line = lineList.get(0).getName();
 			}
-			if (selectedMotherNameList == null) {
+			if (selectedMotherNameList == null)
+			{
 				selectedMotherNameList = new ArrayList<String>();
 			}
-			if (selectedFatherNameList == null) {
+			if (selectedFatherNameList == null)
+			{
 				selectedFatherNameList = new ArrayList<String>();
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading lists";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 		// Some init that only needs to be done once after login
-		if (userName != this.getLogin().getUserName()) {
+		if (userName != this.getLogin().getUserName())
+		{
 			userName = this.getLogin().getUserName();
 			ct.makeObservationTargetNameMap(userName, false);
 			this.setStartdate(dateOnlyFormat.format(new Date()));
 			// Prepare pg matrix
-			if (pgMatrixViewer == null) {
+			if (pgMatrixViewer == null)
+			{
 				loadPgMatrixViewer(db);
 			}
 			pgMatrixViewer.setDatabase(db);
