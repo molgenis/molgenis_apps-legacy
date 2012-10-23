@@ -28,7 +28,7 @@ public class Background extends EasyPluginController<BackgroundModel>
 		super(name, parent);
 		this.setModel(new BackgroundModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Background.ftl", getModel());
@@ -46,9 +46,9 @@ public class Background extends EasyPluginController<BackgroundModel>
 			this.getModel().setNumPatientsUnpub(statisticsService.getNumUnpublishedPatients());
 			this.getModel().setPhenotypeCountHash(statisticsService.getPhenotypeCounts());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			//...
+			// ...
 		}
 	}
 }

@@ -64,35 +64,39 @@ public class LinkBack extends PluginModel<Entity>
 
 		try
 		{
-			
+
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent();
-			FormModel<ObservationElement> parentForm = (FormModel<ObservationElement>) ((FormController) parentController).getModel();
+			FormModel<ObservationElement> parentForm = (FormModel<ObservationElement>) ((FormController) parentController)
+					.getModel();
 
 			List<ObservationElement> phenotype = parentForm.getRecords();
-			
+
 			this.model.setId(null);
 
 			if (phenotype.size() == 1)
 			{
-				//special: Gene is always translated to Probe!
-				//if Gene is measured directly, this code must be updated.
-				if(phenotype.get(0).get(ObservationElement.__TYPE).equals("Gene"))
+				// special: Gene is always translated to Probe!
+				// if Gene is measured directly, this code must be updated.
+				if (phenotype.get(0).get(ObservationElement.__TYPE).equals("Gene"))
 				{
-					List<Probe> probes = db.find(Probe.class, new QueryRule(Probe.REPORTSFOR, Operator.EQUALS, phenotype.get(0).get(Gene.ID)), new QueryRule(Operator.OR), new QueryRule(Probe.SYMBOL, Operator.EQUALS, phenotype.get(0).get(Gene.NAME)));
-				
-//					if(probes.size() == 0)
-//					{
-//						probes = db.find(Probe.class, new QueryRule(Probe.SYMBOL, Operator.EQUALS, phenotype.get(0).get(Gene.NAME)));
-//					}
-					
-					if(probes.size() > 0)
+					List<Probe> probes = db.find(Probe.class, new QueryRule(Probe.REPORTSFOR, Operator.EQUALS,
+							phenotype.get(0).get(Gene.ID)), new QueryRule(Operator.OR), new QueryRule(Probe.SYMBOL,
+							Operator.EQUALS, phenotype.get(0).get(Gene.NAME)));
+
+					// if(probes.size() == 0)
+					// {
+					// probes = db.find(Probe.class, new QueryRule(Probe.SYMBOL,
+					// Operator.EQUALS, phenotype.get(0).get(Gene.NAME)));
+					// }
+
+					if (probes.size() > 0)
 					{
 						StringBuilder ids = new StringBuilder();
-						for(Probe p : probes)
+						for (Probe p : probes)
 						{
-							ids.append(p.getId()+",");
+							ids.append(p.getId() + ",");
 						}
-						ids.deleteCharAt(ids.length()-1);
+						ids.deleteCharAt(ids.length() - 1);
 						this.model.setId(ids.toString());
 					}
 				}

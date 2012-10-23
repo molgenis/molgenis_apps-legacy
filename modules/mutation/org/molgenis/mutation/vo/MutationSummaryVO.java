@@ -32,142 +32,233 @@ public class MutationSummaryVO implements Serializable
 	private List<PublicationVO> publicationVOList;
 	private String niceNotation;
 
-	public Integer getId() {
+	public Integer getId()
+	{
 		return id;
 	}
-	public void setId(Integer id) {
+
+	public void setId(Integer id)
+	{
 		this.id = id;
 	}
-	public String getIdentifier() {
+
+	public String getIdentifier()
+	{
 		return identifier;
 	}
-	public void setIdentifier(String identifier) {
+
+	public void setIdentifier(String identifier)
+	{
 		this.identifier = identifier;
 	}
-	public String getCdnaNotation() {
+
+	public String getCdnaNotation()
+	{
 		return cdnaNotation;
 	}
-	public void setCdnaNotation(String cdnaNotation) {
+
+	public void setCdnaNotation(String cdnaNotation)
+	{
 		this.cdnaNotation = cdnaNotation;
 	}
-	public Integer getCdnaPosition() {
+
+	public Integer getCdnaPosition()
+	{
 		return cdnaPosition;
 	}
-	public void setCdnaPosition(Integer cdnaPosition) {
+
+	public void setCdnaPosition(Integer cdnaPosition)
+	{
 		this.cdnaPosition = cdnaPosition;
 	}
-	public String getGdnaNotation() {
+
+	public String getGdnaNotation()
+	{
 		return gdnaNotation;
 	}
-	public void setGdnaNotation(String gdnaNotation) {
+
+	public void setGdnaNotation(String gdnaNotation)
+	{
 		this.gdnaNotation = gdnaNotation;
 	}
-	public Integer getGdnaPosition() {
+
+	public Integer getGdnaPosition()
+	{
 		return gdnaPosition;
 	}
-	public void setGdnaPosition(Integer gdnaPosition) {
+
+	public void setGdnaPosition(Integer gdnaPosition)
+	{
 		this.gdnaPosition = gdnaPosition;
 	}
-	public String getAaNotation() {
+
+	public String getAaNotation()
+	{
 		return aaNotation;
 	}
-	public void setAaNotation(String aaNotation) {
+
+	public void setAaNotation(String aaNotation)
+	{
 		this.aaNotation = aaNotation;
 	}
-	public Integer getAaPosition() {
+
+	public Integer getAaPosition()
+	{
 		return aaPosition;
 	}
-	public void setAaPosition(Integer aaPosition) {
+
+	public void setAaPosition(Integer aaPosition)
+	{
 		this.aaPosition = aaPosition;
 	}
-	public Integer getExonId() {
+
+	public Integer getExonId()
+	{
 		return exonId;
 	}
-	public void setExonId(Integer exonId) {
+
+	public void setExonId(Integer exonId)
+	{
 		this.exonId = exonId;
 	}
-	public Integer getExonNumber() {
+
+	public Integer getExonNumber()
+	{
 		return exonNumber;
 	}
-	public void setExonNumber(Integer exonNumber) {
+
+	public void setExonNumber(Integer exonNumber)
+	{
 		this.exonNumber = exonNumber;
 	}
-	public String getExonName() {
+
+	public String getExonName()
+	{
 		return exonName;
 	}
-	public void setExonName(String exonName) {
+
+	public void setExonName(String exonName)
+	{
 		this.exonName = exonName;
 	}
-	public List<String> getProteinDomainNameList() {
+
+	public List<String> getProteinDomainNameList()
+	{
 		return proteinDomainNameList;
 	}
-	public void setProteinDomainNameList(List<String> proteinDomainNameList) {
+
+	public void setProteinDomainNameList(List<String> proteinDomainNameList)
+	{
 		this.proteinDomainNameList = proteinDomainNameList;
 	}
-	public String getConsequence() {
+
+	public String getConsequence()
+	{
 		return consequence;
 	}
-	public void setConsequence(String consequence) {
+
+	public void setConsequence(String consequence)
+	{
 		this.consequence = consequence;
 	}
-	public String getType() {
+
+	public String getType()
+	{
 		return type;
 	}
-	public void setType(String type) {
+
+	public void setType(String type)
+	{
 		this.type = type;
 	}
-	public String getInheritance() {
+
+	public String getInheritance()
+	{
 		return inheritance;
 	}
-	public void setInheritance(String inheritance) {
+
+	public void setInheritance(String inheritance)
+	{
 		this.inheritance = inheritance;
 	}
-	public Boolean getReportedSNP() {
+
+	public Boolean getReportedSNP()
+	{
 		return reportedSNP;
 	}
-	public void setReportedSNP(Boolean reportedSNP) {
+
+	public void setReportedSNP(Boolean reportedSNP)
+	{
 		this.reportedSNP = reportedSNP;
 	}
-	public String getPathogenicity() {
+
+	public String getPathogenicity()
+	{
 		return pathogenicity;
 	}
-	public void setPathogenicity(String pathogenicity) {
+
+	public void setPathogenicity(String pathogenicity)
+	{
 		this.pathogenicity = pathogenicity;
 	}
-	public List<PatientSummaryVO> getPatientSummaryVOList() {
+
+	public List<PatientSummaryVO> getPatientSummaryVOList()
+	{
 		return patientSummaryVOList;
 	}
-	public void setPatientSummaryVOList(List<PatientSummaryVO> patientSummaryVOList) {
+
+	public void setPatientSummaryVOList(List<PatientSummaryVO> patientSummaryVOList)
+	{
 		this.patientSummaryVOList = patientSummaryVOList;
 	}
-	public List<String> getPhenotypeNameList() {
+
+	public List<String> getPhenotypeNameList()
+	{
 		return phenotypeNameList;
 	}
-	public void setPhenotypeNameList(List<String> phenotypeNameList) {
+
+	public void setPhenotypeNameList(List<String> phenotypeNameList)
+	{
 		this.phenotypeNameList = phenotypeNameList;
 	}
-	public List<PublicationVO> getPublicationVOList() {
+
+	public List<PublicationVO> getPublicationVOList()
+	{
 		return publicationVOList;
 	}
-	public void setPublicationVOList(List<PublicationVO> publicationVOList) {
+
+	public void setPublicationVOList(List<PublicationVO> publicationVOList)
+	{
 		this.publicationVOList = publicationVOList;
 	}
-	public String getNiceNotation() {
+
+	public String getNiceNotation()
+	{
 		return niceNotation;
 	}
-	public void setNiceNotation(String niceNotation) {
+
+	public void setNiceNotation(String niceNotation)
+	{
 		this.niceNotation = niceNotation;
 	}
-	public String getCodonChange() {
+
+	public String getCodonChange()
+	{
 		return codonChange;
 	}
-	public void setCodonChange(String codonChange) {
+
+	public void setCodonChange(String codonChange)
+	{
 		this.codonChange = codonChange;
 	}
-	public String getPubmedURL() {
-	    return pubmedURL;
+
+	public String getPubmedURL()
+	{
+		return pubmedURL;
 	}
-	public void setPubmedURL(String pubmedURL) {
-	    this.pubmedURL = pubmedURL;
+
+	public void setPubmedURL(String pubmedURL)
+	{
+		this.pubmedURL = pubmedURL;
 	}
 }

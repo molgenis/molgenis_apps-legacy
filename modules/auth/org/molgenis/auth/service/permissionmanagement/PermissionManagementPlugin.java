@@ -23,121 +23,151 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class PermissionManagementPlugin extends PluginModel<Entity> {
+public class PermissionManagementPlugin extends PluginModel<Entity>
+{
 
-    private static final long serialVersionUID = -9150476614594665384L;
-    private PermissionManagementModel varmodel;
-    private PermissionManagementService service;
-    private static Logger logger = Logger.getLogger(PermissionManagementPlugin.class);
+	private static final long serialVersionUID = -9150476614594665384L;
+	private PermissionManagementModel varmodel;
+	private PermissionManagementService service;
+	private static Logger logger = Logger.getLogger(PermissionManagementPlugin.class);
 
-    public PermissionManagementPlugin(String name, ScreenController<?> parent) {
+	public PermissionManagementPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
-		
+
 		varmodel = new PermissionManagementModel();
-    }
+	}
 
-    @Override
-    public String getViewName()
-    {
-    	return "org_molgenis_auth_service_permissionmanagement_PermissionManagementPlugin";
-    }
+	@Override
+	public String getViewName()
+	{
+		return "org_molgenis_auth_service_permissionmanagement_PermissionManagementPlugin";
+	}
 
-    @Override
-    public String getViewTemplate()
-    {
-    	return "org/molgenis/auth/service/permissionmanagement/PermissionManagementPlugin.ftl";
-    }
+	@Override
+	public String getViewTemplate()
+	{
+		return "org/molgenis/auth/service/permissionmanagement/PermissionManagementPlugin.ftl";
+	}
 
-    @Override
-    public void handleRequest(Database db, Tuple request) {
-    	
-    	service.setDb(db);
-    	try {
-    		varmodel.setAction(request.getAction());
-    		
-    		if (varmodel.getAction().equals("AddEdit")) {
-    			varmodel.setPermId(request.getInt("id"));
-    		} else if (varmodel.getAction().equals("Remove")) {
-    			varmodel.setPermId(request.getInt("id"));
-    		    service.remove(varmodel.getRole().getId(), varmodel.getPermId());
-    		    this.setMessages(new ScreenMessage("Removal successful", true));
-    		} else if (varmodel.getAction().equals("AddPerm")) {
-    		    service.insert(varmodel.getRole().getId(), addPermission(request));
-    		    this.setMessages(new ScreenMessage("Adding successful", true));
-    		} else if (varmodel.getAction().equals("UpdatePerm")){
-    		    service.update(varmodel.getRole().getId(), updatePermission(request));
-    		    this.setMessages(new ScreenMessage("Update successful", true));
-    		}
-    			
-    	} catch (Exception e) {
-		    logger.error("Error occurred: ", e);
-		    this.setMessages(new ScreenMessage(e != null ? e.getMessage() : "null", false));
-    	}
-    }
+	@Override
+	public void handleRequest(Database db, Tuple request)
+	{
 
-    /** Update a permission based on request
-     * 
-     * @param request
-     * @return
-     * @throws DatabaseException
-     * @throws ParseException
-     */
-    private MolgenisPermission updatePermission(Tuple request) throws DatabaseException, ParseException {
-		if (request.getString("entity") != null) {
+		service.setDb(db);
+		try
+		{
+			varmodel.setAction(request.getAction());
+
+			if (varmodel.getAction().equals("AddEdit"))
+			{
+				varmodel.setPermId(request.getInt("id"));
+			}
+			else if (varmodel.getAction().equals("Remove"))
+			{
+				varmodel.setPermId(request.getInt("id"));
+				service.remove(varmodel.getRole().getId(), varmodel.getPermId());
+				this.setMessages(new ScreenMessage("Removal successful", true));
+			}
+			else if (varmodel.getAction().equals("AddPerm"))
+			{
+				service.insert(varmodel.getRole().getId(), addPermission(request));
+				this.setMessages(new ScreenMessage("Adding successful", true));
+			}
+			else if (varmodel.getAction().equals("UpdatePerm"))
+			{
+				service.update(varmodel.getRole().getId(), updatePermission(request));
+				this.setMessages(new ScreenMessage("Update successful", true));
+			}
+
+		}
+		catch (Exception e)
+		{
+			logger.error("Error occurred: ", e);
+			this.setMessages(new ScreenMessage(e != null ? e.getMessage() : "null", false));
+		}
+	}
+
+	/**
+	 * Update a permission based on request
+	 * 
+	 * @param request
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	private MolgenisPermission updatePermission(Tuple request) throws DatabaseException, ParseException
+	{
+		if (request.getString("entity") != null)
+		{
 			MolgenisPermission perm = new MolgenisPermission();
 			perm.setEntity(Integer.parseInt(request.getString("entity")));
 			perm.setRole(Integer.parseInt(request.getString("role")));
 			perm.setPermission(request.getString("permission"));
 			return perm;
-		} else {
+		}
+		else
+		{
 			throw new DatabaseException("Cannot update permission: no entity set");
 		}
-    }
+	}
 
-    /** Insert (add) a permission based on request
-     * 
-     * @param request
-     * @return
-     */
-    public MolgenisPermission addPermission(Tuple request) throws DatabaseException {
-		if (request.getString("entity") != null) {
+	/**
+	 * Insert (add) a permission based on request
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public MolgenisPermission addPermission(Tuple request) throws DatabaseException
+	{
+		if (request.getString("entity") != null)
+		{
 			MolgenisPermission perm = new MolgenisPermission();
 			perm.setEntity(Integer.parseInt(request.getString("entity")));
 			perm.setRole(Integer.parseInt(request.getString("role")));
 			perm.setPermission(request.getString("permission"));
 			return perm;
-		} else {
+		}
+		else
+		{
 			throw new DatabaseException("Cannot add permission: no entity set");
 		}
-    }
+	}
 
-    @Override
-    public void reload(Database db) {
-    	
-    	service = PermissionManagementService.getInstance();
-    	service.setDb(db);
-		try {
+	@Override
+	public void reload(Database db)
+	{
+
+		service = PermissionManagementService.getInstance();
+		service.setDb(db);
+		try
+		{
 			varmodel.setRole(service.findRole(db.getLogin().getUserId()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		    //TODO: add logger + screen message
 		}
-    }
-    
-    public PermissionManagementModel getVarmodel() {
-    	return varmodel;
-    }  
-    
-    public PermissionManagementService getService() {
-    	return service;
-    }
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			// TODO: add logger + screen message
+		}
+	}
 
-    public void setService(PermissionManagementService service) {
-    	this.service = service;
-    }
-    
-    @Override
-    public boolean isVisible()
+	public PermissionManagementModel getVarmodel()
+	{
+		return varmodel;
+	}
+
+	public PermissionManagementService getService()
+	{
+		return service;
+	}
+
+	public void setService(PermissionManagementService service)
+	{
+		this.service = service;
+	}
+
+	@Override
+	public boolean isVisible()
 	{
 		if (this.getController().getApplicationController().getLogin() instanceof SimpleLogin)
 		{

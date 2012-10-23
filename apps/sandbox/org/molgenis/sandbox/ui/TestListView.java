@@ -16,9 +16,9 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.util.Tuple;
 
 /**
- * Extend GenericPlugin to use a plugin without freemarker.
- * Instead you have to implement the 'render' method that outputs as HTML string.
- * Here you can use the MOLGENIS UI framework to do the heavy lifting. An example below.
+ * Extend GenericPlugin to use a plugin without freemarker. Instead you have to
+ * implement the 'render' method that outputs as HTML string. Here you can use
+ * the MOLGENIS UI framework to do the heavy lifting. An example below.
  * 
  * 
  */
@@ -46,7 +46,7 @@ public class TestListView extends EasyPluginController
 		// {
 		// Database db = this.getDatabase();
 		// String action = request.getString("__action");
-		//		
+		//
 		// if( action.equals("do_add") )
 		// {
 		// Experiment e = new Experiment();
@@ -64,27 +64,27 @@ public class TestListView extends EasyPluginController
 	{
 		try
 		{
-			//TODO: Danny: use or loose
-			/*List<Investigation> investigations = */db.find(Investigation.class);
+			// TODO: Danny: use or loose
+			/* List<Investigation> investigations = */db.find(Investigation.class);
 
-			// borrow form builder from generated form (need to make trivial and configurable)
-//			InvestigationForm f = new InvestigationForm();
-//			//f.setEntity(investigations);
-//
-//			ActionInput edit = new ActionInput("edit");
-//			edit.setIcon("generated-res/img/editview.gif");
-//			
-//			listView = new ListView("mylist");
-//			for(HtmlForm form: f.getRecordInputs())
-//			{
-//				form.addAction(edit);
-//				listView.addRow(form);
-//			}
-//			
-//			listView.setSortedBy("name");
-//			
-//			
-			
+			// borrow form builder from generated form (need to make trivial and
+			// configurable)
+			// InvestigationForm f = new InvestigationForm();
+			// //f.setEntity(investigations);
+			//
+			// ActionInput edit = new ActionInput("edit");
+			// edit.setIcon("generated-res/img/editview.gif");
+			//
+			// listView = new ListView("mylist");
+			// for(HtmlForm form: f.getRecordInputs())
+			// {
+			// form.addAction(edit);
+			// listView.addRow(form);
+			// }
+			//
+			// listView.setSortedBy("name");
+			//
+			//
 
 			// do something
 		}

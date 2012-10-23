@@ -1,6 +1,5 @@
 package org.molgenis.xgap.test;
 
-
 import org.molgenis.Molgenis;
 
 public class XgapTestGenerate
@@ -10,8 +9,9 @@ public class XgapTestGenerate
 		try
 		{
 			new Molgenis("handwritten/apps/org/molgenis/xgap/xgap.test.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

@@ -16,73 +16,92 @@ import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
-public class NamingPlugin extends PluginModel<Entity> {
+public class NamingPlugin extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = -5003817917974881648L;
 	public String input;
 	public String output;
-	//public String unique;
 
-	public String getInput() {
+	// public String unique;
+
+	public String getInput()
+	{
 		return input;
 	}
 
-	public void setInput(String input) {
+	public void setInput(String input)
+	{
 		this.input = input;
 	}
 
-	public String getOutput() {
+	public String getOutput()
+	{
 		return output;
 	}
 
-	public void setOutput(String output) {
+	public void setOutput(String output)
+	{
 		this.output = output;
 	}
-	
 
-//	public String getUnique() {
-//		return unique;
-//	}
-//
-//	public void setUnique(String unique) {
-//		this.unique = unique;
-//	}
+	// public String getUnique() {
+	// return unique;
+	// }
+	//
+	// public void setUnique(String unique) {
+	// this.unique = unique;
+	// }
 
-	public NamingPlugin(String name, ScreenController<?> parent) {
+	public NamingPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "plugins_help_naming_NamingPlugin";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/help/naming/NamingPlugin.ftl";
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
-		if (request.getString("__action") != null) {
-			if (request.getString("__action").equals("convertNames")) {
+	public void handleRequest(Database db, Tuple request)
+	{
+		if (request.getString("__action") != null)
+		{
+			if (request.getString("__action").equals("convertNames"))
+			{
 				String rawInput = request.getString("input");
 
-				if (rawInput != null) {
+				if (rawInput != null)
+				{
 					this.setInput(rawInput);
 
 					String[] split = rawInput.split("\\r?\\n");
 
 					output = "";
-					for (String s : split) {
-						try {
+					for (String s : split)
+					{
+						try
+						{
 							String escape = NameConvention.escapeEntityNameStrict(s);
-							if(escape.length() == 0){
+							if (escape.length() == 0)
+							{
 								output += "INVALID NAME: ALL CHARACTERS ARE ESCAPED\n";
-							}else{
+							}
+							else
+							{
 								output += escape + "\n";
 							}
-						} catch (DatabaseException e) {
+						}
+						catch (DatabaseException e)
+						{
 							output = e.toString();
 							e.printStackTrace();
 							break;
@@ -90,22 +109,28 @@ public class NamingPlugin extends PluginModel<Entity> {
 					}
 
 					this.setOutput(output);
-				} else {
+				}
+				else
+				{
 					this.setInput(null);
 					this.setOutput(null);
 				}
-				
 
-			} else if (request.getString("__action").equals("loadExample")) {
+			}
+			else if (request.getString("__action").equals("loadExample"))
+			{
 				this.setInput(example());
-			} else if (request.getString("__action").equals("clear")) {
+			}
+			else if (request.getString("__action").equals("clear"))
+			{
 				this.setInput(null);
 				this.setOutput(null);
 			}
 		}
 	}
 
-	private String example() {
+	private String example()
+	{
 		String example = "P11/M54-248e\n";
 		example += "TG68_12.14\n";
 		example += "CT120bp_11.x/12.3\n";
@@ -120,9 +145,9 @@ public class NamingPlugin extends PluginModel<Entity> {
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 
 	}
-
 
 }

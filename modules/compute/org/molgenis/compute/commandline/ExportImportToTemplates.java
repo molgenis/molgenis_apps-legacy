@@ -67,7 +67,7 @@ public class ExportImportToTemplates
 		List<ComputeParameter> parameters = db.find(ComputeParameter.class);
 		List<WorkflowElement> elements = db.find(WorkflowElement.class);
 		List<Tuple> worksheet = this.generateWorksheet(db, LibraryLane.class);
-        List<WorkflowElementParameter> elementParameters = db.find(WorkflowElementParameter.class);
+		List<WorkflowElementParameter> elementParameters = db.find(WorkflowElementParameter.class);
 
 		// write out parameters and workflowelements just as before to
 		// ComputeParameter.txt and WorkflowElements.txt
@@ -75,37 +75,37 @@ public class ExportImportToTemplates
 
 		// export parameters
 		this.exportParameters(dir, parameters);
-		
+
 		// export the workflow elements
 		this.exportWorkflowElements(dir, elements);
 
 		// export protocols
 		this.exportProtocols(dir, protocols);
 
-        //export parameters (WorkflowElement level)
-        this.exportWorkflowElementParameters(dir, elementParameters);
+		// export parameters (WorkflowElement level)
+		this.exportWorkflowElementParameters(dir, elementParameters);
 	}
 
-    private void exportProtocols(File dir, List<ComputeProtocol> protocols) throws FileNotFoundException
+	private void exportProtocols(File dir, List<ComputeProtocol> protocols) throws FileNotFoundException
 	{
 		// TODO Auto-generated method stub
 		for (ComputeProtocol p : protocols)
 		{
-			File target = new File(dir.getAbsoluteFile() + File.separator + "protocols" + File.separator
-					+ p.getName() + ".ftl");
-			
-			//make sure parent folder exists
+			File target = new File(dir.getAbsoluteFile() + File.separator + "protocols" + File.separator + p.getName()
+					+ ".ftl");
+
+			// make sure parent folder exists
 			target.getParentFile().mkdirs();
-			
+
 			PrintWriter writer = new PrintWriter(target);
-			
-			//create header string
+
+			// create header string
 			String header = "#";
-			if(p.getWalltime() != null) header += "walltime="+p.getWalltime()+" ";
-			if(p.getCores() != null) header += "cores="+p.getCores()+" ";
-			if(p.getMem() != null) header += "memory="+p.getMem()+" "; 
-			
-			//write header and script template
+			if (p.getWalltime() != null) header += "walltime=" + p.getWalltime() + " ";
+			if (p.getCores() != null) header += "cores=" + p.getCores() + " ";
+			if (p.getMem() != null) header += "memory=" + p.getMem() + " ";
+
+			// write header and script template
 			writer.println(header);
 			writer.println();
 			writer.println(p.getScriptTemplate());
@@ -113,12 +113,14 @@ public class ExportImportToTemplates
 		}
 	}
 
-	/** Export parameters while only keeping a subset of the headers (for now) 
-	 * @throws IOException */
+	/**
+	 * Export parameters while only keeping a subset of the headers (for now)
+	 * 
+	 * @throws IOException
+	 */
 	private void exportParameters(File dir, List<ComputeParameter> parameters) throws IOException
 	{
-		File paramFile = new File(dir.getAbsoluteFile() + File.separator
-				+ "computeparameter.txt");
+		File paramFile = new File(dir.getAbsoluteFile() + File.separator + "computeparameter.txt");
 		List<String> paramFields = Arrays.asList(new String[]
 		{ "name", "description", "defaultValue" });
 
@@ -128,13 +130,12 @@ public class ExportImportToTemplates
 			writer.writeRow(p);
 		writer.close();
 	}
-	
+
 	private void exportWorkflowElements(File dir, List<WorkflowElement> elements) throws IOException
 	{
-		File paramFile = new File(dir.getAbsoluteFile() + File.separator
-				+ "workflowelement.txt");
+		File paramFile = new File(dir.getAbsoluteFile() + File.separator + "workflowelement.txt");
 		List<String> paramFields = Arrays.asList(new String[]
-		{"name","protocol_name","PreviousSteps_name"});
+		{ "name", "protocol_name", "PreviousSteps_name" });
 
 		CsvWriter writer = new CsvFileWriter(paramFile, paramFields);
 		writer.writeHeader();
@@ -143,21 +144,20 @@ public class ExportImportToTemplates
 		writer.close();
 	}
 
-    private void exportWorkflowElementParameters(File dir, List<WorkflowElementParameter> elementParameters) throws IOException
-    {
-        File paramFile = new File(dir.getAbsoluteFile() + File.separator
-                + "workflowelementparameter.txt");
-        List<String> paramFields = Arrays.asList(new String[]
-        {"parameter_name", "value"});
+	private void exportWorkflowElementParameters(File dir, List<WorkflowElementParameter> elementParameters)
+			throws IOException
+	{
+		File paramFile = new File(dir.getAbsoluteFile() + File.separator + "workflowelementparameter.txt");
+		List<String> paramFields = Arrays.asList(new String[]
+		{ "parameter_name", "value" });
 
-        CsvWriter writer = new CsvFileWriter(paramFile, paramFields);
-        writer.writeHeader();
-        for (WorkflowElementParameter e : elementParameters)
-            writer.writeRow(e);
-        writer.close();
+		CsvWriter writer = new CsvFileWriter(paramFile, paramFields);
+		writer.writeHeader();
+		for (WorkflowElementParameter e : elementParameters)
+			writer.writeRow(e);
+		writer.close();
 
-    }
-	
+	}
 
 	/**
 	 * Generate a worksheet from the database using one level of target as the
@@ -167,8 +167,7 @@ public class ExportImportToTemplates
 	 * @param db
 	 * @return
 	 */
-	public List<Tuple> generateWorksheet(Database db,
-			Class<? extends ObservationElement> target)
+	public List<Tuple> generateWorksheet(Database db, Class<? extends ObservationElement> target)
 	{
 		// this will query first the selected target and load those into tuples
 		// meanwhile it will also follow xrefs and mrefs on the target to find

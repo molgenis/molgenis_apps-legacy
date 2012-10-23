@@ -35,14 +35,14 @@ public class XgapExcelExport extends ExcelWriterNoExportDataElement
 		{
 			FileUtils.cleanDirectory(directory);
 		}
-		
+
 		File excelFile = new File(directory.getAbsolutePath() + File.separator + "xgap.xls");
 
 		// Annotations
 		List<Data> dataList;
 		if (investigationName == null)
 		{
-			//checkIfEscapedInvestigationNamesAreAmbiguous(db);
+			// checkIfEscapedInvestigationNamesAreAmbiguous(db);
 			super.exportAll(excelFile, db, true);
 			dataList = db.find(Data.class);
 		}
@@ -56,7 +56,7 @@ public class XgapExcelExport extends ExcelWriterNoExportDataElement
 		}
 
 		XgapMatrixExport.exportMatrix(dataList, investigationName, db, directory);
-		
+
 	}
 
 }

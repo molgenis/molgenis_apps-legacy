@@ -42,13 +42,18 @@ import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**
- * ImportWorksheetController takes care of all user requests and application logic.
+ * ImportWorksheetController takes care of all user requests and application
+ * logic.
  * 
- * <li>Each user request is handled by its own method based action=methodName. <li>MOLGENIS takes care of db.commits and catches exceptions to show to the user <li>ImportWorksheetModel holds
- * application state and business logic on top of domain model. Get it via this.getModel()/setModel(..) <li>
- * ImportWorksheetView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * <li>Each user request is handled by its own method based action=methodName.
+ * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
+ * user <li>ImportWorksheetModel holds application state and business logic on
+ * top of domain model. Get it via this.getModel()/setModel(..) <li>
+ * ImportWorksheetView holds the template to show the layout. Get/set it via
+ * this.getView()/setView(..).
  */
-public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
+public class ImportWorksheet extends EasyPluginController<ImportWorksheet>
+{
 	Map<String, Person> persons = new LinkedHashMap<String, Person>();
 	Map<String, NgsStudy> studies = new LinkedHashMap<String, NgsStudy>();
 	Map<String, NgsSample> samples = new LinkedHashMap<String, NgsSample>();
@@ -60,7 +65,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 	Map<String, Machine> machines = new LinkedHashMap<String, Machine>();
 	Map<String, Array> arrays = new LinkedHashMap<String, Array>();
 
-	public enum State {
+	public enum State
+	{
 		UPLOAD, REVIEW
 	};
 
@@ -68,22 +74,28 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 
 	private static final long serialVersionUID = 6075389492409205677L;
 
-	public ImportWorksheet(String name, ScreenController<?> parent) {
+	public ImportWorksheet(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 		this.setModel(this); // the default model
 	}
 
 	@Override
-	public void reload(Database db) throws Exception {
+	public void reload(Database db) throws Exception
+	{
 		// nothing todo
 	}
 
 	// handle the upload
-	public void uploadWorksheet(Database db, Tuple request) throws IOException, DataFormatException, ParseException {
+	public void uploadWorksheet(Database db, Tuple request) throws IOException, DataFormatException, ParseException
+	{
 		CsvReader reader = null;
-		if (!request.isNull("filefor_worksheetFile")) {
+		if (!request.isNull("filefor_worksheetFile"))
+		{
 			reader = new CsvFileReader(new File(request.getString("filefor_worksheetFile")));
-		} else {
+		}
+		else
+		{
 			reader = new CsvStringReader(request.getString("worksheetCsv"));
 		}
 
@@ -102,7 +114,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 		int counter_ignored = 0;
 
 		// iterate
-		for (Tuple row : reader) {
+		for (Tuple row : reader)
+		{
 			counter_total++;
 
 			// parsing validation
@@ -122,29 +135,39 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 			String arrayFile = row.getString("arrayFile");
 			String arrayID = row.getString("arrayID");
 
-			if (lib_lanes == null) {
+			if (lib_lanes == null)
+			{
 				counter_ignored++;
-				// System.out.println(">> Row ignored because Lane was null: " + row);
+				// System.out.println(">> Row ignored because Lane was null: " +
+				// row);
 				// Do same here as when we did find a lane..
 				// 1. create function calls to do work below
 				// 2. also call functions here
-				// Now, flowcell-lane-barcode-SAMPLE is unique, so we can also store a new sample without specifying its Flowcell (may be NA),
+				// Now, flowcell-lane-barcode-SAMPLE is unique, so we can also
+				// store a new sample without specifying its Flowcell (may be
+				// NA),
 				// its lane (then also NA), its barcode (may be NA)...!
-				// which makes sense because two different samples may be on same FLCLL-LANE-BARCODE!
-			} else {
+				// which makes sense because two different samples may be on
+				// same FLCLL-LANE-BARCODE!
+			}
+			else
+			{
 				for (String lib_lane : lib_lanes.split(","))// laneList)
 				{
 					lib_lane = lib_lane.trim();
 
-					String lib_identifier = flowcell_identifier + "_L" + lib_lane + "_" + lib_barcode + "_" + sample_identifier;
+					String lib_identifier = flowcell_identifier + "_L" + lib_lane + "_" + lib_barcode + "_"
+							+ sample_identifier;
 
-					// if Google-docs-validation script produced error, then insert null in barcode
-					if (barcodeType != null) {
+					// if Google-docs-validation script produced error, then
+					// insert null in barcode
+					if (barcodeType != null)
+					{
 						boolean validBarcodeType = false;
 						for (ValueLabel vl : (new NgsBarcode().getBarcodeTypeOptions()))
-							if (barcodeType.equalsIgnoreCase((String) vl.getValue()))
-								validBarcodeType = true;
-						if (!validBarcodeType) {
+							if (barcodeType.equalsIgnoreCase((String) vl.getValue())) validBarcodeType = true;
+						if (!validBarcodeType)
+						{
 							lib_barcode = null;
 							barcodeType = null;
 						}
@@ -153,20 +176,19 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					// parsing dates sucks
 					Date flowcell_startDate = null;
 					DateFormat formatter = new SimpleDateFormat("yyMMdd", Locale.US);
-					if (!row.isNull("sequencingStartDate"))
-						flowcell_startDate = new java.sql.Date(formatter.parse(row.getString("sequencingStartDate")).getTime());
+					if (!row.isNull("sequencingStartDate")) flowcell_startDate = new java.sql.Date(formatter.parse(
+							row.getString("sequencingStartDate")).getTime());
 
 					// validation
-					if (study_identifier == null)
-						throw new DataFormatException("project is required for row: " + row);
-					if (study_contact == null)
-						throw new DataFormatException("contact is required for row: " + row);
-					if (sample_identifier == null)
-						throw new DataFormatException("internalSampleId is required for row: " + row);
+					if (study_identifier == null) throw new DataFormatException("project is required for row: " + row);
+					if (study_contact == null) throw new DataFormatException("contact is required for row: " + row);
+					if (sample_identifier == null) throw new DataFormatException(
+							"internalSampleId is required for row: " + row);
 
 					// object creation, based on identifiers
 
-					if (persons.get(study_contact) == null) {
+					if (persons.get(study_contact) == null)
+					{
 						Person person = new Person();
 						person.setName(study_contact);
 
@@ -174,28 +196,41 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					}
 
 					// required: study
-					if (studies.get(study_identifier) == null) {
+					if (studies.get(study_identifier) == null)
+					{
 						NgsStudy study = new NgsStudy();
 						study.setIdentifier(study_identifier);
 
-						// FIXME? Why is seqType a propertie of study?! MD thinks seqType should be a property of lane-barcode.
-						if (seqType == null) {
-							if (flowcell_startDate == null) {
+						// FIXME? Why is seqType a propertie of study?! MD
+						// thinks seqType should be a property of lane-barcode.
+						if (seqType == null)
+						{
+							if (flowcell_startDate == null)
+							{
 								study.setSeqType("PE");
-							} else {
+							}
+							else
+							{
 								// guesstimate: (date < 10 Nov 2010 ? SR : PE)
-								if (flowcell_startDate.before(new java.sql.Date(formatter.parse("101110").getTime()))) {
+								if (flowcell_startDate.before(new java.sql.Date(formatter.parse("101110").getTime())))
+								{
 									study.setSeqType("SR");
-								} else {
+								}
+								else
+								{
 									study.setSeqType("PE");
 								}
 							}
-						} else {
+						}
+						else
+						{
 							study.setSeqType(seqType);
 						}
 
 						// check seq type
-						if (study.getSeqType().equalsIgnoreCase("PE") && flowcell_machine != null && flowcell_machine.equalsIgnoreCase("HWUSI-EAS536")) {
+						if (study.getSeqType().equalsIgnoreCase("PE") && flowcell_machine != null
+								&& flowcell_machine.equalsIgnoreCase("HWUSI-EAS536"))
+						{
 							throw new DataFormatException(">>> Paired end was never run on HWUSI-EAS536 >>> " + row);
 						}
 
@@ -205,7 +240,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					}
 
 					// required: sample
-					if (studies.get(sample_identifier) == null) {
+					if (studies.get(sample_identifier) == null)
+					{
 						NgsSample sample = new NgsSample();
 						sample.setIdentifier(sample_identifier);
 						sample.setExternalIdentifier(sample_externalIdentifier);
@@ -215,7 +251,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					}
 
 					// optional: flowcell
-					if (flowcell_identifier != null && flowcells.get(flowcell_identifier) == null) {
+					if (flowcell_identifier != null && flowcells.get(flowcell_identifier) == null)
+					{
 						Flowcell flowcell = new Flowcell();
 						flowcell.setIdentifier(flowcell_identifier);
 						flowcell.setRun(flowcell_run);
@@ -226,7 +263,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					}
 
 					// optional: libraryLane
-					if (lib_identifier != null && liblanes.get(lib_identifier) == null) {
+					if (lib_identifier != null && liblanes.get(lib_identifier) == null)
+					{
 						LibraryLane lib = new LibraryLane();
 						lib.setIdentifier(lib_identifier);
 						lib.setFlowcell_Identifier(flowcell_identifier);
@@ -240,7 +278,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					}
 
 					// System.out.println(">> " + barcodeType);
-					if (lib_barcode != null && barcodes.get(lib_barcode) == null) {
+					if (lib_barcode != null && barcodes.get(lib_barcode) == null)
+					{
 						NgsBarcode bc = new NgsBarcode();
 						bc.setName(lib_barcode);
 						// if (barcodeType != null) {
@@ -252,21 +291,24 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 						barcodes.put(lib_barcode, bc);
 					}
 
-					if (lib_capturingKit != null && capturingKits.get(lib_capturingKit) == null) {
+					if (lib_capturingKit != null && capturingKits.get(lib_capturingKit) == null)
+					{
 						NgsCapturingKit c = new NgsCapturingKit();
 						c.setName(lib_capturingKit);
 
 						capturingKits.put(lib_capturingKit, c);
 					}
 
-					if (lib_prepKit != null && prepKits.get(lib_prepKit) == null) {
+					if (lib_prepKit != null && prepKits.get(lib_prepKit) == null)
+					{
 						NgsPrepKit c = new NgsPrepKit();
 						c.setName(lib_prepKit);
 
 						prepKits.put(lib_prepKit, c);
 					}
 
-					if (flowcell_machine != null && machines.get(flowcell_machine) == null) {
+					if (flowcell_machine != null && machines.get(flowcell_machine) == null)
+					{
 						Machine c = new Machine();
 						c.setName(flowcell_machine);
 
@@ -274,7 +316,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 					}
 
 					System.out.println(">> Array: " + arrayFile);
-					if (arrayFile != null && arrays.get(sample_identifier) == null) {
+					if (arrayFile != null && arrays.get(sample_identifier) == null)
+					{
 						Array a = new Array();
 						a.setSample_Identifier(sample_identifier);
 						a.setArrayFile(arrayFile);
@@ -296,14 +339,15 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 	/**
 	 * Capitalize only the first character of name
 	 */
-	private String capitalizeFirstOnly(String name) {
+	private String capitalizeFirstOnly(String name)
+	{
 		String result = "";
 
-		if (name != null)
-			for (int i = 0; i < name.length(); i++) {
-				char c = name.charAt(i);
-				result += (i == 0 ? Character.toUpperCase(c) : Character.toLowerCase(c));
-			}
+		if (name != null) for (int i = 0; i < name.length(); i++)
+		{
+			char c = name.charAt(i);
+			result += (i == 0 ? Character.toUpperCase(c) : Character.toLowerCase(c));
+		}
 
 		return result;
 	}
@@ -311,10 +355,12 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 	/**
 	 * Capitalize first letter and each letter followed by a whitespace
 	 */
-	private String nameCasing(String name) {
+	private String nameCasing(String name)
+	{
 		String result = "";
 		boolean capitalize = true;
-		for (int i = 0; i < name.length(); i++) {
+		for (int i = 0; i < name.length(); i++)
+		{
 			char c = name.charAt(i);
 			result += (capitalize ? Character.toUpperCase(c) : Character.toLowerCase(c));
 			capitalize = c == ' ';
@@ -323,24 +369,34 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 		return result;
 	}
 
-	public void saveUpload(Database db, Tuple request) throws DatabaseException {
+	public void saveUpload(Database db, Tuple request) throws DatabaseException
+	{
 
-		try {
+		try
+		{
 			int count = 0;
 			count += db.update(new ArrayList<Person>(persons.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
-			count += db.update(new ArrayList<NgsStudy>(studies.values()), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
+			count += db.update(new ArrayList<NgsStudy>(studies.values()), DatabaseAction.ADD_UPDATE_EXISTING,
+					"identifier");
 			// System.out.println(">> " + barcodes.values());
-			count += db.update(new ArrayList<NgsBarcode>(barcodes.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
-			count += db.update(new ArrayList<NgsPrepKit>(prepKits.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
+			count += db
+					.update(new ArrayList<NgsBarcode>(barcodes.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
+			count += db
+					.update(new ArrayList<NgsPrepKit>(prepKits.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
 			count += db.update(new ArrayList<Machine>(machines.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
 			// System.out.println(">> " + capturingKits.values());
-			count += db.update(new ArrayList<NgsCapturingKit>(capturingKits.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
-			count += db.update(new ArrayList<NgsSample>(samples.values()), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
-			count += db.update(new ArrayList<Flowcell>(flowcells.values()), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
+			count += db.update(new ArrayList<NgsCapturingKit>(capturingKits.values()),
+					DatabaseAction.ADD_UPDATE_EXISTING, "name");
+			count += db.update(new ArrayList<NgsSample>(samples.values()), DatabaseAction.ADD_UPDATE_EXISTING,
+					"identifier");
+			count += db.update(new ArrayList<Flowcell>(flowcells.values()), DatabaseAction.ADD_UPDATE_EXISTING,
+					"identifier");
 			// System.out.println(">> " + liblanes.values());
-			count += db.update(new ArrayList<LibraryLane>(liblanes.values()), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
-			//count += db.update(new ArrayList<Array>(arrays.values()), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
-			for(Array a: arrays.values())
+			count += db.update(new ArrayList<LibraryLane>(liblanes.values()), DatabaseAction.ADD_UPDATE_EXISTING,
+					"identifier");
+			// count += db.update(new ArrayList<Array>(arrays.values()),
+			// DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
+			for (Array a : arrays.values())
 			{
 				System.out.println(a);
 				db.add(a);
@@ -349,28 +405,34 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 			state = State.UPLOAD;
 
 			this.setSuccess("Added or updated " + count + " records succesfully");
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			state = State.UPLOAD;
 			throw e;
 		}
 	}
 
-	public void resetUpload(Database db, Tuple request) {
+	public void resetUpload(Database db, Tuple request)
+	{
 		state = State.UPLOAD;
 	}
 
 	@Override
-	public ScreenView getView() {
+	public ScreenView getView()
+	{
 		MolgenisForm view = new MolgenisForm(this);
 
-		if (state == State.UPLOAD) {
+		if (state == State.UPLOAD)
+		{
 			view.add(new TextInput("worksheetCsv"));
 			view.add(new Newline());
 			view.add(new FileInput("worksheetFile"));
 			view.add(new Newline());
 			view.add(new ActionInput("uploadWorksheet"));
 		}
-		if (state == State.REVIEW) {
+		if (state == State.REVIEW)
+		{
 			view.add(new Paragraph("<h2>Please review uploaded data:</h2>"));
 			view.add(new ActionInput("resetUpload", "reset"));
 			view.add(new ActionInput("saveUpload", "save"));
@@ -383,15 +445,18 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet> {
 			p.setLabel("<h3>Persons:</h3>");
 			view.add(p);
 
-			EntityTable sa = new EntityTable("samples", samples.values(), false, "study_identifier", "identifier", "externalIdentifier", "sampletype");
+			EntityTable sa = new EntityTable("samples", samples.values(), false, "study_identifier", "identifier",
+					"externalIdentifier", "sampletype");
 			sa.setLabel("<h3>Samples:</h3>");
 			view.add(sa);
 
-			EntityTable fc = new EntityTable("flowcells", flowcells.values(), false, "identifier", "machine_name", "run", "startDate");
+			EntityTable fc = new EntityTable("flowcells", flowcells.values(), false, "identifier", "machine_name",
+					"run", "startDate");
 			fc.setLabel("<h3>Flowcells:</h3>");
 			view.add(fc);
 
-			EntityTable l = new EntityTable("libraryLanes", liblanes.values(), false, "flowcell_identifier", "lane", "barcode_name", "sample_identifier", "prepKit_name", "capturingKit_name");
+			EntityTable l = new EntityTable("libraryLanes", liblanes.values(), false, "flowcell_identifier", "lane",
+					"barcode_name", "sample_identifier", "prepKit_name", "capturingKit_name");
 			l.setLabel("<h3>Libraries loaded on lanes</h3>");
 			view.add(l);
 

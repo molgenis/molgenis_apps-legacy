@@ -1,6 +1,7 @@
 package org.molgenis.animaldb.plugins.administration;
 
-public class DecProject extends DecEntity {
+public class DecProject extends DecEntity
+{
 	private int decAppListId;
 	private String decNr;
 	private String decTitle;
@@ -9,56 +10,82 @@ public class DecProject extends DecEntity {
 	private String pdfDecApproval;
 	private String fieldBiology;
 	private String decBudget;
-	
+
 	public void setDecAppListId(int decAppListId)
 	{
 		this.decAppListId = decAppListId;
 	}
+
 	public int getDecAppListId()
 	{
 		return decAppListId;
 	}
-	
-	public void setDecNr(String decNr) {
+
+	public void setDecNr(String decNr)
+	{
 		this.decNr = decNr;
 	}
-	public String getDecNr() {
+
+	public String getDecNr()
+	{
 		return decNr;
 	}
-	public String getDecTitle() {
+
+	public String getDecTitle()
+	{
 		return decTitle;
 	}
-	public void setDecTitle(String decTitle) {
+
+	public void setDecTitle(String decTitle)
+	{
 		this.decTitle = decTitle;
 	}
-	public void setDecApplicantName(String decApplicantName) {
+
+	public void setDecApplicantName(String decApplicantName)
+	{
 		this.decApplicantName = decApplicantName;
 	}
-	public String getDecApplicantName() {
+
+	public String getDecApplicantName()
+	{
 		return decApplicantName;
 	}
-	public void setPdfDecApplication(String pdfDecApplication) {
+
+	public void setPdfDecApplication(String pdfDecApplication)
+	{
 		this.pdfDecApplication = pdfDecApplication;
 	}
-	public String getPdfDecApplication() {
+
+	public String getPdfDecApplication()
+	{
 		return pdfDecApplication;
 	}
-	public void setPdfDecApproval(String pdfDecApproval) {
+
+	public void setPdfDecApproval(String pdfDecApproval)
+	{
 		this.pdfDecApproval = pdfDecApproval;
 	}
-	public String getPdfDecApproval() {
+
+	public String getPdfDecApproval()
+	{
 		return pdfDecApproval;
 	}
-	public void setFieldBiology(String fieldBiology) {
+
+	public void setFieldBiology(String fieldBiology)
+	{
 		this.fieldBiology = fieldBiology;
 	}
-	public String getFieldBiology() {
+
+	public String getFieldBiology()
+	{
 		return fieldBiology;
 	}
+
 	public String getDecBudget()
 	{
 		return decBudget;
 	}
+
 	public void setDecBudget(String decBudget)
 	{
 		this.decBudget = decBudget;

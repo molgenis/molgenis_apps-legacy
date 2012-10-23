@@ -1,6 +1,9 @@
 package matrix.test.implementations.general;
-public class Params {
-	public Params(int matrixDimension1, int matrixDimension2, int maxTextLength, boolean fixedTextLength, boolean sparse, boolean skipPerElement)
+
+public class Params
+{
+	public Params(int matrixDimension1, int matrixDimension2, int maxTextLength, boolean fixedTextLength,
+			boolean sparse, boolean skipPerElement)
 	{
 		this.matrixDimension1 = matrixDimension1;
 		this.matrixDimension2 = matrixDimension2;
@@ -16,5 +19,5 @@ public class Params {
 	public boolean fixedTextLength;
 	public boolean sparse;
 	public boolean skipPerElement;
-	
+
 }

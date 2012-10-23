@@ -1,6 +1,5 @@
 package org.molgenis.pheno;
 
-
 import org.molgenis.Molgenis;
 
 public class PhenoUpdateDatabase

@@ -14,8 +14,6 @@ public class MolgenisFileManagerModel
 	private String ipURl;
 	private Boolean showApplet;
 	private long fileSize;
-	
-	
 
 	public Boolean getShowApplet()
 	{

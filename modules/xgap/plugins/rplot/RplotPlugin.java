@@ -40,12 +40,13 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 		super(name, parent);
 	}
 
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders()
-//	{
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//	}
+	// moved overlib to molgenis core
+	// @Override
+	// public String getCustomHtmlHeaders()
+	// {
+	// return
+	// "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+	// }
 
 	@Override
 	public String getViewName()
@@ -73,17 +74,17 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 				this.model.setSelectedHeight(Integer.parseInt(request.getString("resolution").split("x")[1]));
 				this.model.setSelectedPlotType(request.getString("typeSelect"));
 
-				String rowType = this.model.getSelectedData().getTargetType(); //shorthand
-				String colType = this.model.getSelectedData().getFeatureType(); //shorthand
-				String rowName = this.model.getSelectedRow(); //shorthand
-				String colName = this.model.getSelectedCol(); //shorthand
-				DataMatrixInstance instance = this.model.getMatrixInstance(); //shorthand
-				Data data = this.model.getSelectedData(); //shorthand
-				String action = request.getString("__action"); //shorthand
-				
+				String rowType = this.model.getSelectedData().getTargetType(); // shorthand
+				String colType = this.model.getSelectedData().getFeatureType(); // shorthand
+				String rowName = this.model.getSelectedRow(); // shorthand
+				String colName = this.model.getSelectedCol(); // shorthand
+				DataMatrixInstance instance = this.model.getMatrixInstance(); // shorthand
+				Data data = this.model.getSelectedData(); // shorthand
+				String action = request.getString("__action"); // shorthand
+
 				Object[] plotThis = null;
 				PlotParameters params = new PlotParameters();
-				
+
 				if (action.equals("plotRow"))
 				{
 					if (data.getValueType().equals("Text"))
@@ -91,7 +92,8 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 						params.setTitle(rowType + " " + rowName);
 						params.setxLabel("Type of " + colType);
 						params.setyLabel("# of " + colType);
-					}else if (data.getValueType().equals("Decimal"))
+					}
+					else if (data.getValueType().equals("Decimal"))
 					{
 						params.setTitle(rowType + " " + rowName);
 						params.setxLabel(colType);
@@ -99,8 +101,8 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 					}
 					plotThis = instance.getRow(rowName);
 				}
-				
-				else if(action.equals("plotCol"))
+
+				else if (action.equals("plotCol"))
 				{
 					if (data.getValueType().equals("Text"))
 					{
@@ -117,7 +119,7 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 					}
 					plotThis = instance.getCol(colName);
 				}
-				
+
 				if (action.equals("plotRow") || action.equals("plotCol"))
 				{
 					File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot"
@@ -155,15 +157,16 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 
 		try
 		{
-			//FormModel<Data> theParent = (FormModel<Data>) this.getParent().getParent();
-			//Data newSelectedData = ((Data) theParent.getRecords().get(0));
-			
+			// FormModel<Data> theParent = (FormModel<Data>)
+			// this.getParent().getParent();
+			// Data newSelectedData = ((Data) theParent.getRecords().get(0));
+
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-			FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+			FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
 			Data newSelectedData = parentForm.getRecords().get(0);
 
-			
-			if(dmh == null){
+			if (dmh == null)
+			{
 				dmh = new DataMatrixHandler(db);
 			}
 
@@ -173,7 +176,6 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 			{
 				this.model.setSelectedData(newSelectedData);
 
-				
 				DataMatrixInstance m = dmh.createInstance(newSelectedData, db);
 
 				this.model.setMatrixCols(m.getColNames());

@@ -25,7 +25,7 @@ public class Header extends EasyPluginController<HeaderModel>
 		super(name, parent);
 		this.setModel(new HeaderModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Chd7Header.ftl", getModel());
@@ -37,29 +37,29 @@ public class Header extends EasyPluginController<HeaderModel>
 		String cssFormat = "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"%s\">\n";
 		String jsFormat = "<script src=\"%s\" type=\"text/javascript\" language=\"javascript\"></script>";
 		String headers = "";
-		
-//		cp res/css/colors.css generated-res/css
-//		cp res/css/data.css generated-res/css
-//		cp res/css/main.css generated-res/css
-//		cp res/css/menu.css generated-res/css
-//		cp res/scripts/all.js generated-res/scripts
-//		cp res/img/*.jpg generated-res/img
+
+		// cp res/css/colors.css generated-res/css
+		// cp res/css/data.css generated-res/css
+		// cp res/css/main.css generated-res/css
+		// cp res/css/menu.css generated-res/css
+		// cp res/scripts/all.js generated-res/scripts
+		// cp res/img/*.jpg generated-res/img
 
 		headers += String.format(cssFormat, "res/displaytag/css/displaytag.css");
-		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
-		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
+		// headers += String.format(cssFormat, "res/displaytag/css/screen.css");
+		// headers += String.format(cssFormat, "res/displaytag/css/site.css");
 		headers += String.format(cssFormat, "res/css/chd7/colors.css");
 		headers += String.format(cssFormat, "res/css/col7a1/data.css");
-		//headers += String.format(cssFormat, "res/css/main.css");
-		//headers += String.format(cssFormat, "res/css/menu.css");
+		// headers += String.format(cssFormat, "res/css/main.css");
+		// headers += String.format(cssFormat, "res/css/menu.css");
 		headers += String.format(jsFormat, "res/scripts/all.js");
-		
+
 		return headers;
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		//nothing to do here
+		// nothing to do here
 	}
 }

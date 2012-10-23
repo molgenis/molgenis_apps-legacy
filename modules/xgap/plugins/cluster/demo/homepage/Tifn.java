@@ -10,7 +10,7 @@ public class Tifn extends plugins.cluster.demo.ClusterDemo
 	{
 		super(name, parent);
 	}
-	
+
 	@Override
 	public String getViewName()
 	{

@@ -9,7 +9,6 @@ package org.molgenis.wormqtl.header;
 
 import org.molgenis.framework.ui.ScreenController;
 
-
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
  * includes the header logo as well as the top level menu items for
@@ -37,11 +36,11 @@ public class MolgenisHeader extends org.molgenis.xgap.xqtlworkbench.header.Molge
 	{
 		return "org/molgenis/wormqtl/header/MolgenisHeader.ftl";
 	}
-	
+
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xqtlpanaceacolors.css\">" + "\n" +
-			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xqtlpanaceacolors.css\">" + "\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">";
 	}
 }

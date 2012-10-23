@@ -18,7 +18,8 @@ import org.w3c.dom.NodeList;
  * 
  * @author roankanninga
  */
-public class HL7OrganizerLRA {
+public class HL7OrganizerLRA
+{
 
 	//
 
@@ -30,30 +31,32 @@ public class HL7OrganizerLRA {
 	public String organizerName;
 	public ArrayList<HL7ObservationLRA> measurements;
 
-	public HL7OrganizerLRA(Node organizer, XPath xpath) throws Exception {
+	public HL7OrganizerLRA(Node organizer, XPath xpath) throws Exception
+	{
 		this.organizer = organizer;
 		this.xpath = xpath;
 		readOrganizerName();
 
-		NodeList nodes = (NodeList) xpath.compile(OBSERVATION).evaluate(
-				organizer, XPathConstants.NODESET);
+		NodeList nodes = (NodeList) xpath.compile(OBSERVATION).evaluate(organizer, XPathConstants.NODESET);
 
 		this.measurements = new ArrayList<HL7ObservationLRA>();
-		for (int i = 0; i < nodes.getLength(); i++) {
+		for (int i = 0; i < nodes.getLength(); i++)
+		{
 			HL7ObservationLRA meas = new HL7ObservationLRA(nodes.item(i), xpath);
 			measurements.add(meas);
 		}
 	}
 
-	public void readOrganizerName() throws XPathExpressionException {
+	public void readOrganizerName() throws XPathExpressionException
+	{
 
-		Node nameNode = (Node) xpath.evaluate(ORGANIZER_NAME, organizer,
-				XPathConstants.NODE);
+		Node nameNode = (Node) xpath.evaluate(ORGANIZER_NAME, organizer, XPathConstants.NODE);
 		this.organizerName = nameNode.getNodeValue();
 
 	}
 
-	public String getHL7OrganizerNameLRA() {
+	public String getHL7OrganizerNameLRA()
+	{
 		return organizerName;
 	}
 

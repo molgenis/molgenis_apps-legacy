@@ -3,9 +3,9 @@ package org.molgenis.matrix.ui;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.matrix.Matrix;
 
-public class StringMatrixView extends HtmlInput<Matrix<String,String,String>>
+public class StringMatrixView extends HtmlInput<Matrix<String, String, String>>
 {
-	public StringMatrixView(String name, Matrix<String,String,String> matrix)
+	public StringMatrixView(String name, Matrix<String, String, String> matrix)
 	{
 		super(name, matrix);
 	}
@@ -15,16 +15,14 @@ public class StringMatrixView extends HtmlInput<Matrix<String,String,String>>
 	{
 		try
 		{
-			Matrix<String,String,String> m = getObject();
-			
-			
+			Matrix<String, String, String> m = getObject();
+
 			// very naive
 			String result = "";
-			
+
 			// add a pulldown to select cols
-				
-				
-			//render table
+
+			// render table
 			result += "<table border=\"1\"><thead><tr><td>&nbsp;</td>";
 
 			// header
@@ -37,10 +35,10 @@ public class StringMatrixView extends HtmlInput<Matrix<String,String,String>>
 
 			for (String row : m.getRowNames())
 			{
-				result += "<tr><td><b>"+row+"</b></td>";
-				for(String col : m.getColNames())
+				result += "<tr><td><b>" + row + "</b></td>";
+				for (String col : m.getColNames())
 				{
-					result += "<td>"+m.getValue(row, col)+"</td>";
+					result += "<td>" + m.getValue(row, col) + "</td>";
 				}
 				result += "</tr>";
 			}

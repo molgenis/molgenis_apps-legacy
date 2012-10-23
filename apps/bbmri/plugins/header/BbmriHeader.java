@@ -16,10 +16,6 @@ import org.molgenis.util.Tuple;
 //import plugins.emptydb.emptyDatabase;
 //import app.FillMetadata;
 
-
-
-
-
 public class BbmriHeader extends PluginModel<Entity>
 {
 	/**
@@ -27,19 +23,18 @@ public class BbmriHeader extends PluginModel<Entity>
 	 */
 	private static final long serialVersionUID = 5516712543692105018L;
 	private String userLogin = new String();
-	
+
 	public BbmriHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"bbmri/css/bbmri_colors.css\">" + "\n"  ;
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"bbmri/css/bbmri_colors.css\">" + "\n";
 	}
-	
-	
+
 	@Override
 	public String getViewName()
 	{
@@ -57,80 +52,88 @@ public class BbmriHeader extends PluginModel<Entity>
 	{
 		System.out.println("__________");
 
-		if ("doLogout".equals(request.getAction())) {
+		if ("doLogout".equals(request.getAction()))
+		{
 			System.out.println("asfgsgas");
-				this.getLogin().logout(db);
-				//getLogin().logout(db);
+			this.getLogin().logout(db);
+			// getLogin().logout(db);
 		}
 	}
-	
 
-//	private void prefillDb(Database db) {
-//		try {
-//			
-//			// Empty DB and run generated sql scripts
-//			new emptyDatabase(db, false);
-//			FillMetadata.fillMetadata(db, false, "SimpleUserLoginPlugin");
-//			
-//			this.getMessages().add(new ScreenMessage("Your database was empty, so it was prefilled with entities needed to make bbmri application run", true));
-//		} catch (Exception e) {
-//			String message = "Something went wrong while trying to prefill your database";
-//			if (e.getMessage() != null) {
-//				message += (": " + e.getMessage());
-//			}
-//			this.getMessages().add(new ScreenMessage(message, false));
-//			e.printStackTrace();
-//		}
-//	}
-	
+	// private void prefillDb(Database db) {
+	// try {
+	//
+	// // Empty DB and run generated sql scripts
+	// new emptyDatabase(db, false);
+	// FillMetadata.fillMetadata(db, false, "SimpleUserLoginPlugin");
+	//
+	// this.getMessages().add(new
+	// ScreenMessage("Your database was empty, so it was prefilled with entities needed to make bbmri application run",
+	// true));
+	// } catch (Exception e) {
+	// String message =
+	// "Something went wrong while trying to prefill your database";
+	// if (e.getMessage() != null) {
+	// message += (": " + e.getMessage());
+	// }
+	// this.getMessages().add(new ScreenMessage(message, false));
+	// e.printStackTrace();
+	// }
+	// }
+
 	@Override
 	public void reload(Database db)
 	{
-//		try {
-//			int nrOfUsersInDb = db.count(MolgenisUser.class);
-//			if (nrOfUsersInDb == 0) { // Check if DB is filled by counting the nr. of users (should always be >= 2)
-//				prefillDb(db);
-//			}
-//		} catch (Exception e) {
-//			prefillDb(db);
-//		}
-		
+		// try {
+		// int nrOfUsersInDb = db.count(MolgenisUser.class);
+		// if (nrOfUsersInDb == 0) { // Check if DB is filled by counting the
+		// nr. of users (should always be >= 2)
+		// prefillDb(db);
+		// }
+		// } catch (Exception e) {
+		// prefillDb(db);
+		// }
+
 		this.setUserLogin();
 	}
-	
-	
-	
+
 	@Override
 	public boolean isVisible()
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
+		// you can use this to hide this plugin, e.g. based on user rights.
+		// e.g.
+		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
 		return true;
 	}
 
-//	public void Logout() {
-//		if (this.getLogin().isAuthenticated()) {
-//			getLogin().logout();
-//		}	
-//	}
-	
+	// public void Logout() {
+	// if (this.getLogin().isAuthenticated()) {
+	// getLogin().logout();
+	// }
+	// }
 
-	public void setUserLogin() {
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			this.userLogin += "<a href='molgenis.do?__target=BbmriHeader&select=SimpleUserLogin&__action=doLogout'>" + " | Logout " + "</a>";
-		} else {
-			//this.userLogin = "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+	public void setUserLogin()
+	{
+		if (this.getLogin().isAuthenticated())
+		{
+			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Welcome "
+					+ ((DatabaseLogin) this.getLogin()).getFullUserName() + "</a>";
+			this.userLogin += "<a href='molgenis.do?__target=BbmriHeader&select=SimpleUserLogin&__action=doLogout'>"
+					+ " | Logout " + "</a>";
+		}
+		else
+		{
+			// this.userLogin =
+			// "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=main&select=UserLogin'>"
+			// + "Login" + "</a>";
 			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Login" + "</a>";
 		}
-		
+
 	}
 
-	
-	
-	public String getUserLogin() {
-		
+	public String getUserLogin()
+	{
+
 		return userLogin;
 	}
 }

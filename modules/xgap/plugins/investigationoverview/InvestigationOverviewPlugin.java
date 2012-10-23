@@ -40,7 +40,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -7068554327138233108L;
 	private InvestigationOverviewModel model = new InvestigationOverviewModel();
-	
+
 	private Integer currentInvId;
 
 	public InvestigationOverviewModel getMyModel()
@@ -52,12 +52,12 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
+
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/tagcloud/jquery.dynacloud-5_xQTL.js\"></script>" +
-				"<link rel=\"stylesheet\" href=\"res/jquery-plugins/tagcloud/taghighlighting.css\">";
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/tagcloud/jquery.dynacloud-5_xQTL.js\"></script>"
+				+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/tagcloud/taghighlighting.css\">";
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				{
 					this.model.setViewDataByTags(false);
 				}
-				else if(action.equals("refresh"))
+				else if (action.equals("refresh"))
 				{
 					currentInvId = null;
 				}
@@ -144,13 +144,13 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			{
 				this.model.setShowAllOther(false);
 			}
-			if(this.model.getViewDataByTags() == null)
+			if (this.model.getViewDataByTags() == null)
 			{
 				this.model.setViewDataByTags(false);
 			}
-			
-			//find out if File viewer is visible for linkouts
-			if(this.getLogin().canRead(this.get("Files")))
+
+			// find out if File viewer is visible for linkouts
+			if (this.getLogin().canRead(this.get("Files")))
 			{
 				this.model.setFileLinkoutIsVisible(true);
 			}
@@ -160,17 +160,18 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			}
 
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-			FormModel<Investigation> parentForm = (FormModel<Investigation>) ((FormController)parentController).getModel();
+			FormModel<Investigation> parentForm = (FormModel<Investigation>) ((FormController) parentController)
+					.getModel();
 			Investigation inv = parentForm.getRecords().get(0);
-			
+
 			boolean reload = false;
-			if(currentInvId == null || !inv.getId().equals(currentInvId))
+			if (currentInvId == null || !inv.getId().equals(currentInvId))
 			{
 				currentInvId = inv.getId();
 				reload = true;
 			}
-			
-			if(reload)
+
+			if (reload)
 			{
 				this.model.setSelectedInv(inv);
 				QueryRule thisInv = new QueryRule(ObservationElement.INVESTIGATION_NAME, Operator.EQUALS, inv.getName());
@@ -189,15 +190,16 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 						if (e.getName().equals(ObservationElement.class.getSimpleName()))
 						{
 							Class<? extends Entity> entityClass = db.getClassForName(entityType.getName());
-							// and the class is not ObservableFeature or ObservationTarget or Data..
-							if	(
-								!entityClass.getSimpleName().equals(ObservableFeature.class.getSimpleName())
-								&& !entityClass.getSimpleName().equals(ObservationTarget.class.getSimpleName())
-								&& !entityClass.getSimpleName().equals(Data.class.getSimpleName())
-								)
+							// and the class is not ObservableFeature or
+							// ObservationTarget or Data..
+							if (!entityClass.getSimpleName().equals(ObservableFeature.class.getSimpleName())
+									&& !entityClass.getSimpleName().equals(ObservationTarget.class.getSimpleName())
+									&& !entityClass.getSimpleName().equals(Data.class.getSimpleName()))
 							{
-								// count the number of entities in the database, who are also of this exact type
-								QueryRule thisType = new QueryRule(ObservationElement.__TYPE, Operator.EQUALS, (entityType.getName()));
+								// count the number of entities in the database,
+								// who are also of this exact type
+								QueryRule thisType = new QueryRule(ObservationElement.__TYPE, Operator.EQUALS,
+										(entityType.getName()));
 								int count = db.count(entityClass, thisInv, thisType);
 								if (count > 0)
 								{
@@ -207,42 +209,44 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 							break;
 						}
 					}
-	
+
 				}
-	
-				// merge type+amount and add hyperlink instead (note: hyperlink may
+
+				// merge type+amount and add hyperlink instead (note: hyperlink
+				// may
 				// NOT actually match!
 				HashMap<String, String> annotationWithLinks = new HashMap<String, String>();
 				for (String key : annotationTypeAndNr.keySet())
 				{
-					annotationWithLinks.put(key, annotationTypeAndNr.get(key)+"");
+					annotationWithLinks.put(key, annotationTypeAndNr.get(key) + "");
 				}
-	
+
 				this.model.setAnnotationList(annotationWithLinks);
-	
+
 				HashMap<String, Data> expList = new HashMap<String, Data>();
 				HashMap<String, String> expDimensions = new HashMap<String, String>();
 				List<Data> dataList = db.find(Data.class, thisInv);
 				for (Data d : dataList)
 				{
 					String name = d.getName();
-					if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
+					if (name.length() > 25) name = name.substring(0, 10) + "(..)" + name.substring(name.length() - 10);
 					expList.put(name, d);
 					expDimensions.put(name, getDataInfo(d, db));
 				}
 				this.model.setExpList(expList);
 				this.model.setExpDimensions(expDimensions);
-	
+
 				HashMap<String, String> otherList = new HashMap<String, String>();
-	
+
 				List<InvestigationFile> ifList = db.find(InvestigationFile.class, thisInv);
 				for (InvestigationFile invFile : ifList)
 				{
 					String name = invFile.getName();
-					if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
-					otherList.put(name + "." + invFile.getExtension(),
-							"?select=Files&__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_id&__filter_operator=EQUALS&__filter_value="
-									+ invFile.getId());
+					if (name.length() > 25) name = name.substring(0, 10) + "(..)" + name.substring(name.length() - 10);
+					otherList
+							.put(name + "." + invFile.getExtension(),
+									"?select=Files&__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_id&__filter_operator=EQUALS&__filter_value="
+											+ invFile.getId());
 				}
 				this.model.setOtherList(otherList);
 			}
@@ -253,14 +257,15 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
-	
+
 	private String getDataInfo(Data data, Database db) throws Exception
 	{
 		String res = "";
-		
-		try{
+
+		try
+		{
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
-			if(dmh.hasSource(data, db))
+			if (dmh.hasSource(data, db))
 			{
 				DataMatrixInstance matrix = dmh.createInstance(data, db);
 				res += "(";
@@ -270,7 +275,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				res += ")";
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			// may not crash or the plugin breaks
 			// in case backend is missing or something else went wrong,

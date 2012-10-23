@@ -29,76 +29,93 @@ public class MBrowse implements Serializable
 		this.isVisible = true;
 	}
 
-	public String getTarget() {
+	public String getTarget()
+	{
 		return target;
 	}
 
-	public void setTarget(String target) {
+	public void setTarget(String target)
+	{
 		this.target = target;
 	}
 
-	public List<ProteinDomainDTO> getProteinDomainDTOList() {
+	public List<ProteinDomainDTO> getProteinDomainDTOList()
+	{
 		return proteinDomainDTOList;
 	}
 
-	public void setProteinDomainDTOList(List<ProteinDomainDTO> proteinDomainDTOList) {
+	public void setProteinDomainDTOList(List<ProteinDomainDTO> proteinDomainDTOList)
+	{
 		this.proteinDomainDTOList = proteinDomainDTOList;
 	}
 
-	public ProteinDomainDTO getProteinDomainDTO() {
+	public ProteinDomainDTO getProteinDomainDTO()
+	{
 		return proteinDomainDTO;
 	}
 
-	public void setProteinDomainDTO(ProteinDomainDTO proteinDomainDTO) {
+	public void setProteinDomainDTO(ProteinDomainDTO proteinDomainDTO)
+	{
 		this.proteinDomainDTO = proteinDomainDTO;
 	}
 
-	public List<MutationSummaryDTO> getMutationSummaryDTOList() {
+	public List<MutationSummaryDTO> getMutationSummaryDTOList()
+	{
 		return mutationSummaryDTOList;
 	}
 
-	public void setMutationSummaryDTOList(
-			List<MutationSummaryDTO> mutationSummaryDTOList) {
+	public void setMutationSummaryDTOList(List<MutationSummaryDTO> mutationSummaryDTOList)
+	{
 		this.mutationSummaryDTOList = mutationSummaryDTOList;
 	}
 
-	public String getMutationPager() {
+	public String getMutationPager()
+	{
 		return mutationPager;
 	}
 
-	public void setMutationPager(String mutationPager) {
+	public void setMutationPager(String mutationPager)
+	{
 		this.mutationPager = mutationPager;
 	}
 
-	public GeneDTO getGeneDTO() {
+	public GeneDTO getGeneDTO()
+	{
 		return geneDTO;
 	}
 
-	public void setGeneDTO(GeneDTO geneDTO) {
+	public void setGeneDTO(GeneDTO geneDTO)
+	{
 		this.geneDTO = geneDTO;
 	}
 
-	public ExonDTO getExonDTO() {
+	public ExonDTO getExonDTO()
+	{
 		return exonDTO;
 	}
 
-	public void setExonDTO(ExonDTO exonDTO) {
+	public void setExonDTO(ExonDTO exonDTO)
+	{
 		this.exonDTO = exonDTO;
 	}
 
-	public List<ExonDTO> getExonDTOList() {
+	public List<ExonDTO> getExonDTOList()
+	{
 		return exonDTOList;
 	}
 
-	public void setExonDTOList(List<ExonDTO> exonDTOList) {
+	public void setExonDTOList(List<ExonDTO> exonDTOList)
+	{
 		this.exonDTOList = exonDTOList;
 	}
 
-	public Boolean getShowNames() {
+	public Boolean getShowNames()
+	{
 		return showNames;
 	}
 
-	public void setShowNames(Boolean showNames) {
+	public void setShowNames(Boolean showNames)
+	{
 		this.showNames = showNames;
 	}
 
@@ -107,7 +124,8 @@ public class MBrowse implements Serializable
 		GenePanel genePanel = new GenePanel();
 		genePanel.setShowNames(this.showNames);
 		genePanel.setProteinDomainSummaryVOList(this.getProteinDomainDTOList());
-		genePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
+		genePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
 
 		return genePanel;
 	}
@@ -116,7 +134,8 @@ public class MBrowse implements Serializable
 	{
 		ProteinDomainPanel proteinDomainPanel = new ProteinDomainPanel();
 		proteinDomainPanel.setProteinDomainDTO(this.getProteinDomainDTO());
-		proteinDomainPanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
+		proteinDomainPanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
 
 		return proteinDomainPanel;
 	}
@@ -126,7 +145,8 @@ public class MBrowse implements Serializable
 		ExonIntronPanel exonIntronPanel = new ExonIntronPanel();
 		exonIntronPanel.setExons(this.getExonDTOList());
 		exonIntronPanel.setShowIntrons(true);
-		exonIntronPanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showExon&exon_id=#results");
+		exonIntronPanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showExon&exon_id=#results");
 
 		return exonIntronPanel;
 	}
@@ -136,7 +156,8 @@ public class MBrowse implements Serializable
 		SequencePanel sequencePanel = new SequencePanel();
 		sequencePanel.setExonDTO(this.getExonDTO());
 		sequencePanel.setMutationSummaryVOs(this.getMutationSummaryDTOList());
-		sequencePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showMutation&mid=#results");
+		sequencePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showMutation&mid=#results");
 
 		return sequencePanel;
 	}

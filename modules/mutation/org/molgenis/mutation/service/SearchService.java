@@ -23,7 +23,7 @@ public class SearchService implements Serializable
 	private static final long serialVersionUID = 6768968931746646894L;
 	private Database db;
 	private HashMap<Integer, ProteinDomainSummaryVO> cache = new HashMap<Integer, ProteinDomainSummaryVO>();
-	
+
 	public SearchService()
 	{
 	}
@@ -35,9 +35,10 @@ public class SearchService implements Serializable
 
 	/**
 	 * Get all mutations sorted by their position
+	 * 
 	 * @return mutations
-	 * @throws java.text.ParseException 
-	 * @throws DatabaseException 
+	 * @throws java.text.ParseException
+	 * @throws DatabaseException
 	 */
 	public List<Mutation> getAllMutations() throws DatabaseException, java.text.ParseException
 	{
@@ -46,18 +47,20 @@ public class SearchService implements Serializable
 
 	/**
 	 * Get all phenotypes sorted by their name
+	 * 
 	 * @return phenotypes
 	 * @throws DatabaseException
 	 */
 	public List<String> getAllPhenotypes() throws DatabaseException
 	{
 		List<Measurement> features = this.db.query(Measurement.class).equals(Measurement.NAME, "Phenotype").find();
-		if (features.size() != 1)
-			return new ArrayList<String>();
+		if (features.size() != 1) return new ArrayList<String>();
 
 		if (this.db instanceof JDBCDatabase)
 		{
-			List<Tuple> values  = ((JDBCDatabase) this.db).sql("SELECT DISTINCT value FROM ObservedValue WHERE Feature = " + features.get(0).getId() + " ORDER BY value");
+			List<Tuple> values = ((JDBCDatabase) this.db)
+					.sql("SELECT DISTINCT value FROM ObservedValue WHERE Feature = " + features.get(0).getId()
+							+ " ORDER BY value");
 			List<String> result = new ArrayList<String>();
 			for (Tuple value : values)
 				result.add(value.getString(1));
@@ -65,7 +68,9 @@ public class SearchService implements Serializable
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT value FROM ObservedValue WHERE Feature = " + features.get(0).getId() + " ORDER BY value");
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(
+					"SELECT DISTINCT value FROM ObservedValue WHERE Feature = " + features.get(0).getId()
+							+ " ORDER BY value");
 			return q.getResultList();
 		}
 		else
@@ -74,6 +79,7 @@ public class SearchService implements Serializable
 
 	/**
 	 * Find a protein domain by its id
+	 * 
 	 * @param id
 	 * @param noIntrons
 	 * @return protein domain
@@ -86,25 +92,27 @@ public class SearchService implements Serializable
 
 	/**
 	 * Get all protein domains
-	 * @param orientation 
+	 * 
+	 * @param orientation
 	 * @return protein domains
-	 * @throws ParseException 
-	 * @throws DatabaseException 
+	 * @throws ParseException
+	 * @throws DatabaseException
 	 */
 	public List<ProteinDomainSummaryVO> getAllProteinDomains() throws DatabaseException, ParseException
 	{
 		return this.toProteinDomainSummaryVOList(this.db.query(ProteinDomain.class).sortASC(ProteinDomain.NAME).find());
 	}
-	
-	private ProteinDomainSummaryVO toProteinDomainSummaryVO(ProteinDomain proteinDomain, Boolean noIntrons) throws DatabaseException
+
+	private ProteinDomainSummaryVO toProteinDomainSummaryVO(ProteinDomain proteinDomain, Boolean noIntrons)
+			throws DatabaseException
 	{
-		if (this.cache.containsKey(proteinDomain.getId()))
-			return this.cache.get(proteinDomain.getId());
+		if (this.cache.containsKey(proteinDomain.getId())) return this.cache.get(proteinDomain.getId());
 
 		ProteinDomainSummaryVO proteinDomainSummaryVO = new ProteinDomainSummaryVO();
 		proteinDomainSummaryVO.setProteinDomain(proteinDomain);
 
-		List<Exon> exons = this.db.query(Exon.class).equals(Exon.PROTEINDOMAIN, proteinDomain.getId()).equals(Exon.ISINTRON, !noIntrons).sortASC(Exon.GDNA_POSITION).find();
+		List<Exon> exons = this.db.query(Exon.class).equals(Exon.PROTEINDOMAIN, proteinDomain.getId())
+				.equals(Exon.ISINTRON, !noIntrons).sortASC(Exon.GDNA_POSITION).find();
 		proteinDomainSummaryVO.setExons(exons);
 
 		// cache value
@@ -112,14 +120,15 @@ public class SearchService implements Serializable
 
 		return proteinDomainSummaryVO;
 	}
-	
-	private List<ProteinDomainSummaryVO> toProteinDomainSummaryVOList(List<ProteinDomain> proteinDomains) throws DatabaseException
+
+	private List<ProteinDomainSummaryVO> toProteinDomainSummaryVOList(List<ProteinDomain> proteinDomains)
+			throws DatabaseException
 	{
 		List<ProteinDomainSummaryVO> result = new ArrayList<ProteinDomainSummaryVO>();
 
 		for (ProteinDomain proteinDomain : proteinDomains)
 			result.add(this.toProteinDomainSummaryVO(proteinDomain, true));
-		
+
 		return result;
 	}
 }

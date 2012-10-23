@@ -12,48 +12,47 @@ public class RegistrationForm extends Container
 
 	public RegistrationForm()
 	{
-		TextLineInput usernameInput     = new TextLineInput("username");
+		TextLineInput usernameInput = new TextLineInput("username");
 		usernameInput.setLabel("Username");
 		this.add(usernameInput);
-		PasswordInput passwordInput     = new PasswordInput("password");
+		PasswordInput passwordInput = new PasswordInput("password");
 		this.add(passwordInput);
-		PasswordInput passwordInput2    = new PasswordInput("password2");
+		PasswordInput passwordInput2 = new PasswordInput("password2");
 		this.add(passwordInput2);
-		TextLineInput emailInput        = new TextLineInput("email");
+		TextLineInput emailInput = new TextLineInput("email");
 		this.add(emailInput);
-		
-		TextLineInput phoneInput         = new TextLineInput("phone");
+
+		TextLineInput phoneInput = new TextLineInput("phone");
 		this.add(phoneInput);
-		TextLineInput faxInput           = new TextLineInput("fax");
+		TextLineInput faxInput = new TextLineInput("fax");
 		this.add(faxInput);
 		TextLineInput tollFreePhoneInput = new TextLineInput("tollFreePhone");
 		this.add(tollFreePhoneInput);
-		TextLineInput addressInput       = new TextLineInput("address");
+		TextLineInput addressInput = new TextLineInput("address");
 		this.add(addressInput);
-		
-		
-		TextLineInput titleInput       = new TextLineInput("title");
+
+		TextLineInput titleInput = new TextLineInput("title");
 		this.add(titleInput);
-		TextLineInput lastnameInput    = new TextLineInput("lastname");
+		TextLineInput lastnameInput = new TextLineInput("lastname");
 		this.add(lastnameInput);
-		TextLineInput firstnameInput   = new TextLineInput("firstname");
+		TextLineInput firstnameInput = new TextLineInput("firstname");
 		this.add(firstnameInput);
-		TextLineInput positionInput    = new TextLineInput("position");
+		TextLineInput positionInput = new TextLineInput("position");
 		this.add(positionInput);
-		TextLineInput instituteInput   = new TextLineInput("institute");
+		TextLineInput instituteInput = new TextLineInput("institute");
 		this.add(instituteInput);
-		TextLineInput departmentInput  = new TextLineInput("department");
+		TextLineInput departmentInput = new TextLineInput("department");
 		this.add(departmentInput);
-		TextLineInput cityInput        = new TextLineInput("city");
+		TextLineInput cityInput = new TextLineInput("city");
 		this.add(cityInput);
-		TextLineInput countryInput     = new TextLineInput("country");
+		TextLineInput countryInput = new TextLineInput("country");
 		this.add(countryInput);
-		TextLineInput codeInput        = new TextLineInput("code");
+		TextLineInput codeInput = new TextLineInput("code");
 		this.add(codeInput);
-		ActionInput addUserInput       = new ActionInput("AddUser", "Add");
+		ActionInput addUserInput = new ActionInput("AddUser", "Add");
 		addUserInput.setTooltip("Add");
 		this.add(addUserInput);
-		ActionInput cancelInput        = new ActionInput("Cancel");
+		ActionInput cancelInput = new ActionInput("Cancel");
 		cancelInput.setTooltip("Cancel");
 		this.add(cancelInput);
 	}

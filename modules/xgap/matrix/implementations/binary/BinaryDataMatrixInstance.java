@@ -16,14 +16,14 @@ import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
 import org.molgenis.matrix.MatrixException;
 
-public class BinaryDataMatrixInstance extends
-		AbstractDataMatrixInstance<Object>
+public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
-	
+
 	private int textElementLength;
 	private int startOfElementsPointer;
-	private int endOfElementsPointer; //FIXME: is this big enough? whats the approx. file size then?
+	private int endOfElementsPointer; // FIXME: is this big enough? whats the
+										// approx. file size then?
 	private byte[] textDataElementLengths;
 	private File bin;
 	private String nullChar;
@@ -62,7 +62,7 @@ public class BinaryDataMatrixInstance extends
 		startOfElements += 1 + 4 + 4;
 
 		this.setData(dataDescription);
-		
+
 		// now the information contained within the actual matrix file
 
 		int[] colNameLengths = new int[this.getNumberOfCols()];
@@ -142,8 +142,7 @@ public class BinaryDataMatrixInstance extends
 		}
 	}
 
-	private Double readNextDoubleFromRAF(RandomAccessFile raf)
-			throws IOException
+	private Double readNextDoubleFromRAF(RandomAccessFile raf) throws IOException
 	{
 		byte[] arr = new byte[8];
 		raf.read(arr);
@@ -155,8 +154,7 @@ public class BinaryDataMatrixInstance extends
 		return d;
 	}
 
-	private Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr)
-			throws IOException
+	private Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr) throws IOException
 	{
 		byte[] arr = new byte[nr * 8];
 		raf.read(arr);
@@ -199,8 +197,7 @@ public class BinaryDataMatrixInstance extends
 		return Double.longBitsToDouble(longBits);
 	}
 
-	private String readNextCharsFromRAF(RandomAccessFile raf, int stringLength)
-			throws IOException
+	private String readNextCharsFromRAF(RandomAccessFile raf, int stringLength) throws IOException
 	{
 		byte[] string = new byte[stringLength];
 		raf.read(string);
@@ -222,8 +219,7 @@ public class BinaryDataMatrixInstance extends
 		return result;
 	}
 
-	private String readNextChars(DataInputStream dis, int stringLength)
-			throws IOException
+	private String readNextChars(DataInputStream dis, int stringLength) throws IOException
 	{
 		byte[] string = new byte[stringLength];
 		dis.read(string);
@@ -243,8 +239,7 @@ public class BinaryDataMatrixInstance extends
 		{
 			for (int i = 0; i < result.length; i++)
 			{
-				raf.seek(this.startOfElementsPointer + (colindex * 8)
-						+ (i * 8 * this.getNumberOfCols()));
+				raf.seek(this.startOfElementsPointer + (colindex * 8) + (i * 8 * this.getNumberOfCols()));
 				// result[i] = raf.readDouble();
 				result[i] = readNextDoubleFromRAF(raf);
 			}
@@ -255,12 +250,9 @@ public class BinaryDataMatrixInstance extends
 			{
 				for (int i = 0; i < result.length; i++)
 				{
-					raf.seek(this.startOfElementsPointer
-							+ (colindex * this.getTextElementLength())
-							+ (i * this.getTextElementLength() * this
-									.getNumberOfCols()));
-					result[i] = readNextCharsFromRAF(raf,
-							this.getTextElementLength());
+					raf.seek(this.startOfElementsPointer + (colindex * this.getTextElementLength())
+							+ (i * this.getTextElementLength() * this.getNumberOfCols()));
+					result[i] = readNextCharsFromRAF(raf, this.getTextElementLength());
 				}
 			}
 			else
@@ -277,8 +269,7 @@ public class BinaryDataMatrixInstance extends
 					}
 					lastindex = nextindex + 1;
 					raf.seek(this.startOfElementsPointer + bytePos);
-					byte elementLength = this.getTextDataElementLengths()[colindex
-							+ (i * this.getNumberOfCols())];
+					byte elementLength = this.getTextDataElementLengths()[colindex + (i * this.getNumberOfCols())];
 					result[i] = readNextCharsFromRAF(raf, elementLength);
 					bytePos += elementLength;
 				}
@@ -296,8 +287,7 @@ public class BinaryDataMatrixInstance extends
 
 		if (this.getData().getValueType().equals("Decimal"))
 		{
-			raf.seek(this.startOfElementsPointer
-					+ (rowindex * this.getNumberOfCols() * 8));
+			raf.seek(this.startOfElementsPointer + (rowindex * this.getNumberOfCols() * 8));
 			for (int i = 0; i < result.length; i++)
 			{
 				// result[i] = raf.readDouble();
@@ -309,12 +299,10 @@ public class BinaryDataMatrixInstance extends
 			if (this.getTextElementLength() != 0)
 			{
 				raf.seek(this.startOfElementsPointer
-						+ (rowindex * this.getNumberOfCols() * this
-								.getTextElementLength()));
+						+ (rowindex * this.getNumberOfCols() * this.getTextElementLength()));
 				for (int i = 0; i < result.length; i++)
 				{
-					result[i] = readNextCharsFromRAF(raf,
-							this.getTextElementLength());
+					result[i] = readNextCharsFromRAF(raf, this.getTextElementLength());
 				}
 			}
 			else
@@ -328,8 +316,7 @@ public class BinaryDataMatrixInstance extends
 				raf.seek(this.startOfElementsPointer + byteOffset);
 				for (int i = 0; i < result.length; i++)
 				{
-					result[i] = readNextCharsFromRAF(raf,
-							this.getTextDataElementLengths()[startIndex + i]);
+					result[i] = readNextCharsFromRAF(raf, this.getTextDataElementLengths()[startIndex + i]);
 				}
 			}
 		}
@@ -355,8 +342,7 @@ public class BinaryDataMatrixInstance extends
 		{
 			if (this.getTextElementLength() != 0)
 			{
-				raf.seek(this.startOfElementsPointer
-						+ (startIndex * this.getTextElementLength()));
+				raf.seek(this.startOfElementsPointer + (startIndex * this.getTextElementLength()));
 				result = readNextCharsFromRAF(raf, this.getTextElementLength());
 			}
 			else
@@ -367,8 +353,7 @@ public class BinaryDataMatrixInstance extends
 					byteOffset += this.getTextDataElementLengths()[i];
 				}
 				raf.seek(this.startOfElementsPointer + byteOffset);
-				result = readNextCharsFromRAF(raf,
-						this.getTextDataElementLengths()[startIndex]);
+				result = readNextCharsFromRAF(raf, this.getTextDataElementLengths()[startIndex]);
 			}
 		}
 		raf.close();
@@ -377,8 +362,7 @@ public class BinaryDataMatrixInstance extends
 	}
 
 	@Override
-	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices,
-			int[] colIndices) throws MatrixException
+	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
 		try
 		{
@@ -407,8 +391,7 @@ public class BinaryDataMatrixInstance extends
 			}
 			if (offsetAble)
 			{
-				return getSubMatrixByOffset(rowIndices[0], rowIndices.length,
-						colIndices[0], colIndices.length);
+				return getSubMatrixByOffset(rowIndices[0], rowIndices.length, colIndices[0], colIndices.length);
 			}
 
 			// the usual way: get single elements at the crossing sections of
@@ -427,8 +410,7 @@ public class BinaryDataMatrixInstance extends
 				{
 					for (int colindex : colIndices)
 					{
-						int index = (rowindex * this.getNumberOfCols())
-								+ colindex;
+						int index = (rowindex * this.getNumberOfCols()) + colindex;
 						raf.seek(this.startOfElementsPointer + (index * 8));
 						elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
 						colCount++;
@@ -445,12 +427,9 @@ public class BinaryDataMatrixInstance extends
 					{
 						for (int colIndex : colIndices)
 						{
-							int index = (rowIndex * this.getNumberOfCols())
-									+ colIndex;
-							raf.seek(this.startOfElementsPointer
-									+ (index * this.getTextElementLength()));
-							elements[rowCount][colCount] = readNextCharsFromRAF(
-									raf, this.getTextElementLength());
+							int index = (rowIndex * this.getNumberOfCols()) + colIndex;
+							raf.seek(this.startOfElementsPointer + (index * this.getTextElementLength()));
+							elements[rowCount][colCount] = readNextCharsFromRAF(raf, this.getTextElementLength());
 							colCount++;
 						}
 						rowCount++;
@@ -463,16 +442,14 @@ public class BinaryDataMatrixInstance extends
 					{
 						for (int colIndex : colIndices)
 						{
-							int index = (rowIndex * this.getNumberOfCols())
-									+ colIndex;
+							int index = (rowIndex * this.getNumberOfCols()) + colIndex;
 							long byteOffset = 0;
 							for (int i = 0; i < index; i++)
 							{
 								byteOffset += this.getTextDataElementLengths()[i];
 							}
 							raf.seek(this.startOfElementsPointer + byteOffset);
-							elements[rowCount][colCount] = readNextCharsFromRAF(
-									raf,
+							elements[rowCount][colCount] = readNextCharsFromRAF(raf,
 									this.getTextDataElementLengths()[index]);
 							colCount++;
 						}
@@ -497,8 +474,7 @@ public class BinaryDataMatrixInstance extends
 				colNames.add(this.getColNames().get(colIndex).toString());
 			}
 
-			result = new MemoryDataMatrixInstance(rowNames, colNames, elements,
-					this.getData());
+			result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
 
 			raf.close();
 
@@ -511,8 +487,8 @@ public class BinaryDataMatrixInstance extends
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row,
-			int nrows, int col, int ncols) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nrows, int col, int ncols)
+			throws Exception
 	{
 		AbstractDataMatrixInstance<Object> result = null;
 		Object[][] elements = new Object[nrows][ncols];
@@ -570,12 +546,10 @@ public class BinaryDataMatrixInstance extends
 				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
 				{
 					int startIndex = (rowIndex * this.getNumberOfCols()) + col;
-					raf.seek(this.startOfElementsPointer
-							+ (startIndex * this.getTextElementLength()));
+					raf.seek(this.startOfElementsPointer + (startIndex * this.getTextElementLength()));
 					for (int colIndex = col; colIndex < col + ncols; colIndex++)
 					{
-						elements[rowCount][colCount] = readNextCharsFromRAF(
-								raf, this.getTextElementLength());
+						elements[rowCount][colCount] = readNextCharsFromRAF(raf, this.getTextElementLength());
 						colCount++;
 					}
 					rowCount++;
@@ -599,11 +573,9 @@ public class BinaryDataMatrixInstance extends
 					raf.seek(this.startOfElementsPointer + byteOffset);
 					for (int colIndex = col; colIndex < col + ncols; colIndex++)
 					{
-						currentIndex = (rowIndex * this.getNumberOfCols())
-								+ colIndex;
+						currentIndex = (rowIndex * this.getNumberOfCols()) + colIndex;
 						byte elementLength = this.getTextDataElementLengths()[currentIndex];
-						elements[rowCount][colCount] = readNextCharsFromRAF(
-								raf, elementLength);
+						elements[rowCount][colCount] = readNextCharsFromRAF(raf, elementLength);
 						byteOffset += elementLength;
 						colCount++;
 					}
@@ -618,8 +590,7 @@ public class BinaryDataMatrixInstance extends
 		List<String> rowNames = getRowNames().subList(row, row + nrows);
 		List<String> colNames = getColNames().subList(col, col + ncols);
 
-		result = new MemoryDataMatrixInstance(rowNames, colNames, elements,
-				this.getData());
+		result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
 
 		raf.close();
 		return result;
@@ -675,7 +646,7 @@ public class BinaryDataMatrixInstance extends
 	{
 		this.nullCharPattern = nullCharPattern;
 	}
-	
+
 	int getStartOfElementsPointer()
 	{
 		return startOfElementsPointer;
@@ -740,14 +711,11 @@ public class BinaryDataMatrixInstance extends
 				{
 					for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
 					{
-						int startIndex = (rowIndex * this.getNumberOfCols())
-								+ col;
-						raf.seek(this.startOfElementsPointer
-								+ (startIndex * this.getTextElementLength()));
+						int startIndex = (rowIndex * this.getNumberOfCols()) + col;
+						raf.seek(this.startOfElementsPointer + (startIndex * this.getTextElementLength()));
 						for (int colIndex = col; colIndex < col + ncols; colIndex++)
 						{
-							elements[rowCount][colCount] = readNextCharsFromRAF(
-									raf, this.getTextElementLength());
+							elements[rowCount][colCount] = readNextCharsFromRAF(raf, this.getTextElementLength());
 							colCount++;
 						}
 						rowCount++;
@@ -771,12 +739,9 @@ public class BinaryDataMatrixInstance extends
 						raf.seek(this.startOfElementsPointer + byteOffset);
 						for (int colIndex = col; colIndex < col + ncols; colIndex++)
 						{
-							currentIndex = (rowIndex * this.getNumberOfCols())
-									+ colIndex;
-							byte elementLength = this
-									.getTextDataElementLengths()[currentIndex];
-							elements[rowCount][colCount] = readNextCharsFromRAF(
-									raf, elementLength);
+							currentIndex = (rowIndex * this.getNumberOfCols()) + colIndex;
+							byte elementLength = this.getTextDataElementLengths()[currentIndex];
+							elements[rowCount][colCount] = readNextCharsFromRAF(raf, elementLength);
 							byteOffset += elementLength;
 							colCount++;
 						}
@@ -819,6 +784,5 @@ public class BinaryDataMatrixInstance extends
 	{
 		throw new Exception("Action not possible");
 	}
-
 
 }

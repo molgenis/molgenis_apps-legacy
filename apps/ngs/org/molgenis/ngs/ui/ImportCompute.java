@@ -148,7 +148,7 @@ public class ImportCompute extends EasyPluginController<ImportCompute>
 		count += db.update(new ArrayList<ComputeProtocol>(protocols), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
 
 		count += db.update(new ArrayList<ComputeWorkflow>(workflows), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
-		
+
 		// because of self relation we need to load in two batches
 		Map<String, List> prevSteps = new LinkedHashMap<String, List>();
 		for (ComputeWorkflowStep p : steps)
@@ -156,12 +156,14 @@ public class ImportCompute extends EasyPluginController<ImportCompute>
 			prevSteps.put(p.getIdentifier(), p.getPrevSteps_Identifier());
 			p.setPrevSteps_Identifier(new ArrayList());
 		}
-		db.update(new ArrayList<ComputeWorkflowStep>(steps), DatabaseAction.ADD_UPDATE_EXISTING, "computeWorkflow_identifier","identifier");
+		db.update(new ArrayList<ComputeWorkflowStep>(steps), DatabaseAction.ADD_UPDATE_EXISTING,
+				"computeWorkflow_identifier", "identifier");
 		for (ComputeWorkflowStep p : steps)
 		{
 			p.setPrevSteps_Identifier(prevSteps.get(p.getIdentifier()));
 		}
-		count += db.update(new ArrayList<ComputeWorkflowStep>(steps), DatabaseAction.ADD_UPDATE_EXISTING, "computeWorkflow_identifier","identifier");
+		count += db.update(new ArrayList<ComputeWorkflowStep>(steps), DatabaseAction.ADD_UPDATE_EXISTING,
+				"computeWorkflow_identifier", "identifier");
 
 		state = State.UPLOAD;
 
@@ -190,10 +192,10 @@ public class ImportCompute extends EasyPluginController<ImportCompute>
 			p2.add(new FileInput("parametersFile"));
 			p2.add(new StringInput("pathToProtocols", "pathToProtocols",
 					"/Users/mswertz/Documents/OmicsConnectWorkspace/molgenis_apps/apps/ngs/protocols", true, false));
-			
+
 			f.add(p1);
 			f.add(p2);
-			
+
 			f.add(new ActionInput("uploadWorkflow"));
 		}
 

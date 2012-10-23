@@ -20,6 +20,7 @@ import org.molgenis.util.Tuple;
 public class TokenManager extends PluginModel
 {
 	private TokenManagerModel model = new TokenManagerModel();
+
 	public TokenManagerModel getMyModel()
 	{
 		return model;
@@ -57,30 +58,31 @@ public class TokenManager extends PluginModel
 					int nrOfTokens = request.getInt("amountOfTokens");
 					int nrOfDays = request.getInt("amountOfDaysValid");
 					int nrOfHours = request.getInt("amountOfHoursValid");
-					
-					if(nrOfDays >= 0 && nrOfDays <= 6 && nrOfHours >= 1 && nrOfHours <= 24 && nrOfTokens >= 1 && nrOfTokens <= 10)
+
+					if (nrOfDays >= 0 && nrOfDays <= 6 && nrOfHours >= 1 && nrOfHours <= 24 && nrOfTokens >= 1
+							&& nrOfTokens <= 10)
 					{
 						Calendar cal = Calendar.getInstance();
 						cal.add(Calendar.DATE, nrOfDays);
 						cal.add(Calendar.HOUR, nrOfHours);
 						Date validUntil = cal.getTime();
 						String userName = db.getLogin().getUserName();
-						
-						for(int i=0; i<nrOfTokens; i++)
+
+						for (int i = 0; i < nrOfTokens; i++)
 						{
 							this.getTokenFactory().makeNewToken(userName, validUntil);
 						}
 					}
-					else{
+					else
+					{
 						throw new Exception("BAD REQUEST: number of days or hours not allowed!");
 					}
-					
-					
+
 				}
-				if(action.startsWith("deleteToken_"))
+				if (action.startsWith("deleteToken_"))
 				{
 					String uuid = action.substring("deleteToken_".length());
-					if(this.getTokenFactory().checkIfTokenExists(uuid))
+					if (this.getTokenFactory().checkIfTokenExists(uuid))
 					{
 						this.getTokenFactory().removeToken(uuid);
 					}
@@ -95,25 +97,22 @@ public class TokenManager extends PluginModel
 		}
 	}
 
-
-
 	@Override
 	public void reload(Database db)
 	{
-		
+
 		try
 		{
 			String user = db.getLogin().getUserName();
 			this.model.setTokens(this.getTokenFactory().getAllTokens(user));
-			
+
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
-		
-		
+
 	}
 
 	@Override
