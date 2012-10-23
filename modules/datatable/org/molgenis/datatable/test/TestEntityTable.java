@@ -3,13 +3,13 @@ package org.molgenis.datatable.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.datatable.model.EntityTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.impl.EntityTable;
 import org.molgenis.pheno.Individual;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
