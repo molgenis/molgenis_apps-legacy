@@ -31,7 +31,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 		this.setModel(new MyMutationModel(this));
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("MyMutation.ftl", getModel());
@@ -41,9 +41,8 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 	public String getCustomHtmlHeaders()
 	{
 		String result = super.getCustomHtmlHeaders();
-		
-		if (CollectionUtils.isEmpty(this.getModel().getPatientSummaryVOList()))
-				result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=MyMutation&__target=MyMutation&__action=show\">";
+
+		if (CollectionUtils.isEmpty(this.getModel().getPatientSummaryVOList())) result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=MyMutation&__target=MyMutation&__action=show\">";
 
 		return result;
 	}
@@ -55,10 +54,12 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 			SearchService searchService = ServiceLocator.instance().getSearchService();
 			searchService.setDatabase(db);
 
-			List<PatientSummaryDTO> patientSummaryVOs = searchService.findPatientsByUserId(this.getApplicationController().getLogin().getUserId());
-	
+			List<PatientSummaryDTO> patientSummaryVOs = searchService.findPatientsByUserId(this
+					.getApplicationController().getLogin().getUserId());
+
 			this.getModel().setPatientSummaryVOList(patientSummaryVOs);
-			((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOList());
+			((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs",
+					this.getModel().getPatientSummaryVOList());
 			this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		}
 		catch (Exception e)

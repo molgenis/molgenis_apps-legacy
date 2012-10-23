@@ -55,7 +55,7 @@ public class ExpertSearchForm extends Container
 	public String toHtml()
 	{
 		StringBuffer buf = new StringBuffer();
-		
+
 		buf.append("<tr>");
 
 		for (int i = 0; i < this.getInputs().size(); ++i)
@@ -67,101 +67,139 @@ public class ExpertSearchForm extends Container
 			buf.append("</td><td>");
 			buf.append(input.toHtml());
 			buf.append("</td>");
-			
+
 			if (i % 2 != 0)
 			{
 				buf.append("</tr>\n");
 				buf.append("<tr>");
 			}
 		}
-		
+
 		if (this.getInputs().size() % 2 == 1)
 		{
 			buf.append("</tr>\n");
 		}
-		
+
 		return buf.toString();
 	}
 
-//	public void setSelect(String select)
-//	{
-//		
-//	}
+	// public void setSelect(String select)
+	// {
+	//
+	// }
 	public void setTarget(String target)
 	{
 		((HiddenInput) this.get("__target")).setValue(target);
 	}
+
 	public void populate()
 	{
-//		this.getModel().getExpertSearchForm().get("select").setValue(this.getName());
-//
-//		if (this.getModel().getMutationSearchCriteriaVO().getVariation() != null)
-//			((TextLineInput) this.getModel().getExpertSearchForm().get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
-//
-//		if (this.getModel().getMutationSearchCriteriaVO().getCdnaPosition() != null)
-//			((IntInput) this.getModel().getExpertSearchForm().get("nuclno")).setValue(this.getModel().getMutationSearchCriteriaVO().getCdnaPosition());
-//
-//		if (this.getModel().getMutationSearchCriteriaVO().getCodonNumber() != null)
-//			((IntInput) this.getModel().getExpertSearchForm().get("aano")).setValue(this.getModel().getMutationSearchCriteriaVO().getCodonNumber());
-//
-//		List<ValueLabel> exonIdOptions = new ArrayList<ValueLabel>();
-//		exonIdOptions.add(new ValueLabel("", "Select exon/intron"));
-//		for (ExonDTO exonSummaryVO : searchService.findAllExons())
-//			exonIdOptions.add(new ValueLabel(exonSummaryVO.getId(), exonSummaryVO.getName()));
-//		((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setOptions(exonIdOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getExonId() != null)
-//			((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getExonId());
-//		else
-//			((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setValue("Select exon/intron");
-//
-//		List<ValueLabel> typeOptions = new ArrayList<ValueLabel>();
-//		typeOptions.add(0, new ValueLabel("", "Select mutation type"));
-//		for (String mutationType : phenoService.findObservedValues("Type of mutation"))
-//			typeOptions.add(new ValueLabel(mutationType, mutationType));
-//		((SelectInput) this.getModel().getExpertSearchForm().get("type")).setOptions(typeOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getType() != null)
-//			((SelectInput) this.getModel().getExpertSearchForm().get("type")).setValue(this.getModel().getMutationSearchCriteriaVO().getType());
-//		else
-//			((SelectInput) this.getModel().getExpertSearchForm().get("type")).setValue("Select mutation type");
-//
-//		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
-//		consequenceOptions.add(0, new ValueLabel("", "Select consequence"));
-//		for (String consequence : phenoService.findObservedValues("consequence"))
-//			consequenceOptions.add(new ValueLabel(consequence, consequence));
-//		((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setOptions(consequenceOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
-//			((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
-//		else
-//			((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setValue("Select consequence");
-//
-//		List<ValueLabel> domainOptions = new ArrayList<ValueLabel>();
-//		domainOptions.add(new ValueLabel("", "Select protein domain"));
-//		for (ProteinDomainDTO domainVO : searchService.findAllProteinDomains())
-//			domainOptions.add(new ValueLabel(domainVO.getDomainId(), domainVO.getDomainName()));
-//		((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setOptions(domainOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getProteinDomainId() != null)
-//			((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId());
-//		else
-//			((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setValue("Select protein domain");
-//		
-//		List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
-//		phenotypeOptions.add(new ValueLabel("", "Select phenotype"));
-//		for (String phenotypeName : phenoService.findObservedValues("Phenotype"))
-//			phenotypeOptions.add(new ValueLabel(phenotypeName, phenotypeName));
-//		((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setOptions(phenotypeOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getPhenotypeId() != null)
-//			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue(this.getModel().getMutationSearchCriteriaVO().getPhenotypeId());
-//		else
-//			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue("Select phenotype");
-//
-//		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
-//		inheritanceOptions.add(0, new ValueLabel("", "Select inheritance"));
-//		for (String inheritance : phenoService.findObservedValues("Inheritance"))
-//			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
-//		((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setOptions(inheritanceOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
-//			((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
-//		else
-//			((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setValue("Select inheritance");
+		// this.getModel().getExpertSearchForm().get("select").setValue(this.getName());
+		//
+		// if (this.getModel().getMutationSearchCriteriaVO().getVariation() !=
+		// null)
+		// ((TextLineInput)
+		// this.getModel().getExpertSearchForm().get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
+		//
+		// if (this.getModel().getMutationSearchCriteriaVO().getCdnaPosition()
+		// != null)
+		// ((IntInput)
+		// this.getModel().getExpertSearchForm().get("nuclno")).setValue(this.getModel().getMutationSearchCriteriaVO().getCdnaPosition());
+		//
+		// if (this.getModel().getMutationSearchCriteriaVO().getCodonNumber() !=
+		// null)
+		// ((IntInput)
+		// this.getModel().getExpertSearchForm().get("aano")).setValue(this.getModel().getMutationSearchCriteriaVO().getCodonNumber());
+		//
+		// List<ValueLabel> exonIdOptions = new ArrayList<ValueLabel>();
+		// exonIdOptions.add(new ValueLabel("", "Select exon/intron"));
+		// for (ExonDTO exonSummaryVO : searchService.findAllExons())
+		// exonIdOptions.add(new ValueLabel(exonSummaryVO.getId(),
+		// exonSummaryVO.getName()));
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("exon_id")).setOptions(exonIdOptions);
+		// if (this.getModel().getMutationSearchCriteriaVO().getExonId() !=
+		// null)
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("exon_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getExonId());
+		// else
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("exon_id")).setValue("Select exon/intron");
+		//
+		// List<ValueLabel> typeOptions = new ArrayList<ValueLabel>();
+		// typeOptions.add(0, new ValueLabel("", "Select mutation type"));
+		// for (String mutationType :
+		// phenoService.findObservedValues("Type of mutation"))
+		// typeOptions.add(new ValueLabel(mutationType, mutationType));
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("type")).setOptions(typeOptions);
+		// if (this.getModel().getMutationSearchCriteriaVO().getType() != null)
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("type")).setValue(this.getModel().getMutationSearchCriteriaVO().getType());
+		// else
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("type")).setValue("Select mutation type");
+		//
+		// List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
+		// consequenceOptions.add(0, new ValueLabel("", "Select consequence"));
+		// for (String consequence :
+		// phenoService.findObservedValues("consequence"))
+		// consequenceOptions.add(new ValueLabel(consequence, consequence));
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("consequence")).setOptions(consequenceOptions);
+		// if (this.getModel().getMutationSearchCriteriaVO().getConsequence() !=
+		// null)
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
+		// else
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("consequence")).setValue("Select consequence");
+		//
+		// List<ValueLabel> domainOptions = new ArrayList<ValueLabel>();
+		// domainOptions.add(new ValueLabel("", "Select protein domain"));
+		// for (ProteinDomainDTO domainVO :
+		// searchService.findAllProteinDomains())
+		// domainOptions.add(new ValueLabel(domainVO.getDomainId(),
+		// domainVO.getDomainName()));
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("domain_id")).setOptions(domainOptions);
+		// if
+		// (this.getModel().getMutationSearchCriteriaVO().getProteinDomainId()
+		// != null)
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("domain_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId());
+		// else
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("domain_id")).setValue("Select protein domain");
+		//
+		// List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
+		// phenotypeOptions.add(new ValueLabel("", "Select phenotype"));
+		// for (String phenotypeName :
+		// phenoService.findObservedValues("Phenotype"))
+		// phenotypeOptions.add(new ValueLabel(phenotypeName, phenotypeName));
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("phenotype")).setOptions(phenotypeOptions);
+		// if (this.getModel().getMutationSearchCriteriaVO().getPhenotypeId() !=
+		// null)
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("phenotype")).setValue(this.getModel().getMutationSearchCriteriaVO().getPhenotypeId());
+		// else
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("phenotype")).setValue("Select phenotype");
+		//
+		// List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
+		// inheritanceOptions.add(0, new ValueLabel("", "Select inheritance"));
+		// for (String inheritance :
+		// phenoService.findObservedValues("Inheritance"))
+		// inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("inheritance")).setOptions(inheritanceOptions);
+		// if (this.getModel().getMutationSearchCriteriaVO().getInheritance() !=
+		// null)
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
+		// else
+		// ((SelectInput)
+		// this.getModel().getExpertSearchForm().get("inheritance")).setValue("Select inheritance");
 	}
 }
