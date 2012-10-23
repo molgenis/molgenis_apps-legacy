@@ -29,14 +29,14 @@ public class Contact extends EasyPluginController<ContactModel>
 	public Contact(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new ContactModel(this)); //the default model
+		this.setModel(new ContactModel(this)); // the default model
 	}
 
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Contact.ftl", getModel());
 	}
-	
+
 	public void handleRequest(Database db, Tuple request)
 	{
 		this.getModel().setMessages();
@@ -47,28 +47,26 @@ public class Contact extends EasyPluginController<ContactModel>
 
 			if ("send".equals(this.getModel().getAction()))
 			{
-				if (StringUtils.isEmpty(request.getString("name")))
-					throw new IllegalArgumentException("Please enter a name.");
-				if (StringUtils.isEmpty(request.getString("email")))
-					throw new IllegalArgumentException("Please enter an email address.");
-				if (StringUtils.isEmpty(request.getString("comments")))
-					throw new IllegalArgumentException("Please enter your comments.");
+				if (StringUtils.isEmpty(request.getString("name"))) throw new IllegalArgumentException(
+						"Please enter a name.");
+				if (StringUtils.isEmpty(request.getString("email"))) throw new IllegalArgumentException(
+						"Please enter an email address.");
+				if (StringUtils.isEmpty(request.getString("comments"))) throw new IllegalArgumentException(
+						"Please enter your comments.");
 
 				// get the http request that is encapsulated inside the tuple
-				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-				HttpServletRequest httpRequest   = rt.getRequest();
+				HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+				HttpServletRequest httpRequest = rt.getRequest();
 
-				Captcha captcha                  = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
+				Captcha captcha = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
 
-				if (!captcha.isCorrect(request.getString("code")))
-					throw new IllegalArgumentException("Code was wrong.");
-					
-				String emailContents = "New comment via the contact form:\n" +
-					"Name: " + request.getString("name") + "\n"+
-					"Email: " + request.getString("email") + "\n" +
-					"Comments: " + request.getString("comments") + "\n";
+				if (!captcha.isCorrect(request.getString("code"))) throw new IllegalArgumentException("Code was wrong.");
 
-				//assuming: 'encoded' p.w. (setting deObf = true)
+				String emailContents = "New comment via the contact form:\n" + "Name: " + request.getString("name")
+						+ "\n" + "Email: " + request.getString("email") + "\n" + "Comments: "
+						+ request.getString("comments") + "\n";
+
+				// assuming: 'encoded' p.w. (setting deObf = true)
 				this.getEmailService().email("New comment", emailContents, this.getModel().getEmailTo(), true);
 				this.getModel().getMessages().add(new ScreenMessage("Your comment has been successfully sent.", true));
 			}
