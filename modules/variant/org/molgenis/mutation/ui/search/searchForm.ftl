@@ -83,9 +83,9 @@ ${muta.expertSearch}
 	
 -->
 <#if model.mbrowse.isVisible>
-<p>
+<div class="mbrowse">
 ${model.getMBrowsePanel().toHtml()}
-</p>
+</div>
 </#if>
 
 <br/>
