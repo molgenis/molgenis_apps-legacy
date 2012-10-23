@@ -1,7 +1,6 @@
 package org.molgenis.mutation.ui.html;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +16,23 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 929100596754279741L;
 
+<<<<<<< HEAD
+	//TODO: make SCALE_FACTOR customizable
+//	private final double SCALE_FACTOR          = 0.1;
+	private final double SCALE_FACTOR          = 1;
+	private List<ExonDTO> exonDTOList;
+	private boolean showNames                  = true;
+	private boolean showExons                  = true;
+	private boolean showIntrons                = true;
+	private boolean showPosition               = true;
+	private String baseUrl;
+
+	public ExonIntronPanel(List<ExonDTO> exonDTOList, String baseUrl)
+	{
+		this.exonDTOList = exonDTOList;
+		this.baseUrl     = baseUrl;
+	}
+=======
 	// TODO: make SCALE_FACTOR customizable
 	// private final double SCALE_FACTOR = 0.1;
 	private final double SCALE_FACTOR = 1;
@@ -26,6 +42,7 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 	private boolean showIntrons = true;
 	private boolean showPosition = true;
 	private String baseUrl = "";
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 
 	@Override
 	public String toHtml()
@@ -111,6 +128,9 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 		return result.toString();
 	}
 
+<<<<<<< HEAD
+	public void setShowNames(boolean showNames) {
+=======
 	public void setExons(List<ExonDTO> exons)
 	{
 		this.exonDTOList = exons;
@@ -118,6 +138,7 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 
 	public void setShowNames(boolean showNames)
 	{
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 		this.showNames = showNames;
 	}
 
@@ -134,10 +155,5 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 	public void setShowPosition(boolean showPosition)
 	{
 		this.showPosition = showPosition;
-	}
-
-	public void setBaseUrl(String baseUrl)
-	{
-		this.baseUrl = baseUrl;
 	}
 }

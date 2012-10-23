@@ -1,7 +1,6 @@
 package org.molgenis.mutation.ui.html;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,11 +17,25 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 600688454568632400L;
 
+<<<<<<< HEAD
+//	private final double SCALE_FACTOR                         = 0.003;
+	private final double SCALE_FACTOR                         = 0.1;
+	private List<ProteinDomainDTO> proteinDomainDTOList;
+	private String baseUrl;
+	private Boolean showNames                                 = true;
+=======
 	// private final double SCALE_FACTOR = 0.003;
 	private final double SCALE_FACTOR = 0.1;
 	private List<ProteinDomainDTO> proteinDomainSummaryVOList = new ArrayList<ProteinDomainDTO>();
 	private String baseUrl = "";
 	private Boolean showNames = true;
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
+
+	public GenePanel(List<ProteinDomainDTO> proteinDomainDTOList, String baseUrl)
+	{
+		this.proteinDomainDTOList = proteinDomainDTOList;
+		this.baseUrl              = baseUrl;
+	}
 
 	public void setShowNames(Boolean showNames)
 	{
@@ -34,6 +47,11 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 	{
 		StrBuilder result = new StrBuilder();
 
+		result.appendln("<br/><br/>");
+		result.appendln("<h3>" + this.getLabel() + "</h3>");
+		result.appendln("<p>Click anywhere on this schematic representation to graphically browse the gene. With every click you will zoom in deeper on the gene. Mutated nucleotides are depicted in red. If the cursor is placed over the mutated nucleotide(s), the corresponding mutation is shown.</p>");
+		result.appendln("<br/>");
+
 		result.appendln("<div class=\"scrollable\">");
 		result.appendln("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"  width=\"1%\">");
 
@@ -41,7 +59,7 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 		if (this.showNames)
 		{
 			result.appendln("<tr>");
-			for (ProteinDomainDTO proteinDomainDTO : proteinDomainSummaryVOList)
+			for (ProteinDomainDTO proteinDomainDTO : proteinDomainDTOList)
 			{
 				List<ExonDTO> exonDTOs = proteinDomainDTO.getExonDTOList();
 
@@ -60,7 +78,7 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 		result.appendln("<tr>");
 
 		// second row: boxes
-		for (ProteinDomainDTO proteinDomainDTO : proteinDomainSummaryVOList)
+		for (ProteinDomainDTO proteinDomainDTO : proteinDomainDTOList)
 		{
 			for (ExonDTO exonDTO : proteinDomainDTO.getExonDTOList())
 			{
@@ -83,6 +101,8 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 
 		return result.toString();
 	}
+<<<<<<< HEAD
+=======
 
 	public List<ProteinDomainDTO> getProteinDomainSummaryVOList()
 	{
@@ -98,4 +118,5 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 	{
 		this.baseUrl = baseUrl;
 	}
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 }

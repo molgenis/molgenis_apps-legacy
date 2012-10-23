@@ -3,7 +3,12 @@ package org.molgenis.mutation.dto;
 import java.io.Serializable;
 import java.util.List;
 
+<<<<<<< HEAD
+
+public class ProteinDomainDTO implements Comparable<ProteinDomainDTO>, Serializable
+=======
 public class ProteinDomainDTO implements Serializable
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = -4365982338471188950L;
@@ -73,5 +78,17 @@ public class ProteinDomainDTO implements Serializable
 	public void setExonDTOList(List<ExonDTO> exonDTOList)
 	{
 		this.exonDTOList = exonDTOList;
+	}
+	@Override
+	public int compareTo(ProteinDomainDTO proteinDomainDTO)
+	{
+		if ("F".equals(this.orientation))
+		{
+			return this.getGdnaStart().compareTo(proteinDomainDTO.getGdnaStart());
+		}
+		else
+		{
+			return -1 * this.getGdnaEnd().compareTo(proteinDomainDTO.getGdnaEnd());
+		}
 	}
 }

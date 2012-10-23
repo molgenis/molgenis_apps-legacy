@@ -17,15 +17,25 @@ public class SequencePanel extends HtmlInput<String> implements Serializable
 {
 	private static final long serialVersionUID = 715300797597319262L;
 	private ExonDTO exonDTO;
+<<<<<<< HEAD
+	private List<MutationSummaryDTO> mutationSummaryDTOList;
+	boolean showNuclSequence  = true;
+	boolean showAaSequence    = true;
+	boolean showBasePositions = true;
+	private String baseUrl;
+=======
 	private List<MutationSummaryDTO> mutationSummaryVOs;
 	boolean showNuclSequence = true;
 	boolean showAaSequence = true;
 	boolean showBasePositions = true;
 	private String baseUrl = "";
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 
-	public SequencePanel()
+	public SequencePanel(ExonDTO exonDTO, List<MutationSummaryDTO> mutationSummaryDTOList, String baseUrl)
 	{
-		this("", "");
+		this.exonDTO                = exonDTO;
+		this.mutationSummaryDTOList = mutationSummaryDTOList;
+		this.baseUrl                = baseUrl;
 	}
 
 	public SequencePanel(String name, String label)
@@ -59,7 +69,7 @@ public class SequencePanel extends HtmlInput<String> implements Serializable
 				// exonDTO.getNuclSequence().length() + ", startPos==" +
 				// startPos + ", i==" + i);
 				boolean hasMutation = false;
-				for (MutationSummaryDTO mutationSummaryVO : mutationSummaryVOs)
+				for (MutationSummaryDTO mutationSummaryVO : this.mutationSummaryDTOList)
 				{
 					// System.out.println(">>> SequencePanel: m.cdna==" +
 					// mutationSummaryVO.getCdnaNotation() + ", m.gdna=" +
@@ -123,6 +133,8 @@ public class SequencePanel extends HtmlInput<String> implements Serializable
 
 		return result.toString();
 	}
+<<<<<<< HEAD
+=======
 
 	public void setExonDTO(ExonDTO exonDTO)
 	{
@@ -133,6 +145,7 @@ public class SequencePanel extends HtmlInput<String> implements Serializable
 	{
 		this.mutationSummaryVOs = mutationSummaryVOs;
 	}
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 
 	public void setShowNuclSequence(boolean showNuclSequence)
 	{
