@@ -68,7 +68,7 @@
 			<unique fields="Name,Identifier" />
 		</entity>
 		<entity name="Characteristic" implements="Identifiable"
-			xref_label="Name,Identifier">
+			xref_label="Identifier">
 			<description> Characteristics are yes-no
 				statements about things in
 				the world. These can be used as part of an observation, as
