@@ -12,11 +12,12 @@ public class TifnGenerate
 	{
 		try
 		{
-			//TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
+			// TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
 			FileUtils.deleteDirectory(new File("hsqldb"));
 			new Molgenis("apps/tifn/org/molgenis/tifn/tifn.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
