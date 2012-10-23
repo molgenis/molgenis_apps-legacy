@@ -2,8 +2,8 @@ package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
 
-import org.molgenis.datatable.model.EntityTable;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.tupletable.impl.EntityTable;
 import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;

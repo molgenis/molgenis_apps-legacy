@@ -32,8 +32,6 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
-
 /**
  * Wrap one Protocol EAV model in a TupleTable so that you can query this
  * protocol as if it was a real table (which we actually could implement for
@@ -86,12 +84,28 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	 */
 
 	/**
-	 * Beware: this function expects a prepared database object with
-	 * security and an active connection to be set before it is called!!
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
 	 */
 	@Override
 	public List<Field> getAllColumns() throws TableException
 	{
+		try
+		{
+			if (getDb().getConnection().isClosed())
+			{
+				throw new TableException("getRows(): Connection is closed!");
+			}
+		}
+		catch (SQLException e1)
+		{
+			throw new TableException(e1);
+		}
+		catch (DatabaseException e1)
+		{
+			throw new TableException(e1);
+		}
+
 		if (columns.size() == 0)
 		{
 			try
@@ -127,8 +141,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	{
 		Map<Measurement, Protocol> result = new LinkedHashMap<Measurement, Protocol>();
 
-		for (Protocol p : db.find(Protocol.class,
-				new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, investigationName)))
+		for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+				investigationName)))
 		{
 
 			if (p.getFeatures_Name().size() > 0)
@@ -147,7 +161,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 	}
 
-	private Map<Measurement, Protocol> getMeasurementsRecursive(Database db, Protocol protocol) throws DatabaseException
+	private Map<Measurement, Protocol> getMeasurementsRecursive(Database db, Protocol protocol)
+			throws DatabaseException
 	{
 		List<Integer> featureIds = protocol.getFeatures_Id();
 
@@ -179,15 +194,15 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	}
 
 	/**
-	 * Beware: this function expects a prepared database object with
-	 * security and an active connection to be set before it is called!!
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
 	 */
 	@Override
 	public List<Tuple> getRows() throws TableException
 	{
 		try
 		{
-			if(getDb().getConnection().isClosed())
+			if (getDb().getConnection().isClosed())
 			{
 				throw new TableException("getRows(): Connection is closed!");
 			}
@@ -200,7 +215,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		{
 			throw new TableException(e1);
 		}
-		
+
 		try
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
@@ -234,17 +249,14 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 							break;
 						}
 					}
-					// if (currentMeasurement == null) {
-					// System.out.println();
-					// }
 					if (currentMeasurement != null)
 					{
 
 						if ("categorical".equals(currentMeasurement.getDataType()))
 						{
 
-							for (Category c : getDb().find(Category.class, new QueryRule(Category.NAME, Operator.IN,
-									currentMeasurement.getCategories_Name())))
+							for (Category c : getDb().find(Category.class,
+									new QueryRule(Category.NAME, Operator.IN, currentMeasurement.getCategories_Name())))
 							{
 								if (v.getValue().equals(c.getCode_String())
 										&& isInViewPort(currentMeasurement.getLabel()))
@@ -259,12 +271,11 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 							if (v.getValue() != null && !v.getValue().isEmpty()
 									&& isInViewPort(currentMeasurement.getLabel()))
-								{
-									row.set(currentMeasurement.getLabel(), v.getValue());
-								
-								}
-							
-							
+							{
+								row.set(currentMeasurement.getLabel(), v.getValue());
+
+							}
+
 						}
 					}
 				}
@@ -280,13 +291,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 			}
 
-			System.out.println("GOING TO RETURN:");
-			for(Tuple t : result)
-			{
-				System.out.println(t.toString());
-			}
-			
-			
 			return result;
 		}
 		catch (Exception e)
@@ -315,8 +319,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	}
 
 	/**
-	 * Beware: this function expects a prepared database object with
-	 * security and an active connection to be set before it is called!!
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
 	 */
 	@Override
 	public int getCount() throws TableException
@@ -389,7 +393,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 					}
 				}
 			}
-			System.out.println("");
 		}
 
 		// one column is defined by ObservedValue.Investigation,
@@ -422,7 +425,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		sql += " WHERE ProtocolApplication.Investigation=" + invID;
 
-		System.out.println(sql);
+		// System.out.println(sql);
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
@@ -450,8 +453,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	}
 
 	/**
-	 * Beware: this function expects a prepared database object with
-	 * security and an active connection to be set before it is called!!
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
 	 */
 	@Override
 	public void add(Tuple request) throws TableException
@@ -572,8 +575,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	}
 
 	/**
-	 * Beware: this function expects a prepared database object with
-	 * security and an active connection to be set before it is called!!
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
 	 */
 	@Override
 	public void update(Tuple request) throws TableException
@@ -617,8 +620,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	}
 
 	/**
-	 * Beware: this function expects a prepared database object with
-	 * security and an active connection to be set before it is called!!
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
 	 */
 	@Override
 	public void remove(Tuple request) throws TableException
@@ -698,17 +701,16 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		this.investigationName = investigationName;
 
 	}
-	
 
 	private Database _db;
-	
+
 	public void setDb(Database db)
 	{
 		this._db = db;
 	}
-	 
+
 	public Database getDb()
-	{	
+	{
 		return this._db;
 	}
 }
