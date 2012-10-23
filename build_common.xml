@@ -207,13 +207,18 @@ It should be used via 'import' plus passing of properties
 			<map from="${basedir}/" to="" />
 		</pathconvert>
 		
-   		<findbugs home="${findbugs.home}"
-       		output="xml:withMessages" outputFile="${basedir}/dist/findbugs.xml"
+   		<findbugs home="${findbugs.home}" 
+       		output="html" outputFile="${basedir}/dist/findbugs.xml"
        		jvmargs="-Xms1024M -Xmx1024M ">
+      		<!--
       		<sourcePath path="${molgenis.dir}/src" />
+      		-->
       		<sourcePath path="${app_src}" />
        		<class location="${build.molgenis.dir}" />
        		<class location="${build.molgenis_apps.dir}" />
+       		<auxclasspath>
+	   			<path refid="molgenis.classpath" />
+			</auxclasspath>
    		</findbugs>
 	</target>
 	
