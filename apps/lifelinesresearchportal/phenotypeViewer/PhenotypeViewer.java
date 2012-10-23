@@ -23,16 +23,16 @@ import org.json.JSONObject;
 import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.model.ProtocolTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.JQGridView;
-import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.view.JQGridView;
+import org.molgenis.framework.tupletable.view.JQGridViewCallback;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
@@ -158,7 +158,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 			} else if (request.getAction().equals(
 					"download_json_reloadGridByInves")) {
 				investigationName = request.getString("investigation");
-				ProtocolTable table = new ProtocolTable(db, investigationName);
+				ProtocolTable table = new ProtocolTable(investigationName);
 				table.setTargetString("target");
 				table.setInvestigation(investigationName);
 				// add editable decorator
@@ -219,7 +219,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 			try {
 
 				// create table
-				ProtocolTable table = new ProtocolTable(db, investigationName);
+				ProtocolTable table = new ProtocolTable(investigationName);
 				table.setTargetString("target");
 				table.setInvestigation(investigationName);
 				// add editable decorator
@@ -271,7 +271,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 
 			importUploadFile(db, request);
 
-			ProtocolTable table = new ProtocolTable(db, investigationName);
+			ProtocolTable table = new ProtocolTable(investigationName);
 
 			table.setTargetString(table.getTargetString());
 			// add editable decorator
@@ -713,8 +713,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements
 				// "stageCatalogue").find().get(0);
 				if (db.find(Protocol.class).size() > 0) {
 					// create table
-					ProtocolTable table = new ProtocolTable(db,
-							investigationName);
+					ProtocolTable table = new ProtocolTable(investigationName);
 
 					table.setTargetString(table.getTargetString());
 					// add editable decorator

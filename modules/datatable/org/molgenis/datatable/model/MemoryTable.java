@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.fieldtypes.StringField;
+import org.molgenis.framework.tupletable.AbstractTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;

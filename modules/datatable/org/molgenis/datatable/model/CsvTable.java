@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import org.molgenis.framework.tupletable.AbstractTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;

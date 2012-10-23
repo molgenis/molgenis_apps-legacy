@@ -6,8 +6,8 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.molgenis.datatable.model.CsvTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.util.Tuple;
 import org.testng.annotations.Test;
 

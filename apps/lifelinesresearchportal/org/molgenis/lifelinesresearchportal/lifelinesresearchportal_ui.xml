@@ -25,7 +25,7 @@
 
 		<menu label="Admin" name="Admin">
 			<plugin name="jqGridViewGenotype"
-				type="org.molgenis.datatable.plugin.JQGridPluginPedMap" label="Genotype viewer" />
+				type="matrix.datatable.JQGridPluginPedMap" label="Genotype viewer" />
 			<form name="investigation" entity="Investigation" label="Investigations"
 				view="list" hide_fields="accession">
 				<menu name="InvestigationMenu">
