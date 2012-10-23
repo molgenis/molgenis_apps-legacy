@@ -36,7 +36,7 @@ public class Header extends EasyPluginController<HeaderModel> {
 	@Override
 	public String getCustomHtmlHeaders() {
 		String cssFormat = "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"%s\">\n";
-		String jsFormat = "<script src=\"%s\" type=\"text/javascript\" language=\"javascript\"></script>";
+//		String jsFormat = "<script src=\"%s\" type=\"text/javascript\" language=\"javascript\"></script>";
 		String headers = "";
 
 		// cp res/css/colors.css generated-res/css
@@ -50,8 +50,8 @@ public class Header extends EasyPluginController<HeaderModel> {
 				.format(cssFormat, "res/displaytag/css/displaytag.css");
 		// headers += String.format(cssFormat, "res/displaytag/css/screen.css");
 		// headers += String.format(cssFormat, "res/displaytag/css/site.css");
-		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
-		headers += String.format(cssFormat, "res/css/col7a1/data.css");
+//		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
+//		headers += String.format(cssFormat, "res/css/col7a1/data.css");
 		// headers += String.format(cssFormat, "res/css/main.css");
 		// headers += String.format(cssFormat, "res/css/menu.css");
 		// headers += String.format(jsFormat, "res/scripts/all.js");

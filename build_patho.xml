@@ -14,6 +14,8 @@
 		<pathelement location="modules/file" />
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/auth" />
+		<pathelement location="modules/news" />
+		<pathelement location="modules/variant" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/core" />

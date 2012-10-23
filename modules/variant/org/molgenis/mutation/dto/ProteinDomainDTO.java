@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 
-public class ProteinDomainDTO implements Serializable
+public class ProteinDomainDTO implements Comparable<ProteinDomainDTO>, Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = -4365982338471188950L;
@@ -51,5 +51,17 @@ public class ProteinDomainDTO implements Serializable
 	}
 	public void setExonDTOList(List<ExonDTO> exonDTOList) {
 		this.exonDTOList = exonDTOList;
+	}
+	@Override
+	public int compareTo(ProteinDomainDTO proteinDomainDTO)
+	{
+		if ("F".equals(this.orientation))
+		{
+			return this.getGdnaStart().compareTo(proteinDomainDTO.getGdnaStart());
+		}
+		else
+		{
+			return -1 * this.getGdnaEnd().compareTo(proteinDomainDTO.getGdnaEnd());
+		}
 	}
 }

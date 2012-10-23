@@ -22,7 +22,7 @@ Unpublished<br/>
 </table>
 
 <p>
-[<a href="javascript:history.back();" onclick="javascript:history.back();">Back to results</a>]
+[<a href="javascript:window.history.back();" onclick="javascript:window.history.back();">Back to results</a>]
 </p>
 <p>
 [<a href="#">Back to top</a>]
