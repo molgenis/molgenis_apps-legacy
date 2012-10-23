@@ -1,6 +1,5 @@
 package plugins.findingProxy;
 
-
 import gcc.catalogue.MappingMeasurement;
 
 import java.util.ArrayList;
@@ -27,8 +26,8 @@ import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.LinkedInformation;
 import plugins.HarmonizationComponent.MappingList;
 
-
-public class findingProxy extends PluginModel<Entity> {
+public class findingProxy extends PluginModel<Entity>
+{
 
 	private List<String> listOfJSON = new ArrayList<String>();
 	private List<String> listOfValidationStudy = new ArrayList<String>();
@@ -39,7 +38,7 @@ public class findingProxy extends PluginModel<Entity> {
 	private String selectedValidationStudy = null;
 	private String selectedManualParameter = null;
 	private boolean stage = true;
-	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();	
+	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
 	private int maxQuerySize = 0;
 	private double cutOffValue = 40;
 	private String userDefinedQuery = "";
@@ -53,42 +52,56 @@ public class findingProxy extends PluginModel<Entity> {
 	 */
 	private static final long serialVersionUID = 7938039670107105296L;
 
-	public findingProxy(String name, ScreenController<?> parent) {
+	public findingProxy(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getCustomHtmlHeaders() {
+	public String getCustomHtmlHeaders()
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">";
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "plugins_findingProxy_findingProxy";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/findingProxy/findingProxy.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request)
+	{
 
-		try{
+		try
+		{
 
-			if(request.getAction().equals("chooseModelAndStudy")){
+			if (request.getAction().equals("chooseModelAndStudy"))
+			{
 
 				listOfParameters.clear();
 
-				if(selectedPredictionModel != null){
+				if (selectedPredictionModel != null)
+				{
 
-					Protocol p = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, selectedPredictionModel)).get(0);
-					List<Measurement> parameters = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, p.getFeatures_Name()));
-					for(Measurement m : parameters){
+					Protocol p = db.find(Protocol.class,
+							new QueryRule(Protocol.NAME, Operator.EQUALS, selectedPredictionModel)).get(0);
+					List<Measurement> parameters = db.find(Measurement.class, new QueryRule(Measurement.NAME,
+							Operator.IN, p.getFeatures_Name()));
+					for (Measurement m : parameters)
+					{
 						String displayName = "";
-						if(m.getLabel() != null && !m.getLabel().equals("")){
+						if (m.getLabel() != null && !m.getLabel().equals(""))
+						{
 							displayName = m.getLabel();
-						}else{
+						}
+						else
+						{
 							displayName = m.getName();
 						}
 						listOfParameters.add(displayName);
@@ -100,28 +113,36 @@ public class findingProxy extends PluginModel<Entity> {
 
 				stage = false;
 
-			}else if(request.getAction().equals("customizedSearch")){
+			}
+			else if (request.getAction().equals("customizedSearch"))
+			{
 
 				manualMappingResultTable.clear();
 
-				userDefinedQuery  = request.getString("userDefinedQuery");
+				userDefinedQuery = request.getString("userDefinedQuery");
 
 				selectedManualParameter = request.getString("selectParameter");
 
 				System.out.println(userDefinedQuery);
 
-				if(request.getString("cutOffValue") != null && !request.getString("cutOffValue").equals("")){
+				if (request.getString("cutOffValue") != null && !request.getString("cutOffValue").equals(""))
+				{
 					cutOffValue = Double.parseDouble(request.getString("cutOffValue"));
-				}else{
+				}
+				else
+				{
 					cutOffValue = 50;
 				}
 
-				if(userDefinedQuery != null){
+				if (userDefinedQuery != null)
+				{
 
-					if(db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
-							Operator.EQUALS, selectedValidationStudy)).size() > 0){
+					if (db.find(Measurement.class,
+							new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedValidationStudy))
+							.size() > 0)
+					{
 
-						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
 								Operator.EQUALS, selectedValidationStudy));
 					}
 
@@ -131,40 +152,54 @@ public class findingProxy extends PluginModel<Entity> {
 
 					this.stringMatching(query, " ", request, true);
 
-					List<JSONObject> listOfJSON  = new ArrayList<JSONObject> (makeHtmlTable(mappingResultAndSimiarity).values());
+					List<JSONObject> listOfJSON = new ArrayList<JSONObject>(makeHtmlTable(mappingResultAndSimiarity)
+							.values());
 
-					for(JSONObject eachJSON : listOfJSON){
+					for (JSONObject eachJSON : listOfJSON)
+					{
 						manualMappingResultTable.add(eachJSON.toString());
-					} 
+					}
 				}
-			}else if(request.getAction().equals("addToExistingMapping")){
+			}
+			else if (request.getAction().equals("addToExistingMapping"))
+			{
 
-				if(selectedValidationStudy != null && selectedValidationStudy.equals("")){
+				if (selectedValidationStudy != null && selectedValidationStudy.equals(""))
+				{
 
 					setMessages(new ScreenMessage("Please input a new name for this validation study", false));
 
-				}else{
+				}
+				else
+				{
 
 					Protocol validationStudyProtocol = null;
 
-					if(db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, selectedValidationStudy)).size() != 0){
+					if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, selectedValidationStudy))
+							.size() != 0)
+					{
 
-						validationStudyProtocol = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, selectedValidationStudy)).get(0);
+						validationStudyProtocol = db.find(Protocol.class,
+								new QueryRule(Protocol.NAME, Operator.EQUALS, selectedValidationStudy)).get(0);
 
-					}else{
+					}
+					else
+					{
 
 						validationStudyProtocol = new Protocol();
 						validationStudyProtocol.setName(selectedValidationStudy);
-						//validationStudyProtocol.setInvestigation_Name("Validation Study");
+						// validationStudyProtocol.setInvestigation_Name("Validation Study");
 						validationStudyProtocol.setInvestigation_Name(selectedValidationStudy);
 						db.add(validationStudyProtocol);
 					}
 
-					for(Entry<String, MappingList> entry : mappingResultAndSimiarity.entrySet()){
+					for (Entry<String, MappingList> entry : mappingResultAndSimiarity.entrySet())
+					{
 
 						String originalQuery = entry.getKey();
 
-						if(request.getAction().equals("addToExistingMapping")){
+						if (request.getAction().equals("addToExistingMapping"))
+						{
 							originalQuery = request.getString("selectParameter");
 						}
 
@@ -173,11 +208,13 @@ public class findingProxy extends PluginModel<Entity> {
 
 						MappingMeasurement mapping = new MappingMeasurement();
 
-						for(LinkedInformation eachMatching : listOfMatchedResult){
+						for (LinkedInformation eachMatching : listOfMatchedResult)
+						{
 
-							String identifier =  eachMatching.measurementName + "_" + entry.getKey();
+							String identifier = eachMatching.measurementName + "_" + entry.getKey();
 
-							if(request.getBool(identifier.replaceAll(" ", "_")) != null){
+							if (request.getBool(identifier.replaceAll(" ", "_")) != null)
+							{
 
 								String dataItemName = eachMatching.measurementName;
 
@@ -187,26 +224,34 @@ public class findingProxy extends PluginModel<Entity> {
 
 						List<Measurement> measurements = new ArrayList<Measurement>();
 
-						if(listOFMatchedItem.size() > 0){
-							measurements = db.find(Measurement.class, 
-									new QueryRule(Measurement.NAME, Operator.IN, listOFMatchedItem));
+						if (listOFMatchedItem.size() > 0)
+						{
+							measurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+									listOFMatchedItem));
 						}
 
-						if(measurements.size() > 0){
+						if (measurements.size() > 0)
+						{
 
 							List<Integer> measurementIds = new ArrayList<Integer>();
 
-							for(Measurement m : measurements){
+							for (Measurement m : measurements)
+							{
 								measurementIds.add(m.getId());
 							}
 
-							if(measurementIds.size() > 0){
+							if (measurementIds.size() > 0)
+							{
 
-								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, 
-										Operator.EQUALS, originalQuery.replaceAll(" ", "_") + "_" + selectedValidationStudy)).size() == 0){
+								if (db.find(
+										Measurement.class,
+										new QueryRule(Measurement.NAME, Operator.EQUALS, originalQuery.replaceAll(" ",
+												"_") + "_" + selectedValidationStudy)).size() == 0)
+								{
 
 									Measurement m = new Measurement();
-									m.setName(originalQuery.toLowerCase().replaceAll(" ", "_") + "_" + selectedValidationStudy);
+									m.setName(originalQuery.toLowerCase().replaceAll(" ", "_") + "_"
+											+ selectedValidationStudy);
 									m.setInvestigation_Name(selectedValidationStudy);
 									db.add(m);
 
@@ -217,18 +262,21 @@ public class findingProxy extends PluginModel<Entity> {
 
 								Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
 
-								queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, 
-										Operator.EQUALS, originalQuery.replaceAll(" ", "_") + "_" + selectedValidationStudy));
+								queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, Operator.EQUALS,
+										originalQuery.replaceAll(" ", "_") + "_" + selectedValidationStudy));
 
-								queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, 
+								queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME,
 										Operator.EQUALS, originalQuery));
 
-								if(queryForMapping.find().size() > 0){
+								if (queryForMapping.find().size() > 0)
+								{
 
 									mapping = queryForMapping.find().get(0);
 
-									for(Integer id : mapping.getFeature_Id()){
-										if(!measurementIds.contains(id)){
+									for (Integer id : mapping.getFeature_Id())
+									{
+										if (!measurementIds.contains(id))
+										{
 											measurementIds.add(id);
 										}
 									}
@@ -237,9 +285,12 @@ public class findingProxy extends PluginModel<Entity> {
 
 									db.update(mapping);
 
-								}else{
+								}
+								else
+								{
 
-									mapping.setTarget_Name(originalQuery.toLowerCase().replaceAll(" ", "_") + "_" + selectedValidationStudy);
+									mapping.setTarget_Name(originalQuery.toLowerCase().replaceAll(" ", "_") + "_"
+											+ selectedValidationStudy);
 
 									mapping.setInvestigation_Name(selectedValidationStudy);
 
@@ -255,109 +306,136 @@ public class findingProxy extends PluginModel<Entity> {
 							}
 						}
 					}
-					//TODO this needs to be revisited. Little bug here
+					// TODO this needs to be revisited. Little bug here
 					db.update(validationStudyProtocol);
 				}
 
-			}else if(request.getAction().equals("backToSelection")){
+			}
+			else if (request.getAction().equals("backToSelection"))
+			{
 				stage = true;
 			}
 
-		}catch(Exception e){
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void reload(Database db)  {
+	public void reload(Database db)
+	{
 
-		try {
+		try
+		{
 
-			if(selectedPredictionModel == null){
+			if (selectedPredictionModel == null)
+			{
 
 				listOfPredictionModel.clear();
 
-				List<Protocol> predictionModels = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Prediction Model")); 
+				List<Protocol> predictionModels = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME,
+						Operator.EQUALS, "Prediction Model"));
 
-				for(Protocol p : predictionModels){
+				for (Protocol p : predictionModels)
+				{
 					listOfPredictionModel.add(p.getName());
 				}
-				if(predictionModels.size() > 0){
+				if (predictionModels.size() > 0)
+				{
 					selectedPredictionModel = listOfPredictionModel.get(0);
 				}
 			}
 
-			if(selectedValidationStudy == null){
+			if (selectedValidationStudy == null)
+			{
 
 				listOfValidationStudy.clear();
 
-				List<Investigation> listOfInvestigation = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.NOT, "Prediction Model"));
+				List<Investigation> listOfInvestigation = db.find(Investigation.class, new QueryRule(
+						Investigation.NAME, Operator.NOT, "Prediction Model"));
 
-				for(Investigation inv : listOfInvestigation){
+				for (Investigation inv : listOfInvestigation)
+				{
 					listOfValidationStudy.add(inv.getName());
 				}
-				if(listOfValidationStudy.size() > 0){
+				if (listOfValidationStudy.size() > 0)
+				{
 					selectedValidationStudy = listOfValidationStudy.get(0);
 				}
 			}
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
-	}	
+	}
 
-	public void stringMatching(List<String> listOfParameters, String separator, Tuple request, boolean cutOff) throws Exception{
+	public void stringMatching(List<String> listOfParameters, String separator, Tuple request, boolean cutOff)
+			throws Exception
+	{
 
 		mappingResultAndSimiarity.clear();
 
-		for(String eachParameter : listOfParameters){
+		for (String eachParameter : listOfParameters)
+		{
 
 			List<String> expandedQuery = new ArrayList<String>();
 
 			List<String> finalQuery = new ArrayList<String>();
 
-			if(expandedQueries.containsKey(eachParameter.toLowerCase())){
+			if (expandedQueries.containsKey(eachParameter.toLowerCase()))
+			{
 				expandedQuery = expandedQueries.get(eachParameter.toLowerCase());
-			}else{
+			}
+			else
+			{
 				expandedQuery.add(eachParameter.toLowerCase());
 			}
 
-			if(expandedQuery.contains("Prediction Model")){
+			if (expandedQuery.contains("Prediction Model"))
+			{
 				System.out.println();
 			}
 
-			for(String eachQuery : expandedQuery){
+			for (String eachQuery : expandedQuery)
+			{
 
 				String[] blocks = eachQuery.split(separator);
 
 				finalQuery.add(eachQuery.replaceAll(separator, " "));
 
-				if(request.getBool("baseline") != null){
+				if (request.getBool("baseline") != null)
+				{
 					finalQuery.add(eachQuery.replaceAll(separator, " ") + " baseline");
 				}
-				//				else{
-				//					finalQuery.add(eachQuery.replaceAll(separator, " "));
-				//				}
+				// else{
+				// finalQuery.add(eachQuery.replaceAll(separator, " "));
+				// }
 
-				for(int i = 0; i < blocks.length; i++){
+				for (int i = 0; i < blocks.length; i++)
+				{
 
-					if(!finalQuery.contains(blocks[i].toLowerCase()))
-						finalQuery.add(blocks[i].toLowerCase());
+					if (!finalQuery.contains(blocks[i].toLowerCase())) finalQuery.add(blocks[i].toLowerCase());
 
-					if(request.getBool("baseline") != null){
-						if(!finalQuery.contains(blocks[i].toLowerCase() + " baseline"))
-							finalQuery.add(blocks[i].toLowerCase() + " baseline");
+					if (request.getBool("baseline") != null)
+					{
+						if (!finalQuery.contains(blocks[i].toLowerCase() + " baseline")) finalQuery.add(blocks[i]
+								.toLowerCase() + " baseline");
 					}
-					//					else{
-					//						if(!finalQuery.contains(blocks[i].toLowerCase()))
-					//							finalQuery.add(blocks[i].toLowerCase());
-					//					}
+					// else{
+					// if(!finalQuery.contains(blocks[i].toLowerCase()))
+					// finalQuery.add(blocks[i].toLowerCase());
+					// }
 				}
 			}
 
 			parameterToExpandedQuery.put(eachParameter, finalQuery);
 
-			for(String eachQuery : finalQuery){
+			for (String eachQuery : finalQuery)
+			{
 
 				double maxSimilarity = 0;
 
@@ -367,54 +445,69 @@ public class findingProxy extends PluginModel<Entity> {
 
 				List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
 
-				for(Measurement m : measurementsInStudy){
+				for (Measurement m : measurementsInStudy)
+				{
 
 					List<String> fields = new ArrayList<String>();
 
-					if(m.getDescription() != null && !m.getDescription().equals("")){
+					if (m.getDescription() != null && !m.getDescription().equals(""))
+					{
 
 						fields.add(m.getDescription());
 
-						if(m.getCategories_Name().size() > 0){
-							for(String categoryName : m.getCategories_Name()){
+						if (m.getCategories_Name().size() > 0)
+						{
+							for (String categoryName : m.getCategories_Name())
+							{
 								fields.add(categoryName + " " + m.getDescription());
 							}
 						}
 					}
 
-					if(cutOff == true)
-						fields.add(m.getName());
+					if (cutOff == true) fields.add(m.getName());
 
-					for(String question : fields){
+					for (String question : fields)
+					{
 
 						List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
 
 						double similarity = model.calculateScore(dataItemTokens, tokens);
 
-						if(cutOff == false && similarity > maxSimilarity){
+						if (cutOff == false && similarity > maxSimilarity)
+						{
 
-							if(m.getDescription() != null){
+							if (m.getDescription() != null)
+							{
 								matchedDataItem = m.getDescription();
-							}else{
+							}
+							else
+							{
 								matchedDataItem = question;
 							}
 							maxSimilarity = similarity;
 							measurementName = m.getName();
 						}
 
-						if(cutOff == true && similarity >= cutOffValue ){
+						if (cutOff == true && similarity >= cutOffValue)
+						{
 
 							MappingList temp = null;
 
-							if(mappingResultAndSimiarity.containsKey(eachParameter)){
+							if (mappingResultAndSimiarity.containsKey(eachParameter))
+							{
 								temp = mappingResultAndSimiarity.get(eachParameter);
-							}else{
+							}
+							else
+							{
 								temp = new MappingList();
 							}
 
-							if(m.getDescription() != null){
+							if (m.getDescription() != null)
+							{
 								matchedDataItem = m.getDescription();
-							}else{
+							}
+							else
+							{
 								matchedDataItem = question;
 							}
 
@@ -425,13 +518,17 @@ public class findingProxy extends PluginModel<Entity> {
 					}
 				}
 
-				if(cutOff == false){
+				if (cutOff == false)
+				{
 
 					MappingList temp = null;
 
-					if(mappingResultAndSimiarity.containsKey(eachParameter)){
+					if (mappingResultAndSimiarity.containsKey(eachParameter))
+					{
 						temp = mappingResultAndSimiarity.get(eachParameter);
-					}else{
+					}
+					else
+					{
 						temp = new MappingList();
 					}
 
@@ -443,11 +540,14 @@ public class findingProxy extends PluginModel<Entity> {
 		}
 	}
 
-	public HashMap<String, JSONObject> makeHtmlTable (HashMap<String, MappingList>mappingResultAndSimiarity) throws Exception {
+	public HashMap<String, JSONObject> makeHtmlTable(HashMap<String, MappingList> mappingResultAndSimiarity)
+			throws Exception
+	{
 
 		HashMap<String, JSONObject> parameterWithHtmlTable = new HashMap<String, JSONObject>();
 
-		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
+		for (String eachOriginalQuery : mappingResultAndSimiarity.keySet())
+		{
 
 			MappingList map = mappingResultAndSimiarity.get(eachOriginalQuery);
 
@@ -461,19 +561,21 @@ public class findingProxy extends PluginModel<Entity> {
 
 			Map<String, Map<String, Double>> uniqueMapping = new HashMap<String, Map<String, Double>>();
 
-			matchingResult += "<tr style='background: blue; color: white;'>" 
-					+"<td>Data Item</td><td>Description</td><td>Select mapping</td></tr>";
+			matchingResult += "<tr style='background: blue; color: white;'>"
+					+ "<td>Data Item</td><td>Description</td><td>Select mapping</td></tr>";
 
-			for(int i = size; i > 0; i--){
+			for (int i = size; i > 0; i--)
+			{
 
 				LinkedInformation eachRow = links.get(i - 1);
 				String expandedQuery = eachRow.expandedQuery;
 				String matchedItem = eachRow.matchedItem;
 				Double similarity = eachRow.similarity;
 				String measurementName = eachRow.measurementName;
-				String identifier = measurementName + "_" + eachOriginalQuery ;
+				String identifier = measurementName + "_" + eachOriginalQuery;
 
-				if(!uniqueMapping.containsKey(identifier)){
+				if (!uniqueMapping.containsKey(identifier))
+				{
 
 					Map<String, Double> queryAndSimilarity = new HashMap<String, Double>();
 
@@ -481,12 +583,14 @@ public class findingProxy extends PluginModel<Entity> {
 
 					uniqueMapping.put(identifier, queryAndSimilarity);
 
-					matchingResult += "<tr class='clickRow' border='1' id='" + identifier.replaceAll(" ", "_") + "' style='cursor:pointer'>" 
-							+ "<td>"+ measurementName +"</td>"
-							+ "<td><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
-							+ matchedItem + "</div></td><td><input type='checkbox' name='" 
-							+ identifier.replaceAll(" ", "_") + "'></td></tr>";
-				}else{
+					matchingResult += "<tr class='clickRow' border='1' id='" + identifier.replaceAll(" ", "_")
+							+ "' style='cursor:pointer'>" + "<td>" + measurementName + "</td>" + "<td><div id='"
+							+ identifier.replaceAll(" ", "_") + "_div'>" + matchedItem
+							+ "</div></td><td><input type='checkbox' name='" + identifier.replaceAll(" ", "_")
+							+ "'></td></tr>";
+				}
+				else
+				{
 
 					Map<String, Double> queryAndSimilarity = uniqueMapping.get(identifier);
 
@@ -496,30 +600,37 @@ public class findingProxy extends PluginModel<Entity> {
 
 				}
 
-				//				System.out.print(eachOriginalQuery + "\t" + expandedQuery + "\t" + matchedItem + "\t" + similarity);
-				//				System.out.println();
+				// System.out.print(eachOriginalQuery + "\t" + expandedQuery +
+				// "\t" + matchedItem + "\t" + similarity);
+				// System.out.println();
 			}
 
 			matchingResult += "</table>";
 
-			String executiveScript  = "";
+			String executiveScript = "";
 
-			if(maxQuerySize < uniqueMapping.keySet().size()){
+			if (maxQuerySize < uniqueMapping.keySet().size())
+			{
 				maxQuerySize = uniqueMapping.keySet().size();
 			}
 
-			for(String identifier : uniqueMapping.keySet()){
+			for (String identifier : uniqueMapping.keySet())
+			{
 
-				if(uniqueMapping.get(identifier).size() > 0){
-					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_") +"_table' style='display:none;position:absolute;'>" 
+				if (uniqueMapping.get(identifier).size() > 0)
+				{
+					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_")
+							+ "_table' style='display:none;position:absolute;'>"
 							+ "<tr><td>expanded query</td><td>similarity</td></tr>";
 
-					for(Entry<String, Double> entry : uniqueMapping.get(identifier).entrySet()){
+					for (Entry<String, Double> entry : uniqueMapping.get(identifier).entrySet())
+					{
 
 						String expandedQuery = entry.getKey();
 						Double similarity = entry.getValue();
 
-						table += "<tr class='insertTable'><td>" + expandedQuery + "</td><td>" + similarity + "</td></tr>";
+						table += "<tr class='insertTable'><td>" + expandedQuery + "</td><td>" + similarity
+								+ "</td></tr>";
 					}
 
 					table += "</table>";
@@ -534,33 +645,34 @@ public class findingProxy extends PluginModel<Entity> {
 			json.put("result", matchingResult);
 			json.put("script", executiveScript);
 
-
-			//			if(!listOfParameters.contains(executiveScript))
-			//				listOfScripts.add(executiveScript);
+			// if(!listOfParameters.contains(executiveScript))
+			// listOfScripts.add(executiveScript);
 
 			parameterWithHtmlTable.put(eachOriginalQuery, json);
 		}
 
-		//		return parameterWithHtmlTable;
-
+		// return parameterWithHtmlTable;
 
 		return parameterWithHtmlTable;
 	}
 
-
-	public List<String> getListOfValidationStudy() {
+	public List<String> getListOfValidationStudy()
+	{
 		return listOfValidationStudy;
 	}
 
-	public List<String> getListOfParameters() {
+	public List<String> getListOfParameters()
+	{
 		return listOfParameters;
 	}
 
-	public String getSelectedValidationStudyName() {
+	public String getSelectedValidationStudyName()
+	{
 		return selectedValidationStudy;
 	}
 
-	public String getSelectedPredictionModel() {
+	public String getSelectedPredictionModel()
+	{
 		return selectedPredictionModel;
 	}
 
@@ -568,35 +680,43 @@ public class findingProxy extends PluginModel<Entity> {
 	{
 		return listOfPredictionModel;
 	}
+
 	public List<String> getManualMappingResultTable()
 	{
 		return manualMappingResultTable;
 	}
+
 	public String getSelectedManualParameter()
 	{
 		return selectedManualParameter;
 	}
-	public boolean getStage() {
+
+	public boolean getStage()
+	{
 		return stage;
 	}
+
 	public String getUserDefinedQuery()
 	{
 		return userDefinedQuery;
 	}
-	public List<String> getListOfJSON(){
+
+	public List<String> getListOfJSON()
+	{
 		return listOfJSON;
 	}
+
 	@Override
 	public boolean isVisible()
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		if (!this.getLogin().isAuthenticated()) {
+		// you can use this to hide this plugin, e.g. based on user rights.
+		// e.g.
+		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
+		if (!this.getLogin().isAuthenticated())
+		{
 			return false;
 		}
 		return true;
 	}
-
 
 }
