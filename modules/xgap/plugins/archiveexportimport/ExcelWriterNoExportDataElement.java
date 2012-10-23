@@ -20,12 +20,10 @@ public class ExcelWriterNoExportDataElement extends ExcelExport
 	 * Override to not export DataElements
 	 */
 	@Override
-	public void copyCsvToWorkbook(String sheetName, File file,
-			WritableWorkbook workbook, WritableCellFormat headerFormat,
-			WritableCellFormat cellFormat) throws Exception
+	public void copyCsvToWorkbook(String sheetName, File file, WritableWorkbook workbook,
+			WritableCellFormat headerFormat, WritableCellFormat cellFormat) throws Exception
 	{
-		if (!sheetName.equals("DecimalDataElement")
-				&& !sheetName.equals("TextDataElement") && file.exists())
+		if (!sheetName.equals("DecimalDataElement") && !sheetName.equals("TextDataElement") && file.exists())
 		{
 			// Create sheet
 			WritableSheet sheet = workbook.createSheet(sheetName, sheetIndex);
@@ -43,8 +41,7 @@ public class ExcelWriterNoExportDataElement extends ExcelExport
 			for (int i = 0; i < tuples.get(0).getFields().size(); i++)
 			{
 				tupleFields.add(tuples.get(0).getFields().get(i));
-				Label l = new Label(i, 0, tuples.get(0).getFields().get(i),
-						headerFormat);
+				Label l = new Label(i, 0, tuples.get(0).getFields().get(i), headerFormat);
 				sheet.addCell(l);
 			}
 
@@ -56,8 +53,7 @@ public class ExcelWriterNoExportDataElement extends ExcelExport
 				{
 					if (!(t.getObject(tupleFields.get(i)) == null))
 					{
-						Label l = new Label(i, rowIndex, t.getObject(
-								tupleFields.get(i)).toString(), cellFormat);
+						Label l = new Label(i, rowIndex, t.getObject(tupleFields.get(i)).toString(), cellFormat);
 						sheet.addCell(l);
 					}
 					else

@@ -16,10 +16,10 @@ import org.molgenis.framework.db.MapperDecorator;
 
 public class NameableDecorator<E extends Nameable> extends MapperDecorator<E>
 {
-	
+
 	protected boolean strict = false;
-	
-	//new kind of constructor to work with latest DB changes
+
+	// new kind of constructor to work with latest DB changes
 	public NameableDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
@@ -28,12 +28,15 @@ public class NameableDecorator<E extends Nameable> extends MapperDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		if(strict){
+		if (strict)
+		{
 			NameConvention.validateEntityNamesStrict(entities);
-		}else{
+		}
+		else
+		{
 			NameConvention.validateEntityNames(entities);
 		}
-		
+
 		int count = super.add(entities);
 
 		return count;
@@ -42,16 +45,18 @@ public class NameableDecorator<E extends Nameable> extends MapperDecorator<E>
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		if(strict){
+		if (strict)
+		{
 			NameConvention.validateEntityNamesStrict(entities);
-		}else{
+		}
+		else
+		{
 			NameConvention.validateEntityNames(entities);
 		}
-		
+
 		int count = super.update(entities);
 
 		return count;
 	}
-	
-}
 
+}

@@ -30,14 +30,14 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 	private String selectedInvestigation;
 	private List<Investigation> investigationList = new ArrayList<Investigation>();
 	private String selectedFormat;
-	
-	
 
-	public String getSelectedFormat() {
+	public String getSelectedFormat()
+	{
 		return selectedFormat;
 	}
 
-	public void setSelectedFormat(String selectedFormat) {
+	public void setSelectedFormat(String selectedFormat)
+	{
 		this.selectedFormat = selectedFormat;
 	}
 
@@ -50,8 +50,6 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 	{
 		this.selectedInvestigation = selectedInvestigation;
 	}
-
-	
 
 	public List<Investigation> getInvestigationList()
 	{
@@ -99,7 +97,7 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 			String action = request.getString("__action");
 			this.setSelectedInvestigation(request.getString("selectInvestigation"));
 			this.setSelectedFormat(request.getString("format"));
-			
+
 			if (action.equals("exportAll"))
 			{
 
@@ -107,28 +105,39 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 
 				if (this.getSelectedInvestigation().equals("__download_every_investigation_1256037232589246000"))
 				{
-					tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator
-							+ "everyinvestigation" + "_export_" + System.nanoTime());
+					tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "everyinvestigation"
+							+ "_export_" + System.nanoTime());
 					tmpDir.mkdir();
-					if(request.getString("format").equals("excel")){
+					if (request.getString("format").equals("excel"))
+					{
 						new XgapExcelExport(tmpDir, db);
-					}else if(request.getString("format").equals("csv")){
+					}
+					else if (request.getString("format").equals("csv"))
+					{
 						new XgapCsvExport(tmpDir, db);
-					}else{
+					}
+					else
+					{
 						throw new Exception("Unknown format selected: " + request.getString("format"));
 					}
-					
+
 				}
 				else
 				{
 					tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator
-							+ NameConvention.escapeFileName(this.getSelectedInvestigation()) + "_export_" + System.nanoTime());
+							+ NameConvention.escapeFileName(this.getSelectedInvestigation()) + "_export_"
+							+ System.nanoTime());
 					tmpDir.mkdir();
-					if(request.getString("format").equals("excel")){
+					if (request.getString("format").equals("excel"))
+					{
 						new XgapExcelExport(tmpDir, db, this.getSelectedInvestigation());
-					}else if(request.getString("format").equals("csv")){
+					}
+					else if (request.getString("format").equals("csv"))
+					{
 						new XgapCsvExport(tmpDir, db, this.getSelectedInvestigation());
-					}else{
+					}
+					else
+					{
 						throw new Exception("Unknown format selected: " + request.getString("format"));
 					}
 				}
@@ -140,52 +149,68 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 			}
 			else if (action.equals("importAll"))
 			{
-					File tarFile = request.getFile("importArchive");
-					File extractDir = TarGz.tarExtract(tarFile);
-					if(isExcelFormatXGAPArchive(extractDir)){
-						new XgapExcelImport(extractDir, db, false);
-					}else{
-						new XgapCsvImport(extractDir, db, false);
-					}
-					
+				File tarFile = request.getFile("importArchive");
+				File extractDir = TarGz.tarExtract(tarFile);
+				if (isExcelFormatXGAPArchive(extractDir))
+				{
+					new XgapExcelImport(extractDir, db, false);
+				}
+				else
+				{
+					new XgapCsvImport(extractDir, db, false);
+				}
+
 			}
-			
+
 			this.setMessages(new ScreenMessage("Success", true));
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage()!=null?e.getMessage():"null", false));
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
-	
-	public static boolean isExcelFormatXGAPArchive(File extractDir){
+
+	public static boolean isExcelFormatXGAPArchive(File extractDir)
+	{
 		String[] filesArr = extractDir.list();
-		
+
 		boolean hasExcelFile = false;
 		boolean hasData = false;
 		boolean hasLengthTwo = false;
 		boolean hasLengthOne = false;
-		
-		for(String s : filesArr){
-			if(s.endsWith(".xls")){
+
+		for (String s : filesArr)
+		{
+			if (s.endsWith(".xls"))
+			{
 				hasExcelFile = true;
 			}
-			if(s.equals("data")){
+			if (s.equals("data"))
+			{
 				hasData = true;
 			}
 		}
-		
-		if(filesArr.length == 1){
+
+		if (filesArr.length == 1)
+		{
 			hasLengthOne = true;
-		}else if(filesArr.length == 2){
+		}
+		else if (filesArr.length == 2)
+		{
 			hasLengthTwo = true;
 		}
-		
-		if(hasExcelFile && hasLengthTwo && hasData){
+
+		if (hasExcelFile && hasLengthTwo && hasData)
+		{
 			return true;
-		}else if(hasExcelFile && hasLengthOne){
+		}
+		else if (hasExcelFile && hasLengthOne)
+		{
 			return true;
-		}else{
+		}
+		else
+		{
 			return false;
 		}
 	}
@@ -197,9 +222,10 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 		{
 			this.setInvestigationList(db.find(Investigation.class));
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage()!=null?e.getMessage():"null", false));
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
 

@@ -71,8 +71,7 @@ public class PreProcessMatrix
 
 	public void trimTextElements() throws Exception
 	{
-		Object[][] newElements = new Object[this.rowNames.size()][this.colNames
-				.size()];
+		Object[][] newElements = new Object[this.rowNames.size()][this.colNames.size()];
 		for (int row = 0; row < this.rowNames.size(); row++)
 		{
 			for (int col = 0; col < this.colNames.size(); col++)
@@ -80,8 +79,7 @@ public class PreProcessMatrix
 				Object o = this.elements[row][col];
 				if (o != null)
 				{
-					newElements[row][col] = o.toString().length() > 127 ? o
-							.toString().substring(0, 127) : o;
+					newElements[row][col] = o.toString().length() > 127 ? o.toString().substring(0, 127) : o;
 				}
 				else
 				{
@@ -97,20 +95,18 @@ public class PreProcessMatrix
 		return writeOutMatrix(this.rowNames, this.colNames, this.elements);
 	}
 
-	private File writeOutMatrix(List<String> newRowNames,
-			List<String> newColNames, Object[][] newElements)
+	private File writeOutMatrix(List<String> newRowNames, List<String> newColNames, Object[][] newElements)
 			throws IOException
 	{
-		File out = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + "tmpMatrix" + System.nanoTime() + ".txt");
+		File out = new File(System.getProperty("java.io.tmpdir") + File.separator + "tmpMatrix" + System.nanoTime()
+				+ ".txt");
 		CsvFileWriter writer = new CsvFileWriter(out);
 		writer.writeMatrix(newRowNames, newColNames, newElements);
 		writer.close();
 		return out;
 	}
 
-	private Object[][] getElementsFromCsv(File in, int nRow, int nCol)
-			throws FileNotFoundException, Exception
+	private Object[][] getElementsFromCsv(File in, int nRow, int nCol) throws FileNotFoundException, Exception
 	{
 		final Object[][] elements = new Object[nRow][nCol];
 		int line_number = 1;
@@ -118,9 +114,8 @@ public class PreProcessMatrix
 		{
 			for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 			{
-				elements[line_number - 1][columnIndex - 1] = line
-						.getObject(columnIndex);
-				
+				elements[line_number - 1][columnIndex - 1] = line.getObject(columnIndex);
+
 			}
 			line_number++;
 		}

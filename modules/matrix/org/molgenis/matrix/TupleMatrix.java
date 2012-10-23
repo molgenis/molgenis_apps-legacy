@@ -6,33 +6,34 @@ import java.util.List;
 import org.molgenis.util.Tuple;
 
 /**
- * Matrix for a uniform set of tuples. 
- * Column names will be the tuple.getFields().
- * Row names will just be ids
+ * Matrix for a uniform set of tuples. Column names will be the
+ * tuple.getFields(). Row names will just be ids
+ * 
  * @author mswertz
- *
+ * 
  */
-public class TupleMatrix extends MemoryMatrix<String,String,String>
+public class TupleMatrix extends MemoryMatrix<String, String, String>
 {
 	public TupleMatrix(List<Tuple> values) throws MatrixException
 	{
-		if(values.size() == 0) throw new MatrixException("values should have 1 or more tuples");
-		
-		//columns
+		if (values.size() == 0) throw new MatrixException("values should have 1 or more tuples");
+
+		// columns
 		Tuple first = values.get(0);
 		this.setColNames(first.getFieldNames());
-		
-		//rows
+
+		// rows
 		List<String> rownames = new ArrayList<String>();
-		for(Tuple v: values) rownames.add(v.getString(first.getColName(0)));
+		for (Tuple v : values)
+			rownames.add(v.getString(first.getColName(0)));
 		this.setRowNames(rownames);
-		
-		//values
+
+		// values
 		String[][] valueArray = this.create(values.size(), this.getColCount(), String.class);
 		int row = 0;
-		for(Tuple v: values)
+		for (Tuple v : values)
 		{
-			for(int col = 0; col < v.size(); col++)
+			for (int col = 0; col < v.size(); col++)
 				valueArray[row][col] = v.getString(col);
 			row++;
 		}

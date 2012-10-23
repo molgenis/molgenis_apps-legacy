@@ -13,7 +13,8 @@ import java.util.List;
 
 import org.molgenis.util.DetectOS;
 
-public class RProcess implements Runnable {
+public class RProcess implements Runnable
+{
 
 	private File outputFile;
 	private long outputFileLength;
@@ -28,10 +29,10 @@ public class RProcess implements Runnable {
 
 	String requestDone = "\\\\r3qu35tc0mpl3t3\\\\";
 	String requestDoneOutputMarker = "[1] \"\\\\r3qu35tc0mpl3t3\\\\\"";
-	String requestDonePrint = "print(\"" + requestDone
-			+ "\");\n";
+	String requestDonePrint = "print(\"" + requestDone + "\");\n";
 
-	public List<String> getStartupMessage() {
+	public List<String> getStartupMessage()
+	{
 		return startupMessage;
 	}
 
@@ -47,7 +48,8 @@ public class RProcess implements Runnable {
 	 * @param timeOut
 	 * @throws Exception
 	 */
-	public RProcess(long timeOut) throws Exception {
+	public RProcess(long timeOut) throws Exception
+	{
 		timeSinceLastResponse = 0;
 		this.timeOut = timeOut;
 		quit = false;
@@ -66,7 +68,7 @@ public class RProcess implements Runnable {
 		this.startupMessage = startupMessage;
 
 		initErrorHandling();
-		
+
 		retrieveRawResults(requestDoneOutputMarker);
 	}
 
@@ -76,7 +78,8 @@ public class RProcess implements Runnable {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void initErrorHandling() throws IOException, InterruptedException {
+	private void initErrorHandling() throws IOException, InterruptedException
+	{
 		List<String> commands = new ArrayList<String>();
 		commands.add("merrorfun <- function(ex) {\n");
 		commands.add("	cat(\"Error: \", ex[[1]], \"\\n\", sep=\"\")\n");
@@ -87,31 +90,38 @@ public class RProcess implements Runnable {
 		commands.add("}\n");
 		commands.add(requestDonePrint);
 
-		for (String command : commands) {
+		for (String command : commands)
+		{
 			bos.write(command.getBytes());
 		}
 		bos.flush();
 
 	}
 
-	private List<String> retrieveRawResults(String requestEndMarker) throws InterruptedException,
-			IOException {
+	private List<String> retrieveRawResults(String requestEndMarker) throws InterruptedException, IOException
+	{
 
 		List<String> results = new ArrayList<String>();
 		boolean requestCompleted = false;
 
-		while (!requestCompleted) {
-			while (outputFile.length() == outputFileLength) {
+		while (!requestCompleted)
+		{
+			while (outputFile.length() == outputFileLength)
+			{
 				Thread.sleep(15);
-//				System.out.print(".");
+				// System.out.print(".");
 			}
 			outputFileLength = outputFile.length();
 			String line;
-			while ((line = bis.readLine()) != null) {
-				if (line.equals(requestEndMarker)) {
+			while ((line = bis.readLine()) != null)
+			{
+				if (line.equals(requestEndMarker))
+				{
 					requestCompleted = true;
 					break;
-				} else {
+				}
+				else
+				{
 					results.add(line);
 				}
 			}
@@ -126,20 +136,22 @@ public class RProcess implements Runnable {
 	 * 
 	 * @throws Exception
 	 */
-	private void createOutputFile() throws Exception {
-		outputFile = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + "r_output_tmp_" + System.nanoTime() + ".txt");
-		if (outputFile.exists()) {
+	private void createOutputFile() throws Exception
+	{
+		outputFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "r_output_tmp_"
+				+ System.nanoTime() + ".txt");
+		if (outputFile.exists())
+		{
 			boolean delete = outputFile.delete();
-			if (!delete) {
-				throw new Exception("Deletion of tmp file "
-						+ outputFile.getAbsolutePath() + " failed");
+			if (!delete)
+			{
+				throw new Exception("Deletion of tmp file " + outputFile.getAbsolutePath() + " failed");
 			}
 		}
 		boolean create = outputFile.createNewFile();
-		if (!create) {
-			throw new Exception("Creation of tmp file "
-					+ outputFile.getAbsolutePath() + " failed");
+		if (!create)
+		{
+			throw new Exception("Creation of tmp file " + outputFile.getAbsolutePath() + " failed");
 		}
 	}
 
@@ -149,27 +161,35 @@ public class RProcess implements Runnable {
 	 * @return
 	 * @throws Exception
 	 */
-	private String[] startupCommand() throws Exception {
+	private String[] startupCommand() throws Exception
+	{
 		String osD = DetectOS.getOS();
 
-		if (osD.equals("mac") || osD.equals("unix")) {
+		if (osD.equals("mac") || osD.equals("unix"))
+		{
 			String command = "R --vanilla >> " + outputFile.getAbsolutePath();
-			String[] cmd = { "/bin/sh", "-c", command };
+			String[] cmd =
+			{ "/bin/sh", "-c", command };
 			return cmd;
-		} else if (osD.equals("windowslegacy")) {
-			String command = "R --vanilla >> " + outputFile.getAbsolutePath()
-					+ "";
-			String[] cmd = { "command.com /c set", command };
+		}
+		else if (osD.equals("windowslegacy"))
+		{
+			String command = "R --vanilla >> " + outputFile.getAbsolutePath() + "";
+			String[] cmd =
+			{ "command.com /c set", command };
 			return cmd;
-		} else if (osD.equals("windows")) {
-			String command = "R --vanilla >> " + outputFile.getAbsolutePath()
-					+ "";
+		}
+		else if (osD.equals("windows"))
+		{
+			String command = "R --vanilla >> " + outputFile.getAbsolutePath() + "";
 			// String[] cmd = { "cmd.exe /c set", command };
-			String[] cmd = { command }; // zegt danny
+			String[] cmd =
+			{ command }; // zegt danny
 			return cmd;
-		} else {
-			throw new Exception("Operating system '"
-					+ System.getProperty("os.name") + "' is not supported");
+		}
+		else
+		{
+			throw new Exception("Operating system '" + System.getProperty("os.name") + "' is not supported");
 		}
 	}
 
@@ -178,26 +198,29 @@ public class RProcess implements Runnable {
 	 * reached.
 	 */
 	@Override
-	public void run() {
-		while (!quit) {
-			try {
+	public void run()
+	{
+		while (!quit)
+		{
+			try
+			{
 				Thread.sleep(1000);
 				timeSinceLastResponse += 1;
-				if (timeSinceLastResponse > timeOut) {
-					System.out
-							.println("RProcess timeout ("
-									+ timeSinceLastResponse
-									+ " seconds passed since last response, timeout set to "
-									+ timeOut + " seconds), quitting");
+				if (timeSinceLastResponse > timeOut)
+				{
+					System.out.println("RProcess timeout (" + timeSinceLastResponse
+							+ " seconds passed since last response, timeout set to " + timeOut + " seconds), quitting");
 					quit();
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
 			}
 		}
 
 	}
-	
+
 	/**
 	 * Execute multiple commands
 	 * 
@@ -205,14 +228,15 @@ public class RProcess implements Runnable {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> executeMulti(List<String> commands) throws Exception {
+	public List<String> executeMulti(List<String> commands) throws Exception
+	{
 		List<String> result = new ArrayList<String>();
-		
-		for(String command : commands)
+
+		for (String command : commands)
 		{
 			result.addAll(execute(command));
 		}
-		
+
 		return result;
 	}
 
@@ -223,21 +247,21 @@ public class RProcess implements Runnable {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> execute(String command) throws Exception {
+	public List<String> execute(String command) throws Exception
+	{
 
-		if (quit) {
-			throw new Exception(
-					"RProcess is no longer running and as such, no longer accepting new commands.");
+		if (quit)
+		{
+			throw new Exception("RProcess is no longer running and as such, no longer accepting new commands.");
 		}
-		
+
 		// escape \ to \\
 		command = command.replace("\\", "\\\\");
-		
-		//escape " to \"
+
+		// escape " to \"
 		command = command.replace("\"", "\\\"");
 
-		command = "tryCatch({eval(parse(text=\"" + command
-				+ "\"))}, error = merrorfun, finally = mfinallyfun );\n";
+		command = "tryCatch({eval(parse(text=\"" + command + "\"))}, error = merrorfun, finally = mfinallyfun );\n";
 		command += "print(\"" + requestDone + "\");\n";
 
 		bos.write(command.getBytes());
@@ -245,18 +269,24 @@ public class RProcess implements Runnable {
 
 		List<String> result = retrieveRawResults(requestDoneOutputMarker);
 
-		if (result.size() > 2) {
+		if (result.size() > 2)
+		{
 			// Result looks like: command, answer(s), prompt. Get answer(s) as
 			// response.
 			result = result.subList(1, result.size() - 1);
-		} else if (result.size() == 2) {
+		}
+		else if (result.size() == 2)
+		{
 			// Result looks like: command, prompt. Empty list as response.
 			result = new ArrayList<String>();
-		} else {
+		}
+		else
+		{
 			// Bad result. Empty list as response and throw error.
 			result = new ArrayList<String>();
 			String error = checkForErrors();
-			if (error.length() > 0) {
+			if (error.length() > 0)
+			{
 				throw new Exception("Bad result: " + error);
 			}
 		}
@@ -264,8 +294,10 @@ public class RProcess implements Runnable {
 		return result;
 	}
 
-	private String checkForErrors() throws IOException, Exception {
-		if (bisError.available() > 0) {
+	private String checkForErrors() throws IOException, Exception
+	{
+		if (bisError.available() > 0)
+		{
 			byte[] buff = new byte[bisError.available()];
 			bisError.read(buff);
 			String error = new String(buff);
@@ -279,7 +311,8 @@ public class RProcess implements Runnable {
 	 * 
 	 * @return
 	 */
-	public boolean isRunning() {
+	public boolean isRunning()
+	{
 		return !quit;
 	}
 
@@ -292,15 +325,16 @@ public class RProcess implements Runnable {
 	 * 
 	 * @throws Exception
 	 */
-	public void quit() throws Exception {
+	public void quit() throws Exception
+	{
 		quit = true;
 		bis.close();
 		bisError.close();
 		bos.close();
 		boolean delete = outputFile.delete();
-		if (!delete) {
-			throw new Exception("Deletion of tmp file "
-					+ outputFile.getAbsolutePath() + " failed");
+		if (!delete)
+		{
+			throw new Exception("Deletion of tmp file " + outputFile.getAbsolutePath() + " failed");
 
 		}
 	}

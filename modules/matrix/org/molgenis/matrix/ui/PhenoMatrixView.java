@@ -6,7 +6,8 @@ import org.molgenis.matrix.PhenoMemoryMatrix;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 
-public class PhenoMatrixView<E extends ObservationElement,A extends ObservationElement> extends HtmlInput<Matrix<E, A,ObservedValue>>
+public class PhenoMatrixView<E extends ObservationElement, A extends ObservationElement> extends
+		HtmlInput<Matrix<E, A, ObservedValue>>
 {
 	public PhenoMatrixView(String name, PhenoMemoryMatrix<E, A> phenoMatrix)
 	{
@@ -18,16 +19,14 @@ public class PhenoMatrixView<E extends ObservationElement,A extends ObservationE
 	{
 		try
 		{
-			Matrix<E,A,ObservedValue> m = getObject();
-			
-			
+			Matrix<E, A, ObservedValue> m = getObject();
+
 			// very naive
 			String result = "";
-			
+
 			// add a pulldown to select cols
-				
-				
-			//render table
+
+			// render table
 			result += "<table border=\"1\"><thead><tr><td>&nbsp;</td>";
 
 			// header
@@ -40,11 +39,10 @@ public class PhenoMatrixView<E extends ObservationElement,A extends ObservationE
 
 			for (E row : m.getRowNames())
 			{
-				result += "<tr><td><b>"+row.getName()+"</b></td>";
-				for(A col : m.getColNames())
+				result += "<tr><td><b>" + row.getName() + "</b></td>";
+				for (A col : m.getColNames())
 				{
-					if(m.getValue(row, col) != null)
-						result += "<td>"+m.getValue(row, col).getValue()+"</td>";
+					if (m.getValue(row, col) != null) result += "<td>" + m.getValue(row, col).getValue() + "</td>";
 					else
 						result += "<td>&nbsp</td>";
 				}

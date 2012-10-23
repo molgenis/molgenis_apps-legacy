@@ -38,23 +38,27 @@ public class EmptyDbPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		try {
+		try
+		{
 			String action = request.getString("__action");
 
-			if (action.equals("emptyDatabase")) {
+			if (action.equals("emptyDatabase"))
+			{
 				new emptyDatabase(db, false);
 			}
-		}catch(Exception e){
+		}
+		catch (Exception e)
+		{
 			logger.error(e);
 		}
 	}
 
 	@Override
 	public void reload(Database db)
-	{	
-		
+	{
+
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{

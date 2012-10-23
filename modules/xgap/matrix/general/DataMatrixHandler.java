@@ -130,14 +130,14 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			{
 				if (dm.getValueType().equals("Decimal"))
 				{
-					List<DecimalDataElement> dde = db.find(DecimalDataElement.class,
-							new QueryRule("data_id", Operator.EQUALS, dm.getId()));
+					List<DecimalDataElement> dde = db.find(DecimalDataElement.class, new QueryRule("data_id",
+							Operator.EQUALS, dm.getId()));
 					db.remove(dde);
 				}
 				else
 				{
-					List<TextDataElement> tde = db.find(TextDataElement.class,
-							new QueryRule("data_id", Operator.EQUALS, dm.getId()));
+					List<TextDataElement> tde = db.find(TextDataElement.class, new QueryRule("data_id",
+							Operator.EQUALS, dm.getId()));
 					db.remove(tde);
 				}
 			}
@@ -210,9 +210,12 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			List<? extends Entity> test = db.find(db.getClassForName(matrixSource));
 			for (Entity e : test)
 			{
-				// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-				if ((db instanceof JDBCDatabase && new Integer(e.get("data_id").toString()).intValue() == data.getId().intValue()) ||
-				(db instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
+				// used to be: if
+				// ((e.get("data_name").toString()).equals(data.getName()))
+				if ((db instanceof JDBCDatabase && new Integer(e.get("data_id").toString()).intValue() == data.getId()
+						.intValue())
+						|| (db instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId()
+								.intValue()))
 				{
 					try
 					{
@@ -311,7 +314,9 @@ public class DataMatrixHandler extends MolgenisFileHandler
 				QueryRule mfId = new QueryRule("id", Operator.EQUALS, e.get(e.getIdField()));
 				return db.find(MolgenisFile.class, mfId).get(0);
 				// alternative: by name
-				// db.find(mfClass, new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())));
+				// db.find(mfClass, new QueryRule(MolgenisFile.NAME,
+				// Operator.EQUALS,
+				// NameConvention.escapeFileName(data.getName())));
 
 			}
 		}
@@ -329,13 +334,15 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 */
 	public File findSourceFile(Data data, Database db) throws Exception
 	{
-		List<? extends Entity> mfSubclasses = db.find(
-				db.getClassForName(data.getStorage() + "DataMatrix"));
+		List<? extends Entity> mfSubclasses = db.find(db.getClassForName(data.getStorage() + "DataMatrix"));
 		for (Entity e : mfSubclasses)
 		{
-			// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-			if ((db instanceof JDBCDatabase && new Integer(e.get("data_id").toString()).intValue() == data.getId().intValue()) ||
-			(db instanceof JpaDatabase && ((Data) e.get("data_id")).getId().intValue() == data.getId().intValue()))
+			// used to be: if
+			// ((e.get("data_name").toString()).equals(data.getName()))
+			if ((db instanceof JDBCDatabase && new Integer(e.get("data_id").toString()).intValue() == data.getId()
+					.intValue())
+					|| (db instanceof JpaDatabase && ((Data) e.get("data_id")).getId().intValue() == data.getId()
+							.intValue()))
 			{
 				return this.getFile(e.get("name").toString(), db);
 			}
@@ -388,72 +395,81 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	/**
 	 * Attempt to link this 'Data' object to a backend file that might be there,
 	 * but is not properly attached via MolgenisFile.
+	 * 
 	 * @param data
 	 * @param storage
 	 * @param db
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public boolean attemptStorageRelink(Data data, String storage, Database db) throws Exception
 	{
-		if(storage.equals("Database"))
+		if (storage.equals("Database"))
 		{
 			return false;
 		}
-		
+
 		boolean relinked = false;
 		boolean mfPresent = false;
-		
-		//found out if there already is a MolgenisFile for this 'Data'
-		if(findMolgenisFile(data, db) != null)
+
+		// found out if there already is a MolgenisFile for this 'Data'
+		if (findMolgenisFile(data, db) != null)
 		{
 			mfPresent = true;
 		}
-		
-		//find out if there is a file that can be coupled using a new MolgenisFile object
+
+		// find out if there is a file that can be coupled using a new
+		// MolgenisFile object
 		boolean filePresent;
 		String type = data.getStorage() + "DataMatrix";
 		try
 		{
-			this.getFileDirectly(NameConvention.escapeFileName(data.getName()), getExtension(data.getStorage()), type, db);
+			this.getFileDirectly(NameConvention.escapeFileName(data.getName()), getExtension(data.getStorage()), type,
+					db);
 			filePresent = true;
 		}
-		catch(FileNotFoundException fnfe)
+		catch (FileNotFoundException fnfe)
 		{
 			filePresent = false;
 		}
-		
-		// find out if there is a MolgenisFile for the escaped file name already, else adding of a Data record
-		// with a name that is allowed at first still fails due to relinking, e.g. an immediate error after adding:
-		// File name 'metaboliteExpression' already exists in database when escaped to filesafe format. ('metaboliteexpression')
+
+		// find out if there is a MolgenisFile for the escaped file name
+		// already, else adding of a Data record
+		// with a name that is allowed at first still fails due to relinking,
+		// e.g. an immediate error after adding:
+		// File name 'metaboliteExpression' already exists in database when
+		// escaped to filesafe format. ('metaboliteexpression')
 		boolean escapedMolgenisFileNameExists = false;
-		if(db.find(db.getClassForName(type), new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName()))).size() > 0)
+		if (db.find(db.getClassForName(type),
+				new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())))
+				.size() > 0)
 		{
 			escapedMolgenisFileNameExists = true;
 		}
-		
-		//if there is no MolgenisFile, but there is a file present, make the link
-		if(!mfPresent && filePresent && !escapedMolgenisFileNameExists)
+
+		// if there is no MolgenisFile, but there is a file present, make the
+		// link
+		if (!mfPresent && filePresent && !escapedMolgenisFileNameExists)
 		{
 			MolgenisFile mfAdd = (MolgenisFile) db.getClassForName(type).newInstance();
-			
+
 			mfAdd.setName(data.getName());
 			mfAdd.setExtension(getExtension(data.getStorage()));
-            mfAdd.set("data_" + Data.ID, data.getId().toString());
-            mfAdd.set("data_" + Data.NAME, data.getName());
-            
+			mfAdd.set("data_" + Data.ID, data.getId().toString());
+			mfAdd.set("data_" + Data.NAME, data.getName());
+
 			db.add(mfAdd);
-			relinked = true;			
+			relinked = true;
 		}
 		return relinked;
 	}
-	
+
 	public String getExtension(String storage) throws Exception
 	{
-		if(storage.equals("Binary"))
+		if (storage.equals("Binary"))
 		{
 			return "bin";
 		}
-		else if(storage.equals("CSV"))
+		else if (storage.equals("CSV"))
 		{
 			return "txt";
 		}

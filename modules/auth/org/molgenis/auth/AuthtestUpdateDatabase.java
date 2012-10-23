@@ -1,4 +1,5 @@
 package org.molgenis.auth;
+
 import org.molgenis.Molgenis;
 
 //import cmdline.CmdLineException;

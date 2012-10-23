@@ -14,18 +14,18 @@ import org.molgenis.framework.server.MolgenisService;
 
 public class showjavadirs implements MolgenisService
 {
-	//TODO: Danny: unused, but i guess we do want to use it
-	//private static Logger logger = Logger.getLogger(showjavadirs.class);
+	// TODO: Danny: unused, but i guess we do want to use it
+	// private static Logger logger = Logger.getLogger(showjavadirs.class);
 
 	private DataMatrixHandler dmh;
-	
+
 	private MolgenisContext mc;
-	
+
 	public showjavadirs(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -35,7 +35,7 @@ public class showjavadirs implements MolgenisService
 
 		try
 		{
-			out.println("java.io.tmpdir = "+System.getProperty("java.io.tmpdir"));
+			out.println("java.io.tmpdir = " + System.getProperty("java.io.tmpdir"));
 			out.println("user.dir = " + System.getProperty("user.dir"));
 		}
 		catch (Exception e)
@@ -48,4 +48,3 @@ public class showjavadirs implements MolgenisService
 		}
 	}
 }
-

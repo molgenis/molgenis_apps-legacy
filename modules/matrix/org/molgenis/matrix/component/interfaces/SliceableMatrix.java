@@ -31,8 +31,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * @throws MatrixException
 	 * @See MatrixQueryRule
 	 */
-	public SliceableMatrix<R, C, V> slice(MatrixQueryRule rule)
-			throws MatrixException;
+	public SliceableMatrix<R, C, V> slice(MatrixQueryRule rule) throws MatrixException;
 
 	/**
 	 * Example 1: sliceByColIndex(Operator.GREATER, 20) Grab a matrix slice by
@@ -51,8 +50,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * @return sliced result
 	 * @throws Exception
 	 */
-	public SliceableMatrix<R, C, V> sliceByColIndex(
-			QueryRule.Operator operator, Integer index) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByColIndex(QueryRule.Operator operator, Integer index) throws Exception;
 
 	/**
 	 * Example 2: sliceByColIndex(Operator.LESS_EQUAL, 10) Grab a matrix slice
@@ -63,8 +61,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * @return sliced result
 	 * @throws Exception
 	 */
-	public SliceableMatrix<R, C, V> sliceByRowIndex(
-			QueryRule.Operator operator, Integer index) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByRowIndex(QueryRule.Operator operator, Integer index) throws Exception;
 
 	/**
 	 * Example: sliceByRowLimitOffset(10,30)
@@ -73,8 +70,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * @param offset
 	 * @return
 	 */
-	public SliceableMatrix<R, C, V> sliceByRowOffsetLimit(int limit, int offset)
-			throws Exception;
+	public SliceableMatrix<R, C, V> sliceByRowOffsetLimit(int limit, int offset) throws Exception;
 
 	/**
 	 * Example: sliceByColLimitOffset(10,30)
@@ -83,8 +79,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * @param offset
 	 * @return
 	 */
-	public SliceableMatrix<R, C, V> sliceByColOffsetLimit(int limit, int offset)
-			throws Exception;
+	public SliceableMatrix<R, C, V> sliceByColOffsetLimit(int limit, int offset) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -96,8 +91,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * 
 	 * Example: sliceByRowValues(2, Operator.GREATER, 35)
 	 */
-	public SliceableMatrix<R, C, V> sliceByRowValues(int index,
-			Operator operator, Object value) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByRowValues(int index, Operator operator, Object value) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -113,8 +107,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	// M: that depends on your implementation. If C extends Entity, then simply
 	// C.getIdValue(). This would then be the index. If C instanceof String,
 	// then they should be unique anyway.
-	public SliceableMatrix<R, C, V> sliceByRowValues(R row, Operator operator,
-			Object value) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByRowValues(R row, Operator operator, Object value) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -126,8 +119,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * 
 	 * sliceByColValues("5", Operator.GREATER, 175)
 	 */
-	public SliceableMatrix<R, C, V> sliceByColValues(int index,
-			Operator operator, Object value) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByColValues(int index, Operator operator, Object value) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -142,8 +134,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	// J: how do you identify C ?
 	// M: that depends on your implementation. If C extends Entity, then simply
 	// C.getIdValue(). This would then be the index.
-	public SliceableMatrix<R, C, V> sliceByColValues(C col, Operator operator,
-			Object value) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByColValues(C col, Operator operator, Object value) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -154,10 +145,11 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * simple a compare on the value can be done instead of on some attribute.
 	 * 
 	 * Example: sliceByRowProperty("name", Operator.EQUALS, "rs562378")
-	 * @throws MatrixException 
+	 * 
+	 * @throws MatrixException
 	 */
-	public SliceableMatrix<R, C, V> sliceByRowProperty(String property,
-			Operator operator, Object value) throws MatrixException;
+	public SliceableMatrix<R, C, V> sliceByRowProperty(String property, Operator operator, Object value)
+			throws MatrixException;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -171,37 +163,43 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * 
 	 * @throws Exception
 	 */
-	public SliceableMatrix<R, C, V> sliceByColProperty(String property,
-			Operator operator, Object value) throws Exception;
-	
+	public SliceableMatrix<R, C, V> sliceByColProperty(String property, Operator operator, Object value)
+			throws Exception;
+
 	/**
 	 * Perform slicing on other properties of the value. In more complex
 	 * matrices we could have a class 'ObservedValue' that has 'startdate' on
 	 * which we may want to filter.
 	 * 
-	 * @param col: the column to filter on
-	 * @param property. e.g. 'protocol_name'
-	 * @param operator. e.g. 'equals'
-	 * @param value. e.g. 'alignment 2.0'
+	 * @param col
+	 *            : the column to filter on
+	 * @param property
+	 *            . e.g. 'protocol_name'
+	 * @param operator
+	 *            . e.g. 'equals'
+	 * @param value
+	 *            . e.g. 'alignment 2.0'
 	 * @return
-	 * @throws MatrixException 
+	 * @throws MatrixException
 	 */
-	public SliceableMatrix<R, C, V> sliceByColValueProperty(C col, String property,
-			Operator operator, Object value) throws MatrixException;
-	
+	public SliceableMatrix<R, C, V> sliceByColValueProperty(C col, String property, Operator operator, Object value)
+			throws MatrixException;
+
 	/**
 	 * Perform slicing on other properties of the value. In more complex
 	 * matrices we could have a class 'ObservedValue' that has 'startdate' on
 	 * which we may want to filter.
 	 * 
-	 * @param colIndex to put the filter on
-	 * @param operator. e.g. 'equals'
-	 * @param value. e.g. 'alignment 2.0'
+	 * @param colIndex
+	 *            to put the filter on
+	 * @param operator
+	 *            . e.g. 'equals'
+	 * @param value
+	 *            . e.g. 'alignment 2.0'
 	 * @return
-	 * @throws MatrixException 
+	 * @throws MatrixException
 	 */
-	SliceableMatrix<R, C, V> sliceByColValueProperty(int colIndex,
-			String property, Operator operator, Object value)
+	SliceableMatrix<R, C, V> sliceByColValueProperty(int colIndex, String property, Operator operator, Object value)
 			throws MatrixException;
 
 	/**
@@ -210,11 +208,11 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * the columns, rows and values.
 	 */
 	public BasicMatrix<R, C, V> getResult() throws Exception;
-	
+
 	/**
-	 * Tells slicer on which row header attributes the user can filter. If
-	 * the row headers are strings, you could implement this with just "value".
-	 * If your headers are entities, you might want to fill this list with the
+	 * Tells slicer on which row header attributes the user can filter. If the
+	 * row headers are strings, you could implement this with just "value". If
+	 * your headers are entities, you might want to fill this list with the
 	 * attributes of the entity.
 	 */
 	public List<String> getRowPropertyNames();
@@ -223,8 +221,10 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * Same as getRowHeaderFilterAttributes() except for columns.
 	 */
 	public List<String> getColPropertyNames();
-	
-	/** Meta data on the values. E.g. in ObservedValue you would get list('value','protocol_name', etc);
+
+	/**
+	 * Meta data on the values. E.g. in ObservedValue you would get
+	 * list('value','protocol_name', etc);
 	 * 
 	 * @return
 	 */
@@ -236,15 +236,14 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * performed on the original matrix data instead of a sliced subset.
 	 */
 	public void reset() throws MatrixException;
-	
+
 	/**
-	 * Empty caches and reload matrix data, whilst keeping any
-	 * filters intact.
+	 * Empty caches and reload matrix data, whilst keeping any filters intact.
 	 * 
 	 * @throws MatrixException
 	 */
 	public void reload() throws MatrixException;
-	
+
 	public int getRowLimit();
 
 	public void setRowLimit(int rowLimit);
@@ -261,13 +260,12 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 
 	public void setColOffset(int colOffset);
 
-	SliceableMatrix<R, C, V> sliceByRowValueProperty(R row, String property,
-			Operator operator, Object value) throws MatrixException;
-
-	SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex,
-			String property, Operator operator, Object value)
+	SliceableMatrix<R, C, V> sliceByRowValueProperty(R row, String property, Operator operator, Object value)
 			throws MatrixException;
 
-	SliceableMatrix<R, C, V> sliceByColValueProperty(int protocolId, int measurementId,
-			String valuePropertyToUse, Operator op, Object object) throws MatrixException;
+	SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex, String property, Operator operator, Object value)
+			throws MatrixException;
+
+	SliceableMatrix<R, C, V> sliceByColValueProperty(int protocolId, int measurementId, String valuePropertyToUse,
+			Operator op, Object object) throws MatrixException;
 }

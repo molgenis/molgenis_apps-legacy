@@ -37,7 +37,7 @@ public class AppCustomizer extends PluginModel
 	{
 		return "plugins_system_appcustomizer_AppCustomizer";
 	}
-	
+
 	private Boolean hideLoginButtons;
 
 	@Override
@@ -45,10 +45,9 @@ public class AppCustomizer extends PluginModel
 	{
 		return "plugins/system/appcustomizer/AppCustomizer.ftl";
 	}
-	
-	
 
-	public Boolean getHideLoginButtons() {
+	public Boolean getHideLoginButtons()
+	{
 		return hideLoginButtons;
 	}
 
@@ -57,68 +56,68 @@ public class AppCustomizer extends PluginModel
 	{
 		try
 		{
-		
+
 			if ("uploadBanner".equals(request.getAction()))
 			{
 				File newBanner = request.getFile("uploadBannerFile");
-				
-				if(newBanner == null)
+
+				if (newBanner == null)
 				{
 					throw new Exception("Please provide an image file.");
 				}
-				
+
 				File oldBanner = new File("WebContent/clusterdemo/bg/xqtl_default_banner.png");
-				
+
 				FileUtils.forceDelete(oldBanner);
-				
+
 				FileUtils.copyFile(newBanner, oldBanner);
-				
-//				if(!success)
-//				{
-//					throw new Exception("Putting the new banner in place failed.");
-//				}
-				
+
+				// if(!success)
+				// {
+				// throw new
+				// Exception("Putting the new banner in place failed.");
+				// }
+
 				this.setMessages(new ScreenMessage("New banner uploaded.", true));
-			
+
 			}
 			else if ("uploadCss".equals(request.getAction()))
 			{
 				File newCss = request.getFile("uploadCssFile");
-				
-				if(newCss == null)
+
+				if (newCss == null)
 				{
 					throw new Exception("Please provide a CSS file.");
 				}
-				
+
 				File oldCss = new File("WebContent/clusterdemo/colors.css");
-				
+
 				FileUtils.forceDelete(oldCss);
-				
+
 				FileUtils.copyFile(newCss, oldCss);
-				
-//				if(!success)
-//				{
-//					throw new Exception("Putting the new CSS in place failed.");
-//				}
-				
+
+				// if(!success)
+				// {
+				// throw new Exception("Putting the new CSS in place failed.");
+				// }
+
 				this.setMessages(new ScreenMessage("New CSS uploaded.", true));
 			}
-			
-			else if("showHomeButtons".equals(request.getAction()))
+
+			else if ("showHomeButtons".equals(request.getAction()))
 			{
 				setHideHomeScreenButtons(db, "false");
 			}
-			
-			else if("hideHomeButtons".equals(request.getAction()))
+
+			else if ("hideHomeButtons".equals(request.getAction()))
 			{
 				setHideHomeScreenButtons(db, "true");
 			}
-			
+
 			else
 			{
 				throw new Exception("unknown request action: " + request.getAction());
 			}
-
 
 		}
 		catch (Exception e)
@@ -126,18 +125,19 @@ public class AppCustomizer extends PluginModel
 			this.setMessages(new ScreenMessage(e.getMessage(), false));
 		}
 	}
-	
+
 	private void setHideHomeScreenButtons(Database db, String setMe) throws DatabaseException
 	{
-		List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME, Operator.EQUALS, ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS));
-		if(rp.size() == 0)
+		List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME, Operator.EQUALS,
+				ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS));
+		if (rp.size() == 0)
 		{
 			RuntimeProperty newRp = new RuntimeProperty();
 			newRp.setName(ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS);
 			newRp.setValue(setMe);
 			db.add(newRp);
 		}
-		else if(rp.size() == 1)
+		else if (rp.size() == 1)
 		{
 			rp.get(0).setValue(setMe);
 			db.update(rp);
@@ -147,20 +147,20 @@ public class AppCustomizer extends PluginModel
 			throw new DatabaseException("runtime prop size exceeds 1");
 		}
 	}
-	
 
 	@Override
 	public void reload(Database db)
 	{
 		try
 		{
-			List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME, Operator.EQUALS, ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS));
-			
-			if(rp.size() == 1 && rp.get(0).getValue().equals("false"))
+			List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME,
+					Operator.EQUALS, ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS));
+
+			if (rp.size() == 1 && rp.get(0).getValue().equals("false"))
 			{
 				this.hideLoginButtons = false;
 			}
-			else if(rp.size() == 1 && rp.get(0).getValue().equals("true"))
+			else if (rp.size() == 1 && rp.get(0).getValue().equals("true"))
 			{
 				this.hideLoginButtons = true;
 			}
@@ -169,12 +169,11 @@ public class AppCustomizer extends PluginModel
 				this.hideLoginButtons = false;
 			}
 		}
-		catch(DatabaseException e)
+		catch (DatabaseException e)
 		{
 			this.setMessages(new ScreenMessage("Could not query runtime propery: " + e.getMessage(), false));
 		}
 
 	}
-
 
 }

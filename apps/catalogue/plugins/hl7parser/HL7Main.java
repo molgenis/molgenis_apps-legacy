@@ -13,8 +13,10 @@ import app.DatabaseFactory;
  * 
  * @author roankanninga
  */
-public class HL7Main {
-	public static void main(String[] args) throws Exception {
+public class HL7Main
+{
+	public static void main(String[] args) throws Exception
+	{
 		PropertiesPath path = new PropertiesPath();
 		String file1 = "/Users/pc_iverson/Desktop/Input/HL7Files/Catalog-EX04.xml";
 		// String file1 = "/Users/Roan/Work/HL7/Catalog-EX04.xml";

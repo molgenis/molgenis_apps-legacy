@@ -5,7 +5,8 @@ import java.util.Map;
 
 import org.molgenis.framework.server.Token;
 
-public class TokenManagerModel {
+public class TokenManagerModel
+{
 
 	Map<String, Token> tokens;
 
@@ -19,10 +20,4 @@ public class TokenManagerModel {
 		this.tokens = tokens;
 	}
 
-	
-	
-	
-	
-	
-	
 }

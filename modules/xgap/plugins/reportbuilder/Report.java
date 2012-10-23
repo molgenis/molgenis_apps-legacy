@@ -7,12 +7,12 @@ import org.molgenis.util.Entity;
 
 public class Report
 {
-	
+
 	public Report(Entity entity)
 	{
 		this.entity = entity;
 	}
-	
+
 	Entity entity;
 	List<MatrixLocation> matrices;
 
@@ -35,6 +35,5 @@ public class Report
 	{
 		this.matrices = matrices;
 	}
-	
-	
+
 }

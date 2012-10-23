@@ -17,14 +17,14 @@ import org.molgenis.util.Entity;
 /**
  * Simple memory based matrix of ObservedValue
  */
-public class PhenoMemoryMatrix<E extends ObservationElement, A extends ObservationElement>
-		extends MemoryMatrix<E, A, ObservedValue>
+public class PhenoMemoryMatrix<E extends ObservationElement, A extends ObservationElement> extends
+		MemoryMatrix<E, A, ObservedValue>
 {
 	Class<E> rowType;
 	Class<A> colType;
-	
-	public PhenoMemoryMatrix(Class<E> rowType, Class<A> colType, Database db)
-			throws MatrixException, DatabaseException, ParseException
+
+	public PhenoMemoryMatrix(Class<E> rowType, Class<A> colType, Database db) throws MatrixException,
+			DatabaseException, ParseException
 	{
 		this(db.find(rowType), db.find(colType), db);
 		this.rowType = rowType;
@@ -32,15 +32,17 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 	}
 
 	/** Construct a pheno matrix from database, only using selected rows/cols */
-	public PhenoMemoryMatrix(List<E> rows, List<A> cols, Database db)
-			throws MatrixException, DatabaseException, ParseException
+	public PhenoMemoryMatrix(List<E> rows, List<A> cols, Database db) throws MatrixException, DatabaseException,
+			ParseException
 	{
 		// names are unique in whole database???
 		super(rows, cols, ObservedValue.class);
-		
-		//get rowType and colType
-		for(E row: rows) if(row == null) throw new MatrixException("rows may not have null values");
-		for(A col: cols) if(col == null) throw new MatrixException("cols may not have null values");
+
+		// get rowType and colType
+		for (E row : rows)
+			if (row == null) throw new MatrixException("rows may not have null values");
+		for (A col : cols)
+			if (col == null) throw new MatrixException("cols may not have null values");
 		this.rowType = (Class<E>) rows.get(0).getClass();
 		this.colType = (Class<A>) cols.get(0).getClass();
 
@@ -61,8 +63,7 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 		// most recent value for each row,col pair
 		for (ObservedValue v : values)
 		{
-			this.setValue(rowIds.indexOf(v.getTarget()), colIds.indexOf(v
-					.getFeature()), v);
+			this.setValue(rowIds.indexOf(v.getTarget()), colIds.indexOf(v.getFeature()), v);
 		}
 
 	}
@@ -74,8 +75,8 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 	 * @throws InstantiationException
 	 * @throws MatrixException
 	 */
-	public PhenoMemoryMatrix(Class<E> rowType, Class<A> colType,
-			Matrix<String, String, String> matrix) throws MatrixException
+	public PhenoMemoryMatrix(Class<E> rowType, Class<A> colType, Matrix<String, String, String> matrix)
+			throws MatrixException
 	{
 		super();
 		this.rowType = rowType;
@@ -102,17 +103,16 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 			}
 			this.setColNames(cols);
 			// create new ObservedValue instances
-			ObservedValue[][] values = this.create(rows.size(), cols.size(),
-					ObservedValue.class);
+			ObservedValue[][] values = this.create(rows.size(), cols.size(), ObservedValue.class);
 			for (int i = 0; i < rows.size(); i++)
 			{
 				for (int j = 0; j < cols.size(); j++)
 				{
 					ObservedValue v = new ObservedValue();
 					v.setTarget_Name(rows.get(i).getName());
-					//v.setTarget___Type(this.rowType.getSimpleName());
+					// v.setTarget___Type(this.rowType.getSimpleName());
 					v.setFeature_Name(cols.get(j).getName());
-					//v.setFeature___Type(this.colType.getSimpleName());
+					// v.setFeature___Type(this.colType.getSimpleName());
 					v.setValue(matrix.getValue(i, j));
 					values[i][j] = v;
 				}
@@ -144,8 +144,7 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 	 * @param action
 	 * @throws DatabaseException
 	 */
-	public void store(Database db, Database.DatabaseAction action)
-			throws DatabaseException
+	public void store(Database db, Database.DatabaseAction action) throws DatabaseException
 	{
 		boolean inTransaction = false;
 		try
@@ -158,8 +157,7 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 
 			// except in case of remove, first add the targets.
 			if (!action.equals(Database.DatabaseAction.REMOVE)
-					&& !action
-							.equals(Database.DatabaseAction.REMOVE_IGNORE_MISSING))
+					&& !action.equals(Database.DatabaseAction.REMOVE_IGNORE_MISSING))
 			{
 				db.update(this.getRowNames(), action, ObservationElement.NAME);
 				db.update(this.getColNames(), action, ObservationElement.NAME);
@@ -167,25 +165,23 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 
 			for (int i = 0; i < this.getRowCount(); i++)
 			{
-				db.update(Arrays.asList(this.getRow(i)), action,
-						ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME,
+				db.update(Arrays.asList(this.getRow(i)), action, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME,
 						ObservedValue.VALUE, ObservedValue.TIME);
 			}
 
 			// remove unless linked to another value. BIG FIXME!!!
 			if (action.equals(Database.DatabaseAction.REMOVE)
-					|| action
-							.equals(Database.DatabaseAction.REMOVE_IGNORE_MISSING))
+					|| action.equals(Database.DatabaseAction.REMOVE_IGNORE_MISSING))
 			{
 				db.update(this.getRowNames(), action, ObservationElement.NAME);
 				db.update(this.getColNames(), action, ObservationElement.NAME);
 			}
 
-			if(inTransaction) db.commitTx();
+			if (inTransaction) db.commitTx();
 		}
 		catch (Exception e)
 		{
-			if(inTransaction) db.rollbackTx();
+			if (inTransaction) db.rollbackTx();
 			throw new DatabaseException(e);
 		}
 	}
@@ -221,10 +217,9 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 				for (A col : getColNames())
 				{
 					writer.writeSeparator();
-					if(this.getValue(row, col) != null)
-						writer.writeValue(this.getValue(row, col).getValue());
+					if (this.getValue(row, col) != null) writer.writeValue(this.getValue(row, col).getValue());
 					else
-						writer.writeValue(writer.getMissingValue()	);
+						writer.writeValue(writer.getMissingValue());
 				}
 				writer.writeEndOfLine();
 			}

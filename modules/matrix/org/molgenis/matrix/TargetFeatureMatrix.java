@@ -7,7 +7,7 @@ import org.molgenis.pheno.ObservedValue;
 /**
  * Matrix for Target X Feature matrices.
  */
-public interface TargetFeatureMatrix extends Matrix<ObservationTarget,ObservableFeature,ObservedValue>
+public interface TargetFeatureMatrix extends Matrix<ObservationTarget, ObservableFeature, ObservedValue>
 {
 
 }

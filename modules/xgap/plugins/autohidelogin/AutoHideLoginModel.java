@@ -7,7 +7,6 @@
 
 package plugins.autohidelogin;
 
-
 import org.molgenis.auth.ui.UserLoginModel;
 
 //import commonservice.CommonService;
@@ -20,18 +19,20 @@ public class AutoHideLoginModel extends UserLoginModel
 {
 
 	private static final long serialVersionUID = 6708187240283301564L;
-	
+
 	AutoHideLogin controller;
+
 	public AutoHideLoginModel(AutoHideLogin controller)
 	{
 		super(controller);
 		this.controller = controller;
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{
-		return controller.ac.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) != null ? ((Boolean)controller.ac.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN)) : false;
+		return controller.ac.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) != null ? ((Boolean) controller.ac.sessionVariables
+				.get(AutoHideLogin.AUTOHIDE_LOGIN)) : false;
 	}
-	
+
 }
