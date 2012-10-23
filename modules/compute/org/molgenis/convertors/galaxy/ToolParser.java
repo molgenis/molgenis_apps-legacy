@@ -13,17 +13,18 @@ import javax.xml.bind.Unmarshaller;
 
 public class ToolParser
 {
-	public static void main(String [] args) throws IOException, JAXBException
+	public static void main(String[] args) throws IOException, JAXBException
 	{
 		File dir = new File("D:/Development/molgenis3_3/galaxy/tools/");
 
-		//Map<String, Integer> nodeStats = new LinkedHashMap<String, Integer>();
+		// Map<String, Integer> nodeStats = new LinkedHashMap<String,
+		// Integer>();
 		for (File f : getFilesRecursive(dir))
 		{
 			try
 			{
 				Tool t = loadTool(f);
-				
+
 				System.out.println(t);
 				return;
 			}
@@ -36,15 +37,15 @@ public class ToolParser
 
 		}
 	}
-	
+
 	private static Tool loadTool(File xml) throws JAXBException
 	{
 		JAXBContext jaxbContext = JAXBContext.newInstance("org.molgenis.model.tool");
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		return (Tool)unmarshaller.unmarshal(xml);
+		return (Tool) unmarshaller.unmarshal(xml);
 	}
-	
-	//TODO: Danny: Use the function and then remove the warning suppression
+
+	// TODO: Danny: Use the function and then remove the warning suppression
 	@SuppressWarnings("unused")
 	private static String toString(Tool model) throws JAXBException
 	{
@@ -57,7 +58,7 @@ public class ToolParser
 		marshaller.marshal(model, out);
 		return out.toString().trim();
 	}
-	
+
 	private static List<File> getFilesRecursive(final File f) throws IOException
 	{
 		List<File> files = new ArrayList<File>();

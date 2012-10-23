@@ -23,7 +23,7 @@ public class Help extends PluginModel<Entity>
 	private static final long serialVersionUID = 1L;
 
 	private HelpModel model = new HelpModel();
-	
+
 	public HelpModel getMyModel()
 	{
 		return model;
@@ -45,7 +45,7 @@ public class Help extends PluginModel<Entity>
 	{
 		return "org/molgenis/wormqtl/help/Help.ftl";
 	}
-	
+
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
@@ -53,24 +53,20 @@ public class Help extends PluginModel<Entity>
 			String action = request.getString("__action");
 			try
 			{
-			
+
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
-		
+
 		}
 	}
-	
-	
-	
+
 	@Override
 	public void reload(Database db)
 	{
-
-		
 
 	}
 

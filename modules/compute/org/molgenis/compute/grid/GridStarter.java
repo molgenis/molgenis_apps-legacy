@@ -14,96 +14,96 @@ import java.util.Collection;
 public class GridStarter
 {
 
-    public Grid startGrid()
-    {
-        Grid grid = null;
+	public Grid startGrid()
+	{
+		Grid grid = null;
 
-        GridConfigurationAdapter cfg = new GridConfigurationAdapter();
+		GridConfigurationAdapter cfg = new GridConfigurationAdapter();
 
-        GridBasicTopologySpi topSpi = new GridBasicTopologySpi();
+		GridBasicTopologySpi topSpi = new GridBasicTopologySpi();
 
-        // Exclude local node from topology.
-        topSpi.setLocalNode(false);
+		// Exclude local node from topology.
+		topSpi.setLocalNode(false);
 
+		// Configure your own topology SPI.
+		cfg.setTopologySpi(topSpi);
 
-        // Configure your own topology SPI.
-        cfg.setTopologySpi(topSpi);
+		// discovery spi
+		GridJgroupsDiscoverySpi spi = new GridJgroupsDiscoverySpi();
 
-        //discovery spi
-        GridJgroupsDiscoverySpi spi = new GridJgroupsDiscoverySpi();
+		// Override default JGroups configuration file.
+		// spi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
+		spi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
+		// spi.setConfigurationFile("/home/fvandijk/gridgain/config/jgroups/tcp/jgroups.xml");
 
-        // Override default JGroups configuration file.
-        //spi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
-        spi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
-        //spi.setConfigurationFile("/home/fvandijk/gridgain/config/jgroups/tcp/jgroups.xml");
+		// Override default discovery SPI.
+		cfg.setDiscoverySpi(spi);
 
-        // Override default discovery SPI.
-        cfg.setDiscoverySpi(spi);
+		// transport spi
+		GridJgroupsCommunicationSpi commSpi = new GridJgroupsCommunicationSpi();
 
-        //transport spi
-        GridJgroupsCommunicationSpi commSpi = new GridJgroupsCommunicationSpi();
+		// Override default JGroups configuration file.
+		// commSpi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
+		commSpi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
+		// commSpi.setConfigurationFile("/home/fvandijk/gridgain/config/jgroups/tcp/jgroups.xml");
+		cfg.setCommunicationSpi(commSpi);
 
-        // Override default JGroups configuration file.
-        //commSpi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
-        commSpi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
-        //commSpi.setConfigurationFile("/home/fvandijk/gridgain/config/jgroups/tcp/jgroups.xml");
-        cfg.setCommunicationSpi(commSpi);
+		try
+		{
+			GridFactory.start(cfg);
+			grid = GridFactory.getGrid();
+		}
+		catch (GridException e)
+		{
+			e.printStackTrace();
+		}
 
-        try
-        {
-            GridFactory.start(cfg);
-            grid = GridFactory.getGrid();
-        }
-        catch (GridException e)
-        {
-            e.printStackTrace();
-        }
+		System.out.println("... grid started");
 
-        System.out.println("... grid started");
+		return grid;
+	}
 
-        return grid;
-    }
+	public void waitForRemoteNode(Grid grid)
+	{
+		boolean remoteNodeExists = false;
 
-    public void waitForRemoteNode(Grid grid)
-    {
-        boolean remoteNodeExists = false;
+		while (!remoteNodeExists)
+		{
+			Collection<GridNode> remoteNodes = grid.getRemoteNodes();
 
-        while (!remoteNodeExists)
-        {
-            Collection<GridNode> remoteNodes = grid.getRemoteNodes();
+			if (remoteNodes.size() > 0)
+			{
+				remoteNodeExists = true;
+			}
+			else
+			{
+				System.out.println("... wait for remote node");
+				try
+				{
+					Thread.sleep(5000);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		System.out.println(">>> remote node is available");
+	}
 
-            if (remoteNodes.size() > 0)
-            {
-                remoteNodeExists = true;
-            } else
-            {
-                System.out.println("... wait for remote node");
-                try
-                {
-                    Thread.sleep(5000);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        System.out.println(">>> remote node is available");
-    }
+	public void startRemoteNode()
+	{
+		System.out.println(">>> start remote node");
 
-    public void startRemoteNode()
-    {
-        System.out.println(">>> start remote node");
+		try
+		{
+			Ssh ssh = new Ssh("lala", "lala", "lala");
 
-        try
-        {
-            Ssh ssh = new Ssh("lala", "lala","lala");
-
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 }
