@@ -10,20 +10,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
-@XmlRootElement(name="data_table")
+@XmlRootElement(name = "data_table")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Data_Dict
 {
 	@XmlAttribute
 	public String id;
-	
-	@XmlElement(name="variable")
+
+	@XmlElement(name = "variable")
 	public List<Variable> variables = new ArrayList<Variable>();
 
-	//metadata not parsed out of file
+	// metadata not parsed out of file
 	public String study_id;
-	
+
 	public String study_version;
 
 	public String description;
@@ -31,6 +30,5 @@ public class Data_Dict
 	public URL url;
 
 	public String version;
-
 
 }

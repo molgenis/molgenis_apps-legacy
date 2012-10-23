@@ -1,8 +1,6 @@
 package org.molgenis.phenoflow;
 
-
 import org.molgenis.Molgenis;
-
 
 public class PhenoflowGenerate
 {
