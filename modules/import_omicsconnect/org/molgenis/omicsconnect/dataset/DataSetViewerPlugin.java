@@ -2,9 +2,9 @@ package org.molgenis.omicsconnect.dataset;
 
 import java.io.OutputStream;
 
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.ScreenController;

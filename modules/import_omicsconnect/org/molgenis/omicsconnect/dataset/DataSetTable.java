@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.molgenis.datatable.model.AbstractTupleTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.tupletable.AbstractTupleTable;
+import org.molgenis.framework.tupletable.DatabaseTupleTable;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
 import org.molgenis.observ.Characteristic;
 import org.molgenis.observ.DataSet;
@@ -20,10 +21,13 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /** Unfilterable */
-public class DataSetTable extends AbstractTupleTable
+public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTable
 {
 	// the data set that is wrapped
 	DataSet set;
+
+	// the database
+	Database db;
 
 	// cache of features
 	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
@@ -196,5 +200,15 @@ public class DataSetTable extends AbstractTupleTable
 		{
 			throw new TableException(e);
 		}
+	}
+
+	public Database getDb()
+	{
+		return db;
+	}
+
+	public void setDb(Database db)
+	{
+		this.db = db;
 	}
 }
