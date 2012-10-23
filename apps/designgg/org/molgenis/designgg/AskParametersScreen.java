@@ -80,25 +80,28 @@ public class AskParametersScreen extends PluginModel
 	{
 		try
 		{
-		CsvReader fileReader = new CsvFileReader(new File(p.getGenotype()));
-		int rows = fileReader.rownames().size();
-		if(p.getRangeStart() != null && p.getRangeEnd() != null) for (int i = 0; i < p.getRangeStart().size(); i++)
-		{
-			int start = Integer.parseInt((String) p.getRangeStart().get(i));
-			int end = Integer.parseInt((String) p.getRangeEnd().get(i));
-			logger.debug("" + start + "-" + end);
-			if (start < 1 || end > rows)
+			CsvReader fileReader = new CsvFileReader(new File(p.getGenotype()));
+			int rows = fileReader.rownames().size();
+			if (p.getRangeStart() != null && p.getRangeEnd() != null) for (int i = 0; i < p.getRangeStart().size(); i++)
 			{
-				this.setArgMissing("Marker range should be in [1,maxindex makers="+rows+")], found [start=" + start + ",end=" + end + "]");
-				return false;
-			}
-			else if (end < start)
-			{
-				this.setArgMissing("marker range 'start' should be lower than 'end', found [start=" + start + ",end=" + end + "]");
-				return false;
+				int start = Integer.parseInt((String) p.getRangeStart().get(i));
+				int end = Integer.parseInt((String) p.getRangeEnd().get(i));
+				logger.debug("" + start + "-" + end);
+				if (start < 1 || end > rows)
+				{
+					this.setArgMissing("Marker range should be in [1,maxindex makers=" + rows + ")], found [start="
+							+ start + ",end=" + end + "]");
+					return false;
+				}
+				else if (end < start)
+				{
+					this.setArgMissing("marker range 'start' should be lower than 'end', found [start=" + start
+							+ ",end=" + end + "]");
+					return false;
+				}
 			}
 		}
-		} catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.setArgMissing(e.getMessage());
