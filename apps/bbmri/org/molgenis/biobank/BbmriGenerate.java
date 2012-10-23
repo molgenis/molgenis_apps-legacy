@@ -1,8 +1,6 @@
 package org.molgenis.biobank;
 
-
 import org.molgenis.Molgenis;
-
 
 public class BbmriGenerate
 {
