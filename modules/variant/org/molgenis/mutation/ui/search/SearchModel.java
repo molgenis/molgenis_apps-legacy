@@ -43,7 +43,6 @@ public class SearchModel extends EasyPluginModel
 	private Map<String, Integer> numMutationsByPathogenicity;
 	private Map<String, Integer> numPatientsByPathogenicity;
 	private HtmlFormWrapper expertSearchFormWrapper;
-<<<<<<< HEAD
 	private SimpleSearchForm simpleSearchForm                 = new SimpleSearchForm();
 	private ListAllMutationsForm listAllMutationsForm         = new ListAllMutationsForm();
 	private ListAllPatientsForm listAllPatientsForm           = new ListAllPatientsForm();
@@ -52,16 +51,6 @@ public class SearchModel extends EasyPluginModel
 	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
 	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
 	private HtmlInput<?> mBrowsePanel;
-=======
-	private SimpleSearchForm simpleSearchForm = new SimpleSearchForm();
-	private ListAllMutationsForm listAllMutationsForm = new ListAllMutationsForm();
-	private ListAllPatientsForm listAllPatientsForm = new ListAllPatientsForm();
-	private ToExpertSearchForm toExpertSearchForm = new ToExpertSearchForm();
-	private ToSimpleSearchForm toSimpleSearchForm = new ToSimpleSearchForm();
-	private ShowMutationForm showMutationForm = new ShowMutationForm();
-	private DisplayOptionsForm displayOptionsForm = new DisplayOptionsForm();
->>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
-
 	private MutationSearchCriteriaDTO mutationSearchCriteriaVO = new MutationSearchCriteriaDTO();
 	private QueryParametersDTO queryParametersVO = new QueryParametersDTO();
 

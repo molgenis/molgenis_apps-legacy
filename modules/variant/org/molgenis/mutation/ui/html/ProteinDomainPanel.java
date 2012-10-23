@@ -23,26 +23,12 @@ public class ProteinDomainPanel extends HtmlInput<ProteinDomainDTO> implements S
 	private ProteinDomainDTO proteinDomainDTO;
 	private String baseUrl;
 
-<<<<<<< HEAD
 	public ProteinDomainPanel(ProteinDomainDTO proteinDomainDTO, String baseUrl)
 	{
 		this.proteinDomainDTO = proteinDomainDTO;
 		this.baseUrl          = baseUrl;
 	}
 	
-=======
-	// public ProteinDomainPanel()
-	// {
-	// this("", "");
-	// }
-
-	// public ProteinDomainPanel(String name, String label)
-	// {
-	// super(name, label);
-	// this.setLabel(label);
-	// }
-
->>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 	@Override
 	public String toHtml()
 	{

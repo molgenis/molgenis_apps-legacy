@@ -17,19 +17,11 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 600688454568632400L;
 
-<<<<<<< HEAD
 //	private final double SCALE_FACTOR                         = 0.003;
 	private final double SCALE_FACTOR                         = 0.1;
 	private List<ProteinDomainDTO> proteinDomainDTOList;
 	private String baseUrl;
 	private Boolean showNames                                 = true;
-=======
-	// private final double SCALE_FACTOR = 0.003;
-	private final double SCALE_FACTOR = 0.1;
-	private List<ProteinDomainDTO> proteinDomainSummaryVOList = new ArrayList<ProteinDomainDTO>();
-	private String baseUrl = "";
-	private Boolean showNames = true;
->>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 
 	public GenePanel(List<ProteinDomainDTO> proteinDomainDTOList, String baseUrl)
 	{
@@ -101,22 +93,4 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 
 		return result.toString();
 	}
-<<<<<<< HEAD
-=======
-
-	public List<ProteinDomainDTO> getProteinDomainSummaryVOList()
-	{
-		return proteinDomainSummaryVOList;
-	}
-
-	public void setProteinDomainSummaryVOList(List<ProteinDomainDTO> proteinDomainSummaryVOList)
-	{
-		this.proteinDomainSummaryVOList = proteinDomainSummaryVOList;
-	}
-
-	public void setBaseUrl(String baseUrl)
-	{
-		this.baseUrl = baseUrl;
-	}
->>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 }
