@@ -3,8 +3,8 @@ package org.molgenis.datatable.plugin;
 import java.io.OutputStream;
 
 import org.molgenis.datatable.model.EntityTable;
-import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -16,7 +16,7 @@ import org.molgenis.util.Tuple;
 /** Simple plugin that only shows a data table for testing */
 public class JQGridPluginEntity extends EasyPluginController<JQGridPluginEntity>
 {
-	JQGridView tableView;
+	protected JQGridView tableView;
 
 	public JQGridPluginEntity(String name, ScreenController<?> parent)
 	{

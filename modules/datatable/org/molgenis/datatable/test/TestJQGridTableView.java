@@ -1,9 +1,8 @@
 package org.molgenis.datatable.test;
 
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.JQGridView;
-import org.molgenis.framework.ui.ApplicationController;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.view.JQGridView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

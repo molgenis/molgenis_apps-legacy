@@ -6,9 +6,14 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
+
+import app.DatabaseFactory;
 
 public class JdbcTable extends AbstractFilterableTupleTable
 {
@@ -16,7 +21,6 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	private List<Tuple> rs;
 	private List<Field> columns;
 	private final String query;
-	private Database db;
 	private final String countQuery;
 	private boolean loaded = false;
 
@@ -112,14 +116,26 @@ public class JdbcTable extends AbstractFilterableTupleTable
 		}
 	}
 
-	public void setDatabase(Database db)
-	{
-		this.db = db;
-	}
-
-	@Override
-	public void setDb(Database db)
-	{
-		this.db = db;
-	}
+	/**
+	 * very bad: bypasses all security and connection management
+	 */
+	private Database db;
+	 public void setDb(Database db)
+	 {
+	 if (db == null) throw new
+	 NullPointerException("database cannot be null in setDb(db)");
+	 this.db = db;
+	 }
+	 public Database getDb()
+	 {
+	 try
+	 {
+	 db = DatabaseFactory.create();
+	 }
+	 catch (DatabaseException e)
+	 {
+	 throw new RuntimeException(e);
+	 }
+	 return this.db;
+	 }
 }
