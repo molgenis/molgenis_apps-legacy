@@ -1,4 +1,4 @@
-package miscellaneous.kegg;
+package plugins.kegg;
 
 import java.util.List;
 import java.util.Map;

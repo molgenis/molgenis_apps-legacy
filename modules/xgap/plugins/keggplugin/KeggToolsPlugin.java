@@ -7,13 +7,14 @@
 
 package plugins.keggplugin;
 
-import miscellaneous.kegg.KEGGGene;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import plugins.kegg.KEGGGene;
 
 public class KeggToolsPlugin extends PluginModel<Entity>
 {
