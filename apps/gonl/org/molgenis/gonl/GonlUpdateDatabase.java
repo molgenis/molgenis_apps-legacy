@@ -1,7 +1,5 @@
 package org.molgenis.gonl;
 
-
-
 import org.molgenis.Molgenis;
 
 public class GonlUpdateDatabase

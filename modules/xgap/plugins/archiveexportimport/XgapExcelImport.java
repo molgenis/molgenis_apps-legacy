@@ -62,7 +62,7 @@ public class XgapExcelImport
 		catch (Exception e)
 		{
 			db.rollbackTx();
-			throw(e);
+			throw (e);
 		}
 
 	}

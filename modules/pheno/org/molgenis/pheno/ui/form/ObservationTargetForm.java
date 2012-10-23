@@ -16,7 +16,7 @@ public class ObservationTargetForm extends Container
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", ""));
-		
+
 		this.add(new ActionInput("show"));
 		((ActionInput) this.get("show")).setButtonValue("Back to List mode");
 		((ActionInput) this.get("show")).setLabel("Back to List mode");
@@ -37,14 +37,14 @@ public class ObservationTargetForm extends Container
 		((ActionInput) this.get("select")).setLabel("Apply Protocol");
 		((ActionInput) this.get("select")).setTooltip("Apply Protocol");
 	}
-	
+
 	public void addTextLineInput(Integer observedValueId, String value)
 	{
 		TextLineInput<String> valueInput = new TextLineInput<String>(observedValueId.toString());
 		valueInput.setValue(value);
 		this.add(valueInput);
 	}
-	
+
 	public Input<?> showInput(String name)
 	{
 		return this.get(name);

@@ -15,13 +15,21 @@ import org.molgenis.mutation.dto.ProteinDomainDTO;
 public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
-	private static final long serialVersionUID                = 600688454568632400L;
+	private static final long serialVersionUID = 600688454568632400L;
 
+<<<<<<< HEAD
 //	private final double SCALE_FACTOR                         = 0.003;
 	private final double SCALE_FACTOR                         = 0.1;
 	private List<ProteinDomainDTO> proteinDomainDTOList;
 	private String baseUrl;
 	private Boolean showNames                                 = true;
+=======
+	// private final double SCALE_FACTOR = 0.003;
+	private final double SCALE_FACTOR = 0.1;
+	private List<ProteinDomainDTO> proteinDomainSummaryVOList = new ArrayList<ProteinDomainDTO>();
+	private String baseUrl = "";
+	private Boolean showNames = true;
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 
 	public GenePanel(List<ProteinDomainDTO> proteinDomainDTOList, String baseUrl)
 	{
@@ -54,13 +62,14 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 			for (ProteinDomainDTO proteinDomainDTO : proteinDomainDTOList)
 			{
 				List<ExonDTO> exonDTOs = proteinDomainDTO.getExonDTOList();
-	
+
 				if (exonDTOs.size() > 0)
 				{
 					String domainName = proteinDomainDTO.getDomainName();
-					String beginName  = exonDTOs.get(0).getName();
-					String endName    = exonDTOs.get(exonDTOs.size() - 1).getName();
-					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exonDTOs.size() + "\" width=\"1%\">" + domainName + " (" + beginName + " - " + endName + ")</td>");
+					String beginName = exonDTOs.get(0).getName();
+					String endName = exonDTOs.get(exonDTOs.size() - 1).getName();
+					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exonDTOs.size()
+							+ "\" width=\"1%\">" + domainName + " (" + beginName + " - " + endName + ")</td>");
 				}
 			}
 			result.appendln("</tr>");
@@ -74,11 +83,13 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 			for (ExonDTO exonDTO : proteinDomainDTO.getExonDTOList())
 			{
 				result.append("<td align=\"left\">");
-				result.append("<div class=\"pd" + proteinDomainDTO.getDomainId() + "\" style=\"display: block; width: " + exonDTO.getLength() * this.SCALE_FACTOR + "px; height: 26px;\">");
+				result.append("<div class=\"pd" + proteinDomainDTO.getDomainId() + "\" style=\"display: block; width: "
+						+ exonDTO.getLength() * this.SCALE_FACTOR + "px; height: 26px;\">");
 				String url = this.baseUrl;
 				url = StringUtils.replace(url, "domain_id=", "domain_id=" + proteinDomainDTO.getDomainId());
 				url = StringUtils.replace(url, "#exon", "#exon" + exonDTO.getId());
-				result.append("<a style=\"display: block; height: 100%; width: 100%;\" href=\"" + url + "\" alt=\"" + exonDTO.getName() + "\" title=\"" + exonDTO.getName() + "\"></a>");
+				result.append("<a style=\"display: block; height: 100%; width: 100%;\" href=\"" + url + "\" alt=\""
+						+ exonDTO.getName() + "\" title=\"" + exonDTO.getName() + "\"></a>");
 				result.append("</div>");
 				result.appendln("</td>");
 			}
@@ -90,4 +101,22 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 
 		return result.toString();
 	}
+<<<<<<< HEAD
+=======
+
+	public List<ProteinDomainDTO> getProteinDomainSummaryVOList()
+	{
+		return proteinDomainSummaryVOList;
+	}
+
+	public void setProteinDomainSummaryVOList(List<ProteinDomainDTO> proteinDomainSummaryVOList)
+	{
+		this.proteinDomainSummaryVOList = proteinDomainSummaryVOList;
+	}
+
+	public void setBaseUrl(String baseUrl)
+	{
+		this.baseUrl = baseUrl;
+	}
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 }

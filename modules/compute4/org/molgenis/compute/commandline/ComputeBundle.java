@@ -11,7 +11,8 @@ import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.util.Tuple;
 
-public class ComputeBundle {
+public class ComputeBundle
+{
 	// all parameters needed to describe a workflow
 	private Map<String, ComputeParameter> computeParameters = new LinkedHashMap<String, ComputeParameter>();
 	private List<ComputeProtocol> computeProtocols = new ArrayList<ComputeProtocol>();
@@ -28,81 +29,101 @@ public class ComputeBundle {
 	// generated result of jobs
 	private List<ComputeTask> computeTasks = new ArrayList<ComputeTask>();
 
-	public List<ComputeParameter> getComputeParameters() {
+	public List<ComputeParameter> getComputeParameters()
+	{
 		return new ArrayList<ComputeParameter>(computeParameters.values());
 	}
 
-	public void setComputeParameters(List<ComputeParameter> computeParameters) {
+	public void setComputeParameters(List<ComputeParameter> computeParameters)
+	{
 		this.computeParameters.clear();
-		for (ComputeParameter cp : computeParameters) {
+		for (ComputeParameter cp : computeParameters)
+		{
 			this.computeParameters.put(cp.getName(), cp);
 		}
 	}
 
-	public ComputeParameter getComputeParameter(String name) {
+	public ComputeParameter getComputeParameter(String name)
+	{
 		return this.computeParameters.get(name);
 	}
 
-	public List<ComputeProtocol> getComputeProtocols() {
+	public List<ComputeProtocol> getComputeProtocols()
+	{
 		return computeProtocols;
 	}
 
-	public void addComputeParameter(ComputeParameter cp) {
+	public void addComputeParameter(ComputeParameter cp)
+	{
 		this.computeParameters.put(cp.getName(), cp);
 	}
 
-	public void setComputeProtocols(List<ComputeProtocol> computeProtocols) {
+	public void setComputeProtocols(List<ComputeProtocol> computeProtocols)
+	{
 		this.computeProtocols = computeProtocols;
 	}
 
-	public List<WorkflowElement> getWorkflowElements() {
+	public List<WorkflowElement> getWorkflowElements()
+	{
 		return workflowElements;
 	}
 
-	public void setWorkflowElements(List<WorkflowElement> workflowElements) {
+	public void setWorkflowElements(List<WorkflowElement> workflowElements)
+	{
 		this.workflowElements = workflowElements;
 	}
 
-	public List<Tuple> getUserParameters() {
+	public List<Tuple> getUserParameters()
+	{
 		return userParameters;
 	}
 
-	public void setUserParameters(List<Tuple> userParameters) {
+	public void setUserParameters(List<Tuple> userParameters)
+	{
 		this.userParameters = userParameters;
 	}
 
-	public List<ComputeTask> getComputeTasks() {
+	public List<ComputeTask> getComputeTasks()
+	{
 		return computeTasks;
 	}
 
-	public void setComputeTasks(List<ComputeTask> ComputeTasks) {
+	public void setComputeTasks(List<ComputeTask> ComputeTasks)
+	{
 		this.computeTasks = ComputeTasks;
 	}
 
-	public void setWorksheet(List<Tuple> worksheet) {
+	public void setWorksheet(List<Tuple> worksheet)
+	{
 		this.worksheet = worksheet;
 	}
 
-	public List<Tuple> getWorksheet() {
+	public List<Tuple> getWorksheet()
+	{
 		return worksheet;
 	}
 
-	public void prettyPrint() {
+	public void prettyPrint()
+	{
 		System.out.println("ComputeParameter:");
-		for (ComputeParameter f : this.getComputeParameters()) {
+		for (ComputeParameter f : this.getComputeParameters())
+		{
 			System.out.println(f);
 		}
 		System.out.println("UserParameter:");
-		for (Tuple f : this.getUserParameters()) {
+		for (Tuple f : this.getUserParameters())
+		{
 			System.out.println(f);
 		}
 		System.out.println("WorkflowElement:");
-		for (WorkflowElement f : this.getWorkflowElements()) {
+		for (WorkflowElement f : this.getWorkflowElements())
+		{
 			System.out.println(f);
 		}
 
 		System.out.println("Protocol");
-		for (ComputeProtocol f : this.getComputeProtocols()) {
+		for (ComputeProtocol f : this.getComputeProtocols())
+		{
 			System.out.println(f);
 		}
 	}

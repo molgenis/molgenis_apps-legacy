@@ -7,7 +7,6 @@
 
 package org.molgenis.batch.ui;
 
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -35,7 +34,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	{
 		return "org/molgenis/batch/ui/AnimalDBHeader.ftl";
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{
@@ -43,14 +42,16 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 }

@@ -11,12 +11,12 @@ public class LifeLines extends plugins.cluster.demo.ClusterDemo
 {
 	private static final long serialVersionUID = -5324788471624447907L;
 	private Investigation inv = null;
-	
+
 	public LifeLines(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	@Override
 	public String getViewName()
 	{
@@ -28,13 +28,15 @@ public class LifeLines extends plugins.cluster.demo.ClusterDemo
 	{
 		return "plugins/cluster/demo/homepage/LifeLines.ftl";
 	}
-	
+
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		try
 		{
 			List<Investigation> invList = db.find(Investigation.class);
-			if (invList.size() > 0) {
+			if (invList.size() > 0)
+			{
 				inv = invList.get(0);
 			}
 		}
@@ -43,11 +45,15 @@ public class LifeLines extends plugins.cluster.demo.ClusterDemo
 			// do nothing
 		}
 	}
-	
-	public String getStudyInfo() {
-		if (inv != null) {
+
+	public String getStudyInfo()
+	{
+		if (inv != null)
+		{
 			return inv.getName() + ": " + inv.getDescription();
-		} else {
+		}
+		else
+		{
 			return null;
 		}
 	}

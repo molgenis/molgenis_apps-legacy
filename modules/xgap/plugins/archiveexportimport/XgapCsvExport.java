@@ -35,14 +35,15 @@ public class XgapCsvExport extends CsvWriterNoExportDataElement
 		{
 			FileUtils.cleanDirectory(directory);
 		}
-		
-		//File excelFile = new File(directory.getAbsolutePath() + File.separator + "xgap.xls");
+
+		// File excelFile = new File(directory.getAbsolutePath() +
+		// File.separator + "xgap.xls");
 
 		// Annotations
 		List<Data> dataList;
 		if (investigationName == null)
 		{
-			//checkIfEscapedInvestigationNamesAreAmbiguous(db);
+			// checkIfEscapedInvestigationNamesAreAmbiguous(db);
 			super.exportAll(directory, db, true);
 			dataList = db.find(Data.class);
 		}
@@ -56,7 +57,7 @@ public class XgapCsvExport extends CsvWriterNoExportDataElement
 		}
 
 		XgapMatrixExport.exportMatrix(dataList, investigationName, db, directory);
-		
+
 	}
 
 }

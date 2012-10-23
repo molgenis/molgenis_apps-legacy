@@ -15,8 +15,6 @@ public class QTLMultiPlotResult
 	private HashMap<String, Entity> matches;
 	private HashMap<String, Entity> datasets;
 
-	
-	
 	public String getRegularPlot()
 	{
 		return regularPlot;
@@ -96,7 +94,5 @@ public class QTLMultiPlotResult
 	{
 		this.cisTransPlot = cisTransPlot;
 	}
-	
-	
-	
+
 }

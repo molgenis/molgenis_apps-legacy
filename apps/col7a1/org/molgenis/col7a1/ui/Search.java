@@ -42,30 +42,30 @@ public class Search extends SearchPlugin
 	@SuppressWarnings("unchecked")
 	protected void populateExpertSearchForm()
 	{
-		PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
+		PhenoService phenoService = ServiceLocator.instance().getPhenoService();
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 
-		Container expertSearchForm  = this.getModel().getExpertSearchFormWrapper().getForm();
+		Container expertSearchForm = this.getModel().getExpertSearchFormWrapper().getForm();
 
 		((HiddenInput) expertSearchForm.get("__target")).setValue(this.getName());
 		((HiddenInput) expertSearchForm.get("select")).setValue(this.getName());
 
-		if (this.getModel().getMutationSearchCriteriaVO().getVariation() != null)
-			((TextLineInput<String>) expertSearchForm.get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
+		if (this.getModel().getMutationSearchCriteriaVO().getVariation() != null) ((TextLineInput<String>) expertSearchForm
+				.get("variation")).setValue(this.getModel().getMutationSearchCriteriaVO().getVariation());
 
-		if (this.getModel().getMutationSearchCriteriaVO().getCdnaPosition() != null)
-			((IntInput) expertSearchForm.get("nuclno")).setValue(this.getModel().getMutationSearchCriteriaVO().getCdnaPosition());
+		if (this.getModel().getMutationSearchCriteriaVO().getCdnaPosition() != null) ((IntInput) expertSearchForm
+				.get("nuclno")).setValue(this.getModel().getMutationSearchCriteriaVO().getCdnaPosition());
 
-		if (this.getModel().getMutationSearchCriteriaVO().getCodonNumber() != null)
-			((IntInput) expertSearchForm.get("aano")).setValue(this.getModel().getMutationSearchCriteriaVO().getCodonNumber());
+		if (this.getModel().getMutationSearchCriteriaVO().getCodonNumber() != null) ((IntInput) expertSearchForm
+				.get("aano")).setValue(this.getModel().getMutationSearchCriteriaVO().getCodonNumber());
 
 		List<ValueLabel> exonIdOptions = new ArrayList<ValueLabel>();
 		exonIdOptions.add(new ValueLabel("", "Select"));
 		for (ExonDTO exonSummaryVO : searchService.findAllExons())
 			exonIdOptions.add(new ValueLabel(exonSummaryVO.getId(), exonSummaryVO.getName()));
 		((SelectInput) expertSearchForm.get("exon_id")).setOptions(exonIdOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getExonId() != null)
-			((SelectInput) expertSearchForm.get("exon_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getExonId());
+		if (this.getModel().getMutationSearchCriteriaVO().getExonId() != null) ((SelectInput) expertSearchForm
+				.get("exon_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getExonId());
 		else
 			((SelectInput) expertSearchForm.get("exon_id")).setValue("Select");
 
@@ -74,8 +74,8 @@ public class Search extends SearchPlugin
 		for (String mutationType : searchService.getAllVariantTypes())
 			typeOptions.add(new ValueLabel(mutationType, mutationType));
 		((SelectInput) expertSearchForm.get("type")).setOptions(typeOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getType() != null)
-			((SelectInput) expertSearchForm.get("type")).setValue(this.getModel().getMutationSearchCriteriaVO().getType());
+		if (this.getModel().getMutationSearchCriteriaVO().getType() != null) ((SelectInput) expertSearchForm
+				.get("type")).setValue(this.getModel().getMutationSearchCriteriaVO().getType());
 		else
 			((SelectInput) expertSearchForm.get("type")).setValue("Select");
 
@@ -84,8 +84,8 @@ public class Search extends SearchPlugin
 		for (String consequence : phenoService.findObservedValues("consequence"))
 			consequenceOptions.add(new ValueLabel(consequence, consequence));
 		((SelectInput) expertSearchForm.get("consequence")).setOptions(consequenceOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
-			((SelectInput) expertSearchForm.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
+		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null) ((SelectInput) expertSearchForm
+				.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
 		else
 			((SelectInput) expertSearchForm.get("consequence")).setValue("Select");
 
@@ -94,18 +94,18 @@ public class Search extends SearchPlugin
 		for (ProteinDomainDTO domainVO : searchService.findAllProteinDomains())
 			domainOptions.add(new ValueLabel(domainVO.getDomainId(), domainVO.getDomainName()));
 		((SelectInput) expertSearchForm.get("domain_id")).setOptions(domainOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getProteinDomainId() != null)
-			((SelectInput) expertSearchForm.get("domain_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId());
+		if (this.getModel().getMutationSearchCriteriaVO().getProteinDomainId() != null) ((SelectInput) expertSearchForm
+				.get("domain_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId());
 		else
 			((SelectInput) expertSearchForm.get("domain_id")).setValue("Select");
-		
+
 		List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
 		phenotypeOptions.add(new ValueLabel("", "Select"));
 		for (String phenotypeName : phenoService.findObservedValues("Phenotype"))
 			phenotypeOptions.add(new ValueLabel(phenotypeName, phenotypeName));
 		((SelectInput) expertSearchForm.get("phenotype")).setOptions(phenotypeOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getPhenotypeId() != null)
-			((SelectInput) expertSearchForm.get("phenotype")).setValue(this.getModel().getMutationSearchCriteriaVO().getPhenotypeId());
+		if (this.getModel().getMutationSearchCriteriaVO().getPhenotypeId() != null) ((SelectInput) expertSearchForm
+				.get("phenotype")).setValue(this.getModel().getMutationSearchCriteriaVO().getPhenotypeId());
 		else
 			((SelectInput) expertSearchForm.get("phenotype")).setValue("Select");
 
@@ -114,8 +114,8 @@ public class Search extends SearchPlugin
 		for (String inheritance : phenoService.findObservedValues("Inheritance"))
 			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
 		((SelectInput) expertSearchForm.get("inheritance")).setOptions(inheritanceOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
-			((SelectInput) expertSearchForm.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
+		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null) ((SelectInput) expertSearchForm
+				.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
 		else
 			((SelectInput) expertSearchForm.get("inheritance")).setValue("Select");
 	}

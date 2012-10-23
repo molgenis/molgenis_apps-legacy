@@ -10,22 +10,22 @@ import org.molgenis.framework.db.DatabaseException;
 
 public class PublicationService
 {
-	private Database db                                  = null;
+	private Database db = null;
 	private static PublicationService publicationService = null;
 
-	public static final String PUBMED_URL                = "http://www.ncbi.nlm.nih.gov/pubmed/";
+	public static final String PUBMED_URL = "http://www.ncbi.nlm.nih.gov/pubmed/";
 
 	// private constructor, use singleton instance
 	public PublicationService(Database db)
 	{
 		this.db = db;
 	}
-	
+
 	public static PublicationService getInstance(Database db)
 	{
-		//if (publicationService == null)
+		// if (publicationService == null)
 		publicationService = new PublicationService(db);
-		
+
 		return publicationService;
 	}
 
@@ -33,7 +33,7 @@ public class PublicationService
 	{
 		return this.toPublicationVOList(this.db.query(Publication.class).sortASC(Publication.TITLE).find());
 	}
-	
+
 	public void insert(PublicationVO publicationVO) throws DatabaseException
 	{
 		Publication publication = this.toPublication(publicationVO);
@@ -46,10 +46,10 @@ public class PublicationService
 
 		for (Publication publication : publications)
 			result.add(this.toPublicationVO(publication));
-		
+
 		return result;
 	}
-	
+
 	private PublicationVO toPublicationVO(Publication publication)
 	{
 		PublicationVO publicationVO = new PublicationVO();
@@ -59,10 +59,10 @@ public class PublicationService
 		publicationVO.setPubmedUrl(PublicationService.PUBMED_URL + publication.getPubmedID_Name());
 		publicationVO.setStatus(publication.getStatus_Name());
 		publicationVO.setTitle(publication.getTitle());
-		
+
 		return publicationVO;
 	}
-	
+
 	private Publication toPublication(PublicationVO publicationVO)
 	{
 		Publication publication = new Publication();
@@ -70,7 +70,7 @@ public class PublicationService
 		publication.setName(publicationVO.getName());
 		publication.setPubmedID_Name(publicationVO.getPubmedId());
 		publication.setTitle(publicationVO.getTitle());
-		
+
 		return publication;
 	}
 }

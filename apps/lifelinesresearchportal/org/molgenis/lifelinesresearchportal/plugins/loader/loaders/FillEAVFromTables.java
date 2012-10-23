@@ -1,4 +1,5 @@
 package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
+
 //package org.molgenis.lifelines.loaders;
 //
 //import java.math.BigDecimal;
@@ -167,4 +168,4 @@ package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
 //    	return studyName;
 //    	
 //    }
-//}
+// }

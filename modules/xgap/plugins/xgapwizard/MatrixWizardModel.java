@@ -5,7 +5,8 @@ import java.util.List;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class MatrixWizardModel {
+public class MatrixWizardModel
+{
 
 	private List<DataInfo> dataInfo;
 	private Boolean showVerified;
@@ -31,13 +32,14 @@ public class MatrixWizardModel {
 		this.dataInfo = dataInfo;
 	}
 
-	public Boolean getShowVerified() {
+	public Boolean getShowVerified()
+	{
 		return showVerified;
 	}
 
-	public void setShowVerified(Boolean showVerified) {
+	public void setShowVerified(Boolean showVerified)
+	{
 		this.showVerified = showVerified;
 	}
 
-	
 }

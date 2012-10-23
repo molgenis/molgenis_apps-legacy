@@ -47,7 +47,7 @@ public class QTLDataSetWizard extends PluginModel
 
 	// if db rollbacks, delete this matrix file!
 	private File dataFileRollback = null;
-	
+
 	private QTLDataSetWizardModel model = new QTLDataSetWizardModel();
 
 	public QTLDataSetWizardModel getMyModel()
@@ -111,9 +111,7 @@ public class QTLDataSetWizard extends PluginModel
 
 				parseMapAndAddToDb(mapFile, db, request.getInt("invSelect"));
 
-				this.setMessages(new ScreenMessage(
-						"Map file parsed and markers/chromosomes added to database",
-						true));
+				this.setMessages(new ScreenMessage("Map file parsed and markers/chromosomes added to database", true));
 			}
 			else
 			{
@@ -176,16 +174,14 @@ public class QTLDataSetWizard extends PluginModel
 			// xof.add("Spot"); needs other required
 			this.model.setXqtlObservableFeatureTypes(xof);
 
-			List<OntologyTerm> crosses = db.find(OntologyTerm.class,
-					new QueryRule(OntologyTerm.NAME, Operator.LIKE,
-							"xgap_rqtl_straintype_"));
+			List<OntologyTerm> crosses = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE,
+					"xgap_rqtl_straintype_"));
 			this.model.setCrosses(crosses);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-					.getMessage() : "null", false));
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 
 	}
@@ -199,8 +195,7 @@ public class QTLDataSetWizard extends PluginModel
 	 * @param db
 	 * @throws Exception
 	 */
-	private void uploadData(String type, Tuple request, Database db)
-			throws Exception
+	private void uploadData(String type, Tuple request, Database db) throws Exception
 	{
 		File file = request.getFile(type + "File");
 
@@ -210,8 +205,7 @@ public class QTLDataSetWizard extends PluginModel
 		}
 
 		// make 'Data' set for this genotype matrix
-		String originalFileName = request.getString(
-				type + "FileOriginalfilename").substring(0,
+		String originalFileName = request.getString(type + "FileOriginalfilename").substring(0,
 				request.getString(type + "FileOriginalfilename").indexOf("."));
 		int invSelect = request.getInt("invSelect");
 
@@ -244,15 +238,13 @@ public class QTLDataSetWizard extends PluginModel
 		if (type.equals("Geno"))
 		{
 			// add missing individuals with this cross type
-			addMissingIndividuals(instance, db, request.getString("cross"),
-					invSelect);
+			addMissingIndividuals(instance, db, request.getString("cross"), invSelect);
 		}
 		if (type.equals("Pheno"))
 		{
 			// add missing traits of this type
 			String traitType = request.getString("trait");
-			boolean traitsAdded = addMissingTraits(instance, db, traitType,
-					invSelect);
+			boolean traitsAdded = addMissingTraits(instance, db, traitType, invSelect);
 			if (traitsAdded)
 			{
 				data.setTargetType(traitType);
@@ -263,8 +255,7 @@ public class QTLDataSetWizard extends PluginModel
 		db.commitTx();
 		dataFileRollback = null;
 
-		this.setMessages(new ScreenMessage(type
-				+ "types succesfully uploaded as '" + data.getName()
+		this.setMessages(new ScreenMessage(type + "types succesfully uploaded as '" + data.getName()
 				+ "' and tagged for QTL analysis", true));
 	}
 
@@ -280,16 +271,14 @@ public class QTLDataSetWizard extends PluginModel
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private boolean addMissingTraits(DataMatrixInstance instance, Database db,
-			String type, int invId) throws DatabaseException,
-			InstantiationException, IllegalAccessException
+	private boolean addMissingTraits(DataMatrixInstance instance, Database db, String type, int invId)
+			throws DatabaseException, InstantiationException, IllegalAccessException
 	{
 		List<String> traitsNeeded = instance.getRowNames();
 		Class traitClass = db.getClassForName(type);
 
-		List<ObservableFeature> traitsInDb = db
-				.find(ObservableFeature.class, new QueryRule(
-						ObservableFeature.NAME, Operator.IN, traitsNeeded));
+		List<ObservableFeature> traitsInDb = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.NAME,
+				Operator.IN, traitsNeeded));
 
 		for (ObservableFeature traitInDb : traitsInDb)
 		{
@@ -300,8 +289,7 @@ public class QTLDataSetWizard extends PluginModel
 
 		for (String traitNeeded : traitsNeeded)
 		{
-			ObservableFeature missingTrait = (ObservableFeature) traitClass
-					.newInstance();
+			ObservableFeature missingTrait = (ObservableFeature) traitClass.newInstance();
 			missingTrait.setInvestigation(invId);
 			missingTrait.setName(traitNeeded);
 			addThese.add(missingTrait);
@@ -330,15 +318,15 @@ public class QTLDataSetWizard extends PluginModel
 	 * @param cross
 	 * @throws DatabaseException
 	 */
-	private void addMissingIndividuals(DataMatrixInstance instance,
-			Database db, String cross, int invId) throws DatabaseException
+	private void addMissingIndividuals(DataMatrixInstance instance, Database db, String cross, int invId)
+			throws DatabaseException
 	{
 		List<String> indvNamesNeeded = instance.getColNames();
-		List<Individual> indInDb = db.find(Individual.class, new QueryRule(
-				Individual.NAME, Operator.IN, indvNamesNeeded));
+		List<Individual> indInDb = db.find(Individual.class, new QueryRule(Individual.NAME, Operator.IN,
+				indvNamesNeeded));
 
-		OntologyTerm crossType = db.find(OntologyTerm.class,
-				new QueryRule(OntologyTerm.ID, Operator.EQUALS, cross)).get(0);
+		OntologyTerm crossType = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.ID, Operator.EQUALS, cross))
+				.get(0);
 
 		for (Individual inDb : indInDb)
 		{
@@ -366,8 +354,7 @@ public class QTLDataSetWizard extends PluginModel
 	 * @param invId
 	 * @throws Exception
 	 */
-	private void parseMapAndAddToDb(File mapFile, Database db, int invId)
-			throws Exception
+	private void parseMapAndAddToDb(File mapFile, Database db, int invId) throws Exception
 	{
 		// required columns that we expect in the file
 		String[] required = new String[]
@@ -380,8 +367,7 @@ public class QTLDataSetWizard extends PluginModel
 		// do checks if all column names are in order
 		if (colNames.size() != required.length)
 		{
-			throw new Exception("Your files has " + colNames.size()
-					+ " columns, this needs to be " + required.length);
+			throw new Exception("Your files has " + colNames.size() + " columns, this needs to be " + required.length);
 		}
 		for (String req : required)
 		{
@@ -399,12 +385,10 @@ public class QTLDataSetWizard extends PluginModel
 		}
 
 		// get the selected investigation
-		Investigation inv = db.find(Investigation.class,
-				new QueryRule("id", Operator.EQUALS, invId)).get(0);
+		Investigation inv = db.find(Investigation.class, new QueryRule("id", Operator.EQUALS, invId)).get(0);
 
 		List<String> markersInDb = getMarkerNamesFromDb(db, inv.getId());
-		HashMap<String, Chromosome> chromoInDb = getChromosomesFromDb(db,
-				inv.getId());
+		HashMap<String, Chromosome> chromoInDb = getChromosomesFromDb(db, inv.getId());
 
 		// iterate over tuples then convert to markers and chromosomes
 		// needed for the import don't add markers that already exist!
@@ -435,16 +419,9 @@ public class QTLDataSetWizard extends PluginModel
 				chromosome = chromoInDb.get(chromoName);
 				if (chromosome.getOrderNr().intValue() != chr)
 				{
-					throw new Exception(
-							"Trying use existing chromosome 'chr"
-									+ chr
-									+ "' for input '"
-									+ chr
-									+ "', but the ordernumbers ("
-									+ chromosome.getOrderNr().intValue()
-									+ " vs. "
-									+ chr
-									+ ") are different! Change the annotation or upload an updated file.");
+					throw new Exception("Trying use existing chromosome 'chr" + chr + "' for input '" + chr
+							+ "', but the ordernumbers (" + chromosome.getOrderNr().intValue() + " vs. " + chr
+							+ ") are different! Change the annotation or upload an updated file.");
 				}
 			}
 			else
@@ -474,8 +451,7 @@ public class QTLDataSetWizard extends PluginModel
 			// check for duplicates in the list
 			if (markerNames.contains(name))
 			{
-				throw new Exception("Duplicate marker name '" + name
-						+ "' in your map");
+				throw new Exception("Duplicate marker name '" + name + "' in your map");
 			}
 			else
 			{
@@ -485,8 +461,7 @@ public class QTLDataSetWizard extends PluginModel
 			// check for duplicates in db
 			if (markersInDb.contains(name))
 			{
-				throw new Exception("There is already a marker named '" + name
-						+ "' present in this investigation");
+				throw new Exception("There is already a marker named '" + name + "' present in this investigation");
 			}
 
 			// create new marker and add to list
@@ -513,11 +488,9 @@ public class QTLDataSetWizard extends PluginModel
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private HashMap<String, Chromosome> getChromosomesFromDb(Database db,
-			int investigationId) throws DatabaseException
+	private HashMap<String, Chromosome> getChromosomesFromDb(Database db, int investigationId) throws DatabaseException
 	{
-		QueryRule q = new QueryRule("investigation", Operator.EQUALS,
-				investigationId);
+		QueryRule q = new QueryRule("investigation", Operator.EQUALS, investigationId);
 		List<Chromosome> chromo = db.find(Chromosome.class, q);
 		HashMap<String, Chromosome> chromoHash = new HashMap<String, Chromosome>();
 		for (Chromosome c : chromo)
@@ -535,11 +508,9 @@ public class QTLDataSetWizard extends PluginModel
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private List<String> getMarkerNamesFromDb(Database db, int investigationId)
-			throws DatabaseException
+	private List<String> getMarkerNamesFromDb(Database db, int investigationId) throws DatabaseException
 	{
-		QueryRule q = new QueryRule("investigation", Operator.EQUALS,
-				investigationId);
+		QueryRule q = new QueryRule("investigation", Operator.EQUALS, investigationId);
 		List<Marker> markers = db.find(Marker.class, q);
 		List<String> names = new ArrayList<String>();
 		for (Marker m : markers)
@@ -560,15 +531,12 @@ public class QTLDataSetWizard extends PluginModel
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private Data makePhenoData(Database db, String originalFileName,
-			int invSelect) throws DatabaseException, IOException,
-			ParseException
+	private Data makePhenoData(Database db, String originalFileName, int invSelect) throws DatabaseException,
+			IOException, ParseException
 	{
 		Data phenoData = new Data();
-		OntologyTerm onto = db.find(
-				OntologyTerm.class,
-				new QueryRule(OntologyTerm.NAME, Operator.EQUALS,
-						"phenotype_matrix")).get(0);
+		OntologyTerm onto = db.find(OntologyTerm.class,
+				new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "phenotype_matrix")).get(0);
 		if (onto == null)
 		{
 			onto = new OntologyTerm();
@@ -584,8 +552,7 @@ public class QTLDataSetWizard extends PluginModel
 		phenoData.setTargetType("ClassicalPhenotype");
 		phenoData.setValueType("Decimal");
 		phenoData.setStorage("Binary");
-		Investigation inv = db.find(Investigation.class,
-				new QueryRule("id", Operator.EQUALS, invSelect)).get(0);
+		Investigation inv = db.find(Investigation.class, new QueryRule("id", Operator.EQUALS, invSelect)).get(0);
 		phenoData.setInvestigation(inv);
 		phenoData.setInvestigation_Name(inv.getName());
 		return phenoData;
@@ -602,15 +569,12 @@ public class QTLDataSetWizard extends PluginModel
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private Data makeGenoData(Database db, String originalFileName,
-			int invSelect) throws DatabaseException, IOException,
-			ParseException
+	private Data makeGenoData(Database db, String originalFileName, int invSelect) throws DatabaseException,
+			IOException, ParseException
 	{
 		Data genoData = new Data();
-		OntologyTerm onto = db.find(
-				OntologyTerm.class,
-				new QueryRule(OntologyTerm.NAME, Operator.EQUALS,
-						"genotype_matrix")).get(0);
+		OntologyTerm onto = db.find(OntologyTerm.class,
+				new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "genotype_matrix")).get(0);
 		if (onto == null)
 		{
 			onto = new OntologyTerm();
@@ -644,11 +608,10 @@ public class QTLDataSetWizard extends PluginModel
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	private void tagMatrix(String dataSet, String dataName, Data dataValue,
-			Database db) throws DatabaseException, ParseException, IOException
+	private void tagMatrix(String dataSet, String dataName, Data dataValue, Database db) throws DatabaseException,
+			ParseException, IOException
 	{
-		List<DataSet> dsRefList = db.find(DataSet.class, new QueryRule("name",
-				Operator.EQUALS, dataSet));
+		List<DataSet> dsRefList = db.find(DataSet.class, new QueryRule("name", Operator.EQUALS, dataSet));
 		DataSet dsRef = null;
 
 		if (dsRefList.size() == 0)
@@ -684,8 +647,7 @@ public class QTLDataSetWizard extends PluginModel
 		DataValue dv = new DataValue();
 		dv.setDataName(dnRef);
 		dv.setValue(dataValue);
-		dv.setName(dataValue.getInvestigation_Name() + "_"
-				+ dataValue.getName());
+		dv.setName(dataValue.getInvestigation_Name() + "_" + dataValue.getName());
 		db.add(dv);
 	}
 }

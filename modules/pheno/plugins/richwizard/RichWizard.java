@@ -42,14 +42,15 @@ public class RichWizard extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders()
-//	{
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//
-//	}
+
+	// moved overlib to molgenis core
+	// @Override
+	// public String getCustomHtmlHeaders()
+	// {
+	// return
+	// "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+	//
+	// }
 
 	@Override
 	public String getViewName()
@@ -94,13 +95,16 @@ public class RichWizard extends PluginModel<Entity>
 
 					List<org.molgenis.model.elements.Entity> entities = new ArrayList<org.molgenis.model.elements.Entity>();
 					List<String> entityNames = new ArrayList<String>();
-					//TODO Use or Loose
-					//HashMap<String, Vector<org.molgenis.model.elements.Field>> selectedDataTypes = new HashMap<String, Vector<org.molgenis.model.elements.Field>>();
+					// TODO Use or Loose
+					// HashMap<String,
+					// Vector<org.molgenis.model.elements.Field>>
+					// selectedDataTypes = new HashMap<String,
+					// Vector<org.molgenis.model.elements.Field>>();
 					for (String dt : this.model.getDataTypes())
 					{
 						if (request.getString("dt_" + dt) != null)
 						{
-					
+
 							org.molgenis.model.elements.Entity entity = metadb.getEntity(dt);
 							entities.add(entity);
 							entityNames.add(entity.getName());
@@ -124,9 +128,9 @@ public class RichWizard extends PluginModel<Entity>
 							}
 						}
 					}
-					
+
 					this.model.setUniqueAncestorsOfEntities(uniqueAncestorsOfEntities);
-					
+
 					entities = MolgenisModel.sortEntitiesByDependency(entities, metadb);
 
 					this.model.setEntities(entities);
@@ -134,13 +138,17 @@ public class RichWizard extends PluginModel<Entity>
 
 					this.model.setExampleCsvs(Helper.getExampleCSVs(entities));
 
-				}else if(action.startsWith("upload_textarea_")){
+				}
+				else if (action.startsWith("upload_textarea_"))
+				{
 					String entity = action.substring(16);
-					String content = request.getString("textarea_"+entity);
-					
+					String content = request.getString("textarea_" + entity);
+
 					System.out.println("*** CONTENT: " + content);
-					
-				}else{
+
+				}
+				else
+				{
 					throw new Exception("Unknown request action: " + action);
 				}
 

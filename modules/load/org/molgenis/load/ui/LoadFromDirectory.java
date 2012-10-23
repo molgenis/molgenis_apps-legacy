@@ -21,8 +21,7 @@ import app.CsvImport;
  * LoadFromDirectoryView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
-public class LoadFromDirectory extends
-		EasyPluginController<LoadFromDirectoryModel>
+public class LoadFromDirectory extends EasyPluginController<LoadFromDirectoryModel>
 {
 	// needed for serialization
 	private static final long serialVersionUID = -8519723133998268849L;
@@ -31,8 +30,8 @@ public class LoadFromDirectory extends
 	{
 		super(name, parent);
 		this.setModel(new LoadFromDirectoryModel(this)); // the default model
-//		this.setView(new LoadFromDirectoryView(this.getModel())); // <plugin
-																					// flavor="freemarker"
+		// this.setView(new LoadFromDirectoryView(this.getModel())); // <plugin
+		// flavor="freemarker"
 	}
 
 	public void loadDirectory(Database db, Tuple request) throws Exception
@@ -46,7 +45,7 @@ public class LoadFromDirectory extends
 	public void reload(Database db) throws Exception
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

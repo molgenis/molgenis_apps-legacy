@@ -13,5 +13,5 @@ public class SomeValueType
 	{
 		return value;
 	}
-	
+
 }

@@ -30,16 +30,16 @@ import plugins.cluster.interfaces.ComputationResource;
  * @author joerivandervelde
  * 
  */
-public class taskreporter  implements MolgenisService
+public class taskreporter implements MolgenisService
 {
-	
+
 	private MolgenisContext mc;
-	
+
 	public taskreporter(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	private static Logger logger = Logger.getLogger(taskreporter.class);
 
 	@Override
@@ -62,21 +62,21 @@ public class taskreporter  implements MolgenisService
 			String statusText = request.getString("statustext"); // text
 
 			Database db = request.getDatabase();
-			
 
 			QueryRule jobQuery0 = new QueryRule(Job.ID, Operator.EQUALS, jobID);
-			
+
 			QueryRule subjobQuery1 = new QueryRule("nr", Operator.EQUALS, subjobNr);
 
-//			out.println("job queryrule: " + subjobQuery0.toString());
-//			out.println("subjob queryrule: " + subjobQuery1.toString());
-//
-//			out.println("db.find: " + db.find(Subjob.class, subjobQuery0, subjobQuery1).toString());
+			// out.println("job queryrule: " + subjobQuery0.toString());
+			// out.println("subjob queryrule: " + subjobQuery1.toString());
+			//
+			// out.println("db.find: " + db.find(Subjob.class, subjobQuery0,
+			// subjobQuery1).toString());
 
 			Job job = db.find(Job.class, jobQuery0).get(0);
-			
+
 			QueryRule subjobQuery0 = new QueryRule(Subjob.JOB, Operator.EQUALS, job.getId());
-			
+
 			Subjob subjob = db.find(Subjob.class, subjobQuery0, subjobQuery1).get(0);
 
 			subjob.setStatusCode(statusCode);
@@ -108,7 +108,7 @@ public class taskreporter  implements MolgenisService
 				cr.executeCommands(cList);
 			}
 
-		//	db.close();
+			// db.close();
 
 			logger.info("serving " + request.getRequest().getRequestURI());
 		}

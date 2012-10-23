@@ -41,13 +41,13 @@ public class MolgenisHeader extends PluginModel
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		//static
+		// static
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		//static
+		// static
 	}
 
 	@Override

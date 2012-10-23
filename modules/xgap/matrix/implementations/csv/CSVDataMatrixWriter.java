@@ -50,42 +50,42 @@ public class CSVDataMatrixWriter
 		HashMap<Data, File> dataFileMap = new HashMap<Data, File>();
 		dataFileMap.put(data, inputFile);
 		new CSVDataMatrixWriter(dataFileMap, db);
-//		List<Data> dataList = new ArrayList<Data>();
-//		dataList.add(data);
-//		List<File> inputFiles = new ArrayList<File>();
-//		inputFiles.add(inputFile);
-//		new CSVDataMatrixWriter(dataList, inputFiles, db);
+		// List<Data> dataList = new ArrayList<Data>();
+		// dataList.add(data);
+		// List<File> inputFiles = new ArrayList<File>();
+		// inputFiles.add(inputFile);
+		// new CSVDataMatrixWriter(dataList, inputFiles, db);
 	}
 
 	/**
-	 * Wrapper constructor
-	 * Use filepointer as a directory of input files
-	 * Dont use unless you know exactly what you're doing (filenames have to map to datanames)
+	 * Wrapper constructor Use filepointer as a directory of input files Dont
+	 * use unless you know exactly what you're doing (filenames have to map to
+	 * datanames)
+	 * 
 	 * @param dataList
 	 * @param inputDir
 	 * @param db
 	 * @param testMode
 	 * @throws Exception
 	 */
-	public CSVDataMatrixWriter(List<Data> dataList, File inputDir, Database db)
-			throws Exception
+	public CSVDataMatrixWriter(List<Data> dataList, File inputDir, Database db) throws Exception
 	{
 		List<File> inputFiles = new ArrayList<File>();
 		for (File input : inputDir.listFiles())
 		{
 			inputFiles.add(input);
 		}
-		
+
 		HashMap<Data, File> dataFileMap = new HashMap<Data, File>();
 		for (Data data : dataList)
 		{
 			File inputFile = getInputFileForName(NameConvention.escapeFileName(data.getName()) + ".txt", inputFiles);
 			dataFileMap.put(data, inputFile);
 		}
-		
+
 		new CSVDataMatrixWriter(dataFileMap, db);
 	}
-	
+
 	/**
 	 * Core constructor to import CSV datamatrices. The import is done
 	 * immediatly. (instanciation = import)
@@ -95,13 +95,12 @@ public class CSVDataMatrixWriter
 	 * @param db
 	 * @throws Exception
 	 */
-	public CSVDataMatrixWriter(HashMap<Data, File> dataFileMap, Database db)
-			throws Exception
+	public CSVDataMatrixWriter(HashMap<Data, File> dataFileMap, Database db) throws Exception
 	{
 
 		for (Data data : dataFileMap.keySet())
 		{
-			
+
 			File src = dataFileMap.get(data);
 
 			if (src == null || !src.exists())
@@ -110,12 +109,12 @@ public class CSVDataMatrixWriter
 			}
 
 			VerifyCsv.verify(src, data.getValueType());
-					
-			//upload as a MolgenisFile, type 'CSVDataMatrix'
-            HashMap<String, String> extraFields = new HashMap<String, String>();
-            extraFields.put("data_" + Data.ID, data.getId().toString());
-            extraFields.put("data_" + Data.NAME, data.getName());
-			
+
+			// upload as a MolgenisFile, type 'CSVDataMatrix'
+			HashMap<String, String> extraFields = new HashMap<String, String>();
+			extraFields.put("data_" + Data.ID, data.getId().toString());
+			extraFields.put("data_" + Data.NAME, data.getName());
+
 			PerformUpload.doUpload(db, true, data.getName() + ".txt", "CSVDataMatrix", src, extraFields, false);
 		}
 	}

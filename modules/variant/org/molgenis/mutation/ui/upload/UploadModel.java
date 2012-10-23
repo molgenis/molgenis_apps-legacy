@@ -15,8 +15,10 @@ import org.molgenis.mutation.ui.upload.form.MutationForm;
 import org.molgenis.mutation.ui.upload.form.PatientForm;
 
 /**
- * UploadModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
+ * UploadModel takes care of all state and it can have helper methods to query
+ * the database. It should not contain layout or application logic which are
+ * solved in View and Controller.
+ * 
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
 public class UploadModel extends EasyPluginModel
@@ -26,7 +28,8 @@ public class UploadModel extends EasyPluginModel
 	private String action;
 	private MutationUploadDTO mutationUploadVO;
 	private PatientSummaryDTO patientSummaryVO;
-	private int referer ; // referer for patient.mutation{1,2} => 1 or 2, 0 initially
+	private int referer; // referer for patient.mutation{1,2} => 1 or 2, 0
+							// initially
 
 	private BatchForm batchForm;
 	private PatientForm patientForm;
@@ -37,61 +40,74 @@ public class UploadModel extends EasyPluginModel
 		super(controller);
 	}
 
-	public String getAction() {
+	public String getAction()
+	{
 		return action;
 	}
 
-	public void setAction(String action) {
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
 
-	public MutationUploadDTO getMutationUploadVO() {
+	public MutationUploadDTO getMutationUploadVO()
+	{
 		return mutationUploadVO;
 	}
 
-	public void setMutationUploadVO(MutationUploadDTO mutationUploadVO) {
+	public void setMutationUploadVO(MutationUploadDTO mutationUploadVO)
+	{
 		this.mutationUploadVO = mutationUploadVO;
 	}
 
-	public PatientSummaryDTO getPatientSummaryVO() {
+	public PatientSummaryDTO getPatientSummaryVO()
+	{
 		return patientSummaryVO;
 	}
 
-	public void setPatientSummaryVO(PatientSummaryDTO patientSummaryVO) {
+	public void setPatientSummaryVO(PatientSummaryDTO patientSummaryVO)
+	{
 		this.patientSummaryVO = patientSummaryVO;
 	}
 
-	public int getReferer() {
+	public int getReferer()
+	{
 		return referer;
 	}
 
-	public void setReferer(int referer) {
+	public void setReferer(int referer)
+	{
 		this.referer = referer;
 	}
 
-	public BatchForm getBatchForm() {
+	public BatchForm getBatchForm()
+	{
 		return batchForm;
 	}
 
-	public void setBatchForm(BatchForm batchForm) {
+	public void setBatchForm(BatchForm batchForm)
+	{
 		this.batchForm = batchForm;
 	}
 
-	public PatientForm getPatientForm() {
+	public PatientForm getPatientForm()
+	{
 		return patientForm;
 	}
 
-	public void setPatientForm(PatientForm patientForm) {
+	public void setPatientForm(PatientForm patientForm)
+	{
 		this.patientForm = patientForm;
 	}
 
-	public MutationForm getMutationForm() {
+	public MutationForm getMutationForm()
+	{
 		return mutationForm;
 	}
 
-	public void setMutationForm(MutationForm mutationForm) {
+	public void setMutationForm(MutationForm mutationForm)
+	{
 		this.mutationForm = mutationForm;
 	}
-	
-	
+
 }

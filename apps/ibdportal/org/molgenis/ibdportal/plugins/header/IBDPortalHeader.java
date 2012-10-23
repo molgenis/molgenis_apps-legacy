@@ -15,7 +15,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
  * includes the header logo as well as the top level menu items for
@@ -26,17 +25,18 @@ import org.molgenis.util.Tuple;
 public class IBDPortalHeader extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 4701628601897969977L;
-	
+
 	public IBDPortalHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
-	public String getCustomHtmlHeaders() {
-		return  "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">";		
+
+	public String getCustomHtmlHeaders()
+	{
+		return "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">";
 	}
 
 	@Override
@@ -56,28 +56,32 @@ public class IBDPortalHeader extends PluginModel<Entity>
 	{
 		//
 	}
-	
+
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
 		try
 		{
-			if ("doLogout".equals(request.getAction())) {
+			if ("doLogout".equals(request.getAction()))
+			{
 				getLogin().logout(db);
 			}
 
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage(e.getMessage(), false));
-			//this.setError(e.getMessage());
+			// this.setError(e.getMessage());
 		}
 	}
 
-	public String getFullUserName() {
-		
-		if (this.getLogin().isAuthenticated()) {
-			return ((DatabaseLogin)this.getLogin()).getFullUserName();
+	public String getFullUserName()
+	{
+
+		if (this.getLogin().isAuthenticated())
+		{
+			return ((DatabaseLogin) this.getLogin()).getFullUserName();
 		}
 		return null;
 	}
@@ -87,5 +91,5 @@ public class IBDPortalHeader extends PluginModel<Entity>
 	{
 		return true;
 	}
-	
+
 }

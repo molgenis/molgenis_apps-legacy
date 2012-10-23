@@ -19,8 +19,8 @@ public class MolgenisUpdateDatabase
 		// TODO Auto-generated constructor stub
 	}
 
-	public void UpdateDatabase(Database db, String targetID, String value, 
-			String measurement, Integer protappID) throws DatabaseException
+	public void UpdateDatabase(Database db, String targetID, String value, String measurement, Integer protappID)
+			throws DatabaseException
 	{
 
 		List<QueryRule> filterRules = new ArrayList<QueryRule>();

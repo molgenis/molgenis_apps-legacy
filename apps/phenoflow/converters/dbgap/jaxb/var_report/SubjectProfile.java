@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SubjectProfile
 {
-	@XmlElement(name="case_control")
+	@XmlElement(name = "case_control")
 	List<CaseControl> case_control = new ArrayList<CaseControl>();
 
 	@XmlElement
@@ -21,14 +21,14 @@ public class SubjectProfile
 	public String toString()
 	{
 		String case_control_string = "";
-		for(CaseControl c: case_control) case_control_string += c.toString();
-		
+		for (CaseControl c : case_control)
+			case_control_string += c.toString();
+
 		String sex_string = "";
-		for(Sex s: sex) sex_string += s.toString();
-		
-		return String.format("SubjectProfile(" +
-				"\n\tcase_control=%s," +
-				"\n\tsex=%s" +
-				"\n)", case_control_string, sex_string);
+		for (Sex s : sex)
+			sex_string += s.toString();
+
+		return String.format("SubjectProfile(" + "\n\tcase_control=%s," + "\n\tsex=%s" + "\n)", case_control_string,
+				sex_string);
 	}
 }

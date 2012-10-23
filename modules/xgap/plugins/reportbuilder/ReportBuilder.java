@@ -86,52 +86,60 @@ public class ReportBuilder extends PluginModel
 				{
 					this.model.setDisambiguate(null);
 					this.model.setReport(null);
-					
+
 					String dataType = request.getString("dataTypeSelect");
 					String entityName = request.getString("entityName");
 					this.model.setSelectedAnnotationTypeAndNr(dataType);
 					this.model.setSelectedName(entityName);
-					
+
 					Class<? extends Entity> entityClass = db.getClassForName(dataType);
-					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservationElement.NAME, Operator.LIKE, entityName));
-					
-					if(result.size() == 0)
+					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservationElement.NAME,
+							Operator.LIKE, entityName));
+
+					if (result.size() == 0)
 					{
-						throw new Exception("No results found for " + dataType + " '"+entityName+"'");
+						throw new Exception("No results found for " + dataType + " '" + entityName + "'");
 					}
-					
-					else if(result.size() == 1)
+
+					else if (result.size() == 1)
 					{
-						//build report!
+						// build report!
 						model.setReport(makeReport(result.get(0), db));
 					}
 					else
 					{
-						//disambiguate
+						// disambiguate
 						this.model.setDisambiguate(result);
-						
+
 					}
-					
+
 				}
-				else if(action.startsWith("disambig_"))
+				else if (action.startsWith("disambig_"))
 				{
 					this.model.setDisambiguate(null);
 					this.model.setReport(null);
-					
+
 					String dataType = this.model.getSelectedAnnotationTypeAndNr();
 					String entityName = action.substring("disambig_".length());
 					this.model.setSelectedName(entityName);
-					
+
 					Class<? extends Entity> entityClass = db.getClassForName(dataType);
-					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservationElement.NAME, Operator.EQUALS, entityName));
-					
-					if(result.size() == 1)
+					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservationElement.NAME,
+							Operator.EQUALS, entityName));
+
+					if (result.size() == 1)
 					{
-						//build report!
+						// build report!
 						model.setReport(makeReport(result.get(0), db));
-					}else
+					}
+					else
 					{
-						throw new Exception("Error when querying for " + dataType + " '" + entityName + "', data may have been deleted/modified/corrupted since the last time it was requested");
+						throw new Exception(
+								"Error when querying for "
+										+ dataType
+										+ " '"
+										+ entityName
+										+ "', data may have been deleted/modified/corrupted since the last time it was requested");
 					}
 				}
 
@@ -147,82 +155,86 @@ public class ReportBuilder extends PluginModel
 	public static Report makeReport(Entity entity, Database db) throws Exception
 	{
 		Report r = new Report(entity);
-		
+
 		List<Data> allData = db.find(Data.class);
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
-		
+
 		List<MatrixLocation> matrixLocations = new ArrayList<MatrixLocation>();
-		for(Data d : allData)
+		for (Data d : allData)
 		{
-			if(d.getTargetType().equals(entity.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(entity.get(Field.TYPE_FIELD))){
+			if (d.getTargetType().equals(entity.get(Field.TYPE_FIELD))
+					|| d.getFeatureType().equals(entity.get(Field.TYPE_FIELD)))
+			{
 				DataMatrixInstance instance = dmh.createInstance(d, db);
 				String name = entity.get(ObservationElement.NAME).toString();
-				
+
 				int rowIndex = instance.getRowNames().indexOf(name);
 				int colIndex = instance.getColNames().indexOf(name);
-				
-				
-				
-				if(rowIndex != -1 || colIndex != -1)
+
+				if (rowIndex != -1 || colIndex != -1)
 				{
 					int totalRows = instance.getNumberOfRows();
 					int totalCols = instance.getNumberOfCols();
 					MatrixLocation ml = new MatrixLocation(d, rowIndex, colIndex, totalRows, totalCols);
-					
+
 					String plotType = d.getValueType().equals("Text") ? "o" : "boxplot";
-					
-					if(rowIndex != -1 && totalCols < 10000)
+
+					if (rowIndex != -1 && totalCols < 10000)
 					{
-						//make a plot
-						try{
+						// make a plot
+						try
+						{
 							File img = MakeRPlot.plot(d, instance, name, null, "row", plotType, 800, 600);
 							ml.setRowImg(img.getName());
-						}catch(Exception e)
+						}
+						catch (Exception e)
 						{
 							e.printStackTrace();
-							//too bad, image failed
+							// too bad, image failed
 						}
-						
-						//also do some correlation
-						if(totalRows * totalCols < 1000000){
+
+						// also do some correlation
+						if (totalRows * totalCols < 1000000)
+						{
 							TreeMap<String, Double> corr = Statistics.getSpearManCorr(instance, name, true);
 							ml.setRowCorr(corr);
 						}
 					}
-					
-					if(colIndex != -1 && totalRows < 10000)
+
+					if (colIndex != -1 && totalRows < 10000)
 					{
-						//make a plot
-						try{
+						// make a plot
+						try
+						{
 							File img = MakeRPlot.plot(d, instance, null, name, "col", plotType, 800, 600);
 							ml.setColImg(img.getName());
-						}catch(Exception e)
+						}
+						catch (Exception e)
 						{
 							e.printStackTrace();
-							//too bad, image failed
+							// too bad, image failed
 						}
-						
-						//also do some correlation
-						if(totalRows * totalCols < 1000000){
+
+						// also do some correlation
+						if (totalRows * totalCols < 1000000)
+						{
 							TreeMap<String, Double> corr = Statistics.getSpearManCorr(instance, name, false);
 							ml.setColCorr(corr);
 						}
 					}
-					
+
 					matrixLocations.add(ml);
 				}
 
 			}
 		}
 		r.setMatrices(matrixLocations);
-		
-		//File img = MakeRPlot.plot(screenModel.getSelectedData(), instance, rowName, colName, action, type, width, height);
-		
+
+		// File img = MakeRPlot.plot(screenModel.getSelectedData(), instance,
+		// rowName, colName, action, type, width, height);
+
 		return r;
 	}
-	
-
-
 
 	@Override
 	public void reload(Database db)
@@ -265,9 +277,6 @@ public class ReportBuilder extends PluginModel
 				}
 				model.setAnnotationTypeAndNr(annotationTypeAndNr);
 			}
-			
-			
-			
 
 		}
 		catch (Exception e)

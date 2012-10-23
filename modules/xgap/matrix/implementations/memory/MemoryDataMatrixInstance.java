@@ -22,29 +22,30 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 {
 	// matrix of row,col
 	E[][] values;
-	
-	
-	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, List<E[]> valueList, Data data) throws MatrixException
+
+	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, List<E[]> valueList, Data data)
+			throws MatrixException
 	{
 		int nrOfRows = valueList.size();
 		int nrOfCols = valueList.get(0).length;
-		
-		//see: http://stackoverflow.com/questions/2927391/whats-the-reason-i-cant-create-generic-array-types-in-java
+
+		// see:
+		// http://stackoverflow.com/questions/2927391/whats-the-reason-i-cant-create-generic-array-types-in-java
 		E[][] values = (E[][]) new Object[nrOfRows][nrOfCols];
-		
-		for(int rowIndex = 0; rowIndex < nrOfRows; rowIndex++)
+
+		for (int rowIndex = 0; rowIndex < nrOfRows; rowIndex++)
 		{
 			E[] row = valueList.get(rowIndex);
-			if(row.length != nrOfCols)
+			if (row.length != nrOfCols)
 			{
 				throw new MatrixException("Unequal number of columns in this matrix is not allowed");
 			}
-			for(int colIndex = 0; colIndex < row.length; colIndex++)
+			for (int colIndex = 0; colIndex < row.length; colIndex++)
 			{
 				values[rowIndex][colIndex] = row[colIndex];
 			}
 		}
-		
+
 		// checks
 		if (rownames.size() != values.length) throw new MatrixException(
 				"rownames.length and values[] (rows) are of different sizes: " + rownames.size() + " vs "
@@ -57,7 +58,8 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 			i++;
 		}
 
-		if(data == null){
+		if (data == null)
+		{
 			data = new Data();
 			data.setName("nameless_memorymatrix");
 		}
@@ -70,8 +72,9 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 		this.values = values;
 		this.setData(data);
 	}
-	
-	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws MatrixException
+
+	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data)
+			throws MatrixException
 	{
 		// checks
 		if (rownames.size() != values.length) throw new MatrixException(
@@ -85,7 +88,8 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 			i++;
 		}
 
-		if(data == null){
+		if (data == null)
+		{
 			data = new Data();
 			data.setName("nameless_memorymatrix");
 		}
@@ -156,7 +160,8 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nrows, int col, int ncols) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nrows, int col, int ncols)
+			throws Exception
 	{
 		List<String> rows = new ArrayList<String>(nrows);
 		List<String> cols = new ArrayList<String>(ncols);
@@ -187,18 +192,21 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 		List<String> cols = new ArrayList<String>(colIndices.length);
 		Object[][] elements = new Object[rowIndices.length][colIndices.length];
 		Object[][] allAlements = this.getElements();
-		
-			for(int rowIndicesIndex = 0; rowIndicesIndex < rowIndices.length; rowIndicesIndex++){
+
+		for (int rowIndicesIndex = 0; rowIndicesIndex < rowIndices.length; rowIndicesIndex++)
+		{
 			rows.add(this.getRowNames().get(rowIndices[rowIndicesIndex]));
-			for(int colIndicesIndex = 0; colIndicesIndex < colIndices.length; colIndicesIndex++){
+			for (int colIndicesIndex = 0; colIndicesIndex < colIndices.length; colIndicesIndex++)
+			{
 				elements[rowIndicesIndex][colIndicesIndex] = allAlements[rowIndices[rowIndicesIndex]][colIndices[colIndicesIndex]];
 			}
 		}
-		
-		for(int colIndicesIndex = 0; colIndicesIndex < colIndices.length; colIndicesIndex++){
+
+		for (int colIndicesIndex = 0; colIndicesIndex < colIndices.length; colIndicesIndex++)
+		{
 			cols.add(this.getColNames().get(colIndices[colIndicesIndex]));
 		}
-		
+
 		return new MemoryDataMatrixInstance(rows, cols, elements, this.getData());
 	}
 

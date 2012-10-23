@@ -32,16 +32,14 @@ public class GenericConvertor
 
 	Database db;
 
-	public void converter(File file, String invName, Database db,
-			String individual, String father, String mother, String sample,
-			List<String> samplemeaslist) throws Exception
+	public void converter(File file, String invName, Database db, String individual, String father, String mother,
+			String sample, List<String> samplemeaslist) throws Exception
 	{
 
 		this.invName = invName;
 		this.db = db;
 		makeInvestigation(invName);
-		populateIndividualAndSample(file, invName, individual, father, mother,
-				sample);
+		populateIndividualAndSample(file, invName, individual, father, mother, sample);
 		populateMeasurement(file, invName, individual, father, mother);
 
 		populateValue(file, invName, individual, sample, samplemeaslist);
@@ -62,8 +60,7 @@ public class GenericConvertor
 		}
 		try
 		{
-			export.exportAll(tmpDir, individualsList, measurementsList,
-					valuesList);
+			export.exportAll(tmpDir, individualsList, measurementsList, valuesList);
 		}
 		catch (Exception e)
 		{
@@ -109,9 +106,8 @@ public class GenericConvertor
 		return newInvest;
 	}
 
-	public void populateIndividualAndSample(File file, String invName,
-			final String individual, final String father, final String mother,
-			final String sample) throws Exception
+	public void populateIndividualAndSample(File file, String invName, final String individual, final String father,
+			final String mother, final String sample) throws Exception
 	{
 		individualsList.clear();
 
@@ -141,9 +137,8 @@ public class GenericConvertor
 		}
 	}
 
-	public void populateMeasurement(File file, String invName,
-			final String target, final String father, final String mother)
-			throws Exception
+	public void populateMeasurement(File file, String invName, final String target, final String father,
+			final String mother) throws Exception
 	{
 
 		measurementsList.clear();
@@ -155,11 +150,9 @@ public class GenericConvertor
 		{
 			// optionally
 			// if (!header.equals("id_individual")) {
-			if (!header.equals(target) && !header.equals(mother)
-					&& !header.equals(father))
+			if (!header.equals(target) && !header.equals(mother) && !header.equals(father))
 			{
-				if (db.query(Measurement.class).eq(Measurement.NAME, header)
-						.count() == 0)
+				if (db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0)
 				{
 					Measurement measurement = new Measurement();
 					measurement.setName(header);
@@ -170,11 +163,8 @@ public class GenericConvertor
 				}
 				else
 				{
-					List<Measurement> measList = db.query(Measurement.class)
-							.eq(Measurement.NAME, header).find();
-					int invID = db.query(Investigation.class)
-							.eq(Investigation.NAME, "System").find().get(0)
-							.getId();
+					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
+					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System").find().get(0).getId();
 					Measurement meas = measList.get(0);
 					meas.setInvestigation_Id(invID);
 					db.update(meas);
@@ -189,8 +179,7 @@ public class GenericConvertor
 		return invName;
 	}
 
-	public void populateValue(File file, String invName,
-			final String individual, final String sample,
+	public void populateValue(File file, String invName, final String individual, final String sample,
 			final List<String> samplemeaslist) throws Exception
 	{
 		valuesList.clear();
@@ -215,15 +204,13 @@ public class GenericConvertor
 
 					if (samplemeaslist.contains(featureName))
 					{
-						System.out.println("featureName(Sample): "
-								+ featureName);
+						System.out.println("featureName(Sample): " + featureName);
 						newValue.setTarget_Name(sampleName);
 					}
 					else
 					{
 						newValue.setTarget_Name(targetName);
-						System.out.println("featureName(individual): "
-								+ featureName);
+						System.out.println("featureName(individual): " + featureName);
 					}
 					newValue.setValue(value);
 					newValue.setInvestigation_Name(getInvestigation());

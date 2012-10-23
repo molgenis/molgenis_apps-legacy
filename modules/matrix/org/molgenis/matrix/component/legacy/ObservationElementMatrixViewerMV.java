@@ -1,4 +1,5 @@
 package org.molgenis.matrix.component.legacy;
+
 //package org.molgenis.matrix.component;
 //
 //import java.io.OutputStream;
@@ -641,4 +642,4 @@ package org.molgenis.matrix.component.legacy;
 //		return matrix.getRowHeaders();
 //	}
 //
-//}
+// }

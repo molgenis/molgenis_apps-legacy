@@ -37,13 +37,14 @@ public class MatrixInspector extends PluginModel
 		super(name, parent);
 	}
 
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders()
-//	{
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//
-//	}
+	// moved overlib to molgenis core
+	// @Override
+	// public String getCustomHtmlHeaders()
+	// {
+	// return
+	// "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+	//
+	// }
 
 	@Override
 	public String getViewName()
@@ -59,31 +60,32 @@ public class MatrixInspector extends PluginModel
 
 	public void handleRequest(Database db, Tuple request)
 	{
-	
+
 	}
 
 	@Override
 	public void reload(Database db)
 	{
 
-		if(dmh == null){
+		if (dmh == null)
+		{
 			dmh = new DataMatrixHandler(db);
 		}
-		
+
 		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
 		Data data = parentForm.getRecords().get(0);
 
 		try
 		{
 
-			//ASSUMING newOrOtherData");
+			// ASSUMING newOrOtherData");
 
 			this.model.setSelectedData(data);
 			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
-			
+
 			logger.info("hasBackend: " + this.model.isHasBackend());
-			
+
 			if (this.model.isHasBackend())
 			{
 				logger.info("*** creating browser instance");

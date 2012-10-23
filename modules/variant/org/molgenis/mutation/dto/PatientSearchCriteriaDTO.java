@@ -17,58 +17,76 @@ public class PatientSearchCriteriaDTO implements Serializable
 	Integer submissionId;
 	Integer userId;
 
-	public String getPid() {
+	public String getPid()
+	{
 		return pid;
 	}
-	public void setPid(String pid) {
+
+	public void setPid(String pid)
+	{
 		this.pid = pid;
 	}
-	public Integer getMutationId() {
+
+	public Integer getMutationId()
+	{
 		return mutationId;
 	}
-	public void setMutationId(Integer mutationId) {
+
+	public void setMutationId(Integer mutationId)
+	{
 		this.mutationId = mutationId;
 	}
-	public String getMid() {
+
+	public String getMid()
+	{
 		return mid;
 	}
-	public void setMid(String mid) {
+
+	public void setMid(String mid)
+	{
 		this.mid = mid;
 	}
-	public Boolean getConsent() {
+
+	public Boolean getConsent()
+	{
 		return consent;
 	}
-	public void setConsent(Boolean consent) {
+
+	public void setConsent(Boolean consent)
+	{
 		this.consent = consent;
 	}
-	public Integer getSubmissionId() {
+
+	public Integer getSubmissionId()
+	{
 		return submissionId;
 	}
-	public void setSubmissionId(Integer submissionId) {
+
+	public void setSubmissionId(Integer submissionId)
+	{
 		this.submissionId = submissionId;
 	}
-	public Integer getUserId() {
+
+	public Integer getUserId()
+	{
 		return userId;
 	}
-	public void setUserId(Integer userId) {
+
+	public void setUserId(Integer userId)
+	{
 		this.userId = userId;
 	}
+
 	public String toString()
 	{
 		List<String> result = new ArrayList<String>();
 
-		if (this.pid != null)
-			result.add("PID = '" + this.pid + "'");
-		if (this.mutationId != null)
-			result.add("mutation id = " + this.mutationId);
-		if (this.mid != null)
-			result.add("MID = '" + this.mid + "'");
-		if (this.consent != null)
-			result.add("consent = '" + this.consent.toString() + "'");
-		if (this.submissionId != null)
-			result.add("submission id = '" + this.submissionId + "'");
-		if (this.userId != null)
-			result.add("user id = '" + this.userId + "'");
+		if (this.pid != null) result.add("PID = '" + this.pid + "'");
+		if (this.mutationId != null) result.add("mutation id = " + this.mutationId);
+		if (this.mid != null) result.add("MID = '" + this.mid + "'");
+		if (this.consent != null) result.add("consent = '" + this.consent.toString() + "'");
+		if (this.submissionId != null) result.add("submission id = '" + this.submissionId + "'");
+		if (this.userId != null) result.add("user id = '" + this.userId + "'");
 
 		return StringUtils.join(result, " and ");
 	}

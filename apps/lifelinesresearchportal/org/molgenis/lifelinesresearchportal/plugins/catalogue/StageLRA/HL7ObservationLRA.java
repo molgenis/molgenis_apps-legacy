@@ -14,7 +14,8 @@ import org.w3c.dom.Node;
  * 
  * @author roankanninga
  */
-public class HL7ObservationLRA {
+public class HL7ObservationLRA
+{
 
 	private Node measurement;
 	private XPath xpath;
@@ -35,7 +36,8 @@ public class HL7ObservationLRA {
 	private static final String OBSERVATION_DATATYPE = "urn:hl7-org:v3:value/@*[local-name()='type']";
 	private static final String OBSERVATION_DESCRIPTION = "urn:hl7-org:v3:code/urn:hl7-org:v3:originalText/text()";
 
-	public HL7ObservationLRA(Node measurement, XPath xpath) throws Exception {
+	public HL7ObservationLRA(Node measurement, XPath xpath) throws Exception
+	{
 		this.measurement = measurement;
 		this.xpath = xpath;
 		readMeasurementName();
@@ -44,56 +46,66 @@ public class HL7ObservationLRA {
 		readMeasurementLabel();
 	}
 
-	private void readMeasurementName() throws Exception {
+	private void readMeasurementName() throws Exception
+	{
 
-		Node nameNode = (Node) xpath.evaluate(OBSERVATION_NAME, measurement,
-				XPathConstants.NODE);
+		Node nameNode = (Node) xpath.evaluate(OBSERVATION_NAME, measurement, XPathConstants.NODE);
 
 		this.measurementName = nameNode.getNodeValue().trim();
 	}
 
-	private void readMeasurementLabel() throws Exception {
+	private void readMeasurementLabel() throws Exception
+	{
 
-		Node nameNode = (Node) xpath.evaluate(OBSERVATION_LABEL, measurement,
-				XPathConstants.NODE);
+		Node nameNode = (Node) xpath.evaluate(OBSERVATION_LABEL, measurement, XPathConstants.NODE);
 		this.measurementLabel = nameNode.getNodeValue().trim();
 	}
 
-	private void readMeasurementDescription() throws Exception {
-		try {
-			Node nameNode = (Node) xpath.evaluate(OBSERVATION_DESCRIPTION,
-					measurement, XPathConstants.NODE);
+	private void readMeasurementDescription() throws Exception
+	{
+		try
+		{
+			Node nameNode = (Node) xpath.evaluate(OBSERVATION_DESCRIPTION, measurement, XPathConstants.NODE);
 
 			this.measurementDescription = nameNode.getNodeValue().trim();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			this.measurementDescription = "NO DESCRIPTION";
 		}
 	}
 
-	private void readMeasurementDataType() throws Exception {
-		try {
-			Node nameNode = (Node) xpath.evaluate(OBSERVATION_DATATYPE,
-					measurement, XPathConstants.NODE);
+	private void readMeasurementDataType() throws Exception
+	{
+		try
+		{
+			Node nameNode = (Node) xpath.evaluate(OBSERVATION_DATATYPE, measurement, XPathConstants.NODE);
 
 			this.measurementDataType = nameNode.getNodeValue();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			this.measurementDataType = "NO DATATYPE";
 		}
 	}
 
-	public String getMeasurementName() {
+	public String getMeasurementName()
+	{
 		return measurementName;
 	}
 
-	public String getMeasurementDescription() {
+	public String getMeasurementDescription()
+	{
 		return measurementDescription;
 	}
 
-	public String getMeasurementDataType() {
+	public String getMeasurementDataType()
+	{
 		return measurementDataType;
 	}
 
-	public String getMeasurementLabel() {
+	public String getMeasurementLabel()
+	{
 		return measurementLabel;
 	}
 

@@ -27,12 +27,15 @@ public abstract class AbstractComputeHost extends Ssh implements ComputeHost
 		/** PBS specific state of 'held' */
 		HELD("H"),
 		/** There is something wrong with this job */
-		ERROR("ERROR"), 
-		/** Unclear what these states mean*/
+		ERROR("ERROR"),
+		/** Unclear what these states mean */
 		EXITED("E"), TRANSFERED("T"), WAITING("W"), SUSPEND("S"),
 		/** The user cancelled this job */
-		CANCELLED("Cancelled"), 
-		/** Job is completed, but we still need to get the logs (these are sometimes lagging behind)*/
+		CANCELLED("Cancelled"),
+		/**
+		 * Job is completed, but we still need to get the logs (these are
+		 * sometimes lagging behind)
+		 */
 		WAITING_FOR_LOGS("Get logs");
 
 		private String text;
@@ -67,7 +70,7 @@ public abstract class AbstractComputeHost extends Ssh implements ComputeHost
 
 	// evil, protected map
 	Map<String, Job> jobs = new LinkedHashMap<String, Job>();
-	
+
 	// including '/'
 	private String workingDir = "";
 

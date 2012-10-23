@@ -17,23 +17,23 @@ public class SequencePanel extends HtmlInput
 {
 	private ExonSummaryVO exonSummaryVO;
 	private List<MutationSummaryVO> mutationSummaryVOs;
-	boolean showNuclSequence  = true;
-	boolean showAaSequence    = true;
+	boolean showNuclSequence = true;
+	boolean showAaSequence = true;
 	boolean showBasePositions = true;
-	private String baseUrl    = "";
+	private String baseUrl = "";
 
 	public SequencePanel()
 	{
 		this("", "");
 	}
-	
+
 	public SequencePanel(String name, String label)
 	{
 		super(name, label);
 		this.setLabel(label);
 		this.setClazz("scrollable");
 	}
-	
+
 	@Override
 	/**
 	 * Each input is rendered with a label and in its own div to enable scripting.
@@ -50,32 +50,35 @@ public class SequencePanel extends HtmlInput
 			result.append(exonSummaryVO.getNuclSequenceFlankLeft());
 			result.append("<span class=\"seq\">");
 			int startPos = exonSummaryVO.getExon().getGdna_Position();
-			int endPos   = ("R".equals(exonSummaryVO.getOrientation()) ?
-							startPos - exonSummaryVO.getExon().getLength() :
-							startPos + exonSummaryVO.getExon().getLength());
-			for (int i = startPos;
-					("R".equals(exonSummaryVO.getOrientation()) ? i > endPos : i < endPos);
-					i = ("R".equals(exonSummaryVO.getOrientation()) ? i - 1 : i + 1))
+			int endPos = ("R".equals(exonSummaryVO.getOrientation()) ? startPos - exonSummaryVO.getExon().getLength()
+					: startPos + exonSummaryVO.getExon().getLength());
+			for (int i = startPos; ("R".equals(exonSummaryVO.getOrientation()) ? i > endPos : i < endPos); i = ("R"
+					.equals(exonSummaryVO.getOrientation()) ? i - 1 : i + 1))
 			{
 				boolean hasMutation = false;
 				for (MutationSummaryVO mutationSummaryVO : mutationSummaryVOs)
 				{
-					String url     = this.baseUrl;
+					String url = this.baseUrl;
 					url = StringUtils.replace(url, "mid=", "mid=" + mutationSummaryVO.getIdentifier());
 					String tooltip = mutationSummaryVO.getNiceNotation();
 					if (mutationSummaryVO.getGdnaPosition() == i)
 					{
 						hasMutation = true;
 						result.append("<span class=\"mut\">");
-						result.append("<a class=\"mut\" href=\"" + url + "\" alt=\"" + tooltip + "\" title=\"" + tooltip + "\">");
+						result.append("<a class=\"mut\" href=\"" + url + "\" alt=\"" + tooltip + "\" title=\""
+								+ tooltip + "\">");
 						break;
 					}
 				}
-				if ("R".equals(exonSummaryVO.getOrientation()))
-					result.append(exonSummaryVO.getNuclSequence().substring(startPos - i, startPos - i + 1)); //${exonSummaryVO.nuclSequence?substring(exonSummaryVO.exon.getGdna_Position() - i, exonSummaryVO.exon.getGdna_Position() - i + 1)}
+				if ("R".equals(exonSummaryVO.getOrientation())) result.append(exonSummaryVO.getNuclSequence()
+						.substring(startPos - i, startPos - i + 1)); // ${exonSummaryVO.nuclSequence?substring(exonSummaryVO.exon.getGdna_Position()
+																		// - i,
+																		// exonSummaryVO.exon.getGdna_Position()
+																		// - i +
+																		// 1)}
 				else
 					result.append(exonSummaryVO.getNuclSequence().substring(i - startPos, i - startPos + 1));
-	
+
 				if (hasMutation)
 				{
 					result.append("</a></span>");
@@ -111,7 +114,7 @@ public class SequencePanel extends HtmlInput
 
 		return result.toString();
 	}
-	
+
 	public void setExonSummaryVO(ExonSummaryVO exonSummaryVO)
 	{
 		this.exonSummaryVO = exonSummaryVO;
@@ -144,16 +147,15 @@ public class SequencePanel extends HtmlInput
 
 	private String printBasePositions(Exon exon)
 	{
-		//<#list exon.cdna_position..exon.cdna_position + exon.length as i>
+		// <#list exon.cdna_position..exon.cdna_position + exon.length as i>
 		StringBuffer buf = new StringBuffer();
-		
+
 		for (int i = exon.getCdna_Position(); i < exon.getCdna_Position() + exon.getLength(); i++)
-			if (i % 10 == 0)
-				buf.append(new Formatter().format("%4s", i).toString());
+			if (i % 10 == 0) buf.append(new Formatter().format("%4s", i).toString());
 			else if (i % 10 < 7) // (i % 10 > 3 || i < 4)
-				buf.append(" "); //new Integer(i % 10).toString(); //" ";
-			//else
-				//return "";
+			buf.append(" "); // new Integer(i % 10).toString(); //" ";
+		// else
+		// return "";
 		return buf.toString();
 	}
 }

@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-@XmlRootElement(name="param")
+@XmlRootElement(name = "param")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Param implements Input
 {
@@ -31,13 +31,13 @@ public class Param implements Input
 
 	@XmlAttribute
 	String type;
-	
+
 	@XmlAttribute
 	String size;
 
-	@XmlAttribute(name="label")
+	@XmlAttribute(name = "label")
 	String labelAttribute;
-	@XmlElement(name="label")
+	@XmlElement(name = "label")
 	String label;
 
 	@XmlAttribute()
@@ -48,10 +48,10 @@ public class Param implements Input
 
 	@XmlAttribute
 	Boolean multiple;
-	
+
 	@XmlAttribute
 	Boolean numerical;
-	
+
 	@XmlAttribute
 	Boolean optional;
 
@@ -60,28 +60,28 @@ public class Param implements Input
 
 	@XmlAttribute
 	String value;
-	
+
 	@XmlAttribute
 	String from_file;
-	
-	@XmlElement(name="option")
+
+	@XmlElement(name = "option")
 	List<Option> options = new ArrayList<Option>();
-	
+
 	@XmlElement
 	Validator validator;
-	
+
 	@XmlElement
 	Column column;
-	
+
 	@XmlElement
 	ParamConditional conditional;
-	
-	@XmlElement(name="options")
+
+	@XmlElement(name = "options")
 	ParamOptions dynamicOptions;
-	
+
 	@XmlAttribute
 	String data_ref;
-	
+
 	public String getFormat()
 	{
 		return format;
@@ -112,10 +112,10 @@ public class Param implements Input
 		this.type = type;
 	}
 
-	//maps to both label attribute and <label element
+	// maps to both label attribute and <label element
 	public String getLabel()
 	{
-		if(label == null) return labelAttribute;
+		if (label == null) return labelAttribute;
 		return label;
 	}
 
@@ -173,19 +173,25 @@ public class Param implements Input
 	{
 		this.from_file = from_file;
 	}
-	
+
 	public String toString()
 	{
 		String result = "";
-		for(Option o: options) result += "\n\t"+o;
-		if(validator != null) result +="\n\t"+validator.toString();
-		if(result != "") result +="\n";
-		if(dynamicOptions != null) result+=dynamicOptions.toString().replace("\n","\n\t");
-		return String.format("Param(name='%s', type='%s', label='%s', numerical='%s', optional='%s', format='%s', size='%s', data_ref='%s', multiple='%s', help='%s', from_file='%s', value='%s', hierarchy='%s'%s)", name, type, getLabel(), numerical, optional, format, size, data_ref, multiple, help, from_file, value,hierarchy,result);
+		for (Option o : options)
+			result += "\n\t" + o;
+		if (validator != null) result += "\n\t" + validator.toString();
+		if (result != "") result += "\n";
+		if (dynamicOptions != null) result += dynamicOptions.toString().replace("\n", "\n\t");
+		return String
+				.format("Param(name='%s', type='%s', label='%s', numerical='%s', optional='%s', format='%s', size='%s', data_ref='%s', multiple='%s', help='%s', from_file='%s', value='%s', hierarchy='%s'%s)",
+						name, type, getLabel(), numerical, optional, format, size, data_ref, multiple, help, from_file,
+						value, hierarchy, result);
 	}
 
-	//TODO: Danny Eclipse tells me this is wrong: We should extend the XMLAdapter, Type it and add 
-	//the Marshal and unMarshal function implementations: http://weblogs.java.net/blog/kohsuke/archive/2005/09/using_jaxb_20s.html
+	// TODO: Danny Eclipse tells me this is wrong: We should extend the
+	// XMLAdapter, Type it and add
+	// the Marshal and unMarshal function implementations:
+	// http://weblogs.java.net/blog/kohsuke/archive/2005/09/using_jaxb_20s.html
 	public static class ParamLabelAdapter implements XmlJavaTypeAdapter
 	{
 
@@ -197,7 +203,7 @@ public class Param implements Input
 		}
 
 		@Override
-		public Class<? extends XmlAdapter<?,?>> value()
+		public Class<? extends XmlAdapter<?, ?>> value()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -209,6 +215,6 @@ public class Param implements Input
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
+
 	}
 }

@@ -9,7 +9,8 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 
-public class tableModel {
+public class tableModel
+{
 
 	private List<String> header = new ArrayList<String>();
 	private HashMap<String, Integer> headerToIndex = new HashMap<String, Integer>();
@@ -18,39 +19,45 @@ public class tableModel {
 	private String spreadSheetName = null;
 	private int startingRow = 0;
 	private boolean allSheets = false;
-	
 
-
-	public tableModel(String spreadSheetName, boolean allSheets){
+	public tableModel(String spreadSheetName, boolean allSheets)
+	{
 		this.spreadSheetName = spreadSheetName;
 		this.allSheets = allSheets;
 	}
 
-	public void setStartingRow (int startingRow){
+	public void setStartingRow(int startingRow)
+	{
 		this.startingRow = startingRow - 1;
 	}
 
-	public void processingTable(){
+	public void processingTable()
+	{
 
 		File file = new File(spreadSheetName);
 
 		Workbook workbook = null;
 
-		try {
+		try
+		{
 			workbook = Workbook.getWorkbook(file);
 
 			Sheet[] sheetNames = workbook.getSheets();
 
-			for(int index = 0; index < sheetNames.length; index++){
+			for (int index = 0; index < sheetNames.length; index++)
+			{
 				processingEachSheet(workbook, index);
 			}
 
-		}catch(Exception e){
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	public void processingEachSheet(Workbook workbook, int sheetIndex){
+	public void processingEachSheet(Workbook workbook, int sheetIndex)
+	{
 
 		Sheet sheet = workbook.getSheet(sheetIndex);
 
@@ -60,18 +67,24 @@ public class tableModel {
 
 		List<Cell[]> rowContents = new ArrayList<Cell[]>();
 
-		for(int i = startingRow; i < rows; i++){
+		for (int i = startingRow; i < rows; i++)
+		{
 
-			if(i == this.startingRow){
-				for(int j = 0; j < columns; j++){
+			if (i == this.startingRow)
+			{
+				for (int j = 0; j < columns; j++)
+				{
 					String cellValue = sheet.getCell(j, i).getContents().toString();
-					if(!cellValue.equals("")){
+					if (!cellValue.equals(""))
+					{
 						headerToIndex.put(cellValue, j);
 						IndexToHeader.put(j, cellValue);
 						header.add(cellValue);
 					}
 				}
-			}else{
+			}
+			else
+			{
 				rowContents.add(sheet.getRow(i));
 			}
 
@@ -80,45 +93,54 @@ public class tableModel {
 		sheetNameToContents.put(sheet.getName(), rowContents);
 	}
 
-	public HashMap<String, String> getDescriptionForVariable(String identifier, String description){
+	public HashMap<String, String> getDescriptionForVariable(String identifier, String description)
+	{
 
-		HashMap <String, String> stringToTokens = new HashMap<String, String>();
+		HashMap<String, String> stringToTokens = new HashMap<String, String>();
 
 		Integer identifierIndex = headerToIndex.get(identifier);
 
 		Integer descriptionIndex = headerToIndex.get(description);
 
-		if(identifierIndex != null && descriptionIndex != null){
+		if (identifierIndex != null && descriptionIndex != null)
+		{
 
-			for(String eachSheetName : sheetNameToContents.keySet()){
-				for(Cell[] eachRow : sheetNameToContents.get(eachSheetName)){
-					if(eachRow.length > identifierIndex && eachRow.length > descriptionIndex)
-						stringToTokens.put(eachRow[identifierIndex].getContents(), eachRow[descriptionIndex].getContents());
+			for (String eachSheetName : sheetNameToContents.keySet())
+			{
+				for (Cell[] eachRow : sheetNameToContents.get(eachSheetName))
+				{
+					if (eachRow.length > identifierIndex && eachRow.length > descriptionIndex) stringToTokens.put(
+							eachRow[identifierIndex].getContents(), eachRow[descriptionIndex].getContents());
 				}
 			}
 		}
 		System.out.println(stringToTokens.keySet().size());
 		return stringToTokens;
 	}
-	
-	public List<String> getColumn(String identifier){
+
+	public List<String> getColumn(String identifier)
+	{
 
 		List<String> columns = new ArrayList<String>();
 
 		Integer identifierIndex = headerToIndex.get(identifier);
 
-		if(identifierIndex != null){
+		if (identifierIndex != null)
+		{
 
-			for(String eachSheetName : sheetNameToContents.keySet()){
-				for(Cell[] eachRow : sheetNameToContents.get(eachSheetName)){
+			for (String eachSheetName : sheetNameToContents.keySet())
+			{
+				for (Cell[] eachRow : sheetNameToContents.get(eachSheetName))
+				{
 					columns.add(eachRow[identifierIndex].getContents());
 				}
 			}
 		}
 		return columns;
 	}
-	
-	public List<String> getHeaders(){
+
+	public List<String> getHeaders()
+	{
 		return this.header;
 	}
 }

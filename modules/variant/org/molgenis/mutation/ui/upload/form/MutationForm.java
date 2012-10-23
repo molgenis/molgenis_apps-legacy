@@ -19,17 +19,17 @@ public class MutationForm extends Container
 	{
 		Vector<ValueLabel> conservedaaOptions = new Vector<ValueLabel>();
 		conservedaaOptions.add(new ValueLabel("conservedaa", ""));
-		
-		List<ValueLabel> splicingOptions      = new ArrayList<ValueLabel>();
+
+		List<ValueLabel> splicingOptions = new ArrayList<ValueLabel>();
 		splicingOptions.add(new ValueLabel("No", "No"));
 		splicingOptions.add(new ValueLabel("Unknown", "Yes: Unkown effect"));
 		splicingOptions.add(new ValueLabel("Alternative protein", "Yes: Alternative protein"));
 		splicingOptions.add(new ValueLabel("Premature termination codon", "Yes: Premature termination codon"));
 
-		Vector<ValueLabel> founderOptions     = new Vector<ValueLabel>();
+		Vector<ValueLabel> founderOptions = new Vector<ValueLabel>();
 		founderOptions.add(new ValueLabel("foundermutation", ""));
 
-		Vector<ValueLabel> snpOptions         = new Vector<ValueLabel>();
+		Vector<ValueLabel> snpOptions = new Vector<ValueLabel>();
 		snpOptions.add(new ValueLabel("reportedsnp", ""));
 
 		this.add(new StringInput("gene"));
@@ -48,13 +48,14 @@ public class MutationForm extends Container
 		this.add(new CheckboxInput("conservedaa", "", "Conserved amino acid?", conservedaaOptions, new Vector<String>()));
 		this.add(new SelectInput("effectonsplicing", ""));
 		((SelectInput) this.get("effectonsplicing")).setOptions(splicingOptions);
-//		this.add(new CheckboxInput("effectonsplicing", "", "Effect on splicing?", splicingOptions, new Vector<String>()));
+		// this.add(new CheckboxInput("effectonsplicing", "",
+		// "Effect on splicing?", splicingOptions, new Vector<String>()));
 		this.add(new CheckboxInput("foundermutation", "", "Founder mutation?", founderOptions, new Vector<String>()));
 		this.add(new StringInput("population"));
 		this.add(new CheckboxInput("reportedsnp", "", "Reported as SNP?", snpOptions, new Vector<String>()));
 		this.add(new SelectInput("inheritance", "recessive"));
 		this.add(new StringInput("comment"));
-		
+
 		this.add(new StringInput("readonly_pos"));
 		((StringInput) this.get("readonly_pos")).setReadonly(true);
 		this.add(new SelectInput("exon", ""));
@@ -64,8 +65,8 @@ public class MutationForm extends Container
 		((StringInput) this.get("readonly_ntchange")).setReadonly(true);
 		this.add(new StringInput("codon_number"));
 		((StringInput) this.get("codon_number")).setReadonly(true);
-		this.add(new StringInput("codon_number_rep")); //TODO
-		((StringInput) this.get("codon_number_rep")).setReadonly(true); //TODO
+		this.add(new StringInput("codon_number_rep")); // TODO
+		((StringInput) this.get("codon_number_rep")).setReadonly(true); // TODO
 		this.add(new StringInput("codon"));
 		((StringInput) this.get("codon")).setReadonly(true);
 		this.add(new StringInput("codonchange"));

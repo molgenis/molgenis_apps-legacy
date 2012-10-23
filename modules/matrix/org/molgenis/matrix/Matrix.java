@@ -125,8 +125,8 @@ public interface Matrix<E, A, V>
 	 * @return values with rows in first and columns in second dimension
 	 * @throws MatrixException
 	 */
-	public Matrix<E, A, V> getSubMatrixByOffset(int rowStart, int numRows,
-			int colStart, int numCols) throws MatrixException;
+	public Matrix<E, A, V> getSubMatrixByOffset(int rowStart, int numRows, int colStart, int numCols)
+			throws MatrixException;
 
 	/**
 	 * Slice out a sub matrix based on a list of row and column indexes. If one
@@ -138,8 +138,8 @@ public interface Matrix<E, A, V>
 	 * @return slice of the matrix based on row and column indexes
 	 * @throws MatrixException
 	 */
-	public Matrix<E, A, V> getSubMatrixByIndex(List<Integer> rowIndices,
-			List<Integer> colIndices) throws MatrixException;
+	public Matrix<E, A, V> getSubMatrixByIndex(List<Integer> rowIndices, List<Integer> colIndices)
+			throws MatrixException;
 
 	/**
 	 * Get a subset from the matrix using the column and row names.
@@ -149,8 +149,7 @@ public interface Matrix<E, A, V>
 	 * @return subset of the matrix as 2-dim array
 	 * @throws MatrixException
 	 */
-	public Matrix<E, A, V> getSubMatrixByName(List<E> columns, List<A> rows)
-			throws MatrixException;
+	public Matrix<E, A, V> getSubMatrixByName(List<E> columns, List<A> rows) throws MatrixException;
 
 	/**
 	 * Retrieve all values of this matrix as 2-D array
@@ -159,12 +158,13 @@ public interface Matrix<E, A, V>
 	 */
 	public V[][] getValues() throws MatrixException;
 
-	/** 
+	/**
 	 * Retrieve column names only for the selected index,offset
+	 * 
 	 * @param index
 	 * @param offset
 	 * @return
-	 * @throws MatrixException 
+	 * @throws MatrixException
 	 */
 	public List<A> getColNamesByOffset(int index, int offset) throws MatrixException;
 

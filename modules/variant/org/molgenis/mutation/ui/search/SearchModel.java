@@ -43,6 +43,7 @@ public class SearchModel extends EasyPluginModel
 	private Map<String, Integer> numMutationsByPathogenicity;
 	private Map<String, Integer> numPatientsByPathogenicity;
 	private HtmlFormWrapper expertSearchFormWrapper;
+<<<<<<< HEAD
 	private SimpleSearchForm simpleSearchForm                 = new SimpleSearchForm();
 	private ListAllMutationsForm listAllMutationsForm         = new ListAllMutationsForm();
 	private ListAllPatientsForm listAllPatientsForm           = new ListAllPatientsForm();
@@ -51,18 +52,27 @@ public class SearchModel extends EasyPluginModel
 	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
 	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
 	private HtmlInput<?> mBrowsePanel;
+=======
+	private SimpleSearchForm simpleSearchForm = new SimpleSearchForm();
+	private ListAllMutationsForm listAllMutationsForm = new ListAllMutationsForm();
+	private ListAllPatientsForm listAllPatientsForm = new ListAllPatientsForm();
+	private ToExpertSearchForm toExpertSearchForm = new ToExpertSearchForm();
+	private ToSimpleSearchForm toSimpleSearchForm = new ToSimpleSearchForm();
+	private ShowMutationForm showMutationForm = new ShowMutationForm();
+	private DisplayOptionsForm displayOptionsForm = new DisplayOptionsForm();
+>>>>>>> fdfd48ac8ea094c7d3eed80aa1dd0b8a1fc5d716
 
 	private MutationSearchCriteriaDTO mutationSearchCriteriaVO = new MutationSearchCriteriaDTO();
-	private QueryParametersDTO queryParametersVO               = new QueryParametersDTO();
+	private QueryParametersDTO queryParametersVO = new QueryParametersDTO();
 
 	private GeneDTO geneDTO;
 	private List<GeneDTO> geneDTOList;
 	private ExonDTO exonDTO;
 	private List<ExonDTO> exonDTOList;
 	private MutationSummaryDTO mutationSummaryVO;
-	private List<MutationSummaryDTO> mutationSummaryDTOList    = new ArrayList<MutationSummaryDTO>();
+	private List<MutationSummaryDTO> mutationSummaryDTOList = new ArrayList<MutationSummaryDTO>();
 	private Map<String, String> mutationSummaryVOHash;
-	private List<PatientSummaryDTO> patientSummaryVOs          = new ArrayList<PatientSummaryDTO>();
+	private List<PatientSummaryDTO> patientSummaryVOs = new ArrayList<PatientSummaryDTO>();
 	private ProteinDomainDTO proteinDomainDTO;
 	private List<ProteinDomainDTO> proteinDomainDTOList;
 	private PatientSummaryDTO patientSummaryVO;
@@ -73,44 +83,52 @@ public class SearchModel extends EasyPluginModel
 	private LimitOffsetPager<?> pager;
 
 	private MBrowse mbrowse;
-	
-	private String textWelcome                                = "";
-	private String textSearch                                 = "";
-	private String textRemarks                                = "";
-	private String textCollaborations                         = "";
-	
+
+	private String textWelcome = "";
+	private String textSearch = "";
+	private String textRemarks = "";
+	private String textCollaborations = "";
+
 	private List<VariantDTO> positionMutations;
 	private List<VariantDTO> codonMutations;
 
-	public String getPatientPager() {
+	public String getPatientPager()
+	{
 		return patientPager;
 	}
 
-	public void setPatientPager(String patientPager) {
+	public void setPatientPager(String patientPager)
+	{
 		this.patientPager = patientPager;
 	}
 
-	public String getMutationPager() {
+	public String getMutationPager()
+	{
 		return mutationPager;
 	}
 
-	public void setMutationPager(String mutationPager) {
+	public void setMutationPager(String mutationPager)
+	{
 		this.mutationPager = mutationPager;
 	}
 
-	public String getPatientViewer() {
+	public String getPatientViewer()
+	{
 		return patientViewer;
 	}
 
-	public void setPatientViewer(String patientViewer) {
+	public void setPatientViewer(String patientViewer)
+	{
 		this.patientViewer = patientViewer;
 	}
 
-	public String getMutationViewer() {
+	public String getMutationViewer()
+	{
 		return mutationViewer;
 	}
 
-	public void setMutationViewer(String mutationViewer) {
+	public void setMutationViewer(String mutationViewer)
+	{
 		this.mutationViewer = mutationViewer;
 	}
 
@@ -118,25 +136,29 @@ public class SearchModel extends EasyPluginModel
 	{
 		return action;
 	}
-	
+
 	public void setAction(String action)
 	{
 		this.action = action;
 	}
 
-	public String getResult() {
+	public String getResult()
+	{
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(String result)
+	{
 		this.result = result;
 	}
 
-	public String getSearchTerm() {
+	public String getSearchTerm()
+	{
 		return searchTerm;
 	}
 
-	public void setSearchTerm(String searchTerm) {
+	public void setSearchTerm(String searchTerm)
+	{
 		this.searchTerm = searchTerm;
 	}
 
@@ -180,34 +202,39 @@ public class SearchModel extends EasyPluginModel
 		this.numMutations = numMutations;
 	}
 
-	public Integer getNumMutationsByPathogenicity(String pathogenicity) {
-		if (this.numMutationsByPathogenicity.containsKey(pathogenicity))
-			return this.numMutationsByPathogenicity.get(pathogenicity);
+	public Integer getNumMutationsByPathogenicity(String pathogenicity)
+	{
+		if (this.numMutationsByPathogenicity.containsKey(pathogenicity)) return this.numMutationsByPathogenicity
+				.get(pathogenicity);
 		else
 			return 0;
 	}
 
-	public void setNumMutationsByPathogenicity(
-			Map<String, Integer> numMutationsByPathogenicity) {
+	public void setNumMutationsByPathogenicity(Map<String, Integer> numMutationsByPathogenicity)
+	{
 		this.numMutationsByPathogenicity = numMutationsByPathogenicity;
 	}
 
-	public Integer getNumPatientsByPathogenicity(String pathogenicity) {
-		if (this.numPatientsByPathogenicity.containsKey(pathogenicity))
-			return this.numPatientsByPathogenicity.get(pathogenicity);
+	public Integer getNumPatientsByPathogenicity(String pathogenicity)
+	{
+		if (this.numPatientsByPathogenicity.containsKey(pathogenicity)) return this.numPatientsByPathogenicity
+				.get(pathogenicity);
 		else
 			return 0;
 	}
 
-	public void setNumPatientsByPathogenicity(Map<String, Integer> numPatientsByPathogenicity) {
+	public void setNumPatientsByPathogenicity(Map<String, Integer> numPatientsByPathogenicity)
+	{
 		this.numPatientsByPathogenicity = numPatientsByPathogenicity;
 	}
 
-	public HtmlFormWrapper getExpertSearchFormWrapper() {
+	public HtmlFormWrapper getExpertSearchFormWrapper()
+	{
 		return expertSearchFormWrapper;
 	}
 
-	public void setExpertSearchFormWrapper(HtmlFormWrapper expertSearchFormWrapper) {
+	public void setExpertSearchFormWrapper(HtmlFormWrapper expertSearchFormWrapper)
+	{
 		this.expertSearchFormWrapper = expertSearchFormWrapper;
 	}
 
@@ -311,11 +338,13 @@ public class SearchModel extends EasyPluginModel
 		this.queryParametersVO = queryParametersVO;
 	}
 
-	public void setGeneDTO(GeneDTO geneDTO) {
+	public void setGeneDTO(GeneDTO geneDTO)
+	{
 		this.geneDTO = geneDTO;
 	}
 
-	public GeneDTO getGeneDTO() {
+	public GeneDTO getGeneDTO()
+	{
 		return geneDTO;
 	}
 
@@ -419,27 +448,33 @@ public class SearchModel extends EasyPluginModel
 		this.patientSummaryVO = patientSummaryVO;
 	}
 
-	public ObservationElementDTO getIndividualDTO() {
+	public ObservationElementDTO getIndividualDTO()
+	{
 		return individualDTO;
 	}
 
-	public void setIndividualDTO(ObservationElementDTO individualDTO) {
+	public void setIndividualDTO(ObservationElementDTO individualDTO)
+	{
 		this.individualDTO = individualDTO;
 	}
 
-	public Map<String, String> getPatientSummaryVOHash() {
+	public Map<String, String> getPatientSummaryVOHash()
+	{
 		return patientSummaryVOHash;
 	}
 
-	public void setPatientSummaryVOHash(Map<String, String> patientSummaryVOHash) {
+	public void setPatientSummaryVOHash(Map<String, String> patientSummaryVOHash)
+	{
 		this.patientSummaryVOHash = patientSummaryVOHash;
 	}
 
-	public String getRawOutput() {
+	public String getRawOutput()
+	{
 		return rawOutput;
 	}
 
-	public void setRawOutput(String rawOutput) {
+	public void setRawOutput(String rawOutput)
+	{
 		this.rawOutput = rawOutput;
 	}
 
@@ -453,61 +488,78 @@ public class SearchModel extends EasyPluginModel
 		this.pager = pager;
 	}
 
-	public MBrowse getMbrowse() {
+	public MBrowse getMbrowse()
+	{
 		return mbrowse;
 	}
 
-	public void setMbrowse(MBrowse mbrowse) {
+	public void setMbrowse(MBrowse mbrowse)
+	{
 		this.mbrowse = mbrowse;
 	}
 
-	public String getTextWelcome() {
+	public String getTextWelcome()
+	{
 		return textWelcome;
 	}
 
-	public void setTextWelcome(String textWelcome) {
+	public void setTextWelcome(String textWelcome)
+	{
 		this.textWelcome = textWelcome;
 	}
 
-	public String getTextSearch() {
+	public String getTextSearch()
+	{
 		return textSearch;
 	}
 
-	public void setTextSearch(String textSearch) {
+	public void setTextSearch(String textSearch)
+	{
 		this.textSearch = textSearch;
 	}
 
-	public String getTextRemarks() {
+	public String getTextRemarks()
+	{
 		return textRemarks;
 	}
 
-	public void setTextRemarks(String textRemarks) {
+	public void setTextRemarks(String textRemarks)
+	{
 		this.textRemarks = textRemarks;
 	}
 
-	public String getTextCollaborations() {
+	public String getTextCollaborations()
+	{
 		return textCollaborations;
 	}
 
-	public void setTextCollaborations(String textCollaborations) {
+	public void setTextCollaborations(String textCollaborations)
+	{
 		this.textCollaborations = textCollaborations;
 	}
 
-	public List<VariantDTO> getPositionMutations() {
+	public List<VariantDTO> getPositionMutations()
+	{
 		return positionMutations;
 	}
-	public void setPositionMutations(List<VariantDTO> positionMutations) {
+
+	public void setPositionMutations(List<VariantDTO> positionMutations)
+	{
 		this.positionMutations = positionMutations;
 	}
-	public List<VariantDTO> getCodonMutations() {
+
+	public List<VariantDTO> getCodonMutations()
+	{
 		return codonMutations;
 	}
-	
-	public void setCodonMutations(List<VariantDTO> codonMutations) {
+
+	public void setCodonMutations(List<VariantDTO> codonMutations)
+	{
 		this.codonMutations = codonMutations;
 	}
 
-	public SearchModel(SearchPlugin controller) {
+	public SearchModel(SearchPlugin controller)
+	{
 		super(controller);
 	}
 

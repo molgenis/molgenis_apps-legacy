@@ -1,7 +1,5 @@
 package org.molgenis.compute.sysexecutor;
 
-
-
 public class EnvironmentVar
 {
 	public String fName = null;
