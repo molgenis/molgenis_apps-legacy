@@ -3,8 +3,8 @@ package org.molgenis.datatable.plugin;
 import java.io.OutputStream;
 
 import org.molgenis.datatable.model.ProtocolTable;
-import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -31,7 +31,7 @@ public class JQGridPluginProtocolFilterable extends EasyPluginController<JQGridP
 		{
 			// only this line changed ...
 			final Protocol p = db.query(Protocol.class).eq(Protocol.NAME, "TestProtocol").find().get(0);
-			tableView = new JQGridView("test", this, new ProtocolTable(db, p));
+			tableView = new JQGridView("test", this, new ProtocolTable(p));
 			tableView.setLabel("<b>Table:</b>Testing using the FilterableProtocolTable");
 		}
 		catch (final Exception e)

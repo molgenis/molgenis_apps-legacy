@@ -1,4 +1,4 @@
-package org.molgenis.datatable.view;
+package org.molgenis.datatable.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

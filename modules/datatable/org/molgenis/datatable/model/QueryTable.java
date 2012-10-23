@@ -16,9 +16,10 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -350,10 +351,4 @@ public class QueryTable extends AbstractFilterableTupleTable
 
 	}
 
-	@Override
-	public void setDb(Database db)
-	{
-		// TODO Auto-generated method stub
-
-	}
 }

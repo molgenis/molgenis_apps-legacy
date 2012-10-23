@@ -14,13 +14,13 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 import org.apache.log4j.Logger;
-import org.molgenis.datatable.model.CsvTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.impl.CsvTable;
 import org.molgenis.model.elements.Field;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;

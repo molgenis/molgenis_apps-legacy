@@ -24,7 +24,7 @@
 		<!-- <plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" 
 			/> <plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" 
 			/> -->
-		<plugin label="Upload" name="ExcelWizard" type="plugins.importwizard.ImportWizard" />
+		<plugin label="Upload" name="UploadWizard" type="plugins.importwizard.ImportWizard" />
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">
 				<form name="OntologyTerms" entity="OntologyTerm" />
