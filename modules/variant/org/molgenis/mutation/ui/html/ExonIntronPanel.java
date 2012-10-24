@@ -1,7 +1,6 @@
 package org.molgenis.mutation.ui.html;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,15 +16,21 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 929100596754279741L;
 
-	// TODO: make SCALE_FACTOR customizable
-	// private final double SCALE_FACTOR = 0.1;
-	private final double SCALE_FACTOR = 1;
-	private List<ExonDTO> exonDTOList = new ArrayList<ExonDTO>();
-	private boolean showNames = true;
-	private boolean showExons = true;
-	private boolean showIntrons = true;
-	private boolean showPosition = true;
-	private String baseUrl = "";
+//TODO: make SCALE_FACTOR customizable
+//	private final double SCALE_FACTOR          = 0.1;
+	private final double SCALE_FACTOR          = 1;
+	private List<ExonDTO> exonDTOList;
+	private boolean showNames                  = true;
+	private boolean showExons                  = true;
+	private boolean showIntrons                = true;
+	private boolean showPosition               = true;
+	private String baseUrl;
+
+	public ExonIntronPanel(List<ExonDTO> exonDTOList, String baseUrl)
+	{
+		this.exonDTOList = exonDTOList;
+		this.baseUrl     = baseUrl;
+	}
 
 	@Override
 	public String toHtml()
@@ -111,12 +116,7 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 		return result.toString();
 	}
 
-	public void setExons(List<ExonDTO> exons)
-	{
-		this.exonDTOList = exons;
-	}
-
-	public void setShowNames(boolean showNames)
+	public void setShowNames(boolean showNames) 
 	{
 		this.showNames = showNames;
 	}
@@ -134,10 +134,5 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 	public void setShowPosition(boolean showPosition)
 	{
 		this.showPosition = showPosition;
-	}
-
-	public void setBaseUrl(String baseUrl)
-	{
-		this.baseUrl = baseUrl;
 	}
 }

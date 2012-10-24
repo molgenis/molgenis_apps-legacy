@@ -29,6 +29,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.ExonDTO;
+import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationSearchCriteriaDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
@@ -37,7 +38,11 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.StatisticsService;
+import org.molgenis.mutation.ui.HtmlFormWrapper;
+import org.molgenis.mutation.ui.html.GenePanel;
+import org.molgenis.mutation.ui.html.GenomePanel;
 import org.molgenis.mutation.ui.html.MBrowse;
+import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -63,14 +68,20 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.searchService = ServiceLocator.instance().getSearchService();
 		this.statisticsService = ServiceLocator.instance().getStatisticsService();
 
-		this.getModel().setPatientPager("/mutation/patientPager.jsp");
-		this.getModel().setMutationPager("/mutation/mutationPager.jsp");
+		this.getModel().setPatientPager("/res/mutation/patientPager.jsp");
+		this.getModel().setMutationPager("/res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 		this.getModel().setMutationViewer("/org/molgenis/mutation/ui/search/mutation.ftl");
-		this.getModel().setMbrowse(new MBrowse());
-		this.getModel().getMbrowse().setTarget(this.getName());
-		// this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new
-		// ExpertSearchForm()));
+		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
+
+		this.getModel().setAction("init");
+
+		MBrowse mBrowse = new MBrowse();
+		mBrowse.setTarget(this.getName());
+
+		this.getModel().setMbrowse(mBrowse);
+		
+//		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
 	}
 
 	private ScreenView view;
@@ -123,6 +134,10 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			else if (this.getModel().getAction().equals("listAllPatients"))
 			{
 				this.listAllPatients(request);
+			}
+			else if (this.getModel().getAction().equals("showGene"))
+			{
+				this.handleShowGene(request);
 			}
 			else if (this.getModel().getAction().equals("showProteinDomain"))
 			{
@@ -194,6 +209,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			}
 			else
 			{
+				this.init();
 				this.setView(new FreemarkerView("init.ftl", this.getModel()));
 			}
 
@@ -444,6 +460,23 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		}
 	}
 
+	private void handleShowGene(Tuple request) throws Exception
+	{
+		if (StringUtils.isNotEmpty(request.getString("gene_id")))
+		{
+			Integer geneId  = request.getInt("gene_id");
+			
+			GeneDTO geneDTO = this.searchService.findGene(geneId);
+			
+			this.getModel().setGeneDTO(geneDTO);
+			GenePanel genePanel = this.getModel().getMbrowse().createGenePanel(geneDTO.getProteinDomainDTOList());
+			genePanel.setLabel("Browse the " + geneDTO.getName() + " gene");
+			this.getModel().setMBrowsePanel(genePanel);
+
+			this.setView(new FreemarkerView("init.ftl", this.getModel()));
+		}
+	}
+
 	private void handleShowProteinDomain(Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("domain_id"))) this.getModel().getMutationSearchCriteriaVO()
@@ -457,13 +490,12 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 				this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
-		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
+//		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
 
-		this.getModel().getMbrowse().setProteinDomainDTO(this.getModel().getProteinDomainDTO());
+//		if (this.getModel().getExonDTOList() == null)
+//			this.getModel().setExonDTOList(searchService.findAllExons());
 
-		if (this.getModel().getMbrowse().getExonDTOList() == null) this.getModel().getMbrowse()
-				.setExonDTOList(searchService.findAllExons());
-
+		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createExonIntronPanel(searchService.findAllExons()));
 		this.setView(new FreemarkerView("proteindomain.ftl", getModel()));
 	}
 
@@ -481,10 +513,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 		}
 		this.getModel().setHeader("");
-
-		this.getModel().getMbrowse().setExonDTO(this.getModel().getExonDTO());
-		this.getModel().getMbrowse().setMutationSummaryDTOList(this.getModel().getMutationSummaryDTOList());
-
+		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createSequencePanel(this.getModel().getExonDTO(), this.getModel().getMutationSummaryDTOList()));
 		this.setView(new FreemarkerView("exon.ftl", getModel()));
 	}
 
@@ -528,15 +557,14 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			this.searchService.setDatabase(db);
 			this.statisticsService.setDatabase(db);
 
-			this.getModel().setGeneDTO(searchService.findGene());
-
-			if (this.getModel().getMbrowse().getIsVisible())
+			if (this.getModel().getGeneDTO() == null)
 			{
-				if (this.getModel().getMbrowse().getGeneDTO() == null) this.getModel().getMbrowse()
-						.setGeneDTO(this.getModel().getGeneDTO());
+				this.getModel().setGeneDTO(searchService.findGene());
+			}
 
-				if (this.getModel().getMbrowse().getProteinDomainDTOList() == null) this.getModel().getMbrowse()
-						.setProteinDomainDTOList(searchService.findAllProteinDomains());
+			if ("init".equals(this.getModel().getAction()))
+			{
+				this.init();
 			}
 
 			this.getModel().setTextRemarks(cmsService.findContentByName("remarks"));
@@ -644,6 +672,31 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	//
 	// }
 
+	private void init()
+	{
+		if (this.getModel().getMbrowse().getIsVisible())
+		{
+			List<GeneDTO> geneDTOList = this.searchService.findAllGenes();
+			if (geneDTOList.size() == 1)
+			{
+				GeneDTO geneDTO = geneDTOList.get(0);
+				GenePanel genePanel = this.getModel().getMbrowse().createGenePanel(geneDTO.getProteinDomainDTOList());
+				genePanel.setLabel("Browse the " + geneDTO.getName() + " gene");
+				this.getModel().setMBrowsePanel(genePanel);
+			}
+			else
+			{
+				GenomePanel genomePanel = this.getModel().getMbrowse().createGenomePanel(geneDTOList);
+				genomePanel.setLabel("Browse the genome");
+				this.getModel().setMBrowsePanel(genomePanel);
+			}
+
+//				if (CollectionUtils.isEmpty(this.getModel().getGeneDTOList()))
+//					this.getModel().setGeneDTOList(this.searchService.findAllGenes());
+
+		}
+	}
+
 	private void populateSimpleSearchForm()
 	{
 		((HiddenInput) this.getModel().getSimpleSearchForm().get("__target")).setValue(this.getName());
@@ -725,15 +778,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		else
 			((SelectInput) expertSearchForm.get("type")).setValue("Select");
 
-		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
-		consequenceOptions.add(0, new ValueLabel("", "Select"));
-		for (String consequence : phenoService.findObservedValues("consequence"))
-			consequenceOptions.add(new ValueLabel(consequence, consequence));
-		((SelectInput) expertSearchForm.get("consequence")).setOptions(consequenceOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null) ((SelectInput) expertSearchForm
-				.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
-		else
-			((SelectInput) expertSearchForm.get("consequence")).setValue("Select");
+//		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
+//		consequenceOptions.add(0, new ValueLabel("", "Select"));
+//		for (String consequence : phenoService.findObservedValues("consequence"))
+//			consequenceOptions.add(new ValueLabel(consequence, consequence));
+//		((SelectInput) expertSearchForm.get("consequence")).setOptions(consequenceOptions);
+//		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
+//			((SelectInput) expertSearchForm.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
+//		else
+//			((SelectInput) expertSearchForm.get("consequence")).setValue("Select");
 
 		List<ValueLabel> domainOptions = new ArrayList<ValueLabel>();
 		domainOptions.add(new ValueLabel("", "Select"));
@@ -755,15 +808,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		else
 			((SelectInput) expertSearchForm.get("phenotype")).setValue("Select");
 
-		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
-		inheritanceOptions.add(0, new ValueLabel("", "Select"));
-		for (String inheritance : phenoService.findObservedValues("Inheritance"))
-			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
-		((SelectInput) expertSearchForm.get("inheritance")).setOptions(inheritanceOptions);
-		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null) ((SelectInput) expertSearchForm
-				.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
-		else
-			((SelectInput) expertSearchForm.get("inheritance")).setValue("Select");
+//		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
+//		inheritanceOptions.add(0, new ValueLabel("", "Select"));
+//		for (String inheritance : phenoService.findObservedValues("Inheritance"))
+//			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
+//		((SelectInput) expertSearchForm.get("inheritance")).setOptions(inheritanceOptions);
+//		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
+//			((SelectInput) expertSearchForm.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
+//		else
+//			((SelectInput) expertSearchForm.get("inheritance")).setValue("Select");
 	}
 
 	private void populateDisplayOptionsForm()

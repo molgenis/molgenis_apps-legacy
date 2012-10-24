@@ -19,6 +19,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 
 import org.molgenis.mutation.dto.ExonDTO;
+import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationSearchCriteriaDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
@@ -27,6 +28,7 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.variant.Exon;
+import org.molgenis.variant.Gene;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.ProteinDomain;
 import org.molgenis.variant.Variant;
@@ -826,11 +828,34 @@ public class SearchService extends MolgenisVariantService
 	}
 
 	/**
+	 * Find a gene by its id
+	 * @param id
+	 * @return GeneDTO
+	 */
+	public GeneDTO findGene(final Integer id)
+	{
+		try
+		{
+			Gene gene = this.em.find(Gene.class, id);
+
+			if (gene == null)
+				throw new SearchServiceException("No gene found for " + id);
+
+			return this.geneToGeneDTO(gene);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
+	/**
 	 * Find a protein domain by its id
 	 * 
 	 * @param id
 	 * @param noIntrons
-	 * @return protein domain
+	 * @return ProteinDomainDTO
 	 */
 	public ProteinDomainDTO findProteinDomain(final Integer id, final Boolean noIntrons)
 	{
