@@ -40,7 +40,7 @@ public class ImportWizard extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -6011550003937663086L;
 	private static final Logger LOG = Logger.getLogger(ImportWizard.class);
-	private static final int NR_WIZARD_PAGES = 4;
+	private static final int NR_WIZARD_PAGES = 5;
 	private ImportWizardModel model;
 
 	public ImportWizard(String name, ScreenController<?> parent)
@@ -73,11 +73,11 @@ public class ImportWizard extends PluginModel<Entity>
 
 		try
 		{
-			if (action.equals("screen0"))
+			if (action.equals("screen0")) // select input
 			{
 				this.model.setPage(0);
 			}
-			else if (action.equals("screen1"))
+			else if (action.equals("screen1")) // input validation report
 			{
 				this.model.setPage(1);
 				File file = request.getFile("upload");
@@ -85,17 +85,26 @@ public class ImportWizard extends PluginModel<Entity>
 				if (file == null) throw new IOException("input file is null");
 				validateInput(db, file);
 			}
-			else if (action.equals("screen2"))
+			else if (action.equals("screen2")) // select entity import options
 			{
 				this.model.setPage(2);
-				selectImportOptions();
-
 			}
-			else if (action.equals("screen3"))
+			else if (action.equals("screen3")) // select data import options
 			{
 				this.model.setPage(3);
-				String storageOption = request.getString("storage_option");
-				importData(db, storageOption);
+				String entityImportOption = request.getString("entity_option");
+				if (entityImportOption != null) this.model.setEntityImportOption(entityImportOption);
+			}
+			else if (action.equals("screen4")) // import summary
+			{
+				this.model.setPage(4);
+				String dataTargetImportOption = request.getString("data_target_option");
+				if (dataTargetImportOption != null) this.model.setDataTargetImportOption(dataTargetImportOption);
+				String dataFeatureImportOption = request.getString("data_feature_option");
+				if (dataFeatureImportOption != null) this.model.setDataFeatureImportOption(dataFeatureImportOption);
+
+				doImport(db, this.model.getEntityImportOption(), this.model.getDataTargetImportOption(),
+						this.model.getDataFeatureImportOption());
 			}
 			else if (action.equals("cancel") || action.equals("finish"))
 			{
@@ -126,10 +135,10 @@ public class ImportWizard extends PluginModel<Entity>
 		}
 
 		// validate entity sheets
-		ImportWizardExcelPrognosis iwep = new ImportWizardExcelPrognosis(db, file);
+		ImportWizardExcelPrognosis xlsValidator = new ImportWizardExcelPrognosis(db, file);
 
 		// remove data sheets
-		Map<String, Boolean> entitiesImportable = iwep.getSheetsImportable();
+		Map<String, Boolean> entitiesImportable = xlsValidator.getSheetsImportable();
 		for (Iterator<Entry<String, Boolean>> it = entitiesImportable.entrySet().iterator(); it.hasNext();)
 		{
 			if (it.next().getKey().toLowerCase().startsWith("dataset_")) it.remove();
@@ -145,7 +154,7 @@ public class ImportWizard extends PluginModel<Entity>
 			for (Boolean b : entitiesImportable.values())
 				ok = ok & b;
 
-			for (Collection<String> fields : iwep.getFieldsRequired().values())
+			for (Collection<String> fields : xlsValidator.getFieldsRequired().values())
 				ok = ok & (fields == null || fields.isEmpty());
 		}
 		if (dataSetsImportable != null)
@@ -158,42 +167,39 @@ public class ImportWizard extends PluginModel<Entity>
 		this.model.setFile(file);
 		this.model.setEntitiesImportable(entitiesImportable);
 		this.model.setDataImportable(dataSetsImportable);
-		this.model.setFieldsDetected(iwep.getFieldsImportable());
-		this.model.setFieldsRequired(iwep.getFieldsRequired());
-		this.model.setFieldsAvailable(iwep.getFieldsAvailable());
-		this.model.setFieldsUnknown(iwep.getFieldsUnknown());
+		this.model.setFieldsDetected(xlsValidator.getFieldsImportable());
+		this.model.setFieldsRequired(xlsValidator.getFieldsRequired());
+		this.model.setFieldsAvailable(xlsValidator.getFieldsAvailable());
+		this.model.setFieldsUnknown(xlsValidator.getFieldsUnknown());
 		this.model.setValidationError(!ok);
 	}
 
-	private void selectImportOptions()
-	{
-		LOG.warn("selectImportOptions() not implemented");
-	}
-
-	private void importData(Database db, String dbActionStr) throws Exception
+	private void doImport(Database db, String entityAction, String targetAction, String featureAction) throws Exception
 	{
 		try
 		{
 			// convert input to database action
-			DatabaseAction dbAction;
-			if (dbActionStr.equals("add")) dbAction = DatabaseAction.ADD;
-			else if (dbActionStr.equals("add_ignore")) dbAction = DatabaseAction.ADD_IGNORE_EXISTING;
-			else if (dbActionStr.equals("add_update")) dbAction = DatabaseAction.ADD_UPDATE_EXISTING;
-			else if (dbActionStr.equals("update")) dbAction = DatabaseAction.UPDATE;
-			else if (dbActionStr.equals("update_ignore")) dbAction = DatabaseAction.UPDATE_IGNORE_MISSING;
-			else
-				throw new IOException("unknown storage option: " + dbActionStr);
+			DatabaseAction entityDbAction = toDatabaseAction(entityAction);
+			if (entityDbAction == null) throw new IOException("unknown database action: " + entityAction);
 
-			ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, dbAction, "", true);
+			// import entities
+			ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, entityDbAction, "", true);
 
 			// import dataset instances
 			if (this.model.getDataImportable() != null)
 			{
+				DatabaseAction targetDbAction = toDatabaseAction(targetAction);
+				if (targetDbAction == null) throw new IOException("unknown database action: " + targetDbAction);
+
+				DatabaseAction featureDbAction = toDatabaseAction(featureAction);
+				if (featureDbAction == null) throw new IOException("unknown database action: " + featureDbAction);
+
 				List<String> dataSetSheetNames = new ArrayList<String>();
 				for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
 					if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
 
-				new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames);
+				new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames, targetDbAction,
+						featureDbAction);
 			}
 
 			this.model.setImportError(false);
@@ -203,6 +209,22 @@ public class ImportWizard extends PluginModel<Entity>
 			this.model.setImportError(true);
 			throw e;
 		}
+	}
+
+	private DatabaseAction toDatabaseAction(String actionStr)
+	{
+		// convert input to database action
+		DatabaseAction dbAction;
+
+		if (actionStr.equals("add")) dbAction = DatabaseAction.ADD;
+		else if (actionStr.equals("add_ignore")) dbAction = DatabaseAction.ADD_IGNORE_EXISTING;
+		else if (actionStr.equals("add_update")) dbAction = DatabaseAction.ADD_UPDATE_EXISTING;
+		else if (actionStr.equals("update")) dbAction = DatabaseAction.UPDATE;
+		else if (actionStr.equals("update_ignore")) dbAction = DatabaseAction.UPDATE_IGNORE_MISSING;
+		else
+			dbAction = null;
+
+		return dbAction;
 	}
 
 	private Map<String, Boolean> validateDataSetInstances(File file) throws BiffException, IOException
