@@ -16,6 +16,7 @@ import jxl.read.biff.BiffException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -44,7 +45,8 @@ public class DataSetImporter
 		this.db = db;
 	}
 
-	public void importXLS(File file, List<String> dataSetSheetNames) throws IOException, DatabaseException
+	public void importXLS(File file, List<String> dataSetSheetNames, DatabaseAction targetDbAction,
+			DatabaseAction featureDbAction) throws IOException, DatabaseException
 	{
 		// fixes the problem where, even though decimals have a "." they are
 		// still read as "," because of the locale!
@@ -64,7 +66,7 @@ public class DataSetImporter
 				{
 					String identifier = sheet.getName().substring(sheetPrefix.length());
 					File csvFile = convertToCSVFile(sheet, identifier);
-					importCSV(csvFile, identifier);
+					importCSV(csvFile, identifier, targetDbAction, featureDbAction);
 				}
 			}
 		}
@@ -79,7 +81,7 @@ public class DataSetImporter
 		}
 	}
 
-	private void importCSV(File file, String identifier) throws IOException, DatabaseException
+	private void importCSV(File file, String identifier, DatabaseAction targetDbAction, DatabaseAction featureDbAction) throws IOException, DatabaseException
 	{
 		LOG.info("importing dataset " + identifier + " from file " + file + "...");
 

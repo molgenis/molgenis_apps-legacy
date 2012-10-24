@@ -7,14 +7,20 @@ import java.util.Map;
 public class ImportWizardModel extends WizardModel
 {
 	private File file;
+
 	private Map<String, Boolean> entitiesImportable;
 	private Map<String, Boolean> dataImportable;
 	private Map<String, Collection<String>> fieldsDetected;
 	private Map<String, Collection<String>> fieldsUnknown;
 	private Map<String, Collection<String>> fieldsRequired;
 	private Map<String, Collection<String>> fieldsAvailable;
+
 	private boolean importError;
 	private boolean validationError;
+
+	private String entityImportOption;
+	private String dataFeatureImportOption;
+	private String dataTargetImportOption;
 
 	public ImportWizardModel(int nrPages)
 	{
@@ -109,5 +115,35 @@ public class ImportWizardModel extends WizardModel
 	public void setValidationError(boolean validationError)
 	{
 		this.validationError = validationError;
+	}
+
+	public String getEntityImportOption()
+	{
+		return entityImportOption;
+	}
+
+	public void setEntityImportOption(String entityImportOption)
+	{
+		this.entityImportOption = entityImportOption;
+	}
+
+	public String getDataFeatureImportOption()
+	{
+		return dataFeatureImportOption;
+	}
+
+	public void setDataFeatureImportOption(String dataFeatureImportOption)
+	{
+		this.dataFeatureImportOption = dataFeatureImportOption;
+	}
+
+	public String getDataTargetImportOption()
+	{
+		return dataTargetImportOption;
+	}
+
+	public void setDataTargetImportOption(String dataTargetImportOption)
+	{
+		this.dataTargetImportOption = dataTargetImportOption;
 	}
 }
