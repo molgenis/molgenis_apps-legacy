@@ -14,6 +14,7 @@ public class ImportWizardModel extends WizardModel
 	private Map<String, Collection<String>> fieldsRequired;
 	private Map<String, Collection<String>> fieldsAvailable;
 	private boolean importError;
+	private boolean validationError;
 
 	public ImportWizardModel(int nrPages)
 	{
@@ -98,5 +99,15 @@ public class ImportWizardModel extends WizardModel
 	public void setImportError(boolean importError)
 	{
 		this.importError = importError;
+	}
+
+	public boolean isValidationError()
+	{
+		return validationError;
+	}
+
+	public void setValidationError(boolean validationError)
+	{
+		this.validationError = validationError;
 	}
 }

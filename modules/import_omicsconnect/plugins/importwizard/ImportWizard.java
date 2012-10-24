@@ -97,6 +97,10 @@ public class ImportWizard extends PluginModel<Entity>
 				String storageOption = request.getString("storage_option");
 				importData(db, storageOption);
 			}
+			else if (action.equals("cancel") || action.equals("finish"))
+			{
+				this.model = new ImportWizardModel(NR_WIZARD_PAGES);
+			}
 			else
 			{
 				LOG.warn("unknown action: " + action);
@@ -104,7 +108,6 @@ public class ImportWizard extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
-			this.model.setImportError(true);
 			LOG.warn("Exception occurred importing data", e);
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
@@ -133,9 +136,13 @@ public class ImportWizard extends PluginModel<Entity>
 
 		}
 
+		Map<String, Boolean> dataSetsImportable = validateDataSetInstances(file);
+
 		// determine if validation succeeded
 		boolean ok = true;
 		for (Boolean b : entitiesImportable.values())
+			ok = ok & b;
+		for (Boolean b : dataSetsImportable.values())
 			ok = ok & b;
 		for (Collection<String> fields : iwep.getFieldsRequired().values())
 			ok = ok & (fields == null || fields.isEmpty());
@@ -143,12 +150,12 @@ public class ImportWizard extends PluginModel<Entity>
 		// if no error, set prognosis, set file, and continue
 		this.model.setFile(file);
 		this.model.setEntitiesImportable(entitiesImportable);
-		this.model.setDataImportable(validateDataSetInstances(file));
+		this.model.setDataImportable(dataSetsImportable);
 		this.model.setFieldsDetected(iwep.getFieldsImportable());
 		this.model.setFieldsRequired(iwep.getFieldsRequired());
 		this.model.setFieldsAvailable(iwep.getFieldsAvailable());
 		this.model.setFieldsUnknown(iwep.getFieldsUnknown());
-		this.model.setDisableNext(!ok);
+		this.model.setValidationError(!ok);
 	}
 
 	private void selectImportOptions()
@@ -158,24 +165,34 @@ public class ImportWizard extends PluginModel<Entity>
 
 	private void importData(Database db, String dbActionStr) throws Exception
 	{
-		// convert input to database action
-		DatabaseAction dbAction;
-		if (dbActionStr.equals("add")) dbAction = DatabaseAction.ADD;
-		else if (dbActionStr.equals("add_ignore")) dbAction = DatabaseAction.ADD_IGNORE_EXISTING;
-		else if (dbActionStr.equals("add_update")) dbAction = DatabaseAction.ADD_UPDATE_EXISTING;
-		else if (dbActionStr.equals("update")) dbAction = DatabaseAction.UPDATE;
-		else if (dbActionStr.equals("update_ignore")) dbAction = DatabaseAction.UPDATE_IGNORE_MISSING;
-		else
-			throw new IOException("unknown storage option: " + dbActionStr);
+		try
+		{
+			// convert input to database action
+			DatabaseAction dbAction;
+			if (dbActionStr.equals("add")) dbAction = DatabaseAction.ADD;
+			else if (dbActionStr.equals("add_ignore")) dbAction = DatabaseAction.ADD_IGNORE_EXISTING;
+			else if (dbActionStr.equals("add_update")) dbAction = DatabaseAction.ADD_UPDATE_EXISTING;
+			else if (dbActionStr.equals("update")) dbAction = DatabaseAction.UPDATE;
+			else if (dbActionStr.equals("update_ignore")) dbAction = DatabaseAction.UPDATE_IGNORE_MISSING;
+			else
+				throw new IOException("unknown storage option: " + dbActionStr);
 
-		ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, dbAction, "", true);
+			ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, dbAction, "", true);
 
-		// import dataset instances
-		List<String> dataSetSheetNames = new ArrayList<String>();
-		for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
-			if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
+			// import dataset instances
+			List<String> dataSetSheetNames = new ArrayList<String>();
+			for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
+				if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
 
-		new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames);
+			new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames);
+
+			this.model.setImportError(false);
+		}
+		catch (Exception e)
+		{
+			this.model.setImportError(true);
+			throw e;
+		}
 	}
 
 	private Map<String, Boolean> validateDataSetInstances(File file) throws BiffException, IOException

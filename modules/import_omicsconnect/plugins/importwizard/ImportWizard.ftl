@@ -35,21 +35,21 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
-
+<div style="width: 1140px; margin-left: auto; margin-right: auto;">
 <#if model.page == 0>
-<h1>Data import wizard</h1>
-<input type="file" name="upload"/>
-<a href="clusterdemo/ExampleExcel.xls"><img src="clusterdemo/excel.gif"/></a><label>Download example Excel file</label>
+<h2>Data Import Wizard - Step ${model.page + 1} of ${model.nrPages}</h2>
+<p>Upload <a href="generated-doc/fileformat.html" target="_blank">OmicsConnect</a> data file</p>
+<input type="file" name="upload" style="width: 100%;"/>
 <@controls screen.name model />
 <#elseif model.page == 1>
-<h1>Validation Check</h1>
+<h2>Validation Check - Step ${model.page + 1} of ${model.nrPages}</h2>
+<#if model.dataImportable??>
 <h3>Data</h3>
-<table class="listtable">
+<table class="listtable" style="width: 25%;">
 	<tr class="form_listrow0">
 		<td>Name</td>
-		<td>Importable?</td>
+		<td style="width: 25%; text-align: center;">Importable</td>
 	</tr>
-	
 	<#list model.dataImportable?keys as name>
 	<tr class="form_listrow1">
 		<td>${name}</td>
@@ -57,15 +57,17 @@
 	</tr>
 	</#list>
 </table>
+</#if>
+<#if model.entitiesImportable??>
 <h3>Entities</h3>
-<table class="listtable">
+<table class="listtable" style="width: 25%;">
 	<tr class="form_listrow0">
 		<td>Name</td>
-		<td>Importable?</td>
+		<td style="width: 25%; text-align: center;">Importable</td>
 	</tr>
 	<#list model.entitiesImportable?keys as entity>
 	<tr class="form_listrow1">
-		<td><#if model.entitiesImportable[entity] == true><a href="generated-doc/fileformat.html#${entity}_entity">${entity}</a><#else>${entity}</#if></td>
+		<td><#if model.entitiesImportable[entity] == true><a href="generated-doc/fileformat.html#${entity}_entity" target="_blank">${entity}</a><#else>${entity}</#if></td>
 		<td><#if model.entitiesImportable[entity] == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if></td>
 	</tr>
 	</#list>
@@ -91,28 +93,48 @@
 	</#if>
 </#list>
 </table>
-<#if model.importError>
+</#if>
+<#if model.validationError>
 <h3>Validation Error</h3>
 An error occurred validating the input data. Please resolve the errors and try again.   
 </#if>
-<@controls screen.name model />
+<@controls screen.name model model.validationError/>
 <#elseif model.page == 2>
-<h1>Import options</h1>
-<input type="radio" name="storage_option" value="add" checked>Add<br>
-<input type="radio" name="storage_option" value="add_ignore">Add (ignore existing)<br>
-<input type="radio" name="storage_option" value="add_update">Add (update existing)<br>
-<input type="radio" name="storage_option" value="update">Update<br>
-<input type="radio" name="storage_option" value="update_ignore">Update (ignore missing)<br>
+<h2>Import options - Step ${model.page + 1} of ${model.nrPages}</h2>
+<table class="listtable" style="width: 50%;">
+	<tr>
+		<td><input type="radio" name="storage_option" value="add" checked>Add</td>
+		<td>Importer adds new entities or fails if entity exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="add_ignore">Add &amp; Ignore</td>
+		<td>Importer adds new entities or skips if entity exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="add_update">Add &amp; Update</td>
+		<td>Importer adds new entities or updates existing entities<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="update">Update<br></td>
+		<td>Importer updates existing entities or fails if entity does not exist</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="update">Update &amp; Ignore<br></td>
+		<td>Importer updates existing entities or skips if entity does not exist</td>
+	</tr>
+</table>
+
 <@controls screen.name model />
 <#elseif model.page == 3>
-
-<br>
+<h2>Import Summary - Step ${model.page + 1} of ${model.nrPages}</h2>
 <#if model.importError>
+<h3>Import Error</h3>
 Your import failed. See the above message for details. Please go back to the first screen and upload a new file.
 <#else>
 <p class="successmessage">Your import was successful.</p>
 </#if>
-<@controls screen.name model />
+</div>
+<@controls screen.name model model.importError/>
 </#if>
 <#--end of your plugin-->	
 			</div>
@@ -120,15 +142,16 @@ Your import failed. See the above message for details. Please go back to the fir
 	</div>
 </form>
 </#macro>
-<#macro controls form model>
-<div align="center">
-<input type="submit" value="&#60; Back" onclick="document.forms.${form}.__action.value = 'screen${model.page - 1}'; document.forms.${form}.submit();"<#if model.disableBack> disabled</#if><#if model.firstPage> hidden</#if>/>
-<input type="submit" value="Next &#62;" onclick="document.forms.${form}.__action.value = 'screen${model.page + 1}'; document.forms.${form}.submit();"<#if model.disableNext> disabled</#if><#if model.lastPage> hidden</#if>/>
+<#-- wizard button strip macro -->
+<#macro controls form model disableNext=false>
+<div align="center" style="padding: 10px;">
+<input type="submit" value="&#60; Back" onclick="document.forms.${form}.__action.value = 'screen${model.page - 1}'; document.forms.${form}.submit();"<#if model.firstPage> hidden</#if>/>
+<input type="submit" value="Next &#62;" onclick="document.forms.${form}.__action.value = 'screen${model.page + 1}'; document.forms.${form}.submit();"<#if disableNext> disabled</#if><#if model.lastPage> hidden</#if>/>
 <#if !model.firstPage && !model.lastPage>
-<input type="submit" value="Cancel" onclick="document.forms.${form}.__action.value = 'screen0'; document.forms.${form}.submit();"/>
+<input type="submit" value="Cancel" onclick="document.forms.${form}.__action.value = 'cancel'; document.forms.${form}.submit();"/>
 </#if>
 <#if model.lastPage>
-<input type="submit" value="Finish" onclick="document.forms.${form}.__action.value = 'screen0'; document.forms.${form}.submit();"/>
+<input type="submit" value="Finish" onclick="document.forms.${form}.__action.value = 'finish'; document.forms.${form}.submit();"/>
 </#if>
 </div>
 </#macro>
