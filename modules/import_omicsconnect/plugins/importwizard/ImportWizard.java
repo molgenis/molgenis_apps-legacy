@@ -10,16 +10,22 @@ package plugins.importwizard;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -32,18 +38,20 @@ import app.ImportWizardExcelPrognosis;
 
 public class ImportWizard extends PluginModel<Entity>
 {
-
 	private static final long serialVersionUID = -6011550003937663086L;
-	private ImportWizardModel model = new ImportWizardModel();
-
-	public ImportWizardModel getMyModel()
-	{
-		return model;
-	}
+	private static final Logger LOG = Logger.getLogger(ImportWizard.class);
+	private static final int NR_WIZARD_PAGES = 4;
+	private ImportWizardModel model;
 
 	public ImportWizard(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+		this.model = new ImportWizardModel(NR_WIZARD_PAGES);
+	}
+
+	public ImportWizardModel getMyModel()
+	{
+		return model;
 	}
 
 	@Override
@@ -60,91 +68,163 @@ public class ImportWizard extends PluginModel<Entity>
 
 	public void handleRequest(Database db, Tuple request)
 	{
-		if (request.getString("__action") != null)
+		String action = request.getString("__action");
+		if (action == null) return;
+
+		try
 		{
-
-			try
+			if (action.equals("screen0"))
 			{
-
-				// BUTTONS ON SCREEN ONE
-				if (request.getString("__action").equals("upload"))
-				{
-
-					// get uploaded file and do checks
-					File file = request.getFile("upload");
-					if (file == null)
-					{
-						throw new Exception("No file selected.");
-					}
-					else if (!file.getName().endsWith(".xls"))
-					{
-						throw new Exception("File does not end with '.xls', other formats are not supported.");
-					}
-
-					// run prognosis
-					ImportWizardExcelPrognosis iwep = new ImportWizardExcelPrognosis(file);
-					Map<String, Boolean> sheetsImportable = iwep.getSheetsImportable();
-
-					if (sheetsImportable.containsKey("dataset") && sheetsImportable.get("dataset") == true)
-					{
-						// filter prognosis by checking dataset instances
-						List<String> datasetSheetNames = getDatasetSheetNames(file);
-						for (String datasetSheetName : datasetSheetNames)
-						{
-							if (sheetsImportable.containsKey(datasetSheetName)) sheetsImportable.put(datasetSheetName,
-									true);
-						}
-					}
-
-					// if no error, set prognosis, set file, and continue
-					this.model.setIwep(iwep);
-					this.model.setCurrentFile(file);
-					this.model.setWhichScreen("two");
-
-					// BUTTONS ON SCREEN TWO
-				}
-				else if (request.getString("__action").equals("toScreenOne"))
-				{
-
-					// goto screen one
-					this.model.setWhichScreen("one");
-
-					// reset stuff
-					this.model.setCurrentFile(null);
-					this.model.setIwep(null);
-					this.model.setImportSuccess(false);
-
-				}
-				else if (request.getString("__action").equals("import"))
-				{
-
-					// goto screen three
-					this.model.setWhichScreen("three");
-
-					// set import success to false (again), to be sure
-					this.model.setImportSuccess(false);
-					ExcelImport.importAll(this.model.getCurrentFile(), db, new SimpleTuple());
-
-					// import dataset instances
-
-					// when no error, set success to true
-					this.model.setImportSuccess(true);
-				}
+				this.model.setPage(0);
+			}
+			else if (action.equals("screen1"))
+			{
+				this.model.setPage(1);
+				File file = request.getFile("upload");
+				if (file == null) file = model.getFile();
+				if (file == null) throw new IOException("input file is null");
+				validateInput(db, file);
+			}
+			else if (action.equals("screen2"))
+			{
+				this.model.setPage(2);
+				selectImportOptions();
 
 			}
-			catch (Exception e)
+			else if (action.equals("screen3"))
 			{
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+				this.model.setPage(3);
+				String storageOption = request.getString("storage_option");
+				importData(db, storageOption);
 			}
+			else if (action.equals("cancel") || action.equals("finish"))
+			{
+				this.model = new ImportWizardModel(NR_WIZARD_PAGES);
+			}
+			else
+			{
+				LOG.warn("unknown action: " + action);
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.warn("Exception occurred importing data", e);
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
 
-	private List<String> getDatasetSheetNames(File file) throws BiffException, IOException
+	private void validateInput(Database db, File file) throws Exception
 	{
+		// get uploaded file and do checks
+		if (file == null)
+		{
+			throw new Exception("No file selected.");
+		}
+		if (!file.getName().endsWith(".xls"))
+		{
+			throw new Exception("File does not end with '.xls', other formats are not supported.");
+		}
+
+		// validate entity sheets
+		ImportWizardExcelPrognosis iwep = new ImportWizardExcelPrognosis(db, file);
+
+		// remove data sheets
+		Map<String, Boolean> entitiesImportable = iwep.getSheetsImportable();
+		for (Iterator<Entry<String, Boolean>> it = entitiesImportable.entrySet().iterator(); it.hasNext();)
+		{
+			if (it.next().getKey().toLowerCase().startsWith("dataset_")) it.remove();
+
+		}
+
+		Map<String, Boolean> dataSetsImportable = validateDataSetInstances(file);
+
+		// determine if validation succeeded
+		boolean ok = true;
+		if (entitiesImportable != null)
+		{
+			for (Boolean b : entitiesImportable.values())
+				ok = ok & b;
+
+			for (Collection<String> fields : iwep.getFieldsRequired().values())
+				ok = ok & (fields == null || fields.isEmpty());
+		}
+		if (dataSetsImportable != null)
+		{
+			for (Boolean b : dataSetsImportable.values())
+				ok = ok & b;
+		}
+
+		// if no error, set prognosis, set file, and continue
+		this.model.setFile(file);
+		this.model.setEntitiesImportable(entitiesImportable);
+		this.model.setDataImportable(dataSetsImportable);
+		this.model.setFieldsDetected(iwep.getFieldsImportable());
+		this.model.setFieldsRequired(iwep.getFieldsRequired());
+		this.model.setFieldsAvailable(iwep.getFieldsAvailable());
+		this.model.setFieldsUnknown(iwep.getFieldsUnknown());
+		this.model.setValidationError(!ok);
+	}
+
+	private void selectImportOptions()
+	{
+		LOG.warn("selectImportOptions() not implemented");
+	}
+
+	private void importData(Database db, String dbActionStr) throws Exception
+	{
+		try
+		{
+			// convert input to database action
+			DatabaseAction dbAction;
+			if (dbActionStr.equals("add")) dbAction = DatabaseAction.ADD;
+			else if (dbActionStr.equals("add_ignore")) dbAction = DatabaseAction.ADD_IGNORE_EXISTING;
+			else if (dbActionStr.equals("add_update")) dbAction = DatabaseAction.ADD_UPDATE_EXISTING;
+			else if (dbActionStr.equals("update")) dbAction = DatabaseAction.UPDATE;
+			else if (dbActionStr.equals("update_ignore")) dbAction = DatabaseAction.UPDATE_IGNORE_MISSING;
+			else
+				throw new IOException("unknown storage option: " + dbActionStr);
+
+			ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, dbAction, "", true);
+
+			// import dataset instances
+			if (this.model.getDataImportable() != null)
+			{
+				List<String> dataSetSheetNames = new ArrayList<String>();
+				for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
+					if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
+
+				new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames);
+			}
+
+			this.model.setImportError(false);
+		}
+		catch (Exception e)
+		{
+			this.model.setImportError(true);
+			throw e;
+		}
+	}
+
+	private Map<String, Boolean> validateDataSetInstances(File file) throws BiffException, IOException
+	{
+		// get dataset entity names
 		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
+		if (sheet == null) return null;
+
+		// get sheet names
+		String[] sheetNames = Workbook.getWorkbook(file).getSheetNames();
+		List<String> dataSetSheets = new ArrayList<String>();
+		for (String sheetName : sheetNames)
+		{
+			if (sheetName.toLowerCase().startsWith("dataset_"))
+			{
+				String dataSetName = sheetName.substring("dataset_".length());
+				dataSetSheets.add(dataSetName);
+			}
+		}
+
 		int rows = sheet.getRows();
-		if (rows <= 1) return Collections.emptyList();
+		if (rows <= 1) return Collections.emptyMap();
 
 		List<String> nameList = new ArrayList<String>();
 		Cell[] cells = sheet.getRow(0);
@@ -156,11 +236,18 @@ public class ImportWizard extends PluginModel<Entity>
 				for (int row = 1; row < rows; ++row)
 				{
 					String datasetName = sheet.getCell(col, row).getContents();
-					nameList.add("dataset_" + datasetName);
+					nameList.add(datasetName.toLowerCase());
 				}
 			}
 		}
-		return nameList;
+
+		Map<String, Boolean> dataSetValidationMap = new LinkedHashMap<String, Boolean>();
+		for (String dataSetSheet : dataSetSheets)
+		{
+			dataSetValidationMap.put(dataSetSheet, nameList.contains(dataSetSheet));
+		}
+
+		return dataSetValidationMap;
 	}
 
 	@Override

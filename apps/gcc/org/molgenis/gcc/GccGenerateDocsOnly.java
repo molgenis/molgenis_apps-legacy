@@ -7,11 +7,10 @@ public class GccGenerateDocsOnly
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/gcc/org/molgenis/gcc/gcc.properties",
-				DotDocModuleDependencyGen.class).generate();
-		
-//		new Molgenis("modules/gcc/org/molgenis/gcc/gcc.properties",
-//				DotDocGen.class, FileFormatDocGen.class,
-//				DotDocMinimalGen.class, ObjectModelDocGen.class).generate();
+		new Molgenis("apps/gcc/org/molgenis/gcc/gcc.properties", DotDocModuleDependencyGen.class).generate();
+
+		// new Molgenis("modules/gcc/org/molgenis/gcc/gcc.properties",
+		// DotDocGen.class, FileFormatDocGen.class,
+		// DotDocMinimalGen.class, ObjectModelDocGen.class).generate();
 	}
 }

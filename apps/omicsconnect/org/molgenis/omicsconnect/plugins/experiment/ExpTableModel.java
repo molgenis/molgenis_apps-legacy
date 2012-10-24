@@ -7,30 +7,30 @@ import org.molgenis.organization.Study;
 
 //mac shift o 
 
-
 public class ExpTableModel
 {
-	private List <Study> studies;
-	
-	private List <Panel> panels;
+	private List<Study> studies;
 
-	public List<Study> getStudies() {
+	private List<Panel> panels;
+
+	public List<Study> getStudies()
+	{
 		return studies;
 	}
 
-	public void setStudies(List<Study> studies) {
+	public void setStudies(List<Study> studies)
+	{
 		this.studies = studies;
 	}
 
-	public List<Panel> getPanels() {
+	public List<Panel> getPanels()
+	{
 		return panels;
 	}
 
-	public void setPanels(List<Panel> panels) {
+	public void setPanels(List<Panel> panels)
+	{
 		this.panels = panels;
 	}
-	
-	
-	
-	
+
 }

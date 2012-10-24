@@ -1,6 +1,5 @@
 package org.molgenis.omicsconnect;
 
-
 import org.molgenis.Molgenis;
 
 public class OmicsConnectUpdateDatabase

@@ -18,7 +18,7 @@ import org.molgenis.util.Tuple;
 public class ScrumHeader extends PluginModel<Entity>
 {
 	private String userLogin = new String();
-	
+
 	public ScrumHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -39,14 +39,18 @@ public class ScrumHeader extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		
+
 		String action = request.getString("__action");
-		if ("doLogout".equals(request.getAction())) {
-				try {
-					getLogin().logout(db);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		if ("doLogout".equals(request.getAction()))
+		{
+			try
+			{
+				getLogin().logout(db);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -56,23 +60,28 @@ public class ScrumHeader extends PluginModel<Entity>
 	{
 		//
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{
 		// always visible
 		return true;
 	}
-	
-	public String getUserLogin() {
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+
+	public String getUserLogin()
+	{
+		if (this.getLogin().isAuthenticated())
+		{
+			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Welcome "
+					+ ((DatabaseLogin) this.getLogin()).getFullUserName() + "</a>";
 			this.userLogin += " | ";
-			this.userLogin += "<a href='molgenis.do?__target=ScrumHeader&__action=doLogout'>" + "Exit " + "</a>";		
-		} else {
+			this.userLogin += "<a href='molgenis.do?__target=ScrumHeader&__action=doLogout'>" + "Exit " + "</a>";
+		}
+		else
+		{
 			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Login" + "</a>";
 		}
 		return userLogin;
-		
+
 	}
 }

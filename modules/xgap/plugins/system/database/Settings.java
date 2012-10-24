@@ -113,87 +113,106 @@ public class Settings extends PluginModel
 			this.setMessages(new ScreenMessage(e.getMessage(), false));
 		}
 	}
-	
+
 	public static ArrayList<String> deleteExampleInvestigation(String name, Database db)
 	{
-		
-		ArrayList<String> report = new ArrayList<String>();
-		report.add("Starting to delete example investigation '"+name+"'..");
-	
-		try{
 
-			List<Investigation> invList = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, name));
-			if(invList.size() == 0)
+		ArrayList<String> report = new ArrayList<String>();
+		report.add("Starting to delete example investigation '" + name + "'..");
+
+		try
+		{
+
+			List<Investigation> invList = db.find(Investigation.class, new QueryRule(Investigation.NAME,
+					Operator.EQUALS, name));
+			if (invList.size() == 0)
 			{
 				throw new Exception("Investigation named '" + name + "' has NOT been found!! aborting..");
 			}
 			report.add("Investigation '" + name + "' has been found..");
-			
+
 			Investigation inv = invList.get(0);
-			String invName = inv.getName(); //not really needed but whatever :)
-			
-			List<Panel> panels = db.find(Panel.class, new QueryRule(Panel.INVESTIGATION_NAME, Operator.EQUALS, invName));
+			String invName = inv.getName(); // not really needed but whatever :)
+
+			List<Panel> panels = db
+					.find(Panel.class, new QueryRule(Panel.INVESTIGATION_NAME, Operator.EQUALS, invName));
 			report.add(db.remove(panels) + " panels deleted");
-			
-			List<Marker> markers = db.find(Marker.class, new QueryRule(Marker.INVESTIGATION_NAME, Operator.EQUALS, invName));
+
+			List<Marker> markers = db.find(Marker.class, new QueryRule(Marker.INVESTIGATION_NAME, Operator.EQUALS,
+					invName));
 			report.add(db.remove(markers) + " markers deleted");
-			
-			List<Chromosome> chromosomes = db.find(Chromosome.class, new QueryRule(Chromosome.INVESTIGATION_NAME, Operator.EQUALS, invName));
+
+			List<Chromosome> chromosomes = db.find(Chromosome.class, new QueryRule(Chromosome.INVESTIGATION_NAME,
+					Operator.EQUALS, invName));
 			report.add(db.remove(chromosomes) + " chromosomes deleted");
-			
-			List<Individual> individuals = db.find(Individual.class, new QueryRule(Individual.INVESTIGATION_NAME, Operator.EQUALS, invName));
+
+			List<Individual> individuals = db.find(Individual.class, new QueryRule(Individual.INVESTIGATION_NAME,
+					Operator.EQUALS, invName));
 			report.add(db.remove(individuals) + " individuals deleted");
-			
-			List<Metabolite> metabolites = db.find(Metabolite.class, new QueryRule(Metabolite.INVESTIGATION_NAME, Operator.EQUALS, invName));
+
+			List<Metabolite> metabolites = db.find(Metabolite.class, new QueryRule(Metabolite.INVESTIGATION_NAME,
+					Operator.EQUALS, invName));
 			report.add(db.remove(metabolites) + " metabolites deleted");
-			
+
 			List<Data> data = db.find(Data.class, new QueryRule(Data.INVESTIGATION_NAME, Operator.EQUALS, invName));
-			
+
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
-			for(Data d : data){
-				
-				//this is the only link between "cluster metadata" and the example that we need to break
-				//re-importing the example dataset will fail on the last step where the "cluster metadata" is added:
-				//to restore to old situation, add the 2 'DataValue' records manually
-				report.add("Deleting tag for '"+d.getName()+"' first..");
-				List<DataValue> dvlist = db.find(DataValue.class, new QueryRule(DataValue.VALUE_NAME, Operator.EQUALS, d.getName()));
+			for (Data d : data)
+			{
+
+				// this is the only link between "cluster metadata" and the
+				// example that we need to break
+				// re-importing the example dataset will fail on the last step
+				// where the "cluster metadata" is added:
+				// to restore to old situation, add the 2 'DataValue' records
+				// manually
+				report.add("Deleting tag for '" + d.getName() + "' first..");
+				List<DataValue> dvlist = db.find(DataValue.class, new QueryRule(DataValue.VALUE_NAME, Operator.EQUALS,
+						d.getName()));
 				report.add(db.remove(dvlist) + " datavalues deleted");
-				
-				try{
-				dmh.deleteDataMatrixSource(d, db);
-				report.add("Data source for '"+d.getName()+"' deleted..");
-				}catch(Exception e){
-					report.add("Data source for '"+d.getName()+"' not deleted due to: " + e.getMessage());
+
+				try
+				{
+					dmh.deleteDataMatrixSource(d, db);
+					report.add("Data source for '" + d.getName() + "' deleted..");
+				}
+				catch (Exception e)
+				{
+					report.add("Data source for '" + d.getName() + "' not deleted due to: " + e.getMessage());
 					report.add("Continueing...");
 				}
 				db.remove(d);
-				report.add("Data matrix '"+d.getName()+"' deleted");
+				report.add("Data matrix '" + d.getName() + "' deleted");
 			}
 
-			List<OntologyTerm> onto = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE, "xgap_rqtl_straintype_"));
+			List<OntologyTerm> onto = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE,
+					"xgap_rqtl_straintype_"));
 			report.add(db.remove(onto) + " ontologyterms (containing 'xgap_rqtl_straintype_') deleted");
-			
-			List<OntologyTerm> onto2 = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE, "_matrix"));
+
+			List<OntologyTerm> onto2 = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE,
+					"_matrix"));
 			report.add(db.remove(onto2) + " ontologyterms (containing '_matrix') deleted");
-			
-			List<Species> spec = db.find(Species.class, new QueryRule(Species.NAME, Operator.EQUALS, "Arabidopsis_thaliana"));
+
+			List<Species> spec = db.find(Species.class, new QueryRule(Species.NAME, Operator.EQUALS,
+					"Arabidopsis_thaliana"));
 			report.add(db.remove(spec) + " species (named 'Arabidopsis_thaliana') deleted");
-			
-			List<InvestigationFile> files = db.find(InvestigationFile.class, new QueryRule(InvestigationFile.INVESTIGATION_NAME, Operator.EQUALS, invName));
+
+			List<InvestigationFile> files = db.find(InvestigationFile.class, new QueryRule(
+					InvestigationFile.INVESTIGATION_NAME, Operator.EQUALS, invName));
 			report.add(db.remove(files) + " files removed (Plink example data)");
-			
+
 			report.add(db.remove(inv) + " investigations deleted");
-			
+
 			report.add("All done!");
-			
+
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			report.add("ERROR: " + e.getMessage());
 		}
-		
+
 		return report;
-		
+
 	}
 
 	@Override

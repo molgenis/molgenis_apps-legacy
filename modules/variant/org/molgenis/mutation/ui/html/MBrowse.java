@@ -22,11 +22,13 @@ public class MBrowse implements Serializable
 		this.isVisible = true;
 	}
 
-	public String getTarget() {
+	public String getTarget()
+	{
 		return target;
 	}
 
-	public void setTarget(String target) {
+	public void setTarget(String target)
+	{
 		this.target = target;
 	}
 
@@ -34,7 +36,8 @@ public class MBrowse implements Serializable
 		return showNames;
 	}
 
-	public void setShowNames(Boolean showNames) {
+	public void setShowNames(Boolean showNames)
+	{
 		this.showNames = showNames;
 	}
 

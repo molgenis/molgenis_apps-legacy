@@ -12,28 +12,28 @@ public class BatchEntitySelectForm extends Container
 	public BatchEntitySelectForm()
 	{
 		Table entitiesDbTable;
-		entitiesDbTable          = new Table("entitiesDbTable", "Entities in Database");
+		entitiesDbTable = new Table("entitiesDbTable", "Entities in Database");
 		entitiesDbTable.addColumn("Select");
 		entitiesDbTable.addColumn("Entities");
 
-		ActionInput addButton    = new ActionInput("Add", "", "Add selected");
+		ActionInput addButton = new ActionInput("Add", "", "Add selected");
 
 		Table entitiesBatchTable;
-		entitiesBatchTable       = new Table("entitiesBatchTable", "Entities in Batch");
+		entitiesBatchTable = new Table("entitiesBatchTable", "Entities in Batch");
 		entitiesBatchTable.addColumn("Select");
 		entitiesBatchTable.addColumn("Entities");
-		
+
 		ActionInput removeButton = new ActionInput("Remove", "", "Remove selected");
-		
+
 		ActionInput clearButton = new ActionInput("Clear", "", "Clear");
 
-		DivPanel panel           = new DivPanel("panel", "");
+		DivPanel panel = new DivPanel("panel", "");
 		panel.add(entitiesDbTable);
 		panel.add(addButton);
 		panel.add(entitiesBatchTable);
 		panel.add(removeButton);
 		panel.add(clearButton);
-		
+
 		this.add(panel);
 	}
 }

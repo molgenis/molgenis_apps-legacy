@@ -127,7 +127,7 @@ public class LifeLinesMedicatieListener extends ImportTupleLoader
 				storeValuesInDatabase();
 				batchCount = 0;
 			}
-			
+
 			line_number++;
 		}
 

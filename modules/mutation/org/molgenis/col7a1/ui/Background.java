@@ -32,7 +32,7 @@ public class Background extends EasyPluginController<BackgroundModel>
 		super(name, parent);
 		this.setModel(new BackgroundModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Background.ftl", getModel());
@@ -45,16 +45,16 @@ public class Background extends EasyPluginController<BackgroundModel>
 		{
 			this.mutationService = new MutationService();
 			this.mutationService.setDatabase(db);
-			this.patientService  = new PatientService();
+			this.patientService = new PatientService();
 			this.patientService.setDatabase(db);
 			this.getModel().setNumMutations(this.mutationService.getNumMutations());
 			this.getModel().setNumPatients(this.patientService.getNumPatients());
 			this.getModel().setNumPatientsUnpub(this.patientService.getNumUnpublishedPatients());
 			this.getModel().setPhenotypeCountHash(this.patientService.getPhenotypeCounts());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			//...
+			// ...
 		}
 	}
 

@@ -2,25 +2,26 @@ package org.molgenis.mutation.vo;
 
 import java.io.Serializable;
 
-
 public class ProteinDomainVO implements Serializable
 {
 	private static final long serialVersionUID = 1519684534566190066L;
 	private Integer _id = null;
 	private String _name = null;
 	private String _superDomain = null;
-	
+
 	/**
 	 * Get the Primary key..
+	 * 
 	 * @return id.
 	 */
 	public Integer getId()
 	{
 		return this._id;
 	}
-	
+
 	/**
 	 * Set the Primary key..
+	 * 
 	 * @param _id
 	 */
 	public void setId(Integer _id)
@@ -30,15 +31,17 @@ public class ProteinDomainVO implements Serializable
 
 	/**
 	 * Get the Name of the protein domain. E.g. NC1 domain..
+	 * 
 	 * @return name.
 	 */
 	public String getName()
 	{
 		return this._name;
 	}
-	
+
 	/**
 	 * Set the Name of the protein domain. E.g. NC1 domain..
+	 * 
 	 * @param _name
 	 */
 	public void setName(String _name)
@@ -48,15 +51,17 @@ public class ProteinDomainVO implements Serializable
 
 	/**
 	 * Get the superDomain.
+	 * 
 	 * @return superDomain.
 	 */
 	public String getSuperDomain()
 	{
 		return this._superDomain;
 	}
-	
+
 	/**
 	 * Set the superDomain.
+	 * 
 	 * @param _superDomain
 	 */
 	public void setSuperDomain(String _superDomain)

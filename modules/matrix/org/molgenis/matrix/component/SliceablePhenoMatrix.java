@@ -179,13 +179,14 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 			// parameterize the refresh of the dim, either TARGET or FEATURE
 			MatrixQueryRule.Type xIndexFilterType = MatrixQueryRule.Type.rowIndex;
 			MatrixQueryRule.Type xHeaderFilterType = MatrixQueryRule.Type.rowHeader;
-			//MatrixQueryRule.Type xValuesFilterType = MatrixQueryRule.Type.colValues;
+			// MatrixQueryRule.Type xValuesFilterType =
+			// MatrixQueryRule.Type.colValues;
 			MatrixQueryRule.Type xValuePropertyFilterType = MatrixQueryRule.Type.colValueProperty;
 			if (xClass.equals(getColClass()))
 			{
 				xIndexFilterType = MatrixQueryRule.Type.colIndex;
 				xHeaderFilterType = MatrixQueryRule.Type.colHeader;
-				//xValuesFilterType = MatrixQueryRule.Type.rowValues;
+				// xValuesFilterType = MatrixQueryRule.Type.rowValues;
 				xValuePropertyFilterType = MatrixQueryRule.Type.rowValueProperty;
 			}
 
@@ -269,7 +270,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 					xQuery.offset(rowOffset);
 				}
 			}
-			
+
 			// sort on name
 			xQuery.sortASC(ObservationElement.NAME);
 
@@ -320,7 +321,8 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 				{
 					valueMatrix[rowIndexes.indexOf(value.getTarget_Id())][colIndexes.indexOf(value.getFeature_Id())] = new ArrayList<ObservedValue>();
 				}
-				valueMatrix[rowIndexes.indexOf(value.getTarget_Id())][colIndexes.indexOf(value.getFeature_Id())].add(value);
+				valueMatrix[rowIndexes.indexOf(value.getTarget_Id())][colIndexes.indexOf(value.getFeature_Id())]
+						.add(value);
 			}
 
 			return valueMatrix;
@@ -350,7 +352,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	{
 		throw new UnsupportedOperationException("use getValueLists");
 	}
-	
+
 	@Override
 	public Class<R> getRowClass()
 	{

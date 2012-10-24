@@ -23,16 +23,15 @@ public class AnotherMatrixView implements ScreenView
 
 		MolgenisForm f = new MolgenisForm(this.model);
 
-		
 		TableBeta t = new JQueryDataTableBeta("test123");
 		t.setClazz("molgenis_matrix");
 
-		t.setHead(0,0,"protocolapp1",1,2);
-		
-		t.setHead(1,0,"feature1");
-		
-		t.setHead(1,1,"feature2");
-		
+		t.setHead(0, 0, "protocolapp1", 1, 2);
+
+		t.setHead(1, 0, "feature1");
+
+		t.setHead(1, 1, "feature2");
+
 		t.set(0, 0, new CustomHtml("value0.0"));
 		t.set(0, 1, new CustomHtml("value0.1"), 1, 1);
 		t.set(1, 0, new CustomHtml("value1.0"), 1, 1);

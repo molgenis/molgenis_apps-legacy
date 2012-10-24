@@ -4,12 +4,12 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.molgenis.datatable.model.ProtocolTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.JQGridView;
-import org.molgenis.datatable.view.JQGridViewCallback;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
+import org.molgenis.framework.tupletable.view.JQGridView;
+import org.molgenis.framework.tupletable.view.JQGridViewCallback;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -65,7 +65,7 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 			// }
 
 			// create table
-			ProtocolTable table = new ProtocolTable(db, "ChaoRoan");
+			ProtocolTable table = new ProtocolTable("ChaoRoan");
 			table.setTargetString(target);
 			table.setFirstColumnFixed(true);
 			// add editable decorator

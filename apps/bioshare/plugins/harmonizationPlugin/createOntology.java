@@ -29,7 +29,8 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import plugins.HarmonizationComponent.OWLFunction;
 
-public class createOntology {
+public class createOntology
+{
 
 	private OWLOntologyManager manager;
 	private OWLOntology referenceOntology;
@@ -39,8 +40,8 @@ public class createOntology {
 	private HashMap<String, OWLClass> labelToOWLClass;
 	private HashMap<String, OWLClass> synonymsToOWLClass;
 
-	public createOntology() throws OWLOntologyCreationException,
-			OWLOntologyStorageException {
+	public createOntology() throws OWLOntologyCreationException, OWLOntologyStorageException
+	{
 
 		manager = OWLManager.createOWLOntologyManager();
 
@@ -48,20 +49,15 @@ public class createOntology {
 
 		owlFunction = new OWLFunction(factory, manager);
 
-		referenceOntology = this
-				.loadOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
+		referenceOntology = this.loadOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
 
-		System.out.println(referenceOntology.getOntologyID().getOntologyIRI()
-				.toString());
+		System.out.println(referenceOntology.getOntologyID().getOntologyIRI().toString());
 
-		createdOntology = this
-				.loadOntology("/Users/pc_iverson/Desktop/Input/PredictionModel.owl");
+		createdOntology = this.loadOntology("/Users/pc_iverson/Desktop/Input/PredictionModel.owl");
 
-		this.labelToOWLClass = labelMapURI(referenceOntology,
-				OWLRDFVocabulary.RDFS_LABEL.getIRI());
+		this.labelToOWLClass = labelMapURI(referenceOntology, OWLRDFVocabulary.RDFS_LABEL.getIRI());
 
-		this.synonymsToOWLClass = labelMapURI(
-				referenceOntology,
+		this.synonymsToOWLClass = labelMapURI(referenceOntology,
 				IRI.create("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"));
 
 		this.addingClassHierarchy(referenceOntology, createdOntology);
@@ -70,97 +66,92 @@ public class createOntology {
 
 	}
 
-	public void OntologySave(OWLOntology ontology)
-			throws OWLOntologyStorageException {
+	public void OntologySave(OWLOntology ontology) throws OWLOntologyStorageException
+	{
 		manager.saveOntology(ontology);
 	}
 
-	private void addingClassHierarchy(OWLOntology referenceOntology,
-			OWLOntology createdOntology) {
+	private void addingClassHierarchy(OWLOntology referenceOntology, OWLOntology createdOntology)
+	{
 
 		Set<OWLOntology> setOfOntologies = new HashSet<OWLOntology>();
 
 		setOfOntologies.add(createdOntology);
 
-		OWLEntityRenamer renamer = new OWLEntityRenamer(manager,
-				setOfOntologies);
+		OWLEntityRenamer renamer = new OWLEntityRenamer(manager, setOfOntologies);
 
-		HashMap<String, OWLClass> labelToClassCreated = labelMapURI(
-				createdOntology, OWLRDFVocabulary.RDFS_LABEL.getIRI());
+		HashMap<String, OWLClass> labelToClassCreated = labelMapURI(createdOntology,
+				OWLRDFVocabulary.RDFS_LABEL.getIRI());
 
 		List<String> allChildren = owlFunction.getAllChildren(createdOntology,
-				labelToClassCreated.get("prediction model"),
-				new ArrayList<String>(), 1);
+				labelToClassCreated.get("prediction model"), new ArrayList<String>(), 1);
 
 		System.out.println(allChildren);
 
-		for (String className : allChildren) {
+		for (String className : allChildren)
+		{
 
-			List<OWLClass> composites = getClassesFromExpression(
-					labelToClassCreated.get(className.toLowerCase()),
+			List<OWLClass> composites = getClassesFromExpression(labelToClassCreated.get(className.toLowerCase()),
 					createdOntology);
 
 			OWLClass replacedClass = null;
 
-			for (OWLClass buildingBlock : composites) {
+			for (OWLClass buildingBlock : composites)
+			{
 
 				String classLabel = getLabel(buildingBlock, createdOntology);
 
-				if (labelToOWLClass.containsKey(classLabel.toLowerCase())) {
-					replacedClass = labelToOWLClass.get(classLabel
-							.toLowerCase());
+				if (labelToOWLClass.containsKey(classLabel.toLowerCase()))
+				{
+					replacedClass = labelToOWLClass.get(classLabel.toLowerCase());
 				}
-				if (synonymsToOWLClass.containsKey(classLabel.toLowerCase())) {
-					replacedClass = labelToOWLClass.get(classLabel
-							.toLowerCase());
+				if (synonymsToOWLClass.containsKey(classLabel.toLowerCase()))
+				{
+					replacedClass = labelToOWLClass.get(classLabel.toLowerCase());
 				}
 
-				if (replacedClass != null) {
+				if (replacedClass != null)
+				{
 
 					// Add the mapped class and its ancestry and descendant
 					// classes.
 					List<OWLOntologyChange> changes = renamer.changeIRI(
-							labelToClassCreated.get(classLabel.toLowerCase()),
-							replacedClass.getIRI());
+							labelToClassCreated.get(classLabel.toLowerCase()), replacedClass.getIRI());
 					manager.applyChanges(changes);
 
-					addAnnotation(replacedClass, referenceOntology,
-							createdOntology);
+					addAnnotation(replacedClass, referenceOntology, createdOntology);
 
-					recursiveAddingSuperClass(replacedClass, referenceOntology,
-							createdOntology);
+					recursiveAddingSuperClass(replacedClass, referenceOntology, createdOntology);
 
-					recursiveAddingSubClass(replacedClass, referenceOntology,
-							createdOntology);
+					recursiveAddingSubClass(replacedClass, referenceOntology, createdOntology);
 
-					addSiblingsClass(replacedClass, referenceOntology,
-							createdOntology);
+					addSiblingsClass(replacedClass, referenceOntology, createdOntology);
 				}
 
 			}
 
-			if (labelToOWLClass.containsKey(className.toLowerCase())) {
+			if (labelToOWLClass.containsKey(className.toLowerCase()))
+			{
 				replacedClass = labelToOWLClass.get(className.toLowerCase());
 			}
-			if (synonymsToOWLClass.containsKey(className.toLowerCase())) {
+			if (synonymsToOWLClass.containsKey(className.toLowerCase()))
+			{
 				replacedClass = labelToOWLClass.get(className.toLowerCase());
 			}
 
-			if (replacedClass != null) {
+			if (replacedClass != null)
+			{
 
 				// Add the mapped class and its ancestry and descendant classes.
-				List<OWLOntologyChange> changes = renamer.changeIRI(
-						labelToClassCreated.get(className.toLowerCase()),
+				List<OWLOntologyChange> changes = renamer.changeIRI(labelToClassCreated.get(className.toLowerCase()),
 						replacedClass.getIRI());
 				manager.applyChanges(changes);
 
 				addAnnotation(replacedClass, referenceOntology, createdOntology);
 
-				recursiveAddingSuperClass(replacedClass, referenceOntology,
-						createdOntology);
+				recursiveAddingSuperClass(replacedClass, referenceOntology, createdOntology);
 
-				recursiveAddingSubClass(replacedClass, referenceOntology,
-						createdOntology);
+				recursiveAddingSubClass(replacedClass, referenceOntology, createdOntology);
 			}
 
 		}
@@ -199,17 +190,18 @@ public class createOntology {
 		// }
 	}
 
-	private List<OWLClass> getClassesFromExpression(OWLClass owlClass,
-			OWLOntology createdOntology) {
+	private List<OWLClass> getClassesFromExpression(OWLClass owlClass, OWLOntology createdOntology)
+	{
 
 		List<OWLClass> lisfOfOWLClasses = new ArrayList<OWLClass>();
 
-		for (OWLSubClassOfAxiom axiom : createdOntology
-				.getSubClassAxiomsForSubClass(owlClass)) {
+		for (OWLSubClassOfAxiom axiom : createdOntology.getSubClassAxiomsForSubClass(owlClass))
+		{
 
 			OWLClassExpression expression = axiom.getSuperClass();
 
-			if (expression.isAnonymous()) {
+			if (expression.isAnonymous())
+			{
 				lisfOfOWLClasses.addAll(expression.getClassesInSignature());
 			}
 		}
@@ -217,79 +209,76 @@ public class createOntology {
 		return lisfOfOWLClasses;
 	}
 
-	private void addSiblingsClass(OWLClass cls, OWLOntology referenceOntology,
-			OWLOntology createdOntology) {
+	private void addSiblingsClass(OWLClass cls, OWLOntology referenceOntology, OWLOntology createdOntology)
+	{
 
-		for (OWLSubClassOfAxiom axiom : referenceOntology
-				.getSubClassAxiomsForSubClass(cls)) {
+		for (OWLSubClassOfAxiom axiom : referenceOntology.getSubClassAxiomsForSubClass(cls))
+		{
 
 			OWLClassExpression expression = axiom.getSuperClass();
 
-			if (!expression.isAnonymous()) {
+			if (!expression.isAnonymous())
+			{
 
 				manager.applyChange(new AddAxiom(createdOntology, axiom));
 
-				addAnnotation(expression.asOWLClass(), referenceOntology,
-						createdOntology);
+				addAnnotation(expression.asOWLClass(), referenceOntology, createdOntology);
 
-				recursiveAddingSuperClass(expression.asOWLClass(),
-						referenceOntology, createdOntology);
+				recursiveAddingSuperClass(expression.asOWLClass(), referenceOntology, createdOntology);
 
-				recursiveAddingSubClass(expression.asOWLClass(),
-						referenceOntology, createdOntology);
+				recursiveAddingSubClass(expression.asOWLClass(), referenceOntology, createdOntology);
 			}
 		}
 
 	}
 
-	private void recursiveAddingSuperClass(OWLClass cls,
-			OWLOntology referenceOntology, OWLOntology createdOntology) {
+	private void recursiveAddingSuperClass(OWLClass cls, OWLOntology referenceOntology, OWLOntology createdOntology)
+	{
 
-		for (OWLSubClassOfAxiom axiom : referenceOntology
-				.getSubClassAxiomsForSubClass(cls)) {
+		for (OWLSubClassOfAxiom axiom : referenceOntology.getSubClassAxiomsForSubClass(cls))
+		{
 
 			OWLClassExpression expression = axiom.getSuperClass();
 
-			if (!expression.isAnonymous()) {
+			if (!expression.isAnonymous())
+			{
 				manager.applyChange(new AddAxiom(createdOntology, axiom));
-				addAnnotation(expression.asOWLClass(), referenceOntology,
-						createdOntology);
-				recursiveAddingSuperClass(expression.asOWLClass(),
-						referenceOntology, createdOntology);
+				addAnnotation(expression.asOWLClass(), referenceOntology, createdOntology);
+				recursiveAddingSuperClass(expression.asOWLClass(), referenceOntology, createdOntology);
 			}
 		}
 	}
 
-	private void recursiveAddingSubClass(OWLClass cls,
-			OWLOntology referenceOntology, OWLOntology createdOntology) {
+	private void recursiveAddingSubClass(OWLClass cls, OWLOntology referenceOntology, OWLOntology createdOntology)
+	{
 
-		for (OWLSubClassOfAxiom axiom : referenceOntology
-				.getSubClassAxiomsForSuperClass(cls)) {
+		for (OWLSubClassOfAxiom axiom : referenceOntology.getSubClassAxiomsForSuperClass(cls))
+		{
 
 			OWLClassExpression expression = axiom.getSubClass();
 
-			if (!expression.isAnonymous()) {
+			if (!expression.isAnonymous())
+			{
 				manager.applyChange(new AddAxiom(createdOntology, axiom));
-				addAnnotation(expression.asOWLClass(), referenceOntology,
-						createdOntology);
-				recursiveAddingSubClass(expression.asOWLClass(),
-						referenceOntology, createdOntology);
+				addAnnotation(expression.asOWLClass(), referenceOntology, createdOntology);
+				recursiveAddingSubClass(expression.asOWLClass(), referenceOntology, createdOntology);
 			}
 		}
 	}
 
-	public static void main(String args[]) throws OWLOntologyCreationException,
-			OWLOntologyStorageException {
+	public static void main(String args[]) throws OWLOntologyCreationException, OWLOntologyStorageException
+	{
 
 		new createOntology();
 	}
 
-	public void openSpreadSheet(String fileName) {
+	public void openSpreadSheet(String fileName)
+	{
 
 	}
 
-	public OWLOntology loadOntology(String ontologyFileName)
-			throws OWLOntologyCreationException {
+	public OWLOntology loadOntology(String ontologyFileName) throws OWLOntologyCreationException
+	{
 
 		System.out.println("Loading the ontology file!");
 
@@ -310,30 +299,30 @@ public class createOntology {
 	 * @param referenceOntology
 	 * @param createdOntology
 	 */
-	public void addAnnotation(OWLClass cls, OWLOntology referenceOntology,
-			OWLOntology createdOntology) {
+	public void addAnnotation(OWLClass cls, OWLOntology referenceOntology, OWLOntology createdOntology)
+	{
 
-		for (OWLAnnotation annotation : cls.getAnnotations(referenceOntology)) {
-			OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(cls.getIRI(),
-					annotation);
+		for (OWLAnnotation annotation : cls.getAnnotations(referenceOntology))
+		{
+			OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(cls.getIRI(), annotation);
 			manager.applyChange(new AddAxiom(createdOntology, ax));
 		}
 	}
 
-	public HashMap<String, OWLClass> labelMapURI(OWLOntology owlontology,
-			IRI AnnotataionProperty) {
+	public HashMap<String, OWLClass> labelMapURI(OWLOntology owlontology, IRI AnnotataionProperty)
+	{
 
 		HashMap<String, OWLClass> mapURI = new HashMap<String, OWLClass>();
-		OWLAnnotationProperty label = factory
-				.getOWLAnnotationProperty(AnnotataionProperty);
-		OWLAnnotationProperty synonym = factory
-				.getOWLAnnotationProperty(IRI
-						.create("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"));
-		for (OWLClass cls : owlontology.getClassesInSignature()) {
+		OWLAnnotationProperty label = factory.getOWLAnnotationProperty(AnnotataionProperty);
+		OWLAnnotationProperty synonym = factory.getOWLAnnotationProperty(IRI
+				.create("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"));
+		for (OWLClass cls : owlontology.getClassesInSignature())
+		{
 			// Get the annotations on the class that use the label property
-			for (OWLAnnotation annotation : cls.getAnnotations(owlontology,
-					label)) {
-				if (annotation.getValue() instanceof OWLLiteral) {
+			for (OWLAnnotation annotation : cls.getAnnotations(owlontology, label))
+			{
+				if (annotation.getValue() instanceof OWLLiteral)
+				{
 					OWLLiteral val = (OWLLiteral) annotation.getValue();
 					String labelString = val.getLiteral();
 					mapURI.put(labelString.toLowerCase(), cls);
@@ -350,20 +339,23 @@ public class createOntology {
 	 * 
 	 * @return the label of the class
 	 */
-	public String getLabel(OWLEntity cls, OWLOntology owlontology) {
+	public String getLabel(OWLEntity cls, OWLOntology owlontology)
+	{
 		String labelValue = "";
-		try {
-			OWLAnnotationProperty label = factory
-					.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL
-							.getIRI());
-			for (OWLAnnotation annotation : cls.getAnnotations(owlontology,
-					label)) {
-				if (annotation.getValue() instanceof OWLLiteral) {
+		try
+		{
+			OWLAnnotationProperty label = factory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
+			for (OWLAnnotation annotation : cls.getAnnotations(owlontology, label))
+			{
+				if (annotation.getValue() instanceof OWLLiteral)
+				{
 					OWLLiteral val = (OWLLiteral) annotation.getValue();
 					labelValue = val.getLiteral().toString();
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			System.out.println("The annotation is null!");
 		}
 		return labelValue;

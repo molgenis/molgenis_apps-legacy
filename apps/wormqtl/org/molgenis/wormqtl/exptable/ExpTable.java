@@ -23,7 +23,7 @@ public class ExpTable extends PluginModel<Entity>
 	private static final long serialVersionUID = 1L;
 
 	private ExpTableModel model = new ExpTableModel();
-	
+
 	public ExpTableModel getMyModel()
 	{
 		return model;
@@ -45,7 +45,7 @@ public class ExpTable extends PluginModel<Entity>
 	{
 		return "org/molgenis/wormqtl/exptable/ExpTable.ftl";
 	}
-	
+
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
@@ -53,7 +53,7 @@ public class ExpTable extends PluginModel<Entity>
 			String action = request.getString("__action");
 			try
 			{
-			
+
 			}
 			catch (Exception e)
 			{
@@ -62,14 +62,10 @@ public class ExpTable extends PluginModel<Entity>
 			}
 		}
 	}
-	
-	
-	
+
 	@Override
 	public void reload(Database db)
 	{
-
-		
 
 	}
 

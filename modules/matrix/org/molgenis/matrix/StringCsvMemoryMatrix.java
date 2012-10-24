@@ -9,8 +9,7 @@ public class StringCsvMemoryMatrix extends CsvMemoryMatrix<String, String, Strin
 {
 	public StringCsvMemoryMatrix(CsvReader reader) throws FileNotFoundException, MatrixException
 	{
-		super(new StringConvertor(), new StringConvertor(),
-				new StringConvertor(), reader);
+		super(new StringConvertor(), new StringConvertor(), new StringConvertor(), reader);
 	}
 
 }

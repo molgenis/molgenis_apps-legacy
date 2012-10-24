@@ -41,8 +41,7 @@ public class TestDatabaseMatrix
 	 * @param runPerformanceTests
 	 * @throws Exception
 	 */
-	public TestDatabaseMatrix(Database db, Params params)
-			throws Exception
+	public TestDatabaseMatrix(Database db, Params params) throws Exception
 	{
 		/**
 		 * Assumption: the list of the traits/subjects that are created of size
@@ -59,11 +58,12 @@ public class TestDatabaseMatrix
 
 		logger.info("Importing matrices..");
 		new DatabaseDataMatrixWriter(h.getDataList(), h.getInputFilesDir(), db, false);
-		
+
 		List<DatabaseDataMatrixInstance> dmList = new ArrayList<DatabaseDataMatrixInstance>();
 		for (Data data : h.getDataList())
 		{
-			DatabaseDataMatrixInstance dm = (DatabaseDataMatrixInstance) new DataMatrixHandler(db).createInstance(data, db);
+			DatabaseDataMatrixInstance dm = (DatabaseDataMatrixInstance) new DataMatrixHandler(db).createInstance(data,
+					db);
 			dmList.add(dm);
 		}
 
@@ -83,11 +83,11 @@ public class TestDatabaseMatrix
 		{
 			for (String method : methods)
 			{
-				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, dm, dm.getData(),
-						h.getInputFilesDir(), method, true, true));
+				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, dm, dm.getData(), h.getInputFilesDir(),
+						method, true, true));
 			}
 		}
-		
+
 		db.close();
 	}
 }

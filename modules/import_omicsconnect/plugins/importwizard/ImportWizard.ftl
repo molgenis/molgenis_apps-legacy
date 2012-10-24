@@ -14,6 +14,7 @@
 	<#assign endFont = "</font>">
 	
 	<#assign greenBg = "<font style=\"background-color: #52D017\">"> <#--successmess: 52D017-->
+	<#assign orangeBg = "<font style=\"background-color: #FFA500\">">
 	<#assign redBg = "<font style=\"background-color: red; color: white; font-weight:bold\">">
 		
 <!-- this shows a title and border -->
@@ -34,117 +35,123 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
-
-<#if !model.getWhichScreen()?exists || model.getWhichScreen() == "one">
-<h2>Data import wizard Type Dennis</h2>
-<div style="height: 10px;">&nbsp;</div>
-
-<i>Upload Excel file with your data</i>
-<br>
-<input type="file" name="upload"/>
-<input type="submit" value="Upload" id="upload_excel" onclick="__action.value='upload';return true;"/><br>
-
-<div style="height: 25px;">&nbsp;</div>
-
-<a href="clusterdemo/ExampleExcel.xls"><img src="clusterdemo/excel.gif"/></a><label>Download example Excel file</label>
-
-
-
-
-<#elseif model.getWhichScreen() == "two">
-
-<h1>Import prognosis</h1>
-
-<h3>Sheets</h3>
-<table class="listtable">
+<div style="width: 1140px; margin-left: auto; margin-right: auto;">
+<#if model.page == 0>
+<h2>Data Import Wizard - Step ${model.page + 1} of ${model.nrPages}</h2>
+<p>Upload <a href="generated-doc/fileformat.html" target="_blank">OmicsConnect</a> data file</p>
+<input type="file" name="upload" style="width: 100%;"/>
+<@controls screen.name model />
+<#elseif model.page == 1>
+<h2>Validation Check - Step ${model.page + 1} of ${model.nrPages}</h2>
+<#if model.dataImportable??>
+<h3>Data</h3>
+<table class="listtable" style="width: 25%;">
 	<tr class="form_listrow0">
-		<td>Sheet name</td>
-		<td>Importable?</td>
+		<td>Name</td>
+		<td style="width: 25%; text-align: center;">Importable</td>
 	</tr>
-	
-	<#list model.iwep.sheetsImportable?keys as sheet>
+	<#list model.dataImportable?keys as name>
 	<tr class="form_listrow1">
-		<td>${sheet}</td>
-		<td><#if model.iwep.sheetsImportable[sheet] == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if></td>
+		<td>${name}</td>
+		<td><#if model.dataImportable[name] == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if></td>
 	</tr>
 	</#list>
-
 </table>
-
-<h3>Fields of importable sheets</h3>
+</#if>
+<#if model.entitiesImportable??>
+<h3>Entities</h3>
+<table class="listtable" style="width: 25%;">
+	<tr class="form_listrow0">
+		<td>Name</td>
+		<td style="width: 25%; text-align: center;">Importable</td>
+	</tr>
+	<#list model.entitiesImportable?keys as entity>
+	<tr class="form_listrow1">
+		<td><#if model.entitiesImportable[entity] == true><a href="generated-doc/fileformat.html#${entity}_entity" target="_blank">${entity}</a><#else>${entity}</#if></td>
+		<td><#if model.entitiesImportable[entity] == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if></td>
+	</tr>
+	</#list>
+</table>
+<h3>Entity Fields</h3>
 <table class="listtable">
 	<tr class="form_listrow0">
-		<td>Import order</td>
-		<td>Sheet name</td>
-		<td>Importable fields</td>
-		<td>Unknown fields</td>
+		<td>Name</td>
+		<td>Detected</td>
+		<td>Required</td>
+		<td>Available</td>
+		<td>Unknown</td>
 	</tr>
-<#assign count = 1>
-<#list model.iwep.importOrder as sheet>
+<#list model.entitiesImportable?keys as entity>
+	<#if model.entitiesImportable[entity] == true>
 	<tr class="form_listrow1">
-		<td>${count}</td>
-		<td>${sheet}</td>
-		
-		<td><#if model.iwep.fieldsImportable[sheet]?size gt 0><#list model.iwep.fieldsImportable[sheet] as field>${greenBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="errormessage">No importable fields</p></#if></td>
-		
-		<td><#if model.iwep.fieldsUnknown[sheet]?size gt 0><#list model.iwep.fieldsUnknown[sheet] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No unknown fields</p></#if></td>
+		<td><a href="generated-doc/fileformat.html#${entity}_entity">${entity}</a></td>
+		<td><#if model.fieldsDetected[entity]?size gt 0><#list model.fieldsDetected[entity] as field>${greenBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="errormessage">No detected fields</p></#if></td>
+		<td><#if model.fieldsRequired[entity]?size gt 0><#list model.fieldsRequired[entity] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No missing fields</p></#if></td>
+		<td><#if model.fieldsAvailable[entity]?size gt 0><#list model.fieldsAvailable[entity] as field>${orangeBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No optional fields</p></#if></td>
+		<td><#if model.fieldsUnknown[entity]?size gt 0><#list model.fieldsUnknown[entity] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No unknown fields</p></#if></td>
 	</tr>
-<#assign count = count+1>
+	</#if>
 </#list>
 </table>
-
-<br>
-Unknown sheets and fields will be ignored during the import. If the current prognosis is not to your liking, please update your Excel file and upload it again.
-<br><br>
-
-<table>
+</#if>
+<#if model.validationError>
+<h3>Validation Error</h3>
+An error occurred validating the input data. Please resolve the errors and try again.   
+</#if>
+<@controls screen.name model model.validationError/>
+<#elseif model.page == 2>
+<h2>Import options - Step ${model.page + 1} of ${model.nrPages}</h2>
+<table class="listtable" style="width: 50%;">
 	<tr>
-		<td align="left">
-			<i>Select new file</i> <input type="submit" value="Previous" onclick="document.forms.${screen.name}.__action.value = 'toScreenOne'; document.forms.${screen.name}.submit();"/>
-		</td>
-		<td align="right">
-			<i>Done?</i> <input type="submit" value="Import" onclick="document.forms.${screen.name}.__action.value = 'import'; document.forms.${screen.name}.submit();"/>
-		</td>
+		<td><input type="radio" name="storage_option" value="add" checked>Add</td>
+		<td>Importer adds new entities or fails if entity exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="add_ignore">Add &amp; Ignore</td>
+		<td>Importer adds new entities or skips if entity exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="add_update">Add &amp; Update</td>
+		<td>Importer adds new entities or updates existing entities<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="update">Update<br></td>
+		<td>Importer updates existing entities or fails if entity does not exist</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="storage_option" value="update">Update &amp; Ignore<br></td>
+		<td>Importer updates existing entities or skips if entity does not exist</td>
 	</tr>
 </table>
 
-
-<#elseif model.getWhichScreen() == "three">
-
-<br>
-<#if model.importSuccess>
-<p class="successmessage">Your import was successful.</p>
-<#else>
+<@controls screen.name model />
+<#elseif model.page == 3>
+<h2>Import Summary - Step ${model.page + 1} of ${model.nrPages}</h2>
+<#if model.importError>
+<h3>Import Error</h3>
 Your import failed. See the above message for details. Please go back to the first screen and upload a new file.
-</#if>
-<br><br>
-<table>
-	<tr>
-		<td align="left">
-			<i>Select new file</i> <input type="submit" value="Reset" onclick="document.forms.${screen.name}.__action.value = 'toScreenOne'; document.forms.${screen.name}.submit();"/>
-		</td>
-	</tr>
-</table>
-
 <#else>
-	<table>
-		<tr>
-			<td>
-				<font style="color: #FFFFFF;"><b>Error: No screen specified.</b></font>
-			</td>
-		</tr>
-		<tr>
-			<td align="left">
-				<i>Return to first screen</i> <input type="submit" value="Previous" onclick="document.forms.${screen.name}.__action.value = 'toScreenOne'; document.forms.${screen.name}.submit();"/>
-			</td>
-		</tr>
-	</table>
+<p class="successmessage">Your import was successful.</p>
 </#if>
-
-
+</div>
+<@controls screen.name model model.importError/>
+</#if>
 <#--end of your plugin-->	
 			</div>
 		</div>
 	</div>
 </form>
+</#macro>
+<#-- wizard button strip macro -->
+<#macro controls form model disableNext=false>
+<div align="center" style="padding: 10px;">
+<input type="submit" value="&#60; Back" onclick="document.forms.${form}.__action.value = 'screen${model.page - 1}'; document.forms.${form}.submit();"<#if model.firstPage> hidden</#if>/>
+<input type="submit" value="Next &#62;" onclick="document.forms.${form}.__action.value = 'screen${model.page + 1}'; document.forms.${form}.submit();"<#if disableNext> disabled</#if><#if model.lastPage> hidden</#if>/>
+<#if !model.firstPage && !model.lastPage>
+<input type="submit" value="Cancel" onclick="document.forms.${form}.__action.value = 'cancel'; document.forms.${form}.submit();"/>
+</#if>
+<#if model.lastPage>
+<input type="submit" value="Finish" onclick="document.forms.${form}.__action.value = 'finish'; document.forms.${form}.submit();"/>
+</#if>
+</div>
 </#macro>

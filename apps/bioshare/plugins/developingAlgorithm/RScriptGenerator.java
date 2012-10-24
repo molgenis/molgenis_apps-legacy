@@ -26,18 +26,20 @@ import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Template;
 
-public class RScriptGenerator {
-	
+public class RScriptGenerator
+{
+
 	private testModel model = new testModel();
 
-	public static void main (String args[]) throws Exception{
-		
+	public static void main(String args[]) throws Exception
+	{
+
 		RScriptGenerator test = new RScriptGenerator();
-		
+
 		test.start();
-		
+
 	}
-	
+
 	public testModel getModel()
 	{
 		return model;
@@ -48,26 +50,27 @@ public class RScriptGenerator {
 		this.model = model;
 	}
 
-	public void start() throws Exception {
-		
-		Template template = createTemplate("/"+this.getClass().getSimpleName()+".R.ftl" );
-		
+	public void start() throws Exception
+	{
+
+		Template template = createTemplate("/" + this.getClass().getSimpleName() + ".R.ftl");
+
 		Map<String, Object> templateArgs = createTemplateArguments();
-		
-		File target = new File("apps/catalogue/plugins/Rscript/generated.R" );
-		
+
+		File target = new File("apps/catalogue/plugins/Rscript/generated.R");
+
 		target.getParentFile().mkdirs();
-		
+
 		templateArgs.put("model", model);
-		
+
 		OutputStream targetOut = new FileOutputStream(target);
-		
+
 		template.process(templateArgs, new OutputStreamWriter(targetOut));
-		
+
 		targetOut.close();
-		
+
 	}
-	
+
 	public Template createTemplate(String path) throws Exception
 	{
 		freemarker.template.Configuration cfg = new freemarker.template.Configuration();
@@ -86,7 +89,7 @@ public class RScriptGenerator {
 		// either end
 		return cfg.getTemplate(path);
 	}
-	
+
 	public Map<String, Object> createTemplateArguments()
 	{
 		Map<String, Object> args = new TreeMap<String, Object>();
@@ -104,5 +107,5 @@ public class RScriptGenerator {
 		args.put("version", Version.convertToString());
 		return args;
 	}
-	
+
 }

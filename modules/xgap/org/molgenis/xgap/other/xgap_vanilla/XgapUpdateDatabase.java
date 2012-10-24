@@ -1,4 +1,5 @@
 package org.molgenis.xgap.other.xgap_vanilla;
+
 import org.molgenis.Molgenis;
 
 public class XgapUpdateDatabase

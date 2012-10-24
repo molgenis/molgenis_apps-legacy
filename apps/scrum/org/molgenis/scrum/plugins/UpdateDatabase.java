@@ -54,11 +54,15 @@ public class UpdateDatabase extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		if (request.getAction().equals("updateDatabase")) {
-			try {
+		if (request.getAction().equals("updateDatabase"))
+		{
+			try
+			{
 				new Molgenis("apps/scrum/org/molgenis/scrum/scrum.properties").updateDb(true);
 				this.setMessages(new ScreenMessage("Database updated successfully", true));
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage("Database update failed: " + e.getMessage(), false));
 			}

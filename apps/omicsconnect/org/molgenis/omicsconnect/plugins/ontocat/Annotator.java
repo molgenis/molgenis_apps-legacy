@@ -4,16 +4,21 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 
-public class Annotator {
+public class Annotator
+{
 	public static final String annotatorUrl = "http://rest.bioontology.org/obs/annotator";
 
-	public static void main(String[] args) {
-		try {
+	public static void main(String[] args)
+	{
+		try
+		{
 			HttpClient client = new HttpClient();
-			client.getParams().setParameter(HttpMethodParams.USER_AGENT,
-					"Annotator Client Example - Annotator"); // Set this string
-																// for your
-																// application
+			client.getParams().setParameter(HttpMethodParams.USER_AGENT, "Annotator Client Example - Annotator"); // Set
+																													// this
+																													// string
+																													// for
+																													// your
+																													// application
 
 			String text = "Melanoma";
 
@@ -40,22 +45,27 @@ public class Annotator {
 			method.addParameter("textToAnnotate", text); // "Melanoma is a malignant tumor of melanocytes which are found predominantly in skin but also in the bowel and the eye");
 			method.addParameter("format", "text"); // Options are 'text', 'xml',
 													// 'tabDelimited'
-			method.addParameter("apikey",
-					"eaae1357-1b7d-4c9d-98f4-2bd61c0e49fc");
+			method.addParameter("apikey", "eaae1357-1b7d-4c9d-98f4-2bd61c0e49fc");
 
 			// Execute the POST method
 			int statusCode = client.executeMethod(method);
 
-			if (statusCode != -1) {
-				try {
+			if (statusCode != -1)
+			{
+				try
+				{
 					String contents = method.getResponseBodyAsString();
 					method.releaseConnection();
 					System.out.println(contents);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					e.printStackTrace();
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}

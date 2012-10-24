@@ -15,25 +15,29 @@ public class HeaderModel extends EasyPluginModel
 	private static final long serialVersionUID = 1L;
 	private String logo;
 	private String title;
-	
+
 	public HeaderModel(Header controller)
 	{
 		super(controller);
 	}
 
-	public String getLogo() {
+	public String getLogo()
+	{
 		return logo;
 	}
 
-	public void setLogo(String logo) {
+	public void setLogo(String logo)
+	{
 		this.logo = logo;
 	}
 
-	public String getTitle() {
+	public String getTitle()
+	{
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(String title)
+	{
 		this.title = title;
 	}
 }

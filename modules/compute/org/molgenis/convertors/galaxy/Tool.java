@@ -101,9 +101,15 @@ public class Tool
 		String tests_string = "";
 		for (Test t : tests)
 			tests_string += "\t" + t.toString().replace("\n", "\n\t") + "\n";
-		return String.format("Tool(id='%s', name='%s',version='%s')\n%s", id, name, version, command_string
-				+ code_string + params_string + data_string + tests_string
-				+ (help != "" ? "\n\thelp='" + help.replace("\n", "\n\t") + "'\n" : null)
-				+ (description != null ? "\n\tdescription='" + description.replace("\n", "\n\t") + "'\n" : null) + ")");
+		return String
+				.format("Tool(id='%s', name='%s',version='%s')\n%s", id, name, version,
+						command_string
+								+ code_string
+								+ params_string
+								+ data_string
+								+ tests_string
+								+ (help != "" ? "\n\thelp='" + help.replace("\n", "\n\t") + "'\n" : null)
+								+ (description != null ? "\n\tdescription='" + description.replace("\n", "\n\t")
+										+ "'\n" : null) + ")");
 	}
 }

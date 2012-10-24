@@ -29,7 +29,6 @@ import org.molgenis.util.Tuple;
 import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
 
-
 public class LLDataImportExcel extends PluginModel<Entity>
 {
 	private String Status = "";
@@ -54,9 +53,11 @@ public class LLDataImportExcel extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception	{
+	public void handleRequest(Database db, Tuple request) throws Exception
+	{
 
-		if ("ImportLifelineToPheno".equals(request.getAction())) {
+		if ("ImportLifelineToPheno".equals(request.getAction()))
+		{
 
 			System.out.println("----------------->");
 
@@ -64,21 +65,26 @@ public class LLDataImportExcel extends PluginModel<Entity>
 
 			Investigation inv = new Investigation();
 
-			if(db.query(Investigation.class).eq(Investigation.NAME, "LifeLines").count() == 0){
+			if (db.query(Investigation.class).eq(Investigation.NAME, "LifeLines").count() == 0)
+			{
 
 				inv.setName("LifeLines");
 				db.add(inv);
 
-			}else{
-				
-				inv = db.find (Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "LifeLines")).get(0);
 			}
-			
+			else
+			{
+
+				inv = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "LifeLines"))
+						.get(0);
+			}
+
 			loadDataFromExcel(db, request, inv);
 
 		}
 
-		if ("fillinDatabase".equals(request.getAction())) {
+		if ("fillinDatabase".equals(request.getAction()))
+		{
 
 			new emptyDatabase(db, false);
 			FillMetadata.fillMetadata(db, false);
@@ -86,295 +92,346 @@ public class LLDataImportExcel extends PluginModel<Entity>
 		}
 
 	}
+
 	@SuppressWarnings("unchecked")
-	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException, DatabaseException{
+	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException,
+			DatabaseException
+	{
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-		File file = new File(tmpDir+ "/LifelinesDict.xls"); 
+		File file = new File(tmpDir + "/LifelinesDict.xls");
 
-		if (file.exists()) {
+		if (file.exists())
+		{
 
 			System.out.println("The excel file is being imported, please be patient");
 
 			this.setStatus("The excel file is being imported, please be patient");
 
-			Workbook workbook = Workbook.getWorkbook(file); 
+			Workbook workbook = Workbook.getWorkbook(file);
 
 			Sheet dictionaryCategory = null;
-			
+
 			int numberOfSheet = workbook.getNumberOfSheets();
-			
-			for(int i = 0; i < numberOfSheet; i++){
-				
-				dictionaryCategory = workbook.getSheet(i); //TODO what if there are more than 2 sheets?
-				
+
+			for (int i = 0; i < numberOfSheet; i++)
+			{
+
+				dictionaryCategory = workbook.getSheet(i); // TODO what if there
+															// are more than 2
+															// sheets?
+
 				System.out.println(dictionaryCategory);
-				
-				if(dictionaryCategory.getName().equals("Dictionary"))
-					convertDictionary(dictionaryCategory, db, request, inv);
-				else if (dictionaryCategory.getName().equals("Category"))
-					insertCategory(workbook.getSheet(1), db, request, inv);
-				
-				this.setStatus("The file is imported.Congrats!" );
+
+				if (dictionaryCategory.getName().equals("Dictionary")) convertDictionary(dictionaryCategory, db,
+						request, inv);
+				else if (dictionaryCategory.getName().equals("Category")) insertCategory(workbook.getSheet(1), db,
+						request, inv);
+
+				this.setStatus("The file is imported.Congrats!");
 			}
-		} else {
-			this.setStatus("The file should be in " + file );
+		}
+		else
+		{
+			this.setStatus("The file should be in " + file);
 		}
 	}
-	
-	public void insertCategory(Sheet excelSheet, Database db, Tuple request, Investigation inv) throws DatabaseException{
-	
+
+	public void insertCategory(Sheet excelSheet, Database db, Tuple request, Investigation inv)
+			throws DatabaseException
+	{
+
 		int row = excelSheet.getRows();
 
 		int column = excelSheet.getColumns();
-		
+
 		String fieldName = "";
-		
+
 		String codeLable = "";
-		
+
 		String codeString = "";
-		
+
 		HashMap<String, Measurement> nameToMesurement = new HashMap<String, Measurement>();
-		
-		HashMap<Measurement, List<String>> measurementToCategory = new HashMap <Measurement, List<String>>();
-		
+
+		HashMap<Measurement, List<String>> measurementToCategory = new HashMap<Measurement, List<String>>();
+
 		List<Measurement> addedMeasurement = new ArrayList<Measurement>();
-		
+
 		List<Category> addedCategory = new ArrayList<Category>();
-		
-		for(Measurement m : db.find(Measurement.class)){
+
+		for (Measurement m : db.find(Measurement.class))
+		{
 			nameToMesurement.put(m.getName(), m);
 		}
-		
-		
-		for(int i = 1; i < row; i++){
-			
+
+		for (int i = 1; i < row; i++)
+		{
+
 			Measurement measurement = new Measurement();
-			
+
 			Category category = new Category();
-			
-			for(int j = 0; j < column; j++){
-				
-				if (j == 1){
-					
+
+			for (int j = 0; j < column; j++)
+			{
+
+				if (j == 1)
+				{
+
 					fieldName = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
 					measurement = nameToMesurement.get(fieldName);
-					
-					if(!measurementToCategory.containsKey(measurement)){
-						
+
+					if (!measurementToCategory.containsKey(measurement))
+					{
+
 						List<String> temp = new ArrayList<String>();
 						measurementToCategory.put(measurement, temp);
 					}
-				
-				}else if(j == 3){
-					
+
+				}
+				else if (j == 3)
+				{
+
 					codeLable = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
 					category.setLabel(codeLable);
 					category.setName(codeLable);
-					
-				}else if(j == 4){
-				
+
+				}
+				else if (j == 4)
+				{
+
 					codeString = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
 					category.setCode_String(codeString);
 					category.setDescription(codeString);
 					category.setInvestigation(inv);
 				}
-				
+
 			}
-			
-			if(!addedCategory.contains(category))
-				addedCategory.add(category);
-			
+
+			if (!addedCategory.contains(category)) addedCategory.add(category);
+
 			List<String> temp = measurementToCategory.get(measurement);
-			
-			if(!temp.contains(category.getLabel())){
+
+			if (!temp.contains(category.getLabel()))
+			{
 				temp.add(category.getLabel());
 				measurementToCategory.put(measurement, temp);
 			}
-			
-			if(!addedMeasurement.contains(measurement))
-				addedMeasurement.add(measurement);
+
+			if (!addedMeasurement.contains(measurement)) addedMeasurement.add(measurement);
 		}
-			
+
 		db.update(addedCategory, DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
-		
-		for(Measurement m : addedMeasurement){
+
+		for (Measurement m : addedMeasurement)
+		{
 
 			List<String> categoryNames = measurementToCategory.get(m);
-			
+
 			List<Integer> categoryId = new ArrayList<Integer>();
-			//System.out.print(m.getName() + "\t");
-			
-			List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
-			
-			for(Category c : categories){
-					categoryId.add(c.getId());
+			// System.out.print(m.getName() + "\t");
+
+			List<Category> categories = db.find(Category.class,
+					new QueryRule(Category.NAME, Operator.IN, categoryNames));
+
+			for (Category c : categories)
+			{
+				categoryId.add(c.getId());
 			}
-			
+
 			m.setCategories_Id(categoryId);
 			m.setInvestigation(inv);
 		}
 		db.update(addedMeasurement);
 	}
-	
-	public void convertDictionary(Sheet excelSheet, Database db, Tuple request, Investigation inv) throws DatabaseException{
-		
+
+	public void convertDictionary(Sheet excelSheet, Database db, Tuple request, Investigation inv)
+			throws DatabaseException
+	{
+
 		int row = excelSheet.getRows();
 
 		int column = excelSheet.getColumns();
 
 		String protocolName = "";
-		
+
 		String fieldTypeName = "";
-		
+
 		String measurementName = "";
-		
+
 		String descriptionText;
-		
+
 		Pattern text = Pattern.compile("text");
-		
+
 		Pattern number = Pattern.compile("number");
-		
+
 		List<Protocol> protocolList = new ArrayList<Protocol>();
-		
+
 		List<Measurement> measurementList = new ArrayList<Measurement>();
-		
+
 		HashMap<String, List> protocolMeasurement = new HashMap<String, List>();
-		
-		for(int i = 1; i < row; i++){
-			
+
+		for (int i = 1; i < row; i++)
+		{
+
 			Protocol protocol = new Protocol();
-			
+
 			Measurement measurement = new Measurement();
-			
+
 			measurement.setInvestigation(inv);
-			
+
 			protocol.setInvestigation(inv);
-			
-			for(int j = 0; j < column; j++){
-				
-				if( j == 0 ){
-					
+
+			for (int j = 0; j < column; j++)
+			{
+
+				if (j == 0)
+				{
+
 					protocolName = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
-					
+
 					protocol.setName(protocolName);
-					
+
 					protocol.setInvestigation(inv);
-					
-					if(!protocolMeasurement.containsKey(protocolName)){
+
+					if (!protocolMeasurement.containsKey(protocolName))
+					{
 						List<String> temp = new ArrayList();
-						protocolMeasurement.put(protocolName,temp);
+						protocolMeasurement.put(protocolName, temp);
 					}
 				}
-				
-				if(j == 3){
-					
+
+				if (j == 3)
+				{
+
 					measurementName = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
-					
-					if(measurementName.equalsIgnoreCase("ID")){
+
+					if (measurementName.equalsIgnoreCase("ID"))
+					{
 						measurementName = protocolName + "_" + measurementName;
 					}
-					
+
 					measurement.setName(measurementName);
-					
+
 					measurement.setInvestigation(inv);
-					
+
 					List<String> tempMeasurements = protocolMeasurement.get(protocolName.toLowerCase());
-					
-					if(!tempMeasurements.contains(measurementName))
-						tempMeasurements.add(measurementName);
-					
+
+					if (!tempMeasurements.contains(measurementName)) tempMeasurements.add(measurementName);
+
 					protocolMeasurement.put(protocolName, tempMeasurements);
 				}
-			
-				if(j == 4){
-					
-					fieldTypeName = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase().toLowerCase();
-					
+
+				if (j == 4)
+				{
+
+					fieldTypeName = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase()
+							.toLowerCase();
+
 					Matcher m = text.matcher(fieldTypeName);
-					
-					
-					if(fieldTypeName.equals("date")){
-					
+
+					if (fieldTypeName.equals("date"))
+					{
+
 						measurement.setDataType("datetime");
-					
-					}else if(m.find()){
+
+					}
+					else if (m.find())
+					{
 						measurement.setDataType("string");
-					}else{
+					}
+					else
+					{
 						m = number.matcher(fieldTypeName);
-						if(m.find()){
+						if (m.find())
+						{
 							measurement.setDataType("int");
 						}
 					}
 				}
-				
-				if(j == 5){
-				
+
+				if (j == 5)
+				{
+
 					descriptionText = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
-					
+
 					measurement.setDescription(descriptionText);
 				}
 			}
-			
-			if(!protocolList.contains(protocol))
-				protocolList.add(protocol);
-			
-			if(!measurementList.contains(measurement)){
-				if(measurementName.equalsIgnoreCase("PA_ID")){
-					if(protocolName.equalsIgnoreCase("PATIENT")){
+
+			if (!protocolList.contains(protocol)) protocolList.add(protocol);
+
+			if (!measurementList.contains(measurement))
+			{
+				if (measurementName.equalsIgnoreCase("PA_ID"))
+				{
+					if (protocolName.equalsIgnoreCase("PATIENT"))
+					{
 						measurementList.add(measurement);
 					}
-				}else if(measurementName.equalsIgnoreCase("BZ_ID")){
-					if(protocolName.equalsIgnoreCase("BEZOEK")){
+				}
+				else if (measurementName.equalsIgnoreCase("BZ_ID"))
+				{
+					if (protocolName.equalsIgnoreCase("BEZOEK"))
+					{
 						measurementList.add(measurement);
 					}
-				}else if(measurementName.equalsIgnoreCase("ELEMENT NO")){
-					if(protocolName.equalsIgnoreCase("BEP_OMSCHR")){
+				}
+				else if (measurementName.equalsIgnoreCase("ELEMENT NO"))
+				{
+					if (protocolName.equalsIgnoreCase("BEP_OMSCHR"))
+					{
 						measurementList.add(measurement);
 					}
-				}else{
+				}
+				else
+				{
 					measurementList.add(measurement);
 				}
 			}
 		}
-		
+
 		List<Protocol> addedProtocols = new ArrayList<Protocol>();
-		
+
 		List<Measurement> addedMeasurements = new ArrayList<Measurement>();
-		
+
 		db.update(measurementList, DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
-		
-		for(Protocol p : addedProtocols){
-			
-			if(protocolMeasurement.containsKey(p.getName())){
+
+		for (Protocol p : addedProtocols)
+		{
+
+			if (protocolMeasurement.containsKey(p.getName()))
+			{
 				List<String> featureNames = protocolMeasurement.get(p.getName());
-				List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
+				List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+						featureNames));
 				List<Integer> measIdList = new ArrayList<Integer>();
-				for (Measurement m : measList) {
+				for (Measurement m : measList)
+				{
 					measIdList.add(m.getId());
 				}
 				p.setFeatures_Id(measIdList);
 
 			}
 		}
-		
-		//db.add(protocolList);
-		
+
+		// db.add(protocolList);
+
 		db.update(protocolList, DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
 	}
-	
+
 	@Override
-	public void reload(Database db)	{
+	public void reload(Database db)
+	{
 	}
 
-
-	public void setStatus(String status) {
+	public void setStatus(String status)
+	{
 		Status = status;
 	}
 
-
-	public String getStatus() {
+	public String getStatus()
+	{
 		return Status;
 	}
 }

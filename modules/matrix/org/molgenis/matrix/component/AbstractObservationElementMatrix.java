@@ -15,11 +15,11 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 
 /** Abstract observation matrix */
-public abstract class AbstractObservationElementMatrix<R extends ObservationElement, C extends ObservationElement, V extends ObservedValue> implements
-		SliceableMatrix<R, C, V>
+public abstract class AbstractObservationElementMatrix<R extends ObservationElement, C extends ObservationElement, V extends ObservedValue>
+		implements SliceableMatrix<R, C, V>
 {
 
-	//protected Database database;
+	// protected Database database;
 	protected Class<R> rowClass;
 	protected Class<C> colClass;
 	protected Class<? extends V> valueClass;
@@ -75,8 +75,10 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	{
 		// retrieve the indices from the headers (we use the id value).
 		List<Integer> rowIndices = new ArrayList<Integer>();
-		if (getRowHeaders() != null) {
-			for (R row : getRowHeaders()) {
+		if (getRowHeaders() != null)
+		{
+			for (R row : getRowHeaders())
+			{
 				rowIndices.add(row.getId());
 			}
 		}
@@ -240,8 +242,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByRowOffsetLimit(int limit, int offset)
-			throws Exception
+	public SliceableMatrix<R, C, V> sliceByRowOffsetLimit(int limit, int offset) throws Exception
 	{
 		this.rowLimit = limit;
 		this.rowOffset = offset;
@@ -249,8 +250,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByColOffsetLimit(int limit, int offset)
-			throws Exception
+	public SliceableMatrix<R, C, V> sliceByColOffsetLimit(int limit, int offset) throws Exception
 	{
 		this.colLimit = limit;
 		this.colOffset = offset;
@@ -258,116 +258,94 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByRowValues(int rowIndex, Operator operator, Object value)
-			throws Exception
+	public SliceableMatrix<R, C, V> sliceByRowValues(int rowIndex, Operator operator, Object value) throws Exception
 	{
 		// slice by rowIndex means effectively ObservedValue.target=index &&
 		// ObervedValue.value=value!
-		return this.slice(new MatrixRowValueFilter(rowIndex,
-				ObservedValue.VALUE, operator, value));
+		return this.slice(new MatrixRowValueFilter(rowIndex, ObservedValue.VALUE, operator, value));
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByRowValues(R row, Operator operator, Object value)
-			throws Exception
+	public SliceableMatrix<R, C, V> sliceByRowValues(R row, Operator operator, Object value) throws Exception
 	{
 		// slice by rowIndex means effectively ObservedValue.target=row.getId()
 		// && ObervedValue.value=value!
-		if (row.getId() == null) throw new MatrixException(
-				"row.getId() not set for sliceByRowValues(" + row + ")");
-		return this.slice(new MatrixRowValueFilter(row.getId(),
-				ObservedValue.VALUE, operator, value));
+		if (row.getId() == null) throw new MatrixException("row.getId() not set for sliceByRowValues(" + row + ")");
+		return this.slice(new MatrixRowValueFilter(row.getId(), ObservedValue.VALUE, operator, value));
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByColValues(int colIndex, Operator operator, Object value)
-			throws Exception
+	public SliceableMatrix<R, C, V> sliceByColValues(int colIndex, Operator operator, Object value) throws Exception
 	{
 		// slice by rowIndex means effectively ObservedValue.feature=index &&
 		// ObervedValue.value=value!
-		return this.slice(new MatrixColValueFilter(colIndex,
-				ObservedValue.VALUE, operator, value));
+		return this.slice(new MatrixColValueFilter(colIndex, ObservedValue.VALUE, operator, value));
 	}
 
 	public SliceableMatrix<R, C, V> sortCol(int colIndex, Operator operator) throws MatrixException
 	{
 		//
 		// sort by value
-		return this.slice(new MatrixColValueFilter(colIndex,
-				ObservedValue.VALUE, operator));
+		return this.slice(new MatrixColValueFilter(colIndex, ObservedValue.VALUE, operator));
 	}
 
 	public SliceableMatrix<R, C, V> sortCol(Integer colIndex, String colProperty, Operator operator)
 			throws MatrixException
 	{
-		return this.slice(new MatrixColValueFilter(colIndex, colProperty,
-				operator));
+		return this.slice(new MatrixColValueFilter(colIndex, colProperty, operator));
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByColValues(C col, Operator operator, Object value)
-			throws Exception
+	public SliceableMatrix<R, C, V> sliceByColValues(C col, Operator operator, Object value) throws Exception
 	{
 		// slice by rowIndex means effectively ObservedValue.target=row.getId()
 		// && ObervedValue.value=value!
-		if (col.getId() == null) throw new MatrixException(
-				"col.getId() not set for sliceByColValues(" + col + ")");
-		return this.slice(new MatrixColValueFilter(col.getId(),
-				ObservedValue.VALUE, operator, value));
+		if (col.getId() == null) throw new MatrixException("col.getId() not set for sliceByColValues(" + col + ")");
+		return this.slice(new MatrixColValueFilter(col.getId(), ObservedValue.VALUE, operator, value));
 	}
 
-	public SliceableMatrix<R, C, V> sortByColValues(C col, Operator operator)
-			throws MatrixException
+	public SliceableMatrix<R, C, V> sortByColValues(C col, Operator operator) throws MatrixException
 	{
-		if (col.getId() == null) throw new MatrixException(
-				"col.getId() not set for sortByColValues(" + col + ")");
-		return this.slice(new MatrixColValueFilter(col.getId(),
-				ObservedValue.VALUE, operator, col.getId()));
+		if (col.getId() == null) throw new MatrixException("col.getId() not set for sortByColValues(" + col + ")");
+		return this.slice(new MatrixColValueFilter(col.getId(), ObservedValue.VALUE, operator, col.getId()));
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByColValueProperty(C col, String property,
-			Operator operator, Object value) throws MatrixException
+	public SliceableMatrix<R, C, V> sliceByColValueProperty(C col, String property, Operator operator, Object value)
+			throws MatrixException
 	{
-		if (col.getId() == null) throw new MatrixException(
-				"col.getId() not set for sortByColValues(" + col + ")");
-		return this.slice(new MatrixColValueFilter(col.getId(),
-				property, operator, value));
+		if (col.getId() == null) throw new MatrixException("col.getId() not set for sortByColValues(" + col + ")");
+		return this.slice(new MatrixColValueFilter(col.getId(), property, operator, value));
 	}
 
 	public SliceableMatrix<R, C, V> sliceByColValueProperty(int protocolId, int colIndex, String property,
 			Operator operator, Object value) throws MatrixException
 	{
-		return this.slice(new MatrixColValueFilter(protocolId, colIndex,
-				property, operator, value));
-        }
-        
-	@Override
-	public SliceableMatrix<R, C, V> sliceByColValueProperty(int colIndex, String property,
-			Operator operator, Object value) throws MatrixException
-	{
-		return this.slice(new MatrixColValueFilter(colIndex,
-				property, operator, value));
+		return this.slice(new MatrixColValueFilter(protocolId, colIndex, property, operator, value));
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByRowValueProperty(R row, String property,
-			Operator operator, Object value) throws MatrixException
+	public SliceableMatrix<R, C, V> sliceByColValueProperty(int colIndex, String property, Operator operator,
+			Object value) throws MatrixException
 	{
-		if (row.getId() == null) throw new MatrixException(
-				"row.getId() not set for sortByColValues(" + row + ")");
-		return this.slice(new MatrixRowValueFilter(row.getId(),
-				property, operator, value));
+		return this.slice(new MatrixColValueFilter(colIndex, property, operator, value));
 	}
 
 	@Override
-	public SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex, String property,
-			Operator operator, Object value) throws MatrixException
+	public SliceableMatrix<R, C, V> sliceByRowValueProperty(R row, String property, Operator operator, Object value)
+			throws MatrixException
 	{
-		return this.slice(new MatrixRowValueFilter(rowIndex,
-				property, operator, value));
+		if (row.getId() == null) throw new MatrixException("row.getId() not set for sortByColValues(" + row + ")");
+		return this.slice(new MatrixRowValueFilter(row.getId(), property, operator, value));
 	}
-	
+
+	@Override
+	public SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex, String property, Operator operator,
+			Object value) throws MatrixException
+	{
+		return this.slice(new MatrixRowValueFilter(rowIndex, property, operator, value));
+	}
+
 	@Override
 	public SliceableMatrix<R, C, V> sliceByRowProperty(String property, Operator operator, Object value)
 			throws MatrixException
@@ -392,17 +370,13 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 				case rowHeader:
 					if (!this.getRowPropertyNames().contains(rule.getField()))
 					{
-						throw new MatrixException(
-								"rule.field not in matrix.rowPropertyNames: "
-										+ rule);
+						throw new MatrixException("rule.field not in matrix.rowPropertyNames: " + rule);
 					}
 					break;
 				case colHeader:
 					if (!this.getColPropertyNames().contains(rule.getField()))
 					{
-						throw new MatrixException(
-								"rule.field not in matrix.rowPropertyNames: "
-										+ rule);
+						throw new MatrixException("rule.field not in matrix.rowPropertyNames: " + rule);
 					}
 					break;
 				case rowValueProperty:
@@ -418,13 +392,13 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 			throw new MatrixException("rule not supported: " + rule);
 		}
 	}
-	
+
 	@Override
 	public List<MatrixQueryRule> getRules()
 	{
 		return rules;
 	}
-	
+
 	/**
 	 * Empty filter rules and cached data.
 	 */
@@ -433,7 +407,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	{
 		this.reset();
 	}
-	
+
 	/**
 	 * Empty filter rules and cached data.
 	 */
@@ -445,10 +419,9 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 
 		this.reload();
 	}
-	
+
 	/**
-	 * Empty caches and reload matrix data, whilst keeping any
-	 * filters intact.
+	 * Empty caches and reload matrix data, whilst keeping any filters intact.
 	 * 
 	 */
 	@Override

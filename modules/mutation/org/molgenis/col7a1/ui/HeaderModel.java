@@ -11,7 +11,8 @@ import org.molgenis.framework.ui.EasyPluginModel;
 
 public class HeaderModel extends EasyPluginModel
 {
-	private static final long serialVersionUID = 1L; //a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L; // a system veriable that
+														// is needed by tomcat
 
 	public HeaderModel(Header controller)
 	{

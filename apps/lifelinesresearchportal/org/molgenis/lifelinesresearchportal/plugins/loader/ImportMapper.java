@@ -71,7 +71,8 @@ public class ImportMapper
 		Database db = DatabaseFactory.create();
 
 		Investigation inv = new Investigation();
-		switch (studyNr) {
+		switch (studyNr)
+		{
 			case 0:
 				inv.setName("Test" + new Date());
 				break;
@@ -99,9 +100,9 @@ public class ImportMapper
 		final String DICT = "VW_DICT";
 		VwDictLoader dictLoader = new VwDictLoader(inv, DICT, db);
 		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA.csv"));
-		
+
 		dictLoader.load(reader);
-		
+
 		dictLoader.commit();
 
 		// load categories
@@ -113,8 +114,10 @@ public class ImportMapper
 
 		// iterate through the protocols map assuming CSV files
 		// exclude a few views:
-		// BEZOEK is skipped because we use BEZOEK_PIVOT, where each subvisit has become a row
-		List<String> exclude = Arrays.asList(new String[] { "BEZOEK", "BEP_OMSCHR", "DICT_HULP", "ONDERZOEK" });
+		// BEZOEK is skipped because we use BEZOEK_PIVOT, where each subvisit
+		// has become a row
+		List<String> exclude = Arrays.asList(new String[]
+		{ "BEZOEK", "BEP_OMSCHR", "DICT_HULP", "ONDERZOEK" });
 		for (Protocol protocol : dictLoader.getProtocols().values())
 		{
 			if (!exclude.contains(protocol.getName()))

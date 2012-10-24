@@ -20,38 +20,47 @@ import org.molgenis.util.Tuple;
 /**
  * Shows table of experiment information for WormQTL
  */
-public class PubMedLookup extends PluginModel<Entity> {
+public class PubMedLookup extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = 1L;
 
 	private PubMedLookupModel model = new PubMedLookupModel();
 
-	public PubMedLookupModel getMyModel() {
+	public PubMedLookupModel getMyModel()
+	{
 		return model;
 	}
 
-	public PubMedLookup(String name, ScreenController<?> parent) {
+	public PubMedLookup(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "PubMedTest";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "org/molgenis/omicsconnect/plugins/pubmed/PubMedLookup.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request) {
-		if (request.getString("__action") != null) {
+	public void handleRequest(Database db, Tuple request)
+	{
+		if (request.getString("__action") != null)
+		{
 			String action = request.getString("__action");
 			String pubmedFromUser = request.getString("Pubmed");
 
-			try {
+			try
+			{
 
-				if (action.equals("query")) {
+				if (action.equals("query"))
+				{
 
 					model.setBaseURL("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?");
 					model.setDb("pubmed");
@@ -63,30 +72,29 @@ public class PubMedLookup extends PluginModel<Entity> {
 
 					HashMap<String, String> map = model.PubMedData();
 
-					System.out.println("TEST::::::::::::::::>>>>>>>>"
-							+ map.toString());
+					System.out.println("TEST::::::::::::::::>>>>>>>>" + map.toString());
 
 					model.setPubmed(map);
 
 					JSONObject json = model.getJson();
 					model.setJson(json);
 
-					System.out.println("GET::::::::::::::::>>>>>>>>"
-							+ json.toString());
+					System.out.println("GET::::::::::::::::>>>>>>>>" + json.toString());
 				}
 
 			}
 
-			catch (Exception e) {
+			catch (Exception e)
+			{
 				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-						.getMessage() : "null", false));
+				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 
 	}
 

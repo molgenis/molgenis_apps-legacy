@@ -39,7 +39,7 @@ public class UploadService implements Serializable
 {
 	private static final long serialVersionUID = -5361668039279819684L;
 	private Database db;
-	
+
 	public void setDatabase(Database db)
 	{
 		this.db = db;
@@ -54,45 +54,56 @@ public class UploadService implements Serializable
 	 */
 	public void insert(PatientSummaryVO patientSummaryVO) throws Exception
 	{
-		if (patientSummaryVO == null)
-			return;
+		if (patientSummaryVO == null) return;
 
 		Patient patient = this.toPatient(patientSummaryVO);
 
 		// submissions are never inserted via patients, just select newest
 		// by date
-		//TODO: Do we still need that???
-//		List<Submission> submissions = this.db.query(Submission.class).equals(Submission.DATE_,	patientSummaryVO.getSubmissionDate()).sortDESC("id").find();
-//
-//		if (submissions.size() > 0)
-//		{
-//			patientSummaryVO.getPatient().setSubmission(submissions.get(0));
-//		}
+		// TODO: Do we still need that???
+		// List<Submission> submissions =
+		// this.db.query(Submission.class).equals(Submission.DATE_,
+		// patientSummaryVO.getSubmissionDate()).sortDESC("id").find();
+		//
+		// if (submissions.size() > 0)
+		// {
+		// patientSummaryVO.getPatient().setSubmission(submissions.get(0));
+		// }
 
 		// mutations are never inserted via patients, just select
 		for (MutationSummaryVO mutationSummaryVO : patientSummaryVO.getVariantSummaryVOList())
 		{
-			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.CDNA_NOTATION, mutationSummaryVO.getCdnaNotation()).find();
+			List<Mutation> mutations = this.db.query(Mutation.class)
+					.equals(Mutation.CDNA_NOTATION, mutationSummaryVO.getCdnaNotation()).find();
 
-//			System.out.println(">>> Queried: " + mutationSummaryVO.getCdnaNotation() + ", found: " + mutations.size());
-			if (mutations.size() != 1)
-				throw new Exception("ERROR: No mutation found for " + mutationSummaryVO.getCdnaNotation());
+			// System.out.println(">>> Queried: " +
+			// mutationSummaryVO.getCdnaNotation() + ", found: " +
+			// mutations.size());
+			if (mutations.size() != 1) throw new Exception("ERROR: No mutation found for "
+					+ mutationSummaryVO.getCdnaNotation());
 
 			patient.getMutations_Id().add(mutations.get(0).getId());
 		}
 
 		// phenotypes are never inserted via patients, just select
-//		if (patientSummaryVO.getPhenotypeId() == null)
-//		{
-////			System.out.println(">>> Query: majortype==" + patientSummaryVO.getPhenotypeMajor() + ", subtype==" + patientSummaryVO.getPhenotypeSub());
-//			List<MutationPhenotype> phenotypes = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.MAJORTYPE, patientSummaryVO.getPhenotypeMajor()).equals(MutationPhenotype.SUBTYPE, patientSummaryVO.getPhenotypeSub()).find();
-//
-//			if (phenotypes.size() != 1)
-//				throw new Exception("No phenotype found for " + patientSummaryVO.getPhenotypeMajor() + ", " + patientSummaryVO.getPhenotypeSub());
-//
-//			patientSummaryVO.setPhenotypeId(phenotypes.get(0).getId());
-//		}
-//		patient.setPhenotype_Id(patientSummaryVO.getPhenotypeId());
+		// if (patientSummaryVO.getPhenotypeId() == null)
+		// {
+		// // System.out.println(">>> Query: majortype==" +
+		// patientSummaryVO.getPhenotypeMajor() + ", subtype==" +
+		// patientSummaryVO.getPhenotypeSub());
+		// List<MutationPhenotype> phenotypes =
+		// this.db.query(MutationPhenotype.class).equals(MutationPhenotype.MAJORTYPE,
+		// patientSummaryVO.getPhenotypeMajor()).equals(MutationPhenotype.SUBTYPE,
+		// patientSummaryVO.getPhenotypeSub()).find();
+		//
+		// if (phenotypes.size() != 1)
+		// throw new Exception("No phenotype found for " +
+		// patientSummaryVO.getPhenotypeMajor() + ", " +
+		// patientSummaryVO.getPhenotypeSub());
+		//
+		// patientSummaryVO.setPhenotypeId(phenotypes.get(0).getId());
+		// }
+		// patient.setPhenotype_Id(patientSummaryVO.getPhenotypeId());
 
 		// Publications are never inserted via patients, just select
 		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList()))
@@ -101,51 +112,50 @@ public class UploadService implements Serializable
 
 			for (PublicationVO publicationVO : patientSummaryVO.getPublicationVOList())
 			{
-				if (publicationVO.getPubmedId() == null)
-					continue;
+				if (publicationVO.getPubmedId() == null) continue;
 
-				List<OntologyTerm> pubmedTerms = this.db.query(OntologyTerm.class).equals(OntologyTerm.NAME, publicationVO.getPubmedId()).find();
-				
-				if (pubmedTerms.size() != 1)
-					continue;
+				List<OntologyTerm> pubmedTerms = this.db.query(OntologyTerm.class)
+						.equals(OntologyTerm.NAME, publicationVO.getPubmedId()).find();
 
-				List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID, pubmedTerms.get(0).getId()).find();
+				if (pubmedTerms.size() != 1) continue;
 
-				if (publications.size() != 1)
-					throw new Exception("No publication found for Pubmed ID " + publicationVO.getPubmedId());
-					
+				List<Publication> publications = this.db.query(Publication.class)
+						.equals(Publication.PUBMEDID, pubmedTerms.get(0).getId()).find();
+
+				if (publications.size() != 1) throw new Exception("No publication found for Pubmed ID "
+						+ publicationVO.getPubmedId());
+
 				publicationIds.add(publications.get(0).getId());
 			}
-				
+
 			patient.setPatientreferences_Id(publicationIds);
 		}
 		patient.setSubmission_Id(1);
 		// Insert patient
 		this.db.add(patient);
-		
+
 		// Insert ObservedValues
-		
+
 		for (ObservedValueVO observedValueVO : patientSummaryVO.getObservedValueVOList())
 		{
-			if (observedValueVO == null)
-				return;
-			
-			List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
-			
-			if (features.size() != 1)
-				return;
-			
-			List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
-			
-			if (patients.size() != 1)
-				return;
-	
+			if (observedValueVO == null) return;
+
+			List<ObservableFeature> features = this.db.query(ObservableFeature.class)
+					.equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
+
+			if (features.size() != 1) return;
+
+			List<Patient> patients = this.db.query(Patient.class)
+					.equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
+
+			if (patients.size() != 1) return;
+
 			ObservedValue observedValue = new ObservedValue();
 			observedValue.setFeature(features.get(0));
 			observedValue.setInvestigation(1);
 			observedValue.setTarget(patient.getId());
 			observedValue.setValue(observedValueVO.getValue());
-			
+
 			this.db.add(observedValue);
 		}
 	}
@@ -159,10 +169,11 @@ public class UploadService implements Serializable
 	 */
 	public int insertBatch(File file, CsvToDatabase<Entity> uploadBatchCsvReader) throws Exception
 	{
-		Workbook workbook             = Workbook.getWorkbook(file);
+		Workbook workbook = Workbook.getWorkbook(file);
 		UploadBatchExcelReader reader = new UploadBatchExcelReader();
 		reader.setUploadBatchCsvReader(uploadBatchCsvReader);
-		int count                     = reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
+		int count = reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(),
+				DatabaseAction.ADD_IGNORE_EXISTING, "");
 		return count;
 	}
 
@@ -173,10 +184,12 @@ public class UploadService implements Serializable
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public Integer getMaxPatientIdentifier() throws DatabaseException, ParseException {
+	public Integer getMaxPatientIdentifier() throws DatabaseException, ParseException
+	{
 		List<Patient> patients = this.db.query(Patient.class).find();
 
-		if (CollectionUtils.isEmpty(patients)) {
+		if (CollectionUtils.isEmpty(patients))
+		{
 			return 0;
 		}
 
@@ -186,10 +199,11 @@ public class UploadService implements Serializable
 
 	/**
 	 * Insert mutation and set primary key
+	 * 
 	 * @param mutation
 	 * @return number of mutations inserted
-	 * @throws IOException 
-	 * @throws Exception 
+	 * @throws IOException
+	 * @throws Exception
 	 */
 	public int insert(MutationUploadVO mutationUploadVO) throws Exception
 	{
@@ -199,7 +213,9 @@ public class UploadService implements Serializable
 		mutationUploadVO.getMutation().setExon(this.db.findById(Exon.class, mutationUploadVO.getExonId()));
 
 		// Genes are never inserted via mutations, just select
-		mutationUploadVO.getMutation().setGene(this.db.query(MutationGene.class).equals(MutationGene.SYMBOL, mutationUploadVO.getGeneSymbol()).find().get(0));
+		mutationUploadVO.getMutation().setGene(
+				this.db.query(MutationGene.class).equals(MutationGene.SYMBOL, mutationUploadVO.getGeneSymbol()).find()
+						.get(0));
 
 		// Insert mutation and set primary key
 		count = this.db.add(mutationUploadVO.getMutation());
@@ -215,6 +231,7 @@ public class UploadService implements Serializable
 
 	/**
 	 * Get the biggest identifier without the leading 'P'
+	 * 
 	 * @return biggest identifier without the leading 'P'
 	 * @throws DatabaseException
 	 * @throws ParseException
@@ -222,9 +239,8 @@ public class UploadService implements Serializable
 	public Integer getMaxMutationIdentifier() throws DatabaseException, ParseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).find();
-		
-		if (CollectionUtils.isEmpty(mutations))
-			return 0;
+
+		if (CollectionUtils.isEmpty(mutations)) return 0;
 
 		Collections.sort(mutations, new MutationComparator());
 		return Integer.valueOf(mutations.get(mutations.size() - 1).getIdentifier().substring(1));
@@ -245,17 +261,19 @@ public class UploadService implements Serializable
 		patient.setDeath_Cause(patientSummaryVO.getPatientDeathCause());
 		patient.setMmp1_Allele1(patientSummaryVO.getPatientMmp1Allele1());
 		patient.setMmp1_Allele2(patientSummaryVO.getPatientMmp1Allele2());
-		if (StringUtils.isNotEmpty(patientSummaryVO.getVariantComment()))
-			patient.setMutation2remark(patientSummaryVO.getVariantComment());
+		if (StringUtils.isNotEmpty(patientSummaryVO.getVariantComment())) patient.setMutation2remark(patientSummaryVO
+				.getVariantComment());
 
-//		patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
-//			
-//		Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
-//		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
-//		patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
-//		patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
-//		patientSummaryVO.setSubmitterCity(submitter.getCity());
-//		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
+		// patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
+		//
+		// Submission submission = this.db.findById(Submission.class,
+		// patient.getSubmission_Id());
+		// MolgenisUser submitter = this.db.findById(MolgenisUser.class,
+		// submission.getSubmitters_Id().get(0));
+		// patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
+		// patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
+		// patientSummaryVO.setSubmitterCity(submitter.getCity());
+		// patientSummaryVO.setSubmitterCountry(submitter.getCountry());
 
 		return patient;
 	}

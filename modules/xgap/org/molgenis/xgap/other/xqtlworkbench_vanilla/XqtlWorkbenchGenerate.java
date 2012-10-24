@@ -1,6 +1,5 @@
 package org.molgenis.xgap.other.xqtlworkbench_vanilla;
 
-
 import org.molgenis.Molgenis;
 
 public class XqtlWorkbenchGenerate
@@ -10,8 +9,9 @@ public class XqtlWorkbenchGenerate
 		try
 		{
 			new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench/xqtlworkbench.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

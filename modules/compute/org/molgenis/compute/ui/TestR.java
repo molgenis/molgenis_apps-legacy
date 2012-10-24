@@ -15,55 +15,54 @@ import org.molgenis.util.Tuple;
 public class TestR extends EasyPluginController<TestRView>
 {
 
-    private WorkflowGeneratorDB processing = new WorkflowGeneratorDB();
+	private WorkflowGeneratorDB processing = new WorkflowGeneratorDB();
 
-    public TestR(String name, ScreenController<?> parent)
-    {
-        super(name, parent);
-        this.setModel(new TestRView(this)); //the default model
-    }
+	public TestR(String name, ScreenController<?> parent)
+	{
+		super(name, parent);
+		this.setModel(new TestRView(this)); // the default model
+	}
 
-    public ScreenView getView()
-    {
-    	return new FreemarkerView("TestR.ftl", getModel());
-    }
-    
-    @Override
-    public void reload(Database db) throws Exception
-    {
-    }
+	public ScreenView getView()
+	{
+		return new FreemarkerView("TestR.ftl", getModel());
+	}
 
+	@Override
+	public void reload(Database db) throws Exception
+	{
+	}
 
-    public void buttonRunTest(Database db, Tuple request) throws Exception
-    {
-        System.out.println("Run R");
+	public void buttonRunTest(Database db, Tuple request) throws Exception
+	{
+		System.out.println("Run R");
 
-        String outputname = request.getString("outputName");
-        outputname = '"' + outputname + '"';
+		String outputname = request.getString("outputName");
+		outputname = '"' + outputname + '"';
 
-        //only one user value goes from ui
-        String applicationName = null;
-        Hashtable<String, String> userValues = new Hashtable<String, String>();
+		// only one user value goes from ui
+		String applicationName = null;
+		Hashtable<String, String> userValues = new Hashtable<String, String>();
 
-        userValues.put("outputname", outputname);
+		userValues.put("outputname", outputname);
 
-        //I have no idea how to specify constraction of the application name
-        applicationName = "RTEST"
-                        + "_" + processing.getFormattedTime();
+		// I have no idea how to specify constraction of the application name
+		applicationName = "RTEST" + "_" + processing.getFormattedTime();
 
-        //get NGS workflow
-        Workflow workflow = db.query(Workflow.class).equals(Workflow.NAME, "TestR").find().get(0);
+		// get NGS workflow
+		Workflow workflow = db.query(Workflow.class).equals(Workflow.NAME, "TestR").find().get(0);
 
-        //set few necessary parameters
-        //should it come from some settings file
-        processing.setRemoteLocation("/data/gcc/test_george/");
+		// set few necessary parameters
+		// should it come from some settings file
+		processing.setRemoteLocation("/data/gcc/test_george/");
 
-        //and local settings for debugging
-        processing.setToWriteLocally(true);
-        processing.setLocalLocation("/test/");
+		// and local settings for debugging
+		processing.setToWriteLocally(true);
+		processing.setLocalLocation("/test/");
 
-        processing.processSingleWorksheet(db, request, userValues, workflow, applicationName, WorkflowGeneratorDB.ENV_CLUSTER);
-        getModel().setSuccess("start workflow succesfull");
-    }
+		processing.processSingleWorksheet(db, request, userValues, workflow, applicationName,
+				WorkflowGeneratorDB.ENV_CLUSTER);
+		getModel().setSuccess("start workflow succesfull");
+	}
 
 }

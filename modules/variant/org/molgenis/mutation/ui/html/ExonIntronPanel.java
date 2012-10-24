@@ -16,7 +16,7 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 929100596754279741L;
 
-	//TODO: make SCALE_FACTOR customizable
+//TODO: make SCALE_FACTOR customizable
 //	private final double SCALE_FACTOR          = 0.1;
 	private final double SCALE_FACTOR          = 1;
 	private List<ExonDTO> exonDTOList;
@@ -47,18 +47,19 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 
 			for (ExonDTO exonDTO : exonDTOList)
 			{
-				result.appendln("<td id=\"exon" + exonDTO.getId() + "\" width=\"" + exonDTO.getLength() * SCALE_FACTOR + "px\" align=\"center\">" + exonDTO.getName() + "</td>");
+				result.appendln("<td id=\"exon" + exonDTO.getId() + "\" width=\"" + exonDTO.getLength() * SCALE_FACTOR
+						+ "px\" align=\"center\">" + exonDTO.getName() + "</td>");
 			}
-	
+
 			result.appendln("</tr>");
 		}
-		
+
 		// second row: boxes
 		result.appendln("<tr>");
-		
+
 		for (ExonDTO exonDTO : exonDTOList)
 		{
-			String url   = this.baseUrl;
+			String url = this.baseUrl;
 			url = StringUtils.replace(url, "exon_id=", "exon_id=" + exonDTO.getId());
 			String title = "Go to " + exonDTO.getName();
 
@@ -67,7 +68,9 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 				if (this.showIntrons)
 				{
 					result.appendln("<td>");
-					result.append("<a href=\"" + url + "\" alt=\"[]\" title=\"" + title + "\"><img src=\"res/img/col7a1/intron.png\" width=\"" + exonDTO.getLength() * SCALE_FACTOR + "px\" height=\"30px\"/></a>");
+					result.append("<a href=\"" + url + "\" alt=\"[]\" title=\"" + title
+							+ "\"><img src=\"res/img/col7a1/intron.png\" width=\"" + exonDTO.getLength() * SCALE_FACTOR
+							+ "px\" height=\"30px\"/></a>");
 					result.appendln("</td>");
 				}
 			}
@@ -76,8 +79,11 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 				if (this.showExons)
 				{
 					result.appendln("<td>");
-					result.append("<div class=\"pd" + exonDTO.getDomainId().get(0).intValue() + "\" style=\"display: block; width: " + exonDTO.getLength() * SCALE_FACTOR + "px; height: 26px; border-width:2px; border-style:solid;\">");
-					result.append("<a class=\"clickable_block\" href=\"" + url + "\" alt=\"[]\" title=\"" + title + "\"></a>");
+					result.append("<div class=\"pd" + exonDTO.getDomainId().get(0).intValue()
+							+ "\" style=\"display: block; width: " + exonDTO.getLength() * SCALE_FACTOR
+							+ "px; height: 26px; border-width:2px; border-style:solid;\">");
+					result.append("<a class=\"clickable_block\" href=\"" + url + "\" alt=\"[]\" title=\"" + title
+							+ "\"></a>");
 					result.append("</div>");
 					result.appendln("</td>");
 				}
@@ -85,17 +91,22 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 		}
 
 		result.appendln("</tr>");
-		
+
 		// third row: positions
 		if (this.showPosition)
 		{
 			result.appendln("<tr>");
-			
+
 			for (ExonDTO exonSummaryVO : exonDTOList)
 			{
-				result.appendln("<td width=\"" + exonSummaryVO.getLength() * SCALE_FACTOR + "px\" align=\"left\">" + (!exonSummaryVO.getIsIntron() ? "<span style=\"font-size:6pt;\">" + exonSummaryVO.getCdnaStart() + "</span>" : "") + "</td>");
+				result.appendln("<td width=\""
+						+ exonSummaryVO.getLength()
+						* SCALE_FACTOR
+						+ "px\" align=\"left\">"
+						+ (!exonSummaryVO.getIsIntron() ? "<span style=\"font-size:6pt;\">"
+								+ exonSummaryVO.getCdnaStart() + "</span>" : "") + "</td>");
 			}
-	
+
 			result.appendln("</tr>");
 		}
 
@@ -105,11 +116,13 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 		return result.toString();
 	}
 
-	public void setShowNames(boolean showNames) {
+	public void setShowNames(boolean showNames) 
+	{
 		this.showNames = showNames;
 	}
 
-	public void setShowExons(boolean showExons) {
+	public void setShowExons(boolean showExons)
+	{
 		this.showExons = showExons;
 	}
 
@@ -118,7 +131,8 @@ public class ExonIntronPanel extends HtmlInput<ExonDTO> implements Serializable
 		this.showIntrons = showIntrons;
 	}
 
-	public void setShowPosition(boolean showPosition) {
+	public void setShowPosition(boolean showPosition)
+	{
 		this.showPosition = showPosition;
 	}
 }

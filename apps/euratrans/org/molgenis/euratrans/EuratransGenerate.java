@@ -1,6 +1,5 @@
 package org.molgenis.euratrans;
 
-
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
@@ -15,8 +14,9 @@ public class EuratransGenerate
 		{
 			FileUtils.deleteDirectory(new File("hsqldb"));
 			new Molgenis("apps/euratrans/org/molgenis/euratrans/euratrans.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

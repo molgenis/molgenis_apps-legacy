@@ -36,8 +36,8 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 {
 
 	protected boolean strict = false;
-	
-	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
+
+	// TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public MolgenisFileDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
@@ -52,9 +52,12 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 		// later on we will escape the entity name to filename and do uniqueness
 		// checks. this means file can have 'pretty' names in the database but
 		// are simple on the filesystem
-		if(strict){
+		if (strict)
+		{
 			NameConvention.validateEntityNamesStrict(entities);
-		}else{
+		}
+		else
+		{
 			NameConvention.validateEntityNames(entities);
 		}
 
@@ -132,7 +135,7 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 	public int update(List<E> entities) throws DatabaseException
 	{
 		boolean dbAlreadyInTx = this.getDatabase().inTx();
-		
+
 		genericAddUpdateChecks(entities);
 
 		// make sure the names within the imported list are allowed in
@@ -178,8 +181,8 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 		int count = 0;
 		for (MolgenisFile mf : entities)
 		{
-			MolgenisFile oldMF = this.getDatabase().find(MolgenisFile.class,
-					new QueryRule("id", Operator.EQUALS, mf.getId())).get(0);
+			MolgenisFile oldMF = this.getDatabase()
+					.find(MolgenisFile.class, new QueryRule("id", Operator.EQUALS, mf.getId())).get(0);
 
 			String oldFileName = NameConvention.escapeFileName(oldMF.getName());
 			String newFileName = NameConvention.escapeFileName(mf.getName());
@@ -204,10 +207,11 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 						// skip rest of the function
 					}
 
-					if(!dbAlreadyInTx){
+					if (!dbAlreadyInTx)
+					{
 						this.getDatabase().beginTx();
 					}
-					
+
 					if (oldFile != null)
 					{
 
@@ -233,21 +237,23 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 							}
 						}
 					}
-					
+
 					// update record for just this file
 					super.update(entities.subList(count, count + 1));
 
 					// commit and count
-					if(!dbAlreadyInTx){
+					if (!dbAlreadyInTx)
+					{
 						this.getDatabase().commitTx();
 					}
-					
+
 					count++;
-					
+
 				}
 				catch (Exception e)
 				{
-					if(!dbAlreadyInTx){
+					if (!dbAlreadyInTx)
+					{
 						this.getDatabase().rollbackTx();
 					}
 					throw new DatabaseException(e.getMessage());
@@ -262,16 +268,17 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		boolean dbAlreadyInTx = this.getDatabase().inTx();
-		
+
 		// find backend file, and if exists, delete
 		int count = 0;
 		for (MolgenisFile mf : entities)
 		{
-			
-			if(!dbAlreadyInTx){
+
+			if (!dbAlreadyInTx)
+			{
 				this.getDatabase().beginTx();
 			}
-					
+
 			try
 			{
 				try
@@ -279,7 +286,8 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 					// attempt delete, only catch FileNotFound (this is okay)
 					MolgenisFileHandler mfh = new MolgenisFileHandler(this.getDatabase());
 					mfh.deleteFile(mf, this.getDatabase());
-					//System.out.println("Deleted MolgenisFile: " + mf.toString());
+					// System.out.println("Deleted MolgenisFile: " +
+					// mf.toString());
 				}
 				catch (FileNotFoundException fnfe)
 				{
@@ -289,25 +297,28 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MapperDecorat
 					// caught here ofcourse (eg. DatabaseException,
 					// InterruptedException, TypeUnknownException,
 					// XGAPStorageException, IOException)
-					
-					//System.out.println("Trying to delete '" + mf.getName()
-					//		+ "', but file not found. Exception caught: " + fnfe.getMessage());
+
+					// System.out.println("Trying to delete '" + mf.getName()
+					// + "', but file not found. Exception caught: " +
+					// fnfe.getMessage());
 				}
 
 				// update record for just this file
 				super.remove(entities.subList(count, count + 1));
 
 				// commit and count
-				if(!dbAlreadyInTx){
+				if (!dbAlreadyInTx)
+				{
 					this.getDatabase().commitTx();
 				}
-				
+
 				count++;
 
 			}
 			catch (Exception e)
 			{
-				if(!dbAlreadyInTx){
+				if (!dbAlreadyInTx)
+				{
 					this.getDatabase().rollbackTx();
 				}
 				throw new DatabaseException(e.getMessage());

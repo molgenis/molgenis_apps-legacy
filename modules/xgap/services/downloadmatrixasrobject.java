@@ -36,12 +36,12 @@ public class downloadmatrixasrobject implements MolgenisService
 	private static Logger logger = Logger.getLogger(downloadmatrixasrobject.class);
 
 	private MolgenisContext mc;
-	
+
 	public downloadmatrixasrobject(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -51,10 +51,10 @@ public class downloadmatrixasrobject implements MolgenisService
 		OutputStream out = response.getResponse().getOutputStream();
 		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
 		response.getResponse().setStatus(HttpServletResponse.SC_OK);
-		
+
 		boolean databaseIsAvailable = false;
 		Database db = null;
-		
+
 		String content = "";
 
 		try
@@ -72,19 +72,22 @@ public class downloadmatrixasrobject implements MolgenisService
 		{
 			try
 			{
-				
-				//special exception for filtered content: get matrix instance from memory and do complete handle
-				if(request.getString("id").equals("inmemory"))
+
+				// special exception for filtered content: get matrix instance
+				// from memory and do complete handle
+				if (request.getString("id").equals("inmemory"))
 				{
-					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
-					content = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA)).getAsRobject(false);
+					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession()
+							.getAttribute("application");
+					content = ((DataMatrixInstance) molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA))
+							.getAsRobject(false);
 					response.getResponse().setContentLength(content.length());
 					p.print(content);
 					p.flush();
 					p.close();
 					return;
 				}
-				
+
 				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
@@ -93,7 +96,7 @@ public class downloadmatrixasrobject implements MolgenisService
 
 				if (request.getString("download").equals("all"))
 				{
-					content +=  instance.getAsRobject(false) ;
+					content += instance.getAsRobject(false);
 				}
 				else if (request.getString("download").equals("some"))
 				{
@@ -101,7 +104,8 @@ public class downloadmatrixasrobject implements MolgenisService
 					int colLimit = request.getInt("clim");
 					int rowOffset = request.getInt("roff");
 					int rowLimit = request.getInt("rlim");
-					content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsRobject(false);	
+					content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsRobject(
+							false);
 				}
 				else
 				{
@@ -125,11 +129,15 @@ public class downloadmatrixasrobject implements MolgenisService
 
 	public String displayUsage(Database db)
 	{
-		String usage = "Usage:" + "\n\n" + "Full matrix:\n"
-				+ "http://localhost:8080/xgap/downloadmatrixasrobject?id=58342&download=all" + "\n\n"
+		String usage = "Usage:"
+				+ "\n\n"
+				+ "Full matrix:\n"
+				+ "http://localhost:8080/xgap/downloadmatrixasrobject?id=58342&download=all"
+				+ "\n\n"
 				+ "Only first element of matrix (top left):\n"
 				+ "http://localhost:8080/xgap/downloadmatrixasrobject?id=58342&download=some&coff=0&clim=1&roff=0&rlim=1"
-				+ "\n\n" + "6 by 15 submatrix with a row offset of 20 and a column offset of 5:\n"
+				+ "\n\n"
+				+ "6 by 15 submatrix with a row offset of 20 and a column offset of 5:\n"
 				+ "http://localhost:8080/xgap/downloadmatrixasrobject?id=58342&download=some&coff=5&clim=6&roff=20&rlim=15"
 				+ "\n\n" + "Matrices available in this database:\n\n" + matricesFromDb(db) + "\n";
 		return usage;

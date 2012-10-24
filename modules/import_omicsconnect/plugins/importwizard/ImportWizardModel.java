@@ -1,55 +1,113 @@
 package plugins.importwizard;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Map;
 
-import app.ImportWizardExcelPrognosis;
-
-public class ImportWizardModel
+public class ImportWizardModel extends WizardModel
 {
+	private File file;
+	private Map<String, Boolean> entitiesImportable;
+	private Map<String, Boolean> dataImportable;
+	private Map<String, Collection<String>> fieldsDetected;
+	private Map<String, Collection<String>> fieldsUnknown;
+	private Map<String, Collection<String>> fieldsRequired;
+	private Map<String, Collection<String>> fieldsAvailable;
+	private boolean importError;
+	private boolean validationError;
 
-	private String whichScreen;
-	private File currentFile;
-	private ImportWizardExcelPrognosis iwep;
-	private boolean importSuccess;
-
-	public String getWhichScreen()
+	public ImportWizardModel(int nrPages)
 	{
-		return whichScreen;
+		super(nrPages);
 	}
 
-	public void setWhichScreen(String whichScreen)
+	public File getFile()
 	{
-		this.whichScreen = whichScreen;
+		return file;
 	}
 
-	public File getCurrentFile()
+	public void setFile(File file)
 	{
-		return currentFile;
+		this.file = file;
 	}
 
-	public void setCurrentFile(File currentFile)
+	public Map<String, Boolean> getEntitiesImportable()
 	{
-		this.currentFile = currentFile;
+		return entitiesImportable;
 	}
 
-	public ImportWizardExcelPrognosis getIwep()
+	public void setEntitiesImportable(Map<String, Boolean> entitiesImportable)
 	{
-		return iwep;
+		this.entitiesImportable = entitiesImportable;
 	}
 
-	public void setIwep(ImportWizardExcelPrognosis iwep)
+	public Map<String, Collection<String>> getFieldsDetected()
 	{
-		this.iwep = iwep;
+		return fieldsDetected;
 	}
 
-	public boolean isImportSuccess()
+	public Map<String, Collection<String>> getFieldsUnknown()
 	{
-		return importSuccess;
+		return fieldsUnknown;
 	}
 
-	public void setImportSuccess(boolean importSuccess)
+	public Map<String, Collection<String>> getFieldsRequired()
 	{
-		this.importSuccess = importSuccess;
+		return fieldsRequired;
 	}
 
+	public Map<String, Collection<String>> getFieldsAvailable()
+	{
+		return fieldsAvailable;
+	}
+
+	public void setFieldsDetected(Map<String, Collection<String>> fieldsDetected)
+	{
+		this.fieldsDetected = fieldsDetected;
+	}
+
+	public void setFieldsUnknown(Map<String, Collection<String>> fieldsUnknown)
+	{
+		this.fieldsUnknown = fieldsUnknown;
+	}
+
+	public void setFieldsRequired(Map<String, Collection<String>> fieldsRequired)
+	{
+		this.fieldsRequired = fieldsRequired;
+	}
+
+	public void setFieldsAvailable(Map<String, Collection<String>> fieldsAvailable)
+	{
+		this.fieldsAvailable = fieldsAvailable;
+	}
+
+	public Map<String, Boolean> getDataImportable()
+	{
+		return dataImportable;
+	}
+
+	public void setDataImportable(Map<String, Boolean> dataImportable)
+	{
+		this.dataImportable = dataImportable;
+	}
+
+	public boolean isImportError()
+	{
+		return importError;
+	}
+
+	public void setImportError(boolean importError)
+	{
+		this.importError = importError;
+	}
+
+	public boolean isValidationError()
+	{
+		return validationError;
+	}
+
+	public void setValidationError(boolean validationError)
+	{
+		this.validationError = validationError;
+	}
 }
