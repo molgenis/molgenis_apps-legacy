@@ -140,12 +140,19 @@ public class ImportWizard extends PluginModel<Entity>
 
 		// determine if validation succeeded
 		boolean ok = true;
-		for (Boolean b : entitiesImportable.values())
-			ok = ok & b;
-		for (Boolean b : dataSetsImportable.values())
-			ok = ok & b;
-		for (Collection<String> fields : iwep.getFieldsRequired().values())
-			ok = ok & (fields == null || fields.isEmpty());
+		if (entitiesImportable != null)
+		{
+			for (Boolean b : entitiesImportable.values())
+				ok = ok & b;
+
+			for (Collection<String> fields : iwep.getFieldsRequired().values())
+				ok = ok & (fields == null || fields.isEmpty());
+		}
+		if (dataSetsImportable != null)
+		{
+			for (Boolean b : dataSetsImportable.values())
+				ok = ok & b;
+		}
 
 		// if no error, set prognosis, set file, and continue
 		this.model.setFile(file);
@@ -180,11 +187,14 @@ public class ImportWizard extends PluginModel<Entity>
 			ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, dbAction, "", true);
 
 			// import dataset instances
-			List<String> dataSetSheetNames = new ArrayList<String>();
-			for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
-				if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
+			if (this.model.getDataImportable() != null)
+			{
+				List<String> dataSetSheetNames = new ArrayList<String>();
+				for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
+					if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
 
-			new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames);
+				new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames);
+			}
 
 			this.model.setImportError(false);
 		}
@@ -197,6 +207,10 @@ public class ImportWizard extends PluginModel<Entity>
 
 	private Map<String, Boolean> validateDataSetInstances(File file) throws BiffException, IOException
 	{
+		// get dataset entity names
+		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
+		if (sheet == null) return null;
+
 		// get sheet names
 		String[] sheetNames = Workbook.getWorkbook(file).getSheetNames();
 		List<String> dataSetSheets = new ArrayList<String>();
@@ -209,8 +223,6 @@ public class ImportWizard extends PluginModel<Entity>
 			}
 		}
 
-		// get dataset entity names
-		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
 		int rows = sheet.getRows();
 		if (rows <= 1) return Collections.emptyMap();
 
