@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -101,7 +102,6 @@ public class DataSetImporter
 		{
 			db.beginTx();
 			csvTable = new CsvTable(file);
-
 			List<Field> headerFields = csvTable.getAllColumns();
 			for (Tuple row : csvTable.getRows())
 			{
@@ -193,54 +193,51 @@ public class DataSetImporter
 
 	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException
 	{
-		List<String> headers = new ArrayList<String>();
-		Cell[] headerCells = sheet.getRow(0); // assume headers are on first
-												// line
-		if (headerCells.length == 0)
+		// get headers
+		Cell[] headerCells = sheet.getRow(0);
+		final int nrHeaders = headerCells.length;
+		if (nrHeaders == 0) return false;
+
+		List<String> headers = new ArrayList<String>(nrHeaders);
+		for (Cell headerCell : headerCells)
+			headers.add(headerCell.getContents());
+
+		// create writer
+		CsvWriter cw;
+		try
 		{
-			return false;
+			cw = new CsvWriter(new PrintWriter(file, "UTF-8"), headers);
 		}
-		ArrayList<Integer> namelessHeaderLocations = new ArrayList<Integer>(); // allow
-																				// for
-																				// empty
-																				// columns,
-																				// also
-																				// column
-																				// order
-																				// does
-																				// not
-																				// matter
-		for (int i = 0; i < headerCells.length; i++)
+		catch (UnsupportedEncodingException e)
 		{
-			if (!headerCells[i].getContents().equals(""))
-			{
-				headers.add(headerCells[i].getContents());
-			}
-			else
-			{
-				headers.add("nameless" + i);
-				namelessHeaderLocations.add(i);
-			}
+			throw new RuntimeException(e);
 		}
-		PrintWriter pw = new PrintWriter(file);
-		CsvWriter cw = new CsvWriter(pw, headers);
 		cw.setMissingValue("");
-		cw.writeHeader();
-		for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++)
+
+		// write csv to file
+		try
 		{
-			Tuple t = new SimpleTuple();
-			int colIndex = 0;
-			for (Cell c : sheet.getRow(rowIndex))
+			cw.writeHeader();
+			final int nrRows = sheet.getRows();
+			for (int rowIndex = 1; rowIndex < nrRows; rowIndex++)
 			{
-				if (!namelessHeaderLocations.contains(colIndex) && colIndex < headers.size() && c.getContents() != null)
+				Tuple t = new SimpleTuple();
+				int colIndex = 0;
+				for (Cell c : sheet.getRow(rowIndex))
 				{
-					t.set(headers.get(colIndex), c.getContents());
+					if (colIndex < headers.size() && c.getContents() != null)
+					{
+						t.set(headers.get(colIndex), c.getContents());
+					}
+					colIndex++;
 				}
-				colIndex++;
+				cw.writeRow(t);
 			}
-			cw.writeRow(t);
 		}
-		cw.close();
+		finally
+		{
+			cw.close();
+		}
 		return true;
 	}
 }
