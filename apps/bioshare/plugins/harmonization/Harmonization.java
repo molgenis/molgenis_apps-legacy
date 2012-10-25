@@ -9,7 +9,9 @@ package plugins.harmonization;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.json.JSONObject;
 import org.molgenis.compute.ComputeProtocol;
@@ -22,11 +24,14 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import plugins.HarmonizationComponent.OWLFunction;
 
 //import plugins.autohidelogin.AutoHideLoginModel; 
 
@@ -38,6 +43,8 @@ public class Harmonization extends PluginModel<Entity>
 	 */
 	private static final long serialVersionUID = 4255876428416189905L;
 	private List<String> listOfPredictionModels = new ArrayList<String>();
+	private List<String> listOfCohortStudies = new ArrayList<String>();
+	private List<String> reservedInv = new ArrayList<String>();
 
 	public Harmonization(String name, ScreenController<?> parent)
 	{
@@ -299,6 +306,68 @@ public class Harmonization extends PluginModel<Entity>
 						status.put("success", true);
 					}
 				}
+				else if ("download_json_validateStudy".equals(request.getAction()))
+				{
+					String predictionModel = request.getString("predictionModel");
+
+					String validationStudy = request.getString("validationStudy");
+
+					ComputeProtocol cp = db.find(ComputeProtocol.class,
+							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
+
+					if (cp.getFeatures_Name().size() > 0)
+					{
+						HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+
+						for (Measurement m : db.find(Measurement.class,
+								new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
+						{
+							PredictorInfo predictor = new PredictorInfo(m.getName());
+
+							predictor.setLabel(m.getLabel());
+
+							HashMap<String, String> categories = new HashMap<String, String>();
+
+							for (Category c : db.find(Category.class,
+									new QueryRule(Category.NAME, Operator.EQUALS, m.getCategories_Name())))
+							{
+								categories.put(c.getCode_String(), c.getDescription());
+							}
+
+							predictor.setCategory(categories);
+
+							predictors.put(m.getName(), predictor);
+						}
+
+						Query<ObservedValue> query = db.query(ObservedValue.class);
+
+						query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, cp.getFeatures_Name()));
+
+						query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
+
+						for (ObservedValue ov : query.find())
+						{
+							String targetName = ov.getTarget_Name();
+
+							String value = ov.getValue();
+
+							predictors.get(targetName).setBuildingBlocks(value.split(","));
+						}
+
+						// TODO ontocat dynamically searching ontology terms
+						String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
+
+						OWLFunction owlFunction = new OWLFunction(ontologyFileName);
+
+						for (Entry<String, PredictorInfo> entry : predictors.entrySet())
+						{
+							PredictorInfo predictor = entry.getValue();
+
+							createExpandQuery(predictor.getBuildingBlocks(), owlFunction);
+						}
+					}
+
+				}
 
 				db.commitTx();
 			}
@@ -331,17 +400,39 @@ public class Harmonization extends PluginModel<Entity>
 		{
 			// clear the old variable content
 			listOfPredictionModels.clear();
+			listOfCohortStudies.clear();
+
+			if (reservedInv.size() == 0)
+			{
+				reservedInv.add("catalogueCohortStudy");
+				reservedInv.add("cataloguePredictionModel");
+				reservedInv.add("Prediction Model");
+			}
 
 			for (ComputeProtocol cp : db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.INVESTIGATION_NAME,
 					Operator.EQUALS, "Prediction Model")))
 			{
 				listOfPredictionModels.add(cp.getName());
 			}
+
+			for (Investigation inv : db.find(Investigation.class))
+			{
+				if (!reservedInv.contains(inv.getName()))
+				{
+					listOfCohortStudies.add(inv.getName());
+				}
+			}
+
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private void createExpandQuery(List<String> buildingBlocks, OWLFunction owlFunction)
+	{
+
 	}
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
@@ -435,5 +526,10 @@ public class Harmonization extends PluginModel<Entity>
 	public String getUrl()
 	{
 		return "molgenis.do?__target=" + this.getName();
+	}
+
+	public List<String> getListOfCohortStudies()
+	{
+		return listOfCohortStudies;
 	}
 }

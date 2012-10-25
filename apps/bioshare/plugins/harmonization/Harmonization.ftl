@@ -81,6 +81,20 @@
 				$('#defineFormulaPanel').dialog('open');
 			});
 			
+			$('#showCohortStudy').button().click(function(){
+				$('#selectCohortStudyPanel').fadeIn();
+			});
+			
+			$('#listOfCohortStudies').chosen();
+			
+			$('#validatePredictionModel').button().click(function(){
+				validateStudy();
+			});
+			
+			$('#cancelSelectCohortStudy').button().click(function(){
+				$('#selectCohortStudyPanel').fadeOut();
+			});
+			
 			$('#addPredictorButton').click(function(){
 				$('#defineVariablePanel').fadeIn();
 			});
@@ -111,6 +125,31 @@
 			});
 		});
 		
+		function validateStudy(){
+		
+			if($('#listOfCohortStudies option').length == 0){
+				
+				showMessage("There are no cohort studies to validate the prediction model", false);
+			
+			}else if($('#selectPredictionModel option').length == 0){
+			
+				showMessage("There are no prediction models", false);
+			
+			}else{
+				
+				predictionModel = $('#selectPredictionModel').val();
+				
+				validationStudy = $('#listOfCohortStudies').val();
+				
+				$.ajax({
+					url : "${screen.getUrl()}&__action=download_json_validateStudy&predictionModel=" + predictionModel 
+						+ "&validationStudy=" + validationStudy,
+					async: false,
+				}).done(function(status){
+				});
+			}
+		}
+		
 		function insertNewRow(){
 			
 			message = {};
@@ -125,8 +164,11 @@
 				data["description"] = $('#descriptionOfPredictor').val();
 				data["dataType"] = $('#dataTypeOfPredictor').val();
 				data["unit"] = $('#unitOfPredictor').val();
-				data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","));
-				data["buildingBlocks"] = uniqueElementToString($('#buildingBlocks').val().split(","));
+				data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
+				
+				buildingBlockString = uniqueElementToString($('#buildingBlocks').val().split(";"), ";");
+				
+				data["buildingBlocks"] = uniqueElementToString(buildingBlockString.split(","), ",");
 				
 				//add the data to table
 				identifier = data["name"].replace(/\s/g,"_");
@@ -176,7 +218,8 @@
 			
 			addedCategory = "";
 			
-			if(categories != "" && categories != null){
+			if(categories != "" && categories != null)
+			{
 				blocks = categories.split(",");
 				addedCategory = createMultipleSelect(blocks);
 			}
@@ -185,9 +228,15 @@
 			
 			selectBlocks = "";
 			
-			if(buildingBlocks != "" && buildingBlocks != null){
-				blocks = buildingBlocks.split(",");
-				selectBlocks = createMultipleSelect(blocks);
+			if(buildingBlocks != "" && buildingBlocks != null)
+			{
+				
+				for( var i = 0 ; i < buildingBlocks.split(";").length ; i++)
+				{
+					eachDefinition = buildingBlocks.split(";")[i];
+					blocks = eachDefinition.split(",");
+					selectBlocks += createMultipleSelect(blocks);		
+				}
 			}
 			
 			newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
@@ -373,14 +422,18 @@
 	       return result;
 		}
 		
-		function uniqueElementToString(anArray){
+		function uniqueElementToString(anArray, separator){
 			
 			unique = uniqueElements(anArray);
 			
 			backToString = "";
 			
 			for(var i = 0; i < unique.length; i++){
-				backToString += unique[i] + ",";
+				if(separator != null){
+					backToString += unique[i] + separator;
+				}else{
+					backToString += unique[i] + ",";
+				}
 			}
 			
 			backToString = backToString.substring(0, backToString.length - 1);
@@ -455,14 +508,15 @@
 				<div class="screenpadding">
 					<div style="height:600px;width:100%;">
 						<div style="padding-left:6px;background:#DDDDDD;border:1px solid #BBBBBB;font-size:14px;height:28%;width:60%;float:left;margin-right:30px;" class="ui-corner-all">
-							<span style="font-style:italic;">
+							<div style="font-style:italic;">
 								<h3>Validate prediction models</h3>
-								<hr/>
-							</span>
+							</div>							
+							<hr/>
 							<div id="selectedPrediction" style="height:30px;padding-left:10px;">
 								Selected prediction model:
 								<span style="font-size:25px;font-style:italic;"></span>
-								<input type="button" id="defineFormula" value="formula" style="cursor:pointer;font-size:12px;height:25px;width:60px;float:right;margin-top:4px;margin-right:20px;" />
+								<input type="button" id="defineFormula" value="formula" style="font-size:12px;height:30px;width:70px;float:right;margin-top:4px;margin-right:20px;" />
+								<input type="button" id="showCohortStudy" value="cohort study" style="font-size:12px;height:30px;width:100px;float:right;margin-top:4px;" />
 								<div id="defineFormulaPanel" style="display:none;">
 									<textarea id="showFormula" style="width:90%;height:90%;font-size:12px;">
 									</textarea>
@@ -499,7 +553,23 @@
 								</div>
 							</div>
 						</div>
-						<fieldset id="statusMessage" style="display:none;width:275px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+						<div id="selectCohortStudyPanel" style="display:none;margin-left:-20px;width:300px;height:28%;position:relative;float:left;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:14%;width:100%;">
+								<span style="margin:10px;font-size:20px;font-style:italic;">Select a cohort study</span>
+							</div>
+							<div style="margin-top:20px;margin-left:10px;height:70%;">
+								<select id="listOfCohortStudies" style="width:185px;">
+									<#if screen.getListOfCohortStudies()??>
+										<#list screen.getListOfCohortStudies() as study>
+											<option>${study}</option>
+										</#list>
+									</#if>
+								</select>
+								<input type="button" id="validatePredictionModel" value="validate" style="font-size:10px;position:absolute;top:80%;right:25%;" class="ui-button ui-widget ui-state-default ui-corner-all">
+								<input type="button" id="cancelSelectCohortStudy" value="cancel" style="font-size:10px;position:absolute;top:80%;right:5%;" class="ui-button ui-widget ui-state-default ui-corner-all">
+							</div>
+						</div>
+						<fieldset id="statusMessage" style="display:none;width:250px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 							<legend style="font-style:italic;">
 								Status
 							</legend>
@@ -643,7 +713,7 @@
 											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
 												category
 											</th>
-											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:40%;">
 												building blocks
 											</th>
 										</tr>
