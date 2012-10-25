@@ -1,4 +1,4 @@
-package plugins.catalogueTree;
+package eMeasure;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,9 +16,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.molgenis.framework.db.Database;
-import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Measurement;
-import org.molgenis.protocol.Protocol;
+import org.molgenis.gwascentral.Investigation;
+import org.molgenis.observ.ObservableFeature;
+import org.molgenis.observ.Protocol;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -28,7 +28,7 @@ public class EMeasure
 
 	PrintWriter out;
 	Protocol protocol;
-	Measurement measurement;
+	ObservableFeature obserableFeature;
 	Investigation investigation;
 	Database db;
 
@@ -45,15 +45,15 @@ public class EMeasure
 		filePath = tmpDir + File.separator + fileName + ".xml";
 	}
 
-	public String convert(List<Measurement> selectedMeasurements) throws Exception
+	public String convert(List<ObservableFeature> selectedObservableFeatures) throws Exception
 	{
 		StringBuffer out = new StringBuffer();
 
 		out.append("<QualityMeasureDocument xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"REPC_MT000100UV01.Organizer\" xsi:schemaLocation=\"urn:hl7-org:v3 multicacheschemas/REPC_MT000100UV01.xsd\" classCode=\"CONTAINER\" moodCode=\"DEF\" xmlns=\"urn:hl7-org:v3\">");
 
-		for (Measurement m : selectedMeasurements)
+		for (ObservableFeature m : selectedObservableFeatures)
 		{
-			EMeasureMeasurement e = new EMeasureMeasurement();
+			EMeasureObservableFeature e = new EMeasureObservableFeature();
 
 			out.append(e.addXML(m, db));
 		}
