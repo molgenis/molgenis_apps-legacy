@@ -9,6 +9,7 @@
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/import_omicsconnect" />
+		<pathelement location="modules/protocolViewer_omicsconnect" />
 	    <pathelement location="modules/webserver" />
 	    <pathelement location="modules/minigui" />
 	</path>
