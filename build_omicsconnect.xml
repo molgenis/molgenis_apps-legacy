@@ -8,8 +8,8 @@
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
-		<pathelement location="modules/omicsconnect_importer" />
-		<pathelement location="modules/omicsconnect_protocolViewer" />
+		<pathelement location="modules/omicsconnect-importer" />
+		<pathelement location="modules/omicsconnect-protocolViewer" />
 	    <pathelement location="modules/webserver" />
 	    <pathelement location="modules/minigui" />
 	</path>
