@@ -18,11 +18,11 @@ public class RunDemoTasksCluster
         // execute generated tasks with pilots
         ComputeExecutor executor = new ComputeExecutorPilotDB();
         executor.startHost("gcc");
-        executor.executeTasks(ComputeExecutorPilotDB.BACK_END_CLUSTER);
+        executor.executeTasks("cluster.gcc.rug.nl", ComputeExecutorPilotDB.BACK_END_CLUSTER);
 
         while (true)
         {
-            executor.executeTasks(ComputeExecutorPilotDB.BACK_END_CLUSTER);
+            executor.executeTasks("cluster.gcc.rug.nl", ComputeExecutorPilotDB.BACK_END_CLUSTER);
             try
             {
                 Thread.sleep(10000);

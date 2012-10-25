@@ -19,5 +19,5 @@ public interface ComputeGenerator
 
 	void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config);
 
-	void generateTasks(Workflow workflow, List<ComputeParameter> parameters, List<Tuple> targets);
+	void generateTasks(Workflow workflow, List<ComputeParameter> parameters, List<Tuple> targets, String backend_name);
 }

@@ -33,7 +33,7 @@ public class RunPilotsOnBackEnd
 
         while (true)
         {
-            executor.executeTasks(backendType);
+            executor.executeTasks(host, backendType);
             try
             {
                 Thread.sleep(30000);

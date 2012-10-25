@@ -20,7 +20,7 @@ public class RunPilotsOnLocalhost
 
         while (true)
         {
-            executor.executeTasks(ComputeExecutorPilotDB.BACK_END_LOCALHOST);
+            executor.executeTasks("",ComputeExecutorPilotDB.BACK_END_LOCALHOST);
             try
             {
                 Thread.sleep(10000);
