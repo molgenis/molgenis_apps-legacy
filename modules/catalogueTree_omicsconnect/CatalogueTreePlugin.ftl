@@ -421,21 +421,21 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				<#if screen.isSelectedInv() == true>
+				<#if screen.isSelectedDataSet() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr>
 							<td class="box-header" colspan="2">  
 						        <label style='font-size:14px'>
-						        <#if screen.getArrayInvestigations()??>
-							        <#if (screen.getArrayInvestigations()?size > 1)>
+						        <#if screen.getArrayDataSets()??>
+							        <#if (screen.getArrayDataSets()?size > 1)>
 										Choose a cohort:
-										<#list screen.getArrayInvestigations() as invName>
-												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value = "${invName}"
+										<#list screen.getArrayDataSets() as datasetsName>
+												<input class="cohortSelect" type="submit" name="cohortSelectSubmit" value = "${datasetsName}"
 													 style="display:none" onclick="__action.value='cohortSelect';"/>
 										</#list>
-									<#elseif (screen.getArrayInvestigations()?size > 0)>
+									<#elseif (screen.getArrayDataSets()?size > 0)>
 										Catalog: 
-										<#assign invName = screen.getArrayInvestigations()[0]> ${invName}
+										<#assign invName = screen.getArrayDataSets()[0]> ${datasetsName}
 									</#if>
 								</#if>
 								</label>

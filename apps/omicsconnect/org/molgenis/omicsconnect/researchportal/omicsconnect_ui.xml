@@ -18,6 +18,9 @@
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 		</form>
+		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin"
+			label="Tree" />
+		
 		<form name="DataSetViewer" entity="DataSet">
 			<plugin name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
 		</form>
