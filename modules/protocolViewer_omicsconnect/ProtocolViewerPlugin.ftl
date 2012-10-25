@@ -1,4 +1,4 @@
-<#macro plugins_catalogueTree_CatalogueTreePlugin screen>
+<#macro plugins_catalogueTree_ProtocolViewerPlugin screen>
 
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_CatalogueTreePlugin" name="${screen.name}" action="">

@@ -1,4 +1,4 @@
-package plugins.catalogueTree;
+package plugins.protocolViewer;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -50,7 +50,7 @@ import eMeasure.EMeasure;
 
 //import org.molgenis.util.XlsWriter;
 
-public class CatalogueTreePlugin extends PluginModel<Entity>
+public class ProtocolViewerPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -6143910771849972946L;
@@ -68,6 +68,8 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	private String selectedField = null;
 	private String SelectionName = "empty";
 	private List<ObservableFeature> listOfFeatures = new ArrayList<ObservableFeature>();
+	private List<Integer> listOfFeatureIds = new ArrayList<Integer>();
+
 	private boolean isSelectedDataSet = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
 	private List<String> SearchFilters = new ArrayList<String>();
@@ -95,7 +97,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 	private List<String> listOfObservableFeatures = new ArrayList<String>();
 
-	public CatalogueTreePlugin(String name, ScreenController<?> parent)
+	public ProtocolViewerPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -108,13 +110,13 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_catalogueTree_CatalogueTreePlugin";
+		return "plugins_catalogueTree_ProtocolViewerPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "CatalogueTreePlugin.ftl";
+		return "ProtocolViewerPlugin.ftl";
 	}
 
 	@Override
@@ -188,7 +190,14 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 		for (DataSet d : listDataSets)
 		{
-			listOfFeatures = d.getProtocolUsed().getFeatures();
+			List<Protocol> listP = db.find(Protocol.class,
+					new QueryRule(Protocol.ID, Operator.EQUALS, d.getProtocolUsed_Id()));
+
+			listOfFeatureIds = listP.get(0).getFeatures_Id();
+
+			listOfFeatures = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID, Operator.IN,
+					listOfFeatureIds));
+
 		}
 
 		appLoc = ((MolgenisRequest) request).getAppLocation();
@@ -251,9 +260,9 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 			for (DataSet d : listDataSets)
 			{
-				listOfFeatures = d.getProtocolUsed().getFeatures();
+				// listOfFeatures = d.getProtocolUsed().getFeatures();
 
-				for (final Integer featureID : d.getProtocolUsed().getFeatures_Id())
+				for (final Integer featureID : listOfFeatureIds)
 				{
 
 					String checkboxID = ObservableFeature.class.getSimpleName() + featureID
@@ -395,6 +404,11 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 				treeView = null;
 				RetrieveProtocols(db);
 			}
+			else
+			{
+				this.setMessages(new ScreenMessage(
+						"There is no Dataset in the database, please provide a Dataset in order to use the tree", false));
+			}
 
 		}
 		catch (Exception e)
@@ -438,69 +452,83 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 					this.selectedDataSet));
 
 			// Iterate through all the found protocols
+
 			for (DataSet d : listD)
 			{
-				System.out.println(d.getProtocolUsed_Id());
-				Protocol p = d.getProtocolUsed();
-				System.out.println();
-				// if (!p.getName().equalsIgnoreCase("generic"))
-				// {
 
-				setSelectedDataSet(true);
-				System.out.println(bla);
-				List<String> subNames = p.getSubprotocols_Identifier();
-
-				// keep a record of each protocol in a hashmap. Later on we
-				// could reference to the Protocol by name
-				if (!nameToProtocol.containsKey(p.getName()))
-				{
-					nameToProtocol.put(p.getName(), p);
-				}
-
-				/**
-				 * Algorithm to find the topmost protocols. There are three kind
-				 * of protocols needed. 1. The protocols that are parents of
-				 * other protocols 2. The protocols that are children of some
-				 * other protocols and at the same time are parents of some
-				 * other protocols 3. The protocols that are only children of
-				 * other protocols Therefore we could do protocol2 =
-				 * protocol2.removeAll(protocol3) ----> parent protocols but not
-				 * topmost we then do protocol1 = protocol1.removeAll(protocol2)
-				 * topmost parent protocols
-				 */
-				if (!subNames.isEmpty())
+				List<Protocol> listP = db.find(Protocol.class,
+						new QueryRule(Protocol.ID, Operator.EQUALS, d.getProtocolUsed_Id()));
+				if (listP.size() == 0)
 				{
 
-					if (!topProtocols.contains(p.getName()))
-					{
-						topProtocols.add(p.getName());
-					}
-					for (String subProtocol : subNames)
-					{
-						if (!middleProtocols.contains(subProtocol))
-						{
-							middleProtocols.add(subProtocol);
-						}
-					}
+					this.setMessages(new ScreenMessage(
+							"There is no protocol in the database, please provide a protocol in order to use the tree",
+							false));
 
 				}
 				else
 				{
 
-					if (!bottomProtocols.contains(p.getName()))
+					Protocol p = listP.get(0);
+
+					setSelectedDataSet(true);
+					List<String> subNames = p.getSubprotocols_Identifier();
+
+					// keep a record of each protocol in a hashmap. Later on
+					// we
+					// could reference to the Protocol by name
+					if (!nameToProtocol.containsKey(p.getName()))
 					{
-						bottomProtocols.add(p.getName());
+						nameToProtocol.put(p.getName(), p);
 					}
+
+					/**
+					 * Algorithm to find the topmost protocols. There are three
+					 * kind of protocols needed. 1. The protocols that are
+					 * parents of other protocols 2. The protocols that are
+					 * children of some other protocols and at the same time are
+					 * parents of some other protocols 3. The protocols that are
+					 * only children of other protocols Therefore we could do
+					 * protocol2 = protocol2.removeAll(protocol3) ----> parent
+					 * protocols but not topmost we then do protocol1 =
+					 * protocol1.removeAll(protocol2) topmost parent protocols
+					 */
+					if (!subNames.isEmpty())
+					{
+
+						if (!topProtocols.contains(p.getName()))
+						{
+							topProtocols.add(p.getName());
+						}
+						for (String subProtocol : subNames)
+						{
+							if (!middleProtocols.contains(subProtocol))
+							{
+								middleProtocols.add(subProtocol);
+							}
+						}
+
+					}
+					else
+					{
+
+						if (!bottomProtocols.contains(p.getName()))
+						{
+							bottomProtocols.add(p.getName());
+						}
+					}
+					// }
+					middleProtocols.removeAll(bottomProtocols);
+					topProtocols.removeAll(middleProtocols);
 				}
-				// }
-				middleProtocols.removeAll(bottomProtocols);
-				topProtocols.removeAll(middleProtocols);
+
 			}
 
 		}
 		catch (DatabaseException e)
 		{
 			e.printStackTrace();
+
 		}
 
 		// Create a starting point of the tree! The root of the tree!
@@ -559,7 +587,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			// this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
 			// + "</h4>");
 
-			this.setError("There are no results to show. Please, redifine your search or import some data.");
+			this.setError("There is no protocol in the database, please provide a protocol in order to use the tree");
 
 		}
 	}
@@ -804,7 +832,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			//
 
 			List<ObservableFeature> ObservableFeatureList = db.find(ObservableFeature.class, new QueryRule(
-					ObservableFeature.NAME, Operator.IN, childNode));
+					ObservableFeature.IDENTIFIER, Operator.IN, childNode));
 
 			List<ObservableFeature> filteredObservableFeaturesList = new ArrayList<ObservableFeature>();
 
