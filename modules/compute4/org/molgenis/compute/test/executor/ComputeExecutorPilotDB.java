@@ -1,7 +1,6 @@
 package org.molgenis.compute.test.executor;
 
 import app.DatabaseFactory;
-import org.molgenis.compute.runtime.ComputeHost;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.compute.test.sysexecutor.SysCommandExecutor;
 import org.molgenis.framework.db.Database;
@@ -28,6 +27,25 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
     private ExecutionHost host = null;
     SysCommandExecutor localExecutor = new SysCommandExecutor();
 
+    private Database db = null;
+
+    public ComputeExecutorPilotDB()
+    {
+        startDB();
+    }
+
+    private void startDB()
+    {
+        try
+        {
+            db = DatabaseFactory.create();
+        }
+        catch (DatabaseException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     //actual start pilots here
     public void executeTasks(String backend)
     {
@@ -38,16 +56,14 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 
         try
         {
-            Database db = DatabaseFactory.create();
             db.beginTx();
 
             List<ComputeTask> generatedTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "generated"));
-            readyToSubmitSize = evaluateTasks(db, generatedTasks);
+            readyToSubmitSize = evaluateTasks(generatedTasks);
             db.commitTx();
 
             List<ComputeTask> readyTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "ready"));
             readyToSubmitSize = readyTasks.size();
-
 
         }
         catch (DatabaseException e)
@@ -112,7 +128,7 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
       	System.out.println(cmdOutput);
     }
 
-    private int evaluateTasks(Database db, List<ComputeTask> generatedTasks)
+    private int evaluateTasks(List<ComputeTask> generatedTasks)
     {
         int count = 0;
         for (ComputeTask task : generatedTasks)
@@ -137,31 +153,6 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 
     public void startHost(String name)
     {
-        //get host name from database
-        Database db = null;
-        ComputeHost dbHost = null;
-        try
-        {
-            db = DatabaseFactory.create();
-            db.beginTx();
-
-            dbHost = db.find(ComputeHost.class, new QueryRule(ComputeHost.NAME, QueryRule.Operator.EQUALS, name)).get(0);
-            db.close();
-        }
-        catch (DatabaseException e)
-        {
-            e.printStackTrace();
-        }
-
-        try
-        {
-            System.out.println("OLD VERSION IS USED IN THIS CASE");
-            host = new ExecutionHost(dbHost.getHostName(), "", "", 22);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
 
     }
 
