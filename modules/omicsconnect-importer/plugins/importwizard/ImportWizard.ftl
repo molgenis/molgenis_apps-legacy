@@ -98,34 +98,82 @@
 <h3>Validation Error</h3>
 An error occurred validating the input data. Please resolve the errors and try again.   
 </#if>
-<@controls screen.name model model.validationError/>
+<@controls screen.name model false model.validationError/>
 <#elseif model.page == 2>
-<h2>Import options - Step ${model.page + 1} of ${model.nrPages}</h2>
-<table class="listtable" style="width: 50%;">
+<h2>Entity Import options - Step ${model.page + 1} of ${model.nrPages}</h2>
+<table class="listtable" style="width: 75%;">
 	<tr>
-		<td><input type="radio" name="storage_option" value="add" checked>Add</td>
+		<td style="width: 30%;"><input type="radio" name="entity_option" value="add" checked>Add entities</td>
 		<td>Importer adds new entities or fails if entity exists<td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="storage_option" value="add_ignore">Add &amp; Ignore</td>
+		<td><input type="radio" name="entity_option" value="add_ignore">Add entities / ignore existing</td>
 		<td>Importer adds new entities or skips if entity exists<td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="storage_option" value="add_update">Add &amp; Update</td>
+		<td><input type="radio" name="entity_option" value="add_update">Add entities / update existing</td>
 		<td>Importer adds new entities or updates existing entities<td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="storage_option" value="update">Update<br></td>
+		<td><input type="radio" name="entity_option" value="update">Update Entities<br></td>
 		<td>Importer updates existing entities or fails if entity does not exist</td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="storage_option" value="update">Update &amp; Ignore<br></td>
+		<td><input type="radio" name="entity_option" value="update_ignore">Update Entities / ignore existing<br></td>
 		<td>Importer updates existing entities or skips if entity does not exist</td>
 	</tr>
 </table>
-
 <@controls screen.name model />
 <#elseif model.page == 3>
+<h2>Data Import options - Step ${model.page + 1} of ${model.nrPages}</h2>
+<h3>Target options</h3>
+<table class="listtable" style="width: 75%;">
+	<tr>
+		<td style="width: 30%;"><input type="radio" name="data_target_option" value="add" checked>Add Targets</td>
+		<td>Importer adds data for new targets in dataset or fails if target exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_target_option" value="add_ignore">Add Targets / ignore existing</td>
+		<td>Importer adds data for new targets in dataset or skips if target exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_target_option" value="add_update">Add Targets / update existing</td>
+		<td>Importer adds data for new targets in dataset or updates existing measurements<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_target_option" value="update">Update Targets<br></td>
+		<td>Importer updates existing targets in dataset or fails if target does not exist</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_target_option" value="update_ignore">Update Targets / ignore existing<br></td>
+		<td>Importer updates existing targets in dataset or skips if target does not exist</td>
+	</tr>
+</table>
+<h3>Feature options</h3>
+<table class="listtable" style="width: 75%;">
+	<tr>
+		<td style="width: 30%;"><input type="radio" name="data_feature_option" value="add" checked>Add Features</td>
+		<td>Importer adds data for new features in dataset or fails if feature exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_feature_option" value="add_ignore">Add Features / ignore existing</td>
+		<td>Importer adds data for new features in dataset or skips if feature exists<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_feature_option" value="add_update">Add Features / update existing</td>
+		<td>Importer adds data for new features in dataset or updates existing features<td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_feature_option" value="update">Update Features<br></td>
+		<td>Importer updates existing features in dataset or fails if feature does not exist</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="data_feature_option" value="update_ignore">Update Features / ignore existing<br></td>
+		<td>Importer updates existing features in dataset or skips if feature does not exist</td>
+	</tr>
+</table>
+<@controls screen.name model />
+<#elseif model.page == 4>
 <h2>Import Summary - Step ${model.page + 1} of ${model.nrPages}</h2>
 <#if model.importError>
 <h3>Import Error</h3>
@@ -134,7 +182,7 @@ Your import failed. See the above message for details. Please go back to the fir
 <p class="successmessage">Your import was successful.</p>
 </#if>
 </div>
-<@controls screen.name model model.importError/>
+<@controls screen.name model model.importError==false model.importError==false />
 </#if>
 <#--end of your plugin-->	
 			</div>
@@ -143,9 +191,9 @@ Your import failed. See the above message for details. Please go back to the fir
 </form>
 </#macro>
 <#-- wizard button strip macro -->
-<#macro controls form model disableNext=false>
+<#macro controls form model disableBack=false disableNext=false>
 <div align="center" style="padding: 10px;">
-<input type="submit" value="&#60; Back" onclick="document.forms.${form}.__action.value = 'screen${model.page - 1}'; document.forms.${form}.submit();"<#if model.firstPage> hidden</#if>/>
+<input type="submit" value="&#60; Back" onclick="document.forms.${form}.__action.value = 'screen${model.page - 1}'; document.forms.${form}.submit();"<#if disableBack> disabled</#if><#if model.firstPage> hidden</#if>/>
 <input type="submit" value="Next &#62;" onclick="document.forms.${form}.__action.value = 'screen${model.page + 1}'; document.forms.${form}.submit();"<#if disableNext> disabled</#if><#if model.lastPage> hidden</#if>/>
 <#if !model.firstPage && !model.lastPage>
 <input type="submit" value="Cancel" onclick="document.forms.${form}.__action.value = 'cancel'; document.forms.${form}.submit();"/>
