@@ -1,12 +1,12 @@
-package plugins.catalogueTree;
+package eMeasure;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.pheno.Measurement;
+import org.molgenis.observ.ObservableFeature;
 
-public class EMeasureMeasurement
+public class EMeasureObservableFeature
 {
 
-	public String addXML(Measurement m, Database db) throws Exception
+	public String addXML(ObservableFeature m, Database db) throws Exception
 	{
 		StringBuffer out = new StringBuffer();
 

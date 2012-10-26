@@ -1,4 +1,4 @@
-package plugins.catalogueTree;
+package eMeasure;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
