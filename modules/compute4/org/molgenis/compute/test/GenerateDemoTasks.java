@@ -57,7 +57,7 @@ public class GenerateDemoTasks
 		// generate ComputeTasks
 		ComputeGenerator generator = new ComputeGeneratorDBWorksheet();
 		// generator.generateWithTuple(workflow, worksheet, null);
-		generator.generateTasks(workflow, parameters, worksheet);
+		generator.generateTasks(workflow, parameters, worksheet, "");
 
 		System.out.println("... generated");
 	}
