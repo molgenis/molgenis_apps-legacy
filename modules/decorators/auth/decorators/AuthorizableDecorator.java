@@ -7,7 +7,6 @@
 
 package decorators;
 
-import java.util.Date;
 import java.util.List;
 
 import org.molgenis.auth.Authorizable;
@@ -47,35 +46,6 @@ public class AuthorizableDecorator<E extends Entity> extends MapperDecorator<E>
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
 
-		Date date = new Date();
-		Login login = this.getDatabase().getLogin();
-		if (login != null && !(login instanceof SimpleLogin))
-		{
-			if (login.getUserId() != null)
-			{
-				int userId = this.getDatabase().getLogin().getUserId();
-
-				for (Authorizable e : entities)
-				{
-					// Set ownership of new record to current user
-					e.setOwns_Id(userId);
-
-					// Give group "AllUsers" read-rights on the new record
-					try
-					{
-						MolgenisGroup mg = getDatabase().find(MolgenisGroup.class,
-								new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
-						e.setCanRead_Id(mg.getId());
-					}
-					catch (Exception ex)
-					{
-						// When running from Hudson, there will be no group
-						// "AllUsers" so we prevent
-						// an error, to keep our friend Hudson from breaking
-					}
-				}
-			}
-		}
 		return count;
 	}
 
@@ -88,6 +58,35 @@ public class AuthorizableDecorator<E extends Entity> extends MapperDecorator<E>
 		// {
 		// e.setTriggeredField("Before update called!!!");
 		// }
+
+		Login login = this.getDatabase().getLogin();
+		if (login != null && !(login instanceof SimpleLogin))
+		{
+			if (login.getUserId() != null)
+			{
+				int userId = this.getDatabase().getLogin().getUserId();
+
+				for (E e : entities)
+				{
+					// Set ownership of new record to current user
+					((Authorizable) e).setOwns_Id(userId);
+
+					// Give group "AllUsers" read-rights on the new record
+					try
+					{
+						MolgenisGroup mg = getDatabase().find(MolgenisGroup.class,
+								new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+						((Authorizable) e).setCanRead_Id(mg.getId());
+					}
+					catch (Exception ex)
+					{
+						// When running from Hudson, there will be no group
+						// "AllUsers" so we prevent
+						// an error, to keep our friend Hudson from breaking
+					}
+				}
+			}
+		}
 
 		// here we call the standard 'update'
 		int count = super.update(entities);
