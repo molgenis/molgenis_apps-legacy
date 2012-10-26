@@ -455,13 +455,10 @@ public class Harmonization extends PluginModel<Entity>
 
 			String identifier = predictorName + "_" + measurementName;
 
-			table += "<tr id=\""
+			table += "<tr id=\"" + identifier.replaceAll(" ", "_")
+					+ "_row\"><td style=\"text-align:center;cursor:pointer;\">" + measurementName + "<div id=\""
 					+ identifier.replaceAll(" ", "_")
-					+ "_row\"><td style=\"text-align:center;cursor:pointer;\">"
-					+ measurementName
-					+ "<div id=\""
-					+ identifier.replaceAll(" ", "_")
-					+ "_details\" style=\"display:none;cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" "
+					+ "_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" "
 					+ "class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">"
 					+ "<span class=\"ui-icon ui-icon-plus\"></span></div>" + "</td><td style=\"text-align:center;\">"
 					+ description + "</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"" + identifier

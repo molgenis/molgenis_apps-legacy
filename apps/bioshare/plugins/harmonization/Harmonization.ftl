@@ -220,9 +220,9 @@
 							}, 
 							function () {
 								$(this).css("font-weight", "normal");
-								identifier = $(this).parent().attr('id');
-								identifier = identifier.replace("_row", "_details");
-								$('#' + identifier).hide();
+								//identifier = $(this).parent().attr('id');
+								//identifier = identifier.replace("_row", "_details");
+								//$('#' + identifier).hide();
 							}
 						);
 					});
@@ -673,8 +673,10 @@
 							<div id="selectedPrediction" style="height:30px;padding-left:10px;">
 								Selected prediction model:
 								<span style="font-size:25px;font-style:italic;"></span>
-								<input type="button" id="defineFormula" value="formula" style="font-size:12px;height:30px;width:70px;float:right;margin-top:4px;margin-right:20px;" />
-								<input type="button" id="showCohortStudy" value="cohort study" style="font-size:12px;height:30px;width:100px;float:right;margin-top:4px;" />
+								<input type="button" id="defineFormula" value="formula" class="ui-button ui-widget ui-state-default ui-corner-all"
+									style="font-size:12px;height:30px;width:70px;float:right;margin-top:4px;margin-right:20px;" />
+								<input type="button" id="showCohortStudy" value="cohort study" class="ui-button ui-widget ui-state-default ui-corner-all"
+									style="font-size:12px;height:30px;width:100px;float:right;margin-top:4px;" />
 								<div id="defineFormulaPanel" style="display:none;">
 									<textarea id="showFormula" style="width:90%;height:90%;font-size:12px;">
 									</textarea>
@@ -723,8 +725,10 @@
 										</#list>
 									</#if>
 								</select>
-								<input type="button" id="validatePredictionModel" value="validate" style="font-size:10px;position:absolute;top:80%;right:25%;" class="ui-button ui-widget ui-state-default ui-corner-all">
-								<input type="button" id="cancelSelectCohortStudy" value="cancel" style="font-size:10px;position:absolute;top:80%;right:5%;" class="ui-button ui-widget ui-state-default ui-corner-all">
+								<input type="button" id="validatePredictionModel" value="validate" 
+									style="font-size:10px;position:absolute;top:80%;right:25%;" class="ui-button ui-widget ui-state-default ui-corner-all">
+								<input type="button" id="cancelSelectCohortStudy" value="cancel" 
+									style="font-size:10px;position:absolute;top:80%;right:5%;" class="ui-button ui-widget ui-state-default ui-corner-all">
 							</div>
 						</div>
 						<fieldset id="statusMessage" style="display:none;width:250px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
