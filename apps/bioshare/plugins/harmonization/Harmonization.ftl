@@ -1,35 +1,5 @@
 <#macro plugins_harmonization_Harmonization screen>
 	<style>
-		div#popup{
-			position: fixed;
-		   	top: 0;
-		   	right: 0;
-		   	bottom: 0;
-		   	left: 0;
-		   	height: 100%;
-		   	width: 100%;
-		   	margin: 0;
-		   	padding: 0;
-		   	background: #000000;
-		   	opacity: .15;
-		   	filter: alpha(opacity=15);
-		   	-moz-opacity: .15;
-		   	z-index: 101;
-		   	display: none;
-		}
-		.insertTable{
-			display: none;
-		   	top: 50%;
-		   	left: 50%;
-		   	margin-left: -190px;
-		   	margin-top: -100px;
-		   	background-color: #ffffff;
-		   	border: 2px solid #336699;
-		   	padding: 0px;
-		   	z-index: 102;
-		   	font-family: Verdana;
-		   	font-size: 10pt;
-		}
 		.predictorInput{
 			display:block;
 			float:right;
@@ -201,7 +171,24 @@
 							
 							table = Info["mappingResult"];
 							
-							$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") + "\" style=\"cursor:pointer;\">" + label + "</option>");
+							$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") 
+								+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+							
+							$('#validatePredictors option').each(function(){
+								$(this).hover(
+									function(){
+										$(this).css({
+											"font-weight" : "bolder",
+											"color" : "grey"
+										});
+									},function(){
+										$(this).css({
+											"font-weight" : "normal",
+											"color" : "black"
+										});
+									}
+								);
+							});
 							
 							$('#mappingResult').append(table);
 						}
@@ -252,14 +239,25 @@
 				url : "${screen.getUrl()}&__action=download_json_retrieveExpandedQuery&predictor="
 					+ predictor + "&matchedVariable=" + matchedVariable,
 				async: false,
+				
 			}).done(function(status){
+				
 				table = status["table"];
-				$('#popup').show();
-				$('#popup').append(table);
-				$('#' + matchedVariable).show();
-				$('#popup').click(function(){
-					$('#popup').hide();
+				
+				$('#afterMapping').append(table);
+				
+				$('#' + matchedVariable).dialog({
+					title : "Expanded queries",
+					height: 300,
+	            	width: 600,
+	            	modal: true,
+	            	buttons: {
+		                Cancel: function() {
+		                    $( this ).dialog( "close" );
+		                }
+	            	},
 				});
+				$('#' + matchedVariable).show();
 			});
 		}
 		
@@ -619,24 +617,23 @@
 			</div>
 			<div class="screenbody">
 				<div class="screenpadding">
-					<div id="popup"></div>
-					<div id="afterMapping" style="height:600px;width:100%;">
+					<div id="afterMapping" style="display:none;height:600px;width:100%;">
 						<div style="width:100%;height:120px;">
-						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:100px;margin:2px;float:left">
-							<div class="ui-widget-header ui-corner-all" style="height:30px;">
-								<div style="margin:3px;float:left;">Matching result</div>
+							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:100px;margin:2px;float:left">
+								<div class="ui-widget-header ui-corner-all" style="height:30px;">
+									<div style="margin:3px;float:left;">Matching result</div>
+								</div>
+								<div style="margin:5px;">
+									Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;">KORA</span>
+								</div>
+								<div style="margin:5px;">
+									Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;">PREVEND</span>
+								</div>
 							</div>
-							<div style="margin:5px;">
-								Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;">KORA</span>
+							<div style="width:45%;height:100px;margin:2px;top:70px;position:relative;float:right">
+								<input type="button" id="saveMapping" value="Save the mappings" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+								<input type="button" id="startNewValidation" value="Validate a new model" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
-							<div style="margin:5px;">
-								Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;">PREVEND</span>
-							</div>
-						</div>
-						<div style="width:45%;height:100px;margin:2px;top:70px;position:relative;float:right">
-							<input type="button" id="saveMapping" value="Save the mappings" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-							<input type="button" id="startNewValidation" value="Validate a new model" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-						</div>
 						</div>
 						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:30%;float:left;margin-left:4px;">
 							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">

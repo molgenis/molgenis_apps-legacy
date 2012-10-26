@@ -80,8 +80,15 @@ public class PredictorInfo
 	{
 		this.mappings = mappings;
 
-		for (LinkedInformation eachRow : mappings.getSortedInformation())
+		List<LinkedInformation> allMappings = mappings.getSortedInformation();
+
+		for (int i = allMappings.size(); i > 0; i--)
 		{
+			LinkedInformation eachRow = allMappings.get(i - 1);
+			// }
+			//
+			// for (LinkedInformation eachRow : mappings.getSortedInformation())
+			// {
 			String expandedQuery = eachRow.expandedQuery;
 			String matchedItem = eachRow.matchedItem;
 			Double similarity = eachRow.similarity;

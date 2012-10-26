@@ -401,17 +401,18 @@ public class Harmonization extends PluginModel<Entity>
 					String matchedVariable = request.getString("matchedVariable");
 
 					String table = "<div id=\"" + matchedVariable.replaceAll(" ", "_")
-							+ "\" class=\"insertTable\" style=\"display:none;with:300px;height:400px;overflow:auto;\">"
-							+ "<table style=\"width:100%;height:300px;overflow:auto;\">"
-							+ "<tr><th>Expanded queries</th>"
+							+ "\" style=\"display:none;with:300px;height:400px;overflow:auto;\">"
+							+ "<table style=\"width:100%;overflow:auto;\">"
+							+ "<tr style=\"font-size:16px;\"><th>Expanded queries</th>"
 							+ "<th>Matched variable</th><th>Similarity score</th></tr>";
 
 					matchedVariable = matchedVariable.replaceAll(predictor + "_", "");
 
 					for (String query : predictors.get(predictor).getExpandedQueryForOneMapping(matchedVariable))
 					{
-						table += "<tr><td>" + query + "</td><td>" + matchedVariable + "</td><td>"
-								+ predictors.get(predictor).getSimilarity(query) + "</td></tr>";
+						table += "<tr style=\"font-size:12px;text-align:center;\"><td>" + query + "</td><td>"
+								+ matchedVariable + "</td><td>" + predictors.get(predictor).getSimilarity(query)
+								+ "</td></tr>";
 					}
 					table += "</table></div>";
 
@@ -532,12 +533,10 @@ public class Harmonization extends PluginModel<Entity>
 
 			for (Measurement m : measurementsInStudy)
 			{
-
 				List<String> fields = new ArrayList<String>();
 
 				if (m.getDescription() != null && !m.getDescription().equals(""))
 				{
-
 					fields.add(m.getDescription());
 
 					if (m.getCategories_Name().size() > 0)
