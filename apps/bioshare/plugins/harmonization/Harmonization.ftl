@@ -1,5 +1,35 @@
 <#macro plugins_harmonization_Harmonization screen>
 	<style>
+		div#popup{
+			position: fixed;
+		   	top: 0;
+		   	right: 0;
+		   	bottom: 0;
+		   	left: 0;
+		   	height: 100%;
+		   	width: 100%;
+		   	margin: 0;
+		   	padding: 0;
+		   	background: #000000;
+		   	opacity: .15;
+		   	filter: alpha(opacity=15);
+		   	-moz-opacity: .15;
+		   	z-index: 101;
+		   	display: none;
+		}
+		.insertTable{
+			display: none;
+		   	top: 50%;
+		   	left: 50%;
+		   	margin-left: -190px;
+		   	margin-top: -100px;
+		   	background-color: #ffffff;
+		   	border: 2px solid #336699;
+		   	padding: 0px;
+		   	z-index: 102;
+		   	font-family: Verdana;
+		   	font-size: 10pt;
+		}
 		.predictorInput{
 			display:block;
 			float:right;
@@ -91,6 +121,11 @@
 				validateStudy();
 			});
 			
+			$('#startNewValidation').button().click(function(){
+				$('#beforeMapping').show();
+				$('#afterMapping').hide();
+			});
+			
 			$('#cancelSelectCohortStudy').button().click(function(){
 				$('#selectCohortStudyPanel').fadeOut();
 			});
@@ -146,8 +181,86 @@
 						+ "&validationStudy=" + validationStudy,
 					async: false,
 				}).done(function(status){
+					
+					$('#validatePredictors').empty();
+					$('#mappingResult').empty();
+					
+					$.each(status, function(key, Info)
+					{
+						if(key == "predictionModel")
+						{
+							$('#matchingPredictionModel').text(status["predictionModel"]);
+						}
+						else if(key == "validationStudy")
+						{
+							$('#matchingValidationStudy').text(status["validationStudy"]);
+						}
+						else
+						{	
+							label = Info["label"];
+							
+							table = Info["mappingResult"];
+							
+							$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") + "\" style=\"cursor:pointer;\">" + label + "</option>");
+							
+							$('#mappingResult').append(table);
+						}
+						
+						$('#validatePredictors').change(function(){
+							$('#mappingResult table').hide();
+							id = $("#validatePredictors option:selected").attr('id');
+							identifier = "mapping_" + id;
+							$('#' + identifier).show();
+						});
+					});
+					
+					$('#mappingResult tr td:first-child').each(function(){
+						
+						identifier = $(this).parent().attr('id');
+						identifier = identifier.replace("_row", "_details");
+						$('#' + identifier).show();
+						$('#' + identifier).click(function(){
+							predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
+							retrieveExpandedQueries(predictor, identifier.replace("_details", ""));
+						});	
+						
+						$(this).hover(
+							function () {
+								$(this).css("font-weight", "bolder");
+								identifier = $(this).parent().attr('id');
+								identifier = identifier.replace("_row", "_details");
+								$('#' + identifier).show();
+							}, 
+							function () {
+								$(this).css("font-weight", "normal");
+								identifier = $(this).parent().attr('id');
+								identifier = identifier.replace("_row", "_details");
+								$('#' + identifier).hide();
+							}
+						);
+					});
+					
+					$('#beforeMapping').hide();
+					$('#afterMapping').show();
 				});
 			}
+		}
+		
+		function retrieveExpandedQueries(predictor, matchedVariable){
+			
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_retrieveExpandedQuery&predictor="
+					+ predictor + "&matchedVariable=" + matchedVariable,
+				async: false,
+			}).done(function(status){
+				table = status["table"];
+				$('#popup').show();
+				$('#popup').append(table);
+				$('#' + matchedVariable).show();
+				$('#popup').click(function(){
+					$('#popup').hide();
+				});
+			});
 		}
 		
 		function insertNewRow(){
@@ -506,7 +619,55 @@
 			</div>
 			<div class="screenbody">
 				<div class="screenpadding">
-					<div style="height:600px;width:100%;">
+					<div id="popup"></div>
+					<div id="afterMapping" style="height:600px;width:100%;">
+						<div style="width:100%;height:120px;">
+						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:100px;margin:2px;float:left">
+							<div class="ui-widget-header ui-corner-all" style="height:30px;">
+								<div style="margin:3px;float:left;">Matching result</div>
+							</div>
+							<div style="margin:5px;">
+								Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;">KORA</span>
+							</div>
+							<div style="margin:5px;">
+								Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;">PREVEND</span>
+							</div>
+						</div>
+						<div style="width:45%;height:100px;margin:2px;top:70px;position:relative;float:right">
+							<input type="button" id="saveMapping" value="Save the mappings" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+							<input type="button" id="startNewValidation" value="Validate a new model" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+						</div>
+						</div>
+						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:30%;float:left;margin-left:4px;">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+								<span style="display:block;margin:7px;text-align:center;">Predictors</span>
+							</div>
+							<div style="float:left;width:100%;height:80%;">
+								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:25px;width:100%;height:95%;">
+									<option>PredictorA</option>
+									<option>PredictorB</option>
+									<option>PredictorC</option>
+									<option>PredictorD</option>
+									<option>PredictorE</option>
+									<option>PredictorF</option>
+								</select>
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+								</div>
+							</div>
+						</div>
+						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:69%;float:left;">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+								<span style="display:block;margin:7px;text-align:center;">Matching variables</span>
+							</div>
+							<div style="float:left;width:100%;height:80%;">
+								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
+								</div>
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="beforeMapping" style="height:600px;width:100%;">
 						<div style="padding-left:6px;background:#DDDDDD;border:1px solid #BBBBBB;font-size:14px;height:28%;width:60%;float:left;margin-right:30px;" class="ui-corner-all">
 							<div style="font-style:italic;">
 								<h3>Validate prediction models</h3>

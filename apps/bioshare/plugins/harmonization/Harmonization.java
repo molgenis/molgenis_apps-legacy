@@ -9,6 +9,7 @@ package plugins.harmonization;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -31,6 +32,8 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import plugins.HarmonizationComponent.LevenshteinDistanceModel;
+import plugins.HarmonizationComponent.MappingList;
 import plugins.HarmonizationComponent.OWLFunction;
 
 //import plugins.autohidelogin.AutoHideLoginModel; 
@@ -45,6 +48,8 @@ public class Harmonization extends PluginModel<Entity>
 	private List<String> listOfPredictionModels = new ArrayList<String>();
 	private List<String> listOfCohortStudies = new ArrayList<String>();
 	private List<String> reservedInv = new ArrayList<String>();
+	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
+	private HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
 
 	public Harmonization(String name, ScreenController<?> parent)
 	{
@@ -312,12 +317,16 @@ public class Harmonization extends PluginModel<Entity>
 
 					String validationStudy = request.getString("validationStudy");
 
+					status.put("validationStudy", validationStudy);
+					status.put("predictionModel", predictionModel);
+
 					ComputeProtocol cp = db.find(ComputeProtocol.class,
 							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
 
 					if (cp.getFeatures_Name().size() > 0)
 					{
-						HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+
+						predictors.clear();
 
 						for (Measurement m : db.find(Measurement.class,
 								new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
@@ -336,7 +345,7 @@ public class Harmonization extends PluginModel<Entity>
 
 							predictor.setCategory(categories);
 
-							predictors.put(m.getName(), predictor);
+							predictors.put(m.getName().replaceAll(" ", "_"), predictor);
 						}
 
 						Query<ObservedValue> query = db.query(ObservedValue.class);
@@ -351,22 +360,62 @@ public class Harmonization extends PluginModel<Entity>
 
 							String value = ov.getValue();
 
-							predictors.get(targetName).setBuildingBlocks(value.split(","));
+							predictors.get(targetName.replaceAll(" ", "_")).setBuildingBlocks(value.split(";"));
 						}
 
-						// TODO ontocat dynamically searching ontology terms
-						String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
+						List<Measurement> measurementsInStudy = db.find(Measurement.class, new QueryRule(
+								Measurement.INVESTIGATION_NAME, Operator.EQUALS, validationStudy));
 
-						OWLFunction owlFunction = new OWLFunction(ontologyFileName);
-
-						for (Entry<String, PredictorInfo> entry : predictors.entrySet())
+						if (measurementsInStudy.size() > 0)
 						{
-							PredictorInfo predictor = entry.getValue();
+							// TODO ontocat dynamically searching ontology terms
+							String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
 
-							createExpandQuery(predictor.getBuildingBlocks(), owlFunction);
+							OWLFunction owlFunction = new OWLFunction(ontologyFileName);
+
+							for (Entry<String, PredictorInfo> entry : predictors.entrySet())
+							{
+								PredictorInfo predictor = entry.getValue();
+
+								for (String eachDefintion : predictor.getBuildingBlocks())
+								{
+									predictor.getExpandedQuery().addAll(
+											createExpandQuery(eachDefintion.split(","), owlFunction));
+								}
+
+								executeMapping(predictor, measurementsInStudy);
+
+								String mappingResult = makeMappingTable(predictor);
+
+								JSONObject eachMapping = new JSONObject();
+								eachMapping.put("label", predictor.getLabel());
+								eachMapping.put("mappingResult", mappingResult);
+								status.put(predictor.getName(), eachMapping);
+							}
 						}
 					}
+				}
+				else if ("download_json_retrieveExpandedQuery".equals(request.getAction()))
+				{
+					String predictor = request.getString("predictor");
+					String matchedVariable = request.getString("matchedVariable");
 
+					String table = "<div id=\"" + matchedVariable.replaceAll(" ", "_")
+							+ "\" class=\"insertTable\" style=\"display:none;with:300px;height:400px;overflow:auto;\">"
+							+ "<table style=\"width:100%;height:300px;overflow:auto;\">"
+							+ "<tr><th>Expanded queries</th>"
+							+ "<th>Matched variable</th><th>Similarity score</th></tr>";
+
+					matchedVariable = matchedVariable.replaceAll(predictor + "_", "");
+
+					for (String query : predictors.get(predictor).getExpandedQueryForOneMapping(matchedVariable))
+					{
+						table += "<tr><td>" + query + "</td><td>" + matchedVariable + "</td><td>"
+								+ predictors.get(predictor).getSimilarity(query) + "</td></tr>";
+					}
+					table += "</table></div>";
+
+					status.put("table", table);
 				}
 
 				db.commitTx();
@@ -376,6 +425,7 @@ public class Harmonization extends PluginModel<Entity>
 				status.put("message", e.getMessage());
 				status.put("success", false);
 				db.rollbackTx();
+				e.printStackTrace();
 			}
 
 			PrintWriter writer = new PrintWriter(out);
@@ -385,6 +435,41 @@ public class Harmonization extends PluginModel<Entity>
 		}
 
 		return Show.SHOW_MAIN;
+	}
+
+	public String makeMappingTable(PredictorInfo predictor)
+	{
+
+		String table = "<table id=\"mapping_" + predictor.getName().replaceAll(" ", "_")
+				+ "\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\""
+				+ " class=\"ui-widget-content ui-corner-all\">"
+				+ "<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles"
+				+ "</th><th>Description</th><th>Select the mapping</th></tr>";
+
+		String predictorName = predictor.getName();
+
+		for (String measurementName : predictor.getMappedVariables())
+		{
+			String description = predictor.getDescription(measurementName);
+
+			String identifier = predictorName + "_" + measurementName;
+
+			table += "<tr id=\""
+					+ identifier.replaceAll(" ", "_")
+					+ "_row\"><td style=\"text-align:center;cursor:pointer;\">"
+					+ measurementName
+					+ "<div id=\""
+					+ identifier.replaceAll(" ", "_")
+					+ "_details\" style=\"display:none;cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" "
+					+ "class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">"
+					+ "<span class=\"ui-icon ui-icon-plus\"></span></div>" + "</td><td style=\"text-align:center;\">"
+					+ description + "</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"" + identifier
+					+ "_checkBox\" /></td></tr>";
+		}
+
+		table += "</table>";
+
+		return table;
 	}
 
 	@Override
@@ -401,6 +486,7 @@ public class Harmonization extends PluginModel<Entity>
 			// clear the old variable content
 			listOfPredictionModels.clear();
 			listOfCohortStudies.clear();
+			predictors.clear();
 
 			if (reservedInv.size() == 0)
 			{
@@ -430,14 +516,145 @@ public class Harmonization extends PluginModel<Entity>
 		}
 	}
 
-	private void createExpandQuery(List<String> buildingBlocks, OWLFunction owlFunction)
+	private void executeMapping(PredictorInfo predictor, List<Measurement> measurementsInStudy) throws Exception
+	{
+		MappingList mappings = new MappingList();
+
+		for (String eachQuery : predictor.getExpandedQuery())
+		{
+			double maxSimilarity = 0;
+
+			String matchedDataItem = "";
+
+			String measurementName = "";
+
+			List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
+
+			for (Measurement m : measurementsInStudy)
+			{
+
+				List<String> fields = new ArrayList<String>();
+
+				if (m.getDescription() != null && !m.getDescription().equals(""))
+				{
+
+					fields.add(m.getDescription());
+
+					if (m.getCategories_Name().size() > 0)
+					{
+						for (String categoryName : m.getCategories_Name())
+						{
+							fields.add(categoryName + " " + m.getDescription());
+						}
+					}
+				}
+
+				for (String question : fields)
+				{
+					List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
+
+					double similarity = model.calculateScore(dataItemTokens, tokens);
+
+					if (similarity > maxSimilarity)
+					{
+						if (m.getDescription() != null)
+						{
+							matchedDataItem = m.getDescription();
+						}
+						else
+						{
+							matchedDataItem = question;
+						}
+						maxSimilarity = similarity;
+						measurementName = m.getName();
+					}
+				}
+			}
+			mappings.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);
+		}
+
+		predictor.setMappings(mappings);
+	}
+
+	private List<String> createExpandQuery(String[] buildingBlocksArray, OWLFunction owlFunction)
+	{
+		List<String> buildingBlocks = new ArrayList<String>(Arrays.asList(buildingBlocksArray));
+
+		List<String> expandedQueries = new ArrayList<String>();
+
+		if (buildingBlocks.size() == 1)
+		{
+			expandedQueries.addAll(collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction));
+		}
+		else if (buildingBlocks.size() >= 2)
+		{
+			List<String> expansionForFirst = collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction);
+
+			List<String> expansionForSeconed = collectInfoFromOntology(buildingBlocks.get(1).trim(), owlFunction);
+
+			List<String> concatenatedString = new ArrayList<String>();
+
+			for (String tokenFromFirst : expansionForFirst)
+			{
+				expandedQueries.add(tokenFromFirst);
+
+				for (String tokenFromSecond : expansionForSeconed)
+				{
+					expandedQueries.add(tokenFromSecond);
+					concatenatedString.add(tokenFromFirst + " " + tokenFromSecond);
+				}
+			}
+
+			String first = buildingBlocks.get(0);
+
+			String second = buildingBlocks.get(1);
+
+			buildingBlocks.remove(first);
+
+			buildingBlocks.remove(second);
+
+			while (buildingBlocks.size() > 0)
+			{
+				List<String> expansionForNext = collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction);
+
+				List<String> fragments = new ArrayList<String>();
+
+				for (String fragmentString : concatenatedString)
+				{
+					for (String tokenForNext : expansionForNext)
+					{
+						fragments.add(fragmentString + " " + tokenForNext);
+
+						expandedQueries.add(tokenForNext);
+					}
+				}
+
+				String next = buildingBlocks.get(0);
+
+				buildingBlocks.remove(next);
+
+				concatenatedString = fragments;
+			}
+
+			expandedQueries.addAll(concatenatedString);
+		}
+
+		return expandedQueries;
+	}
+
+	public List<String> collectInfoFromOntology(String queryToExpand, OWLFunction owlFunction)
 	{
 
+		List<String> expandedQueries = new ArrayList<String>();
+		expandedQueries.add(queryToExpand);
+		expandedQueries.addAll(owlFunction.getSynonyms(queryToExpand));
+		expandedQueries.addAll(owlFunction.getAllChildren(queryToExpand, new ArrayList<String>(), 1));
+
+		return expandedQueries;
 	}
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
 	{
-
 		Measurement m = db.find(Measurement.class,
 				new QueryRule(Measurement.NAME, Operator.EQUALS, predictor + "_" + predictionModel)).get(0);
 

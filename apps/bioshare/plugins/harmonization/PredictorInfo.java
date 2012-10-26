@@ -2,7 +2,11 @@ package plugins.harmonization;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+import plugins.HarmonizationComponent.LinkedInformation;
+import plugins.HarmonizationComponent.MappingList;
 
 public class PredictorInfo
 {
@@ -12,7 +16,10 @@ public class PredictorInfo
 	private List<String> expandedQuery = new ArrayList<String>();
 	private List<String> finalMappings = new ArrayList<String>();
 	private HashMap<String, String> category = new HashMap<String, String>();
-	private HashMap<String, String> expandedQueryMappings = new HashMap<String, String>();
+	private HashMap<String, String> description = new HashMap<String, String>();
+	private HashMap<String, Double> similarity = new HashMap<String, Double>();
+	private LinkedHashMap<String, List<String>> expandedQueryPerMapping = new LinkedHashMap<String, List<String>>();
+	private MappingList mappings = new MappingList();
 
 	public PredictorInfo(String name)
 	{
@@ -69,6 +76,43 @@ public class PredictorInfo
 		this.finalMappings = finalMappings;
 	}
 
+	public void setMappings(MappingList mappings)
+	{
+		this.mappings = mappings;
+
+		for (LinkedInformation eachRow : mappings.getSortedInformation())
+		{
+			String expandedQuery = eachRow.expandedQuery;
+			String matchedItem = eachRow.matchedItem;
+			Double similarity = eachRow.similarity;
+			String measurementName = eachRow.measurementName;
+
+			if (!this.similarity.containsKey(expandedQuery))
+			{
+				this.similarity.put(expandedQuery, similarity);
+			}
+
+			if (!this.description.containsKey(measurementName))
+			{
+				this.description.put(measurementName, matchedItem);
+			}
+
+			List<String> temp = null;
+
+			if (this.expandedQueryPerMapping.containsKey(measurementName))
+			{
+				temp = this.expandedQueryPerMapping.get(measurementName);
+				temp.add(expandedQuery);
+			}
+			else
+			{
+				temp = new ArrayList<String>();
+				temp.add(expandedQuery);
+			}
+			this.expandedQueryPerMapping.put(measurementName, temp);
+		}
+	}
+
 	public String getName()
 	{
 		return name;
@@ -79,9 +123,9 @@ public class PredictorInfo
 		return buildingBlocks;
 	}
 
-	public HashMap<String, String> getMappings()
+	public MappingList getMappings()
 	{
-		return expandedQueryMappings;
+		return mappings;
 	}
 
 	public List<String> getExpandedQuery()
@@ -102,5 +146,32 @@ public class PredictorInfo
 	public HashMap<String, String> getCategory()
 	{
 		return category;
+	}
+
+	public List<String> getMappedVariables()
+	{
+		return new ArrayList<String>(expandedQueryPerMapping.keySet());
+	}
+
+	public List<String> getExpandedQueryForOneMapping(String measurementName)
+	{
+
+		if (expandedQueryPerMapping.containsKey(measurementName)) return expandedQueryPerMapping.get(measurementName);
+		else
+			return null;
+	}
+
+	public String getDescription(String measurementName)
+	{
+		if (description.containsKey(measurementName)) return description.get(measurementName);
+		else
+			return null;
+	}
+
+	public Double getSimilarity(String expandedQuery)
+	{
+		if (similarity.containsKey(expandedQuery)) return similarity.get(expandedQuery);
+		else
+			return null;
 	}
 }
