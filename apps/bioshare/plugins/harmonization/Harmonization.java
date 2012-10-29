@@ -6,13 +6,17 @@
 
 package plugins.harmonization;
 
+import gcc.catalogue.MappingMeasurement;
+
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
@@ -28,6 +32,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -368,6 +373,13 @@ public class Harmonization extends PluginModel<Entity>
 							predictors.get(targetName.replaceAll(" ", "_")).setBuildingBlocks(value.split(";"));
 						}
 
+						for (MappingMeasurement mapping : db.find(MappingMeasurement.class, new QueryRule(
+								MappingMeasurement.MAPPING_NAME, Operator.IN, cp.getFeatures_Name())))
+						{
+							predictors.get(mapping.getMapping_Name().replaceAll(" ", "_")).setFinalMappings(
+									mapping.getFeature_Name());
+						}
+
 						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
 								Operator.EQUALS, validationStudy));
 
@@ -393,14 +405,6 @@ public class Harmonization extends PluginModel<Entity>
 					loadingProcess++;
 
 					PredictorInfo predictor = predictors.get(eachKey);
-					//
-					// break;
-					// }
-					//
-					// for (Entry<String, PredictorInfo> entry :
-					// predictors.entrySet())
-					// {
-					// PredictorInfo predictor = entry.getValue();
 
 					for (String eachDefintion : predictor.getBuildingBlocks())
 					{
@@ -411,10 +415,12 @@ public class Harmonization extends PluginModel<Entity>
 
 					String mappingResult = makeMappingTable(predictor);
 
-					JSONObject eachMapping = new JSONObject();
-					eachMapping.put("label", predictor.getLabel());
-					eachMapping.put("mappingResult", mappingResult);
-					status.put(predictor.getName(), eachMapping);
+					String existingMapping = makeExistingMappingTable(predictor);
+
+					status.put("label", predictor.getLabel());
+					status.put("mappingResult", mappingResult);
+					status.put("identifier", predictor.getName());
+					status.put("existingMapping", existingMapping);
 					status.put("loadingProcess", loadingProcess);
 					status.put("total", predictors.size());
 
@@ -450,6 +456,202 @@ public class Harmonization extends PluginModel<Entity>
 
 					status.put("table", table);
 				}
+				else if ("download_json_saveMapping".equals(request.getAction()))
+				{
+					JSONObject mappingResult = new JSONObject(request.getString("mappingResult"));
+
+					String validationStudyName = request.getString("validationStudy");
+
+					String predictionModel = request.getString("predictionModel");
+
+					Protocol validationStudyProtocol = null;
+
+					if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, validationStudyName))
+							.size() != 0)
+					{
+						validationStudyProtocol = db.find(Protocol.class,
+								new QueryRule(Protocol.NAME, Operator.EQUALS, validationStudyName)).get(0);
+					}
+					else
+					{
+						validationStudyProtocol = new Protocol();
+						validationStudyProtocol.setName(validationStudyName);
+						validationStudyProtocol.setInvestigation_Name(validationStudyName);
+						db.add(validationStudyProtocol);
+					}
+
+					@SuppressWarnings("unchecked")
+					Iterator<String> iterator = mappingResult.keys();
+
+					while (iterator.hasNext())
+					{
+						String predictor = iterator.next();
+
+						StringBuilder identifier = new StringBuilder();
+
+						StringBuilder predictorName = new StringBuilder();
+
+						predictorName.append(predictors.get(predictor).getLabel()).append("_").append(predictionModel);
+
+						identifier.append(predictors.get(predictor).getLabel()).append("_").append(validationStudyName);
+
+						if (db.find(Measurement.class,
+								new QueryRule(Measurement.NAME, Operator.EQUALS, identifier.toString())).size() == 0)
+						{
+							Measurement m = new Measurement();
+							m.setName(identifier.toString());
+							m.setLabel(predictors.get(predictor).getLabel());
+							m.setInvestigation_Name(validationStudyName);
+							db.add(m);
+
+							validationStudyProtocol.getFeatures_Id().add(m.getId());
+						}
+
+						JSONArray features = mappingResult.getJSONArray(predictor);
+
+						List<String> listOfFeatures = new ArrayList<String>();
+
+						List<Integer> listOfFeatureIds = new ArrayList<Integer>();
+
+						for (int i = 0; i < features.length(); i++)
+						{
+							listOfFeatures.add(features.getString(i));
+						}
+
+						for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+								listOfFeatures)))
+						{
+							listOfFeatureIds.add(m.getId());
+						}
+
+						MappingMeasurement mapping = null;
+
+						Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
+
+						queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, Operator.EQUALS,
+								identifier.toString()));
+
+						queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.EQUALS,
+								predictorName.toString()));
+
+						if (queryForMapping.find().size() == 0)
+						{
+							mapping = new MappingMeasurement();
+
+							mapping.setTarget_Name(identifier.toString());
+
+							mapping.setInvestigation_Name(validationStudyName);
+
+							mapping.setDataType("pairingrule");
+
+							mapping.setMapping_Name(predictorName.toString());
+
+							mapping.setFeature_Id(listOfFeatureIds);
+
+							mapping.setFeature_Name(listOfFeatures);
+
+							db.add(mapping);
+						}
+						else
+						{
+							mapping = queryForMapping.find().get(0);
+
+							for (Integer eachID : listOfFeatureIds)
+							{
+								if (!mapping.getFeature_Id().contains(eachID))
+								{
+									mapping.getFeature_Id().add(eachID);
+								}
+							}
+
+							for (String eachFeature : listOfFeatures)
+							{
+								if (!mapping.getFeature_Name().contains(eachFeature))
+								{
+									mapping.getFeature_Name().add(eachFeature);
+								}
+							}
+
+							db.update(mapping);
+						}
+
+						db.update(validationStudyProtocol);
+
+						predictors.get(predictor).setFinalMappings(mapping.getFeature_Name());
+
+						status.put(predictorName.toString().replaceAll(" ", "_"),
+								makeExistingMappingTable(predictors.get(predictor)));
+
+						status.put("success", true);
+						status.put("message", "The mapping has updated");
+					}
+				}
+				else if ("download_json_removeMapping".equals(request.getAction()))
+				{
+					String predictor = request.getString("predictor");
+
+					String measurementName = request.getString("measurementName");
+
+					StringBuilder identifier = new StringBuilder();
+
+					StringBuilder predictorName = new StringBuilder();
+
+					identifier.append(predictor).append("_").append(request.getString("validationStudy"));
+
+					predictorName.append(predictor).append("_").append(request.getString("predictionModel"));
+
+					Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
+
+					queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, Operator.EQUALS, identifier
+							.toString()));
+
+					queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.EQUALS,
+							predictorName.toString()));
+
+					Measurement m = db.find(Measurement.class,
+							new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
+
+					MappingMeasurement mapping = queryForMapping.find().get(0);
+
+					mapping.getFeature_Name().remove(measurementName);
+
+					mapping.getFeature_Id().remove(m.getId());
+
+					if (mapping.getFeature_Id().size() == 0)
+					{
+						db.remove(mapping);
+
+						Protocol validationStudyProtocol = db.find(Protocol.class,
+								new QueryRule(Protocol.NAME, Operator.EQUALS, request.getString("validationStudy")))
+								.get(0);
+
+						Measurement derivedPredictor = db.find(Measurement.class,
+								new QueryRule(Measurement.NAME, Operator.EQUALS, identifier)).get(0);
+
+						validationStudyProtocol.getFeatures_Id().remove(derivedPredictor.getId());
+
+						if (validationStudyProtocol.getFeatures_Id().size() == 0)
+						{
+							db.remove(validationStudyProtocol);
+						}
+						else
+						{
+							db.update(validationStudyProtocol);
+						}
+
+						db.remove(derivedPredictor);
+					}
+					else
+					{
+						db.update(mapping);
+					}
+
+					status.put("message", "The variable " + measurementName + " was removed from the mapping for "
+							+ predictor);
+
+					status.put("success", true);
+
+				}
 				else
 				{
 					status = catalogue.requestHandle(request, db, out);
@@ -476,7 +678,6 @@ public class Harmonization extends PluginModel<Entity>
 
 	public String makeMappingTable(PredictorInfo predictor)
 	{
-
 		String table = "<table id=\"mapping_" + predictor.getName().replaceAll(" ", "_")
 				+ "\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\""
 				+ " class=\"ui-widget-content ui-corner-all\">"
@@ -504,6 +705,41 @@ public class Harmonization extends PluginModel<Entity>
 		table += "</table>";
 
 		return table;
+	}
+
+	public String makeExistingMappingTable(PredictorInfo predictor)
+	{
+		StringBuilder table = new StringBuilder();
+
+		table.append("<table id=\"matched_").append(predictor.getName().replaceAll(" ", "_"))
+				.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
+				.append(" class=\"ui-widget-content ui-corner-all\">")
+				.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
+				.append("</th><th>Description</th><th>Remove the mapping</th></tr>");
+
+		String predictorName = predictor.getName();
+
+		for (String measurementName : predictor.getFinalMappings())
+		{
+			String description = predictor.getDescription(measurementName);
+
+			StringBuilder identifier = new StringBuilder();
+
+			identifier.append(predictorName).append("_").append(measurementName);
+
+			table.append("<tr id=\"").append(identifier.toString().replaceAll(" ", "_"))
+					.append("_matchedRow\"><td style=\"text-align:center;cursor:pointer;\"><span>")
+					.append(measurementName).append("</span></td><td style=\"text-align:center;\">")
+					.append(description).append("</td><td style=\"text-align:center;\"><div id=\"")
+					.append(identifier.toString().replaceAll(" ", "_"))
+					.append("_remove\" style=\"cursor:pointer;height:18px;width:18px;margin-left:30px;\" ")
+					.append("class=\"ui-state-default ui-corner-all\" title=\"remove\">")
+					.append("<span class=\"ui-icon ui-icon-trash\"></span></div></td></tr>");
+		}
+
+		table.append("</table>");
+
+		return table.toString();
 	}
 
 	@Override

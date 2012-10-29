@@ -101,9 +101,23 @@
 				validateStudy();
 			});
 			
+			$('#showMatchedMapping').button().click(function(){
+				$('#candidateMapping').hide();
+				$('#matchedMapping').fadeIn();
+			});
+			
+			$('#showCandidateMapping').button().click(function(){
+				$('#matchedMapping').hide();
+				$('#candidateMapping').fadeIn();
+			});
+			
 			$('#startNewValidation').button().click(function(){
 				$('#beforeMapping').show();
 				$('#afterMapping').hide();
+			});
+			
+			$('#saveMapping').button().click(function(){
+				saveMapping();
 			});
 			
 			$('#cancelSelectCohortStudy').button().click(function(){
@@ -192,7 +206,7 @@
 							{
 								$('#matchingValidationStudy').text(status["validationStudy"]);
 								
-							}
+					 		}
 						});
 						
 						createProgressBar("Loading predictor");
@@ -214,50 +228,40 @@
 				async: false,
 			}).done(function(status){
 				
-				$.each(status, function(key, Info)
-				{
-					if(key == "treeView")
-					{
-						$('#browser').empty().append(Info);
-					}
-					else if(key != "loadingProcess" && key != "total")
-					{	
-						label = Info["label"];
-						
-						table = Info["mappingResult"];
-						
-						$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") 
-							+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
-						
-						$('#validatePredictors option').each(function(){
-							$(this).hover(
-								function(){
-									$(this).css({
-										"font-weight" : "bolder",
-										"color" : "grey"
-									});
-								},function(){
-									$(this).css({
-										"font-weight" : "normal",
-										"color" : "black"
-									});
-								}
-							);
-						});
-						
-						$('#mappingResult').append(table);
-					}
-					
-					$('#validatePredictors').change(function(){
-						$('#mappingResult table').hide();
-						id = $("#validatePredictors option:selected").attr('id');
-						identifier = "mapping_" + id;
-						$('#' + identifier).show();
-					});
+				label = status["label"];
+				
+				table = status["mappingResult"];
+				
+				existingMapping = status["existingMapping"];
+				
+				$('#validatePredictors').append("<option id=\"" + status["identifier"].replace(/\s/g,"_") 
+					+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+				
+				$('#validatePredictors option').each(function(){
+					$(this).hover(
+						function(){
+							$(this).css({
+								"font-weight" : "bolder",
+								"color" : "grey"
+							});
+						},function(){
+							$(this).css({
+								"font-weight" : "normal",
+								"color" : "black"
+							});
+						}
+					);
 				});
+				
+				$('#mappingResult').append(table);
+				
+				$('#existingMappings').append(existingMapping);
+				
 				
 				if(status["loadingProcess"] == status["total"])
 				{
+					$('#browser').empty().append(status["treeView"]);
+					
 					$('#mappingResult tr td:first-child').each(function(){
 				
 						identifier = $(this).parent().attr('id');
@@ -287,35 +291,178 @@
 							
 							measurementName = $(this).text();
 							
-							$.ajax({
-								url : "${screen.getUrl()}&__action=download_json_getPosition&measurementName=" + measurementName,
-								async: false,
-							}).done(function(status){
-								
-								identifier = status["identifier"];
-								
-								$('#browser').empty().append(status["treeView"]).treeview(settings);
-								$("#browser").find('li').each(function(){
-									toggleNodeEvent($(this));
-								});
-								
-								$('#' + identifier).children('span').trigger('click');
-								
-								window.scrollTo(0, 500);
-								
-								var elementTop = $('#' + identifier).position().top;
-								var treeDivTop = $('#treeView').position().top;
-								var divHeight = $('#treeView').height();
-								var lastTop = $('#treeView').scrollTop();
-								$('#treeView').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
-							});
+							trackInTree(measurementName);
 						});
 					});
+					
+					$('#validatePredictors').change(function(){
+						
+						predictorName = $(this).find('option:selected').eq(0).text();
+						
+						$('#matchingSelectedPredictor').text(predictorName);
+						
+						$('#mappingResult table').hide();
+						
+						$('#existingMappings table').hide();
+						
+						id = $("#validatePredictors option:selected").attr('id');
+						
+						identifierForNew = "mapping_" + id;
+						
+						$('#' + identifierForNew).show();
+						
+						identifierForExisting = "matched_" + id;
+						
+						$('#' + identifierForExisting).show();
+					});
+					
+					$('#existingMappings tr td:last-child >div').each(function()
+					{
+						$(this).click(function(){
+							removeSingleMapping($(this));
+						});
+						
+						span = $(this).parents('tr').eq(0).find('td >span');
+						
+						measurementName = $(span).text();
+						
+						$(span).click(function(){
+							trackInTree($(this).text());
+						});
+					});
+					
 				}else{
 					updateProgressBar(status["loadingProcess"]/status["total"]);
 					loadMappingResult(validationStudy);
 				}
 			});
+		}
+		
+		function removeSingleMapping(element){
+		
+			data = {};
+			
+			data["measurementName"] = $(element).parents('tr').eq(0).find('td:first-child span').text();
+			
+			data["validationStudy"] = $('#matchingValidationStudy').text();
+			
+			data["predictionModel"] = $('#matchingPredictionModel').text();
+			
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_removeMapping&predictor=" 
+					+ $('#validatePredictors').val(),
+				async : false,
+				data : data,
+			}).done(function(status){
+				
+				if(status["success"] == true){
+					showMessage(status["message"], true);
+					$(element).parents('tr').eq(0).remove();
+				}else{
+					showMessage(status["message"], false);
+				}
+			});
+		}
+		
+		function trackInTree(measurementName){
+			
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_getPosition&measurementName=" + measurementName,
+				async: false,
+			}).done(function(status){
+				
+				identifier = status["identifier"];
+				
+				$('#browser').empty().append(status["treeView"]).treeview(settings);
+				$("#browser").find('li').each(function(){
+					toggleNodeEvent($(this));
+				});
+				
+				$('#' + identifier).children('span').trigger('click');
+				
+				window.scrollTo(0, 500);
+				
+				var elementTop = $('#' + identifier).position().top;
+				var treeDivTop = $('#treeView').position().top;
+				var divHeight = $('#treeView').height();
+				var lastTop = $('#treeView').scrollTop();
+				$('#treeView').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
+				
+			});
+		}
+		function saveMapping(){
+			
+			mappings = {};
+			
+			$('#mappingResult input:checkbox').each(function(){
+				
+				if($(this).is(':checked')){
+					
+					predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_", "");
+					
+					measurementName = $(this).parents('tr').eq(0).find('td>span').text();
+					
+					features = new Array();
+					
+					if(mappings[predictor] == null)
+					{
+						features[0] = measurementName;
+					}else
+					{
+						features = mappings[predictor];
+						index = features.length;
+						features[index] = measurementName;
+					}
+					
+					mappings[predictor] = features;	
+				}
+			});
+			
+			validationStudy = $('#matchingValidationStudy').text();
+			predictionModel = $('#matchingPredictionModel').text();
+			
+			createScreenMessage("Save mappings!");
+			
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_saveMapping&mappingResult=" 
+					+ JSON.stringify(mappings) + "&validationStudy=" + validationStudy 
+					+ "&predictionModel=" + predictionModel,
+				async: false,
+				
+			}).done(function(status){
+				
+				if(status["success"] == true)
+				{
+					$.each(status, function(key, table)
+					{
+						if(key != "success" & key != "message")
+						{
+							$('#matched_' + key).remove();
+							
+							$('#existingMappings').append(table);
+							
+							$('#matched_' + key + " tr td:last-child >div").each(function(){
+								$(this).click(function(){
+									removeSingleMapping($(this));
+								});
+							});
+							$('#' + key).click(function(){
+								$('#existingMappings table').hide();
+								$('#matched_' + key).show();
+							});
+							
+							$('#' + key).trigger('click');
+						}
+					});
+					$('#candidateMapping input:checkbox').attr('checked', false);
+					showMessage(status["message"], true);
+					
+				}else{
+					showMessage(status["message"], false);
+				}
+			});
+			
+			destroyScreenMessage();
 		}
 		
 		function retrieveExpandedQueries(predictor, matchedVariable){
@@ -675,6 +822,21 @@
 		
 		function showMessage(message, success){
 			
+			messagePanel = "<fieldset id=\"statusMessage\" class=\"ui-tabs-panel ui-widget-content ui-corner-bottom\">"
+						 + "<legend style=\"font-style:italic;\">Status</legend>"
+						 + "<div align=\"justify\" style=\"font-size:14px;padding:4px;\">"
+						 + "Please choose an existing prediction model or add a new prediction model </div></fieldset>"		
+			
+			$('#messagePanel').empty().append(messagePanel);
+			
+			$('#statusMessage').css({
+				position : "absolute",
+				width : "250px",
+				height : "140px",
+				top : 150,
+				right : 30
+			});
+			
 			element = "";
 			
 			if(success == true){
@@ -687,7 +849,7 @@
 			
 			$('#statusMessage >div').empty().append(element);
 			
-			$('#statusMessage').effect('bounce').delay(2000).fadeOut();
+			$('#statusMessage').effect('bounce').delay(2000).fadeOut().delay(2000);
 		}
 		
 		function createScreenMessage(showMessage){
@@ -975,27 +1137,29 @@
 			</div>
 			<div class="screenbody">
 				<div class="screenpadding">
+					<div id="messagePanel"></div>
 					<div id="afterMapping" style="display:none;height:800px;width:100%;">
-						<div style="width:100%;height:120px;">
-							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:100px;margin:2px;float:left">
+						<div style="width:100%;height:140px;">
+							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:130px;margin:2px;float:left">
 								<div class="ui-widget-header ui-corner-all" style="height:30px;">
 									<div style="margin:3px;float:left;">Matching result</div>
+									<input type="button" id="startNewValidation" value="Validate a new model" 
+										style="font-size:10px;margin:3px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 								</div>
 								<div style="margin:5px;">
-									Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;">KORA</span>
+									Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;"></span>
 								</div>
 								<div style="margin:5px;">
-									Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;">PREVEND</span>
+									Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;"></span>
 								</div>
-							</div>
-							<div style="width:45%;height:100px;margin:2px;top:70px;position:relative;float:right">
-								<input type="button" id="saveMapping" value="Save the mappings" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-								<input type="button" id="startNewValidation" value="Validate a new model" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+								<div style="margin:5px;">
+									Selected predictor: <span id="matchingSelectedPredictor" style="float:right;margin-right:20px;"></span>
+								</div>
 							</div>
 						</div>
 						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:30%;float:left;margin-left:4px;">
 							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:7px;text-align:center;">Predictors</span>
+								<span style="display:block;margin:12px;text-align:center;">Predictors</span>
 							</div>
 							<div style="float:left;width:100%;height:80%;">
 								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:25px;width:100%;height:95%;">
@@ -1004,12 +1168,29 @@
 								</div>
 							</div>
 						</div>
-						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:69%;float:left;">
+						<div id="candidateMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:69%;float:left;">
 							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:7px;text-align:center;">Matching variables</span>
+								<span style="display:block;margin:12px;float:left;">Candidate variables</span>
+								<input type="button" id="showMatchedMapping" style="font-size:12px;float:right;margin:12px;" 
+									value="Matched variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+									<input type="button" id="saveMapping" value="Save the mappings" style="font-size:12px;margin:12px;float:right;" 
+										class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
 							<div style="float:left;width:100%;height:80%;">
 								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
+								</div>
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+								</div>
+							</div>
+						</div>
+						<div id="matchedMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="display:none;height:40%;width:69%;float:left;">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+								<span style="display:block;margin:12px;float:left;">Matched variables</span>
+								<input type="button" id="showCandidateMapping" style="font-size:12px;float:right;margin:12px;" 
+									value="Candidate variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+							</div>
+							<div style="float:left;width:100%;height:80%;">
+								<div id="existingMappings" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
 								</div>
 								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
 								</div>
@@ -1109,14 +1290,6 @@
 									style="font-size:10px;position:absolute;top:80%;right:5%;" class="ui-button ui-widget ui-state-default ui-corner-all">
 							</div>
 						</div>
-						<fieldset id="statusMessage" style="display:none;width:250px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-							<legend style="font-style:italic;">
-								Status
-							</legend>
-							<div align="justify" style="font-size:14px;padding:4px;">
-								Please choose an existing prediction model or add a new prediction model 
-							</div>
-						</fieldset>
 						<div class="ui-corner-all" style="margin-top:20px;width:100%;height:60%;float:left;">
 							<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:280px;width:400px;float:left;margin:5px;">
 								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:14%;width:100%;">
