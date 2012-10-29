@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.json.JSONObject;
 import org.molgenis.compute.ComputeProtocol;
@@ -46,7 +45,11 @@ public class Harmonization extends PluginModel<Entity>
 	 * 
 	 */
 	private static final long serialVersionUID = 4255876428416189905L;
+
+	private int loadingProcess = 0;
+	private OWLFunction owlFunction = null;
 	private catalogueTreeComponent catalogue = null;
+	private List<Measurement> measurementsInStudy = null;
 	private List<String> listOfPredictionModels = new ArrayList<String>();
 	private List<String> listOfCohortStudies = new ArrayList<String>();
 	private List<String> reservedInv = new ArrayList<String>();
@@ -319,6 +322,9 @@ public class Harmonization extends PluginModel<Entity>
 
 					String validationStudy = request.getString("validationStudy");
 
+					this.loadingProcess = 0;
+					this.predictors.clear();
+
 					status.put("validationStudy", validationStudy);
 					status.put("predictionModel", predictionModel);
 
@@ -327,9 +333,6 @@ public class Harmonization extends PluginModel<Entity>
 
 					if (cp.getFeatures_Name().size() > 0)
 					{
-
-						predictors.clear();
-
 						for (Measurement m : db.find(Measurement.class,
 								new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
 						{
@@ -365,36 +368,59 @@ public class Harmonization extends PluginModel<Entity>
 							predictors.get(targetName.replaceAll(" ", "_")).setBuildingBlocks(value.split(";"));
 						}
 
-						List<Measurement> measurementsInStudy = db.find(Measurement.class, new QueryRule(
-								Measurement.INVESTIGATION_NAME, Operator.EQUALS, validationStudy));
+						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+								Operator.EQUALS, validationStudy));
 
 						if (measurementsInStudy.size() > 0)
 						{
 							// TODO ontocat dynamically searching ontology terms
 							String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
 
-							OWLFunction owlFunction = new OWLFunction(ontologyFileName);
+							owlFunction = new OWLFunction(ontologyFileName);
 
-							for (Entry<String, PredictorInfo> entry : predictors.entrySet())
-							{
-								PredictorInfo predictor = entry.getValue();
-
-								for (String eachDefintion : predictor.getBuildingBlocks())
-								{
-									predictor.getExpandedQuery().addAll(
-											createExpandQuery(eachDefintion.split(","), owlFunction));
-								}
-
-								executeMapping(predictor, measurementsInStudy);
-
-								String mappingResult = makeMappingTable(predictor);
-
-								JSONObject eachMapping = new JSONObject();
-								eachMapping.put("label", predictor.getLabel());
-								eachMapping.put("mappingResult", mappingResult);
-								status.put(predictor.getName(), eachMapping);
-							}
+							status.put("success", true);
 						}
+					}
+
+				}
+				else if ("download_json_loadMappingResult".equals(request.getAction()))
+				{
+
+					List<String> keys = new ArrayList<String>(predictors.keySet());
+
+					String eachKey = keys.get(loadingProcess);
+
+					loadingProcess++;
+
+					PredictorInfo predictor = predictors.get(eachKey);
+					//
+					// break;
+					// }
+					//
+					// for (Entry<String, PredictorInfo> entry :
+					// predictors.entrySet())
+					// {
+					// PredictorInfo predictor = entry.getValue();
+
+					for (String eachDefintion : predictor.getBuildingBlocks())
+					{
+						predictor.getExpandedQuery().addAll(createExpandQuery(eachDefintion.split(","), owlFunction));
+					}
+
+					executeMapping(predictor, measurementsInStudy);
+
+					String mappingResult = makeMappingTable(predictor);
+
+					JSONObject eachMapping = new JSONObject();
+					eachMapping.put("label", predictor.getLabel());
+					eachMapping.put("mappingResult", mappingResult);
+					status.put(predictor.getName(), eachMapping);
+					status.put("loadingProcess", loadingProcess);
+					status.put("total", predictors.size());
+
+					if (loadingProcess == predictors.size())
+					{
+						String validationStudy = request.getString("validationStudy");
 
 						catalogue = new catalogueTreeComponent(validationStudy);
 

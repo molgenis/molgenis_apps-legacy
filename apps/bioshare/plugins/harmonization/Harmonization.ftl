@@ -24,238 +24,6 @@
 		var CLASSES = $.treeview.classes;
 		var settings = {};
 		var searchNode = new Array();
-		
-		function toggler() {
-			$(this)
-				.parent()
-				// swap classes for hitarea
-				.find(">.hitarea")
-					.swapClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
-					.swapClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
-				.end()
-				// swap classes for parent li
-				.swapClass( CLASSES.collapsable, CLASSES.expandable )
-				.swapClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
-				// find child lists
-				.find( ">ul" )
-				// toggle them
-				.heightToggle( settings.animated, settings.toggle );
-			if ( settings.unique ) {
-				$(this).parent()
-					.siblings()
-					// swap classes for hitarea
-					.find(">.hitarea")
-						.replaceClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
-						.replaceClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
-					.end()
-					.replaceClass( CLASSES.collapsable, CLASSES.expandable )
-					.replaceClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
-					.find( ">ul" )
-					.heightHide( settings.animated, settings.toggle );
-			}
-		}
-		
-		function toggleNodeEvent(clickedNode){
-			
-			$(clickedNode).children('span').click(function(){
-				
-				var nodeName = $(this).parent().attr('id');
-				
-				if($('#' + nodeName).find('li').length > 0){
-					
-					$.ajax({
-						url:"${screen.getUrl()}&__action=download_json_toggleNode&nodeIdentifier=" + nodeName,
-						async: false,
-					}).done();
-					
-				}else{
-					
-					$.ajax({
-						url:"${screen.getUrl()}&__action=download_json_getChildren&nodeIdentifier=" + nodeName,
-						async: false,
-					}).done(function(result){
-						var addedNodes = result["result"];
-						var branch = "<li class=\"open\"><span class=\"folder\">test</span><ul><li class=\"open\"><span class=\"folder\">test2</li></ul></li>";
-						$('#' + nodeName + ' >ul').prepend(addedNodes);
-						var prepareBranches = $.fn.prepareBranches;
-						var applyClasses = $.fn.applyClasses;
-						
-						var branches = $('#' + nodeName).find('li').prepareBranches(settings);
-						
-						branches.applyClasses(settings, toggler);
-						
-						$('#' + nodeName).find('li').each(function(){
-							toggleNodeEvent($(this));
-						});
-					});
-				}
-				
-				if($(this).parent().find('li').size() == 0){
-					highlightClick($(this).parent());
-					$('#details').empty();
-					$.ajax({
-						url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + $(this).parent().attr('id'),
-	      				async: false
-	      			}).done(function(data) {
-						$('#details').append(data["result"]);
-					});
-				}
-			});
-		}
-		
-		function searchTree(token){
-			
-			showModal();
-				
-			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:46%;top:80%\">Searching..</div>");
-			
-			if(token != ""){
-				array = {};
-				
-				$.ajax({
-					url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
-					async: false,
-				}).done(function(result){
-					array = result["result"];
-				});
-				
-				$('#browser').empty().append(array);
-				
-				var branches = $('#browser li').prepareBranches(settings);
-				
-				branches.applyClasses(settings, toggler);
-			}
-			
-			$('.modalWindow').remove();
-			
-			$('#progressbar').remove();
-			
-			$('#browser li').each(function(){
-				toggleNodeEvent($(this));
-			});
-		}
-		
-		function loadTree(){
-			status = {};
-			$.ajax({
-				url:"${screen.getUrl()}&__action=download_json_loadingTree",
-				async: false,
-			}).done(function(result){
-				status = result;
-			});
-			$("#progressbar").progressbar({
-				value: status["result"]/5 * 100
-			});
-			if(status["status"] == false){
-				loadTree();
-			}
-		}
-		
-		function showModal(){
-			
-			$('body').append("<div class=\"modalWindow\"></div>");
-			
-			$('.modalWindow').css({
-				'left' : 0,
-				'top' : 0,
-				'height' : $('.formscreen').height() + 200,
-				'width' : $('body').width(),
-			    'position' : 'absolute',
-			    'z-index' : '1500',
-			    'opacity' : '0.5',
-			    background : 'grey'
-			});
-		}
-		
-		function highlightClick(clickedBranch){
-			
-			$(clickedBranch).children('span').css({
-				'color':'#778899',
-				'font-size':17,
-				'font-style':'italic',
-				'font-weight':'bold'
-			});
-			
-			var measurementID = $(clickedBranch).attr('id');
-			
-			var clickedVar = $('#clickedVariable').val();
-			
-			if(clickedVar != "" && clickedVar != measurementID){
-				$('#' + clickedVar + '>span').css({
-					'color':'black',
-					'font-size':15,
-					'font-style':'normal',
-					'font-weight':400
-				});
-				var parentOld = $('#' + clickedVar).parent().siblings('span');
-		
-				$(parentOld).css({
-					'color':'black',
-					'font-size':15,
-					'font-style':'normal',
-					'font-weight':400									
-				});
-			}
-			$('#clickedVariable').val(measurementID);
-		}
-		
-		function initialize(){
-			
-			$('#search').button();
-			$('#search').click(function(){
-				token = $('#searchField').val();
-				searchTree(token);
-			});
-			
-			$('#clearButton').button();
-			$('#clearButton').click(function(){
-				array = {};
-				$.ajax({
-					url:"${screen.getUrl()}&__action=download_json_clearSearch",
-					async: false,
-				}).done(function(result){
-					array = result["result"];
-				});
-				
-				$('#browser').empty().append(array).treeview(settings);
-				
-				$("#browser").find('li').each(function(){
-					
-					toggleNodeEvent($(this));
-				});
-				
-				$('#searchField').val('');
-			});
-			
-			$("#browser").treeview(settings).css('font-size', 16).find('li').show();	
-			
-			$("#browser").find('li').each(function(){
-				
-				toggleNodeEvent($(this));
-			});	
-			
-			showModal();
-			
-			$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
-			$('body').append("<div class=\"middleBar\" style=\"padding-left:60px;padding-top:15px;font-style:italic;\">Loading catalogue</div>");
-			
-			$("#progressbar").progressbar({value: 0});
-			
-			$('.middleBar').css({
-				'left' : 400,
-				'top' : 300,
-				'height' : 50,
-				'width' : 300,
-			    'position' : 'absolute',
-			    'z-index' : 1501,
-			});
-			
-			loadTree();
-			
-			$('.modalWindow').remove();
-			$('.middleBar').remove();
-			$('#treePanel').show();
-		}
 	
 		$(document).ready(function(){
 			
@@ -388,68 +156,110 @@
 				
 				validationStudy = $('#listOfCohortStudies').val();
 				
+				$('#beforeMapping').hide();
+				
+				$('#details').empty();
+				
+				$('#browser').empty();
+						
+				$('#afterMapping').show();
+				
+				createScreenMessage("Loading ontology...");
+				
 				$.ajax({
 					url : "${screen.getUrl()}&__action=download_json_validateStudy&predictionModel=" + predictionModel 
 						+ "&validationStudy=" + validationStudy,
 					async: false,
+					
 				}).done(function(status){
 					
-					$('#validatePredictors').empty();
-					
-					$('#mappingResult').empty();
-					
-					$.each(status, function(key, Info)
+					if(status["success"] == true)
 					{
-						if(key == "predictionModel")
-						{
-							$('#matchingPredictionModel').text(status["predictionModel"]);
-						}
-						else if(key == "validationStudy")
-						{
-							$('#matchingValidationStudy').text(status["validationStudy"]);
-							
-						}else if(key == "treeView")
-						{
-							$('#browser').empty().append(Info);
-						}
-						else
-						{	
-							label = Info["label"];
-							
-							table = Info["mappingResult"];
-							
-							$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") 
-								+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
-							
-							$('#validatePredictors option').each(function(){
-								$(this).hover(
-									function(){
-										$(this).css({
-											"font-weight" : "bolder",
-											"color" : "grey"
-										});
-									},function(){
-										$(this).css({
-											"font-weight" : "normal",
-											"color" : "black"
-										});
-									}
-								);
-							});
-							
-							$('#mappingResult').append(table);
-						}
-						
-						$('#validatePredictors').change(function(){
-							$('#mappingResult table').hide();
-							id = $("#validatePredictors option:selected").attr('id');
-							identifier = "mapping_" + id;
-							$('#' + identifier).show();
-						});
-					});
 					
-					$('#mappingResult tr td:first-child').each(function(){
+						destroyScreenMessage();
 						
+						$('#validatePredictors').empty();
+					
+						$('#mappingResult').empty();
+						
+						$.each(status, function(key, Info)
+						{
+							if(key == "predictionModel")
+							{
+								$('#matchingPredictionModel').text(status["predictionModel"]);
+							}
+							else if(key == "validationStudy")
+							{
+								$('#matchingValidationStudy').text(status["validationStudy"]);
+								
+							}
+						});
+						
+						createProgressBar("Loading predictor");
+						
+						loadMappingResult(validationStudy);
+						
+						destroyProgressBar();
+						
+						initializeTree();
+					}
+				});
+			}
+		}
+		
+		function loadMappingResult(validationStudy){
+			
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_loadMappingResult&validationStudy=" + validationStudy,
+				async: false,
+			}).done(function(status){
+				
+				$.each(status, function(key, Info)
+				{
+					if(key == "treeView")
+					{
+						$('#browser').empty().append(Info);
+					}
+					else if(key != "loadingProcess" && key != "total")
+					{	
+						label = Info["label"];
+						
+						table = Info["mappingResult"];
+						
+						$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") 
+							+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+						
+						$('#validatePredictors option').each(function(){
+							$(this).hover(
+								function(){
+									$(this).css({
+										"font-weight" : "bolder",
+										"color" : "grey"
+									});
+								},function(){
+									$(this).css({
+										"font-weight" : "normal",
+										"color" : "black"
+									});
+								}
+							);
+						});
+						
+						$('#mappingResult').append(table);
+					}
+					
+					$('#validatePredictors').change(function(){
+						$('#mappingResult table').hide();
+						id = $("#validatePredictors option:selected").attr('id');
+						identifier = "mapping_" + id;
+						$('#' + identifier).show();
+					});
+				});
+				
+				if(status["loadingProcess"] == status["total"])
+				{
+					$('#mappingResult tr td:first-child').each(function(){
+				
 						identifier = $(this).parent().attr('id');
 						identifier = identifier.replace("_row", "_details");
 						$('#' + identifier).show();
@@ -501,12 +311,11 @@
 							});
 						});
 					});
-					
-					$('#beforeMapping').hide();
-					$('#afterMapping').show();
-					initialize();
-				});
-			}
+				}else{
+					updateProgressBar(status["loadingProcess"]/status["total"]);
+					loadMappingResult(validationStudy);
+				}
+			});
 		}
 		
 		function retrieveExpandedQueries(predictor, matchedVariable){
@@ -880,6 +689,276 @@
 			
 			$('#statusMessage').effect('bounce').delay(2000).fadeOut();
 		}
+		
+		function createScreenMessage(showMessage){
+			
+			showModal();
+				
+			$('body').append("<div id=\"progressbar\" class=\"middleBar\">" + showMessage + "</div>");
+		
+			$('.middleBar').css({
+				'left' : '46%',
+				'top' : '50%',
+				'height' : 50,
+				'width' : 300,
+			    'position' : 'absolute',
+			    'z-index' : 1501,
+			});
+		}
+		
+		function destroyScreenMessage(){
+					
+			$('.modalWindow').remove();
+			
+			$('#progressbar').remove();
+		}
+		
+		function createProgressBar(showMessage){
+			
+			showModal();
+						
+			$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
+			$('body').append("<div id=\"LoadPredictor\" class=\"middleBar\" style=\"padding-left:60px;padding-top:15px;font-style:italic;\">" 
+				+ showMessage + "</div>");
+			
+			$("#progressbar").progressbar({value: 0});
+			
+			$('.middleBar').css({
+				'left' : '38%',
+				'top' : '50%',
+				'height' : 50,
+				'width' : 300,
+			    'position' : 'absolute',
+			    'z-index' : 1501,
+			});
+		}
+		
+		function updateProgressBar(percentage){
+			$("#progressbar").progressbar({
+				value: percentage * 100
+			});
+		}
+		
+		function destroyProgressBar(){
+			
+			$('.middleBar').remove();
+			$('.modalWindow').remove();
+			$('#progressbar').remove();
+		}
+		
+		function toggler() {
+			$(this)
+				.parent()
+				// swap classes for hitarea
+				.find(">.hitarea")
+					.swapClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
+					.swapClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
+				.end()
+				// swap classes for parent li
+				.swapClass( CLASSES.collapsable, CLASSES.expandable )
+				.swapClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
+				// find child lists
+				.find( ">ul" )
+				// toggle them
+				.heightToggle( settings.animated, settings.toggle );
+			if ( settings.unique ) {
+				$(this).parent()
+					.siblings()
+					// swap classes for hitarea
+					.find(">.hitarea")
+						.replaceClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
+						.replaceClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
+					.end()
+					.replaceClass( CLASSES.collapsable, CLASSES.expandable )
+					.replaceClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
+					.find( ">ul" )
+					.heightHide( settings.animated, settings.toggle );
+			}
+		}
+		
+		function toggleNodeEvent(clickedNode){
+			
+			$(clickedNode).children('span').click(function(){
+				
+				var nodeName = $(this).parent().attr('id');
+				
+				if($('#' + nodeName).find('li').length > 0){
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_toggleNode&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done();
+					
+				}else{
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_getChildren&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done(function(result){
+						var addedNodes = result["result"];
+						var branch = "<li class=\"open\"><span class=\"folder\">test</span><ul><li class=\"open\"><span class=\"folder\">test2</li></ul></li>";
+						$('#' + nodeName + ' >ul').prepend(addedNodes);
+						var prepareBranches = $.fn.prepareBranches;
+						var applyClasses = $.fn.applyClasses;
+						
+						var branches = $('#' + nodeName).find('li').prepareBranches(settings);
+						
+						branches.applyClasses(settings, toggler);
+						
+						$('#' + nodeName).find('li').each(function(){
+							toggleNodeEvent($(this));
+						});
+					});
+				}
+				
+				if($(this).parent().find('li').size() == 0){
+					highlightClick($(this).parent());
+					$('#details').empty();
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + $(this).parent().attr('id'),
+	      				async: false
+	      			}).done(function(data) {
+						$('#details').append(data["result"]);
+					});
+				}
+			});
+		}
+		
+		function searchTree(token){
+			
+			createScreenMessage("Searching...");
+			
+			if(token != ""){
+				array = {};
+				
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array);
+				
+				var branches = $('#browser li').prepareBranches(settings);
+				
+				branches.applyClasses(settings, toggler);
+			}
+			
+			destroyScreenMessage();
+			
+			$('#browser li').each(function(){
+				toggleNodeEvent($(this));
+			});
+		}
+		
+		function loadTree(){
+			status = {};
+			$.ajax({
+				url:"${screen.getUrl()}&__action=download_json_loadingTree",
+				async: false,
+			}).done(function(result){
+				status = result;
+			});
+			
+			updateProgressBar(status["result"]/5);
+			
+			if(status["status"] == false){
+				loadTree();
+			}
+		}
+		
+		function showModal(){
+			
+			$('body').append("<div class=\"modalWindow\"></div>");
+			
+			$('.modalWindow').css({
+				'left' : 0,
+				'top' : 0,
+				'height' : $('.formscreen').height() + 200,
+				'width' : $('body').width(),
+			    'position' : 'absolute',
+			    'z-index' : '1500',
+			    'opacity' : '0.5',
+			    background : 'grey'
+			});
+		}
+		
+		function highlightClick(clickedBranch){
+			
+			$(clickedBranch).children('span').css({
+				'color':'#778899',
+				'font-size':17,
+				'font-style':'italic',
+				'font-weight':'bold'
+			});
+			
+			var measurementID = $(clickedBranch).attr('id');
+			
+			var clickedVar = $('#clickedVariable').val();
+			
+			if(clickedVar != "" && clickedVar != measurementID){
+				$('#' + clickedVar + '>span').css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400
+				});
+				var parentOld = $('#' + clickedVar).parent().siblings('span');
+		
+				$(parentOld).css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400									
+				});
+			}
+			$('#clickedVariable').val(measurementID);
+		}
+		
+		function initializeTree(){
+			
+			$('#search').button();
+			$('#search').click(function(){
+				token = $('#searchField').val();
+				searchTree(token);
+			});
+			
+			$('#clearButton').button();
+			$('#clearButton').click(function(){
+				array = {};
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_clearSearch",
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array).treeview(settings);
+				
+				$("#browser").find('li').each(function(){
+					
+					toggleNodeEvent($(this));
+				});
+				
+				$('#searchField').val('');
+			});
+			
+			$("#browser").treeview(settings).css('font-size', 16).find('li').show();	
+			
+			$("#browser").find('li').each(function(){
+				
+				toggleNodeEvent($(this));
+			});	
+			
+			createProgressBar("Loading catalogue");
+			
+			loadTree();
+			
+			destroyProgressBar();
+			
+			$('#treePanel').show();
+		}
 	</script>
 	<form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -920,12 +999,6 @@
 							</div>
 							<div style="float:left;width:100%;height:80%;">
 								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:25px;width:100%;height:95%;">
-									<option>PredictorA</option>
-									<option>PredictorB</option>
-									<option>PredictorC</option>
-									<option>PredictorD</option>
-									<option>PredictorE</option>
-									<option>PredictorF</option>
 								</select>
 								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
 								</div>
