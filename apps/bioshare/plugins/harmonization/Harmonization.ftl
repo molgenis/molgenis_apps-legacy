@@ -1,4 +1,10 @@
 <#macro plugins_harmonization_Harmonization screen>
+	<link type="text/css" href="jquery/css/smoothness/jquery-ui-1.8.7.custom.css" rel="Stylesheet"/>
+	<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" language="javascript"></script>
+	<script src="res/jquery-plugins/Treeview/jquery.treeview.js" language="javascript"></script>
+	<script src="res/scripts/catalogue.js" language="javascript"></script>
+	<link rel="stylesheet" href="res/jquery-plugins/Treeview/jquery.treeview.css" type="text/css" media="screen" /> 
+	<link rel="stylesheet" href="res/css/catalogue.css" type="text/css" media="screen" />
 	<style>
 		.predictorInput{
 			display:block;
@@ -15,6 +21,242 @@
 	 	}
 	</style>
 	<script>
+		var CLASSES = $.treeview.classes;
+		var settings = {};
+		var searchNode = new Array();
+		
+		function toggler() {
+			$(this)
+				.parent()
+				// swap classes for hitarea
+				.find(">.hitarea")
+					.swapClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
+					.swapClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
+				.end()
+				// swap classes for parent li
+				.swapClass( CLASSES.collapsable, CLASSES.expandable )
+				.swapClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
+				// find child lists
+				.find( ">ul" )
+				// toggle them
+				.heightToggle( settings.animated, settings.toggle );
+			if ( settings.unique ) {
+				$(this).parent()
+					.siblings()
+					// swap classes for hitarea
+					.find(">.hitarea")
+						.replaceClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
+						.replaceClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
+					.end()
+					.replaceClass( CLASSES.collapsable, CLASSES.expandable )
+					.replaceClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
+					.find( ">ul" )
+					.heightHide( settings.animated, settings.toggle );
+			}
+		}
+		
+		function toggleNodeEvent(clickedNode){
+			
+			$(clickedNode).children('span').click(function(){
+				
+				var nodeName = $(this).parent().attr('id');
+				
+				if($('#' + nodeName).find('li').length > 0){
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_toggleNode&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done();
+					
+				}else{
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_getChildren&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done(function(result){
+						var addedNodes = result["result"];
+						var branch = "<li class=\"open\"><span class=\"folder\">test</span><ul><li class=\"open\"><span class=\"folder\">test2</li></ul></li>";
+						$('#' + nodeName + ' >ul').prepend(addedNodes);
+						var prepareBranches = $.fn.prepareBranches;
+						var applyClasses = $.fn.applyClasses;
+						
+						var branches = $('#' + nodeName).find('li').prepareBranches(settings);
+						
+						branches.applyClasses(settings, toggler);
+						
+						$('#' + nodeName).find('li').each(function(){
+							toggleNodeEvent($(this));
+						});
+					});
+				}
+				
+				if($(this).parent().find('li').size() == 0){
+					highlightClick($(this).parent());
+					$('#details').empty();
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + $(this).parent().attr('id'),
+	      				async: false
+	      			}).done(function(data) {
+						$('#details').append(data["result"]);
+					});
+				}
+			});
+		}
+		
+		function searchTree(token){
+			
+			showModal();
+				
+			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:46%;top:80%\">Searching..</div>");
+			
+			if(token != ""){
+				array = {};
+				
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array);
+				
+				var branches = $('#browser li').prepareBranches(settings);
+				
+				branches.applyClasses(settings, toggler);
+			}
+			
+			$('.modalWindow').remove();
+			
+			$('#progressbar').remove();
+			
+			$('#browser li').each(function(){
+				toggleNodeEvent($(this));
+			});
+		}
+		
+		function loadTree(){
+			status = {};
+			$.ajax({
+				url:"${screen.getUrl()}&__action=download_json_loadingTree",
+				async: false,
+			}).done(function(result){
+				status = result;
+			});
+			$("#progressbar").progressbar({
+				value: status["result"]/5 * 100
+			});
+			if(status["status"] == false){
+				loadTree();
+			}
+		}
+		
+		function showModal(){
+			
+			$('body').append("<div class=\"modalWindow\"></div>");
+			
+			$('.modalWindow').css({
+				'left' : 0,
+				'top' : 0,
+				'height' : $('.formscreen').height() + 200,
+				'width' : $('body').width(),
+			    'position' : 'absolute',
+			    'z-index' : '1500',
+			    'opacity' : '0.5',
+			    background : 'grey'
+			});
+		}
+		
+		function highlightClick(clickedBranch){
+			
+			$(clickedBranch).children('span').css({
+				'color':'#778899',
+				'font-size':17,
+				'font-style':'italic',
+				'font-weight':'bold'
+			});
+			
+			var measurementID = $(clickedBranch).attr('id');
+			
+			var clickedVar = $('#clickedVariable').val();
+			
+			if(clickedVar != "" && clickedVar != measurementID){
+				$('#' + clickedVar + '>span').css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400
+				});
+				var parentOld = $('#' + clickedVar).parent().siblings('span');
+		
+				$(parentOld).css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400									
+				});
+			}
+			$('#clickedVariable').val(measurementID);
+		}
+		
+		function initialize(){
+			
+			$('#search').button();
+			$('#search').click(function(){
+				token = $('#searchField').val();
+				searchTree(token);
+			});
+			
+			$('#clearButton').button();
+			$('#clearButton').click(function(){
+				array = {};
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_clearSearch",
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array).treeview(settings);
+				
+				$("#browser").find('li').each(function(){
+					
+					toggleNodeEvent($(this));
+				});
+				
+				$('#searchField').val('');
+			});
+			
+			$("#browser").treeview(settings).css('font-size', 16).find('li').show();	
+			
+			$("#browser").find('li').each(function(){
+				
+				toggleNodeEvent($(this));
+			});	
+			
+			showModal();
+			
+			$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
+			$('body').append("<div class=\"middleBar\" style=\"padding-left:60px;padding-top:15px;font-style:italic;\">Loading catalogue</div>");
+			
+			$("#progressbar").progressbar({value: 0});
+			
+			$('.middleBar').css({
+				'left' : 400,
+				'top' : 300,
+				'height' : 50,
+				'width' : 300,
+			    'position' : 'absolute',
+			    'z-index' : 1501,
+			});
+			
+			loadTree();
+			
+			$('.modalWindow').remove();
+			$('.middleBar').remove();
+			$('#treePanel').show();
+		}
+	
 		$(document).ready(function(){
 			
 			//Styling for the dropDown box
@@ -153,6 +395,7 @@
 				}).done(function(status){
 					
 					$('#validatePredictors').empty();
+					
 					$('#mappingResult').empty();
 					
 					$.each(status, function(key, Info)
@@ -164,6 +407,10 @@
 						else if(key == "validationStudy")
 						{
 							$('#matchingValidationStudy').text(status["validationStudy"]);
+							
+						}else if(key == "treeView")
+						{
+							$('#browser').empty().append(Info);
 						}
 						else
 						{	
@@ -225,10 +472,39 @@
 								//$('#' + identifier).hide();
 							}
 						);
+						
+						$(this).children('span').click(function(){
+							
+							measurementName = $(this).text();
+							
+							$.ajax({
+								url : "${screen.getUrl()}&__action=download_json_getPosition&measurementName=" + measurementName,
+								async: false,
+							}).done(function(status){
+								
+								identifier = status["identifier"];
+								
+								$('#browser').empty().append(status["treeView"]).treeview(settings);
+								$("#browser").find('li').each(function(){
+									toggleNodeEvent($(this));
+								});
+								
+								$('#' + identifier).children('span').trigger('click');
+								
+								window.scrollTo(0, 500);
+								
+								var elementTop = $('#' + identifier).position().top;
+								var treeDivTop = $('#treeView').position().top;
+								var divHeight = $('#treeView').height();
+								var lastTop = $('#treeView').scrollTop();
+								$('#treeView').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
+							});
+						});
 					});
 					
 					$('#beforeMapping').hide();
 					$('#afterMapping').show();
+					initialize();
 				});
 			}
 		}
@@ -610,6 +886,9 @@
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action">
+	<!-- remember the clicked variable -->
+	<input type="hidden" id="clickedVariable"/>
+
 		<#--optional: mechanism to show messages-->
 		<div class="formscreen">
 			<div class="form_header" id="${screen.getName()}">
@@ -617,7 +896,7 @@
 			</div>
 			<div class="screenbody">
 				<div class="screenpadding">
-					<div id="afterMapping" style="display:none;height:600px;width:100%;">
+					<div id="afterMapping" style="display:none;height:800px;width:100%;">
 						<div style="width:100%;height:120px;">
 							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:100px;margin:2px;float:left">
 								<div class="ui-widget-header ui-corner-all" style="height:30px;">
@@ -662,6 +941,32 @@
 								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
 								</div>
 							</div>
+						</div>
+						<div id="treePanel" style="float:left;width:100%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
+								<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
+								<div id="treeSearchPanel" style="float:left;margin:7px;">
+									<input type="text" id="searchField" style="font-size:12px;"/>
+									<input type="button" id="search" style="font-size:12px;" value="search"/>
+									<input type="button" id="clearButton" style="font-size:12px;" value="clear"/>
+								</div>
+							</div>
+							<table style="width:100%">
+								<tr>
+									<td style="width:50%">
+										<div id="treePanel">
+											<div id="treeView" style="height:250px;overflow:auto;">
+												<ul id="browser" class="pointtree">  
+												</ul>
+											</div>
+										</div>
+									</td>
+									<td style="width:50%">
+										<div id="details" style="height:250px;overflow:auto;">
+										</div>
+									</td>
+								</tr>
+							</table>
 						</div>
 					</div>
 					<div id="beforeMapping" style="height:600px;width:100%;">

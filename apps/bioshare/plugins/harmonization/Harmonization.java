@@ -35,6 +35,7 @@ import org.molgenis.util.Tuple;
 import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.MappingList;
 import plugins.HarmonizationComponent.OWLFunction;
+import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
 
 //import plugins.autohidelogin.AutoHideLoginModel; 
 
@@ -45,6 +46,7 @@ public class Harmonization extends PluginModel<Entity>
 	 * 
 	 */
 	private static final long serialVersionUID = 4255876428416189905L;
+	private catalogueTreeComponent catalogue = null;
 	private List<String> listOfPredictionModels = new ArrayList<String>();
 	private List<String> listOfCohortStudies = new ArrayList<String>();
 	private List<String> reservedInv = new ArrayList<String>();
@@ -393,6 +395,10 @@ public class Harmonization extends PluginModel<Entity>
 								status.put(predictor.getName(), eachMapping);
 							}
 						}
+
+						catalogue = new catalogueTreeComponent(validationStudy);
+
+						status.put("treeView", catalogue.getTreeView());
 					}
 				}
 				else if ("download_json_retrieveExpandedQuery".equals(request.getAction()))
@@ -417,6 +423,10 @@ public class Harmonization extends PluginModel<Entity>
 					table += "</table></div>";
 
 					status.put("table", table);
+				}
+				else
+				{
+					status = catalogue.requestHandle(request, db, out);
 				}
 
 				db.commitTx();
@@ -456,8 +466,8 @@ public class Harmonization extends PluginModel<Entity>
 			String identifier = predictorName + "_" + measurementName;
 
 			table += "<tr id=\"" + identifier.replaceAll(" ", "_")
-					+ "_row\"><td style=\"text-align:center;cursor:pointer;\">" + measurementName + "<div id=\""
-					+ identifier.replaceAll(" ", "_")
+					+ "_row\"><td style=\"text-align:center;cursor:pointer;\"><span>" + measurementName
+					+ "</span><div id=\"" + identifier.replaceAll(" ", "_")
 					+ "_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" "
 					+ "class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">"
 					+ "<span class=\"ui-icon ui-icon-plus\"></span></div>" + "</td><td style=\"text-align:center;\">"
