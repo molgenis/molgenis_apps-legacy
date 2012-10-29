@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.molgenis.pheno.Measurement;
-
 public class MappingList
 {
 
@@ -76,6 +74,7 @@ public class MappingList
 			for (LinkedInformation inf : links)
 			{
 				System.out.println(inf.expandedQuery + " ------------ similarity: " + inf.similarity);
+
 			}
 		}
 	}

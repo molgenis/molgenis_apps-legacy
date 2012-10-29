@@ -1,4 +1,10 @@
 <#macro plugins_harmonization_Harmonization screen>
+	<link type="text/css" href="jquery/css/smoothness/jquery-ui-1.8.7.custom.css" rel="Stylesheet"/>
+	<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" language="javascript"></script>
+	<script src="res/jquery-plugins/Treeview/jquery.treeview.js" language="javascript"></script>
+	<script src="res/scripts/catalogue.js" language="javascript"></script>
+	<link rel="stylesheet" href="res/jquery-plugins/Treeview/jquery.treeview.css" type="text/css" media="screen" /> 
+	<link rel="stylesheet" href="res/css/catalogue.css" type="text/css" media="screen" />
 	<style>
 		.predictorInput{
 			display:block;
@@ -15,6 +21,242 @@
 	 	}
 	</style>
 	<script>
+		var CLASSES = $.treeview.classes;
+		var settings = {};
+		var searchNode = new Array();
+		
+		function toggler() {
+			$(this)
+				.parent()
+				// swap classes for hitarea
+				.find(">.hitarea")
+					.swapClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
+					.swapClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
+				.end()
+				// swap classes for parent li
+				.swapClass( CLASSES.collapsable, CLASSES.expandable )
+				.swapClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
+				// find child lists
+				.find( ">ul" )
+				// toggle them
+				.heightToggle( settings.animated, settings.toggle );
+			if ( settings.unique ) {
+				$(this).parent()
+					.siblings()
+					// swap classes for hitarea
+					.find(">.hitarea")
+						.replaceClass( CLASSES.collapsableHitarea, CLASSES.expandableHitarea )
+						.replaceClass( CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea )
+					.end()
+					.replaceClass( CLASSES.collapsable, CLASSES.expandable )
+					.replaceClass( CLASSES.lastCollapsable, CLASSES.lastExpandable )
+					.find( ">ul" )
+					.heightHide( settings.animated, settings.toggle );
+			}
+		}
+		
+		function toggleNodeEvent(clickedNode){
+			
+			$(clickedNode).children('span').click(function(){
+				
+				var nodeName = $(this).parent().attr('id');
+				
+				if($('#' + nodeName).find('li').length > 0){
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_toggleNode&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done();
+					
+				}else{
+					
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_getChildren&nodeIdentifier=" + nodeName,
+						async: false,
+					}).done(function(result){
+						var addedNodes = result["result"];
+						var branch = "<li class=\"open\"><span class=\"folder\">test</span><ul><li class=\"open\"><span class=\"folder\">test2</li></ul></li>";
+						$('#' + nodeName + ' >ul').prepend(addedNodes);
+						var prepareBranches = $.fn.prepareBranches;
+						var applyClasses = $.fn.applyClasses;
+						
+						var branches = $('#' + nodeName).find('li').prepareBranches(settings);
+						
+						branches.applyClasses(settings, toggler);
+						
+						$('#' + nodeName).find('li').each(function(){
+							toggleNodeEvent($(this));
+						});
+					});
+				}
+				
+				if($(this).parent().find('li').size() == 0){
+					highlightClick($(this).parent());
+					$('#details').empty();
+					$.ajax({
+						url:"${screen.getUrl()}&__action=download_json_showInformation&variableName=" + $(this).parent().attr('id'),
+	      				async: false
+	      			}).done(function(data) {
+						$('#details').append(data["result"]);
+					});
+				}
+			});
+		}
+		
+		function searchTree(token){
+			
+			showModal();
+				
+			$('body').append("<div id=\"progressbar\" style=\"z-index:1501;height:50px;width:300px;position:absolute;left:46%;top:80%\">Searching..</div>");
+			
+			if(token != ""){
+				array = {};
+				
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_search&searchToken=" + token,
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array);
+				
+				var branches = $('#browser li').prepareBranches(settings);
+				
+				branches.applyClasses(settings, toggler);
+			}
+			
+			$('.modalWindow').remove();
+			
+			$('#progressbar').remove();
+			
+			$('#browser li').each(function(){
+				toggleNodeEvent($(this));
+			});
+		}
+		
+		function loadTree(){
+			status = {};
+			$.ajax({
+				url:"${screen.getUrl()}&__action=download_json_loadingTree",
+				async: false,
+			}).done(function(result){
+				status = result;
+			});
+			$("#progressbar").progressbar({
+				value: status["result"]/5 * 100
+			});
+			if(status["status"] == false){
+				loadTree();
+			}
+		}
+		
+		function showModal(){
+			
+			$('body').append("<div class=\"modalWindow\"></div>");
+			
+			$('.modalWindow').css({
+				'left' : 0,
+				'top' : 0,
+				'height' : $('.formscreen').height() + 200,
+				'width' : $('body').width(),
+			    'position' : 'absolute',
+			    'z-index' : '1500',
+			    'opacity' : '0.5',
+			    background : 'grey'
+			});
+		}
+		
+		function highlightClick(clickedBranch){
+			
+			$(clickedBranch).children('span').css({
+				'color':'#778899',
+				'font-size':17,
+				'font-style':'italic',
+				'font-weight':'bold'
+			});
+			
+			var measurementID = $(clickedBranch).attr('id');
+			
+			var clickedVar = $('#clickedVariable').val();
+			
+			if(clickedVar != "" && clickedVar != measurementID){
+				$('#' + clickedVar + '>span').css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400
+				});
+				var parentOld = $('#' + clickedVar).parent().siblings('span');
+		
+				$(parentOld).css({
+					'color':'black',
+					'font-size':15,
+					'font-style':'normal',
+					'font-weight':400									
+				});
+			}
+			$('#clickedVariable').val(measurementID);
+		}
+		
+		function initialize(){
+			
+			$('#search').button();
+			$('#search').click(function(){
+				token = $('#searchField').val();
+				searchTree(token);
+			});
+			
+			$('#clearButton').button();
+			$('#clearButton').click(function(){
+				array = {};
+				$.ajax({
+					url:"${screen.getUrl()}&__action=download_json_clearSearch",
+					async: false,
+				}).done(function(result){
+					array = result["result"];
+				});
+				
+				$('#browser').empty().append(array).treeview(settings);
+				
+				$("#browser").find('li').each(function(){
+					
+					toggleNodeEvent($(this));
+				});
+				
+				$('#searchField').val('');
+			});
+			
+			$("#browser").treeview(settings).css('font-size', 16).find('li').show();	
+			
+			$("#browser").find('li').each(function(){
+				
+				toggleNodeEvent($(this));
+			});	
+			
+			showModal();
+			
+			$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
+			$('body').append("<div class=\"middleBar\" style=\"padding-left:60px;padding-top:15px;font-style:italic;\">Loading catalogue</div>");
+			
+			$("#progressbar").progressbar({value: 0});
+			
+			$('.middleBar').css({
+				'left' : 400,
+				'top' : 300,
+				'height' : 50,
+				'width' : 300,
+			    'position' : 'absolute',
+			    'z-index' : 1501,
+			});
+			
+			loadTree();
+			
+			$('.modalWindow').remove();
+			$('.middleBar').remove();
+			$('#treePanel').show();
+		}
+	
 		$(document).ready(function(){
 			
 			//Styling for the dropDown box
@@ -81,6 +323,25 @@
 				$('#defineFormulaPanel').dialog('open');
 			});
 			
+			$('#showCohortStudy').button().click(function(){
+				$('#selectCohortStudyPanel').fadeIn();
+			});
+			
+			$('#listOfCohortStudies').chosen();
+			
+			$('#validatePredictionModel').button().click(function(){
+				validateStudy();
+			});
+			
+			$('#startNewValidation').button().click(function(){
+				$('#beforeMapping').show();
+				$('#afterMapping').hide();
+			});
+			
+			$('#cancelSelectCohortStudy').button().click(function(){
+				$('#selectCohortStudyPanel').fadeOut();
+			});
+			
 			$('#addPredictorButton').click(function(){
 				$('#defineVariablePanel').fadeIn();
 			});
@@ -111,6 +372,171 @@
 			});
 		});
 		
+		function validateStudy(){
+		
+			if($('#listOfCohortStudies option').length == 0){
+				
+				showMessage("There are no cohort studies to validate the prediction model", false);
+			
+			}else if($('#selectPredictionModel option').length == 0){
+			
+				showMessage("There are no prediction models", false);
+			
+			}else{
+				
+				predictionModel = $('#selectPredictionModel').val();
+				
+				validationStudy = $('#listOfCohortStudies').val();
+				
+				$.ajax({
+					url : "${screen.getUrl()}&__action=download_json_validateStudy&predictionModel=" + predictionModel 
+						+ "&validationStudy=" + validationStudy,
+					async: false,
+				}).done(function(status){
+					
+					$('#validatePredictors').empty();
+					
+					$('#mappingResult').empty();
+					
+					$.each(status, function(key, Info)
+					{
+						if(key == "predictionModel")
+						{
+							$('#matchingPredictionModel').text(status["predictionModel"]);
+						}
+						else if(key == "validationStudy")
+						{
+							$('#matchingValidationStudy').text(status["validationStudy"]);
+							
+						}else if(key == "treeView")
+						{
+							$('#browser').empty().append(Info);
+						}
+						else
+						{	
+							label = Info["label"];
+							
+							table = Info["mappingResult"];
+							
+							$('#validatePredictors').append("<option id=\"" + key.replace(/\s/g,"_") 
+								+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+							
+							$('#validatePredictors option').each(function(){
+								$(this).hover(
+									function(){
+										$(this).css({
+											"font-weight" : "bolder",
+											"color" : "grey"
+										});
+									},function(){
+										$(this).css({
+											"font-weight" : "normal",
+											"color" : "black"
+										});
+									}
+								);
+							});
+							
+							$('#mappingResult').append(table);
+						}
+						
+						$('#validatePredictors').change(function(){
+							$('#mappingResult table').hide();
+							id = $("#validatePredictors option:selected").attr('id');
+							identifier = "mapping_" + id;
+							$('#' + identifier).show();
+						});
+					});
+					
+					$('#mappingResult tr td:first-child').each(function(){
+						
+						identifier = $(this).parent().attr('id');
+						identifier = identifier.replace("_row", "_details");
+						$('#' + identifier).show();
+						$('#' + identifier).click(function(){
+							predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
+							retrieveExpandedQueries(predictor, identifier.replace("_details", ""));
+						});	
+						
+						$(this).hover(
+							function () {
+								$(this).css("font-weight", "bolder");
+								identifier = $(this).parent().attr('id');
+								identifier = identifier.replace("_row", "_details");
+								$('#' + identifier).show();
+							}, 
+							function () {
+								$(this).css("font-weight", "normal");
+								//identifier = $(this).parent().attr('id');
+								//identifier = identifier.replace("_row", "_details");
+								//$('#' + identifier).hide();
+							}
+						);
+						
+						$(this).children('span').click(function(){
+							
+							measurementName = $(this).text();
+							
+							$.ajax({
+								url : "${screen.getUrl()}&__action=download_json_getPosition&measurementName=" + measurementName,
+								async: false,
+							}).done(function(status){
+								
+								identifier = status["identifier"];
+								
+								$('#browser').empty().append(status["treeView"]).treeview(settings);
+								$("#browser").find('li').each(function(){
+									toggleNodeEvent($(this));
+								});
+								
+								$('#' + identifier).children('span').trigger('click');
+								
+								window.scrollTo(0, 500);
+								
+								var elementTop = $('#' + identifier).position().top;
+								var treeDivTop = $('#treeView').position().top;
+								var divHeight = $('#treeView').height();
+								var lastTop = $('#treeView').scrollTop();
+								$('#treeView').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
+							});
+						});
+					});
+					
+					$('#beforeMapping').hide();
+					$('#afterMapping').show();
+					initialize();
+				});
+			}
+		}
+		
+		function retrieveExpandedQueries(predictor, matchedVariable){
+			
+			$.ajax({
+				url : "${screen.getUrl()}&__action=download_json_retrieveExpandedQuery&predictor="
+					+ predictor + "&matchedVariable=" + matchedVariable,
+				async: false,
+				
+			}).done(function(status){
+				
+				table = status["table"];
+				
+				$('#afterMapping').append(table);
+				
+				$('#' + matchedVariable).dialog({
+					title : "Expanded queries",
+					height: 300,
+	            	width: 600,
+	            	modal: true,
+	            	buttons: {
+		                Cancel: function() {
+		                    $( this ).dialog( "close" );
+		                }
+	            	},
+				});
+				$('#' + matchedVariable).show();
+			});
+		}
+		
 		function insertNewRow(){
 			
 			message = {};
@@ -125,8 +551,11 @@
 				data["description"] = $('#descriptionOfPredictor').val();
 				data["dataType"] = $('#dataTypeOfPredictor').val();
 				data["unit"] = $('#unitOfPredictor').val();
-				data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","));
-				data["buildingBlocks"] = uniqueElementToString($('#buildingBlocks').val().split(","));
+				data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
+				
+				buildingBlockString = uniqueElementToString($('#buildingBlocks').val().split(";"), ";");
+				
+				data["buildingBlocks"] = uniqueElementToString(buildingBlockString.split(","), ",");
 				
 				//add the data to table
 				identifier = data["name"].replace(/\s/g,"_");
@@ -176,7 +605,8 @@
 			
 			addedCategory = "";
 			
-			if(categories != "" && categories != null){
+			if(categories != "" && categories != null)
+			{
 				blocks = categories.split(",");
 				addedCategory = createMultipleSelect(blocks);
 			}
@@ -185,9 +615,15 @@
 			
 			selectBlocks = "";
 			
-			if(buildingBlocks != "" && buildingBlocks != null){
-				blocks = buildingBlocks.split(",");
-				selectBlocks = createMultipleSelect(blocks);
+			if(buildingBlocks != "" && buildingBlocks != null)
+			{
+				
+				for( var i = 0 ; i < buildingBlocks.split(";").length ; i++)
+				{
+					eachDefinition = buildingBlocks.split(";")[i];
+					blocks = eachDefinition.split(",");
+					selectBlocks += createMultipleSelect(blocks);		
+				}
 			}
 			
 			newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
@@ -373,14 +809,18 @@
 	       return result;
 		}
 		
-		function uniqueElementToString(anArray){
+		function uniqueElementToString(anArray, separator){
 			
 			unique = uniqueElements(anArray);
 			
 			backToString = "";
 			
 			for(var i = 0; i < unique.length; i++){
-				backToString += unique[i] + ",";
+				if(separator != null){
+					backToString += unique[i] + separator;
+				}else{
+					backToString += unique[i] + ",";
+				}
 			}
 			
 			backToString = backToString.substring(0, backToString.length - 1);
@@ -446,6 +886,9 @@
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action">
+	<!-- remember the clicked variable -->
+	<input type="hidden" id="clickedVariable"/>
+
 		<#--optional: mechanism to show messages-->
 		<div class="formscreen">
 			<div class="form_header" id="${screen.getName()}">
@@ -453,16 +896,92 @@
 			</div>
 			<div class="screenbody">
 				<div class="screenpadding">
-					<div style="height:600px;width:100%;">
+					<div id="afterMapping" style="display:none;height:800px;width:100%;">
+						<div style="width:100%;height:120px;">
+							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:100px;margin:2px;float:left">
+								<div class="ui-widget-header ui-corner-all" style="height:30px;">
+									<div style="margin:3px;float:left;">Matching result</div>
+								</div>
+								<div style="margin:5px;">
+									Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;">KORA</span>
+								</div>
+								<div style="margin:5px;">
+									Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;">PREVEND</span>
+								</div>
+							</div>
+							<div style="width:45%;height:100px;margin:2px;top:70px;position:relative;float:right">
+								<input type="button" id="saveMapping" value="Save the mappings" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+								<input type="button" id="startNewValidation" value="Validate a new model" style="font-size:11px;margin:2px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+							</div>
+						</div>
+						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:30%;float:left;margin-left:4px;">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+								<span style="display:block;margin:7px;text-align:center;">Predictors</span>
+							</div>
+							<div style="float:left;width:100%;height:80%;">
+								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:25px;width:100%;height:95%;">
+									<option>PredictorA</option>
+									<option>PredictorB</option>
+									<option>PredictorC</option>
+									<option>PredictorD</option>
+									<option>PredictorE</option>
+									<option>PredictorF</option>
+								</select>
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+								</div>
+							</div>
+						</div>
+						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:69%;float:left;">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+								<span style="display:block;margin:7px;text-align:center;">Matching variables</span>
+							</div>
+							<div style="float:left;width:100%;height:80%;">
+								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
+								</div>
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+								</div>
+							</div>
+						</div>
+						<div id="treePanel" style="float:left;width:100%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
+								<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
+								<div id="treeSearchPanel" style="float:left;margin:7px;">
+									<input type="text" id="searchField" style="font-size:12px;"/>
+									<input type="button" id="search" style="font-size:12px;" value="search"/>
+									<input type="button" id="clearButton" style="font-size:12px;" value="clear"/>
+								</div>
+							</div>
+							<table style="width:100%">
+								<tr>
+									<td style="width:50%">
+										<div id="treePanel">
+											<div id="treeView" style="height:250px;overflow:auto;">
+												<ul id="browser" class="pointtree">  
+												</ul>
+											</div>
+										</div>
+									</td>
+									<td style="width:50%">
+										<div id="details" style="height:250px;overflow:auto;">
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div id="beforeMapping" style="height:600px;width:100%;">
 						<div style="padding-left:6px;background:#DDDDDD;border:1px solid #BBBBBB;font-size:14px;height:28%;width:60%;float:left;margin-right:30px;" class="ui-corner-all">
-							<span style="font-style:italic;">
+							<div style="font-style:italic;">
 								<h3>Validate prediction models</h3>
-								<hr/>
-							</span>
+							</div>							
+							<hr/>
 							<div id="selectedPrediction" style="height:30px;padding-left:10px;">
 								Selected prediction model:
 								<span style="font-size:25px;font-style:italic;"></span>
-								<input type="button" id="defineFormula" value="formula" style="cursor:pointer;font-size:12px;height:25px;width:60px;float:right;margin-top:4px;margin-right:20px;" />
+								<input type="button" id="defineFormula" value="formula" class="ui-button ui-widget ui-state-default ui-corner-all"
+									style="font-size:12px;height:30px;width:70px;float:right;margin-top:4px;margin-right:20px;" />
+								<input type="button" id="showCohortStudy" value="cohort study" class="ui-button ui-widget ui-state-default ui-corner-all"
+									style="font-size:12px;height:30px;width:100px;float:right;margin-top:4px;" />
 								<div id="defineFormulaPanel" style="display:none;">
 									<textarea id="showFormula" style="width:90%;height:90%;font-size:12px;">
 									</textarea>
@@ -499,7 +1018,25 @@
 								</div>
 							</div>
 						</div>
-						<fieldset id="statusMessage" style="display:none;width:275px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+						<div id="selectCohortStudyPanel" style="display:none;margin-left:-20px;width:300px;height:28%;position:relative;float:left;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:14%;width:100%;">
+								<span style="margin:10px;font-size:20px;font-style:italic;">Select a cohort study</span>
+							</div>
+							<div style="margin-top:20px;margin-left:10px;height:70%;">
+								<select id="listOfCohortStudies" style="width:185px;">
+									<#if screen.getListOfCohortStudies()??>
+										<#list screen.getListOfCohortStudies() as study>
+											<option>${study}</option>
+										</#list>
+									</#if>
+								</select>
+								<input type="button" id="validatePredictionModel" value="validate" 
+									style="font-size:10px;position:absolute;top:80%;right:25%;" class="ui-button ui-widget ui-state-default ui-corner-all">
+								<input type="button" id="cancelSelectCohortStudy" value="cancel" 
+									style="font-size:10px;position:absolute;top:80%;right:5%;" class="ui-button ui-widget ui-state-default ui-corner-all">
+							</div>
+						</div>
+						<fieldset id="statusMessage" style="display:none;width:250px;height:140px;position:relative;top:-10px;" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 							<legend style="font-style:italic;">
 								Status
 							</legend>
@@ -643,7 +1180,7 @@
 											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
 												category
 											</th>
-											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:20%;">
+											<th class="ui-tabs-nav ui-widget-header ui-corner-all" style="width:40%;">
 												building blocks
 											</th>
 										</tr>
