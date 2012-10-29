@@ -44,8 +44,8 @@ import org.molgenis.util.Tuple;
 
 public class PatientService implements Serializable
 {
-	private static final long serialVersionUID       = -5343468595949980106L;
-	private Database db                              = null;
+	private static final long serialVersionUID = -5343468595949980106L;
+	private Database db = null;
 	private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
 
 	public void setDatabase(Database db)
@@ -58,7 +58,7 @@ public class PatientService implements Serializable
 		if (this.db instanceof JDBCDatabase)
 		{
 			Query<Patient> query = this.db.query(Patient.class);
-	
+
 			if (criteria.getPid() != null)
 			{
 				query = query.equals(Patient.IDENTIFIER, criteria.getPid());
@@ -70,7 +70,8 @@ public class PatientService implements Serializable
 			}
 			if (criteria.getMid() != null)
 			{
-				List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, criteria.getMid()).find();
+				List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, criteria.getMid())
+						.find();
 				if (mutations.size() == 1)
 				{
 					Integer mutationId = mutations.get(0).getId();
@@ -81,7 +82,8 @@ public class PatientService implements Serializable
 			{
 				if (criteria.getConsent())
 				{
-					query = query.in(Patient.CONSENT, Arrays.asList(new String[] { "publication", "yes" }));
+					query = query.in(Patient.CONSENT, Arrays.asList(new String[]
+					{ "publication", "yes" }));
 				}
 				else
 				{
@@ -94,40 +96,43 @@ public class PatientService implements Serializable
 			}
 			if (criteria.getUserId() != null)
 			{
-				List<Submission> submissions = this.db.query(Submission.class).equals(Submission.SUBMITTERS, criteria.getUserId()).find();
-				List<Integer> submissionIds  = new ArrayList<Integer>();
+				List<Submission> submissions = this.db.query(Submission.class)
+						.equals(Submission.SUBMITTERS, criteria.getUserId()).find();
+				List<Integer> submissionIds = new ArrayList<Integer>();
 				for (Submission submission : submissions)
 				{
 					submissionIds.add(submission.getId());
 				}
 				query = query.in(Patient.SUBMISSION, submissionIds);
 			}
-	
+
 			if (query.getRules().length > 0)
 			{
 				return this.toPatientSummaryVOList(query.sortASC(Patient.IDENTIFIER).find());
 			}
-			else // Return an empty list, if query is "empty". find() would return all objects.
+			else
+			// Return an empty list, if query is "empty". find() would return
+			// all objects.
 			{
 				return new ArrayList<PatientSummaryVO>();
 			}
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			CriteriaBuilder cb              = this.db.getEntityManager().getCriteriaBuilder();
-			CriteriaQuery<Patient> query    = cb.createQuery(Patient.class);
-//			Metamodel metaModel             = this.db.getEntityManager().getMetamodel();
-//			EntityType<Mutation> Mutation_  = metaModel.entity(Mutation.class);
+			CriteriaBuilder cb = this.db.getEntityManager().getCriteriaBuilder();
+			CriteriaQuery<Patient> query = cb.createQuery(Patient.class);
+			// Metamodel metaModel = this.db.getEntityManager().getMetamodel();
+			// EntityType<Mutation> Mutation_ =
+			// metaModel.entity(Mutation.class);
 
-			Root<Patient> patient           = query.from(Patient.class);
+			Root<Patient> patient = query.from(Patient.class);
 			query.select(patient);
-			
+
 			List<Predicate> patientCriteria = new ArrayList<Predicate>();
 
-			if (criteria.getPid() != null)
-				patientCriteria.add(cb.equal(patient.get("identifier"), criteria.getPid()));
-			if (criteria.getMutationId() != null)
-				patientCriteria.add(cb.or(cb.equal(patient.get("mutations"), criteria.getMutationId())));
+			if (criteria.getPid() != null) patientCriteria.add(cb.equal(patient.get("identifier"), criteria.getPid()));
+			if (criteria.getMutationId() != null) patientCriteria.add(cb.or(cb.equal(patient.get("mutations"),
+					criteria.getMutationId())));
 			if (criteria.getMid() != null)
 			{
 				Join<Patient, Mutation> mutation = patient.join("mutations", JoinType.LEFT);
@@ -136,16 +141,16 @@ public class PatientService implements Serializable
 			}
 			if (criteria.getConsent() != null)
 			{
-				if (criteria.getConsent())
-					patientCriteria.add(patient.get("consent").in(Arrays.asList(new String[] { "publication", "yes" })));
+				if (criteria.getConsent()) patientCriteria.add(patient.get("consent").in(Arrays.asList(new String[]
+				{ "publication", "yes" })));
 				else
 					patientCriteria.add(cb.equal(patient.get("consent"), "no"));
 			}
-			if (criteria.getSubmissionId() != null)
-				patientCriteria.add(cb.equal(patient.get("submission"), criteria.getSubmissionId()));
+			if (criteria.getSubmissionId() != null) patientCriteria.add(cb.equal(patient.get("submission"),
+					criteria.getSubmissionId()));
 			if (criteria.getUserId() != null)
 			{
-				Join<Patient, Submission> submission   = patient.join("submission", JoinType.LEFT);
+				Join<Patient, Submission> submission = patient.join("submission", JoinType.LEFT);
 				Join<Patient, MolgenisUser> submitters = submission.join("submitters", JoinType.LEFT);
 
 				patientCriteria.add(cb.equal(submitters.get("id"), criteria.getUserId()));
@@ -166,13 +171,15 @@ public class PatientService implements Serializable
 
 	public PhenotypeDetailsVO findPhenotypeDetails(String pid) throws DatabaseException, ParseException
 	{
-		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, pid).in(Patient.CONSENT, Arrays.asList(new String[] { "publication", "yes" })).find();
-		
-		if (CollectionUtils.isEmpty(patients))
-			throw new IllegalArgumentException("Unknown patient identifier '" + pid + "'");
-		
-		Patient patient        = patients.get(0);
-		
+		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, pid)
+				.in(Patient.CONSENT, Arrays.asList(new String[]
+				{ "publication", "yes" })).find();
+
+		if (CollectionUtils.isEmpty(patients)) throw new IllegalArgumentException("Unknown patient identifier '" + pid
+				+ "'");
+
+		Patient patient = patients.get(0);
+
 		if (this.db instanceof JDBCDatabase)
 		{
 			PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
@@ -182,32 +189,31 @@ public class PatientService implements Serializable
 			phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
 
 			List<Workflow> workflows = this.db.query(Workflow.class).find();
-			
-			if (CollectionUtils.isEmpty(workflows))
-				return phenotypeDetailsVO;
-			
+
+			if (CollectionUtils.isEmpty(workflows)) return phenotypeDetailsVO;
+
 			// Use only first workflow
 			// TODO: What to do in case more than one workflow was found???
-			
-			WorkflowService workflowService        = new WorkflowService();
+
+			WorkflowService workflowService = new WorkflowService();
 			workflowService.setDatabase(db);
 			List<WorkflowElement> workflowElements = workflowService.findWorkflowElements(workflows.get(0));
 
-			if (CollectionUtils.isEmpty(workflowElements))
-				return phenotypeDetailsVO;
-			
+			if (CollectionUtils.isEmpty(workflowElements)) return phenotypeDetailsVO;
+
 			for (WorkflowElement workflowElement : workflowElements)
 			{
 				Protocol protocol = this.db.findById(Protocol.class, workflowElement.getProtocol_Id());
 
 				// ignore protocols without features
-				if (CollectionUtils.isEmpty(protocol.getFeatures_Id()))
-					continue;
+				if (CollectionUtils.isEmpty(protocol.getFeatures_Id())) continue;
 
 				phenotypeDetailsVO.getProtocolNames().add(protocol.getName());
 				phenotypeDetailsVO.getObservedValues().put(protocol.getName(), new ArrayList<ObservedValueVO>());
 
-				List<ObservedValue> observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patient.getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
+				List<ObservedValue> observedValues = this.db.query(ObservedValue.class)
+						.equals(ObservedValue.TARGET, patient.getId())
+						.in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
 				for (ObservedValue observedValue : observedValues)
 				{
 					ObservedValueVO observedValueVO = new ObservedValueVO();
@@ -220,7 +226,8 @@ public class PatientService implements Serializable
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			//TODO: Use navigatable objects here. Would currently break JDBCMapper build.
+			// TODO: Use navigatable objects here. Would currently break
+			// JDBCMapper build.
 			PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
 			phenotypeDetailsVO.setPatientId(patient.getId());
 			phenotypeDetailsVO.setPatientIdentifier(patient.getIdentifier());
@@ -228,29 +235,30 @@ public class PatientService implements Serializable
 			phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
 
 			List<Workflow> workflows = this.db.query(Workflow.class).find();
-			
-			if (CollectionUtils.isEmpty(workflows))
-				return phenotypeDetailsVO;
-			
+
+			if (CollectionUtils.isEmpty(workflows)) return phenotypeDetailsVO;
+
 			// Use only first workflow
 			// TODO: What to do in case more than one workflow was found???
-			
-			WorkflowService workflowService        = new WorkflowService();
+
+			WorkflowService workflowService = new WorkflowService();
 			workflowService.setDatabase(this.db);
 			List<WorkflowElement> workflowElements = workflowService.findWorkflowElements(workflows.get(0));
 
-			if (CollectionUtils.isEmpty(workflowElements))
-				return phenotypeDetailsVO;
-			
+			if (CollectionUtils.isEmpty(workflowElements)) return phenotypeDetailsVO;
+
 			for (WorkflowElement workflowElement : workflowElements)
 			{
 				Protocol protocol = this.db.findById(Protocol.class, workflowElement.getProtocol_Id());
 
-				javax.persistence.Query query = this.db.getEntityManager().createNativeQuery("SELECT ov.id, f.name, ov.value FROM ObservedValue ov JOIN Protocol_Features pf ON (ov.Feature = pf.Features) JOIN ObservationElement f ON (pf.Features = f.id) WHERE ov.target = " + patient.getId() + " AND pf.Protocol = " + protocol.getId());
-				List<?> observedValueList     = query.getResultList();
-				
-				if (observedValueList.size() == 0)
-					continue;
+				javax.persistence.Query query = this.db
+						.getEntityManager()
+						.createNativeQuery(
+								"SELECT ov.id, f.name, ov.value FROM ObservedValue ov JOIN Protocol_Features pf ON (ov.Feature = pf.Features) JOIN ObservationElement f ON (pf.Features = f.id) WHERE ov.target = "
+										+ patient.getId() + " AND pf.Protocol = " + protocol.getId());
+				List<?> observedValueList = query.getResultList();
+
+				if (observedValueList.size() == 0) continue;
 
 				phenotypeDetailsVO.getProtocolNames().add(protocol.getName());
 				phenotypeDetailsVO.getObservedValues().put(protocol.getName(), new ArrayList<ObservedValueVO>());
@@ -282,23 +290,30 @@ public class PatientService implements Serializable
 	 * @return number of patients
 	 * @throws DatabaseException
 	 */
-	public int getNumPatients() throws DatabaseException {
+	public int getNumPatients() throws DatabaseException
+	{
 		return this.db.count(Patient.class);
 	}
 
 	/**
 	 * Get number of patients by type of mutation pathogenicity
+	 * 
 	 * @param pathogenicity
 	 * @return number of patients
 	 * @throws DatabaseException
 	 */
 	public int getNumPatientsByPathogenicity(String pathogenicity) throws DatabaseException
 	{
-		if (this.db instanceof JDBCDatabase)
-			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '" + pathogenicity + "'").size();
+		if (this.db instanceof JDBCDatabase) return ((JDBCDatabase) this.db)
+				.sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '"
+						+ pathogenicity + "'").size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '" + pathogenicity + "'");
+			javax.persistence.Query q = this.db
+					.getEntityManager()
+					.createNativeQuery(
+							"SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '"
+									+ pathogenicity + "'");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else
@@ -314,83 +329,89 @@ public class PatientService implements Serializable
 	 */
 	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
 	{
-		if (this.db instanceof JDBCDatabase)
-			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_patientreferences WHERE Patient.id = Patient_patientreferences.Patient)").size();
+		if (this.db instanceof JDBCDatabase) return ((JDBCDatabase) this.db)
+				.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_patientreferences WHERE Patient.id = Patient_patientreferences.Patient)")
+				.size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_patientreferences pp ON (p.id = pp.Patient) WHERE pp.patientreferences IS NULL");
+			javax.persistence.Query q = this.db
+					.getEntityManager()
+					.createNativeQuery(
+							"SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_patientreferences pp ON (p.id = pp.Patient) WHERE pp.patientreferences IS NULL");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else
 			throw new DatabaseException("Unsupported database mapper");
 	}
 
-//	public void insertObservedValues(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException, IOException
-//	{
-//		if (observedValueVO == null)
-//			return;
-//		
-//		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
-//		
-//		if (features.size() != 1)
-//			return;
-//		
-//		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
-//		
-//		if (patients.size() != 1)
-//			return;
-//
-//		ObservedValue observedValue = new ObservedValue();
-//		observedValue.setFeature(features.get(0));
-//		observedValue.setInvestigation(1);
-//		observedValue.setTarget(patients.get(0));
-//		observedValue.setValue(observedValueVO.getValue());
-//		
-//		this.db.add(observedValue);
-//	}
+	// public void insertObservedValues(PatientSummaryVO patientSummaryVO)
+	// throws DatabaseException, ParseException, IOException
+	// {
+	// if (observedValueVO == null)
+	// return;
+	//
+	// List<ObservableFeature> features =
+	// this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME,
+	// observedValueVO.getFeatureName()).find();
+	//
+	// if (features.size() != 1)
+	// return;
+	//
+	// List<Patient> patients =
+	// this.db.query(Patient.class).equals(Patient.IDENTIFIER,
+	// observedValueVO.getTargetName()).find();
+	//
+	// if (patients.size() != 1)
+	// return;
+	//
+	// ObservedValue observedValue = new ObservedValue();
+	// observedValue.setFeature(features.get(0));
+	// observedValue.setInvestigation(1);
+	// observedValue.setTarget(patients.get(0));
+	// observedValue.setValue(observedValueVO.getValue());
+	//
+	// this.db.add(observedValue);
+	// }
 
-
-
-
-//	public void setDefaults(PatientSummaryVO patientSummaryVO)
-//			throws DatabaseException, ParseException, MalformedURLException,
-//			JAXBException, IOException {
-//		// set default mutations
-//
-//		// Mutation nf = new Mutation();
-//		// nf.setCdna_notation("NF");
-//		// nf = db.findByExample(nf).get(0);
-//		//
-//		// patientSummaryVO.setMutation1(nf);
-//		// patientSummaryVO.setMutation2(nf);
-//
-//		// set default phenotype
-//
-//		// MutationPhenotype phenotype =
-//		// this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME,
-//		// "DEB-u").find().get(0);
-////		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
-////				.equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
-////
-////		patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
-////		patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
-//
-//		// set default Pubmed values based on given PubMed ID (if any)
-//
-//		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList())) {
-//			for (PublicationVO publicationVO : patientSummaryVO.getPublicationVOList()) {
-//				PubmedService pubmedService = new PubmedService();
-//				List<Integer> pubmedIds = new ArrayList<Integer>();
-//				pubmedIds.add(new Integer(publicationVO.getPubmed()));
-//				List<PubmedArticle> articles = pubmedService
-//						.getPubmedArticlesForIds(pubmedIds);
-//				// TODO:Danny: Use or loose
-//				/* PubmedArticle article = */articles.get(0);
-//			}
-//		}
-//	}
-
-
+	// public void setDefaults(PatientSummaryVO patientSummaryVO)
+	// throws DatabaseException, ParseException, MalformedURLException,
+	// JAXBException, IOException {
+	// // set default mutations
+	//
+	// // Mutation nf = new Mutation();
+	// // nf.setCdna_notation("NF");
+	// // nf = db.findByExample(nf).get(0);
+	// //
+	// // patientSummaryVO.setMutation1(nf);
+	// // patientSummaryVO.setMutation2(nf);
+	//
+	// // set default phenotype
+	//
+	// // MutationPhenotype phenotype =
+	// // this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME,
+	// // "DEB-u").find().get(0);
+	// // MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
+	// // .equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
+	// //
+	// // patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
+	// // patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
+	//
+	// // set default Pubmed values based on given PubMed ID (if any)
+	//
+	// if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList()))
+	// {
+	// for (PublicationVO publicationVO :
+	// patientSummaryVO.getPublicationVOList()) {
+	// PubmedService pubmedService = new PubmedService();
+	// List<Integer> pubmedIds = new ArrayList<Integer>();
+	// pubmedIds.add(new Integer(publicationVO.getPubmed()));
+	// List<PubmedArticle> articles = pubmedService
+	// .getPubmedArticlesForIds(pubmedIds);
+	// // TODO:Danny: Use or loose
+	// /* PubmedArticle article = */articles.get(0);
+	// }
+	// }
+	// }
 
 	private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException
 	{
@@ -400,7 +421,7 @@ public class PatientService implements Serializable
 		}
 
 		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
-//		patientSummaryVO.setPatient(patient);
+		// patientSummaryVO.setPatient(patient);
 
 		patientSummaryVO.setPatientIdentifier(patient.getIdentifier());
 		patientSummaryVO.setPatientNumber(patient.getNumber());
@@ -412,7 +433,7 @@ public class PatientService implements Serializable
 		patientSummaryVO.setPatientDeathCause(patient.getDeath_Cause());
 		patientSummaryVO.setPatientMmp1Allele1(patient.getMmp1_Allele1());
 		patientSummaryVO.setPatientMmp1Allele2(patient.getMmp1_Allele2());
-			
+
 		patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
 		List<Mutation> mutations = this.db.query(Mutation.class).in(Mutation.ID, patient.getMutations_Id()).find();
 		for (Mutation mutation : mutations)
@@ -437,30 +458,34 @@ public class PatientService implements Serializable
 		}
 		patientSummaryVO.setVariantComment(patient.getMutation2remark());
 
-		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, "Phenotype").find();
-		if (features.size() != 1)
-			throw new DatabaseException("Not exactly one ObservableFeature with name 'Phenotype' found.");
+		List<ObservableFeature> features = this.db.query(ObservableFeature.class)
+				.equals(ObservableFeature.NAME, "Phenotype").find();
+		if (features.size() != 1) throw new DatabaseException(
+				"Not exactly one ObservableFeature with name 'Phenotype' found.");
 
-		List<ObservedValue> phenotypes = this.db.query(ObservedValue.class).equals(ObservedValue.FEATURE, features.get(0).getId()).equals(ObservedValue.TARGET, patient.getId()).find();
-		List<String> phenotypeNames    = new ArrayList<String>();
+		List<ObservedValue> phenotypes = this.db.query(ObservedValue.class)
+				.equals(ObservedValue.FEATURE, features.get(0).getId()).equals(ObservedValue.TARGET, patient.getId())
+				.find();
+		List<String> phenotypeNames = new ArrayList<String>();
 		for (ObservedValue phenotype : phenotypes)
 			phenotypeNames.add(phenotype.getValue());
 		patientSummaryVO.setPhenotypeMajor(StringUtils.join(phenotypeNames, ", "));
 		patientSummaryVO.setPhenotypeSub("");
-			
+
 		patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
-			
-		Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
+
+		Submission submission = this.db.findById(Submission.class, patient.getSubmission_Id());
 		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
 		patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
 		patientSummaryVO.setSubmitterInstitute(submitter.getAffiliation_Name());
 		patientSummaryVO.setSubmitterCity(submitter.getCity());
 		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
-			
+
 		if (CollectionUtils.isNotEmpty(patient.getPatientreferences_Id()))
 		{
 			patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
-			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPatientreferences_Id()).find();
+			List<Publication> publications = this.db.query(Publication.class)
+					.in(Publication.ID, patient.getPatientreferences_Id()).find();
 			for (Publication publication : publications)
 			{
 				PublicationVO publicationVO = new PublicationVO();
@@ -473,7 +498,7 @@ public class PatientService implements Serializable
 
 		patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
 
-//			patientSummaryVO.setMaterial(patient.getMaterial_Name());
+		// patientSummaryVO.setMaterial(patient.getMaterial_Name());
 
 		// cache value
 		this.cache.put(patient.getId(), patientSummaryVO);
@@ -495,9 +520,10 @@ public class PatientService implements Serializable
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
-			List<Tuple> counts = ((JDBCDatabase) this.db).sql("SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value");
+			List<Tuple> counts = ((JDBCDatabase) this.db)
+					.sql("SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value");
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
-		
+
 			for (Tuple entry : counts)
 				result.put(entry.getString(0), entry.getInt(1));
 
@@ -505,8 +531,8 @@ public class PatientService implements Serializable
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			String sql                      = "SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value";
-			List<Object[]> counts           = this.db.getEntityManager().createNativeQuery(sql).getResultList();
+			String sql = "SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value";
+			List<Object[]> counts = this.db.getEntityManager().createNativeQuery(sql).getResultList();
 
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
 

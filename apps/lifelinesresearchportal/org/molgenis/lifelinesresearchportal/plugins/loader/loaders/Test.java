@@ -8,12 +8,11 @@ import org.apache.log4j.PropertyConfigurator;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
-public class Test {
-	public static void main(String[] args) throws DatabaseException {
-		PropertyConfigurator.configure("log4j.properties");  
+public class Test
+{
+	public static void main(String[] args) throws DatabaseException
+	{
+		PropertyConfigurator.configure("log4j.properties");
 
-		
-		
-		
 	}
 }

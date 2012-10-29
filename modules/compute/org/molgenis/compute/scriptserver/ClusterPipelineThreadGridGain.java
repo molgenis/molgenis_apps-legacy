@@ -10,57 +10,54 @@ import org.molgenis.compute.remoteexecutor.RemoteScriptSubmitter;
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 
-
 //thread class for a pipeline; every pipeline runs in the separated thread
 public class ClusterPipelineThreadGridGain extends PipelineThread
 {
 
-    public ClusterPipelineThreadGridGain(Pipeline pipeline, Grid grid)
-    {
-        this.pipeline = pipeline;
-        exec = grid.newGridExecutorService();
+	public ClusterPipelineThreadGridGain(Pipeline pipeline, Grid grid)
+	{
+		this.pipeline = pipeline;
+		exec = grid.newGridExecutorService();
 
-        monitor = new ClusterLoggingReaderGridGain();
-        //to monitor pipeline execution from outside
-        pipeline.setMonitor(monitor);
+		monitor = new ClusterLoggingReaderGridGain();
+		// to monitor pipeline execution from outside
+		pipeline.setMonitor(monitor);
 
+		monitor.setLogFile(pipeline.getPipelinelogpath());
+		((ClusterLoggingReaderGridGain) monitor).setGrid(grid);
+	}
 
-        monitor.setLogFile(pipeline.getPipelinelogpath());
-        ((ClusterLoggingReaderGridGain) monitor).setGrid(grid);
-    }
+	protected boolean submitScript(Script script)
+	{
+		Future<RemoteResult> future = exec.submit(new RemoteScriptSubmitter(script));
 
-    protected boolean submitScript(Script script)
-    {
-        Future<RemoteResult> future = exec.submit(new RemoteScriptSubmitter(script));
+		RemoteResult back = null;
+		try
+		{
+			back = future.get();
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		catch (ExecutionException e)
+		{
+			e.printStackTrace();
+		}
 
-        RemoteResult back = null;
-        try
-        {
-            back = future.get();
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        catch (ExecutionException e)
-        {
-            e.printStackTrace();
-        }
+		String output = back.getOutString();
+		String error = back.getErrString();
 
-        String output = back.getOutString();
-        String error = back.getErrString();
+		System.out.println("output: " + output);
+		System.out.println("error: " + error);
 
-        System.out.println("output: " + output);
-        System.out.println("error: " + error);
+		if (error.toCharArray().length > 0 || output.toCharArray().length == 0) return true;
+		return false;
+	}
 
-        if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
-            return true;
-        return false;
-    }
-
-    @Override
-    protected int getSleepingInterval()
-    {
-        return 10000;
-    }
+	@Override
+	protected int getSleepingInterval()
+	{
+		return 10000;
+	}
 }

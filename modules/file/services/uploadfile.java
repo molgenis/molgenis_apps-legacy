@@ -21,9 +21,9 @@ public class uploadfile implements MolgenisService
 	 * File upload service. Callable by Curl, RCurl, and other post services.
 	 * Currently used to images, expandable to all other files.
 	 */
-	
+
 	private MolgenisContext mc;
-	
+
 	public uploadfile(MolgenisContext mc)
 	{
 		this.mc = mc;
@@ -43,20 +43,28 @@ public class uploadfile implements MolgenisService
 			db = request.getDatabase();
 
 			String fileName = request.getString("name"); // the 'real' file name
-			String fileType = request.getString("type"); // file type, must correspond to a subclass of MolgenisFile
-			File fileContent = request.getFile("file"); // has a tmp name, so content only
-			
+			String fileType = request.getString("type"); // file type, must
+															// correspond to a
+															// subclass of
+															// MolgenisFile
+			File fileContent = request.getFile("file"); // has a tmp name, so
+														// content only
+
 			HashMap<String, String> extraFields = new HashMap<String, String>();
-		
-			for(int cIndex = 0; cIndex < request.size(); cIndex++){
+
+			for (int cIndex = 0; cIndex < request.size(); cIndex++)
+			{
 				String colName = request.getColName(cIndex);
-				if(colName.equals("name") || colName.equals("type") || colName.equals("file")){
-					//already handled
-				}else{
+				if (colName.equals("name") || colName.equals("type") || colName.equals("file"))
+				{
+					// already handled
+				}
+				else
+				{
 					extraFields.put(colName, request.getString(colName));
 				}
 			}
-	
+
 			PerformUpload.doUpload(db, true, fileName, fileType, fileContent, extraFields, false);
 
 			out.println("upload successful");
@@ -84,8 +92,7 @@ public class uploadfile implements MolgenisService
 			out.println(")");
 			out.println();
 			out.println("Example for commandline Curl when uploading an 'InvestigationFile':");
-			out
-					.println("curl -F \"file=@/pictures/mypicture.jpg\" -F \"name=mypicture.jpg\" -F \"Investigation_name=ClusterDemo\" -F \"type=InvestigationFile\" http://mydomain.org/xqtl/uploadfile");
+			out.println("curl -F \"file=@/pictures/mypicture.jpg\" -F \"name=mypicture.jpg\" -F \"Investigation_name=ClusterDemo\" -F \"type=InvestigationFile\" http://mydomain.org/xqtl/uploadfile");
 			out.println();
 			e.printStackTrace(out);
 		}

@@ -4,7 +4,7 @@ import org.molgenis.framework.ui.html.Container;
 
 /**
  * Wrapper class around ExpertSearchForm to be used in freemarker.
- *
+ * 
  */
 public class HtmlFormWrapper
 {

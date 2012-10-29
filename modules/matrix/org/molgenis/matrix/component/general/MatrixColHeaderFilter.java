@@ -10,7 +10,7 @@ public class MatrixColHeaderFilter extends MatrixQueryRule
 	{
 		super(MatrixQueryRule.Type.colHeader, property, operator, null);
 	}
-	
+
 	/** For binary operators such as EQUALS */
 	public MatrixColHeaderFilter(String property, Operator operator, Object value)
 	{

@@ -29,8 +29,7 @@ public class CopyOfGenericConvertor
 
 	Database db;
 
-	public void converter(File file, String invName, Database db)
-			throws Exception
+	public void converter(File file, String invName, Database db) throws Exception
 	{
 
 		this.invName = invName;
@@ -56,8 +55,7 @@ public class CopyOfGenericConvertor
 		}
 		try
 		{
-			export.exportAll(tmpDir, individualsList, measurementsList,
-					valuesList);
+			export.exportAll(tmpDir, individualsList, measurementsList, valuesList);
 		}
 		catch (Exception e)
 		{
@@ -149,8 +147,7 @@ public class CopyOfGenericConvertor
 			{
 				// if (!header.equals("id_individual") &&
 				// !header.equals("id_mother") && !header.equals("id_father")) {
-				if (db.query(Measurement.class).eq(Measurement.NAME, header)
-						.count() == 0)
+				if (db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0)
 				{
 					Measurement measurement = new Measurement();
 					measurement.setName(header);
@@ -161,11 +158,8 @@ public class CopyOfGenericConvertor
 				}
 				else
 				{
-					List<Measurement> measList = db.query(Measurement.class)
-							.eq(Measurement.NAME, header).find();
-					int invID = db.query(Investigation.class)
-							.eq(Investigation.NAME, "System").find().get(0)
-							.getId();
+					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
+					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System").find().get(0).getId();
 					Measurement meas = measList.get(0);
 					meas.setInvestigation_Id(invID);
 					db.update(meas);

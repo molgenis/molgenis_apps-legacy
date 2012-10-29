@@ -1,4 +1,5 @@
 package org.molgenis.col7a1;
+
 import org.molgenis.Molgenis;
 
 //import cmdline.CmdLineException;

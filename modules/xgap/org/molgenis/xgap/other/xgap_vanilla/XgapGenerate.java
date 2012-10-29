@@ -1,6 +1,5 @@
 package org.molgenis.xgap.other.xgap_vanilla;
 
-
 import org.molgenis.Molgenis;
 
 public class XgapGenerate
@@ -10,8 +9,9 @@ public class XgapGenerate
 		try
 		{
 			new Molgenis("handwritten/apps/org/molgenis/xgap/xgap.properties").generate();
-			
-		} catch(Exception e)
+
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

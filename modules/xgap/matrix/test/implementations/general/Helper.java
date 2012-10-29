@@ -73,12 +73,13 @@ public class Helper
 		d.setTargetType(rowType);
 		d.setFeatureType(colType);
 		d.setStorage(source);
-//		d.setFeature(feature);
-//		d.setTarget(target);
+		// d.setFeature(feature);
+		// d.setTarget(target);
 		return d;
 	}
 
-	public void prepareDatabaseAndFiles(String storage, Params params) throws DatabaseException, IOException, InterruptedException
+	public void prepareDatabaseAndFiles(String storage, Params params) throws DatabaseException, IOException,
+			InterruptedException
 	{
 		// new emptyDatabase(db);
 		db.remove(db.find(TextDataElement.class));
@@ -86,7 +87,8 @@ public class Helper
 		db.remove(db.find(Marker.class));
 		db.remove(db.find(Individual.class));
 		db.remove(db.find(MolgenisFile.class));
-		for(Data d : db.find(Data.class)){
+		for (Data d : db.find(Data.class))
+		{
 			db.remove(d);
 		}
 		db.remove(db.find(DerivedTrait.class));
@@ -145,8 +147,8 @@ public class Helper
 		logger.info("Randomizing data matrix filling and adding data files to input directory..");
 		for (Data data : dataList)
 		{
-			createAndWriteRandomMatrix(inputFilesDir, data, db, params.matrixDimension2, params.matrixDimension1, params.maxTextLength,
-					params.sparse, params.fixedTextLength);
+			createAndWriteRandomMatrix(inputFilesDir, data, db, params.matrixDimension2, params.matrixDimension1,
+					params.maxTextLength, params.sparse, params.fixedTextLength);
 		}
 
 		this.inputFilesDir = inputFilesDir;
@@ -163,8 +165,8 @@ public class Helper
 		d.setTargetType(rowType);
 		d.setFeatureType(colType);
 		d.setStorage(source);
-//		d.setFeature(feature);
-//		d.setTarget(target);
+		// d.setFeature(feature);
+		// d.setTarget(target);
 		return d;
 	}
 
@@ -232,7 +234,7 @@ public class Helper
 	 * @param sparse
 	 * @param fixedTextLength
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public MemoryDataMatrixInstance<Object> createAndWriteRandomMemoryMatrix(File inputMatrixDir, Data data,
 			Database db, int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength)
@@ -267,7 +269,7 @@ public class Helper
 
 		if (data.getValueType().equals("Decimal"))
 		{
-			//decimal data
+			// decimal data
 			elements = new Object[totalRows][totalCols];
 			for (int i = 0; i < totalRows; i++)
 			{
@@ -361,7 +363,7 @@ public class Helper
 
 		if (data.getValueType().equals("Decimal"))
 		{
-			//decimal data
+			// decimal data
 			for (int i = 0; i < totalRows; i++)
 			{
 				out.write(rowList.get(i).get("name").toString());
@@ -483,8 +485,9 @@ public class Helper
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String res = "";
 		String line;
-		while ((line = br.readLine()) != null){
-			res += line+"\n";
+		while ((line = br.readLine()) != null)
+		{
+			res += line + "\n";
 		}
 		return res;
 	}

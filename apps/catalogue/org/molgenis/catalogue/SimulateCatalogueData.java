@@ -10,16 +10,20 @@ import org.molgenis.pheno.Measurement;
 
 import app.DatabaseFactory;
 
-public class SimulateCatalogueData {
+public class SimulateCatalogueData
+{
 
-	public static void main(String[] args) throws DatabaseException {
+	public static void main(String[] args) throws DatabaseException
+	{
 		BasicConfigurator.configure();
 
 		Database db = DatabaseFactory.create();
 
-		for (int j = 1; j < 100; j++) {
+		for (int j = 1; j < 100; j++)
+		{
 			List<Measurement> measurements = new ArrayList<Measurement>();
-			for (int i = 1; i < 1000; i++) {
+			for (int i = 1; i < 1000; i++)
+			{
 				Measurement m = new Measurement();
 				m.setName("meas" + i + "_" + System.currentTimeMillis());
 				measurements.add(m);

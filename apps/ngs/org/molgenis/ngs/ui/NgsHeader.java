@@ -1,4 +1,3 @@
-
 package org.molgenis.ngs.ui;
 
 import org.molgenis.framework.db.Database;
@@ -14,14 +13,14 @@ public class NgsHeader extends EasyPluginController<NgsHeader>
 	{
 		super(name, parent);
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("NgsHeaderView.ftl", this);
 	}
-	
+
 	@Override
 	public void reload(Database db) throws Exception
-	{	
+	{
 	}
 }

@@ -37,8 +37,7 @@ public class TestPhenoMatrix
 	}
 
 	@Test
-	public void testPhenoMatrixFromDatabase() throws SQLException,
-			CmdLineException, Exception
+	public void testPhenoMatrixFromDatabase() throws SQLException, CmdLineException, Exception
 	{
 		Database db = DatabaseFactory.create(PROPERTIES_FILE);
 
@@ -94,8 +93,7 @@ public class TestPhenoMatrix
 		// put in database
 		db.add(vList);
 
-		logger
-				.info("DATA LOADED, now starting rendering and printing of matrix");
+		logger.info("DATA LOADED, now starting rendering and printing of matrix");
 
 		// create the matrix
 		PhenoMemoryMatrix<ObservationTarget, ObservableFeature> m = new PhenoMemoryMatrix<ObservationTarget, ObservableFeature>(
@@ -111,8 +109,7 @@ public class TestPhenoMatrix
 	}
 
 	@Test
-	public void testPhenoMatrixFromStringMatrix() throws SQLException,
-			CmdLineException, Exception
+	public void testPhenoMatrixFromStringMatrix() throws SQLException, CmdLineException, Exception
 	{
 		Database db = DatabaseFactory.create(PROPERTIES_FILE);
 

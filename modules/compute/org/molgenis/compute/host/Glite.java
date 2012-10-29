@@ -27,35 +27,28 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		String path = getWorkingDir() + ("".equals(this.getWorkingDir()) ? "" : "/") + job.getName();
 
 		// create standard jdl
-//		String jdl = String.format("Type=\"Job\";" + "\nJobType=\"Normal\";" + "\n" + "\nExecutable = \"/bin/sh\";"
-//                + "\nVirtualOrganisation = \"lsgrid\";"
-//				+ "\nArguments = \"%1$s.sh\";" + "\n" + "\nStdError = \"%1$s.err\";" + "StdOutput = \"%1$s.out\";"
-//				+ "\n" + "InputSandbox = {\"$HOME/%2$s.sh\"};" + "\nOutputSandbox = {\"%1$s.err\", \"%1$s.out\"};"
-//                + "\nMyProxyServer = \"px.grid.sara.nl\";",
-//				job.getName(), path);
+		// String jdl = String.format("Type=\"Job\";" + "\nJobType=\"Normal\";"
+		// + "\n" + "\nExecutable = \"/bin/sh\";"
+		// + "\nVirtualOrganisation = \"lsgrid\";"
+		// + "\nArguments = \"%1$s.sh\";" + "\n" + "\nStdError = \"%1$s.err\";"
+		// + "StdOutput = \"%1$s.out\";"
+		// + "\n" + "InputSandbox = {\"$HOME/%2$s.sh\"};" +
+		// "\nOutputSandbox = {\"%1$s.err\", \"%1$s.out\"};"
+		// + "\nMyProxyServer = \"px.grid.sara.nl\";",
+		// job.getName(), path);
 
-        String jdl = String.format("# General\n" +
-                "Type = \"Job\";\n" +
-                "VirtualOrganisation = \"bbmri.nl\";\n" +
-                "DefaultNodeShallowRetryCount = 5;\n" +
-                "\n" +
-                "# Executables, input and output\n" +
-                "Executable = \"/bin/sh\";\n" +
-                "Arguments = \"%1$s.sh\";\n" +
-                "StdOutput = \"%1$s.out\";\n" +
-                "StdError = \"%1$s.err\";\n" +
-                "InputSandbox = {\"$HOME/%2$s.sh\"};\n" +
-                "OutputSandbox = {\"%1$s.err\",\"%1$s.out\"};\n" +
-                "MyProxyServer = \"px.grid.sara.nl\";\n" +
-                "RetryCount = 0;",
-                job.getName(), path);
-
+		String jdl = String.format("# General\n" + "Type = \"Job\";\n" + "VirtualOrganisation = \"bbmri.nl\";\n"
+				+ "DefaultNodeShallowRetryCount = 5;\n" + "\n" + "# Executables, input and output\n"
+				+ "Executable = \"/bin/sh\";\n" + "Arguments = \"%1$s.sh\";\n" + "StdOutput = \"%1$s.out\";\n"
+				+ "StdError = \"%1$s.err\";\n" + "InputSandbox = {\"$HOME/%2$s.sh\"};\n"
+				+ "OutputSandbox = {\"%1$s.err\",\"%1$s.out\"};\n" + "MyProxyServer = \"px.grid.sara.nl\";\n"
+				+ "RetryCount = 0;", job.getName(), path);
 
 		// copy .sh and .jdl
 		String filename = job.getName() + ".sh";
 		logger.debug("uploading script as file: " + filename);
-        String script = job.getScript();
-        script = script.replaceAll("\r","");
+		String script = job.getScript();
+		script = script.replaceAll("\r", "");
 		this.uploadStringToFile(script, filename, this.getWorkingDir());
 
 		filename = job.getName() + ".jdl";
@@ -93,8 +86,8 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		this.close();
 	}
 
-    public void submitPilot(Job job) throws IOException
-    {
+	public void submitPilot(Job job) throws IOException
+	{
 		// if no name set, create one
 		if (job.getName() == null) job.setName(UUID.randomUUID().toString().replace("-", ""));
 
@@ -102,11 +95,11 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		String path = getWorkingDir() + ("".equals(this.getWorkingDir()) ? "" : "/") + job.getName();
 
 		// start the scrip
-		String command = String.format(
-				"glite-wms-job-submit  -d $USER -o %1$s $HOME/maverick/maverick.jdl", job.getName(), path);
+		String command = String.format("glite-wms-job-submit  -d $USER -o %1$s $HOME/maverick/maverick.jdl",
+				job.getName(), path);
 
-		//cd to working directory (otherwise stuff is in wrong dir)
-		if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
+		// cd to working directory (otherwise stuff is in wrong dir)
+		if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
 
 		SshResult result = this.executeCommand(command);
 
@@ -121,16 +114,16 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 			if (line.startsWith("https")) job.setId(line);
 		}
 
-		//set the paths, incl working dir
-//		job.setError_path( path +".err");
-//		job.setOutput_path( path + ".out");
+		// set the paths, incl working dir
+		// job.setError_path( path +".err");
+		// job.setOutput_path( path + ".out");
 		logger.debug("job sumitted: " + job);
 
 		// remember job
 		this.jobs.put(job.getId(), job);
-    }
+	}
 
-    @Override
+	@Override
 	public void remove(Job job) throws IOException
 	{
 		// TODO Auto-generated method stub

@@ -9,8 +9,8 @@ package org.molgenis.omicsconnect.plugins.ontocat;
 
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -28,38 +28,47 @@ import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 /**
  * Shows table of experiment information for WormQTL
  */
-public class OntoCat extends PluginModel<Entity> {
+public class OntoCat extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = 1L;
 	private OntologyService os;
 
 	private OntoCatModel model = new OntoCatModel();
 
-	public OntoCatModel getMyModel() {
+	public OntoCatModel getMyModel()
+	{
 		return model;
 	}
 
-	public OntoCat(String name, ScreenController<?> parent) {
+	public OntoCat(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "OntoCatTest";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "org/molgenis/omicsconnect/plugins/OntoCat/OntoCat.ftl";
 	}
 
 	@SuppressWarnings("unchecked")
-	public void handleRequest(Database db, Tuple request) {
-		if (request.getString("__action") != null) {
+	public void handleRequest(Database db, Tuple request)
+	{
+		if (request.getString("__action") != null)
+		{
 			String action = request.getString("__action");
-			try {
+			try
+			{
 
-				if (action.equals("query")) {
+				if (action.equals("query"))
+				{
 					this.setMessages(new ScreenMessage("performed lookup", true));
 
 					// String select_ont = request.getString("ontology");
@@ -73,7 +82,8 @@ public class OntoCat extends PluginModel<Entity> {
 
 					// outer.addAll(results);
 
-					for (Ontology o : results) {
+					for (Ontology o : results)
+					{
 
 						JSONObject inner = new JSONObject();
 
@@ -87,43 +97,49 @@ public class OntoCat extends PluginModel<Entity> {
 
 						inner.put("value", acc);
 						inner.put("label", label);
-						jsonarray.add(inner);
+						jsonarray.put(inner);
 
 					}
 
 					model.setJsonarray(jsonarray);
-					String jsonString = jsonarray.toJSONString();
+					String jsonString = jsonarray.toString();
 					model.setJsonstring(jsonString);
 					model.setOntologies(results);
 
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-						.getMessage() : "null", false));
+				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
 
-		if (request.getString("__action") != null) {
+		if (request.getString("__action") != null)
+		{
 
 			String action = request.getString("__action");
 
 			OntologyService os = new BioportalOntologyService();
-			if (action.equals("ontoQuery")) {
+			if (action.equals("ontoQuery"))
+			{
 
 				String ontologySubmitted = request.getString("Ontology");
 				List<OntologyTerm> ontoresults = null;
-				try {
-					ontoresults = os.searchOntology(ontologySubmitted,
-							"diabetes", SearchOptions.INCLUDE_PROPERTIES);
-				} catch (OntologyServiceException e) {
+				try
+				{
+					ontoresults = os.searchOntology(ontologySubmitted, "diabetes", SearchOptions.INCLUDE_PROPERTIES);
+				}
+				catch (OntologyServiceException e)
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 				model.setOntoresults(ontoresults);
 
-				for (OntologyTerm o : ontoresults) {
+				for (OntologyTerm o : ontoresults)
+				{
 					// System.out.println(o.);
 
 				}
@@ -135,7 +151,8 @@ public class OntoCat extends PluginModel<Entity> {
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		// if (model.getOntologies() == null) {
 		// this.os = new BioportalOntologyService();
 		//

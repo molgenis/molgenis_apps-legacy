@@ -54,18 +54,18 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class Breedingnew extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
-		private CommonService ct = CommonService.getInstance();
-	//private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private CommonService ct = CommonService.getInstance();
+	// private SimpleDateFormat dateOnlyFormat = new
+	// SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
 	private String line = null;
 	private String litterRemarks = null;
-	//private String pgStatus = null;
+	// private String pgStatus = null;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
 	MatrixViewer pgMatrixViewer = null;
@@ -115,70 +115,88 @@ public class Breedingnew extends PluginModel<Entity>
 	String sex = "not selected";
 	boolean stillToWeanYN = true;
 	boolean stillToGenotypeYN = true;
-	//HashMap<String,List<String>> hashMothers = new HashMap<String,List<String>>();
-	Map<Integer,List<String>> hashMothers = new LinkedHashMap<Integer,List<String>>();
-	Map<Integer,List<String>> hashFathers = new LinkedHashMap<Integer,List<String>>();
-	
+	// HashMap<String,List<String>> hashMothers = new
+	// HashMap<String,List<String>>();
+	Map<Integer, List<String>> hashMothers = new LinkedHashMap<Integer, List<String>>();
+	Map<Integer, List<String>> hashFathers = new LinkedHashMap<Integer, List<String>>();
+
 	public Breedingnew(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
-	public String getCustomHtmlHeaders() {
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
-				"<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n" +
-				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
-				"<script src=\"res/scripts/custom/litters.js\" language=\"javascript\"></script>\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">";
+
+	public String getCustomHtmlHeaders()
+	{
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+				+ "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
+				+ "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
+				+ "<script src=\"res/scripts/custom/litters.js\" language=\"javascript\"></script>\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">";
 	}
 
-
-	
-	public String getAnimalName(Integer id) {
-		try {
+	public String getAnimalName(Integer id)
+	{
+		try
+		{
 			return ct.getObservationTargetLabel(id);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return id.toString();
 		}
 	}
-	
-	public String getStartdate() {
+
+	public String getStartdate()
+	{
 		return startdate;
 	}
-	public void setStartdate(String startdate) {
+
+	public void setStartdate(String startdate)
+	{
 		this.startdate = startdate;
 	}
 
-	public void setLine(String line) {
+	public void setLine(String line)
+	{
 		this.line = line;
 	}
-	
-	public String getLine() {
+
+	public String getLine()
+	{
 		return line;
 	}
 
-	public List<ObservationTarget> getLineList() {
+	public List<ObservationTarget> getLineList()
+	{
 		return lineList;
 	}
-	public void setLineList(List<ObservationTarget> lineList) {
+
+	public void setLineList(List<ObservationTarget> lineList)
+	{
 		this.lineList = lineList;
 	}
 
-	public String getRemarks() {
+	public String getRemarks()
+	{
 		return remarks;
 	}
-	public void setRemarks(String remarks) {
+
+	public void setRemarks(String remarks)
+	{
 		this.remarks = remarks;
 	}
-	
-	public String getAction() {
+
+	public String getAction()
+	{
 		return action;
 	}
-	public void setAction(String action) {
+
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
-	
+
 	public String getEntity()
 	{
 		return entity;
@@ -191,16 +209,19 @@ public class Breedingnew extends PluginModel<Entity>
 
 	public String getMotherMatrixViewer()
 	{
-		if (motherMatrixViewerString != null) {
+		if (motherMatrixViewerString != null)
+		{
 			return motherMatrixViewerString;
 		}
 		return "Mother matrix not loaded";
 	}
-	
-	public void loadMotherMatrixViewer(Database db) {
-		try {
+
+	public void loadMotherMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
@@ -211,53 +232,65 @@ public class Breedingnew extends PluginModel<Entity>
 			measurementsToShow.add("Species");
 			// Mother matrix viewer
 			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 					Operator.IN, investigationNames));
-			
-			
-			//MOTHER IS DISABLED
-			/*motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
-					ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));*/
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != null) {
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
-				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
+
+			// MOTHER IS DISABLED
+			/*
+			 * motherFilterRules.add(new
+			 * MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+			 * ct.getMeasurementId("Sex"), ObservedValue.RELATION_NAME,
+			 * Operator.EQUALS, "Female"));
+			 */
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != null)
+			{
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
+				// Setting filter on the RELATION field with value = line would
+				// be more efficient,
+				// but gives a very un-userfriendly toString value when shown in
+				// the MatrixViewer UI
 				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
-						speciesName));
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
 			}
-			
-			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+
+			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(
+					Individual.class, Measurement.class);
 			SPMM.setDatabase(db);
-			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, 
-					true, 2, false, false, motherFilterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
+			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, true, 2, false, false, motherFilterRules,
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+							measurementsToShow));
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading mother matrix viewer";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getFatherMatrixViewer()
 	{
-		if (fatherMatrixViewerString != null) {
+		if (fatherMatrixViewerString != null)
+		{
 			return fatherMatrixViewerString;
 		}
 		return "Father matrix not loaded";
 	}
-	
-	public void loadFatherMatrixViewer(Database db) {
-		try {
+
+	public void loadFatherMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
@@ -268,46 +301,54 @@ public class Breedingnew extends PluginModel<Entity>
 			measurementsToShow.add("Species");
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 					Operator.IN, investigationNames));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
-					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != null) {
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
-				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+					ct.getMeasurementId("Sex"), ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != null)
+			{
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
+				// Setting filter on the RELATION field with value = line would
+				// be more efficient,
+				// but gives a very un-userfriendly toString value when shown in
+				// the MatrixViewer UI
 				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
-						speciesName));
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
 			}
-			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(
+					Individual.class, Measurement.class);
 			SPMF.setDatabase(db);
-			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, 
-					true, 2, false, false, fatherFilterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
+			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, true, 2, false, false, fatherFilterRules,
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+							measurementsToShow));
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading father matrix viewer";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getPgMatrixViewer()
 	{
 		return pgMatrixViewerString;
 	}
-	
-	public void loadPgMatrixViewer(Database db) {
-		try {
+
+	public void loadPgMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Active");
 			measurementsToShow.add("StartDate");
@@ -316,40 +357,42 @@ public class Breedingnew extends PluginModel<Entity>
 			measurementsToShow.add("ParentgroupMother");
 			measurementsToShow.add("ParentgroupFather");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
-					Operator.IN, investigationNames));
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
-					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, Operator.IN,
+					investigationNames));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Active"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
 					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
-			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, 
-					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
-					true, 1, false, false, filterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-			
-			
-			
-		} catch (Exception e) {
+			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(Panel.class,
+					Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
+					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading parentgroup matrix";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getLitterMatrixViewer()
 	{
 		return litterMatrixViewerString;
 	}
-	
-	public void loadLitterMatrixViewer(Database db) {
-		try {
+
+	public void loadLitterMatrixViewer(Database db)
+	{
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-			
+
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Active");
 			measurementsToShow.add("Parentgroup");
@@ -361,21 +404,23 @@ public class Breedingnew extends PluginModel<Entity>
 			measurementsToShow.add("GenotypeDate");
 			measurementsToShow.add("Remark");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
-					Operator.IN, investigationNames));
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
-					ObservedValue.VALUE, Operator.EQUALS, "Litter"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, Operator.IN,
+					investigationNames));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+					.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Litter"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Active"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
 					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
-			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, 
-					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
-					true, 1, false, false, filterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
+			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(
+					Panel.class, Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
+					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading litter matrix";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
@@ -394,38 +439,50 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 		return "org/molgenis/animaldb/plugins/breeding/Breedingnew.ftl";
 	}
-	
-	private void AddParents(Database db, List<String> parentNameList, String protocolName, String featureName, 
-			String parentgroupName, Date eventDate) 
-			throws DatabaseException, ParseException, IOException {
-		
+
+	private void AddParents(Database db, List<String> parentNameList, String protocolName, String featureName,
+			String parentgroupName, Date eventDate) throws DatabaseException, ParseException, IOException
+	{
+
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
-		
+
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-		
-		for (String parentName : parentNameList) {
-			if(parentName!=null){
-				// Find the 'SetParentgroupMother'/'SetParentgroupFather' event type
-				// TODO: SetParentgroupMother/SetParentgroupFather are now plain event types with only the ParentgroupMother/ParentgroupFather feature
+
+		for (String parentName : parentNameList)
+		{
+			if (parentName != null)
+			{
+				// Find the 'SetParentgroupMother'/'SetParentgroupFather' event
+				// type
+				// TODO: SetParentgroupMother/SetParentgroupFather are now plain
+				// event types with only the ParentgroupMother/ParentgroupFather
+				// feature
 				// and no longer the Certain feature. Solve this!
 				// Make the event
 				ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 				db.add(app);
-				// Make 'ParentgroupMother'/'ParentgroupFather' feature-value pair and link to event
-				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, featureName, parentgroupName, 
-						null, parentName));		
+				// Make 'ParentgroupMother'/'ParentgroupFather' feature-value
+				// pair and link to event
+				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, featureName,
+						parentgroupName, null, parentName));
 				// Make 'Certain' feature-value pair and link to event
 				String valueString;
-				if (parentNameList.size() == 1) {
-					valueString = "1"; // if there's only one parent of this gender, it's certain
-				} else {
+				if (parentNameList.size() == 1)
+				{
+					valueString = "1"; // if there's only one parent of this
+										// gender, it's certain
+				}
+				else
+				{
 					valueString = "0"; // ... otherwise, not
 				}
-				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, "Certain", parentName, valueString, null));
+				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, "Certain",
+						parentName, valueString, null));
 			}
-			else{
-				
+			else
+			{
+
 			}
 		}
 		// Add everything to DB
@@ -437,25 +494,31 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 		ct.setDatabase(db);
 		action = request.getString("__action");
-		try {
-			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName())) {
+		try
+		{
+			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName()))
+			{
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewer.handleRequest(db, request);
 				motherMatrixViewerString = motherMatrixViewer.render();
-				this.action = "selectParents"; // return to mother selection screen
+				this.action = "selectParents"; // return to mother selection
+												// screen
 				return;
 			}
-			
-			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName())) {
+
+			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName()))
+			{
 				fatherMatrixViewer.setDatabase(db);
 				fatherMatrixViewer.handleRequest(db, request);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
-				this.action = "addParentgroupScreen3"; // return to father selection screen
-				//this.action = "selectParents";
+				this.action = "addParentgroupScreen3"; // return to father
+														// selection screen
+				// this.action = "selectParents";
 				return;
 			}
-			
-			if (pgMatrixViewer != null && action.startsWith(pgMatrixViewer.getName())) {
+
+			if (pgMatrixViewer != null && action.startsWith(pgMatrixViewer.getName()))
+			{
 				pgMatrixViewer.setDatabase(db);
 				pgMatrixViewer.handleRequest(db, request);
 				pgMatrixViewerString = pgMatrixViewer.render();
@@ -463,8 +526,9 @@ public class Breedingnew extends PluginModel<Entity>
 				this.entity = "Parentgroups";
 				return;
 			}
-			
-			if (litterMatrixViewer != null && action.startsWith(litterMatrixViewer.getName())) {
+
+			if (litterMatrixViewer != null && action.startsWith(litterMatrixViewer.getName()))
+			{
 				litterMatrixViewer.setDatabase(db);
 				litterMatrixViewer.handleRequest(db, request);
 				litterMatrixViewerString = litterMatrixViewer.render();
@@ -472,127 +536,161 @@ public class Breedingnew extends PluginModel<Entity>
 				this.entity = "Litters";
 				return;
 			}
-			
-			if (action.equals("init")) {
+
+			if (action.equals("init"))
+			{
 				// do nothing here
 			}
-			
-			if (action.equals("selectParents")) {
+
+			if (action.equals("selectParents"))
+			{
 				hashFathers.clear();
 				hashMothers.clear();
-				
+
 				List<String> lis = new ArrayList<String>();
 				lis.add("");
 				numberOfPG = request.getInt("numberPG");
-				if(numberOfPG == null) {
+				if (numberOfPG == null)
+				{
 					numberOfPG = -1;
 				}
-				for(int i = 0; i < numberOfPG; i++){
+				for (int i = 0; i < numberOfPG; i++)
+				{
 					hashMothers.put(i, lis);
 					hashFathers.put(i, lis);
-					pgName.add(i+"");
-					
+					pgName.add(i + "");
+
 				}
 			}
-			if(pgName.size()!=0){
-				for(int i= 0; i < pgName.size(); i++){					
-					if(action.equals("selectParentsM"+(i))){
-						List<String> selectedFatherNameList = new ArrayList<String>();					
+			if (pgName.size() != 0)
+			{
+				for (int i = 0; i < pgName.size(); i++)
+				{
+					if (action.equals("selectParentsM" + (i)))
+					{
+						List<String> selectedFatherNameList = new ArrayList<String>();
 						@SuppressWarnings("unchecked")
 						List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
 						int rowCnt = 0;
 						sex = "not selected";
-						for (ObservationElement row : rows) {		
-							if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
+						for (ObservationElement row : rows)
+						{
+							if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null)
+							{
 								String fatherName = row.getName();
 								sex = ct.getMostRecentValueAsXrefName(fatherName, "Sex");
-								if(sex.equals("Male")){			
-									if (!selectedFatherNameList.contains(fatherName)) {
+								if (sex.equals("Male"))
+								{
+									if (!selectedFatherNameList.contains(fatherName))
+									{
 										selectedFatherNameList.add(fatherName);
 									}
-								}else{
+								}
+								else
+								{
 									this.setMessages(new ScreenMessage("Not a Male", false));
 								}
 							}
 							rowCnt++;
 						}
-						hashFathers.put(i, selectedFatherNameList);					
+						hashFathers.put(i, selectedFatherNameList);
 					}
-					
-					if(action.equals("selectParentsF"+(i))){
+
+					if (action.equals("selectParentsF" + (i)))
+					{
 						List<String> selectedMotherNameList = new ArrayList<String>();
 						@SuppressWarnings("unchecked")
 						List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
 						int rowCnt = 0;
 						sex = "not selected";
-						for (ObservationElement row : rows) {
-							
-							if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
+						for (ObservationElement row : rows)
+						{
+
+							if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null)
+							{
 								String motherName = row.getName();
 								sex = ct.getMostRecentValueAsXrefName(motherName, "Sex");
-								if(sex.equals("Female")){
-									if (!selectedMotherNameList.contains(motherName)) {
+								if (sex.equals("Female"))
+								{
+									if (!selectedMotherNameList.contains(motherName))
+									{
 										selectedMotherNameList.add(motherName);
 									}
 								}
-								else{
+								else
+								{
 									this.setMessages(new ScreenMessage("Not a Female", false));
 								}
 							}
 							rowCnt++;
 						}
 						hashMothers.put(i, selectedMotherNameList);
-						
+
 					}
-				}	
+				}
 			}
-			try{
-				if(action.equals("init")){
+			try
+			{
+				if (action.equals("init"))
+				{
 					hashFathers.clear();
 					hashMothers.clear();
 					numberOfPG = null;
 				}
 
-				if(action.equals("JensonButton")){
+				if (action.equals("JensonButton"))
+				{
 					boolean papa = false;
 					boolean mama = false;
 					List<String> pgNames = new ArrayList<String>();
-					for(Entry<Integer,List<String>> entry : hashFathers.entrySet()){
-						
-						for(String s : entry.getValue()){
-							if(s.isEmpty()){
+					for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
+					{
+
+						for (String s : entry.getValue())
+						{
+							if (s.isEmpty())
+							{
 								papa = true;
 							}
 						}
 					}
-					for(Entry<Integer,List<String>> entry : hashMothers.entrySet()){
-						for(String s : entry.getValue()){
-							if(s.isEmpty()){
+					for (Entry<Integer, List<String>> entry : hashMothers.entrySet())
+					{
+						for (String s : entry.getValue())
+						{
+							if (s.isEmpty())
+							{
 								mama = true;
 							}
 						}
 					}
-					if(papa == false || mama == false){
-						
-						for(Entry <Integer,List<String>> entry: hashFathers.entrySet()){
-	
+					if (papa == false || mama == false)
+					{
+
+						for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
+						{
+
 							String x = "";
 							String y = "";
-							if(request.getDate("startdate"+entry.getKey())!=null){
-								x = request.getString("startdate"+entry.getKey());
+							if (request.getDate("startdate" + entry.getKey()) != null)
+							{
+								x = request.getString("startdate" + entry.getKey());
 							}
-							if(request.getString("remarks"+entry.getKey())!=null){
-								y = request.getString("remarks"+entry.getKey());
+							if (request.getString("remarks" + entry.getKey()) != null)
+							{
+								y = request.getString("remarks" + entry.getKey());
 							}
 
-							pgNames.add(AddParentgroup2(db, request,entry.getValue(),hashMothers.get(entry.getKey()),x,y));
-							
-							
-							// Reset matrix and add filter on name of newly added PG:
+							pgNames.add(AddParentgroup2(db, request, entry.getValue(), hashMothers.get(entry.getKey()),
+									x, y));
+
+							// Reset matrix and add filter on name of newly
+							// added PG:
 							loadPgMatrixViewer(db);
 							pgMatrixViewer.setDatabase(db);
-							//pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-							//Individual.NAME, Operator.EQUALS, pgNames));
+							// pgMatrixViewer.getMatrix().getRules().add(new
+							// MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+							// Individual.NAME, Operator.EQUALS, pgNames));
 							pgMatrixViewer.reloadMatrix(db, null);
 							pgMatrixViewerString = pgMatrixViewer.render();
 							// Reset other fields
@@ -600,31 +698,38 @@ public class Breedingnew extends PluginModel<Entity>
 							this.startdate = newDateOnlyFormat.format(new Date());
 							this.remarks = null;
 							motherMatrixViewer = null;
-							this.setSuccess("Parentgroup " + pgNames + " successfully added; adding filter to matrix: name = " + pgNames);
+							this.setSuccess("Parentgroup " + pgNames
+									+ " successfully added; adding filter to matrix: name = " + pgNames);
 						}
 						hashFathers.clear();
 						hashMothers.clear();
 						numberOfPG = null;
-					
+
 					}
-					else{
+					else
+					{
 						this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
 						action = "selectParents";
-					}					
-				}		
+					}
+				}
 			}
-			catch(Exception e){
-				//this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
+			catch (Exception e)
+			{
+				// this.setMessages(new
+				// ScreenMessage("Not all fathers or mothers are filled in",
+				// false));
 			}
-		
-			if (action.equals("createParentgroup")) {
+
+			if (action.equals("createParentgroup"))
+			{
 				numberOfPG = -1;
 				loadMotherMatrixViewer(db);
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewerString = motherMatrixViewer.render();
 			}
-			
-			if (action.equals("changeLine")) {
+
+			if (action.equals("changeLine"))
+			{
 				this.line = request.getString("line");
 				this.setSuccess("Breeding line changed to " + this.line);
 				// Reset matrices and return to main screen
@@ -636,34 +741,41 @@ public class Breedingnew extends PluginModel<Entity>
 				litterMatrixViewerString = litterMatrixViewer.render();
 				this.action = "init";
 			}
-			
-			if (action.equals("switchParentgroups")) {
+
+			if (action.equals("switchParentgroups"))
+			{
 				this.entity = "Parentgroups";
 				this.action = "init";
 			}
-			
-			if (action.equals("switchLitters")) {
+
+			if (action.equals("switchLitters"))
+			{
 				this.entity = "Litters";
 				this.action = "init";
 			}
-			
-			if (action.equals("deActivate")) {
+
+			if (action.equals("deActivate"))
+			{
 				List<?> rows = pgMatrixViewer.getSelection(db);
 				String pgName;
-				try { 
+				try
+				{
 					int row = request.getInt(PGMATRIX + "_selected");
 					pgName = ((ObservationElement) rows.get(row)).getName();
-				} catch (Exception e) {	
+				}
+				catch (Exception e)
+				{
 					this.action = "init";
 					throw new Exception("No parentgroup selected");
 				}
-				ObservedValue activeVal = db.query(ObservedValue.class).
-						eq(ObservedValue.TARGET_NAME, pgName).
-						eq(ObservedValue.FEATURE_NAME, "Active").
-						find().get(0);
-				if (activeVal.getValue().equals("Active")) {
+				ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, pgName)
+						.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
+				if (activeVal.getValue().equals("Active"))
+				{
 					activeVal.setValue("Inactive");
-				} else {
+				}
+				else
+				{
 					activeVal.setValue("Active");
 				}
 				db.update(activeVal);
@@ -674,24 +786,29 @@ public class Breedingnew extends PluginModel<Entity>
 				this.action = "init";
 				this.entity = "Parentgroups";
 			}
-			
-			if (action.equals("deActivateLitter")) {
+
+			if (action.equals("deActivateLitter"))
+			{
 				List<?> rows = litterMatrixViewer.getSelection(db);
 				String litterName;
-				try { 
+				try
+				{
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					litterName = ((ObservationElement) rows.get(row)).getName();
-				} catch (Exception e) {	
+				}
+				catch (Exception e)
+				{
 					this.action = "init";
 					throw new Exception("No litter selected");
 				}
-				ObservedValue activeVal = db.query(ObservedValue.class).
-						eq(ObservedValue.TARGET_NAME, litterName).
-						eq(ObservedValue.FEATURE_NAME, "Active").
-						find().get(0);
-				if (activeVal.getValue().equals("Active")) {
+				ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, litterName)
+						.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
+				if (activeVal.getValue().equals("Active"))
+				{
 					activeVal.setValue("Inactive");
-				} else {
+				}
+				else
+				{
 					activeVal.setValue("Active");
 				}
 				db.update(activeVal);
@@ -702,27 +819,36 @@ public class Breedingnew extends PluginModel<Entity>
 				this.action = "init";
 				this.entity = "Litters";
 			}
-			
-			if (action.equals("createLitter")) {
+
+			if (action.equals("createLitter"))
+			{
 				this.entity = "Litters"; // switch to litter view
 				// Get selected parentgroup from PARENTGROUP matrix
 				List<?> rows = pgMatrixViewer.getSelection(db);
-				try { 
+				try
+				{
 					int row = request.getInt(PGMATRIX + "_selected");
 					this.selectedParentgroup = ((ObservationElement) rows.get(row)).getName();
-				} catch (Exception e) {	
+				}
+				catch (Exception e)
+				{
 					this.action = "init";
 					throw new Exception("No parentgroup selected");
-				} 
+				}
 			}
-			
-			if (action.equals("addLitter")) {
+
+			if (action.equals("addLitter"))
+			{
 				String newLitterName = ApplyAddLitter(db, request);
-				// Reload litter matrix and set filter on name of newly added litter
+				// Reload litter matrix and set filter on name of newly added
+				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-						Individual.NAME, Operator.EQUALS, newLitterName));
+				litterMatrixViewer
+						.getMatrix()
+						.getRules()
+						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
+								newLitterName));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				// Reset other fields
@@ -732,59 +858,73 @@ public class Breedingnew extends PluginModel<Entity>
 				// Return to start screen for litters
 				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = " + newLitterName);
+				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = "
+						+ newLitterName);
 			}
 
-			if (action.equals("WeanLitter")) {
+			if (action.equals("WeanLitter"))
+			{
 				stillToWeanYN = true;
 				// Get selected litter
 				List<?> rows = litterMatrixViewer.getSelection(db);
-				
-				try { 
+
+				try
+				{
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					this.litter = ((ObservationElement) rows.get(row)).getName();
 					this.birthdate = ct.getMostRecentValueAsString(this.litter, "DateOfBirth");
-				} catch (Exception e) {	
+				}
+				catch (Exception e)
+				{
 					this.action = "init";
 					this.entity = "Litters";
 					throw new Exception("No litter selected");
 				}
-				if(isWeaned(db)){
+				if (isWeaned(db))
+				{
 					stillToWeanYN = false;
 					this.setMessages(new ScreenMessage("Already weaned", false));
-					action="addLitter";
+					action = "addLitter";
 				}
-				else{
+				else
+				{
 					weanLitter(db);
 				}
-				
+
 			}
-			
-			if (action.equals("GenotypeLitter")) {
-			// Prepare parent info
+
+			if (action.equals("GenotypeLitter"))
+			{
+				// Prepare parent info
 				stillToGenotypeYN = true;
 				List<?> rows = litterMatrixViewer.getSelection(db);
-				try { 
+				try
+				{
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					this.litter = ((ObservationElement) rows.get(row)).getName();
-				} 
-				catch (Exception e) {	
+				}
+				catch (Exception e)
+				{
 					this.action = "init";
 					this.entity = "Litters";
 					throw new Exception("No litter selected");
 				}
-				
-				if(!isWeaned(db)){
+
+				if (!isWeaned(db))
+				{
 					this.setMessages(new ScreenMessage("The litter is not weaned yet!", false));
-					action="addLitter";
+					action = "addLitter";
 				}
-				else{
-					if(isGenotyped(db)){
+				else
+				{
+					if (isGenotyped(db))
+					{
 						stillToGenotypeYN = false;
 						this.setMessages(new ScreenMessage("Already genotyped", false));
-						action="addLitter";
+						action = "addLitter";
 					}
-					else{
+					else
+					{
 						String parentgroupName = ct.getMostRecentValueAsXrefName(this.litter, "Parentgroup");
 						parentInfo = "";
 						parentInfo += ("Parentgroup: " + parentgroupName + "<br />");
@@ -796,10 +936,11 @@ public class Breedingnew extends PluginModel<Entity>
 						genotypeLitter(db);
 					}
 				}
-				
-			} 
 
-			if (action.equals("applyWean")) {
+			}
+
+			if (action.equals("applyWean"))
+			{
 				int weanSize = Wean(db, request);
 				// Update custom label map now new animals have been added
 				ct.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
@@ -813,80 +954,109 @@ public class Breedingnew extends PluginModel<Entity>
 				this.respres = null;
 				this.selectedParentgroup = null;
 				this.locName = null;
-				// Reload litter matrix and set filter on name of newly weaned litter
+				// Reload litter matrix and set filter on name of newly weaned
+				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-						Individual.NAME, Operator.EQUALS, this.litter));
+				litterMatrixViewer
+						.getMatrix()
+						.getRules()
+						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
+								this.litter));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("All " + weanSize + " animals successfully weaned; adding filter to matrix: name = " + this.litter);
+				this.setSuccess("All " + weanSize + " animals successfully weaned; adding filter to matrix: name = "
+						+ this.litter);
 			}
 
-			if (action.equals("applyGenotype")) {
+			if (action.equals("applyGenotype"))
+			{
 				int animalCount = Genotype(db, request);
-				// Reload litter matrix and set filter on name of newly weaned litter
+				// Reload litter matrix and set filter on name of newly weaned
+				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-						Individual.NAME, Operator.EQUALS, this.litter));
+				litterMatrixViewer
+						.getMatrix()
+						.getRules()
+						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
+								this.litter));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				// Reset other fields
 				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("All " + animalCount + " animals successfully genotyped; adding filter to matrix: name = " + this.litter);
+				this.setSuccess("All " + animalCount
+						+ " animals successfully genotyped; adding filter to matrix: name = " + this.litter);
 			}
 
-			if (action.equals("makeLabels")) {
+			if (action.equals("makeLabels"))
+			{
 				// Get selected litter
 				List<?> rows = litterMatrixViewer.getSelection(db);
-				try { 
+				try
+				{
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					this.litter = ((ObservationElement) rows.get(row)).getName();
-				} catch (Exception e) {	
+				}
+				catch (Exception e)
+				{
 					this.action = "init";
 					this.entity = "Litters";
 					throw new Exception("No litter selected");
 				}
-				if (ct.getMostRecentValueAsString(this.litter, "WeanDate") == null) {
+				if (ct.getMostRecentValueAsString(this.litter, "WeanDate") == null)
+				{
 					this.action = "init";
 					this.entity = "Litters";
 					throw new Exception("Cannot make labels for an unweaned litter");
-				// disable temporary cage label for now, because it is not part of the flow anymore
-				//} else if (ct.getMostRecentValueAsString(this.litter, "GenotypeDate") == null) {
-				//	makeTempCageLabels(db);
-				} else {
+					// disable temporary cage label for now, because it is not
+					// part of the flow anymore
+					// } else if (ct.getMostRecentValueAsString(this.litter,
+					// "GenotypeDate") == null) {
+					// makeTempCageLabels(db);
+				}
+				else
+				{
 					createDefCageLabels(db);
 				}
 			}
-			
-			if (action.equals("AddGenoCol")) {
+
+			if (action.equals("AddGenoCol"))
+			{
 				storeGenotypeTable(db, request);
 				AddGenoCol(db, request);
 				this.action = "GenotypeLitter";
 				this.setSuccess("Gene modification + state pair successfully added");
 			}
-			
-			if (action.equals("RemGenoCol")) {
-				if (nrOfGenotypes > 1) {
+
+			if (action.equals("RemGenoCol"))
+			{
+				if (nrOfGenotypes > 1)
+				{
 					int currCol = 5 + ((nrOfGenotypes - 1) * 2);
-					genotypeTable.removeColumn(currCol); // NB: nr. of cols is now 1 lower!
+					genotypeTable.removeColumn(currCol); // NB: nr. of cols is
+															// now 1 lower!
 					genotypeTable.removeColumn(currCol);
 					nrOfGenotypes--;
 					this.setSuccess("Gene modification + state pair successfully removed");
-				} else {
+				}
+				else
+				{
 					this.setError("Cannot remove - at least one Gene modification + state pair has to remain");
 				}
 				storeGenotypeTable(db, request);
 				this.action = "GenotypeLitter";
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += ": " + e.getMessage();
 			}
 			this.setError(message);
@@ -912,26 +1082,33 @@ public class Breedingnew extends PluginModel<Entity>
 		genotypeTable.addColumn("Gene modification");
 		genotypeTable.addColumn("Gene state");
 		int row = 0;
-		for (Individual animal : getAnimalsInLitter(db)) {
+		for (Individual animal : getAnimalsInLitter(db))
+		{
 			String animalName = animal.getName();
 			genotypeTable.addRow(animalName);
 			// Birth date
 			DateInput dateInput = new DateInput("0_" + row);
 			dateInput.setDateFormat("yyyy-MM-dd");
-			// get the weandate, in order to limit the input for the birthdate field
+			// get the weandate, in order to limit the input for the birthdate
+			// field
 			String maxDate = "";
-			try {
+			try
+			{
 				maxDate = ct.getMostRecentValueAsString(animalName, "dateOfBirth");
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				// do nothing.
 			}
-			dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxDate + "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+			dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxDate
+					+ "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 			dateInput.setValue(getAnimalBirthDate(animalName));
-			
+
 			genotypeTable.setCell(0, row, dateInput);
 			// Sex
 			SelectInput sexInput = new SelectInput("1_" + row);
-			for (ObservationTarget sex : this.sexList) {
+			for (ObservationTarget sex : this.sexList)
+			{
 				sexInput.addOption(sex.getName(), sex.getName());
 			}
 			sexInput.setValue(getAnimalSex(animalName));
@@ -939,7 +1116,8 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.setCell(1, row, sexInput);
 			// Color
 			SelectInput colorInput = new SelectInput("2_" + row);
-			for (String color : this.colorList) {
+			for (String color : this.colorList)
+			{
 				colorInput.addOption(color, color);
 			}
 			colorInput.setValue(getAnimalColor(animalName));
@@ -947,7 +1125,8 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.setCell(2, row, colorInput);
 			// Earmark
 			SelectInput earmarkInput = new SelectInput("3_" + row);
-			for (Category earmark : this.earmarkList) {
+			for (Category earmark : this.earmarkList)
+			{
 				earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
 			}
 			earmarkInput.setValue(getAnimalEarmark(animalName));
@@ -955,18 +1134,20 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.setCell(3, row, earmarkInput);
 			// Background
 			SelectInput backgroundInput = new SelectInput("4_" + row);
-			for (ObservationTarget background : this.backgroundList) {
+			for (ObservationTarget background : this.backgroundList)
+			{
 				backgroundInput.addOption(background.getName(), background.getName());
 			}
 			backgroundInput.setValue(getAnimalBackground(animalName));
 			backgroundInput.setWidth(-1);
 			genotypeTable.setCell(4, row, backgroundInput);
-			
+
 			// TODO: show columns and selectboxes for ALL set geno mods
-			
+
 			// Gene mod name (1)
 			SelectInput geneNameInput = new SelectInput("5_" + row);
-			for (String geneName : this.geneNameList) {
+			for (String geneName : this.geneNameList)
+			{
 				geneNameInput.addOption(geneName, geneName);
 			}
 			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
@@ -974,7 +1155,8 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.setCell(5, row, geneNameInput);
 			// Gene state (1)
 			SelectInput geneStateInput = new SelectInput("6_" + row);
-			for (String geneState : this.geneStateList) {
+			for (String geneState : this.geneStateList)
+			{
 				geneStateInput.addOption(geneState, geneState);
 			}
 			geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, 0, db));
@@ -986,69 +1168,89 @@ public class Breedingnew extends PluginModel<Entity>
 
 	private void weanLitter(Database db) throws DatabaseException, ParseException
 	{
-		// Find out species of litter user wants to wean, so we can provide the right name prefix
+		// Find out species of litter user wants to wean, so we can provide the
+		// right name prefix
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
 		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
 		// TODO: get rid of duplication with AddAnimalPlugin
 		// TODO: put this hardcoded info in the database (NamePrefix table)
-		if (speciesName.equals("House mouse")) {
+		if (speciesName.equals("House mouse"))
+		{
 			this.prefix = "mm_";
 		}
-		if (speciesName.equals("Brown rat")) {
+		if (speciesName.equals("Brown rat"))
+		{
 			this.prefix = "rn_";
 		}
-		if (speciesName.equals("Common vole")) {
+		if (speciesName.equals("Common vole"))
+		{
 			this.prefix = "mar_";
 		}
-		if (speciesName.equals("Tundra vole")) {
+		if (speciesName.equals("Tundra vole"))
+		{
 			this.prefix = "mo_";
 		}
-		if (speciesName.equals("Syrian hamster")) {
+		if (speciesName.equals("Syrian hamster"))
+		{
 			this.prefix = "ma_";
 		}
-		if (speciesName.equals("European groundsquirrel")) {
+		if (speciesName.equals("European groundsquirrel"))
+		{
 			this.prefix = "sc_";
 		}
-		if (speciesName.equals("Siberian hamster")) {
+		if (speciesName.equals("Siberian hamster"))
+		{
 			this.prefix = "ps_";
 		}
-		if (speciesName.equals("Domestic guinea pig")) {
+		if (speciesName.equals("Domestic guinea pig"))
+		{
 			this.prefix = "cp_";
 		}
-		if (speciesName.equals("Fat-tailed dunnart")) {
+		if (speciesName.equals("Fat-tailed dunnart"))
+		{
 			this.prefix = "sg_";
 		}
 	}
 
-	private Boolean isWeaned(Database db) throws Exception{
-		List<QueryRule> filterRules = new ArrayList<QueryRule>(); 				
+	private Boolean isWeaned(Database db) throws Exception
+	{
+		List<QueryRule> filterRules = new ArrayList<QueryRule>();
 		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "WeanDate"));
 		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
 		List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
-		if(listId.isEmpty()){
+		if (listId.isEmpty())
+		{
 			return false;
-		}else{
+		}
+		else
+		{
 			return true;
 		}
-		
+
 	}
-	private Boolean isGenotyped(Database db) throws Exception{
-		List<QueryRule> filterRules = new ArrayList<QueryRule>(); 				
+
+	private Boolean isGenotyped(Database db) throws Exception
+	{
+		List<QueryRule> filterRules = new ArrayList<QueryRule>();
 		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GenotypeDate"));
 		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
 		List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
 		System.out.println("KIPJES " + listId.size());
-		if(listId.isEmpty()){
+		if (listId.isEmpty())
+		{
 			return false;
-		}else{
+		}
+		else
+		{
 			return true;
 		}
-		
+
 	}
-	
-	
-	private String AddParentgroup2(Database db, Tuple request,List<String> papa, List<String> mama,String startdate,String remarks) throws Exception{
+
+	private String AddParentgroup2(Database db, Tuple request, List<String> papa, List<String> mama, String startdate,
+			String remarks) throws Exception
+	{
 		Date now = new Date();
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 
@@ -1063,128 +1265,128 @@ public class Breedingnew extends PluginModel<Entity>
 		// Make or update name prefix entry
 		ct.updatePrefix("parentgroup", groupPrefix, groupNr);
 		// Mark group as parent group using a special event
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetTypeOfGroup", "TypeOfGroup", groupName, "Parentgroup", null));
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetLine", "Line", groupName, null, line));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
+				groupName, "Parentgroup", null));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLine", "Line", groupName, null,
+				line));
 		// Add parent(s)
 		AddParents(db, mama, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
 		AddParents(db, papa, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
 		// Set line
-		
+
 		// Set start date
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetStartDate", "StartDate", groupName, dbFormat.format(eventDate), null));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetStartDate", "StartDate",
+				groupName, dbFormat.format(eventDate), null));
 		// Set remarks
-		if (remarks != null) {
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-					"SetRemark", "Remark", groupName, remarks, null));
+		if (remarks != null)
+		{
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark", groupName,
+					remarks, null));
 		}
-		
-		//Add Set Active, with (start)time = entrydate and endtime = null
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetActive", "Active", 
-				groupName, "Active", null));
-		
+
+		// Add Set Active, with (start)time = entrydate and endtime = null
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetActive", "Active", groupName,
+				"Active", null));
+
 		return groupName;
 	}
-	
+
 	/*
-	private String AddParentgroup(Database db, Tuple request) throws Exception {
-		Date now = new Date();
-		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
-		// Save start date and remarks that were set in screen 4
-		if (request.getString("startdate") != null) {
-			setStartdate(request.getString("startdate"));
-		}
-		if (request.getString("remarks") != null) {
-			setRemarks(request.getString("remarks"));
-		}
-		Date eventDate = dateOnlyFormat.parse(startdate);
-		// Make parentgroup
-		String groupPrefix = "PG_" + line + "_";
-		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
-		String groupNrPart = "" + groupNr;
-		groupNrPart = ct.prependZeros(groupNrPart, 6);
-		String groupName = groupPrefix + groupNrPart;
-		ct.makePanel(invName, groupName, userName);
-		// Make or update name prefix entry
-		ct.updatePrefix("parentgroup", groupPrefix, groupNr);
-		// Mark group as parent group using a special event
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetTypeOfGroup", "TypeOfGroup", groupName, "Parentgroup", null));
-		// Add parent(s)
-		AddParents(db, this.selectedMotherNameList, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
-		AddParents(db, this.selectedFatherNameList, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
-		// Set line
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetLine", "Line", groupName, null, line));
-		// Set start date
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetStartDate", "StartDate", groupName, dbFormat.format(eventDate), null));
-		// Set remarks
-		if (remarks != null) {
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-					"SetRemark", "Remark", groupName, remarks, null));
-		}
-		
-		//Add Set Active, with (start)time = entrydate and endtime = null
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetActive", "Active", 
-				groupName, "Active", null));
-		
-		return groupName;
-	}
-	*/
+	 * private String AddParentgroup(Database db, Tuple request) throws
+	 * Exception { Date now = new Date(); String invName =
+	 * ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0); //
+	 * Save start date and remarks that were set in screen 4 if
+	 * (request.getString("startdate") != null) {
+	 * setStartdate(request.getString("startdate")); } if
+	 * (request.getString("remarks") != null) {
+	 * setRemarks(request.getString("remarks")); } Date eventDate =
+	 * dateOnlyFormat.parse(startdate); // Make parentgroup String groupPrefix =
+	 * "PG_" + line + "_"; int groupNr =
+	 * ct.getHighestNumberForPrefix(groupPrefix) + 1; String groupNrPart = "" +
+	 * groupNr; groupNrPart = ct.prependZeros(groupNrPart, 6); String groupName
+	 * = groupPrefix + groupNrPart; ct.makePanel(invName, groupName, userName);
+	 * // Make or update name prefix entry ct.updatePrefix("parentgroup",
+	 * groupPrefix, groupNr); // Mark group as parent group using a special
+	 * event db.add(ct.createObservedValueWithProtocolApplication(invName, now,
+	 * null, "SetTypeOfGroup", "TypeOfGroup", groupName, "Parentgroup", null));
+	 * // Add parent(s) AddParents(db, this.selectedMotherNameList,
+	 * "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
+	 * AddParents(db, this.selectedFatherNameList, "SetParentgroupFather",
+	 * "ParentgroupFather", groupName, eventDate); // Set line
+	 * db.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+	 * "SetLine", "Line", groupName, null, line)); // Set start date
+	 * db.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+	 * "SetStartDate", "StartDate", groupName, dbFormat.format(eventDate),
+	 * null)); // Set remarks if (remarks != null) {
+	 * db.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+	 * "SetRemark", "Remark", groupName, remarks, null)); }
+	 * 
+	 * //Add Set Active, with (start)time = entrydate and endtime = null
+	 * db.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+	 * "SetActive", "Active", groupName, "Active", null));
+	 * 
+	 * return groupName; }
+	 */
 
 	@Override
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
 		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-		
-		// Populate lists (do this on every reload so they keep fresh, and do it here
+
+		// Populate lists (do this on every reload so they keep fresh, and do it
+		// here
 		// because we need the lineList in the init part that comes after)
-		
-		try {
+
+		try
+		{
 			// Populate line list
-			
+
 			lineList = ct.getAllMarkedPanels("Line", investigationNames);
 			// Default selected is first line
-			if (line == null && lineList.size() > 0) {
+			if (line == null && lineList.size() > 0)
+			{
 				line = lineList.get(0).getName();
 			}
-			/*if (selectedMotherNameList == null) {
-				selectedMotherNameList = new ArrayList<String>();
-			}
-			if (selectedFatherNameList == null) {
-				selectedFatherNameList = new ArrayList<String>();
-			}*/
-			
-		} catch (Exception e) {
+			/*
+			 * if (selectedMotherNameList == null) { selectedMotherNameList =
+			 * new ArrayList<String>(); } if (selectedFatherNameList == null) {
+			 * selectedFatherNameList = new ArrayList<String>(); }
+			 */
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading lists";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.setError(message);
 			e.printStackTrace();
 		}
 		// Some init that only needs to be done once after login
-		if (userName != this.getLogin().getUserName()) {
+		if (userName != this.getLogin().getUserName())
+		{
 			userName = this.getLogin().getUserName();
 			ct.makeObservationTargetNameMap(userName, false);
 			this.setStartdate(dbFormat.format(new Date()));
 			// Prepare pg matrix
-			if (pgMatrixViewer == null) {
+			if (pgMatrixViewer == null)
+			{
 				loadPgMatrixViewer(db);
 			}
 			pgMatrixViewer.setDatabase(db);
 			pgMatrixViewerString = pgMatrixViewer.render();
 			// Prepare litter matrix
-			if (litterMatrixViewer == null) {
+			if (litterMatrixViewer == null)
+			{
 				loadLitterMatrixViewer(db);
 			}
 			litterMatrixViewer.setDatabase(db);
 			litterMatrixViewerString = litterMatrixViewer.render();
-			try {
+			try
+			{
 				// Populate backgrounds list
 				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
 				// Populate sexes list
@@ -1200,16 +1402,21 @@ public class Breedingnew extends PluginModel<Entity>
 				// Populate name prefixes list for the animals
 				this.bases = new ArrayList<String>();
 				List<String> tmpPrefixes = ct.getPrefixes("animal");
-				for (String tmpPrefix : tmpPrefixes) {
-					if (!tmpPrefix.equals("")) {
+				for (String tmpPrefix : tmpPrefixes)
+				{
+					if (!tmpPrefix.equals(""))
+					{
 						this.bases.add(tmpPrefix);
 					}
 				}
 				// Populate location list
 				this.setLocationList(ct.getAllLocations());
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				String message = "Something went wrong while loading lists";
-				if (e.getMessage() != null) {
+				if (e.getMessage() != null)
+				{
 					message += (": " + e.getMessage());
 				}
 				this.setError(message);
@@ -1217,33 +1424,39 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 		}
 	}
-		
-	public String getBirthdate() {
-		if (birthdate != null) {
+
+	public String getBirthdate()
+	{
+		if (birthdate != null)
+		{
 			return birthdate;
 		}
 		return newDateOnlyFormat.format(new Date());
 	}
-	
-	public int getLitterSize() {
+
+	public int getLitterSize()
+	{
 		return litterSize;
 	}
-	
-	public String getLitterRemarks() {
+
+	public String getLitterRemarks()
+	{
 		return litterRemarks;
 	}
-	
-	public String getSelectedParentgroup() {
-		if (selectedParentgroup != null) {
+
+	public String getSelectedParentgroup()
+	{
+		if (selectedParentgroup != null)
+		{
 			return selectedParentgroup;
 		}
 		return "Error: no parentgoup selected";
 	}
-	
+
 	private String ApplyAddLitter(Database db, Tuple request) throws Exception
 	{
 		Date now = new Date();
-		
+
 		setUserFields(request, false);
 		Date eventDate = newDateOnlyFormat.parse(birthdate);
 		String userName = this.getLogin().getUserName();
@@ -1261,123 +1474,155 @@ public class Breedingnew extends PluginModel<Entity>
 		// Make or update name prefix entry
 		ct.updatePrefix("litter", litterPrefix, litterNr);
 		// Mark group as a litter
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetTypeOfGroup", "TypeOfGroup", litterName, "Litter", null));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
+				litterName, "Litter", null));
 		// Apply other fields using event
 		ProtocolApplication app = ct.createProtocolApplication(invName, "SetLitterSpecs");
 		db.add(app);
 		String paName = app.getName();
 		// Parentgroup
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Parentgroup", 
-				litterName, null, selectedParentgroup));
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Parentgroup", litterName, null,
+				selectedParentgroup));
 		// Set Line also on Litter
-		if (lineName != null) {
-			valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Line", 
-				litterName, null, lineName));
+		if (lineName != null)
+		{
+			valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Line", litterName, null,
+					lineName));
 		}
 		// Date of Birth
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "DateOfBirth", 
-				litterName, newDateOnlyFormat.format(eventDate), null));
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "DateOfBirth", litterName,
+				newDateOnlyFormat.format(eventDate), null));
 		// Size
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Size", litterName, 
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Size", litterName,
 				Integer.toString(litterSize), null));
 		// Size approximate (certain)?
 		String valueString = "0";
-		if (litterSizeApproximate == true) {
+		if (litterSizeApproximate == true)
+		{
 			valueString = "1";
 		}
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Certain", litterName, 
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Certain", litterName,
 				valueString, null));
 		// Remarks
-		if (litterRemarks != null) {
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-					"SetRemark", "Remark", litterName, litterRemarks, null));
+		if (litterRemarks != null)
+		{
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark", litterName,
+					litterRemarks, null));
 		}
 		// Try to get Source via Line
 		String sourceName = ct.getMostRecentValueAsXrefName(lineName, "Source");
-		if (sourceName != null) {
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, 
-					eventDate, null, "SetSource", "Source", litterName, null, sourceName));
+		if (sourceName != null)
+		{
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, eventDate, null, "SetSource",
+					"Source", litterName, null, sourceName));
 		}
 		// Active
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Active", litterName, 
-				"Active", null));
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Active", litterName, "Active",
+				null));
 		// Add everything to DB
 		db.add(valuesToAddList);
-		
+
 		return litterName;
 	}
-	
-	private void setUserFields(Tuple request, boolean wean) throws Exception {
-		if (wean == true) {
+
+	private void setUserFields(Tuple request, boolean wean) throws Exception
+	{
+		if (wean == true)
+		{
 			locName = request.getString("location");
-			if (locName != null && locName.equals("")) {
+			if (locName != null && locName.equals(""))
+			{
 				locName = null;
 			}
 			respres = request.getString("respres");
-			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
+			if (request.getString("weandate") == null || request.getString("weandate").equals(""))
+			{
 				throw new Exception("Wean date cannot be empty");
 			}
 			weandate = request.getString("weandate"); // in old date format!
 			weanSizeFemale = 0;
-			if (request.getInt("weansizefemale") != null) {
+			if (request.getInt("weansizefemale") != null)
+			{
 				weanSizeFemale = request.getInt("weansizefemale");
 			}
 			weanSizeMale = 0;
-			if (request.getInt("weansizemale") != null) {
+			if (request.getInt("weansizemale") != null)
+			{
 				weanSizeMale = request.getInt("weansizemale");
 			}
 			weanSizeUnknown = 0;
-			if (request.getInt("weansizeunknown") != null) {
+			if (request.getInt("weansizeunknown") != null)
+			{
 				weanSizeUnknown = request.getInt("weansizeunknown");
 			}
 			remarks = request.getString("remarks");
-			if (request.getString("namebase") != null) {
+			if (request.getString("namebase") != null)
+			{
 				nameBase = request.getString("namebase");
-				if (nameBase.equals("New")) {
-					if (request.getString("newnamebase") != null) {
+				if (nameBase.equals("New"))
+				{
+					if (request.getString("newnamebase") != null)
+					{
 						nameBase = request.getString("newnamebase");
-					} else {
+					}
+					else
+					{
 						nameBase = "";
 					}
 				}
-			} else {
+			}
+			else
+			{
 				nameBase = "";
 			}
-			if (request.getInt("startnumber") != null) {
+			if (request.getInt("startnumber") != null)
+			{
 				startNumber = request.getInt("startnumber");
-			} else {
+			}
+			else
+			{
 				startNumber = 1; // standard start at 1
 			}
-			
-		} else {
-			if (request.getString("birthdate") == null || request.getString("birthdate").equals("")) {
+
+		}
+		else
+		{
+			if (request.getString("birthdate") == null || request.getString("birthdate").equals(""))
+			{
 				throw new Exception("Birth date cannot be empty");
 			}
 			birthdate = request.getString("birthdate"); // in old date format!
 			this.litterSize = request.getInt("littersize");
-			if (request.getBool("sizeapp_toggle") != null) {
+			if (request.getBool("sizeapp_toggle") != null)
+			{
 				this.litterSizeApproximate = true;
-			} else {
+			}
+			else
+			{
 				this.litterSizeApproximate = false;
 			}
 			this.litterRemarks = request.getString("litterremarks");
 		}
 	}
-	
-	private String findParentForParentgroup(String parentgroupName, String parentSex, Database db) throws DatabaseException, ParseException {
+
+	private String findParentForParentgroup(String parentgroupName, String parentSex, Database db)
+			throws DatabaseException, ParseException
+	{
 		ct.setDatabase(db);
 		Query<ObservedValue> parentQuery = db.query(ObservedValue.class);
 		parentQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, parentgroupName));
 		parentQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Parentgroup" + parentSex));
 		List<ObservedValue> parentValueList = parentQuery.find();
-		if (parentValueList.size() > 0) {
+		if (parentValueList.size() > 0)
+		{
 			return parentValueList.get(0).getRelation_Name();
-		} else {
+		}
+		else
+		{
 			throw new DatabaseException("Fatal error: no " + parentSex + " found for parentgroup " + parentgroupName);
 		}
 	}
-	
+
 	private int Wean(Database db, Tuple request) throws Exception
 	{
 		Date now = new Date();
@@ -1385,73 +1630,94 @@ public class Breedingnew extends PluginModel<Entity>
 		setUserFields(request, true);
 		Date weanDate = newDateOnlyFormat.parse(weandate);
 		String userName = this.getLogin().getUserName();
-		
+
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 		List<ObservationTarget> animalsToAddList = new ArrayList<ObservationTarget>();
-		
+
 		// Source (take from litter)
 		String sourceName = ct.getMostRecentValueAsXrefName(litter, "Source");
 		// Get litter birth date
 		String litterBirthDateString = ct.getMostRecentValueAsString(litter, "DateOfBirth");
-		//Date litterBirthDate = newDateOnlyFormat.parse(litterBirthDateString);
+		// Date litterBirthDate =
+		// newDateOnlyFormat.parse(litterBirthDateString);
 		// Find Parentgroup for this litter
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		// Find Line for this Parentgroup
 		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
-		// Find first mother, plus her animal type, species, color, background, gene modification and gene state
+		// Find first mother, plus her animal type, species, color, background,
+		// gene modification and gene state
 
-		// TODO: handle situation where one of the parents is not known properly.
-		// TODO: properly handle the situation of harem breeding (basicly group of possible mothers/fathers) / maybe make a totally different plugin for this situation?
+		// TODO: handle situation where one of the parents is not known
+		// properly.
+		// TODO: properly handle the situation of harem breeding (basicly group
+		// of possible mothers/fathers) / maybe make a totally different plugin
+		// for this situation?
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
 		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
 		String motherAnimalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
 		String color = ct.getMostRecentValueAsString(motherName, "Color");
 		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
-		  
+
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(userName);
-		//HUGE FIXME, how to make sure that GeneModification and state belong to each other?, via prot app?? 
-		List<ObservedValue> motherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(motherName, "GeneModification", investigationIds); // this does not work, only get the ones for the current animal.
-		//List<ObservedValue> motherAllGeneStates = ct.getObservedValuesByTargetAndMeasurement(motherName, "GeneModification", investigationIds);
-		
+		// HUGE FIXME, how to make sure that GeneModification and state belong
+		// to each other?, via prot app??
+		List<ObservedValue> motherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(motherName,
+				"GeneModification", investigationIds); // this does not work,
+														// only get the ones for
+														// the current animal.
+		// List<ObservedValue> motherAllGeneStates =
+		// ct.getObservedValuesByTargetAndMeasurement(motherName,
+		// "GeneModification", investigationIds);
+
 		// Find father and his background
 		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
 		String fatherBackgroundName = ct.getMostRecentValueAsXrefName(fatherName, "Background");
 		String fatherAnimalType = ct.getMostRecentValueAsString(fatherName, "AnimalType");
-		List<ObservedValue> fatherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(fatherName, "GeneModification", investigationIds); // this does not work, only get the ones for the current animal.
-		//List<ObservedValue> fatherAllGeneStates = ct.getObservedValuesByTargetAndMeasurement(fatherName, "GeneModification", investigationIds);
-
+		List<ObservedValue> fatherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(fatherName,
+				"GeneModification", investigationIds); // this does not work,
+														// only get the ones for
+														// the current animal.
+		// List<ObservedValue> fatherAllGeneStates =
+		// ct.getObservedValuesByTargetAndMeasurement(fatherName,
+		// "GeneModification", investigationIds);
 
 		// Deduce animal type
 		String animalType = motherAnimalType;
 		// If one of the parents is GMO, animal is GMO
-		if (motherAnimalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier")) {
+		if (motherAnimalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier"))
+		{
 			animalType = "B. Transgeen dier";
 		}
-		// Keep normal and transgene types, but set type of child from wild mother to normal
-		if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
+		// Keep normal and transgene types, but set type of child from wild
+		// mother to normal
+		if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop"))
+		{
 			animalType = "A. Gewoon dier";
 		}
 		// Set wean sizes
 		int weanSize = weanSizeFemale + weanSizeMale + weanSizeUnknown;
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetWeanSize", "WeanSize", litter, Integer.toString(weanSize), null));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetWeanSizeFemale", "WeanSizeFemale", litter, Integer.toString(weanSizeFemale), null));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetWeanSizeMale", "WeanSizeMale", litter, Integer.toString(weanSizeMale), null));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-				"SetWeanSizeUnknown", "WeanSizeUnknown", litter, Integer.toString(weanSizeUnknown), null));
-		// Set wean date on litter -> this is how we mark a litter as weaned (but not genotyped)
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-				null, "SetWeanDate", "WeanDate", litter, newDateOnlyFormat.format(weanDate), null));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSize",
+				"WeanSize", litter, Integer.toString(weanSize), null));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSizeFemale",
+				"WeanSizeFemale", litter, Integer.toString(weanSizeFemale), null));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSizeMale",
+				"WeanSizeMale", litter, Integer.toString(weanSizeMale), null));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSizeUnknown",
+				"WeanSizeUnknown", litter, Integer.toString(weanSizeUnknown), null));
+		// Set wean date on litter -> this is how we mark a litter as weaned
+		// (but not genotyped)
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetWeanDate",
+				"WeanDate", litter, newDateOnlyFormat.format(weanDate), null));
 		// Set weaning remarks on litter
-		if (remarks != null) {
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-					"SetRemark", "Remark", litter, remarks, null));
+		if (remarks != null)
+		{
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark", litter,
+					remarks, null));
 		}
 		// Make animal, link to litter, parents and set wean dates etc.
-		for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
+		for (int animalNumber = 0; animalNumber < weanSize; animalNumber++)
+		{
 			String nrPart = "" + (startNumber + animalNumber);
 			nrPart = ct.prependZeros(nrPart, 6);
 			ObservationTarget animalToAdd = ct.createIndividual(invName, nameBase + nrPart, userName);
@@ -1461,95 +1727,116 @@ public class Breedingnew extends PluginModel<Entity>
 		// Make or update name prefix entry
 		ct.updatePrefix("animal", nameBase, startNumber + weanSize - 1);
 		int animalNumber = 0;
-		for (ObservationTarget animal : animalsToAddList) {
+		for (ObservationTarget animal : animalsToAddList)
+		{
 			String animalName = animal.getName();
-			// TODO: link every value to a single Wean protocol application instead of to its own one
+			// TODO: link every value to a single Wean protocol application
+			// instead of to its own one
 			// Link to litter
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-					null, "SetLitter", "Litter", animalName, null, litter));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetLitter",
+					"Litter", animalName, null, litter));
 			// Link to parents using the Mother and Father measurements
-			if (motherName != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-						null, "SetMother", "Mother", animalName, null, motherName));
+			if (motherName != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetMother",
+						"Mother", animalName, null, motherName));
 			}
-			if (fatherName != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-						null, "SetFather", "Father", animalName, null, fatherName));
+			if (fatherName != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetFather",
+						"Father", animalName, null, fatherName));
 			}
 			// Set line also on animal itself
-			if (lineName != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-						null, "SetLine", "Line", animalName, null, lineName));
+			if (lineName != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetLine",
+						"Line", animalName, null, lineName));
 			}
 			// Set responsible researcher
-			if (respres != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, 
-						null, "SetResponsibleResearcher", "ResponsibleResearcher", animalName, respres, null));
+			if (respres != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null,
+						"SetResponsibleResearcher", "ResponsibleResearcher", animalName, respres, null));
 			}
 			// Set location
-			if (locName != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, 
-						null, "SetLocation", "Location", animalName, null, locName));
+			if (locName != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLocation",
+						"Location", animalName, null, locName));
 			}
 			// Set sex
 			String sexName = "Male";
-			if (animalNumber >= weanSizeMale) {
-				if (animalNumber < weanSizeFemale + weanSizeMale) {
+			if (animalNumber >= weanSizeMale)
+			{
+				if (animalNumber < weanSizeFemale + weanSizeMale)
+				{
 					sexName = "Female";
-				} else {
+				}
+				else
+				{
 					sexName = "UnknownSex";
 				}
 			}
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-					null, "SetSex", "Sex", animalName, null, sexName));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetSex", "Sex",
+					animalName, null, sexName));
 			// Set wean date on animal
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-					null, "SetWeanDate", "WeanDate", animalName, newDateOnlyFormat.format(weanDate), null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetWeanDate",
+					"WeanDate", animalName, newDateOnlyFormat.format(weanDate), null));
 			// Set 'Active' -> starts at wean date
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, 
-					weanDate, null, "SetActive", "Active", animalName, "Alive", null));
-	 		// Set 'Date of Birth'
-	 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate,
-	 				null, "SetDateOfBirth", "DateOfBirth", animalName, litterBirthDateString, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetActive",
+					"Active", animalName, "Alive", null));
+			// Set 'Date of Birth'
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+					"SetDateOfBirth", "DateOfBirth", animalName, litterBirthDateString, null));
 			// Set species
-	 		if (speciesName != null) {
-		 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-						null, "SetSpecies", "Species", animalName, null, speciesName));
-	 		}
-			// Set animal type
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-					null, "SetAnimalType", "AnimalType", animalName, animalType, null));
-			// Set source
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-					null, "SetSource", "Source", animalName, null, sourceName));
-			// Set color based on mother's (can be changed during genotyping)
-			if (color != null && !color.equals("")) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-						null, "SetColor", "Color", animalName, color, null));
+			if (speciesName != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+						"SetSpecies", "Species", animalName, null, speciesName));
 			}
-			// Set background based on mother's and father's (can be changed during genotyping)
+			// Set animal type
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetAnimalType",
+					"AnimalType", animalName, animalType, null));
+			// Set source
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetSource",
+					"Source", animalName, null, sourceName));
+			// Set color based on mother's (can be changed during genotyping)
+			if (color != null && !color.equals(""))
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetColor",
+						"Color", animalName, color, null));
+			}
+			// Set background based on mother's and father's (can be changed
+			// during genotyping)
 			String backgroundName = null;
-			if (motherBackgroundName != null && fatherBackgroundName == null) {
+			if (motherBackgroundName != null && fatherBackgroundName == null)
+			{
 				backgroundName = motherBackgroundName;
-			} else if (motherBackgroundName == null && fatherBackgroundName != null) {
+			}
+			else if (motherBackgroundName == null && fatherBackgroundName != null)
+			{
 				backgroundName = fatherBackgroundName;
-			} else if (motherBackgroundName != null && fatherBackgroundName != null) {
+			}
+			else if (motherBackgroundName != null && fatherBackgroundName != null)
+			{
 				// Make new or use existing cross background
-				if (motherBackgroundName.equals(fatherBackgroundName)) {
+				if (motherBackgroundName.equals(fatherBackgroundName))
+				{
 					backgroundName = fatherBackgroundName;
-				} else 
+				}
+				else
 				{
 					// check for cross background
 					// split motherbckgr
 					List<String> mbgNames = Arrays.asList(motherBackgroundName.split(" X "));
 					List<String> fbgNames = Arrays.asList(fatherBackgroundName.split(" X "));
-					
+
 					int fbgSize = fbgNames.size();
 					int mbgSize = mbgNames.size();
 					List<String> newbgs;
 					List<String> oldbgs;
 					backgroundName = "";
-					if (fbgSize + mbgSize == 2) 
+					if (fbgSize + mbgSize == 2)
 					{
 						oldbgs = ListUtils.sum(mbgNames, fbgNames);
 						Collections.sort(oldbgs);
@@ -1557,22 +1844,25 @@ public class Breedingnew extends PluginModel<Entity>
 						backgroundName += oldbgs.get(0);
 						backgroundName += " X ";
 						backgroundName += oldbgs.get(1);
-					} else
+					}
+					else
 					{
-						// sort the single background options in categories same and different
-						if (fbgSize >= mbgSize) 
+						// sort the single background options in categories same
+						// and different
+						if (fbgSize >= mbgSize)
 						{
 							oldbgs = fbgNames;
-							newbgs = ListUtils.subtract(mbgNames,fbgNames);
-						}else
-						{	
-							oldbgs = mbgNames;
-							newbgs= ListUtils.subtract(fbgNames,mbgNames);
+							newbgs = ListUtils.subtract(mbgNames, fbgNames);
 						}
-											
+						else
+						{
+							oldbgs = mbgNames;
+							newbgs = ListUtils.subtract(fbgNames, mbgNames);
+						}
+
 						int oldbgsSize = oldbgs.size();
 						backgroundName += oldbgs.get(0);
-						for (int i=1; i<oldbgsSize; i++ )
+						for (int i = 1; i < oldbgsSize; i++)
 						{
 							backgroundName += " X ";
 							backgroundName += oldbgs.get(i);
@@ -1580,508 +1870,666 @@ public class Breedingnew extends PluginModel<Entity>
 						if (newbgs.size() > 0)
 						{
 							Collections.sort(newbgs);
-							for (int i=0; i<oldbgsSize; i++ )
+							for (int i = 0; i < oldbgsSize; i++)
 							{
 								backgroundName += " X ";
 								backgroundName += newbgs.get(i);
 							}
 						}
-					}					
+					}
 				}
 
-				if (ct.getObservationTargetByName(backgroundName) == null) { 
+				if (ct.getObservationTargetByName(backgroundName) == null)
+				{
 					// create the new mixed background if it does not exist
 					ct.makePanel(invName, backgroundName, userName);
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, 
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 							"SetTypeOfGroup", "TypeOfGroup", backgroundName, "Background", null));
 					// set the correct species on the newly created background
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, 
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 							"SetSpecies", "Species", backgroundName, null, speciesName));
 				}
 			}
-			if (backgroundName != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-							null, "SetBackground", "Background", animalName, null, backgroundName));
+			if (backgroundName != null)
+			{
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+						"SetBackground", "Background", animalName, null, backgroundName));
 			}
 			// Set genotype
-			// TODO: Set based on mother's X father's and ONLY if you can know the outcome, like homozygous double knockouts for both parents
-			//For now just set all genestates of children to unknown.
-			
-			
-			if (motherAllGeneMods != null && fatherAllGeneMods != null) // first handle situation where both parents have genemods
-			{ 
-				// compare the list of genemods of father and mother, and keep unique ones.
+			// TODO: Set based on mother's X father's and ONLY if you can know
+			// the outcome, like homozygous double knockouts for both parents
+			// For now just set all genestates of children to unknown.
+
+			if (motherAllGeneMods != null && fatherAllGeneMods != null) // first
+																		// handle
+																		// situation
+																		// where
+																		// both
+																		// parents
+																		// have
+																		// genemods
+			{
+				// compare the list of genemods of father and mother, and keep
+				// unique ones.
 				List<String> mfGeneModNames = new ArrayList<String>();
-				for (ObservedValue mgm : motherAllGeneMods) 
+				for (ObservedValue mgm : motherAllGeneMods)
 				{
 					mfGeneModNames.add(mgm.getValue());
 				}
-				for (ObservedValue fgm : fatherAllGeneMods) 
+				for (ObservedValue fgm : fatherAllGeneMods)
 				{
 					if (!mfGeneModNames.contains(fgm.getValue()))
 					{
 						mfGeneModNames.add(fgm.getValue());
 					}
-					
+
 				}
-				
-				for (String gm : mfGeneModNames) 
+
+				for (String gm : mfGeneModNames)
 				{
 					String paName = ct.makeProtocolApplication(invName, "SetGenotype");
-					// Set gene mod name based on mother's (can be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-							null, "GeneModification", animalName, gm, null));
-					// Set gene state always on unknown, based on mother's (can be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-							null, "GeneState", animalName, "unknown", null));
+					// Set gene mod name based on mother's (can be changed
+					// during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneModification",
+							animalName, gm, null));
+					// Set gene state always on unknown, based on mother's (can
+					// be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState",
+							animalName, "unknown", null));
 				}
-				
-			} else if (motherAllGeneMods != null && fatherAllGeneMods == null) // than handle situation where only the mother has genemods
+
+			}
+			else if (motherAllGeneMods != null && fatherAllGeneMods == null) // than
+																				// handle
+																				// situation
+																				// where
+																				// only
+																				// the
+																				// mother
+																				// has
+																				// genemods
 			{
-				for (ObservedValue mgm : motherAllGeneMods) 
+				for (ObservedValue mgm : motherAllGeneMods)
 				{
 					String paName = ct.makeProtocolApplication(invName, "SetGenotype");
-					// Set gene mod name based on mother's (can be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-							null, "GeneModification", animalName, mgm.getValue(), null));
-					// Set gene state always on unknown, based on mother's (can be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-							null, "GeneState", animalName, "unknown", null));
+					// Set gene mod name based on mother's (can be changed
+					// during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneModification",
+							animalName, mgm.getValue(), null));
+					// Set gene state always on unknown, based on mother's (can
+					// be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState",
+							animalName, "unknown", null));
 				}
-			} else if (motherAllGeneMods == null && fatherAllGeneMods != null) // than handle situation where only the father has genemods
+			}
+			else if (motherAllGeneMods == null && fatherAllGeneMods != null) // than
+																				// handle
+																				// situation
+																				// where
+																				// only
+																				// the
+																				// father
+																				// has
+																				// genemods
 			{
-				for (ObservedValue fgm : fatherAllGeneMods) 
+				for (ObservedValue fgm : fatherAllGeneMods)
 				{
 					String paName = ct.makeProtocolApplication(invName, "SetGenotype");
-					// Set gene mod name based on mother's (can be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-							null, "GeneModification", animalName, fgm.getValue(), null));
-					// Set gene state always on unknown, based on mother's (can be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-							null, "GeneState", animalName, "unknown", null));
+					// Set gene mod name based on mother's (can be changed
+					// during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneModification",
+							animalName, fgm.getValue(), null));
+					// Set gene state always on unknown, based on mother's (can
+					// be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState",
+							animalName, "unknown", null));
 				}
-			} else 
+			}
+			else
 			{
 				// do not add any genotypes because there are none.
 			}
-			
+
 			animalNumber++;
 		}
-		
+
 		db.add(valuesToAddList);
-		
+
 		return weanSize;
 	}
-	
-	public String getLitter() {
+
+	public String getLitter()
+	{
 		return this.litter;
 	}
-	
-	public String getSpeciesBase() {
-		if (this.prefix != null) {
+
+	public String getSpeciesBase()
+	{
+		if (this.prefix != null)
+		{
 			return this.prefix;
 		}
 		return "";
 	}
-	
-	public List<String> getBases() {
+
+	public List<String> getBases()
+	{
 		return bases;
 	}
-	
-	public List<ObservationTarget> getBackgroundList() {
+
+	public List<ObservationTarget> getBackgroundList()
+	{
 		return backgroundList;
 	}
 
-	public void setBackgroundList(List<ObservationTarget> backgroundList) {
+	public void setBackgroundList(List<ObservationTarget> backgroundList)
+	{
 		this.backgroundList = backgroundList;
 	}
 
-	public List<String> getGeneNameList() {
+	public List<String> getGeneNameList()
+	{
 		return geneNameList;
 	}
 
-	public void setGeneNameList(List<String> geneNameList) {
+	public void setGeneNameList(List<String> geneNameList)
+	{
 		this.geneNameList = geneNameList;
 	}
 
-	public List<String> getGeneStateList() {
+	public List<String> getGeneStateList()
+	{
 		return geneStateList;
 	}
 
-	public void setGeneStateList(List<String> geneStateList) {
+	public void setGeneStateList(List<String> geneStateList)
+	{
 		this.geneStateList = geneStateList;
 	}
 
-	public List<ObservationTarget> getSexList() {
+	public List<ObservationTarget> getSexList()
+	{
 		return sexList;
 	}
 
-	public void setSexList(List<ObservationTarget> sexList) {
+	public void setSexList(List<ObservationTarget> sexList)
+	{
 		this.sexList = sexList;
 	}
 
-	public List<String> getColorList() {
+	public List<String> getColorList()
+	{
 		return colorList;
 	}
 
-	public void setColorList(List<String> colorList) {
+	public void setColorList(List<String> colorList)
+	{
 		this.colorList = colorList;
 	}
 
-	public List<Category> getEarmarkList() {
+	public List<Category> getEarmarkList()
+	{
 		return earmarkList;
 	}
 
-	public void setEarmarkList(List<Category> earmarkList) {
+	public void setEarmarkList(List<Category> earmarkList)
+	{
 		this.earmarkList = earmarkList;
 	}
-	
-	public List<Location> getLocationList() {
+
+	public List<Location> getLocationList()
+	{
 		return locationList;
 	}
 
-	public void setLocationList(List<Location> locationList) {
+	public void setLocationList(List<Location> locationList)
+	{
 		this.locationList = locationList;
 	}
-	
-	public String getStartNumberHelperContent() {
-		try {
+
+	public String getStartNumberHelperContent()
+	{
+		try
+		{
 			String helperContents = "";
 			helperContents += (ct.getHighestNumberForPrefix("") + 1);
 			helperContents += ";1";
-			for (String base : this.bases) {
-				if (!base.equals("")) {
+			for (String base : this.bases)
+			{
+				if (!base.equals(""))
+				{
 					helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
 				}
 			}
 			return helperContents;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return "";
 		}
 	}
-	
-	public int getStartNumberForPreselectedBase() {
-		try {
+
+	public int getStartNumberForPreselectedBase()
+	{
+		try
+		{
 			return ct.getHighestNumberForPrefix(this.prefix) + 1;
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			return 1;
 		}
 	}
-	
-	public List<Individual> getAnimalsInLitter(String litterName, Database db) {
+
+	public List<Individual> getAnimalsInLitter(String litterName, Database db)
+	{
 		List<Individual> returnList = new ArrayList<Individual>();
-		try {
+		try
+		{
 			Query<ObservedValue> q = db.query(ObservedValue.class);
 			q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, litterName));
 			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
 			List<ObservedValue> valueList = q.find();
-			for (ObservedValue value : valueList) {
+			for (ObservedValue value : valueList)
+			{
 				int animalId = value.getTarget_Id();
 				returnList.add(ct.getIndividualById(animalId));
 			}
 			return returnList;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			// On fail, return empty list to UI
 			return new ArrayList<Individual>();
 		}
 	}
-	
-	public List<Individual> getAnimalsInLitter(Database db) {
-		try {
+
+	public List<Individual> getAnimalsInLitter(Database db)
+	{
+		try
+		{
 			return getAnimalsInLitter(this.litter, db);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			// On fail, return empty list to UI
 			return new ArrayList<Individual>();
 		}
 	}
-	
-	public Date getAnimalBirthDate(String animalName) {
-		try {
+
+	public Date getAnimalBirthDate(String animalName)
+	{
+		try
+		{
 			String birthDateString = ct.getMostRecentValueAsString(animalName, "DateOfBirth");
 			return newDateOnlyFormat.parse(birthDateString);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
-	
-	public String getAnimalSex(String animalName) {
-		try {
+
+	public String getAnimalSex(String animalName)
+	{
+		try
+		{
 			return ct.getMostRecentValueAsXrefName(animalName, "Sex");
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
-	
-	public String getAnimalColor(String animalName) {
-		try {
-			if (ct.getMostRecentValueAsString(animalName, "Color") != null) {
+
+	public String getAnimalColor(String animalName)
+	{
+		try
+		{
+			if (ct.getMostRecentValueAsString(animalName, "Color") != null)
+			{
 				return ct.getMostRecentValueAsString(animalName, "Color");
-			} else {
+			}
+			else
+			{
 				return "";
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return "unknown";
 		}
 	}
-	
-	public String getAnimalEarmark(String animalName) {
-		try {
-			if (ct.getMostRecentValueAsString(animalName, "Earmark") != null) {
+
+	public String getAnimalEarmark(String animalName)
+	{
+		try
+		{
+			if (ct.getMostRecentValueAsString(animalName, "Earmark") != null)
+			{
 				return ct.getMostRecentValueAsString(animalName, "Earmark");
-			} else {
+			}
+			else
+			{
 				return "";
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return "";
 		}
 	}
-	
-	public String getAnimalBackground(String animalName) {
-		try {
+
+	public String getAnimalBackground(String animalName)
+	{
+		try
+		{
 			return ct.getMostRecentValueAsXrefName(animalName, "Background");
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
-	
-	public String getAnimalGeneInfo(String measurementName, String animalName, int genoNr, Database db) {
+
+	public String getAnimalGeneInfo(String measurementName, String animalName, int genoNr, Database db)
+	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, measurementName));
 		List<ObservedValue> valueList;
-		try {
+		try
+		{
 			valueList = q.find();
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			return "";
 		}
-		if (valueList.size() > genoNr) {
+		if (valueList.size() > genoNr)
+		{
 			return valueList.get(genoNr).getValue();
-		} else {
+		}
+		else
+		{
 			return "";
 		}
 	}
-	
+
 	private int Genotype(Database db, Tuple request) throws Exception
 	{
 		Date now = new Date();
 		String invName = ct.getObservationTargetByName(this.litter).getInvestigation_Name();
 		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-		
-		// Set genotype date on litter -> this is how we mark a litter as genotyped
-		if (request.getString("genodate") == null) {
+
+		// Set genotype date on litter -> this is how we mark a litter as
+		// genotyped
+		if (request.getString("genodate") == null)
+		{
 			throw new Exception("Genotype date not filled in - litter not genotyped");
 		}
 		Date genoDate = newDateOnlyFormat.parse(request.getString("genodate"));
 		String genodate = dbFormat.format(genoDate);
-		
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, 
-				null, "SetGenotypeDate", "GenotypeDate", this.litter, genodate, null));
+
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetGenotypeDate", "GenotypeDate",
+				this.litter, genodate, null));
 		// Set genotyping remarks on litter
-		if (request.getString("remarks") != null) {
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
-					"SetRemark", "Remark", this.litter, request.getString("remarks"), null));
+		if (request.getString("remarks") != null)
+		{
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark",
+					this.litter, request.getString("remarks"), null));
 		}
-		
+
 		int animalCount = 0;
-		for (Individual animal : this.getAnimalsInLitter(db)) {
-			
+		for (Individual animal : this.getAnimalsInLitter(db))
+		{
+
 			// Here we (re)set the values from the genotyping
-			
+
 			// Set sex
 			String sexName = request.getString("1_" + animalCount);
-			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
-					"Sex", investigationNames, invName).get(0);
+			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
+					invName).get(0);
 			value.setRelation_Name(sexName);
 			value.setValue(null);
-			if (value.getProtocolApplication_Id() == null) {
+			if (value.getProtocolApplication_Id() == null)
+			{
 				String paName = ct.makeProtocolApplication(invName, "SetSex");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-			} else {
+			}
+			else
+			{
 				db.update(value);
 			}
 			// Set birth date
-			String dob = request.getString("0_" + animalCount); // already in new format
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
-						"DateOfBirth", investigationNames, invName).get(0);
+			String dob = request.getString("0_" + animalCount); // already in
+																// new format
+			value = ct
+					.getObservedValuesByTargetAndFeature(animal.getName(), "DateOfBirth", investigationNames, invName)
+					.get(0);
 			value.setValue(dob);
-			if (value.getProtocolApplication_Id() == null) {
+			if (value.getProtocolApplication_Id() == null)
+			{
 				String paName = ct.makeProtocolApplication(invName, "SetDateOfBirth");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-			} else {
+			}
+			else
+			{
 				db.update(value);
 			}
 			// Set color
 			String color = request.getString("2_" + animalCount);
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
-					"Color", investigationNames, invName).get(0);
+			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Color", investigationNames, invName).get(
+					0);
 			value.setValue(color);
-			if (value.getProtocolApplication_Id() == null) {
+			if (value.getProtocolApplication_Id() == null)
+			{
 				String paName = ct.makeProtocolApplication(invName, "SetColor");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-			} else {
+			}
+			else
+			{
 				db.update(value);
 			}
 			// Set earmark
 			String earmark = request.getString("3_" + animalCount);
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
-					"Earmark", investigationNames, invName).get(0);
+			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Earmark", investigationNames, invName)
+					.get(0);
 			value.setValue(earmark);
-			if (value.getProtocolApplication_Id() == null) {
+			if (value.getProtocolApplication_Id() == null)
+			{
 				String paName = ct.makeProtocolApplication(invName, "SetEarmark");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-			} else {
+			}
+			else
+			{
 				db.update(value);
 			}
 			// Set background
 			String backgroundName = request.getString("4_" + animalCount);
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
-					"Background", investigationNames, invName).get(0);
+			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
+					.get(0);
 			value.setRelation_Name(backgroundName);
 			value.setValue(null);
-			if (value.getProtocolApplication_Id() == null) {
+			if (value.getProtocolApplication_Id() == null)
+			{
 				String paName = ct.makeProtocolApplication(invName, "SetBackground");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-			} else {
+			}
+			else
+			{
 				db.update(value);
 			}
 			// Set genotype(s)
-			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++) {
+			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++)
+			{
 				int currCol = 5 + (genoNr * 2);
 				String paName = ct.makeProtocolApplication(invName, "SetGenotype");
 				String geneName = request.getString(currCol + "_" + animalCount);
-				if (geneName == null || geneName.equals("")) {
+				if (geneName == null || geneName.equals(""))
+				{
 					continue; // skip genes that have not been filled in
 				}
-				List<ObservedValue> valueList = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
+				List<ObservedValue> valueList = ct.getObservedValuesByTargetAndFeature(animal.getName(),
 						"GeneModification", investigationNames, invName);
-				if (genoNr < valueList.size()) {
+				if (genoNr < valueList.size())
+				{
 					value = valueList.get(genoNr);
-				} else {
+				}
+				else
+				{
 					value = new ObservedValue();
 					value.setFeature_Name("GeneModification");
 					value.setTarget_Name(animal.getName());
 					value.setInvestigation_Name(invName);
 				}
 				value.setValue(geneName);
-				if (value.getProtocolApplication_Id() == null) {
+				if (value.getProtocolApplication_Id() == null)
+				{
 					value.setProtocolApplication_Name(paName);
 					db.add(value);
-				} else {
+				}
+				else
+				{
 					db.update(value);
 				}
 				String geneState = request.getString((currCol + 1) + "_" + animalCount);
-				valueList = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
-						"GeneState", investigationNames, invName);
-				if (genoNr < valueList.size()) {
+				valueList = ct.getObservedValuesByTargetAndFeature(animal.getName(), "GeneState", investigationNames,
+						invName);
+				if (genoNr < valueList.size())
+				{
 					value = valueList.get(genoNr);
-				} else {
+				}
+				else
+				{
 					value = new ObservedValue();
 					value.setFeature_Name("GeneState");
 					value.setTarget_Name(animal.getName());
 					value.setInvestigation_Name(invName);
 				}
 				value.setValue(geneState);
-				if (value.getProtocolApplication_Id() == null) {
+				if (value.getProtocolApplication_Id() == null)
+				{
 					value.setProtocolApplication_Name(paName);
 					db.add(value);
-				} else {
+				}
+				else
+				{
 					db.update(value);
 				}
 			}
-			
+
 			animalCount++;
 		}
 		return animalCount;
 	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void storeGenotypeTable(Database db, Tuple request) {
+
+	@SuppressWarnings(
+	{ "rawtypes", "unchecked" })
+	private void storeGenotypeTable(Database db, Tuple request)
+	{
 		HtmlInput input;
-		for (int animalCount = 0; animalCount < this.getAnimalsInLitter(db).size(); animalCount++) {
-			
-			if (request.getString("0_" + animalCount) != null) {
-				String dob = request.getString("0_" + animalCount); // already in new format
+		for (int animalCount = 0; animalCount < this.getAnimalsInLitter(db).size(); animalCount++)
+		{
+
+			if (request.getString("0_" + animalCount) != null)
+			{
+				String dob = request.getString("0_" + animalCount); // already
+																	// in new
+																	// format
 				input = (HtmlInput) genotypeTable.getCell(0, animalCount);
 				input.setValue(dob);
 				genotypeTable.setCell(0, animalCount, input);
 			}
-			
-			if (request.getString("1_" + animalCount) != null) {
+
+			if (request.getString("1_" + animalCount) != null)
+			{
 				String sexName = request.getString("1_" + animalCount);
 				input = (HtmlInput) genotypeTable.getCell(1, animalCount);
 				input.setValue(sexName);
 				genotypeTable.setCell(1, animalCount, input);
 			}
-			
-			if (request.getString("2_" + animalCount) != null) {
+
+			if (request.getString("2_" + animalCount) != null)
+			{
 				String color = request.getString("2_" + animalCount);
 				input = (HtmlInput) genotypeTable.getCell(2, animalCount);
 				input.setValue(color);
 				genotypeTable.setCell(2, animalCount, input);
 			}
-			
-			if (request.getString("3_" + animalCount) != null) {
+
+			if (request.getString("3_" + animalCount) != null)
+			{
 				String earmark = request.getString("3_" + animalCount);
 				input = (HtmlInput) genotypeTable.getCell(3, animalCount);
 				input.setValue(earmark);
 				genotypeTable.setCell(3, animalCount, input);
 			}
-			
-			if (request.getString("4_" + animalCount) != null) {
+
+			if (request.getString("4_" + animalCount) != null)
+			{
 				String backgroundName = request.getString("4_" + animalCount);
 				input = (HtmlInput) genotypeTable.getCell(4, animalCount);
 				input.setValue(backgroundName);
 				genotypeTable.setCell(4, animalCount, input);
 			}
-			
-			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++) {
+
+			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++)
+			{
 				int currCol = 5 + (genoNr * 2);
-				
-				if (request.getString(currCol + "_" + animalCount) != null) {
+
+				if (request.getString(currCol + "_" + animalCount) != null)
+				{
 					String geneName = request.getString(currCol + "_" + animalCount);
 					input = (HtmlInput) genotypeTable.getCell(currCol, animalCount);
 					input.setValue(geneName);
 					genotypeTable.setCell(currCol, animalCount, input);
 				}
-				
-				if (request.getString((currCol + 1) + "_" + animalCount) != null) {
+
+				if (request.getString((currCol + 1) + "_" + animalCount) != null)
+				{
 					String geneState = request.getString((currCol + 1) + "_" + animalCount);
 					input = (HtmlInput) genotypeTable.getCell(currCol + 1, animalCount);
 					input.setValue(geneState);
 					genotypeTable.setCell(currCol + 1, animalCount, input);
 				}
 			}
-			
+
 			animalCount++;
 		}
 	}
-	
+
 	private void AddGenoCol(Database db, Tuple request)
 	{
 		nrOfGenotypes++;
 		genotypeTable.addColumn("Gene modification");
 		genotypeTable.addColumn("Gene state");
 		int row = 0;
-		for (Individual animal : getAnimalsInLitter(db)) {
+		for (Individual animal : getAnimalsInLitter(db))
+		{
 			String animalName = animal.getName();
 			// Check for already selected genes for this animal
 			List<String> selectedGenes = new ArrayList<String>();
-			for (int genoNr = 0; genoNr < nrOfGenotypes - 1; genoNr++) {
+			for (int genoNr = 0; genoNr < nrOfGenotypes - 1; genoNr++)
+			{
 				int currCol = 5 + (genoNr * 2);
-				if (request.getString(currCol + "_" + row) != null) {
+				if (request.getString(currCol + "_" + row) != null)
+				{
 					selectedGenes.add(request.getString(currCol + "_" + row));
 				}
 			}
 			// Make new gene mod name box
 			int newCol = 5 + ((nrOfGenotypes - 1) * 2);
 			SelectInput geneNameInput = new SelectInput(newCol + "_" + row);
-			for (String geneName : this.geneNameList) {
-				if (!selectedGenes.contains(geneName)) {
+			for (String geneName : this.geneNameList)
+			{
+				if (!selectedGenes.contains(geneName))
+				{
 					geneNameInput.addOption(geneName, geneName);
 				}
 			}
@@ -2090,7 +2538,8 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.setCell(newCol, row, geneNameInput);
 			// Make new gene state box
 			SelectInput geneStateInput = new SelectInput((newCol + 1) + "_" + row);
-			for (String geneState : this.geneStateList) {
+			for (String geneState : this.geneStateList)
+			{
 				geneStateInput.addOption(geneState, geneState);
 			}
 			geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, nrOfGenotypes, db));
@@ -2099,21 +2548,25 @@ public class Breedingnew extends PluginModel<Entity>
 			row++;
 		}
 	}
-	
-	public boolean getWean() {
+
+	public boolean getWean()
+	{
 		return this.wean;
 	}
-	
-	public String getParentInfo() {
+
+	public String getParentInfo()
+	{
 		return this.parentInfo;
 	}
-	
-	private String getLineInfo(String parentgroupName) throws DatabaseException, ParseException {
+
+	private String getLineInfo(String parentgroupName) throws DatabaseException, ParseException
+	{
 		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
 		return lineName;
 	}
-	
-	private String getGenoInfo(String animalName, Database db) throws DatabaseException, ParseException {
+
+	private String getGenoInfo(String animalName, Database db) throws DatabaseException, ParseException
+	{
 		String returnString = "";
 		String animalBackgroundName = ct.getMostRecentValueAsXrefName(animalName, "Background");
 		returnString += ("background: " + animalBackgroundName + "; ");
@@ -2121,69 +2574,79 @@ public class Breedingnew extends PluginModel<Entity>
 		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
 		List<ObservedValue> valueList = q.find();
-		if (valueList != null) {
-			for (ObservedValue value : valueList) {
+		if (valueList != null)
+		{
+			for (ObservedValue value : valueList)
+			{
 				String geneName = value.getValue();
 				String geneState = "";
 				Query<ObservedValue> geneStateQuery = db.query(ObservedValue.class);
 				geneStateQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 				geneStateQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneState"));
-				geneStateQuery.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, value.getProtocolApplication_Id()));
+				geneStateQuery.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, value
+						.getProtocolApplication_Id()));
 				List<ObservedValue> geneStateValueList = geneStateQuery.find();
-				if (geneStateValueList != null && geneStateValueList.size() > 0) {
+				if (geneStateValueList != null && geneStateValueList.size() > 0)
+				{
 					geneState = geneStateValueList.get(0).getValue();
 				}
-				if (geneName == null || geneName.equals("null") || geneName.equals("")) {
+				if (geneName == null || geneName.equals("null") || geneName.equals(""))
+				{
 					geneName = "unknown";
 				}
-				if (geneState == null || geneState.equals("null") || geneState.equals("")) {
+				if (geneState == null || geneState.equals("null") || geneState.equals(""))
+				{
 					geneState = "unknown";
 				}
 				returnString += ("gene: " + geneName + ": " + geneState + "; ");
 			}
 		}
-		if (returnString.length() > 0) {
+		if (returnString.length() > 0)
+		{
 			returnString = returnString.substring(0, returnString.length() - 2);
 		}
 		return returnString;
 	}
-	
-	public String getGenotypeTable() {
+
+	public String getGenotypeTable()
+	{
 		return genotypeTable.render();
 	}
-	
-private void createDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException {
-		
+
+	private void createDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException
+	{
+
 		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
 		String filename = pdfFile.getName();
 		LabelGenerator labelgenerator = new LabelGenerator(2);
 		labelgenerator.startDocument(pdfFile);
-		
+
 		// Litter stuff
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		String line = this.getLineInfo(parentgroupName);
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-		//String motherInfo = this.getGenoInfo(motherName, db);
+		// String motherInfo = this.getGenoInfo(motherName, db);
 		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
-		//String fatherInfo = this.getGenoInfo(fatherName, db);
-		
-		List<String> elementLabelList;	
+		// String fatherInfo = this.getGenoInfo(fatherName, db);
+
+		List<String> elementLabelList;
 		List<String> elementList;
-		
-		for (Individual animal : this.getAnimalsInLitter(litter, db)) {
+
+		for (Individual animal : this.getAnimalsInLitter(litter, db))
+		{
 			String animalName = animal.getName();
 			elementList = new ArrayList<String>();
 			elementLabelList = new ArrayList<String>();
-			
+
 			// Name / custom label
 			elementLabelList.add("Name:");
 			elementList.add(animalName);
-			//Species
+			// Species
 			elementLabelList.add("Species:");
 			elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Species"));
-			//Sex
+			// Sex
 			String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
 			elementLabelList.add("Sex:");
 			elementList.add(sex);
@@ -2196,22 +2659,22 @@ private void createDefCageLabels(Database db) throws LabelGeneratorException, Da
 			// Background + GeneModification + GeneState
 			elementLabelList.add("Background:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "Background"));
-			
-			//FIXME (can only show one gene modification....
+
+			// FIXME (can only show one gene modification....
 			elementLabelList.add("Genotype:");
-			String genoTypeString = ct.getMostRecentValueAsString(animalName, "GeneModification") 
-								+ ": " 
-								+ ct.getMostRecentValueAsString(animalName, "GeneState");
+			String genoTypeString = ct.getMostRecentValueAsString(animalName, "GeneModification") + ": "
+					+ ct.getMostRecentValueAsString(animalName, "GeneState");
 			elementList.add(genoTypeString);
 			// Color + Sex
-			//elementLabelList.add("Color and Sex:");
-			//String color = ct.getMostRecentValueAsString(animalName, "Color");
-			//if (color == null || color.equals("null") || color.equals("")) {
-			//	color = "unknown";
-			//}
-			//String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
-			//elementList.add(color + "\t\t" + sex);
-			//Birthdate
+			// elementLabelList.add("Color and Sex:");
+			// String color = ct.getMostRecentValueAsString(animalName,
+			// "Color");
+			// if (color == null || color.equals("null") || color.equals("")) {
+			// color = "unknown";
+			// }
+			// String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
+			// elementList.add(color + "\t\t" + sex);
+			// Birthdate
 			elementLabelList.add("Birthdate:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
 			// Geno mother
@@ -2220,7 +2683,7 @@ private void createDefCageLabels(Database db) throws LabelGeneratorException, Da
 			// Add DEC nr, if present, or empty if not
 			elementLabelList.add("Researcher: ");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
-			
+
 			elementLabelList.add("DEC:");
 			String decNr = ct.getMostRecentValueAsString(animalName, "DecNr");
 			String expNr = ct.getMostRecentValueAsString(animalName, "ExperimentNr");
@@ -2230,173 +2693,133 @@ private void createDefCageLabels(Database db) throws LabelGeneratorException, Da
 			elementList.add("\n\n\n\n\n");
 			// Not needed at this time, maybe later:
 			// Birthdate
-			//elementList.add("Birthdate: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth")));
+			// elementList.add("Birthdate: " +
+			// ct.getMostRecentValueAsString(animalId,
+			// ct.getMeasurementId("DateOfBirth")));
 			// OldUliDbExperimentator -> TODO: add responsible researcher
-			//elementList.add("Experimenter: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("OldUliDbExperimentator")));
+			// elementList.add("Experimenter: " +
+			// ct.getMostRecentValueAsString(animalId,
+			// ct.getMeasurementId("OldUliDbExperimentator")));
 			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 		}
-		
+
 		// In case of an odd number of animals, add extra label to make row full
-		if (this.getAnimalsInLitter(litter, db).size() %2 != 0) {
+		if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
+		{
 			elementLabelList = new ArrayList<String>();
 			elementList = new ArrayList<String>();
 			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 		}
-		
+
 		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download cage labels as pdf</a>");
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
+				+ "\" target=\"blank\">Download cage labels as pdf</a>");
 	}
 
-	    /*
-		private void makeTempCageLabels(Database db) throws Exception {
-		
-		// PDF file stuff
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
-		String filename = pdfFile.getName();
-		LabelGenerator labelgenerator = new LabelGenerator(2);
-		labelgenerator.startDocument(pdfFile);
-		List<String> elementList;
-		
-		// Selected litter stuff
-		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
-		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
-		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
-		String litterBirthDateString = ct.getMostRecentValueAsString(litter, "DateOfBirth");
-		int nrOfFemales = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeFemale"));
-		int nrOfMales = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeMale"));
-		int nrOfUnknowns = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeUnknown"));
-		List<ObservedValue> litterValList = db.query(ObservedValue.class).eq(ObservedValue.FEATURE_NAME, "Litter").
-				eq(ObservedValue.RELATION_NAME, litter).find();
-		List<String> females = new ArrayList<String>();
-		List<String> males = new ArrayList<String>();
-		List<String> unknowns = new ArrayList<String>();
-		for (ObservedValue litterVal : litterValList) {
-			String animalName = litterVal.getTarget_Name();
-			if (ct.getMostRecentValueAsXrefName(animalName, "Sex").equals("Female")) {
-				females.add(animalName);
-			} else if (ct.getMostRecentValueAsXrefName(animalName, "Sex").equals("Male")) {
-				males.add(animalName);
-			} else {
-				unknowns.add(animalName);
-			}
-		}
-		
-		// Labels for females
-		int nrOfCages = 0;
-		int femaleNr = 0;
-		while (nrOfFemales > 0) {
-			elementList = new ArrayList<String>();
-			// Line name + Nr. of females in cage
-			String firstLine = lineName + "\t\t"; 
-			// Females can be 2 or 3 in a cage, if possible not 1
-			int cageSize;
-			if (nrOfFemales > 4) {
-				cageSize = 3;
-			} else {
-				if (nrOfFemales == 4) {
-					cageSize = 2;
-				} else {
-					cageSize = nrOfFemales;
-				}
-			}
-			firstLine += (cageSize + " female");
-			if (cageSize > 1) firstLine += "s";
-			elementList.add(firstLine);
-			// Parents
-			elementList.add(motherName + " x " + fatherName);
-			// Litter birth date
-			elementList.add(litterBirthDateString);
-			// Nrs. for writing extra information behind
-			for (int i = 1; i <= cageSize; i++) {
-				elementList.add(females.get(femaleNr++) + ".");
-			}
-			
-			labelgenerator.addLabelToDocument(elementList);
-			nrOfFemales -= cageSize;
-			nrOfCages++;
-		}
-		
-		// Labels for males
-		int maleNr = 0;
-		while (nrOfMales > 0) {
-			elementList = new ArrayList<String>();
-			// Line name + Nr. of males in cage
-			String firstLine = lineName; 
-			if (nrOfMales >= 2) {
-				firstLine += "\t\t2 males";
-			} else {
-				firstLine += "\t\t1 male";
-			}
-			elementList.add(firstLine);
-			// Parents
-			elementList.add(motherName + " x " + fatherName);
-			// Litter birth date
-			elementList.add(litterBirthDateString);
-			// Nrs. for writing extra information behind
-			for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
-				elementList.add(males.get(maleNr++) + ".");
-			}
-			
-			labelgenerator.addLabelToDocument(elementList);
-			nrOfMales -= 2;
-			nrOfCages++;
-		}
-		
-		// Labels for unknowns
-		// TODO: keep or group together with (fe)males?
-		int unknownNr = 0;
-		while (nrOfUnknowns > 0) {
-			elementList = new ArrayList<String>();
-			// Line name + Nr. of unknowns in cage
-			String firstLine = lineName; 
-			if (nrOfUnknowns >= 2) {
-				firstLine += "\t\t2 unknowns";
-			} else {
-				firstLine += "\t\t1 unknown";
-			}
-			elementList.add(firstLine);
-			// Parents
-			elementList.add(motherName + " x " + fatherName);
-			// Litter birth date
-			elementList.add(litterBirthDateString);
-			// Nrs. for writing extra information behind
-			for (int i = 1; i <= Math.min(nrOfUnknowns, 2); i++) {
-				elementList.add(unknowns.get(unknownNr++) + ".");
-			}
-			
-			labelgenerator.addLabelToDocument(elementList);
-			nrOfUnknowns -= 2;
-			nrOfCages++;
-		}
-		
-		// In case of an odd number of cages, add extra label to make row full
-		if (nrOfCages %2 != 0) {
-			elementList = new ArrayList<String>();
-			labelgenerator.addLabelToDocument(elementList);
-		}
-		
-		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download temporary wean labels as pdf</a>");
-	} */
-	
-	public String getLabelDownloadLink() {
+	/*
+	 * private void makeTempCageLabels(Database db) throws Exception {
+	 * 
+	 * // PDF file stuff File tmpDir = new
+	 * File(System.getProperty("java.io.tmpdir")); File pdfFile = new
+	 * File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
+	 * String filename = pdfFile.getName(); LabelGenerator labelgenerator = new
+	 * LabelGenerator(2); labelgenerator.startDocument(pdfFile); List<String>
+	 * elementList;
+	 * 
+	 * // Selected litter stuff String parentgroupName =
+	 * ct.getMostRecentValueAsXrefName(litter, "Parentgroup"); String lineName =
+	 * ct.getMostRecentValueAsXrefName(parentgroupName, "Line"); String
+	 * motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+	 * String fatherName = findParentForParentgroup(parentgroupName, "Father",
+	 * db); String litterBirthDateString = ct.getMostRecentValueAsString(litter,
+	 * "DateOfBirth"); int nrOfFemales =
+	 * Integer.parseInt(ct.getMostRecentValueAsString(litter,
+	 * "WeanSizeFemale")); int nrOfMales =
+	 * Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeMale"));
+	 * int nrOfUnknowns = Integer.parseInt(ct.getMostRecentValueAsString(litter,
+	 * "WeanSizeUnknown")); List<ObservedValue> litterValList =
+	 * db.query(ObservedValue.class).eq(ObservedValue.FEATURE_NAME, "Litter").
+	 * eq(ObservedValue.RELATION_NAME, litter).find(); List<String> females =
+	 * new ArrayList<String>(); List<String> males = new ArrayList<String>();
+	 * List<String> unknowns = new ArrayList<String>(); for (ObservedValue
+	 * litterVal : litterValList) { String animalName =
+	 * litterVal.getTarget_Name(); if
+	 * (ct.getMostRecentValueAsXrefName(animalName, "Sex").equals("Female")) {
+	 * females.add(animalName); } else if
+	 * (ct.getMostRecentValueAsXrefName(animalName, "Sex").equals("Male")) {
+	 * males.add(animalName); } else { unknowns.add(animalName); } }
+	 * 
+	 * // Labels for females int nrOfCages = 0; int femaleNr = 0; while
+	 * (nrOfFemales > 0) { elementList = new ArrayList<String>(); // Line name +
+	 * Nr. of females in cage String firstLine = lineName + "\t\t"; // Females
+	 * can be 2 or 3 in a cage, if possible not 1 int cageSize; if (nrOfFemales
+	 * > 4) { cageSize = 3; } else { if (nrOfFemales == 4) { cageSize = 2; }
+	 * else { cageSize = nrOfFemales; } } firstLine += (cageSize + " female");
+	 * if (cageSize > 1) firstLine += "s"; elementList.add(firstLine); //
+	 * Parents elementList.add(motherName + " x " + fatherName); // Litter birth
+	 * date elementList.add(litterBirthDateString); // Nrs. for writing extra
+	 * information behind for (int i = 1; i <= cageSize; i++) {
+	 * elementList.add(females.get(femaleNr++) + "."); }
+	 * 
+	 * labelgenerator.addLabelToDocument(elementList); nrOfFemales -= cageSize;
+	 * nrOfCages++; }
+	 * 
+	 * // Labels for males int maleNr = 0; while (nrOfMales > 0) { elementList =
+	 * new ArrayList<String>(); // Line name + Nr. of males in cage String
+	 * firstLine = lineName; if (nrOfMales >= 2) { firstLine += "\t\t2 males"; }
+	 * else { firstLine += "\t\t1 male"; } elementList.add(firstLine); //
+	 * Parents elementList.add(motherName + " x " + fatherName); // Litter birth
+	 * date elementList.add(litterBirthDateString); // Nrs. for writing extra
+	 * information behind for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
+	 * elementList.add(males.get(maleNr++) + "."); }
+	 * 
+	 * labelgenerator.addLabelToDocument(elementList); nrOfMales -= 2;
+	 * nrOfCages++; }
+	 * 
+	 * // Labels for unknowns // TODO: keep or group together with (fe)males?
+	 * int unknownNr = 0; while (nrOfUnknowns > 0) { elementList = new
+	 * ArrayList<String>(); // Line name + Nr. of unknowns in cage String
+	 * firstLine = lineName; if (nrOfUnknowns >= 2) { firstLine +=
+	 * "\t\t2 unknowns"; } else { firstLine += "\t\t1 unknown"; }
+	 * elementList.add(firstLine); // Parents elementList.add(motherName + " x "
+	 * + fatherName); // Litter birth date
+	 * elementList.add(litterBirthDateString); // Nrs. for writing extra
+	 * information behind for (int i = 1; i <= Math.min(nrOfUnknowns, 2); i++) {
+	 * elementList.add(unknowns.get(unknownNr++) + "."); }
+	 * 
+	 * labelgenerator.addLabelToDocument(elementList); nrOfUnknowns -= 2;
+	 * nrOfCages++; }
+	 * 
+	 * // In case of an odd number of cages, add extra label to make row full if
+	 * (nrOfCages %2 != 0) { elementList = new ArrayList<String>();
+	 * labelgenerator.addLabelToDocument(elementList); }
+	 * 
+	 * labelgenerator.finishDocument();
+	 * this.setLabelDownloadLink("<a href=\"tmpfile/" + filename +
+	 * "\" target=\"blank\">Download temporary wean labels as pdf</a>"); }
+	 */
+
+	public String getLabelDownloadLink()
+	{
 		return labelDownloadLink;
 	}
-	
-	public void setLabelDownloadLink(String labelDownloadLink) {
+
+	public void setLabelDownloadLink(String labelDownloadLink)
+	{
 		this.labelDownloadLink = labelDownloadLink;
 	}
-	
-	public String getWeandate() {
-		if (weandate != null) {
+
+	public String getWeandate()
+	{
+		if (weandate != null)
+		{
 			return weandate;
 		}
 		return dbFormat.format(new Date());
 	}
-	
-	public String getGenodate() {
+
+	public String getGenodate()
+	{
 		return dbFormat.format(new Date());
 	}
 
@@ -2410,24 +2833,26 @@ private void createDefCageLabels(Database db) throws LabelGeneratorException, Da
 		return pgName;
 	}
 
-//	public HashMap<String, List<String>> getHashMothers()
-//	{
-//		return hashMothers;
-//	}
+	// public HashMap<String, List<String>> getHashMothers()
+	// {
+	// return hashMothers;
+	// }
 
 	public Map<Integer, List<String>> getHashMothers()
 	{
 		return hashMothers;
 	}
-	
-	public List<String> getMotherElement(Integer key) {
+
+	public List<String> getMotherElement(Integer key)
+	{
 		return hashMothers.get(key);
 	}
-	
-	public List<String> getFatherElement(Integer key) {
+
+	public List<String> getFatherElement(Integer key)
+	{
 		return hashFathers.get(key);
 	}
-	
+
 	public String getSex()
 	{
 		return sex;

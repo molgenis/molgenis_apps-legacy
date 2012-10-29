@@ -16,17 +16,23 @@ import plugins.hl7parser.StageLRA.HL7StageLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 
 /**
- *
+ * 
  * @author roankanninga
  */
-interface HL7Data {
+interface HL7Data
+{
 
-    //
-    ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA();
-    ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM();
-    HashMap<String, HL7ValueSetLRA> getHashValueSetLRA();
-    HashMap<String, HL7ValueSetDCM> getHashValueSetDCM();
-    HL7GenericDCM getHl7GenericDCM();
-    HL7StageLRA getHl7StageLRA();
-    
+	//
+	ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA();
+
+	ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM();
+
+	HashMap<String, HL7ValueSetLRA> getHashValueSetLRA();
+
+	HashMap<String, HL7ValueSetDCM> getHashValueSetDCM();
+
+	HL7GenericDCM getHl7GenericDCM();
+
+	HL7StageLRA getHl7StageLRA();
+
 }

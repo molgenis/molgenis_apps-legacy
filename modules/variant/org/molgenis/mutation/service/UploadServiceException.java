@@ -15,8 +15,9 @@ public class UploadServiceException extends RuntimeException
 
 	/**
 	 * Constructs a new instance of <code>SearchException</code>.
-	 *
-	 * @param message the throwable message.
+	 * 
+	 * @param message
+	 *            the throwable message.
 	 */
 	public UploadServiceException(String message)
 	{

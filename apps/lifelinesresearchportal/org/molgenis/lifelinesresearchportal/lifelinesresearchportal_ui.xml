@@ -5,30 +5,39 @@
 	<menu name="main">
 		<plugin label="Home" name="LifeLinesHome"
 			type="org.molgenis.lifelinesresearchportal.plugins.homepage.LifeLines" />
-		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
-	<!--	<plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" />
-		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
-		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" /> -->
-		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin" label="Catalogue" />
-		<plugin name="phenotypeViewer" type="phenotypeViewer.PhenotypeViewer" label="Data viewer" />
-		<plugin label="Upload" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
-		<!--<plugin name="jqGridViewProtocolFilterable" type="org.molgenis.datatable.plugin.JQGridPluginProtocolFilterable" />
-
-		 <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
+		<plugin label="Login" name="UserLogin"
+			type="plugins.autohidelogin.AutoHideLogin" />
+		<!-- <plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" 
+			/> <plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" 
+			/> <plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" 
 			/> -->
-		<!--<plugin label="PLINK" name="PlinkDownload"
-			type="org.molgenis.lifelinesresearchportal.plugins.plinkdownload.PlinkDownload" />-->
+		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin"
+			label="Catalogue" />
+		<plugin name="phenotypeViewer" type="phenotypeViewer.PhenotypeViewer"
+			label="Data viewer" />
+		<plugin label="Upload" name="ExcelWizard"
+			type="plugins.genericwizard.GenericWizard" />
+		<!--<plugin name="jqGridViewProtocolFilterable" type="org.molgenis.datatable.plugin.JQGridPluginProtocolFilterable" 
+			/> <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
+			/> -->
+		<!--<plugin label="PLINK" name="PlinkDownload" type="org.molgenis.lifelinesresearchportal.plugins.plinkdownload.PlinkDownload" 
+			/> -->
 
 		<menu label="Admin" name="Admin">
-			<plugin name="jqGridViewGenotype" type="org.molgenis.datatable.plugin.JQGridPluginPedMap" label="Genotype viewer"/>
+			<plugin name="jqGridViewGenotype"
+				type="matrix.datatable.JQGridPluginPedMap" label="Genotype viewer" />
 			<form name="investigation" entity="Investigation" label="Investigations"
 				view="list" hide_fields="accession">
 				<menu name="InvestigationMenu">
-					<form name="protocol" entity="Protocol" label="Protocols" view="list" />
+					<form name="protocol" entity="Protocol" label="Protocols"
+						view="list" />
 					<form name="PermittedValues" entity="Category" view="list" />
-					<form name="individuals" entity="Individual" view="list" label="Observation targets" />
-					<form name="measurement" entity="Measurement" view="list" label="Measurements" />
-					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
+					<form name="individuals" entity="Individual" view="list"
+						label="Observation targets" />
+					<form name="measurement" entity="Measurement" view="list"
+						label="Measurements" />
+					<form name="observedvalue" entity="ObservedValue" view="list"
+						label="Observed values" />
 				</menu>
 			</form>
 			<menu name="Auth" label="Users and permissions">
@@ -57,8 +66,10 @@
 				<plugin label="Plink" name="PlinkFileManager"
 					type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
 				<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
-				<form name="Files" entity="InvestigationFile" label="Files" header="Navigate files" group="biologist">
-					<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" group="biologist" />
+				<form name="Files" entity="InvestigationFile" label="Files"
+					header="Navigate files" group="biologist">
+					<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager"
+						group="biologist" />
 				</form>
 			</menu>
 		</menu>

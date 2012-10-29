@@ -11,8 +11,6 @@ public class TestParam
 	String name;
 	@XmlAttribute
 	String value;
-	
-
 
 	public String getName()
 	{
@@ -23,7 +21,7 @@ public class TestParam
 	{
 		this.name = name;
 	}
-	
+
 	public String getValue()
 	{
 		return value;
@@ -36,7 +34,7 @@ public class TestParam
 
 	public String toString()
 	{
-		return String.format("Param(name='%s', value='%s')", name,value);
+		return String.format("Param(name='%s', value='%s')", name, value);
 	}
 
 }

@@ -23,11 +23,12 @@ import app.servlet.UsedMolgenisOptions;
 import filehandling.storage.StorageHandler;
 
 /**
- * Test data matrix import and export across all backends, all retrieval functions,
- * data types, and most dimensions, transpositions, sparsities, and text length variation.
+ * Test data matrix import and export across all backends, all retrieval
+ * functions, data types, and most dimensions, transpositions, sparsities, and
+ * text length variation.
  * 
  * To be used in xQTL automated test cases
- *
+ * 
  */
 public class Matrix_XqtlTestNG
 {
@@ -35,27 +36,28 @@ public class Matrix_XqtlTestNG
 	Database db;
 
 	@DataProvider(name = "params")
-	public static Object[][] data() {
-		Object[][] data = new Object[][] {
-				//			 DIM DIM TEXT	FIX.T?  SPARSE?	SKIPEL.?
-				{ new Params(1,	 1,  0,		true,	false,	false) },
-				{ new Params(1,	 1,  1,		true,	false,	false) },
-				{ new Params(20, 1, 10,		true,	true,	false) },
-				{ new Params(1, 20, 10,		false,	false,	false) },
-				{ new Params(50, 10, 127,	false,	true,	false) },
-				{ new Params(10, 50, 127,	true,	false,	false) },
-				};
+	public static Object[][] data()
+	{
+		Object[][] data = new Object[][]
+		{
+				// DIM DIM TEXT FIX.T? SPARSE? SKIPEL.?
+				{ new Params(1, 1, 0, true, false, false) },
+				{ new Params(1, 1, 1, true, false, false) },
+				{ new Params(20, 1, 10, true, true, false) },
+				{ new Params(1, 20, 10, false, false, false) },
+				{ new Params(50, 10, 127, false, true, false) },
+				{ new Params(10, 50, 127, true, false, false) }, };
 		return data;
 	}
 
 	@BeforeClass(alwaysRun = true)
 	public void setupBeforeClass() throws Exception
 	{
-		//cleanup before we start
+		// cleanup before we start
 		XqtlSeleniumTest.deleteDatabase();
 		db = DatabaseFactory.create();
 
-		//setup database tables
+		// setup database tables
 		String report = ResetXgapDb.reset(db, false);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 
@@ -94,7 +96,7 @@ public class Matrix_XqtlTestNG
 	{
 		new TestBinMatrix(db, params);
 	}
-	
+
 	@Test(dataProvider = "params")
 	public void binary2(Params params) throws Exception
 	{

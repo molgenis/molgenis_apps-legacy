@@ -50,5 +50,5 @@ public class GenomeBrowserModel
 	{
 		this.appUrl = appUrl;
 	}
-	
+
 }

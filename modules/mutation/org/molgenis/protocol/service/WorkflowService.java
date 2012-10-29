@@ -17,7 +17,7 @@ import org.molgenis.util.Tuple;
 public class WorkflowService implements Serializable
 {
 	private static final long serialVersionUID = -262659898183648343L;
-	private Database db                        = null;
+	private Database db = null;
 
 	public void setDatabase(Database db)
 	{
@@ -25,7 +25,9 @@ public class WorkflowService implements Serializable
 	}
 
 	/**
-	 * Find workflow elements in the order they have been specified inside a workflow
+	 * Find workflow elements in the order they have been specified inside a
+	 * workflow
+	 * 
 	 * @param workflow
 	 * @return workflow elements
 	 * @throws DatabaseException
@@ -35,18 +37,19 @@ public class WorkflowService implements Serializable
 	{
 		List<WorkflowElement> result = new ArrayList<WorkflowElement>();
 
-		List<Integer> weIds          = new ArrayList<Integer>();
+		List<Integer> weIds = new ArrayList<Integer>();
 		List<WorkflowElement> elements;
 
-		String sql                   = "SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = " + workflow.getId();
+		String sql = "SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = "
+				+ workflow.getId();
 
 		if (this.db instanceof JDBCDatabase)
 		{
 			List<Tuple> ids = ((JDBCDatabase) this.db).sql(sql);
-			
+
 			for (Tuple entry : ids)
 				weIds.add(entry.getInt(0));
-			
+
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
@@ -67,13 +70,16 @@ public class WorkflowService implements Serializable
 	}
 
 	/**
-	 * Helper to select the next following WorkflowElements, i.e. where the previous steps are the current ones
+	 * Helper to select the next following WorkflowElements, i.e. where the
+	 * previous steps are the current ones
+	 * 
 	 * @param elements
 	 * @return List of next WorkflowElements
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private List<WorkflowElement> findNextWorkflowElements(List<WorkflowElement> elements) throws DatabaseException, ParseException
+	private List<WorkflowElement> findNextWorkflowElements(List<WorkflowElement> elements) throws DatabaseException,
+			ParseException
 	{
 		List<WorkflowElement> nextElements = new ArrayList<WorkflowElement>();
 
@@ -81,12 +87,13 @@ public class WorkflowService implements Serializable
 		{
 			List<Integer> weIds = new ArrayList<Integer>();
 
-			String sql          = "SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = " + element.getId();
+			String sql = "SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = "
+					+ element.getId();
 
 			if (this.db instanceof JDBCDatabase)
 			{
 				List<Tuple> ids = ((JDBCDatabase) this.db).sql(sql);
-				
+
 				for (Tuple entry : ids)
 					weIds.add(entry.getInt(0));
 			}
@@ -97,8 +104,8 @@ public class WorkflowService implements Serializable
 			else
 				throw new UnsupportedOperationException("Unsupported database mapper");
 
-			if (weIds.size() > 0)
-				nextElements.addAll(this.db.query(WorkflowElement.class).in(WorkflowElement.ID, weIds).find());
+			if (weIds.size() > 0) nextElements.addAll(this.db.query(WorkflowElement.class)
+					.in(WorkflowElement.ID, weIds).find());
 		}
 		return nextElements;
 	}

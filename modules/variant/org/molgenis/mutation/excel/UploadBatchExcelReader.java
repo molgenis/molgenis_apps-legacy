@@ -1,4 +1,3 @@
-
 /* File:        col7a1/model/UploadBatch.java
  * Copyright:   GBIC 2000-2010, all rights reserved
  * Date:        August 11, 2010
@@ -33,7 +32,6 @@ import org.molgenis.util.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Reads UploadBatch from Excel file.
  */
@@ -41,60 +39,87 @@ import org.springframework.stereotype.Component;
 public class UploadBatchExcelReader
 {
 	public final transient Logger logger = Logger.getLogger(UploadBatchExcelReader.class);
-	
+
 	@Autowired
 	private CsvToDatabase<Entity> uploadBatchCsvReader;
 
 	/**
 	 * Imports UploadBatch from a workbook sheet.
 	 */
-	public int importSheet(final Database db, Sheet sheet, final Tuple defaults, final DatabaseAction dbAction, final String missingValue) throws DatabaseException, IOException, Exception 
+	public int importSheet(final Database db, Sheet sheet, final Tuple defaults, final DatabaseAction dbAction,
+			final String missingValue) throws DatabaseException, IOException, Exception
 	{
 		File tmpUploadBatch = new File(System.getProperty("java.io.tmpdir") + File.separator + "tmpUploadBatch.txt");
-		if(tmpUploadBatch.exists()){
+		if (tmpUploadBatch.exists())
+		{
 			boolean deleteSuccess = tmpUploadBatch.delete();
-			if(!deleteSuccess){
+			if (!deleteSuccess)
+			{
 				throw new Exception("Deletion of tmp file 'tmpUploadBatch.txt' failed, cannot proceed.");
 			}
 		}
 		boolean createSuccess = tmpUploadBatch.createNewFile();
-		if(!createSuccess){
+		if (!createSuccess)
+		{
 			throw new Exception("Creation of tmp file 'tmpUploadBatch.txt' failed, cannot proceed.");
 		}
 		boolean fileHasHeaders = writeSheetToFile(sheet, tmpUploadBatch);
-		if(fileHasHeaders){
+		if (fileHasHeaders)
+		{
 			int count = this.uploadBatchCsvReader.importCsv(db, tmpUploadBatch, defaults, dbAction, missingValue);
 			tmpUploadBatch.delete();
 			return count;
-		}else{
+		}
+		else
+		{
 			tmpUploadBatch.delete();
 			return 0;
 		}
 	}
-	
-	public List<String> getNonEmptyHeaders(Sheet sheet){
+
+	public List<String> getNonEmptyHeaders(Sheet sheet)
+	{
 		List<String> headers = new ArrayList<String>();
-		Cell[] headerCells = sheet.getRow(0); //assume headers are on first line
-		for(int i = 0; i < headerCells.length; i++){
-			if(!headerCells[i].getContents().equals("")){
+		Cell[] headerCells = sheet.getRow(0); // assume headers are on first
+												// line
+		for (int i = 0; i < headerCells.length; i++)
+		{
+			if (!headerCells[i].getContents().equals(""))
+			{
 				headers.add(headerCells[i].getContents());
 			}
 		}
 		return headers;
 	}
-	
-	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException{
+
+	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException
+	{
 		List<String> headers = new ArrayList<String>();
-		Cell[] headerCells = sheet.getRow(0); //assume headers are on first line
-		if(headerCells.length == 0){
+		Cell[] headerCells = sheet.getRow(0); // assume headers are on first
+												// line
+		if (headerCells.length == 0)
+		{
 			return false;
 		}
-		ArrayList<Integer> namelessHeaderLocations = new ArrayList<Integer>(); //allow for empty columns, also column order does not matter
-		for(int i = 0; i < headerCells.length; i++){
-			if(!headerCells[i].getContents().equals("")){
+		ArrayList<Integer> namelessHeaderLocations = new ArrayList<Integer>(); // allow
+																				// for
+																				// empty
+																				// columns,
+																				// also
+																				// column
+																				// order
+																				// does
+																				// not
+																				// matter
+		for (int i = 0; i < headerCells.length; i++)
+		{
+			if (!headerCells[i].getContents().equals(""))
+			{
 				headers.add(headerCells[i].getContents());
-			}else{
-				headers.add("nameless"+i);
+			}
+			else
+			{
+				headers.add("nameless" + i);
 				namelessHeaderLocations.add(i);
 			}
 		}
@@ -102,11 +127,14 @@ public class UploadBatchExcelReader
 		CsvWriter cw = new CsvWriter(pw, headers);
 		cw.setMissingValue("");
 		cw.writeHeader();
-		for(int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++){
+		for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++)
+		{
 			Tuple t = new SimpleTuple();
 			int colIndex = 0;
-			for(Cell c : sheet.getRow(rowIndex)){
-				if(!namelessHeaderLocations.contains(colIndex)){
+			for (Cell c : sheet.getRow(rowIndex))
+			{
+				if (!namelessHeaderLocations.contains(colIndex))
+				{
 					t.set(headers.get(colIndex), c.getContents());
 				}
 				colIndex++;

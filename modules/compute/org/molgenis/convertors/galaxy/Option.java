@@ -17,10 +17,10 @@ public class Option
 
 	@XmlValue
 	String label;
-	
+
 	public String toString()
 	{
-		return String.format("Option(value='%s' label='%s' selected='%s')",value,label,selected);
+		return String.format("Option(value='%s' label='%s' selected='%s')", value, label, selected);
 	}
 
 }

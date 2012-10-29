@@ -8,7 +8,6 @@
 package org.molgenis.mutation.ui.upload;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -31,7 +31,6 @@ import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.BatchForm;
 import org.molgenis.variant.Patient;
-import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -39,26 +38,28 @@ public class Upload extends EasyPluginController<UploadModel>
 {
 
 	private static final long serialVersionUID = -3499931124766785979L;
-	private final transient Logger logger      = Logger.getLogger(Upload.class.getSimpleName());
+	private final transient Logger logger = Logger.getLogger(Upload.class.getSimpleName());
+	private transient MolgenisUserService molgenisUserService;
 	private transient UploadService uploadService;
 
 	public Upload(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setModel(new UploadModel(this));
-		this.view = new FreemarkerView("uploadBatch.ftl", getModel());
+		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
 		this.uploadService = ServiceLocator.instance().getUploadService();
+		this.molgenisUserService = ServiceLocator.instance().getMolgenisUserService();
 
 		this.populateBatchForm();
 	}
-	
+
 	private ScreenView view;
-	
+
 	public ScreenView getView()
 	{
 		return view;
 	}
-	
+
 	public void setView(ScreenView view)
 	{
 		this.view = view;
@@ -70,17 +71,18 @@ public class Upload extends EasyPluginController<UploadModel>
 		try
 		{
 			this.uploadService.setDatabase(db);
+			this.molgenisUserService.setDatabase(db);
 
 			String action = request.getAction();
-			
+
 			if (StringUtils.equals(action, "newBatch"))
 			{
 				this.handleNewBatch();
 			}
-//			else if (StringUtils.equals(action, "checkBatch"))
-//			{
-//				this.handleCheckBatch(request);
-//			}
+			// else if (StringUtils.equals(action, "checkBatch"))
+			// {
+			// this.handleCheckBatch(request);
+			// }
 			else if (StringUtils.equals(action, "insertBatch"))
 			{
 				this.handleInsertBatch(request);
@@ -123,9 +125,10 @@ public class Upload extends EasyPluginController<UploadModel>
 				this.view = new FreemarkerView("uploadLogin.ftl", getModel());
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-//			String message = "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
+			// String message =
+			// "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
 			this.getModel().getMessages().add(new ScreenMessage(e.getMessage(), false));
 			logger.error(e.getMessage());
 			for (StackTraceElement el : e.getStackTrace())
@@ -141,22 +144,24 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
 	}
 
-	private void handleInsertMutation() throws EmailException
+	private void handleInsertMutation()
 	{
-		//TODO: Insert and mark as uncurated
-//		this.mutationService.insert(this.getModel().getMutationUploadVO());
+		// TODO: Insert and mark as uncurated
+		try
+		{
+			// this.mutationService.insert(this.getModel().getMutationUploadVO());
+			String emailContents = "New mutation upload:\n" + this.getModel().getMutationUploadVO().toString()
+					+ "\nUser: " + this.getApplicationController().getLogin().getUserName() + "\n";
+			String adminEmail = this.molgenisUserService.findAdminEmail();
+			// assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("New mutation upload for COL7A1", emailContents, adminEmail, true);
 
-//		if (this.referer == 1)
-//			this.getModel().getPatientSummaryVO().setMutation1(this.getModel().getMutationUploadVO().getMutation());
-//		else if (this.referer == 2)
-//			this.getModel().getPatientSummaryVO().setMutation2(this.getModel().getMutationUploadVO().getMutation());
-		
-		String emailContents = "New mutation upload:\n" + this.getModel().getMutationUploadVO().toString() + "\nUser: " + this.getApplicationController().getLogin().getUserName() + "\n";
-		//assuming: 'encoded' p.w. (setting deObf = true)
-		this.getEmailService().email("New mutation upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
-//		service.email("New mutation upload for COL7A1", emailContents, "robert.wagner42@gmail.com");
-
-		this.getModel().getMessages().add(new ScreenMessage("Mutation successfully inserted", true));
+			this.getModel().getMessages().add(new ScreenMessage("Mutation successfully inserted", true));
+		}
+		catch (Exception e)
+		{
+			this.getModel().getMessages().add(new ScreenMessage(e.getMessage(), false));
+		}
 	}
 
 	private void handleCheckMutation()
@@ -175,15 +180,23 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.populateMutationForm();
 	}
 
-	private void handleInsertPatient() throws EmailException
+	private void handleInsertPatient()
 	{
-		//TODO: Insert and mark as uncurated
-//		this.patientService.insert(this.getModel().getPatientSummaryVO());
-		
-		String emailContents = "New patient upload:\n" + this.getModel().getPatientSummaryVO().toString() + "\nUser: " + this.getApplicationController().getLogin().getUserName() + "\n";
-		//assuming: 'encoded' p.w. (setting deObf = true)
-		this.getEmailService().email("New patient upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
-		this.getModel().getMessages().add(new ScreenMessage("Patient successfully inserted", true));
+		// TODO: Insert and mark as uncurated
+		try
+		{
+			// this.patientService.insert(this.getModel().getPatientSummaryVO());
+			String emailContents = "New patient upload:\n" + this.getModel().getPatientSummaryVO().toString()
+					+ "\nUser: " + this.getApplicationController().getLogin().getUserName() + "\n";
+			String adminEmail = this.molgenisUserService.findAdminEmail();
+			// assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("New patient upload for deb-central", emailContents, adminEmail, true);
+			this.getModel().getMessages().add(new ScreenMessage("Patient successfully inserted", true));
+		}
+		catch (Exception e)
+		{
+			this.getModel().getMessages().add(new ScreenMessage(e.getMessage(), false));
+		}
 	}
 
 	private void handleNewPatient()
@@ -191,27 +204,39 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.populatePatientForm();
 	}
 
-	private void handleEmailBatch(Tuple request) throws EmailException, IOException
+	private void handleEmailBatch(Tuple request)
 	{
-		File file = request.getFile("upload");
+		try
+		{
+			File file = request.getFile("filefor_upload");
 
-		//TODO: Remove absolute path's!!!!
-		File dest = File.createTempFile("molgenis_upload", ".xls");
-		FileUtils.copyFile(file, dest);
-		
-		String emailContents = "New data upload by User: " + this.getApplicationController().getLogin().getUserName() + "\n";
-		//assuming: 'encoded' p.w. (setting deObf = true)
-		this.getEmailService().email("New data upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
-		this.getModel().getMessages().add(new ScreenMessage("Thank you for your submission. Your data has been successfully emailed to us.", true));
-		
-		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
+			File dest = File.createTempFile("molgenis_upload", ".xls");
+			FileUtils.copyFile(file, dest);
+
+			String emailContents = "New data upload by User: "
+					+ this.getApplicationController().getLogin().getUserName() + "\n";
+			String adminEmail = this.molgenisUserService.findAdminEmail();
+			// assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("New data upload for COL7A1", emailContents, adminEmail,
+					dest.getAbsolutePath(), true);
+			this.getModel()
+					.getMessages()
+					.add(new ScreenMessage(
+							"Thank you for your submission. Your data has been successfully emailed to us.", true));
+
+			this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
+		}
+		catch (Exception e)
+		{
+			this.getModel().getMessages().add(new ScreenMessage(e.getMessage(), false));
+		}
 	}
 
 	private void handleInsertBatch(Tuple request)
 	{
-		int count                   = uploadService.insert(request.getFile("filefor_upload"));
+		int count = uploadService.insert(request.getFile("filefor_upload"));
 		this.getModel().getMessages().add(new ScreenMessage("Successfully inserted " + count + " rows", true));
-		
+
 		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
 	}
 
@@ -226,35 +251,53 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.getModel().setBatchForm(new BatchForm());
 		((HiddenInput) this.getModel().getBatchForm().get("__target")).setValue(this.getName());
 		((HiddenInput) this.getModel().getBatchForm().get("select")).setValue(this.getName());
+		((HiddenInput) this.getModel().getBatchForm().get("__action")).setValue("emailBatch");
+		if (this.getApplicationController().getLogin() != null)
+		{
+			if (StringUtils.equals(this.getApplicationController().getLogin().getUserName(), "admin"))
+			{
+				((HiddenInput) this.getModel().getBatchForm().get("__action")).setValue("insertBatch");
+			}
+		}
 	}
 
 	private void populatePatientForm()
 	{
-		SearchService searchService       = (SearchService) ServiceLocator.instance().getService("searchService");
+		SearchService searchService = (SearchService) ServiceLocator.instance().getService("searchService");
 
-		List<ValueLabel> mutationOptions  = new ArrayList<ValueLabel>();
+		List<ValueLabel> mutationOptions = new ArrayList<ValueLabel>();
 		for (VariantDTO variantDTO : searchService.getAllVariants())
 			mutationOptions.add(new ValueLabel(variantDTO.getId(), variantDTO.getCdnaNotation()));
 
-		((StringInput) this.getModel().getPatientForm().get("identifier")).setValue(this.getModel().getPatientSummaryVO().getPatientIdentifier());
+		((StringInput) this.getModel().getPatientForm().get("identifier")).setValue(this.getModel()
+				.getPatientSummaryVO().getPatientIdentifier());
 		((SelectInput) this.getModel().getPatientForm().get("mutation1")).setOptions(mutationOptions);
-		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 0)
-			((SelectInput) this.getModel().getPatientForm().get("mutation1")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(0).getId());
+		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 0) ((SelectInput) this.getModel()
+				.getPatientForm().get("mutation1")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList()
+				.get(0).getId());
 		((SelectInput) this.getModel().getPatientForm().get("mutation2")).setOptions(mutationOptions);
-		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 1)
-			((SelectInput) this.getModel().getPatientForm().get("mutation2")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList().get(1).getId());
-		((StringInput) this.getModel().getPatientForm().get("number")).setValue(this.getModel().getPatientSummaryVO().getPatientLocalId());
-//		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setOptions(phenotypeOptions);
-		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setValue(this.getModel().getPatientSummaryVO().getPhenotypeId());
+		if (this.getModel().getPatientSummaryVO().getVariantDTOList().size() > 1) ((SelectInput) this.getModel()
+				.getPatientForm().get("mutation2")).setValue(this.getModel().getPatientSummaryVO().getVariantDTOList()
+				.get(1).getId());
+		((StringInput) this.getModel().getPatientForm().get("number")).setValue(this.getModel().getPatientSummaryVO()
+				.getPatientLocalId());
+		// ((SelectInput)
+		// this.getModel().getPatientForm().get("phenotype")).setOptions(phenotypeOptions);
+		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setValue(this.getModel()
+				.getPatientSummaryVO().getPhenotypeId());
 		((SelectInput) this.getModel().getPatientForm().get("phenotype")).setOnchange("toggleForm(this.value);");
 		((SelectInput) this.getModel().getPatientForm().get("consent")).setOptions(new Patient().getConsentOptions());
 	}
 
 	private void populateMutationForm()
 	{
-		//TODO: implement
+		// TODO: implement
 	}
 
+	/**
+	 * If not authenticated, display the "Please login" screen If authenticated,
+	 * switch to the "Upload batch" screen
+	 */
 	@Override
 	public void reload(Database db)
 	{

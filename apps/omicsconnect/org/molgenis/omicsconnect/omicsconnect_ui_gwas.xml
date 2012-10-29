@@ -2,17 +2,20 @@
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="omicsconnect">
 	<plugin name="oc_header" type="org.molgenis.omicsconnect.plugins.header.Header" />
-	
+
 
 	<menu name="main">
-	
-		
-	<plugin name="Pubmed" type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
-	<plugin name="OntoCat" type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat"/>
-	
+
+
+		<plugin name="Pubmed"
+			type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
+		<plugin name="OntoCat"
+			type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat" />
+		<plugin label="Upload" name="UploadWizard"
+			type="plugins.importwizard.ImportWizard" />
 		<form name="Characteristics" entity="Characteristic" />
 		<form name="Panels" entity="Panel" />
-		<form name="Citations" entity="Citation"/>
+		<form name="Citations" entity="Citation" />
 		<form name="Individuals" entity="Individual" />
 		<form name="Features" entity="ObservableFeature">
 			<form name="PermittedValues" entity="PermittedValue" />
@@ -37,12 +40,12 @@
 	</menu>
 
 	<menu name="Investigation">
-	<form name="InvestigationInfo" label="Investigation" entity="Investigation"
-		compact_view="name">
-		<menu name="StudyMenu">
-			<form name="Study" label="Study" entity="Study" compact_view="name">
-				<form name="StudyDetail" label="Study Details" entity="StudyDetails" />
-				<form name="samplePanels" label="SamplePanel" entity="SamplePanel"/>
+		<form name="InvestigationInfo" label="Investigation" entity="Investigation"
+			compact_view="name">
+			<menu name="StudyMenu">
+				<form name="Study" label="Study" entity="Study" compact_view="name">
+					<form name="StudyDetail" label="Study Details" entity="StudyDetails" />
+					<form name="samplePanels" label="SamplePanel" entity="SamplePanel" />
 
 					<!-- had hotlinks removed for now form name="Links" label="Hotlinks" 
 						entity="Link" / -->
@@ -56,7 +59,7 @@
 					<form name="Experiments" entity="Experiment" compact_view="identifier,experimentType">
 						<menu name="ExperimentMenu">
 							<!-- <form name="DataSets" lalel="DataSets / ResultSets" entity="DataSet"/> 
-							form name="ExperimentLinks" label="Hotlinks" entity="Link" / -->
+								form name="ExperimentLinks" label="Hotlinks" entity="Link" / -->
 							<form name="AassayedPanels" entity="Panel" />
 							<form name="UsedMarkerSets" entity="UsedMarkerSet" />
 							<form name="Significances" entity="FrequencyCluster">
@@ -65,10 +68,10 @@
 							</form>
 						</menu>
 					</form>
-				</form> <!--  study -->
-				</menu><!-- Studymenu -->
-				</form> <!--  invs -->
-		</menu> <!--  investigation -->
+				</form> <!-- study -->
+			</menu><!-- Studymenu -->
+		</form> <!-- invs -->
+	</menu> <!-- investigation -->
 
 	<menu name="Contacts">
 		<form name="Persons" entity="Person" />

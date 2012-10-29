@@ -6,7 +6,8 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Node;
 
-public class HL7OntologyTerm {
+public class HL7OntologyTerm
+{
 
 	private Node ontologyTermCode;
 	private XPath xpath;
@@ -19,7 +20,8 @@ public class HL7OntologyTerm {
 	private static final String CODESYSTEMNAME = "@codeSystemName";
 	private static final String CODESYSTEM = "@codeSystem";
 
-	public HL7OntologyTerm(Node node, XPath xpath) throws Exception {
+	public HL7OntologyTerm(Node node, XPath xpath) throws Exception
+	{
 		this.xpath = xpath;
 		ontologyTermCode = node;
 		readDisplayName();
@@ -28,51 +30,58 @@ public class HL7OntologyTerm {
 		readCodeSystemName();
 	}
 
-	public void readDisplayName() throws XPathExpressionException {
+	public void readDisplayName() throws XPathExpressionException
+	{
 
-		Node nameNode = (Node) xpath.evaluate(DISPLAYNAME, ontologyTermCode,
-				XPathConstants.NODE);
+		Node nameNode = (Node) xpath.evaluate(DISPLAYNAME, ontologyTermCode, XPathConstants.NODE);
 		this.displayName = nameNode.getNodeValue();
 	}
 
-	public void readCode() throws XPathExpressionException {
+	public void readCode() throws XPathExpressionException
+	{
 
-		Node nameNode = (Node) xpath.evaluate(CODE, ontologyTermCode,
-				XPathConstants.NODE);
+		Node nameNode = (Node) xpath.evaluate(CODE, ontologyTermCode, XPathConstants.NODE);
 		this.code = nameNode.getNodeValue();
 
 	}
 
-	public void readCodeSystemName() throws XPathExpressionException {
-		Node nameNode = (Node) xpath.evaluate(CODESYSTEMNAME, ontologyTermCode,
-				XPathConstants.NODE);
+	public void readCodeSystemName() throws XPathExpressionException
+	{
+		Node nameNode = (Node) xpath.evaluate(CODESYSTEMNAME, ontologyTermCode, XPathConstants.NODE);
 		this.codeSystemName = nameNode.getNodeValue();
 	}
 
-	public void readCodeSystem() throws XPathExpressionException {
+	public void readCodeSystem() throws XPathExpressionException
+	{
 
-		Node nameNode = (Node) xpath.evaluate(CODESYSTEM, ontologyTermCode,
-				XPathConstants.NODE);
-		if (nameNode != null) {
+		Node nameNode = (Node) xpath.evaluate(CODESYSTEM, ontologyTermCode, XPathConstants.NODE);
+		if (nameNode != null)
+		{
 			this.codeSystem = nameNode.getNodeValue();
-		} else {
+		}
+		else
+		{
 			this.codeSystem = "";
 		}
 	}
 
-	public String getDisplayName() {
+	public String getDisplayName()
+	{
 		return displayName;
 	}
 
-	public String getCode() {
+	public String getCode()
+	{
 		return code;
 	}
 
-	public String getCodeSystemName() {
+	public String getCodeSystemName()
+	{
 		return codeSystemName;
 	}
 
-	public String getCodeSystem() {
+	public String getCodeSystem()
+	{
 		return codeSystem;
 	}
 

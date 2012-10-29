@@ -27,12 +27,12 @@ public class Background extends EasyPluginController<BackgroundModel>
 		super(name, parent);
 		this.setModel(new BackgroundModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Background.ftl", getModel());
 	}
-	
+
 	@Override
 	public void reload(Database db)
 	{
@@ -40,19 +40,21 @@ public class Background extends EasyPluginController<BackgroundModel>
 		{
 			MutationService mutationService = new MutationService();
 			mutationService.setDatabase(db);
-			PatientService patientService   = new PatientService();
+			PatientService patientService = new PatientService();
 			patientService.setDatabase(db);
-			
+
 			this.getModel().setNumPathogenicMutations(mutationService.getNumMutationsByPathogenicity("pathogenic"));
 			this.getModel().setNumPathogenicPatients(patientService.getNumPatientsByPathogenicity("pathogenic"));
-			this.getModel().setNumUnclassifiedMutations(mutationService.getNumMutationsByPathogenicity("unclassified variant"));
-			this.getModel().setNumUnclassifiedPatients(patientService.getNumPatientsByPathogenicity("unclassified variant"));
+			this.getModel().setNumUnclassifiedMutations(
+					mutationService.getNumMutationsByPathogenicity("unclassified variant"));
+			this.getModel().setNumUnclassifiedPatients(
+					patientService.getNumPatientsByPathogenicity("unclassified variant"));
 			this.getModel().setNumBenignMutations(mutationService.getNumMutationsByPathogenicity("benign"));
 			this.getModel().setNumPatientsUnpub(patientService.getNumUnpublishedPatients());
 		}
 		catch (Exception e)
 		{
-			//...
+			// ...
 		}
 	}
 }

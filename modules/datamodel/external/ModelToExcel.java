@@ -71,8 +71,8 @@ public class ModelToExcel
 					t.set("nillable", f.isNillable());
 					t.set("description", f.getDescription());
 					t.set("xref", null);
-					
-					if(f.getType() instanceof XrefField || f.getType() instanceof MrefField)
+
+					if (f.getType() instanceof XrefField || f.getType() instanceof MrefField)
 					{
 						t.set("xref", f.getXrefEntityName());
 					}

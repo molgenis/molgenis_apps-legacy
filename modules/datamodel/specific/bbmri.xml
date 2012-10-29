@@ -36,9 +36,8 @@
 			<description>This is the values of the coordinators.</description>
 		</entity>
 		
-		<entity name="Biobank" implements="Identifiable,Authorizable" decorator="decorators.BiobankDecorator" xref_label="id,Cohort">
+		<entity name="Biobank" implements="Identifiable,Authorizable" decorator="decorators.BiobankDecorator" xref_label="Cohort">
 			<description>This describes a panel (or: cohort) of individuals for which data was collected within the biobank.</description>
-			<field name="id" type="autoid" description="automatically generated id" />
 			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" /><!--  unique="true"/>   -->
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
 			<field name="Category" type="xref" xref_entity="BiobankCategory" description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)" />
@@ -57,7 +56,7 @@
 			<!-- this has to become a xref to publication -->
 			<field name="Publications" label="Publications" type="text" nillable="true" />
 			<field name="Approved" default="false" type="bool" nillable="false" description="This field indicates whether the record is approved by admin/curator" ></field>
-			<unique fields="id,Cohort"/>
+			<unique fields="Cohort"/>
 		</entity>
 		
 		<entity name="ChangeLog" implements="Identifiable">

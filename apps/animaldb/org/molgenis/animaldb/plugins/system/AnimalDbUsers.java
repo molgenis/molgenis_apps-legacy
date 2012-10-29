@@ -1,4 +1,3 @@
-
 package org.molgenis.animaldb.plugins.system;
 
 import java.util.ArrayList;
@@ -23,12 +22,15 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
- * AnimalDbUsersController takes care of all user requests and application logic.
- *
- * <li>Each user request is handled by its own method based action=methodName. 
- * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>AnimalDbUsersModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>AnimalDbUsersView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * AnimalDbUsersController takes care of all user requests and application
+ * logic.
+ * 
+ * <li>Each user request is handled by its own method based action=methodName.
+ * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
+ * user <li>AnimalDbUsersModel holds application state and business logic on top
+ * of domain model. Get it via this.getModel()/setModel(..) <li>
+ * AnimalDbUsersView holds the template to show the layout. Get/set it via
+ * this.getView()/setView(..).
  */
 public class AnimalDbUsers extends PluginModel<Entity>
 {
@@ -42,81 +44,105 @@ public class AnimalDbUsers extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
-	public String getUserName() {
+
+	public String getUserName()
+	{
 		return this.getLogin().getUserName();
 	}
-	
-	public String getInvestigationSharers(String invName, boolean canWrite) {
-		try {
+
+	public String getInvestigationSharers(String invName, boolean canWrite)
+	{
+		try
+		{
 			Query<Investigation> q = db.query(Investigation.class);
 			q.addRules(new QueryRule(Investigation.NAME, Operator.EQUALS, invName));
 			List<Investigation> invList = q.find();
-			if (invList.size() == 1) {
+			if (invList.size() == 1)
+			{
 				Investigation inv = invList.get(0);
-				if (canWrite == true) {
+				if (canWrite == true)
+				{
 					return inv.getCanWrite_Name();
-				} else {
+				}
+				else
+				{
 					return inv.getCanRead_Name();
 				}
-			} else {
+			}
+			else
+			{
 				return null;
 			}
-		} catch(Exception e) {
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
-	
+
 	/**
 	 * At each page view: reload data from database into model and/or change.
-	 *
-	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
-	 * All db actions are within one transaction.
-	 */ 
+	 * 
+	 * Exceptions will be caught, logged and shown to the user automatically via
+	 * setMessages(). All db actions are within one transaction.
+	 */
 	@Override
-	public void reload(Database db) {
-		
+	public void reload(Database db)
+	{
+
 		this.db = db;
-		
-		try {
+
+		try
+		{
 			roles = db.find(MolgenisRole.class);
-		} catch (DatabaseException e1) {
+		}
+		catch (DatabaseException e1)
+		{
 			this.setMessages(new ScreenMessage("Something went wrong while loading users and groups", false));
 			e1.printStackTrace();
 		}
-		
+
 		int userId = this.getLogin().getUserId();
 		// Load user's investigation list
-		try {
+		try
+		{
 			Query<Investigation> q = db.query(Investigation.class);
 			q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 			List<Investigation> invList = q.find();
 			setInvestigations(invList);
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			this.setMessages(new ScreenMessage("Something went wrong while loading investigation list", false));
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	public void handleRequest(Database db, Tuple request) {
-		
+	public void handleRequest(Database db, Tuple request)
+	{
+
 		this.db = db;
-		
-		try {
+
+		try
+		{
 			action = request.getAction();
-			
-			if (action.equals("init")) {
+
+			if (action.equals("init"))
+			{
 				//
 			}
-			if (action.equals("New")) {
+			if (action.equals("New"))
+			{
 				//
 			}
-			if (action.equals("Cancel")) {
+			if (action.equals("Cancel"))
+			{
 				action = "init";
 			}
-			if (action.startsWith("ShareRead")) {
+			if (action.startsWith("ShareRead"))
+			{
 				int invNr = Integer.parseInt(action.substring(9));
 				Investigation inv = investigations.get(invNr);
 				int roleId = request.getInt("shareread_" + invNr);
@@ -124,7 +150,8 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				db.update(inv);
 				this.setMessages(new ScreenMessage("Investigation successfully shared", true));
 			}
-			if (action.startsWith("ShareWrite")) {
+			if (action.startsWith("ShareWrite"))
+			{
 				int invNr = Integer.parseInt(action.substring(10));
 				Investigation inv = investigations.get(invNr);
 				int roleId = request.getInt("sharewrite_" + invNr);
@@ -132,41 +159,49 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				db.update(inv);
 				this.setMessages(new ScreenMessage("Investigation successfully shared", true));
 			}
-			if (action.equals("Add")) {
-				
+			if (action.equals("Add"))
+			{
+
 				String firstname = request.getString("firstname");
-				if (firstname == null) {
+				if (firstname == null)
+				{
 					throw new Exception("No first name given");
 				}
 				String lastname = request.getString("lastname");
-				if (lastname == null) {
+				if (lastname == null)
+				{
 					throw new Exception("No last name given");
 				}
-				
+
 				String email = request.getString("email");
-				if (email == null) {
+				if (email == null)
+				{
 					throw new Exception("No email given");
 				}
-				
+
 				String username = request.getString("username");
-				if (username == null) {
+				if (username == null)
+				{
 					throw new Exception("No user name given");
 				}
-				
+
 				String password1 = request.getString("password1");
-				if (password1 == null) {
+				if (password1 == null)
+				{
 					throw new Exception("No password given");
 				}
 				String password2 = request.getString("password2");
-				if (password2 == null) {
+				if (password2 == null)
+				{
 					throw new Exception("Password not repeated");
 				}
-				if (!password1.equals(password2)) {
+				if (!password1.equals(password2))
+				{
 					throw new Exception("Passwords not identical");
 				}
 				PasswordHasher hasher = new PasswordHasher();
 				String passwordHashed = hasher.toMD5(password1);
-				
+
 				// Make user
 				MolgenisUser newUser = new MolgenisUser();
 				newUser.setName(username);
@@ -177,14 +212,17 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				newUser.setActive(true); // no extra registration required
 				db.add(newUser);
 				int userId = newUser.getId();
-				
+
 				// Make new user owner of new or selected investigation
 				Investigation chosenInv = null;
-				if (request.getInt("investigation") != null) {
+				if (request.getInt("investigation") != null)
+				{
 					int invId = request.getInt("investigation");
-					if (invId == -1) {
+					if (invId == -1)
+					{
 						String newinv = request.getString("newinv");
-						if (newinv == null) {
+						if (newinv == null)
+						{
 							throw new Exception("No name given for new investigation");
 						}
 						chosenInv = new Investigation();
@@ -192,40 +230,55 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						chosenInv.setOwns_Id(userId);
 						chosenInv.setCanWrite_Name("admin");
 						db.add(chosenInv);
-						
-					} else {
+
+					}
+					else
+					{
 						Query<Investigation> q = db.query(Investigation.class);
 						q.addRules(new QueryRule(Investigation.ID, Operator.EQUALS, invId));
 						List<Investigation> invList = q.find();
-						if (invList.size() == 1) {
+						if (invList.size() == 1)
+						{
 							chosenInv = invList.get(0);
-						} else {
+						}
+						else
+						{
 							throw new Exception("No (valid) investigation chosen");
 						}
 						chosenInv.setOwns_Id(userId);
 						chosenInv.setCanWrite_Name("admin");
 						db.update(chosenInv);
 					}
-				} else {
+				}
+				else
+				{
 					throw new Exception("No (valid) investigation chosen");
 				}
-				
-				// Give new user write rights on almost all entities, forms, menus and plugins, except everything in the Admin menu
-				List<String> exclude = Arrays.asList(new String[] { "AdminMenu", "securitymenuMenu", "AnimalDbUsersPlugin", 
-						"UserToPersonPluginPlugin", "PermissionManagementPluginPlugin", "secmenuMenu", "MolgenisUserFormController", 
-						"PersonsFormController", "InstitutesFormController", "MolgenisGroupFormController", "MolgenisRoleGroupLinkFormController",
-						"MolgenisEntityFormController", "MolgenisPermissionFormController", "systemmenuMenu", "PreFillDatabasePlugin",
-						"LoadLegacyPlugin", "SimpleArchiverPlugin", "ApplyProtocolPlugin", "CascadingDeleteAnimalsPlugin", "tablemenuMenu",
-						"investigationFormController", "ontologyFormController", "ontologytermFormController", "categoryFormController",
-						"individualFormController", "panelFormController", "locationFormController", "measurementFormController",
-						"protocolFormController", "protocolapplicationFormController", "observedvalueFormController", "prefixFormController",
-						"newsFormController", "contactFormController"});
+
+				// Give new user write rights on almost all entities, forms,
+				// menus and plugins, except everything in the Admin menu
+				List<String> exclude = Arrays.asList(new String[]
+				{ "AdminMenu", "securitymenuMenu", "AnimalDbUsersPlugin", "UserToPersonPluginPlugin",
+						"PermissionManagementPluginPlugin", "secmenuMenu", "MolgenisUserFormController",
+						"PersonsFormController", "InstitutesFormController", "MolgenisGroupFormController",
+						"MolgenisRoleGroupLinkFormController", "MolgenisEntityFormController",
+						"MolgenisPermissionFormController", "systemmenuMenu", "PreFillDatabasePlugin",
+						"LoadLegacyPlugin", "SimpleArchiverPlugin", "ApplyProtocolPlugin",
+						"CascadingDeleteAnimalsPlugin", "tablemenuMenu", "investigationFormController",
+						"ontologyFormController", "ontologytermFormController", "categoryFormController",
+						"individualFormController", "panelFormController", "locationFormController",
+						"measurementFormController", "protocolFormController", "protocolapplicationFormController",
+						"observedvalueFormController", "prefixFormController", "newsFormController",
+						"contactFormController" });
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();
 				Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
 				List<MolgenisEntity> entList = q.find();
-				if (entList != null) {
-					for (MolgenisEntity ent : entList) {
-						if (!exclude.contains(ent.getName())) {
+				if (entList != null)
+				{
+					for (MolgenisEntity ent : entList)
+					{
+						if (!exclude.contains(ent.getName()))
+						{
 							MolgenisPermission newPerm = new MolgenisPermission();
 							newPerm.setRole_Id(userId);
 							newPerm.setPermission("write");
@@ -235,53 +288,62 @@ public class AnimalDbUsers extends PluginModel<Entity>
 					}
 				}
 				db.add(permList);
-				
-				this.setMessages(new ScreenMessage("User " + username + 
-						" successfully added and assigned ownership of investigation " + 
-						chosenInv.getName(), true));
-				
+
+				this.setMessages(new ScreenMessage("User " + username
+						+ " successfully added and assigned ownership of investigation " + chosenInv.getName(), true));
+
 				action = "init";
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				this.setMessages(new ScreenMessage("Error: " + e.getMessage(), false));
 			}
 		}
 	}
 
-	public String getAction() {
+	public String getAction()
+	{
 		return action;
 	}
 
-	public void setAction(String action) {
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "org_molgenis_animaldb_plugins_system_AnimalDbUsers";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "org/molgenis/animaldb/plugins/system/AnimalDbUsersView.ftl";
 	}
-	
+
 	public String getCustomHtmlHeaders()
 	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 
-	public void setInvestigations(List<Investigation> investigations) {
+	public void setInvestigations(List<Investigation> investigations)
+	{
 		this.investigations = investigations;
 	}
 
-	public List<Investigation> getInvestigations() {
+	public List<Investigation> getInvestigations()
+	{
 		return investigations;
 	}
-	
-	public List<MolgenisRole> getRoles() {
+
+	public List<MolgenisRole> getRoles()
+	{
 		return roles;
 	}
 

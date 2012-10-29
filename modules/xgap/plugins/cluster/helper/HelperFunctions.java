@@ -14,8 +14,9 @@ import org.molgenis.framework.db.QueryRule.Operator;
 
 /**
  * Some helpers for ClusterPlugin
+ * 
  * @author joerivandervelde
- *
+ * 
  */
 public class HelperFunctions
 {
@@ -39,14 +40,14 @@ public class HelperFunctions
 		}
 		return maxJobs;
 	}
-	
+
 	public static String dateTimeToMysqlFormat(Date date)
 	{
 		// mysql: 9999-12-31 23:59:59
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return dateFormat.format(date);
 	}
-	
+
 	public static boolean checkIfNameExists(Database db, String putativeName) throws DatabaseException
 	{
 		if (db.find(Job.class, new QueryRule("outputdataname", Operator.EQUALS, putativeName)).size() > 0)
