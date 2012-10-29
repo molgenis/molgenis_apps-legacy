@@ -58,8 +58,10 @@ public class PilotService implements MolgenisService
                     taskScript = "echo TASKID:" + taskName + "\n" + taskScript;
                     // change status to running
                     System.out.println("script " + taskScript);
+                    request.getDatabase().beginTx();
                     task.setStatusCode("running");
                     request.getDatabase().update(task);
+                    request.getDatabase().commitTx();
 
                     // send response
                     response.getResponse().getWriter().write(taskScript);
@@ -81,9 +83,11 @@ public class PilotService implements MolgenisService
 
 			if (task != null && task.getStatusCode().equalsIgnoreCase("running"))
 			{
+                request.getDatabase().beginTx();
 				task.setStatusCode("done");
 				task.setRunLog(results);
 				request.getDatabase().update(task);
+                request.getDatabase().commitTx();
 			}
 		}
 	}
