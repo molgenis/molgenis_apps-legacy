@@ -175,6 +175,14 @@
 				$('#details').empty();
 				
 				$('#browser').empty();
+				
+				$('#existingMappings').empty();
+						
+				$('#mappingResult').empty();
+				
+				$('#validatePredictors').empty();
+				
+				$('#matchingSelectedPredictor').text("");
 						
 				$('#afterMapping').show();
 				
@@ -191,8 +199,6 @@
 					{
 					
 						destroyScreenMessage();
-						
-						$('#validatePredictors').empty();
 					
 						$('#mappingResult').empty();
 						
@@ -256,7 +262,6 @@
 				$('#mappingResult').append(table);
 				
 				$('#existingMappings').append(existingMapping);
-				
 				
 				if(status["loadingProcess"] == status["total"])
 				{
@@ -343,6 +348,8 @@
 			data = {};
 			
 			data["measurementName"] = $(element).parents('tr').eq(0).find('td:first-child span').text();
+			
+			data["mappingIdentifier"] = $(element).attr('id').replace('_remove','');
 			
 			data["validationStudy"] = $('#matchingValidationStudy').text();
 			
@@ -592,8 +599,7 @@
 			$('td[name="category"] >select').chosen();
 			
 			$('#' + identifier + '_remove').click(function(){
-				removePredictor($(this).attr('id'));
-				$(this).parents('tr').eq(0).remove();
+				removePredictor($(this));
 			});
 			
 			$('#showPredictorPanel table tr:last-child').css({
@@ -682,9 +688,9 @@
 			showMessage(message, success);
 		}
 		
-		function removePredictor(identifier){
+		function removePredictor(element){
 			
-			predictor = $('#' + identifier).parents('td').eq(0).text();
+			predictor = $(element).parents('td').eq(0).text();
 			selected = $('#selectPredictionModel').val();
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_removePredictors&name=" 
@@ -696,6 +702,7 @@
 				showMessage(message, success);
 				if(success == true){
 					summaryRemoveOne(identifier);
+					$(element).parents('tr').eq(0).remove();
 				}
 			});
 		}

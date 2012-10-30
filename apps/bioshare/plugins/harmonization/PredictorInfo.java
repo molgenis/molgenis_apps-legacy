@@ -12,6 +12,7 @@ public class PredictorInfo
 {
 	private String name = null;
 	private String label = null;
+	private String identifier = null;
 	private List<String> buildingBlocks = new ArrayList<String>();
 	private List<String> expandedQuery = new ArrayList<String>();
 	private List<String> finalMappings = new ArrayList<String>();
@@ -29,7 +30,6 @@ public class PredictorInfo
 	public PredictorInfo(String name, List<String> buildingBlocks)
 	{
 		this.name = name;
-
 		if (buildingBlocks != null)
 		{
 			this.buildingBlocks = buildingBlocks;
@@ -44,6 +44,11 @@ public class PredictorInfo
 	public void setLabel(String label)
 	{
 		this.label = label;
+	}
+
+	public void setIdentifier(String identifier)
+	{
+		this.identifier = identifier;
 	}
 
 	public void setBuildingBlocks(List<String> buildingBlocks)
@@ -176,5 +181,10 @@ public class PredictorInfo
 		if (similarity.containsKey(expandedQuery)) return similarity.get(expandedQuery);
 		else
 			return null;
+	}
+
+	public String getIdentifier()
+	{
+		return identifier;
 	}
 }
