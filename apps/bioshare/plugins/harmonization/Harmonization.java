@@ -733,13 +733,15 @@ public class Harmonization extends PluginModel<Entity>
 		{
 			String description = predictor.getDescription(measurementName);
 
-			String identifier = predictorName + "_" + measurementName;
+			StringBuilder identifier = new StringBuilder();
 
-			table.append("<tr id=\"" + identifier.replaceAll(" ", "_"))
+			identifier.append(predictorName).append("_").append(measurementName);
+
+			table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
 					.append("_row\"><td style=\"text-align:center;cursor:pointer;\"><span>")
 					.append(measurementName)
 					.append("</span><div id=\"")
-					.append(identifier.replaceAll(" ", "_"))
+					.append(identifier.toString().replaceAll(" ", "_"))
 					.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
 					.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
 					.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
@@ -968,9 +970,12 @@ public class Harmonization extends PluginModel<Entity>
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
 	{
+		StringBuilder predictorName = new StringBuilder();
 
-		Measurement m = db.find(Measurement.class,
-				new QueryRule(Measurement.NAME, Operator.EQUALS, predictor + "_" + predictionModel)).get(0);
+		Measurement m = db.find(
+				Measurement.class,
+				new QueryRule(Measurement.NAME, Operator.EQUALS, predictorName.append(predictor).append("_")
+						.append(predictionModel).toString())).get(0);
 
 		ComputeProtocol cp = db.find(ComputeProtocol.class,
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
