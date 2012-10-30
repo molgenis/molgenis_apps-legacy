@@ -19,8 +19,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Tuple;
 
-//import org.molgenis.util.XlsWriter;
-
 public class catalogueTreeComponent
 {
 
@@ -190,8 +188,6 @@ public class catalogueTreeComponent
 
 			json.put("result", tree);
 
-			System.out.println("The searching token is " + searchToken);
-
 		}
 		else if ("download_json_getChildren".equals(request.getAction()))
 		{
@@ -232,6 +228,7 @@ public class catalogueTreeComponent
 			}
 
 			json.put("treeView", protocolsTree.toHtml());
+
 			json.put("identifier", identifier.get(0));
 		}
 
@@ -240,10 +237,12 @@ public class catalogueTreeComponent
 
 	private String searchForInTree(JQueryTreeViewElement parentNode, List<JQueryTreeViewElement> listOfNodes)
 	{
+		StringBuilder stringBuilder = new StringBuilder();
 
 		String returnString = "";
 
 		boolean parentCollapse = parentNode.isCollapsed();
+
 		parentNode.setCollapsed(false);
 
 		for (JQueryTreeViewElement childNode : parentNode.getChildren())
@@ -253,19 +252,21 @@ public class catalogueTreeComponent
 			{
 				boolean collapse = childNode.isCollapsed();
 				childNode.setCollapsed(false);
-				returnString += childNode.toHtml();
+				stringBuilder.append(childNode.toHtml());
 				childNode.setCollapsed(collapse);
 
 			}
 			else
 			{
-				returnString += searchForInTree(childNode, listOfNodes);
+				stringBuilder.append(searchForInTree(childNode, listOfNodes));
 			}
 		}
 
-		if (!returnString.equals(""))
+		returnString = stringBuilder.toString();
+
+		if (!stringBuilder.toString().equals(""))
 		{
-			returnString = parentNode.toHtml(returnString);
+			returnString = parentNode.toHtml(stringBuilder.toString());
 		}
 
 		parentNode.setCollapsed(parentCollapse);
@@ -286,17 +287,22 @@ public class catalogueTreeComponent
 
 				JQueryTreeViewElement childTree = null;
 
-				String uniqueName = parentName + "_" + subProtocolName;
+				StringBuilder uniqueName = new StringBuilder();
 
-				if (!protocolsAndMeasurementsinTree.containsKey(uniqueName))
+				uniqueName.append(parentName).append("_").append(subProtocolName);
+
+				if (!protocolsAndMeasurementsinTree.containsKey(uniqueName.toString()))
 				{
-
 					Protocol protocol = nameToProtocol.get(subProtocolName);
-					// The tree first time is being created.
-					childTree = new JQueryTreeViewElement(uniqueName, subProtocolName, Protocol.class.getSimpleName()
-							+ protocol.getId().toString(), parentNode);
 
-					protocolsAndMeasurementsinTree.put(uniqueName.replaceAll(" ", "_"), childTree);
+					// The tree first time is being created.
+					StringBuilder nodeIdentifier = new StringBuilder();
+
+					childTree = new JQueryTreeViewElement(uniqueName.toString(), subProtocolName, nodeIdentifier
+							.append(Protocol.class.getSimpleName()).append(protocol.getId().toString()).toString(),
+							parentNode);
+
+					protocolsAndMeasurementsinTree.put(uniqueName.toString().replaceAll(" ", "_"), childTree);
 				}
 
 				List<JQueryTreeViewElement> treeNodes = null;
@@ -322,20 +328,23 @@ public class catalogueTreeComponent
 				for (Measurement feature : db.find(Measurement.class,
 						new QueryRule(Measurement.NAME, Operator.IN, p.getFeatures_Name())))
 				{
-
 					String labelName = (feature.getLabel() != null ? feature.getLabel() : feature.getName());
 
 					String featureName = feature.getName();
 
 					JQueryTreeViewElement childTree = null;
 
-					String uniqueName = parentName + "_" + featureName;
+					StringBuilder uniqueName = new StringBuilder();
 
-					if (!protocolsAndMeasurementsinTree.containsKey(uniqueName))
+					uniqueName.append(parentName).append("_").append(featureName);
+
+					if (!protocolsAndMeasurementsinTree.containsKey(uniqueName.toString()))
 					{
+						StringBuilder nodeIdentifier = new StringBuilder();
 
-						childTree = new JQueryTreeViewElement(uniqueName, labelName, Measurement.class.getSimpleName()
-								+ feature.getId().toString(), parentNode);
+						childTree = new JQueryTreeViewElement(uniqueName.toString(), labelName, nodeIdentifier
+								.append(Measurement.class.getSimpleName()).append(feature.getId().toString())
+								.toString(), parentNode);
 
 						childTree.setIsbottom(true);
 
@@ -343,7 +352,7 @@ public class catalogueTreeComponent
 
 						childTree.setHtmlValue(htmlValue);
 
-						protocolsAndMeasurementsinTree.put(uniqueName.replaceAll(" ", "_"), childTree);
+						protocolsAndMeasurementsinTree.put(uniqueName.toString().replaceAll(" ", "_"), childTree);
 
 					}
 					List<JQueryTreeViewElement> treeNodes = null;
@@ -375,9 +384,12 @@ public class catalogueTreeComponent
 		try
 		{
 			// Create the first node of the tree
-			protocolsTree = new JQueryTreeViewElement("Study_" + investigationName, "", null);
+			StringBuilder nodeIdentifier = new StringBuilder();
 
-			protocolsTree.setLabel("Study: " + investigationName);
+			protocolsTree = new JQueryTreeViewElement(nodeIdentifier.append("Study_").append(investigationName)
+					.toString(), "", null);
+
+			protocolsTree.setLabel(nodeIdentifier.toString());
 
 			protocolsAndMeasurementsinTree.put(protocolsTree.getName().replaceAll(" ", "_"), protocolsTree);
 
@@ -406,11 +418,12 @@ public class catalogueTreeComponent
 			displayName = measurement.getLabel();
 		}
 
-		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
-		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
-				+ nodeName + "_table'>";
-		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName
-				+ "_itemName\"style=\"cursor:pointer\">" + displayName + "</td></tr>";
+		StringBuilder htmlValue = new StringBuilder();
+
+		htmlValue.append("<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '")
+				.append(nodeName).append("_table'>")
+				.append("<tr><td class='box-body-label'>Current selection:</th><td id=\"").append(nodeName)
+				.append("_itemName\"style=\"cursor:pointer\">").append(displayName).append("</td></tr>");
 
 		if (categoryNames.size() > 0)
 		{
@@ -418,43 +431,43 @@ public class catalogueTreeComponent
 			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
 					categoryNames));
 
-			htmlValue += "<tr id='" + nodeName + "_category'><td  class='box-body-label'>Category:</td><td><table>";
+			htmlValue.append("<tr id='").append(nodeName)
+					.append("_category'><td  class='box-body-label'>Category:</td><td><table>");
 
-			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
+			StringBuilder missingCategory = new StringBuilder();
+
+			missingCategory.append("<tr><td  class='box-body-label'>Missing category:</td><td><table>");
 
 			for (Category c : listOfCategory)
 			{
+				StringBuilder codeString = new StringBuilder();
 
-				String codeString = c.getCode_String();
+				codeString.append(c.getCode_String());
 
 				if (!codeString.equals(""))
 				{
-					codeString += " = ";
+					codeString.append(" = ");
 				}
 				if (!c.getIsMissing())
 				{
-					htmlValue += "<tr><td>";
-					htmlValue += codeString + c.getDescription();
-					htmlValue += "</td></tr>";
+					htmlValue.append("<tr><td>").append(codeString).append(c.getDescription()).append("</td></tr>");
 				}
 				else
 				{
-					missingCategory += "<tr><td>";
-					missingCategory += codeString + c.getDescription();
-					missingCategory += "</td></tr>";
+					missingCategory.append("<tr><td>").append(codeString).append(c.getDescription())
+							.append("</td></tr>");
 				}
 			}
 
-			htmlValue += "</table></td></tr>";
-
-			htmlValue += missingCategory + "</table>";
+			htmlValue.append("</table></td></tr>").append(missingCategory.toString()).append("</table>");
 		}
 
-		htmlValue += "<tr id='" + nodeName + "_description'><td class='box-body-label'>Description:</td><td>"
-				+ (measurementDescription == null ? "not provided" : measurementDescription) + "</td></tr>";
-
-		htmlValue += "<tr id='" + nodeName + "_dataType'><td class='box-body-label'>Data type:</th><td>"
-				+ measurementDataType + "</td></tr>";
+		htmlValue.append("<tr id='").append(nodeName)
+				.append("_description'><td class='box-body-label'>Description:</td><td>")
+				.append((measurementDescription == null ? "not provided" : measurementDescription))
+				.append("</td></tr>").append("<tr id='").append(nodeName)
+				.append("_dataType'><td class='box-body-label'>Data type:</th><td>").append(measurementDataType)
+				.append("</td></tr>");
 
 		Query<ObservedValue> queryDetailInformation = db.query(ObservedValue.class);
 
@@ -472,12 +485,11 @@ public class catalogueTreeComponent
 
 				if (featureName.startsWith("SOP"))
 				{
-					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td><a href=" + value + ">"
-							+ value + "</a></td></tr>";
+					htmlValue.append("<tr><td class='box-body-label'>").append(featureName).append("</td><td><a href=")
+							.append(value).append(">").append(value).append("</a></td></tr>");
 				}
 				else
 				{
-
 					if (featureName.startsWith("display name"))
 					{
 						featureName = "display name";
@@ -486,9 +498,9 @@ public class catalogueTreeComponent
 			}
 		}
 
-		htmlValue += "</table>";
+		htmlValue.append("</table>");
 
-		return htmlValue;
+		return htmlValue.toString();
 	}
 
 	public List<String> getTopProtocols(String investigationName, Database db) throws DatabaseException
@@ -516,7 +528,6 @@ public class catalogueTreeComponent
 
 				if (!subNames.isEmpty())
 				{
-
 					if (!topProtocols.contains(p.getName()))
 					{
 						topProtocols.add(p.getName());
@@ -528,7 +539,6 @@ public class catalogueTreeComponent
 							middleProtocols.add(subProtocol);
 						}
 					}
-
 				}
 				else
 				{
