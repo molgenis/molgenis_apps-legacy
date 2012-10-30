@@ -25,11 +25,11 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
+
 	public String getCustomHtmlHeaders()
-    {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
+	{
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+	}
 
 	@Override
 	public String getViewName()
@@ -46,16 +46,19 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		try {
+		try
+		{
 			String action = request.getString("__action");
-			if (action.equals("reset") )
+			if (action.equals("reset"))
 			{
 				// Empty db and run generated sql scripts
 				new emptyDatabase(db, false);
 				FillMetadata.fillMetadata(db, false);
 				this.setSuccess("Database successfully reset");
 			}
-		} catch(Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			this.setError("Something went wrong while resetting your database: " + e.getMessage());
 		}
@@ -64,19 +67,19 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		// try
+		// {
+		// Database db = this.getDatabase();
+		// Query q = db.query(Experiment.class);
+		// q.like("name", "test");
+		// List<Experiment> recentExperiments = q.find();
+		//
+		// //do something
+		// }
+		// catch(Exception e)
+		// {
+		// //...
+		// }
 	}
-	
+
 }

@@ -52,8 +52,9 @@ public class Whiteboard extends PluginModel<Entity>
 	{
 		return "org/molgenis/scrum/plugins/Whiteboard.ftl";
 	}
-	
-	private Sprint getSelectedSprint() {
+
+	private Sprint getSelectedSprint()
+	{
 		ScreenController parent = this.getParent().getParent();
 		FormModel<Sprint> form = (FormModel<Sprint>) parent.getModel();
 		List<Sprint> sprintList = form.getRecords();
@@ -77,13 +78,13 @@ public class Whiteboard extends PluginModel<Entity>
 			else if ("taskDone".equals(action))
 			{
 				t.setStatus("done");
-				t.setChangedOn(new Date());				
+				t.setChangedOn(new Date());
 				db.update(t);
 			}
 			else if ("taskBack".equals(action))
 			{
 				t.setStatus("scheduled");
-				t.setChangedOn(new Date());				
+				t.setChangedOn(new Date());
 				db.update(t);
 			}
 			else if ("taskEdit".equals(action))
@@ -94,7 +95,7 @@ public class Whiteboard extends PluginModel<Entity>
 			{
 				t.setDescription(request.getString("description"));
 				t.setStoryPoints(request.getDouble("storyPoints"));
-				t.setChangedOn(new Date());				
+				t.setChangedOn(new Date());
 				db.update(t);
 				this.taskEdit = null;
 			}
@@ -115,11 +116,11 @@ public class Whiteboard extends PluginModel<Entity>
 				task.setDescription("please edit");
 				task.setStory(request.getInt("__story"));
 				task.setChangedOn(new Date());
-				
+
 				db.add(task);
 				this.taskEdit = task;
 			}
-			else if("storyEdit".equals(action))
+			else if ("storyEdit".equals(action))
 			{
 				this.storyEdit = db.findById(Story.class, request.getInt("__story"));
 			}
@@ -129,7 +130,7 @@ public class Whiteboard extends PluginModel<Entity>
 				story.setName(request.getString(Story.NAME));
 				story.setImportance(request.getString(Story.IMPORTANCE));
 				story.setHowToDemo(request.getString(Story.HOWTODEMO));
-				story.setLinkToDemo(request.getString(Story.LINKTODEMO));			
+				story.setLinkToDemo(request.getString(Story.LINKTODEMO));
 				db.update(story);
 				this.storyEdit = null;
 			}
@@ -183,34 +184,34 @@ public class Whiteboard extends PluginModel<Entity>
 			this.setMessages(new ScreenMessage("" + e.getMessage(), false));
 		}
 	}
-	
+
 	// summing methods
 	public double countSp(String status)
 	{
 		double result = 0;
-		for(Task t: this.tasks)
+		for (Task t : this.tasks)
 		{
-			if(t.getStatus().equals(status))
+			if (t.getStatus().equals(status))
 			{
 				result += t.getStoryPoints();
 			}
 		}
 		return result;
 	}
-	
+
 	public double countSp(Story story)
 	{
 		double result = 0;
-		for(Task t: this.tasks)
+		for (Task t : this.tasks)
 		{
-			if(t.getStory_Id().equals(story.getId()))
+			if (t.getStory_Id().equals(story.getId()))
 			{
 				result += t.getStoryPoints();
 			}
 		}
 		return result;
 	}
-	
+
 	// Getters for the view.
 	public List<Story> getStories()
 	{
@@ -226,7 +227,7 @@ public class Whiteboard extends PluginModel<Entity>
 	{
 		return taskEdit;
 	}
-	
+
 	public Story getStoryEdit()
 	{
 		return storyEdit;

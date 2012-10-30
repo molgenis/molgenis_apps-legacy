@@ -1,6 +1,3 @@
-
-
-
 import org.molgenis.model.JDBCModelExtractor;
 
 public class MolgenisExtractModel

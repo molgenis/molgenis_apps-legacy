@@ -30,7 +30,7 @@ public class HtmlEditor extends EasyPluginController<HtmlEditorModel>
 		super(name, parent);
 		this.setModel(new HtmlEditorModel(this)); // the default model
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("HtmlEditorView.ftl", getModel());

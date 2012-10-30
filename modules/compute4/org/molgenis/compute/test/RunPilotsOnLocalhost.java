@@ -4,14 +4,12 @@ import org.molgenis.compute.test.executor.ComputeExecutor;
 import org.molgenis.compute.test.executor.ComputeExecutorPilotDB;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 13/09/2012
- * Time: 16:10
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 13/09/2012 Time: 16:10
  * To change this template use File | Settings | File Templates.
  */
 public class RunPilotsOnLocalhost
 {
+
     public static void main(String[] args)
     {
         System.out.println("execute with pilots on localhost");

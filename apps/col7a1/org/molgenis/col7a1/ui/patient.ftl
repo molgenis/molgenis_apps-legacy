@@ -18,7 +18,7 @@ ${variantSummaryVO.cdnaNotation}<#if variantSummaryVO.aaNotation??> (${variantSu
 <tr class="form_listrow1"><th>Reference</th><td>
 <#if patientSummaryVO.publicationDTOList?? && patientSummaryVO.publicationDTOList?size &gt; 0>
 <#list patientSummaryVO.publicationDTOList as publicationDTO>
-<a href="${patientSummaryVO.pubmedURL}${publicationDTO.pubmedId}" target="_new">${publicationDTO.title}</a><br/>
+<a href="${patientSummaryVO.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new">${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}</a><br/>
 </#list>
 <#if patientSummaryVO.submitterDepartment??>
 First submitted as unpublished case by
@@ -31,7 +31,7 @@ ${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute},
 </table>
 
 <p>
-[<a href="javascript:back();">Back to results</a>]
+[<a href="javascript:window.history.back();" onclick="javascript:window.history.back();">Back to results</a>]
 </p>
 <p>
 [<a href="#">Back to top</a>]

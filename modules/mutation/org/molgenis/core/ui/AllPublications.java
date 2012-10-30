@@ -27,7 +27,7 @@ public class AllPublications extends IntegratedPluginController<AllPublicationsM
 		this.setModel(new AllPublicationsModel(this));
 		this.getModel().setPublicationPager("res/mutation/publicationPager.jsp");
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("AllPublications.ftl", getModel());
@@ -37,9 +37,8 @@ public class AllPublications extends IntegratedPluginController<AllPublicationsM
 	public String getCustomHtmlHeaders()
 	{
 		String result = super.getCustomHtmlHeaders();
-		
-		if (CollectionUtils.isEmpty(this.getModel().getPublicationVOList()))
-				result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=Publications&__target=Publications&__action=show\">";
+
+		if (CollectionUtils.isEmpty(this.getModel().getPublicationVOList())) result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=Publications&__target=Publications&__action=show\">";
 
 		return result;
 	}
@@ -50,9 +49,10 @@ public class AllPublications extends IntegratedPluginController<AllPublicationsM
 		{
 			PublicationService publicationService = PublicationService.getInstance(db);
 			this.getModel().setPublicationVOList(publicationService.getAll());
-			((HttpServletRequestTuple) request).getRequest().setAttribute("publicationVOList", this.getModel().getPublicationVOList());
+			((HttpServletRequestTuple) request).getRequest().setAttribute("publicationVOList",
+					this.getModel().getPublicationVOList());
 			this.getModel().setRawOutput(this.include(request, this.getModel().getPublicationPager()));
-			
+
 		}
 		catch (Exception e)
 		{

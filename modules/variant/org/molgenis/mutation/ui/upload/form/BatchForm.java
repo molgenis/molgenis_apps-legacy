@@ -14,12 +14,16 @@ public class BatchForm extends Container
 	{
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("select", ""));
-		this.add(new HiddenInput("__action", "insertBatch"));
+		this.add(new HiddenInput("__action", ""));
 		this.add(new FileInput("upload"));
 		this.add(new ActionInput("insertBatch"));
 		((ActionInput) this.get("insertBatch")).setLabel("Upload");
 		((ActionInput) this.get("insertBatch")).setTooltip("Upload");
 		((ActionInput) this.get("insertBatch")).setButtonValue("Upload");
+		this.add(new ActionInput("emailBatch"));
+		((ActionInput) this.get("emailBatch")).setLabel("Upload");
+		((ActionInput) this.get("emailBatch")).setTooltip("Upload");
+		((ActionInput) this.get("emailBatch")).setButtonValue("Upload");
 		ActionInput reindexInput = new ActionInput("reindex");
 		reindexInput.setLabel("Rebuild full text index");
 		reindexInput.setTooltip("Rebuild full text index");

@@ -8,11 +8,8 @@
 	<listener>
 		<listener-class>app.servlet.MolgenisContextListener</listener-class>
 	</listener>
-	<!--
-	<listener>
-		<listener-class>org.molgenis.framework.server.BackgroundListener</listener-class>
-	</listener>
-	-->
+	<!-- <listener> <listener-class>org.molgenis.framework.server.BackgroundListener</listener-class> 
+		</listener> -->
 	<resource-ref>
 		<res-ref-name>jdbc/molgenisdb</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
@@ -30,37 +27,15 @@
 		<servlet-name>FrontController</servlet-name>
 		<servlet-class>org.molgenis.mutation.web.SpringFrontController</servlet-class>
 	</servlet>
-<!--
-	<servlet-mapping>
-		<servlet-name>FrontController</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
--->
-<!--
-	<servlet>
-		<servlet-name>MolgenisServlet</servlet-name>
-		<servlet-class>app.servlet.MolgenisServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>RestServlet</servlet-name>
-		<servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
-		<init-param>
-			<param-name>jaxrs.serviceClasses</param-name>
-			<param-value>
-    			app.servlet.RestApi	      
-  			</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>jqGrid</servlet-name>
-		<servlet-class>org.molgenis.lifelines.jqGrid</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>jqGrid</servlet-name>
-		<url-pattern>/jqGrid/*</url-pattern>
-	</servlet-mapping>
--->
+	<!-- <servlet-mapping> <servlet-name>FrontController</servlet-name> <url-pattern>/*</url-pattern> 
+		</servlet-mapping> -->
+	<!-- <servlet> <servlet-name>MolgenisServlet</servlet-name> <servlet-class>app.servlet.MolgenisServlet</servlet-class> 
+		</servlet> <servlet> <servlet-name>RestServlet</servlet-name> <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class> 
+		<init-param> <param-name>jaxrs.serviceClasses</param-name> <param-value> 
+		app.servlet.RestApi </param-value> </init-param> <load-on-startup>1</load-on-startup> 
+		</servlet> <servlet> <servlet-name>jqGrid</servlet-name> <servlet-class>org.molgenis.lifelines.jqGrid</servlet-class> 
+		</servlet> <servlet-mapping> <servlet-name>jqGrid</servlet-name> <url-pattern>/jqGrid/*</url-pattern> 
+		</servlet-mapping> -->
 	<servlet-mapping>
 		<servlet-name>FrontController</servlet-name>
 		<url-pattern>*.do</url-pattern>
@@ -105,12 +80,8 @@
 		<servlet-name>FrontController</servlet-name>
 		<url-pattern>/api/rest.php/*</url-pattern>
 	</servlet-mapping>
-<!--
-	<servlet>
-		<servlet-name>RApiServlet</servlet-name>
-		<servlet-class>RApiServlet</servlet-class>
-	</servlet>
--->
+	<!-- <servlet> <servlet-name>RApiServlet</servlet-name> <servlet-class>RApiServlet</servlet-class> 
+		</servlet> -->
 	<servlet-mapping>
 		<servlet-name>FrontController</servlet-name>
 		<url-pattern>/api/R/*</url-pattern>
@@ -134,7 +105,7 @@
 		<servlet-name>SimpleCaptcha</servlet-name>
 		<url-pattern>/captchaImg</url-pattern>
 	</servlet-mapping>
-	<!--  displaytag -->
+	<!-- displaytag -->
 	<filter>
 		<filter-name>ResponseOverrideFilter</filter-name>
 		<filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
@@ -148,34 +119,15 @@
 		<url-pattern>*.jsp</url-pattern>
 	</filter-mapping>
 	<!-- quartz scheduling -->
-<!--
-	<servlet> 
-      <servlet-name>QuartzInitializer</servlet-name> 
-      <servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class> 
-      <init-param>
-        <param-name>shutdown-on-unload</param-name>
-        <param-value>true</param-value>
-      </init-param>
-      <init-param>
-        <param-name>wait-on-shutdown</param-name>
-        <param-value>false</param-value>
-      </init-param>
-      <init-param>
-        <param-name>start-scheduler-on-load</param-name>
-        <param-value>true</param-value>
-      </init-param>
-      <load-on-startup>2</load-on-startup>
-    </servlet>
--->
-    <!-- Spring framework -->
-<!--
-    <context-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>/WEB-INF/beanRefFactory.xml /WEB-INF/applicationContext.xml</param-value>
-    </context-param>
-
-    <listener>
-      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
--->
+	<!-- <servlet> <servlet-name>QuartzInitializer</servlet-name> <servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class> 
+		<init-param> <param-name>shutdown-on-unload</param-name> <param-value>true</param-value> 
+		</init-param> <init-param> <param-name>wait-on-shutdown</param-name> <param-value>false</param-value> 
+		</init-param> <init-param> <param-name>start-scheduler-on-load</param-name> 
+		<param-value>true</param-value> </init-param> <load-on-startup>2</load-on-startup> 
+		</servlet> -->
+	<!-- Spring framework -->
+	<!-- <context-param> <param-name>contextConfigLocation</param-name> <param-value>/WEB-INF/beanRefFactory.xml 
+		/WEB-INF/applicationContext.xml</param-value> </context-param> <listener> 
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> 
+		</listener> -->
 </web-app>

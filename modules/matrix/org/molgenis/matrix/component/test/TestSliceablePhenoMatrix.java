@@ -25,36 +25,34 @@ import app.DatabaseFactory;
 
 public class TestSliceablePhenoMatrix
 {
-	//SETTINGS!
+	// SETTINGS!
 	String properties = "apps/animaldb/org/molgenis/animaldb/animaldb.properties";
-	
-	
-	//data and metadata
+
+	// data and metadata
 	private List<Measurement> features = new ArrayList<Measurement>();
 	private List<Individual> targets = new ArrayList<Individual>();
 	private List<ObservedValue> values = new ArrayList<ObservedValue>();
 	private Investigation investigation;
 
-	//the matrix
+	// the matrix
 	private SliceablePhenoMatrix<Individual, Measurement> matrix;
-	
-	//the logger
+
+	// the logger
 	Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
 	@BeforeClass
 	public void setUp() throws DatabaseException, FileNotFoundException, IOException
 	{
 		BasicConfigurator.configure();
-		
-                Database db = DatabaseFactory.create(properties);
+
+		Database db = DatabaseFactory.create(properties);
 
 		this.generateData(db);
 
-		matrix = new SliceablePhenoMatrix<Individual, Measurement>(
-				Individual.class, Measurement.class);
-		//different row and col limit to make sure we test different things
+		matrix = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+		// different row and col limit to make sure we test different things
 		matrix.setColLimit(5);
-		
+
 		logger.debug("++++++++++SETUP COMPLETE++++++++++++");
 	}
 
@@ -63,15 +61,15 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testRowHeaders");
-		
+
 		List<Individual> rowHeaders = matrix.getRowHeaders();
-		
+
 		Assert.assertEquals(rowHeaders.get(0).getIdValue(), targets.get(0).getIdValue());
 		Assert.assertEquals(rowHeaders.size(), matrix.getRowLimit());
-		
-		//more the row offset
-		//matrix.setRowOffset(10);
-		//Assert.assertEquals(rowHeaders.get(0), targets.get(10));
+
+		// more the row offset
+		// matrix.setRowOffset(10);
+		// Assert.assertEquals(rowHeaders.get(0), targets.get(10));
 	}
 
 	@Test
@@ -79,11 +77,11 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testColHeaders");
-		//we expect feature index in reverse order
+		// we expect feature index in reverse order
 		List<Measurement> colHeaders = matrix.getColHeaders();
-		
+
 		Assert.assertEquals(colHeaders.size(), matrix.getColLimit());
-		
+
 		Assert.assertEquals(colHeaders.get(0), features.get(0));
 
 	}
@@ -93,10 +91,10 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testRowIndics");
-		
-		//we expect feature index in reverse order
+
+		// we expect feature index in reverse order
 		List<Integer> rowIndices = matrix.getRowIndices();
-		
+
 		Assert.assertEquals(rowIndices.size(), matrix.getRowLimit());
 		Assert.assertEquals(rowIndices.get(0), targets.get(0).getIdValue());
 
@@ -107,10 +105,10 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testColIndices");
-		
-		//we expect feature index in reverse order
+
+		// we expect feature index in reverse order
 		List<Integer> colIndices = matrix.getColIndices();
-		
+
 		Assert.assertEquals(colIndices.get(0), features.get(0).getIdValue());
 		Assert.assertEquals(colIndices.size(), matrix.getColLimit());
 	}
@@ -120,57 +118,58 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testValues: load data");
-		
+
 		List<? extends Observation>[][] valueMatrix = matrix.getValueLists();
 		logger.debug("testValues: verifying...");
-		
-		for(Integer row = 0; row < matrix.getRowLimit(); row++ )
+
+		for (Integer row = 0; row < matrix.getRowLimit(); row++)
 		{
-			for(Integer col = 0; col < matrix.getColLimit(); col++)
+			for (Integer col = 0; col < matrix.getColLimit(); col++)
 			{
 				List<? extends Observation> e = valueMatrix[row][col];
-				Assert.assertEquals(e.get(0).get(ObservedValue.VALUE), this.values.get(row*matrix.getColCount() + col).getValue());
-				//TODO 
-				//Assert.assertEquals(e.get(0), col);
-				//Assert.assertEquals(e.getValue(), "val"+row+","+col);
+				Assert.assertEquals(e.get(0).get(ObservedValue.VALUE), this.values
+						.get(row * matrix.getColCount() + col).getValue());
+				// TODO
+				// Assert.assertEquals(e.get(0), col);
+				// Assert.assertEquals(e.getValue(), "val"+row+","+col);
 			}
 		}
 	}
-	
+
 	@Test
 	public void testRowHeaderFilters(Database db) throws Exception
 	{
 		matrix.reset();
-		logger.debug("testRowHeaderFilters");		
-		
-		//check for first one greater then 
+		logger.debug("testRowHeaderFilters");
+
+		// check for first one greater then
 		matrix.sliceByRowProperty(Individual.ID, Operator.GREATER, targets.get(5).getId());
 		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(6).getId());
-		
-		//repeat for sliceByRowIndex (wich should work identical to above)
+
+		// repeat for sliceByRowIndex (wich should work identical to above)
 		matrix.reset();
 		matrix.sliceByRowIndex(Operator.GREATER, targets.get(5).getId());
 		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(6).getId());
 
-		
-		//reverse sort, now we should get last ID first
+		// reverse sort, now we should get last ID first
 		matrix.sliceByRowProperty(Individual.ID, Operator.SORTDESC, null);
 		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(targets.size() - 1).getIdValue());
-		
+
 	}
-	
+
 	@Test
 	public void testColValuePropertyFilters(Database db) throws Exception
 	{
 		matrix.reset();
-		logger.debug("testColValuePropertyFilters");		
-		
-		//filter on 5th column (values 'val4,4' and higher), we expect first result target to be row5
+		logger.debug("testColValuePropertyFilters");
+
+		// filter on 5th column (values 'val4,4' and higher), we expect first
+		// result target to be row5
 		matrix.sliceByColValues(features.get(5), Operator.GREATER, "val44");
 		matrix.sortCol(features.get(5).getId(), ObservedValue.VALUE, Operator.SORTASC);
 		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(5));
-		
-		//repeate but now explicity property chosing
+
+		// repeate but now explicity property chosing
 		matrix.reset();
 		matrix.sliceByColValueProperty(features.get(5), ObservedValue.VALUE, Operator.GREATER, "val44");
 		matrix.sortCol(features.get(5).getId(), ObservedValue.VALUE, Operator.SORTASC);
@@ -182,7 +181,7 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testColCount");
-		Assert.assertEquals(matrix.getColCount(), (Integer)features.size());
+		Assert.assertEquals(matrix.getColCount(), (Integer) features.size());
 	}
 
 	@Test
@@ -190,37 +189,37 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testRowCount");
-		Assert.assertEquals(matrix.getRowCount(), (Integer)targets.size());
+		Assert.assertEquals(matrix.getRowCount(), (Integer) targets.size());
 	}
-	
+
 	@Test
 	public void testRowOffset(Database db) throws Exception
 	{
 		matrix.reset();
 		logger.debug("testRowOffset");
 		matrix.setRowOffset(10);
-		Assert.assertEquals(matrix.getRowIndices().get(0), targets.get(10).getIdValue());	
-		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(10));	
+		Assert.assertEquals(matrix.getRowIndices().get(0), targets.get(10).getIdValue());
+		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(10));
 	}
-	
+
 	@AfterClass
 	public void tearDown() throws DatabaseException, FileNotFoundException, IOException
 	{
 		logger.debug("++++++++++TEST COMPLETE, REMOVING DATA ++++++++++++");
 		Database db = DatabaseFactory.create(properties);
-		
+
 		try
 		{
 			db.beginTx();
-			
+
 			db.remove(values);
 			db.remove(targets);
 			db.remove(features);
 			db.remove(investigation);
-			
+
 			db.commitTx();
 		}
-		catch(DatabaseException e)
+		catch (DatabaseException e)
 		{
 			db.rollbackTx();
 		}
@@ -247,17 +246,17 @@ public class TestSliceablePhenoMatrix
 				Measurement meas = new Measurement();
 				meas.setInvestigation(investigation.getId());
 				meas.setName("meas" + i);
-				//to help compile
+				// to help compile
 				try
 				{
-					meas.set("Owns",2);
+					meas.set("Owns", 2);
 				}
 				catch (Exception e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				features.add(meas);
 			}
 			db.add(features);
@@ -271,7 +270,7 @@ public class TestSliceablePhenoMatrix
 				inv.setName("inv" + i);
 				try
 				{
-					inv.set("Owner",2);
+					inv.set("Owner", 2);
 				}
 				catch (Exception e)
 				{
@@ -294,8 +293,8 @@ public class TestSliceablePhenoMatrix
 					ObservedValue td = new ObservedValue();
 					td.setFeature(features.get(col));
 					td.setTarget(targets.get(row));
-					td.setValue("val"+row+","+col);
-					
+					td.setValue("val" + row + "," + col);
+
 					values.add(td);
 				}
 				rowIndex++;

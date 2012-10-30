@@ -1,6 +1,5 @@
 package org.molgenis.compute;
 
-
 import org.molgenis.Molgenis;
 
 public class ComputeUpdateDatabase

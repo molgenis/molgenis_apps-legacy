@@ -4,13 +4,12 @@ import java.util.List;
 
 import org.molgenis.organization.Investigation;
 
-
 public class PlinkFileManagerModel
 {
 	private String uploadMode = null;
 	private List<Investigation> investigations;
 	private Integer selectedInv;
-	
+
 	public String getUploadMode()
 	{
 		return uploadMode;
@@ -40,8 +39,5 @@ public class PlinkFileManagerModel
 	{
 		this.selectedInv = selectedInv;
 	}
-	
-	
-	
 
 }

@@ -13,28 +13,43 @@ public class ProtocolDTO implements Serializable
 	private String protocolName;
 	private List<FeatureDTO> featureDTOList;
 
-	public Integer getProtocolId() {
+	public Integer getProtocolId()
+	{
 		return protocolId;
 	}
-	public void setProtocolId(Integer protocolId) {
+
+	public void setProtocolId(Integer protocolId)
+	{
 		this.protocolId = protocolId;
 	}
-	public String getProtocolKey() {
+
+	public String getProtocolKey()
+	{
 		return protocolKey;
 	}
-	public void setProtocolKey(String protocolKey) {
+
+	public void setProtocolKey(String protocolKey)
+	{
 		this.protocolKey = protocolKey;
 	}
-	public String getProtocolName() {
+
+	public String getProtocolName()
+	{
 		return protocolName;
 	}
-	public void setProtocolName(String protocolName) {
+
+	public void setProtocolName(String protocolName)
+	{
 		this.protocolName = protocolName;
 	}
-	public List<FeatureDTO> getFeatureDTOList() {
+
+	public List<FeatureDTO> getFeatureDTOList()
+	{
 		return featureDTOList;
 	}
-	public void setFeatureDTOList(List<FeatureDTO> featureDTOList) {
+
+	public void setFeatureDTOList(List<FeatureDTO> featureDTOList)
+	{
 		this.featureDTOList = featureDTOList;
 	}
 }

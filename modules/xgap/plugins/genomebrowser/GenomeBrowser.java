@@ -54,10 +54,12 @@ public class GenomeBrowser extends PluginModel<Entity>
 
 	public void handleRequest(Database db, Tuple request)
 	{
-		// on any request, set the location of the app based on how the user 'contacted' the app
-		// the action "__continue_to_genomebrowser" is not handled but only serves to lead here
+		// on any request, set the location of the app based on how the user
+		// 'contacted' the app
+		// the action "__continue_to_genomebrowser" is not handled but only
+		// serves to lead here
 		this.model.setAppUrl(((MolgenisRequest) request).getAppLocation());
-		
+
 		if (request.getString("__action") != null)
 		{
 			String action = request.getString("__action");

@@ -15,14 +15,12 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 15/08/2012
- * Time: 13:15
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 15/08/2012 Time: 13:15
  * To change this template use File | Settings | File Templates.
  */
 public class WorkflowImporterJDBC
 {
+
     private File workflowDir, parametersFile, workflowElements, protocolsDir;
 
     public static void main(String[] args)
@@ -291,4 +289,5 @@ public class WorkflowImporterJDBC
         bis.close();
         return new String(bytes);
     }
+
 }

@@ -21,8 +21,8 @@ ${model.selectProtocolForm.__target}
 <p>
 ${model.selectProtocolForm.Protocol}
 </p>
-<@action name="show" label="Back to List mode"/>
-<@action name="add" label="Apply Protocol"/>
+${model.selectProtocolForm.show}
+${model.selectProtocolForm.add}
 </form>
 
 			</div>

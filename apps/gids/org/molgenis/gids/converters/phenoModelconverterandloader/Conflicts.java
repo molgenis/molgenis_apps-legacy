@@ -1,14 +1,16 @@
 package org.molgenis.gids.converters.phenoModelconverterandloader;
 
-public class Conflicts {
+public class Conflicts
+{
 
 	private int id;
 	private String target;
 	private String featureName;
 	private String oldValue;
 	private String newValue;
-	
-	public void setVariables(String target, String featureName, int id, String oldValue, String newValue){
+
+	public void setVariables(String target, String featureName, int id, String oldValue, String newValue)
+	{
 		this.target = target;
 		this.featureName = featureName;
 		this.id = id;
@@ -16,24 +18,29 @@ public class Conflicts {
 		this.newValue = newValue;
 	}
 
-	public int getId() {
+	public int getId()
+	{
 		return id;
 	}
 
-	public String getTarget() {
+	public String getTarget()
+	{
 		return target;
 	}
 
-	public String getFeatureName() {
+	public String getFeatureName()
+	{
 		return featureName;
 	}
 
-	public String getOldValue() {
+	public String getOldValue()
+	{
 		return oldValue;
 	}
 
-	public String getNewValue() {
+	public String getNewValue()
+	{
 		return newValue;
 	}
-	
+
 }

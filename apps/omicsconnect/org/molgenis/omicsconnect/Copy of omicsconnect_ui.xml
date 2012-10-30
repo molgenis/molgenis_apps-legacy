@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="omicsconnect">
-	 <plugin name="oc_header" type="org.molgenis.omicsconnect.plugins.header.Header"/> 
-		
-	<!-- plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" / -->>
+	<plugin name="oc_header" type="org.molgenis.omicsconnect.plugins.header.Header" />
+
+	<!-- plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" 
+		/ -->
+	>
 	<menu name="main">
-	<plugin name="GenomeBrowserPlugin" type="org.molgenis.omicsconnect.plugins.browser.GenomeBrowserPlugin"
-            label="Genome Browser"/>
-            	<plugin name="ExpPlugin" type="org.molgenis.omicsconnect.plugins.experiment.ExpTable"
-            label="EXP TEST"/>
+		<plugin name="GenomeBrowserPlugin"
+			type="org.molgenis.omicsconnect.plugins.browser.GenomeBrowserPlugin"
+			label="Genome Browser" />
+		<plugin name="ExpPlugin"
+			type="org.molgenis.omicsconnect.plugins.experiment.ExpTable" label="EXP TEST" />
 		<!-- plugin name="Login" type="org.molgenis.auth.ui.UserLogin" / -->
 
 		<form name="StudyInfo" label="Studies" entity="Study"
@@ -16,7 +19,8 @@
 			<menu name="StudyMenu">
 				<form name="StudyDetails" entity="StudyDetails" />
 				<form name="StudyPanels" label="Panels" entity="Panel">
-					<!-- had hotlinks removed for now form name="Links" label="Hotlinks" entity="Link" /-->
+					<!-- had hotlinks removed for now form name="Links" label="Hotlinks" 
+						entity="Link" / -->
 					<form name="PanelIndividuals" entity="Individual" />
 					<form name="PanelSources" entity="PanelSource" />
 				</form>
@@ -26,9 +30,9 @@
 				<form name="Experiments" entity="Experiment" compact_view="identifier,experimentType">
 					<menu name="ExperimentMenu">
 						<form name="DataSets" lalel="DataSets / ResultSets" entity="DataSet">
-							<!-- form name="DataSetLinks" label="Hotlinks" entity="Link" /-->
+							<!-- form name="DataSetLinks" label="Hotlinks" entity="Link" / -->
 						</form>
-						<!-- form name="ExperimentLinks" label="Hotlinks" entity="Link" /-->
+						<!-- form name="ExperimentLinks" label="Hotlinks" entity="Link" / -->
 						<form name="AassayedPanels" entity="Panel" />
 						<form name="UsedMarkerSets" entity="Usedmarkerset" />
 						<form name="Significances" entity="FrequencyCluster">

@@ -22,21 +22,21 @@ import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.service.SearchService;
 
-public class AtomFeed implements MolgenisService 
+public class AtomFeed implements MolgenisService
 {
 	private static Abdera abdera = null;
-	
-	public AtomFeed(@SuppressWarnings("unused") MolgenisContext mc)
+
+	public AtomFeed(@SuppressWarnings("unused")
+	MolgenisContext mc)
 	{
-		if (abdera == null)
-			abdera = new Abdera();
+		if (abdera == null) abdera = new Abdera();
 	}
 
 	@Override
-	public void handleRequest(MolgenisRequest req, MolgenisResponse resp)
-			throws ParseException, DatabaseException, IOException
+	public void handleRequest(MolgenisRequest req, MolgenisResponse resp) throws ParseException, DatabaseException,
+			IOException
 	{
-		HttpServletRequest request   = req.getRequest();
+		HttpServletRequest request = req.getRequest();
 		HttpServletResponse response = resp.getResponse();
 
 		response.setContentType("application/atom+xml");
@@ -68,16 +68,17 @@ public class AtomFeed implements MolgenisService
 
 	private void handleGeneFeed(MolgenisRequest req, MolgenisResponse resp) throws IOException
 	{
-		HttpServletRequest request   = req.getRequest();
+		HttpServletRequest request = req.getRequest();
 		HttpServletResponse response = resp.getResponse();
 
-		SearchService searchService  = ServiceLocator.instance().getSearchService();
+		SearchService searchService = ServiceLocator.instance().getSearchService();
 		searchService.setDatabase(req.getDatabase());
-	
-		String geneURL               = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
-		GeneDTO geneSummaryDTO       = searchService.findGene();
-			
-		StringBuffer content         = new StringBuffer();
+
+		String geneURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+				+ "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
+		GeneDTO geneSummaryDTO = searchService.findGene();
+
+		StringBuffer content = new StringBuffer();
 		content.append("id:" + geneSummaryDTO.getSymbol() + "\n");
 		content.append("entrez_id:NA\n");
 		content.append("symbol:" + geneSummaryDTO.getSymbol() + "\n");
@@ -108,20 +109,21 @@ public class AtomFeed implements MolgenisService
 
 		feed.writeTo(response.getOutputStream());
 	}
-	
+
 	private void handleVariantsFeed(MolgenisRequest req, MolgenisResponse resp) throws IOException
 	{
-		HttpServletRequest request   = req.getRequest();
+		HttpServletRequest request = req.getRequest();
 		HttpServletResponse response = resp.getResponse();
 
-		SearchService searchService  = (SearchService) ServiceLocator.instance().getService("searchService");
+		SearchService searchService = (SearchService) ServiceLocator.instance().getService("searchService");
 		searchService.setDatabase(req.getDatabase());
-	
-		String geneURL               = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
+
+		String geneURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+				+ "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
 
 		GeneDTO geneSummaryDTO = searchService.findGene();
 
-		Feed feed                    = abdera.newFeed();
+		Feed feed = abdera.newFeed();
 
 		feed.setTitle("Listing of all public variants in the " + geneSummaryDTO.getSymbol() + " database");
 		feed.addLink(geneURL, "alternate");
@@ -137,7 +139,9 @@ public class AtomFeed implements MolgenisService
 			Entry entry = feed.addEntry();
 			entry.setId(mutationSummaryVO.getIdentifier());
 			entry.setTitle(geneSummaryDTO.getSymbol() + ":" + mutationSummaryVO.getCdnaNotation());
-			String mutationURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=showMutation&mid=" + mutationSummaryVO.getIdentifier() + "#results";
+			String mutationURL = "http://" + request.getServerName() + ":" + request.getServerPort()
+					+ request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=showMutation&mid="
+					+ mutationSummaryVO.getIdentifier() + "#results";
 			entry.addLink(mutationURL, "alternate");
 			entry.addLink(request.getRequestURL().toString(), "self");
 			entry.addAuthor("Peter van den Akker");
@@ -148,14 +152,16 @@ public class AtomFeed implements MolgenisService
 			StringBuffer content = new StringBuffer();
 			content.append("symbol:" + geneSummaryDTO.getSymbol() + "\n");
 			content.append("id:" + mutationSummaryVO.getIdentifier() + "\n");
-			content.append("position_mRNA:" + geneSummaryDTO.getGenbankId() + "." + geneSummaryDTO.getGenomeBuild() + ":c." + mutationSummaryVO.getCdnaStart() + "\n");
-			content.append("position_genomic:" + geneSummaryDTO.getChromosome() + ":" + mutationSummaryVO.getGdnaStart() + "\n");
+			content.append("position_mRNA:" + geneSummaryDTO.getGenbankId() + "." + geneSummaryDTO.getGenomeBuild()
+					+ ":c." + mutationSummaryVO.getCdnaStart() + "\n");
+			content.append("position_genomic:" + geneSummaryDTO.getChromosome() + ":"
+					+ mutationSummaryVO.getGdnaStart() + "\n");
 			content.append("Variant/DNA:" + mutationSummaryVO.getCdnaNotation() + "\n");
 			content.append("Variant/DBID:" + mutationSummaryVO.getIdentifier() + "\n");
 			content.append("Times_reported:" + mutationSummaryVO.getPatientSummaryDTOList().size() + "\n");
 			entry.setContent(content.toString());
 		}
-		
+
 		feed.writeTo(response.getOutputStream());
 	}
 }

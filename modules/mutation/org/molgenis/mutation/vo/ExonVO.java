@@ -13,41 +13,64 @@ public class ExonVO extends Exon implements Serializable
 	private String aaSequence;
 	private String nuclSequenceFlankLeft;
 	private String nuclSequenceFlankRight;
-	
-	public Integer getNumFullAminoAcids() {
+
+	public Integer getNumFullAminoAcids()
+	{
 		return numFullAminoAcids;
 	}
-	public void setNumFullAminoAcids(Integer numFullAminoAcids) {
+
+	public void setNumFullAminoAcids(Integer numFullAminoAcids)
+	{
 		this.numFullAminoAcids = numFullAminoAcids;
 	}
-	public Integer getNumPartAminoAcids() {
+
+	public Integer getNumPartAminoAcids()
+	{
 		return numPartAminoAcids;
 	}
-	public void setNumPartAminoAcids(Integer numPartAminoAcids) {
+
+	public void setNumPartAminoAcids(Integer numPartAminoAcids)
+	{
 		this.numPartAminoAcids = numPartAminoAcids;
 	}
-	public String getNuclSequence() {
+
+	public String getNuclSequence()
+	{
 		return nuclSequence;
 	}
-	public void setNuclSequence(String nuclSequence) {
+
+	public void setNuclSequence(String nuclSequence)
+	{
 		this.nuclSequence = nuclSequence;
 	}
-	public String getAaSequence() {
+
+	public String getAaSequence()
+	{
 		return aaSequence;
 	}
-	public void setAaSequence(String aaSequence) {
+
+	public void setAaSequence(String aaSequence)
+	{
 		this.aaSequence = aaSequence;
 	}
-	public String getNuclSequenceFlankLeft() {
+
+	public String getNuclSequenceFlankLeft()
+	{
 		return nuclSequenceFlankLeft;
 	}
-	public void setNuclSequenceFlankLeft(String nuclSequenceFlankLeft) {
+
+	public void setNuclSequenceFlankLeft(String nuclSequenceFlankLeft)
+	{
 		this.nuclSequenceFlankLeft = nuclSequenceFlankLeft;
 	}
-	public String getNuclSequenceFlankRight() {
+
+	public String getNuclSequenceFlankRight()
+	{
 		return nuclSequenceFlankRight;
 	}
-	public void setNuclSequenceFlankRight(String nuclSequenceFlankRight) {
+
+	public void setNuclSequenceFlankRight(String nuclSequenceFlankRight)
+	{
 		this.nuclSequenceFlankRight = nuclSequenceFlankRight;
 	}
 }

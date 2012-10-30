@@ -27,15 +27,16 @@ import org.molgenis.framework.ui.ApplicationController;
 
 import plugins.matrix.manager.MatrixManager;
 
-public class downloadmatrixasexcel implements MolgenisService {
+public class downloadmatrixasexcel implements MolgenisService
+{
 
 	private MolgenisContext mc;
-	
+
 	public downloadmatrixasexcel(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -44,14 +45,17 @@ public class downloadmatrixasexcel implements MolgenisService {
 		boolean databaseIsAvailable = false;
 		boolean setupSuccess = false;
 		boolean argumentsAreCorrect = false;
-		
+
 		Database db = null;
 		DataMatrixInstance instance = null;
 
-		try {
+		try
+		{
 			db = request.getDatabase();
 			databaseIsAvailable = true;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			PrintWriter out = response.getResponse().getWriter();
 			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
@@ -60,19 +64,24 @@ public class downloadmatrixasexcel implements MolgenisService {
 			out.close();
 		}
 
-		if (databaseIsAvailable) {
-			try {
-				
-				//special exception for filtered content: get matrix instance from memory and do complete handle
-				if(request.getString("id").equals("inmemory"))
+		if (databaseIsAvailable)
+		{
+			try
+			{
+
+				// special exception for filtered content: get matrix instance
+				// from memory and do complete handle
+				if (request.getString("id").equals("inmemory"))
 				{
-					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
-					DataMatrixInstance dm = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA));
-					if(dm.getNumberOfCols() > 256)
+					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession()
+							.getAttribute("application");
+					DataMatrixInstance dm = ((DataMatrixInstance) molgenis.sessionVariables
+							.get(MatrixManager.SESSION_MATRIX_DATA));
+					if (dm.getNumberOfCols() > 256)
 					{
 						throw new Exception("Too many columns selected. The maximum for Excel is 256.");
 					}
-					if(dm.getNumberOfRows() > 100000)
+					if (dm.getNumberOfRows() > 100000)
 					{
 						throw new Exception("Too many rows selected. The maximum is limited to 100k.");
 					}
@@ -83,39 +92,42 @@ public class downloadmatrixasexcel implements MolgenisService {
 					InputStream in = new BufferedInputStream(conn.getInputStream());
 					response.getResponse().setContentType("application/vnd.ms-excel");
 					response.getResponse().setContentLength((int) excelFile.length());
-					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+dm.getData().getName()+"_"+"some"+".xls"+"\"");
+					response.getResponse().setHeader("Content-disposition",
+							"attachment; filename=\"" + dm.getData().getName() + "_" + "some" + ".xls" + "\"");
 					byte[] buffer = new byte[2048];
-					for (;;) {
+					for (;;)
+					{
 						int nBytes = in.read(buffer);
-						if (nBytes <= 0)
-							break;
+						if (nBytes <= 0) break;
 						outSpecial.write(buffer, 0, nBytes);
 					}
 					outSpecial.flush();
 					outSpecial.close();
 					return;
 				}
-				
+
 				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				List<Data> dataList = db.find(Data.class, q);
-				if (dataList.size() != 1) {
-					throw new Exception("Datamatrix for ID " + matrixId
-							+ " was not found.");
+				if (dataList.size() != 1)
+				{
+					throw new Exception("Datamatrix for ID " + matrixId + " was not found.");
 				}
 				Data data = dataList.get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
 				instance = dmh.createInstance(data, db);
-				if(instance.getNumberOfCols() > 256)
+				if (instance.getNumberOfCols() > 256)
 				{
 					throw new Exception("Too many columns selected. The maximum for Excel is 256.");
 				}
-				if(instance.getNumberOfRows() > 100000)
+				if (instance.getNumberOfRows() > 100000)
 				{
 					throw new Exception("Too many rows selected. The maximum is limited to 100k.");
 				}
 				setupSuccess = true;
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				PrintWriter out = response.getResponse().getWriter();
 				e.printStackTrace(out);
 				out.print("\n\n");
@@ -124,24 +136,31 @@ public class downloadmatrixasexcel implements MolgenisService {
 				out.close();
 			}
 		}
-		
-		if(setupSuccess){
-			try {
+
+		if (setupSuccess)
+		{
+			try
+			{
 				if (request.getString("download").equals("all"))
 				{
-					//correct
-				}else if (request.getString("download").equals("some"))
+					// correct
+				}
+				else if (request.getString("download").equals("some"))
 				{
 					request.getInt("coff");
 					request.getInt("clim");
 					request.getInt("roff");
 					request.getInt("rlim");
-					//correct
-				}else{
+					// correct
+				}
+				else
+				{
 					throw new Exception("Bad arguments.");
 				}
 				argumentsAreCorrect = true;
-			}catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				PrintWriter out = response.getResponse().getWriter();
 				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
@@ -151,64 +170,79 @@ public class downloadmatrixasexcel implements MolgenisService {
 			}
 		}
 
-		if (argumentsAreCorrect) {
+		if (argumentsAreCorrect)
+		{
 			OutputStream outFile = response.getResponse().getOutputStream();
-			try {
+			try
+			{
 				File excelFile = null;
 				String download = request.getString("download");
 				if (download.equals("all"))
 				{
 					excelFile = instance.getAsExcelFile();
-				}else if (download.equals("some"))
+				}
+				else if (download.equals("some"))
 				{
 					int colOffset = request.getInt("coff");
 					int colLimit = request.getInt("clim");
 					int rowOffset = request.getInt("roff");
 					int rowLimit = request.getInt("rlim");
-					excelFile = instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsExcelFile();
+					excelFile = instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit)
+							.getAsExcelFile();
 				}
 				URL localURL = excelFile.toURI().toURL();
 				URLConnection conn = localURL.openConnection();
 				InputStream in = new BufferedInputStream(conn.getInputStream());
 				response.getResponse().setContentType("application/vnd.ms-excel");
 				response.getResponse().setContentLength((int) excelFile.length());
-				response.getResponse().setHeader("Content-disposition","attachment; filename=\""+instance.getData().getName()+"_"+download+".xls"+"\"");
+				response.getResponse().setHeader("Content-disposition",
+						"attachment; filename=\"" + instance.getData().getName() + "_" + download + ".xls" + "\"");
 				byte[] buffer = new byte[2048];
-				for (;;) {
+				for (;;)
+				{
 					int nBytes = in.read(buffer);
-					if (nBytes <= 0)
-						break;
+					if (nBytes <= 0) break;
 					outFile.write(buffer, 0, nBytes);
 				}
 				outFile.flush();
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
-				//logger.error(e);
-			} finally {
+				// logger.error(e);
+			}
+			finally
+			{
 				outFile.close();
 			}
 		}
 	}
 
-	public void displayUsage(PrintWriter out, Database db) {
+	public void displayUsage(PrintWriter out, Database db)
+	{
 		String usage = "Potentially downloadable matrices available in this database:\n\n" + matricesFromDb(db) + "\n";
 		out.print(usage);
 	}
 
-	public String matricesFromDb(Database db) {
+	public String matricesFromDb(Database db)
+	{
 		String res = "";
-		try {
+		try
+		{
 			List<Data> dataList = db.find(Data.class);
-//			MolgenisFileHandler mfh = new MolgenisFileHandler(db);
-			for (Data data : dataList) {
-//				try{
-//					mfh.findFile(data).equals("null")
-//				}
-				
-					res += data.toString() + "\n";
-				
+			// MolgenisFileHandler mfh = new MolgenisFileHandler(db);
+			for (Data data : dataList)
+			{
+				// try{
+				// mfh.findFile(data).equals("null")
+				// }
+
+				res += data.toString() + "\n";
+
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			res += "An error occurred when retrieving matrix information:\n\n";
 			res += e.getMessage();
 		}

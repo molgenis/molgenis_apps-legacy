@@ -11,7 +11,8 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.pheno.Measurement;
 
-public class MeasurementDecorator<E extends Measurement> extends MapperDecorator<E> {
+public class MeasurementDecorator<E extends Measurement> extends MapperDecorator<E>
+{
 
 	public MeasurementDecorator(Mapper<E> generatedMapper)
 	{

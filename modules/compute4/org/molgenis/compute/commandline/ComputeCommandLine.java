@@ -76,8 +76,10 @@ public class ComputeCommandLine
 
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
+
 		// create map of all workflow elements (needed for dependencies)
 		Map<String, WorkflowElement> wfeMap = new LinkedHashMap<String, WorkflowElement>();
+
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
 		{
 			wfeMap.put(wfe.getName(), wfe);
@@ -102,12 +104,14 @@ public class ComputeCommandLine
 				targets.add("line_number");
 			}
 
+
 			// task_number will be added by folding
 			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet,
 					this.computeBundle.getComputeParameters(), targets);
 
 			// each element of folded worksheet produces one
 			// protocolApplication (i.e. a script)
+
 
 			for (Tuple work : folded)
 			{
@@ -132,6 +136,7 @@ public class ComputeCommandLine
 				// FIXME: Here I make queue dependent on walltime and memory per
 				// node..., which is specifically for Millipede..
 				// This you can find out on the cluster
+
 				// int m = Integer.parseInt(mem); // memory in GB?
 				// queue = (4 < m && 2 < cores ? "quads" : "nodes");
 
@@ -151,6 +156,7 @@ public class ComputeCommandLine
 				// work.set("clusterQueue", queue);
 				// done with FIXME
 
+
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores"))
 						: protocol.getCores());
 				work.set("cores", cores);
@@ -158,6 +164,7 @@ public class ComputeCommandLine
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
 						.getMem().toString());
 				work.set("mem", mem + "gb");
+
 
 				// set jobname. If a job starts/completes, we put this in a
 				// logfile
@@ -198,11 +205,13 @@ public class ComputeCommandLine
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name())
 						{
+
 							// if (work.getList(target).size() > 1) {
 							// replace target by number
 
 							int i_fix = Math.min(work.getList(target).size() - 1, i);
 							jobName += "_" + work.getList(target).get(i_fix);
+
 
 							// jobName += "_XXX" + i;
 							// } else {
@@ -318,7 +327,6 @@ public class ComputeCommandLine
 	public String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException,
 			TemplateException
 	{
-
 		// first create map
 		Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -490,6 +498,7 @@ public class ComputeCommandLine
 			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile, this.parametersfile))
 			{
 
+
 				String sourcepath = f.getCanonicalPath();
 
 				// make this part windows compentible
@@ -505,6 +514,7 @@ public class ComputeCommandLine
 				}
 
 				String[] filenamelist = sourcepath.split(fileSeparatorPatternString);
+
 				String filename = filenamelist[filenamelist.length - 1];
 				// Files.copy(f, new File(this.outputdir + File.separator +
 				// filename));
@@ -526,6 +536,7 @@ public class ComputeCommandLine
 	private String getworkflowfilename()
 	{
 
+
 		// make this part windows compentible
 		String fileSeparatorPatternString;
 		if (File.separator.equals("/"))
@@ -538,6 +549,7 @@ public class ComputeCommandLine
 		}
 
 		String[] workflowfilenamelist = this.workflowfile.toString().split(fileSeparatorPatternString);
+
 		String f = workflowfilenamelist[workflowfilenamelist.length - 1];
 
 		// replace dots with underscore, because qsub does not allow for dots in

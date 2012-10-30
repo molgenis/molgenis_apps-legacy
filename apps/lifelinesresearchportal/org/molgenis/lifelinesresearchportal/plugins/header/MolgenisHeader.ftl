@@ -8,7 +8,7 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<div onclick="location.href='molgenis.do?__target=main&select=LifeLinesHome';" id="sample_div" style="background-image:url(clusterdemo/bg/llrp.png); width: 900px; height: 125px;"></div>
+<div onclick="location.href='molgenis.do?__target=main&select=LifeLinesHome';" id="sample_div" style="background-image:url(clusterdemo/bg/mrp_banner_v1.png); width: 900px; height: 125px;"></div>
 
 
 <div align="right">

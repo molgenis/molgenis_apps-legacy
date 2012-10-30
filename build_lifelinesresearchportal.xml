@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project>
+<project name="lifelinesresearchportal">
 	<!-- this name is used to name the war file -->
 	<property name="app_name" value="lifelines_researchportal" />
 

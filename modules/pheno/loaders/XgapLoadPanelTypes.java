@@ -31,9 +31,9 @@ public class XgapLoadPanelTypes
 
 	/**
 	 * @param args
-	 * @throws DatabaseException 
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, DatabaseException
 	{

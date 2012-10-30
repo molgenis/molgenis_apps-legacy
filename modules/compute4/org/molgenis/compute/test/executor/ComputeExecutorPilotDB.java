@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 22/08/2012
- * Time: 14:26
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 14:26
  * To change this template use File | Settings | File Templates.
  */
 public class ComputeExecutorPilotDB implements ComputeExecutor

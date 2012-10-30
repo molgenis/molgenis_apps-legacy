@@ -23,19 +23,19 @@ public class DisplayOptionsForm extends Container
 		this.add(new HiddenInput("mid", ""));
 
 		this.add(new SelectInput("snpbool", ""));
-		List<ValueLabel> snpOptions           = new ArrayList<ValueLabel>();
+		List<ValueLabel> snpOptions = new ArrayList<ValueLabel>();
 		snpOptions.add(new ValueLabel("show", "show"));
 		snpOptions.add(new ValueLabel("hide", "hide"));
 		((SelectInput) this.get("snpbool")).setOptions(snpOptions);
 
 		this.add(new SelectInput("showIntrons", ""));
-		List<ValueLabel> showIntronsOptions   = new ArrayList<ValueLabel>();
+		List<ValueLabel> showIntronsOptions = new ArrayList<ValueLabel>();
 		showIntronsOptions.add(new ValueLabel("show", "show"));
 		showIntronsOptions.add(new ValueLabel("hide", "hide"));
 		((SelectInput) this.get("showIntrons")).setOptions(showIntronsOptions);
 
 		this.add(new SelectInput("showNames", ""));
-		List<ValueLabel> showNamesOptions     = new ArrayList<ValueLabel>();
+		List<ValueLabel> showNamesOptions = new ArrayList<ValueLabel>();
 		showNamesOptions.add(new ValueLabel("show", "show"));
 		showNamesOptions.add(new ValueLabel("hide", "hide"));
 		((SelectInput) this.get("showNames")).setOptions(showNamesOptions);

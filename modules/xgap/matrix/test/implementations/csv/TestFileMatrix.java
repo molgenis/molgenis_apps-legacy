@@ -32,17 +32,16 @@ public class TestFileMatrix
 	 * @param sparse
 	 * @throws Exception
 	 */
-	public TestFileMatrix(Database db, Params params)
-			throws Exception
+	public TestFileMatrix(Database db, Params params) throws Exception
 	{
 		/**
 		 * Assumption: the list of the traits/subjects that are created of size
 		 * N match the corresponding size N of totalCols/totalRows of the
 		 * randomized matrices and are therefore used 1:1 as row/colnames
 		 */
-		
+
 		String storage = "CSV";
-		
+
 		logger.info("Creating database instance and erasing all existing data..");
 		Helper h = new Helper(db);
 		h.printSettings(storage, params);
@@ -50,7 +49,7 @@ public class TestFileMatrix
 
 		logger.info("Transforming the files into their plain counterpart in the storage directory..");
 		new CSVDataMatrixWriter(h.getDataList(), h.getInputFilesDir(), db);
-				
+
 		logger.info("Instantiating the matrices..");
 		List<CSVDataMatrixInstance> fmList = new ArrayList<CSVDataMatrixInstance>();
 		for (Data data : h.getDataList())
@@ -75,8 +74,8 @@ public class TestFileMatrix
 		{
 			for (String method : methods)
 			{
-				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, fm, fm.getData(),
-						h.getInputFilesDir(), method, true, true));
+				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, fm, fm.getData(), h.getInputFilesDir(),
+						method, true, true));
 			}
 		}
 	}

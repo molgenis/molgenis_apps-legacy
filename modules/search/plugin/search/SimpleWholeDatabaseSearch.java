@@ -40,7 +40,7 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 	{
 		return model;
 	}
-	
+
 	public String getCustomHtmlHeaders()
 	{
 		return "";
@@ -70,14 +70,14 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 				if (action.equals("doSearch"))
 				{
 					String searchThis = request.getString("searchThis");
-					
+
 					this.model.searchThis = searchThis;
 
 					long start = System.currentTimeMillis();
 					List<org.molgenis.util.Entity> results = search(searchThis, db);
 					long stop = System.currentTimeMillis();
-					
-					double time = (stop-start)/1000.0;
+
+					double time = (stop - start) / 1000.0;
 					System.out.println("TIME " + time);
 					this.model.setTime(time);
 
@@ -97,15 +97,15 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 	private List<Entity> search(String searchThis, Database db) throws DatabaseException
 	{
 		List<org.molgenis.util.Entity> res = new ArrayList<org.molgenis.util.Entity>();
-	
+
 		for (org.molgenis.model.elements.Entity eClass : db.getMetaData().getEntities(false, false))
 		{
-				
+
 			String name = eClass.getName();
 			Class<? extends Entity> entityClass = db.getClassForName(name);
-				
-			//user must have at least have read permissions
-			if(this.getLogin().canRead(entityClass))
+
+			// user must have at least have read permissions
+			if (this.getLogin().canRead(entityClass))
 			{
 				List<? extends org.molgenis.util.Entity> eInstances = db.find(entityClass);
 				for (org.molgenis.util.Entity e : eInstances)
@@ -127,7 +127,7 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 					}
 				}
 			}
-			
+
 		}
 		return res;
 	}

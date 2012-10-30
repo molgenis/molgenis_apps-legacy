@@ -41,9 +41,9 @@ public class Background extends EasyPluginController<BackgroundModel>
 			this.getModel().setNumPatientsUnpub(statisticsService.getNumUnpublishedPatients());
 			this.getModel().setPhenotypeCountHash(statisticsService.getPhenotypeCounts());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			//...
+			// ...
 		}
 	}
 }

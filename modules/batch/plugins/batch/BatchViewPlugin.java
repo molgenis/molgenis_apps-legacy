@@ -15,49 +15,49 @@ import org.molgenis.util.Tuple;
 
 public class BatchViewPlugin extends EasyPluginController
 {
-    private static final long serialVersionUID = -3093693807976546141L;
-    //private String action = "init";
-    private BatchContainer batchContainer = null;
-    private BatchService service;
-    private BatchViewUi ui = new BatchViewUi();
+	private static final long serialVersionUID = -3093693807976546141L;
+	// private String action = "init";
+	private BatchContainer batchContainer = null;
+	private BatchService service;
+	private BatchViewUi ui = new BatchViewUi();
 
-    public BatchViewPlugin(String name, ScreenController<?> parent)
-    {
+	public BatchViewPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 		service = new BatchService();
-    }
+	}
 
-    public void handleRequest(Database db, Tuple request)
-    {
+	public void handleRequest(Database db, Tuple request)
+	{
 		try
 		{
-		    //this.action = request.getString("__action");
-	
-//		    if (action.equals("Refresh"))
-//		    {
-//		    	this.action = "init";
-//		    }
+			// this.action = request.getString("__action");
+
+			// if (action.equals("Refresh"))
+			// {
+			// this.action = "init";
+			// }
 		}
 		catch (Exception e)
 		{
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
-    }
+	}
 
-    @Override
-    public void reload(Database db)
-    {
+	@Override
+	public void reload(Database db)
+	{
 		service.setDatabase(db, db.getLogin().getUserId());
-	
+
 		batchContainer = new BatchContainer(service, db.getLogin().getUserId());
 		ui.updateBatchView(batchContainer, service);
-    }
+	}
 
-    /**
-     * Render the html
-     */
-    public ScreenView getView()
-    {
-    	return ui.getContainer();
-    }
+	/**
+	 * Render the html
+	 */
+	public ScreenView getView()
+	{
+		return ui.getContainer();
+	}
 }

@@ -17,6 +17,6 @@ public class ToExpertSearchForm extends Container
 		this.add(new ActionInput("submit"));
 		((ActionInput) this.get("submit")).setLabel("Advanced search");
 		((ActionInput) this.get("submit")).setTooltip("Advanced search");
-		
+
 	}
 }

@@ -1,7 +1,5 @@
 package org.molgenis.patho;
 
-
-
 import org.molgenis.Molgenis;
 
 public class PathoUpdateDatabase

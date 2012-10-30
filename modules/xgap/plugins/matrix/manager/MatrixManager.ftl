@@ -79,11 +79,13 @@ targ2	val4	val5	val6</textarea>
 				&nbsp;
 			</td>
 			<td align="left" class="shadeHeader" valign="center">
+				<nobr>
 				<input type="image" src="res/img/first.png" onclick="document.forms.${screen.name}.__action.value = 'moveFarLeft';" />
 				<input type="image" src="res/img/prev.png" onclick="document.forms.${screen.name}.__action.value = 'moveLeft';"/>
 				<b><font class="fontColor"><#if model.getColHeader()?exists>${model.getColHeader()}<#else>0-0 of 0</#if></font></b>
 				<input type="image" src="res/img/next.png" onclick="document.forms.${screen.name}.__action.value = 'moveRight';"/>
 				<input type="image" src="res/img/last.png"  onclick="document.forms.${screen.name}.__action.value = 'moveFarRight';" />
+				</nobr>
 			</td>
 		</tr>
 		<tr>

@@ -15,15 +15,16 @@ import plugins.qtlfinder.QtlPlotDataPoint;
 
 public class MakeRPlot
 {
-	public static File plot(Data data, DataMatrixInstance instance, String rowName, String colName, String action, String type, int width, int height) throws Exception
+	public static File plot(Data data, DataMatrixInstance instance, String rowName, String colName, String action,
+			String type, int width, int height) throws Exception
 	{
-		String rowType = data.getTargetType(); //shorthand
-		String colType = data.getFeatureType(); //shorthand
-		//Data data = model.getSelectedData(); //shorthand
-		
+		String rowType = data.getTargetType(); // shorthand
+		String colType = data.getFeatureType(); // shorthand
+		// Data data = model.getSelectedData(); //shorthand
+
 		Object[] plotThis = null;
 		PlotParameters params = new PlotParameters();
-		
+
 		if (action.endsWith("row"))
 		{
 			if (data.getValueType().equals("Text"))
@@ -31,7 +32,8 @@ public class MakeRPlot
 				params.setTitle(rowType + " " + rowName);
 				params.setxLabel("Type of " + colType);
 				params.setyLabel("# of " + colType);
-			}else if (data.getValueType().equals("Decimal"))
+			}
+			else if (data.getValueType().equals("Decimal"))
 			{
 				params.setTitle(rowType + " " + rowName);
 				params.setxLabel(colType);
@@ -39,8 +41,8 @@ public class MakeRPlot
 			}
 			plotThis = instance.getRow(rowName);
 		}
-		
-		else if(action.endsWith("col"))
+
+		else if (action.endsWith("col"))
 		{
 			if (data.getValueType().equals("Text"))
 			{
@@ -57,7 +59,7 @@ public class MakeRPlot
 			}
 			plotThis = instance.getCol(colName);
 		}
-		else if(action.endsWith("heatmap"))
+		else if (action.endsWith("heatmap"))
 		{
 			params.setTitle(instance.getData().getName());
 			params.setxLabel("");
@@ -67,44 +69,44 @@ public class MakeRPlot
 		{
 			throw new Exception("unrecognized action: " + action);
 		}
-		
 
-			File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot"
-					+ System.nanoTime() + ".png");
-			params.setType(type);
-			params.setWidth(width);
-			params.setHeight(height);
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime()
+				+ ".png");
+		params.setType(type);
+		params.setWidth(width);
+		params.setHeight(height);
 
-			if(action.endsWith("col") || action.endsWith("row"))
+		if (action.endsWith("col") || action.endsWith("row"))
+		{
+			if (type.equals("boxplot"))
 			{
-				if (type.equals("boxplot"))
-				{
-					params.setFunction("boxplot");
-				}
-				else
-				{
-					params.setFunction("plot");
-				}
-
-				new ScriptInstance(plotThis, tmpImg, params);
+				params.setFunction("boxplot");
 			}
-			else if(action.endsWith("heatmap"))
+			else
 			{
-				new HeatmapScriptInstance(instance, tmpImg, params);
+				params.setFunction("plot");
 			}
-			
-			return tmpImg;
-		
+
+			new ScriptInstance(plotThis, tmpImg, params);
+		}
+		else if (action.endsWith("heatmap"))
+		{
+			new HeatmapScriptInstance(instance, tmpImg, params);
+		}
+
+		return tmpImg;
+
 	}
-	
-	public File qtlPlot(String plotName, TreeMap<Long, QtlPlotDataPoint> data, long genePos, int width, int height,String ylab, String filePrefix) throws RScriptException
+
+	public File qtlPlot(String plotName, TreeMap<Long, QtlPlotDataPoint> data, long genePos, int width, int height,
+			String ylab, String filePrefix) throws RScriptException
 	{
 		double[] lodscores = new double[data.size()];
 		long[] bplocs = new long[data.size()];
 		String[] chromosomes = new String[data.size()];
-		
+
 		int index = 0;
-		for(Long key : data.keySet())
+		for (Long key : data.keySet())
 		{
 			lodscores[index] = data.get(key).getLodScore();
 			bplocs[index] = data.get(key).getBpLoc();
@@ -113,9 +115,10 @@ public class MakeRPlot
 		}
 		return qtlPlot(plotName, lodscores, bplocs, chromosomes, genePos, width, height, ylab, filePrefix);
 	}
-	
+
 	/**
 	 * Bad: specific for WormQTL...
+	 * 
 	 * @param dataPoints
 	 * @param width
 	 * @param height
@@ -123,33 +126,40 @@ public class MakeRPlot
 	 * @param chromosomes
 	 * @return
 	 */
-	public File wormqtl_ProfilePlot(File dataPoints, int width, int height, String title, ArrayList<Chromosome> chromosomes)
+	public File wormqtl_ProfilePlot(File dataPoints, int width, int height, String title,
+			ArrayList<Chromosome> chromosomes)
 	{
-		
+
 		String chrNamesAppend = "";
-		for(int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < chromosomes.size(); i++)
 		{
-			chrNamesAppend += "\""+chromosomes.get(i).getName()+"\"";
-			if(i != chromosomes.size()-1){ chrNamesAppend += ","; }
+			chrNamesAppend += "\"" + chromosomes.get(i).getName() + "\"";
+			if (i != chromosomes.size() - 1)
+			{
+				chrNamesAppend += ",";
+			}
 		}
-		
+
 		String chrLengthsAppend = "";
-		for(int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < chromosomes.size(); i++)
 		{
 			chrLengthsAppend += chromosomes.get(i).getBpLength();
-			if(i != chromosomes.size()-1){ chrLengthsAppend += ","; }
+			if (i != chromosomes.size() - 1)
+			{
+				chrLengthsAppend += ",";
+			}
 		}
-		
+
 		long time = System.nanoTime();
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".png");
-		
+
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
-		
+
 		script.append("drawChrRect<-function()");
 		script.append("{");
 		script.append("  par(new=TRUE)");
-		script.append("  chr.lengths<-c("+chrLengthsAppend+")/10^6");
+		script.append("  chr.lengths<-c(" + chrLengthsAppend + ")/10^6");
 		script.append("  x.text <-  diffinv(chr.lengths)[-length(diffinv(chr.lengths))]+chr.lengths/2");
 		script.append("  y.text <- max(as.numeric(plotMe[,7]))");
 		script.append(" ");
@@ -158,20 +168,21 @@ public class MakeRPlot
 		script.append("  if ( i %in% c(1,3,5,7) ){ rect(sum(chr.lengths[1:i])-sum(chr.lengths[i]),0,sum(chr.lengths[1:i]),2*y.text,col=\"grey\",border=F)}");
 		script.append("  if( i %in% 7){ lines(c(sum(chr.lengths),sum(chr.lengths)),c(0,2*y.text),lwd=3,col=\"grey\") }");
 		script.append("  }");
-		script.append("  text( x.text,y.text,c("+chrNamesAppend+"),cex=2,font=2) ");
+		script.append("  text( x.text,y.text,c(" + chrNamesAppend + "),cex=2,font=2) ");
 		script.append("  par(new=TRUE)");
 		script.append("}");
 		script.append(" ");
-		
+
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 		script.append("png(imagefile, width = 2024, height = 1024)");
-		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
-		
+		script.append("plotMe <- read.table(\"" + dataPoints.getAbsolutePath().replace("\\", "/") + "\")");
+
 		script.append(" ");
 		script.append("probenames                      <- paste(plotMe[,5],plotMe[,8],sep=\":\")");
 		script.append("plotMe[,5] <- probenames");
 		script.append("  par(fig=c(0,0.85,0,1),mgp=c(4,2,0),mai=c(1,1.5,1,0.05))");
-		script.append("plot(0,0,type=\"n\",xlim=c(0,102),ylim=c(0,max(as.numeric(plotMe[,7]))),cex.lab=3,cex.axis=3,main=\"Profile plot for "+title+"\",");
+		script.append("plot(0,0,type=\"n\",xlim=c(0,102),ylim=c(0,max(as.numeric(plotMe[,7]))),cex.lab=3,cex.axis=3,main=\"Profile plot for "
+				+ title + "\",");
 		script.append("      xlab=\"Genome (MB)\", ylab=\"LOD\",cex.main=4)");
 		script.append("drawChrRect()");
 		script.append("nr.of.lines <- length(unique(probenames))");
@@ -212,78 +223,82 @@ public class MakeRPlot
 		script.append("text(0,0.75,\"Li etal 2006\",adj=0,cex=2)");
 		script.append("box()");
 		script.append(" ");
-		
-		//print to file
+
+		// print to file
 		script.append("dev.off()");
-		
-		//may not fail and crash the other plots
+
+		// may not fail and crash the other plots
 		try
 		{
-			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_"+time+".R");
+			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".R");
 		}
 		catch (RScriptException e)
 		{
 			e.printStackTrace();
 		}
-				
+
 		return tmpImg;
-		
+
 	}
-	
-	
-	public File wormqtl_MultiPlot(File dataPoints, int width, int height, String title, ArrayList<Chromosome> chromosomes)
+
+	public File wormqtl_MultiPlot(File dataPoints, int width, int height, String title,
+			ArrayList<Chromosome> chromosomes)
 	{
-		
-		//TODO: make dynamic using the chromosomes..
+
+		// TODO: make dynamic using the chromosomes..
 		String chrNamesAppend = "";
-		for(int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < chromosomes.size(); i++)
 		{
-			chrNamesAppend += "\""+chromosomes.get(i).getName()+"\"";
-			if(i != chromosomes.size()-1){ chrNamesAppend += ","; }
+			chrNamesAppend += "\"" + chromosomes.get(i).getName() + "\"";
+			if (i != chromosomes.size() - 1)
+			{
+				chrNamesAppend += ",";
+			}
 		}
-		
+
 		long cumulative = 0;
 		String cumuChrLengthsAppend = "";
-		for(int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < chromosomes.size(); i++)
 		{
-			if(i == 0)
+			if (i == 0)
 			{
 				cumulative = 0;
 			}
-			else if(i == chromosomes.size()-1)
+			else if (i == chromosomes.size() - 1)
 			{
-				cumulative += chromosomes.get(i-1).getBpLength();
+				cumulative += chromosomes.get(i - 1).getBpLength();
 				cumuChrLengthsAppend += cumulative + "";
 			}
 			else
 			{
-				cumulative += chromosomes.get(i-1).getBpLength();
+				cumulative += chromosomes.get(i - 1).getBpLength();
 				cumuChrLengthsAppend += cumulative + ",";
 			}
-//			for(int cumu = 0; cumu < i; cumu ++)
-//			{
-//				
-//			}
-			
-		//	chrLengthsAppend += chromosomes.get(i).getBpLength();
-		//	if(i != chromosomes.size()-1){ chrLengthsAppend += ","; }
+			// for(int cumu = 0; cumu < i; cumu ++)
+			// {
+			//
+			// }
+
+			// chrLengthsAppend += chromosomes.get(i).getBpLength();
+			// if(i != chromosomes.size()-1){ chrLengthsAppend += ","; }
 		}
-		
+
 		long time = System.nanoTime();
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".png");
-		
+
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
-		
-		//lines input example:
-		//plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557", 15184683, 0.0127419530093572))
+
+		// lines input example:
+		// plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557",
+		// 15184683, 0.0127419530093572))
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
-		
-		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
-		
-		//FIXME: worm specific!!! bad!!
-		//script.append("chr_startpos <- c(15072423,15072423+15279345,15072423+15279345+13783700,15072423+15279345+13783700+17493793,15072423+15279345+13783700+17493793+20924149)");
+
+		script.append("plotMe <- read.table(\"" + dataPoints.getAbsolutePath().replace("\\", "/") + "\")");
+
+		// FIXME: worm specific!!! bad!!
+		// script.append("chr_startpos <- c(15072423,15072423+15279345,15072423+15279345+13783700,15072423+15279345+13783700+17493793,15072423+15279345+13783700+17493793+20924149)");
 		script.append("chr_startpos <- c(" + cumuChrLengthsAppend + ")");
 		script.append("lodscores <- as.numeric(plotMe[,7])");
 		script.append("lodscores[which(lodscores > 10)] <- 10");
@@ -303,7 +318,8 @@ public class MakeRPlot
 		script.append("}");
 		script.append("cl <- c(cl,length(datasetids))");
 		script.append("op <- par(mai=c(1,2,1,1))");
-		script.append("plot(c(0, max(as.numeric(plotMe[,4])/1000000)),c(1,length(unique(probenames))),type='n',main=\"Heat plot for "+title+"\", yaxt='n',ylab=\"\", xlab=\"Location (cumulative Mbp)\")");
+		script.append("plot(c(0, max(as.numeric(plotMe[,4])/1000000)),c(1,length(unique(probenames))),type='n',main=\"Heat plot for "
+				+ title + "\", yaxt='n',ylab=\"\", xlab=\"Location (cumulative Mbp)\")");
 		script.append("cnt <- 1");
 		script.append("for(x in unique(probenames)){");
 		script.append("  toplot <- which(plotMe[,5]==x)");
@@ -311,7 +327,8 @@ public class MakeRPlot
 		script.append("  points(as.numeric(plotMe[toplot[1],6])/1000000, cnt, pch=18, cex=1.5, col=\"red\")");
 		script.append("  cnt <- cnt + 1");
 		script.append("}");
-		//script.append("axis(2,at=1:length(unique(probenames)),unlist(lapply(strsplit(unique(probenames),\":\"),\"[\",1)),las=1,cex.axis=0.7)"); //removes dataset id
+		// script.append("axis(2,at=1:length(unique(probenames)),unlist(lapply(strsplit(unique(probenames),\":\"),\"[\",1)),las=1,cex.axis=0.7)");
+		// //removes dataset id
 		script.append("axis(2,at=1:length(unique(probenames)),unique(probenames),las=1,cex.axis=1)");
 		script.append("abline(v=(chr_startpos/1000000)+.5,col='red')");
 		script.append("dl <- cl-1");
@@ -327,35 +344,36 @@ public class MakeRPlot
 		script.append("  cc <- cc+((x-p))");
 		script.append("  p <- x");
 		script.append("}");
-		
-		//print to file
+
+		// print to file
 		script.append("dev.off()");
-		
-		//may not fail and crash the other plots
+
+		// may not fail and crash the other plots
 		try
 		{
-			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_"+time+".R");
+			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".R");
 		}
 		catch (RScriptException e)
 		{
 			e.printStackTrace();
 		}
-				
+
 		return tmpImg;
 	}
-	
-	public File wormqtl_ProfilePlot_prev(File dataPoints, int width, int height, String title, ArrayList<Chromosome> chromosomes)
+
+	public File wormqtl_ProfilePlot_prev(File dataPoints, int width, int height, String title,
+			ArrayList<Chromosome> chromosomes)
 	{
-		
+
 		long time = System.nanoTime();
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_regular_" + time + ".png");
-		
+
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
-		
+
 		appendDrawChromosomes(script, chromosomes);
-		
-		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
+
+		script.append("plotMe <- read.table(\"" + dataPoints.getAbsolutePath().replace("\\", "/") + "\")");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 
 		script.append("lodscores                       <- as.numeric(plotMe[,7])");
@@ -384,50 +402,57 @@ public class MakeRPlot
 		script.append("  }");
 		script.append("   matplot( as.numeric(plotMe[toplot,4])/1000000, t(qtl.all),type=\"n\",xlab=\"\",ylab=\"\",cex.axis=2.5)");
 		script.append("   drawChrStrips()      ");
-		script.append("   matplot( as.numeric(plotMe[toplot,4])/1000000, t(qtl.all),type=\"l\", lty=rep(1,length(unique(probenames))),col=1:length(unique(probenames)),lwd=2,ylab=\"LOD\",xlab=\"Genome (Mb)\",main=\"QTLs for "+title+"\",cex.main=2.5,cex.lab=2.5,cex.axis=2.5)   ");
+		script.append("   matplot( as.numeric(plotMe[toplot,4])/1000000, t(qtl.all),type=\"l\", lty=rep(1,length(unique(probenames))),col=1:length(unique(probenames)),lwd=2,ylab=\"LOD\",xlab=\"Genome (Mb)\",main=\"QTLs for "
+				+ title + "\",cex.main=2.5,cex.lab=2.5,cex.axis=2.5)   ");
 		script.append("}");
-		//print to file
+		// print to file
 		script.append("dev.off()");
-		
-		//may not fail and crash the other plots
+
+		// may not fail and crash the other plots
 		try
 		{
-			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_regular_"+time+".R");
+			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_regular_" + time + ".R");
 		}
 		catch (RScriptException e)
 		{
 			e.printStackTrace();
 		}
-				
+
 		return tmpImg;
 
 	}
-	
+
 	public void appendDrawChromosomes(RScript script, ArrayList<Chromosome> chromosomes)
 	{
 		String chrNamesAppend = "";
-		for(int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < chromosomes.size(); i++)
 		{
-			chrNamesAppend += "\""+chromosomes.get(i).getName()+"\"";
-			if(i != chromosomes.size()-1){ chrNamesAppend += ","; }
+			chrNamesAppend += "\"" + chromosomes.get(i).getName() + "\"";
+			if (i != chromosomes.size() - 1)
+			{
+				chrNamesAppend += ",";
+			}
 		}
-		
+
 		String chrLengthsAppend = "";
-		for(int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < chromosomes.size(); i++)
 		{
 			chrLengthsAppend += chromosomes.get(i).getBpLength();
-			if(i != chromosomes.size()-1){ chrLengthsAppend += ","; }
+			if (i != chromosomes.size() - 1)
+			{
+				chrLengthsAppend += ",";
+			}
 		}
-		
+
 		script.append("drawChrStrips<-function()");
 		script.append("{");
 		script.append("  par(new=TRUE)");
-		script.append("  chr.lengths<-c("+chrLengthsAppend+")/10^6");
+		script.append("  chr.lengths<-c(" + chrLengthsAppend + ")/10^6");
 		script.append("  nn  <- 100");
 		script.append("  chrStrips<-seq(0,0,length=100)");
 		script.append("  x.text <-  diffinv(chr.lengths)[-length(diffinv(chr.lengths))]+chr.lengths/2");
 		script.append("  y.text <- 102");
-		script.append("  text( x.text,y.text,c("+chrNamesAppend+"),cex=1.5)");
+		script.append("  text( x.text,y.text,c(" + chrNamesAppend + "),cex=1.5)");
 		script.append("  for(i in 1:length(chr.lengths))");
 		script.append("  {");
 		script.append("  if(i%%2==0){ next; }");
@@ -440,17 +465,18 @@ public class MakeRPlot
 		script.append("  par(new=TRUE)");
 		script.append("}");
 	}
-	
-	public File wormqtl_CisTransPlot(File dataPoints, int width, int height, String title, ArrayList<Chromosome> chromosomes)
+
+	public File wormqtl_CisTransPlot(File dataPoints, int width, int height, String title,
+			ArrayList<Chromosome> chromosomes)
 	{
-		
+
 		long time = System.nanoTime();
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_cistrans_" + time + ".png");
-		
+
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
-				
-		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
+
+		script.append("plotMe <- read.table(\"" + dataPoints.getAbsolutePath().replace("\\", "/") + "\")");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
 		script.append("op <- par(mai=c(1,2,1,1))");
@@ -458,37 +484,41 @@ public class MakeRPlot
 		script.append("my.scale <- 4");
 		appendDrawChromosomes(script, chromosomes);
 		script.append("my.offset <- 1000000/10^6");
-		script.append("plot(c(0,max(as.numeric(plotMe[,4]))),c(0,max(as.numeric(plotMe[,6]))),type='n',main=\"Cis-trans plot for "+title+"\",ylab=\"Probe position (Mb)\", xlab=\"Marker position (Mb)\",xlim=c(0,101),ylim=c(0,101),cex.lab=1.5,cex.main=1.5,cex.axis=1.5)");
+		script.append("plot(c(0,max(as.numeric(plotMe[,4]))),c(0,max(as.numeric(plotMe[,6]))),type='n',main=\"Cis-trans plot for "
+				+ title
+				+ "\",ylab=\"Probe position (Mb)\", xlab=\"Marker position (Mb)\",xlim=c(0,101),ylim=c(0,101),cex.lab=1.5,cex.main=1.5,cex.axis=1.5)");
 		script.append("drawChrStrips()");
 		script.append("points(as.numeric(plotMe[,4])/10^6,as.numeric(plotMe[,6])/10^6,cex=(plotMe[,7]/my.scale) * as.numeric(plotMe[,7] >= min.qtl), col=as.numeric(plotMe[,3]),pch=20)");
 		script.append("abline(-my.offset,1,col=\"gray\",lty=2)");
 		script.append("abline(my.offset,1,col=\"gray\",lty=2)");
 		script.append("abline(0,1,col=\"black\",lty=1)");
-		
-		//print to file
+
+		// print to file
 		script.append("dev.off()");
-		
-		//may not fail and crash the other plots
+
+		// may not fail and crash the other plots
 		try
 		{
-			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_cistrans_"+time+".R");
+			script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_cistrans_" + time + ".R");
 		}
 		catch (RScriptException e)
 		{
 			e.printStackTrace();
 		}
-				
+
 		return tmpImg;
 	}
 
-	//all inputs must be sorted and of equal length!!
-	//create QTL plot scaling by incrementing basepair position
-	//give markers colours based on their chromosome
-	//no missing values allowed!
-	public File qtlPlot(String plotName, double[] lodscores, long[] bplocs, String[] chromosomes, long genePos, int width, int height,String ylab, String filePrefix) throws RScriptException
+	// all inputs must be sorted and of equal length!!
+	// create QTL plot scaling by incrementing basepair position
+	// give markers colours based on their chromosome
+	// no missing values allowed!
+	public File qtlPlot(String plotName, double[] lodscores, long[] bplocs, String[] chromosomes, long genePos,
+			int width, int height, String ylab, String filePrefix) throws RScriptException
 	{
-		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + filePrefix + "_rplot" + System.nanoTime() + ".png");
-		
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + filePrefix + "_rplot"
+				+ System.nanoTime() + ".png");
+
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
@@ -506,31 +536,34 @@ public class MakeRPlot
 		script.append("chrs <- as.numeric(as.factor(chrs))+1");
 		script.append("pos <- " + genePos);
 		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
-		
-		//start plotting: black line
-		script.append("plot(y=dataVector,x=locs,col=\"black\",main=\"" + plotName + "\",xlab=\""
-				+ "Basepair position" + "\",ylab=\"" + ylab + "\",type=\"" + "l" + "\",pch=20,cex=2,lwd=2)");
-		
-		//now add coloured balls
+
+		// start plotting: black line
+		script.append("plot(y=dataVector,x=locs,col=\"black\",main=\"" + plotName + "\",xlab=\"" + "Basepair position"
+				+ "\",ylab=\"" + ylab + "\",type=\"" + "l" + "\",pch=20,cex=2,lwd=2)");
+
+		// now add coloured balls
 		script.append("points(y=dataVector,x=locs,col=chrs,type=\"" + "p" + "\",pch=20,cex=2)");
-		
-		//now add vertical coloured lines
+
+		// now add vertical coloured lines
 		script.append("points(y=dataVector,x=locs,col=chrs,type=\"" + "h" + "\",lwd=2)");
-		
-		//add transcript positions
+
+		// add transcript positions
 		script.append("axis(1,pos,\"Transcript\",line=1)");
 		script.append("abline(v=pos,lty=2,col='black')");
-		
-		//print to file
+
+		// print to file
 		script.append("dev.off()");
 		script.execute();
-		
+
 		return tmpImg;
 	}
-	
-	public static void main(String []args) throws RScriptException
+
+	public static void main(String[] args) throws RScriptException
 	{
-		File res = new MakeRPlot().qtlPlot("henkie", new double[]{3,4,3,6,7,2,4,6}, new long[]{1,2,4,30,8,15,20,5}, new String[]{"I", "I", "I", "IV", "II", "III", "IV", "II"},25, 800, 600,"LOD score", "qtl");
+		File res = new MakeRPlot().qtlPlot("henkie", new double[]
+		{ 3, 4, 3, 6, 7, 2, 4, 6 }, new long[]
+		{ 1, 2, 4, 30, 8, 15, 20, 5 }, new String[]
+		{ "I", "I", "I", "IV", "II", "III", "IV", "II" }, 25, 800, 600, "LOD score", "qtl");
 		System.out.println("RES @ " + res);
 	}
 }

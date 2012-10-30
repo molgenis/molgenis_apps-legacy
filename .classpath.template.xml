@@ -10,6 +10,7 @@
 -->
 <classpath>
   <classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"></classpathentry>
+  <classpathentry combineaccessrules="false" kind="src" path="/molgenis"/>
   <classpathentry kind="output" path="build/classes"></classpathentry>
   <!-- WEB-INF/lib -->
 </classpath>
