@@ -63,6 +63,7 @@ public class OWLFunction
 		this.factory = manager.getOWLDataFactory();
 		this.owlontology = manager.loadOntologyFromOntologyDocument(new File(ontologyFileName));
 		this.ontologyIRI = owlontology.getOntologyID().getOntologyIRI().toString();
+		this.labelMapURI();
 	}
 
 	public OWLFunction(OWLDataFactory factory, OWLOntologyManager manager)
@@ -604,6 +605,7 @@ public class OWLFunction
 				{
 					String label = this.getLabel(expression.asOWLClass(), owlontology);
 					allChildren.add(label);
+					allChildren.addAll(getSynonyms(label));
 					if (!expression.asOWLClass().isBottomEntity())
 					{
 						if (recursiveTimes - 1 > 0) getAllChildren(owlontology, expression.asOWLClass(), allChildren,
@@ -691,6 +693,34 @@ public class OWLFunction
 		return allParents;
 	}
 
+	public List<String> getAllParents(String className, List<String> allParents, int recursiveTimes)
+	{
+
+		for (OWLSubClassOfAxiom axiom : owlontology.getSubClassAxiomsForSubClass(labelToClass.get(className
+				.toLowerCase().trim())))
+		{
+
+			OWLClassExpression expression = axiom.getSuperClass();
+
+			if (!expression.isAnonymous())
+			{
+				String label = this.getLabel(expression.asOWLClass(), owlontology);
+				if (!label.equals(""))
+				{
+					if (!allParents.contains(label))
+					{
+						allParents.add(label);
+						allParents.addAll(getSynonyms(label));
+						if (recursiveTimes - 1 > 0) getAllParents(owlontology, expression.asOWLClass(), allParents,
+								--recursiveTimes);
+					}
+				}
+			}
+		}
+
+		return allParents;
+	}
+
 	public HashMap<String, String> getFormula()
 	{
 
@@ -726,6 +756,11 @@ public class OWLFunction
 		return labelValue;
 	}// end of the getLabel method
 
+	public OWLClass getOWLClass(String label, OWLOntology owlontology)
+	{
+		return labelToClass.get(label.toLowerCase());
+	}
+
 	public List<String> getComposites(String mappedParameter)
 	{
 
@@ -756,17 +791,21 @@ public class OWLFunction
 
 		List<String> synonyms = new ArrayList<String>();
 
-		OWLClass cls = labelToClass.get(classLabel.toLowerCase());
-
-		OWLAnnotationProperty synonymsAnnotationProperty = factory.getOWLAnnotationProperty(IRI.create(ontologyIRI
-				+ "#alternative_term"));
-
-		for (OWLAnnotation annotation : cls.getAnnotations(owlontology, synonymsAnnotationProperty))
+		if (labelToClass.containsKey(classLabel.toLowerCase().trim()))
 		{
-			if (annotation.getValue() instanceof OWLLiteral)
+
+			OWLClass cls = labelToClass.get(classLabel.toLowerCase().trim());
+
+			OWLAnnotationProperty synonymsAnnotationProperty = factory.getOWLAnnotationProperty(IRI.create(ontologyIRI
+					+ "#alternative_term"));
+
+			for (OWLAnnotation annotation : cls.getAnnotations(owlontology, synonymsAnnotationProperty))
 			{
-				OWLLiteral val = (OWLLiteral) annotation.getValue();
-				synonyms.add(val.getLiteral().toString());
+				if (annotation.getValue() instanceof OWLLiteral)
+				{
+					OWLLiteral val = (OWLLiteral) annotation.getValue();
+					synonyms.add(val.getLiteral().toString());
+				}
 			}
 		}
 
