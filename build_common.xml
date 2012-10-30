@@ -199,12 +199,12 @@ It should be used via 'import' plus passing of properties
 	</target>
 		
 
-	<findbugs home="${findbugs.home}"
+	<!--findbugs home="${findbugs.home}"
        		output="html" outputFile="${basedir}/dist/findbugs.xml"
        		jvmargs="-Xms1024M -Xmx1024M ">
       		<!--
       		<sourcePath path="${molgenis.dir}/src" />
-      		-->
+      		>
       		<sourcePath path="${app_src}" />
        		<class location="${build.molgenis.dir}" />
        		<class location="${build.molgenis_apps.dir}" />
@@ -212,7 +212,7 @@ It should be used via 'import' plus passing of properties
 	   			<path refid="molgenis.classpath" />
 			</auxclasspath>
    		</findbugs>
-	</target>
+	</target-->
 	
 
 	<!--  cobertura -->
