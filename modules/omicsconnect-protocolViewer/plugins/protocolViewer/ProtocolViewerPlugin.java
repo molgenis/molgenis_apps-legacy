@@ -39,16 +39,13 @@ import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
+import org.molgenis.omicsconnect.EMeasureEntityWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
-import eMeasure.EMeasure;
-
-//import org.molgenis.util.XlsWriter;
 
 public class ProtocolViewerPlugin extends PluginModel<Entity>
 {
@@ -222,16 +219,11 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 			response.setHeader("Content-Disposition", "attachment; filename=" + "EMeasure_" + dateFormat.format(date)
 					+ ".xml");
 
-			PrintWriter pw = response.getWriter();
-
 			// Make E-Measure XML file
 			List<ObservableFeature> selectedMeasList = getSelectedObsFeature(db, request);
-			EMeasure em = new EMeasure(db, "EMeasure_" + dateFormat.format(date));
 
-			String result = em.convert(selectedMeasList);
-
-			pw.print(result);
-			pw.close();
+			EMeasureEntityWriter eMeasureWriter = new EMeasureEntityWriter(response.getWriter());
+			eMeasureWriter.writeObservableFeatures(selectedMeasList);
 		}
 		else if (request.getAction().equals("downloadButton"))
 		{
