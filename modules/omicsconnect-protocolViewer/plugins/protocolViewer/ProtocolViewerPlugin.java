@@ -44,6 +44,9 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
 public class ProtocolViewerPlugin extends PluginModel<Entity>
 {
 
@@ -249,20 +252,39 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 
 			for (DataSet d : listDataSets)
 			{
+				// listOfFeatures = d.getProtocolUsed().getFeatures();
 
-				List<ObservableFeature> selectedMeasList = getSelectedObsFeature(db, request);
-				for (ObservableFeature f : selectedMeasList)
+				for (final Integer featureID : listOfFeatureIds)
 				{
-					outputExcel.addCell(new Label(0, row, f.getName()));
 
-					String description = f.getDescription() != null ? f.getDescription() : "";
-					outputExcel.addCell(new Label(1, row, description));
+					String checkboxID = ObservableFeature.class.getSimpleName() + featureID
+							+ Protocol.class.getSimpleName() + d.getProtocolUsed().getId();
 
-					outputExcel.addCell(new Label(2, row, d.getProtocolUsed_Identifier()));
+					if (request.getBool(checkboxID) != null)
+					{
+						ObservableFeature observableFeature = Iterables.find(listOfFeatures,
+								new Predicate<ObservableFeature>()
+								{
+									@Override
+									public boolean apply(ObservableFeature m)
+									{
+										return m.getId().equals(featureID);
+									}
 
-					row++;
+								}, null);
+
+						outputExcel.addCell(new Label(0, row, observableFeature.getName()));
+
+						String description = observableFeature.getDescription() != null ? observableFeature
+								.getDescription() : "";
+						outputExcel.addCell(new Label(1, row, description));
+
+						outputExcel.addCell(new Label(2, row, d.getProtocolUsed().getName()));
+
+						row++;
+					}
+
 				}
-
 			}
 
 			workbook.write();

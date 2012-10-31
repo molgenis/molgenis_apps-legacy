@@ -141,14 +141,19 @@
 			<!-- todo: can we parameterize the target types this can be applied to 
 				(e.g. Sample) AND optionally also give a characteristic types (e.g. SNP) -->
 		</entity>
-		<entity name="Category" implements="Autoid">
-			<description>Category is partOf ObservableFeature to define
-				categories for an ObservableFeature, that are
+		<entity name="PermittedValue" implements="Autoid">
+			<description>PermittedValue is partOf ObservableFeature to define
+				permitted values for an
+				ObservableFeature, such as the categorical
+				answer codes that are
 				often used in Questionaires. For example the
-				ObservableFeature 'sex' has
+				Measurement 'sex' has
 				{code_string = 1, label=male} and {code_string
 				= 2, label=female}.
-				 Category extends
+				PermittedValue can be linked to well-defined
+				ontology terms via the
+				ontologyReference. Category
+				extends
 				ObservationElement such that it
 				can be referenced by
 				ObservedValue.value.
