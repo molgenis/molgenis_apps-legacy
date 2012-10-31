@@ -13,8 +13,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
-
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
  * includes the header logo as well as the top level menu items for
@@ -46,13 +44,13 @@ public class MolgenisHeader extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		//static
+		// static
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		//static
+		// static
 	}
 
 	@Override
@@ -60,11 +58,11 @@ public class MolgenisHeader extends PluginModel<Entity>
 	{
 		return true;
 	}
-	
+
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xwbllcolors.css\">" + "\n" +
-			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xwbllcolors.css\">" + "\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">";
 	}
 }

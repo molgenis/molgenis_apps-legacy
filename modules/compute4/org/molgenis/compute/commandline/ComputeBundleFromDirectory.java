@@ -38,8 +38,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * @param worksheetFile
 	 * @throws Exception
 	 */
-	public ComputeBundleFromDirectory(ComputeCommandLine options)
-			throws Exception
+	public ComputeBundleFromDirectory(ComputeCommandLine options) throws Exception
 	{
 		// load files
 		this.setComputeParameters(options.parametersfile);
@@ -182,8 +181,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setWorksheet(File worksheetFile) throws Exception
 	{
-		this.setUserParameters(new WorksheetHelper()
-				.readTuplesFromFile(worksheetFile));
+		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
 		// copy missing parameters from worksheet header to ComputeParameter
 		Tuple firstTuple = this.getUserParameters().get(0);
 		for (String field : firstTuple.getFields())
@@ -206,8 +204,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// TODO Auto-generated constructor stub
 	}
 
-	public ComputeBundleFromDirectory(File parametersfile, File workflowfile,
-			File worksheetfile, File protocoldir) throws Exception
+	public ComputeBundleFromDirectory(File parametersfile, File workflowfile, File worksheetfile, File protocoldir)
+			throws Exception
 	{
 		this.setComputeParameters(parametersfile);
 		this.setWorkflowElements(workflowfile);
@@ -249,18 +247,14 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 							{
 								String[] data = keyValue.split("=");
 
-								if (data.length != 2) throw new RuntimeException(
-										"error parsing file " + f
-												+ ", keyValue ='" + keyValue
-												+ "': " + line);
+								if (data.length != 2) throw new RuntimeException("error parsing file " + f
+										+ ", keyValue ='" + keyValue + "': " + line);
 
 								String key = data[0];
 								if (!p.getFields().contains(key))
 								{
-									throw new RuntimeException(
-											"error parsing file " + f
-													+ ", unknown key '" + key
-													+ "' in line: " + line);
+									throw new RuntimeException("error parsing file " + f + ", unknown key '" + key
+											+ "' in line: " + line);
 								}
 
 								params.set(data[0], data[1]);
@@ -272,12 +266,11 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						p.setWalltime(params.getString("walltime"));
 						p.setNodes(params.getInt("nodes"));
 						p.setCores(params.getInt("cores"));
-						//p.setClusterQueue(params.getString("clusterQueue"));
+						// p.setClusterQueue(params.getString("clusterQueue"));
 					}
 					else if (line.trim().startsWith("#FOREACH"))
 					{
-						String thisline = line.substring("#FOREACH".length())
-								.trim();
+						String thisline = line.substring("#FOREACH".length()).trim();
 						if (thisline.length() > 0)
 						{
 							String[] targets = thisline.split(",");
@@ -289,8 +282,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#DOCUMENTATION"))
 					{
-						String thisline = line.substring(
-								"#DOCUMENTATION".length()).trim();
+						String thisline = line.substring("#DOCUMENTATION".length()).trim();
 						if (0 < thisline.length())
 						{
 							p.setDescription(thisline.trim());
@@ -298,8 +290,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#INTERPRETER"))
 					{
-						String thisline = line.substring(
-								"#INTERPRETER".length()).trim();
+						String thisline = line.substring("#INTERPRETER".length()).trim();
 						if (0 < thisline.length())
 						{
 							p.setScriptInterpreter(thisline.trim());
@@ -357,10 +348,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				}
 				reader.close();
 
-				if (!foundHeader) logger
-						.warn("protocol "
-								+ f
-								+ " does not contain #MOLGENIS header. Defaults will be used");
+				if (!foundHeader) logger.warn("protocol " + f
+						+ " does not contain #MOLGENIS header. Defaults will be used");
 
 				p.setScriptTemplate(scriptTemplate);
 
@@ -372,18 +361,15 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setComputeParameters(File file) throws Exception
 	{
-		this.setComputeParameters(readEntitiesFromFile(file,
-				ComputeParameter.class));
+		this.setComputeParameters(readEntitiesFromFile(file, ComputeParameter.class));
 	}
 
 	public void setWorkflowElements(File file) throws Exception
 	{
-		this.setWorkflowElements(readEntitiesFromFile(file,
-				WorkflowElement.class));
+		this.setWorkflowElements(readEntitiesFromFile(file, WorkflowElement.class));
 	}
 
-	private <E extends Entity> List<E> readEntitiesFromFile(File file,
-			final Class<E> klazz) throws Exception
+	private <E extends Entity> List<E> readEntitiesFromFile(File file, final Class<E> klazz) throws Exception
 	{
 		final List<E> result = new ArrayList<E>();
 

@@ -14,12 +14,14 @@ public class Study
 	public String description;
 	public List<Data_Dict> dictionaries = new ArrayList<Data_Dict>();
 	public List<Var_Report> reports = new ArrayList<Var_Report>();
-	
+
 	public String toString()
 	{
-		String result = "Study: "+name + " "+version +"\n";
-		for(Data_Dict d: dictionaries) result += d.id+"\n";
-		for(Var_Report r: reports) result += r.dataset_id+"\n";
+		String result = "Study: " + name + " " + version + "\n";
+		for (Data_Dict d : dictionaries)
+			result += d.id + "\n";
+		for (Var_Report r : reports)
+			result += r.dataset_id + "\n";
 		return result;
 	}
 }

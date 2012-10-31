@@ -34,12 +34,20 @@ For obtaining consent, you can download the provided <a href="res/mutation/col7a
 	${form.__target}
 	${form.__action}
 	<td>File name:</td>
+<#if model.getController().getApplicationController().getLogin().getUserName() == "admin">
 	<td>${form.upload}${form.insertBatch}</td>
+<#else>
+	<td>${form.upload}${form.emailBatch}</td>
+</#if>
 	<td><a href="res/mutation/col7a1/col7a1_template.xls">Example template</a></td>
+<#if model.getController().getApplicationController().getLogin().getUserName() == "admin">
 	<td><a href="molgenis.do?__target=${screen.name}&__action=newPatient">Submit single patient</a></td>
+</#if>
 </tr>
 </table>
+<#if model.getController().getApplicationController().getLogin().getUserName() == "admin">
 ${form.reindex}
+</#if>
 </form>
 			</div>
 		</div>

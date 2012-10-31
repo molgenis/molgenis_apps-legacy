@@ -34,13 +34,14 @@ public class MatrixAdmin extends PluginModel
 		super(name, parent);
 	}
 
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders()
-//	{
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//
-//	}
+	// moved overlib to molgenis core
+	// @Override
+	// public String getCustomHtmlHeaders()
+	// {
+	// return
+	// "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+	//
+	// }
 
 	@Override
 	public String getViewName()
@@ -82,20 +83,21 @@ public class MatrixAdmin extends PluginModel
 	{
 
 		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
 		Data data = parentForm.getRecords().get(0);
-		
-		if(dmh == null){
+
+		if (dmh == null)
+		{
 			dmh = new DataMatrixHandler(db);
 		}
 
 		try
 		{
-			//ASSUMING newOrOtherData");
+			// ASSUMING newOrOtherData");
 
 			this.model.setSelectedData(data);
 			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
-			
+
 			logger.info("hasBackend: " + this.model.isHasBackend());
 
 		}

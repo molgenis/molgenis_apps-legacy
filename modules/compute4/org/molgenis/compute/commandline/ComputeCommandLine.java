@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -144,7 +143,7 @@ public class ComputeCommandLine
 			{
 				// fill template with work and put in script
 				ComputeTask job = new ComputeTask();
-				job.setName(this.generateJobName(wfe, work));
+				job.setName(this.createJobName(wfe, work));
 				job.setInterpreter(protocol.getScriptInterpreter());
 
 				// if walltime, cores, mem not specified in protocol, then use
@@ -155,8 +154,9 @@ public class ComputeCommandLine
 				// job.setWalltime(walltime);
 				work.set("walltime", walltime);
 
-//				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("clusterQueue")
-//						: protocol.getClusterQueue());
+				// String queue = (protocol.getClusterQueue() == null ?
+				// worksheet.getdefaultvalue("clusterQueue")
+				// : protocol.getClusterQueue());
 				// FIXME: Here I make queue dependent on walltime and memory per
 				// node..., which is specifically for Millipede..
 				// This you can find out on the cluster
@@ -180,7 +180,7 @@ public class ComputeCommandLine
 				// throw new Exception("Walltime too large: " + walltime +
 				// ". Maximum is 240h.");
 
-				//work.set("clusterQueue", queue);
+				// work.set("clusterQueue", queue);
 				work.set("cores", cores);
 				work.set("mem", mem + "gb");
 				// done with FIXME
@@ -313,28 +313,26 @@ public class ComputeCommandLine
 		return null;
 	}
 
-	private String generateJobName(WorkflowElement wfe, Tuple tuple)
+	private String createJobName(WorkflowElement wfe, Tuple tuple)
 	{
 		String jobName = wfe.getName();
 		ComputeProtocol wfeProtocol = findProtocol(wfe.getProtocol_Name(), computeBundle.getComputeProtocols());
 
 		// in case no targets, we number
 		List<String> targets = wfeProtocol.getIterateOver_Name();
-		if (0 == targets.size())
-		{
-			jobName += "_" + tuple.getString("line_number");
-		}
-		// otherwise use targets
-		else
-			for (String target : targets)
-			{
-				jobName += "_" + tuple.getString(target);
-			}
+		// if (0 == targets.size()) {
+		jobName += "_" + tuple.getString("task_number");
+		// }
+		// // otherwise use targets
+		// else
+		// for (String target : targets) {
+		// jobName += "_" + tuple.getString(target);
+		// }
 
 		return stepnr(wfe.getName()) + jobName;
 	}
 
-	private String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException,
+	public String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException,
 			TemplateException
 	{
 		// first create map
@@ -568,18 +566,18 @@ public class ComputeCommandLine
 	private void generateScripts()
 	{
 		new File(outputdir).mkdirs();
-		
-		//extra: custom
-		Map<String,Object> params = new HashMap<String,Object>();
+
+		// extra: custom
+		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("jobs", tasks);
 		params.put("workflowfilename", this.getworkflowfilename());
-		
-		String result = new FreemarkerView(this.protocoldir + File.separator + "CustomSubmit.sh.ftl",params).render();
-		
+
+		String result = new FreemarkerView(this.protocoldir + File.separator + "CustomSubmit.sh.ftl", params).render();
+
 		try
 		{
 			FileUtils.write(new File(outputdir + File.separator + "submitCustom.sh"), result);
-			
+
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
 
@@ -644,13 +642,15 @@ public class ComputeCommandLine
 
 			submitWriter.close();
 			submitWriterLocal.close();
-			
+
 		}
 		catch (FileNotFoundException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

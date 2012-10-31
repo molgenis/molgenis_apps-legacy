@@ -17,7 +17,6 @@ import org.molgenis.mutation.ui.search.form.ToExpertSearchForm;
 import org.molgenis.mutation.ui.search.form.ToSimpleSearchForm;
 import org.molgenis.news.MolgenisNews;
 
-
 public class SearchPluginVO implements Serializable
 {
 	private static final long serialVersionUID = 8321193926556324386L;
@@ -27,30 +26,30 @@ public class SearchPluginVO implements Serializable
 	private int numPatients;
 	private int numUnpublished;
 	private int numMutations;
-	private SimpleSearchForm simpleSearchForm                 = new SimpleSearchForm();
-	private ListAllMutationsForm listAllMutationsForm         = new ListAllMutationsForm();
-	private ListAllPatientsForm listAllPatientsForm           = new ListAllPatientsForm();
-	private ToExpertSearchForm toExpertSearchForm             = new ToExpertSearchForm();
-	private ToSimpleSearchForm toSimpleSearchForm             = new ToSimpleSearchForm();
-	private ExpertSearchForm expertSearchForm                 = new ExpertSearchForm();
-	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
-	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
+	private SimpleSearchForm simpleSearchForm = new SimpleSearchForm();
+	private ListAllMutationsForm listAllMutationsForm = new ListAllMutationsForm();
+	private ListAllPatientsForm listAllPatientsForm = new ListAllPatientsForm();
+	private ToExpertSearchForm toExpertSearchForm = new ToExpertSearchForm();
+	private ToSimpleSearchForm toSimpleSearchForm = new ToSimpleSearchForm();
+	private ExpertSearchForm expertSearchForm = new ExpertSearchForm();
+	private ShowMutationForm showMutationForm = new ShowMutationForm();
+	private DisplayOptionsForm displayOptionsForm = new DisplayOptionsForm();
 
-	private ExonSearchCriteriaVO exonSearchCriteriaVO         = new ExonSearchCriteriaVO();
+	private ExonSearchCriteriaVO exonSearchCriteriaVO = new ExonSearchCriteriaVO();
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
-	private PatientSearchCriteriaVO patientSearchCriteriaVO   = new PatientSearchCriteriaVO();
-	private QueryParametersVO queryParametersVO               = new QueryParametersVO();
+	private PatientSearchCriteriaVO patientSearchCriteriaVO = new PatientSearchCriteriaVO();
+	private QueryParametersVO queryParametersVO = new QueryParametersVO();
 
 	private MutationGene gene;
 	private ExonSummaryVO exonSummaryVO;
 	private MutationSummaryVO mutationSummaryVO;
-	private List<MutationSummaryVO> mutationSummaryVOs        = new ArrayList<MutationSummaryVO>();
+	private List<MutationSummaryVO> mutationSummaryVOs = new ArrayList<MutationSummaryVO>();
 	private HashMap<String, LimitOffsetPager<MutationSummaryVO>> mutationSummaryVOHash;
-	private List<PatientSummaryVO> patientSummaryVOs          = new ArrayList<PatientSummaryVO>();
+	private List<PatientSummaryVO> patientSummaryVOs = new ArrayList<PatientSummaryVO>();
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
 	private List<ProteinDomainSummaryVO> proteinDomainList;
 	private PatientSummaryVO patientSummaryVO;
-//	private List<PatientDetailsVO> patientDetailsVO;
+	// private List<PatientDetailsVO> patientDetailsVO;
 	private PhenotypeDetailsVO phenotypeDetailsVO;
 	private HashMap<String, String> patientSummaryVOHash;
 	private String rawOutput; // for output from included sources
@@ -62,17 +61,19 @@ public class SearchPluginVO implements Serializable
 	{
 		return action;
 	}
-	
+
 	public void setAction(String action)
 	{
 		this.action = action;
 	}
 
-	public String getResult() {
+	public String getResult()
+	{
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(String result)
+	{
 		this.result = result;
 	}
 
@@ -211,8 +212,7 @@ public class SearchPluginVO implements Serializable
 		return mutationSearchCriteriaVO;
 	}
 
-	public void setMutationSearchCriteriaVO(
-			MutationSearchCriteriaVO mutationSearchCriteriaVO)
+	public void setMutationSearchCriteriaVO(MutationSearchCriteriaVO mutationSearchCriteriaVO)
 	{
 		this.mutationSearchCriteriaVO = mutationSearchCriteriaVO;
 	}
@@ -222,8 +222,7 @@ public class SearchPluginVO implements Serializable
 		return patientSearchCriteriaVO;
 	}
 
-	public void setPatientSearchCriteriaVO(
-			PatientSearchCriteriaVO patientSearchCriteriaVO)
+	public void setPatientSearchCriteriaVO(PatientSearchCriteriaVO patientSearchCriteriaVO)
 	{
 		this.patientSearchCriteriaVO = patientSearchCriteriaVO;
 	}
@@ -238,11 +237,13 @@ public class SearchPluginVO implements Serializable
 		this.queryParametersVO = queryParametersVO;
 	}
 
-	public void setGene(MutationGene gene) {
+	public void setGene(MutationGene gene)
+	{
 		this.gene = gene;
 	}
 
-	public MutationGene getGene() {
+	public MutationGene getGene()
+	{
 		return gene;
 	}
 
@@ -281,8 +282,7 @@ public class SearchPluginVO implements Serializable
 		return mutationSummaryVOHash;
 	}
 
-	public void setMutationSummaryVOHash(
-			HashMap<String, LimitOffsetPager<MutationSummaryVO>> mutationSummaryVOHash)
+	public void setMutationSummaryVOHash(HashMap<String, LimitOffsetPager<MutationSummaryVO>> mutationSummaryVOHash)
 	{
 		this.mutationSummaryVOHash = mutationSummaryVOHash;
 	}
@@ -297,21 +297,21 @@ public class SearchPluginVO implements Serializable
 		this.patientSummaryVOs = patientSummaryVOs;
 	}
 
-//	public List<PatientDetailsVO> getPatientDetailsVO() {
-//		return patientDetailsVO;
-//	}
-//
-//	public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO) {
-//		this.patientDetailsVO = patientDetailsVO;
-//	}
+	// public List<PatientDetailsVO> getPatientDetailsVO() {
+	// return patientDetailsVO;
+	// }
+	//
+	// public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO)
+	// {
+	// this.patientDetailsVO = patientDetailsVO;
+	// }
 
 	public ProteinDomainSummaryVO getProteinDomainSummaryVO()
 	{
 		return proteinDomainSummaryVO;
 	}
 
-	public void setProteinDomainSummaryVO(
-			ProteinDomainSummaryVO proteinDomainSummaryVO)
+	public void setProteinDomainSummaryVO(ProteinDomainSummaryVO proteinDomainSummaryVO)
 	{
 		this.proteinDomainSummaryVO = proteinDomainSummaryVO;
 	}
@@ -346,27 +346,33 @@ public class SearchPluginVO implements Serializable
 		this.phenotypeDetailsVO = phenotypeDetailsVO;
 	}
 
-	public HashMap<String, String> getPatientSummaryVOHash() {
+	public HashMap<String, String> getPatientSummaryVOHash()
+	{
 		return patientSummaryVOHash;
 	}
 
-	public void setPatientSummaryVOHash(HashMap<String, String> patientSummaryVOHash) {
+	public void setPatientSummaryVOHash(HashMap<String, String> patientSummaryVOHash)
+	{
 		this.patientSummaryVOHash = patientSummaryVOHash;
 	}
 
-	public String getRawOutput() {
+	public String getRawOutput()
+	{
 		return rawOutput;
 	}
 
-	public void setRawOutput(String rawOutput) {
+	public void setRawOutput(String rawOutput)
+	{
 		this.rawOutput = rawOutput;
 	}
 
-	public List<MolgenisNews> getNews() {
+	public List<MolgenisNews> getNews()
+	{
 		return news;
 	}
 
-	public void setNews(List<MolgenisNews> news) {
+	public void setNews(List<MolgenisNews> news)
+	{
 		this.news = news;
 	}
 

@@ -1,8 +1,6 @@
 package org.molgenis.sandbox;
 
-
 import org.molgenis.Molgenis;
-
 
 public class SandboxGenerate
 {

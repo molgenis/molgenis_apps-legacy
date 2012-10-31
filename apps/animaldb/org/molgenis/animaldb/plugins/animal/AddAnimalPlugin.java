@@ -82,7 +82,7 @@ public class AddAnimalPlugin extends EasyPluginController
 	private String resResearcher = null;
 	private List<String> genes = null;
 	private List<String> genestates = null;
-	
+
 	public DateInput fakedate = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
@@ -219,7 +219,7 @@ public class AddAnimalPlugin extends EasyPluginController
 				this.setError("Error: " + e.getMessage());
 			}
 		}
-		
+
 		return Show.SHOW_MAIN;
 	}
 
@@ -253,11 +253,12 @@ public class AddAnimalPlugin extends EasyPluginController
 		// Birth date (String)
 		if (!birthdate.getValue().equals(""))
 		{
-			//FIXME --> construct to make sure that the date is saved in de Animaldb date format(yyyy-MM-dd)
-			//birthDate = birthdate.getValue();
+			// FIXME --> construct to make sure that the date is saved in de
+			// Animaldb date format(yyyy-MM-dd)
+			// birthDate = birthdate.getValue();
 			Date bd = dbFormat.parse(birthdate.getValue());
 			birthDate = dbFormat.format(bd);
-			
+
 		}
 		// Entry date (Date)
 		if (!entrydate.getValue().equals(""))
@@ -605,19 +606,22 @@ public class AddAnimalPlugin extends EasyPluginController
 		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setDescription("The date of birth of the animal(s).");
 		birthdate.setDateFormat("yyyy-MM-dd");
-		birthdate.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		birthdate
+				.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 		birthdate.setValue(null);
 		if (birthDate != null)
 		{
 			birthdate.setValue(dateOnlyFormat.parse(birthDate));
 		}
-		
+
 		entrydate = new DateInput("entrydate");
 		entrydate.setLabel("Date of entry:");
 		entrydate.setNillable(false);
-		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
+		entrydate
+				.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		entrydate.setDateFormat("yyyy-MM-dd");
-		entrydate.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		entrydate
+				.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 		entrydate.setValue(new Date());
 		if (entryDate != null)
 		{
@@ -750,10 +754,8 @@ public class AddAnimalPlugin extends EasyPluginController
 
 		ct.setDatabase(db);
 
-
 		containingPanel = new DivPanel(this.getName() + "panel", "");
-		
-		
+
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info (II)</h2>"));
 
 		genestateList = new ArrayList<SelectInput>();

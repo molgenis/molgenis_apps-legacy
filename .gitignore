@@ -6,7 +6,7 @@ tmp/
 hsqldb/
 handwritten/
 generated/
-WebContent/WEB-INF/
+WebContent/WEB-INF/lib/
 
 ## Always ignore these
 *~
@@ -58,3 +58,4 @@ logger.out*
 /.settings/org.eclipse.wst.common.component
 /.settings/org.eclipse.core.resources.prefs
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java
+runmij*

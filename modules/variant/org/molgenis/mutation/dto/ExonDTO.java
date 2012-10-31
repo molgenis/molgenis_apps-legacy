@@ -32,7 +32,7 @@ public class ExonDTO implements Comparable<ExonDTO>, Serializable
 	{
 		this.init();
 	}
-	
+
 	private void init()
 	{
 		this.id = 0;
@@ -55,118 +55,194 @@ public class ExonDTO implements Comparable<ExonDTO>, Serializable
 		this.nuclSequence = "";
 		this.aaSequence = "";
 	}
-	public Integer getId() {
+
+	public Integer getId()
+	{
 		return id;
 	}
-	public void setId(Integer id) {
+
+	public void setId(Integer id)
+	{
 		this.id = id;
 	}
-	public String getName() {
+
+	public String getName()
+	{
 		return name;
 	}
-	public void setName(String name) {
+
+	public void setName(String name)
+	{
 		this.name = name;
 	}
-	public Boolean getIsIntron() {
+
+	public Boolean getIsIntron()
+	{
 		return isIntron;
 	}
-	public void setIsIntron(Boolean isIntron) {
+
+	public void setIsIntron(Boolean isIntron)
+	{
 		this.isIntron = isIntron;
 	}
-	public Integer getLength() {
+
+	public Integer getLength()
+	{
 		return length;
 	}
-	public void setLength(Integer length) {
+
+	public void setLength(Integer length)
+	{
 		this.length = length;
 	}
-	public Integer getCdnaStart() {
+
+	public Integer getCdnaStart()
+	{
 		return cdnaStart;
 	}
-	public void setCdnaStart(Integer cdnaStart) {
+
+	public void setCdnaStart(Integer cdnaStart)
+	{
 		this.cdnaStart = cdnaStart;
 	}
-	public Integer getCdnaEnd() {
+
+	public Integer getCdnaEnd()
+	{
 		return cdnaEnd;
 	}
-	public void setCdnaEnd(Integer cdnaEnd) {
+
+	public void setCdnaEnd(Integer cdnaEnd)
+	{
 		this.cdnaEnd = cdnaEnd;
 	}
-	public Integer getGdnaStart() {
+
+	public Integer getGdnaStart()
+	{
 		return gdnaStart;
 	}
-	public void setGdnaStart(Integer gdnaStart) {
+
+	public void setGdnaStart(Integer gdnaStart)
+	{
 		this.gdnaStart = gdnaStart;
 	}
-	public Integer getGdnaEnd() {
+
+	public Integer getGdnaEnd()
+	{
 		return gdnaEnd;
 	}
-	public void setGdnaEnd(Integer gdnaEnd) {
+
+	public void setGdnaEnd(Integer gdnaEnd)
+	{
 		this.gdnaEnd = gdnaEnd;
 	}
-	public List<Integer> getDomainId() {
+
+	public List<Integer> getDomainId()
+	{
 		return domainId;
 	}
-	public void setDomainId(List<Integer> domainId) {
+
+	public void setDomainId(List<Integer> domainId)
+	{
 		this.domainId = domainId;
 	}
-	public List<String> getDomainName() {
+
+	public List<String> getDomainName()
+	{
 		return domainName;
 	}
-	public void setDomainName(List<String> domainName) {
+
+	public void setDomainName(List<String> domainName)
+	{
 		this.domainName = domainName;
 	}
-	public String getOrientation() {
+
+	public String getOrientation()
+	{
 		return orientation;
 	}
-	public void setOrientation(String orientation) {
+
+	public void setOrientation(String orientation)
+	{
 		this.orientation = orientation;
 	}
-	public Integer getNumFullAminoAcids() {
+
+	public Integer getNumFullAminoAcids()
+	{
 		return numFullAminoAcids;
 	}
-	public void setNumFullAminoAcids(Integer numFullAminoAcids) {
+
+	public void setNumFullAminoAcids(Integer numFullAminoAcids)
+	{
 		this.numFullAminoAcids = numFullAminoAcids;
 	}
-	public Integer getNumPartAminoAcids() {
+
+	public Integer getNumPartAminoAcids()
+	{
 		return numPartAminoAcids;
 	}
-	public void setNumPartAminoAcids(Integer numPartAminoAcids) {
+
+	public void setNumPartAminoAcids(Integer numPartAminoAcids)
+	{
 		this.numPartAminoAcids = numPartAminoAcids;
 	}
-	public Integer getNumGlyXYRepeats() {
+
+	public Integer getNumGlyXYRepeats()
+	{
 		return numGlyXYRepeats;
 	}
-	public void setNumGlyXYRepeats(Integer numGlyXYRepeats) {
+
+	public void setNumGlyXYRepeats(Integer numGlyXYRepeats)
+	{
 		this.numGlyXYRepeats = numGlyXYRepeats;
 	}
-	public Boolean getMultiple3Nucl() {
+
+	public Boolean getMultiple3Nucl()
+	{
 		return multiple3Nucl;
 	}
-	public void setMultiple3Nucl(Boolean multiple3Nucl) {
+
+	public void setMultiple3Nucl(Boolean multiple3Nucl)
+	{
 		this.multiple3Nucl = multiple3Nucl;
 	}
-	public String getNuclSequenceFlankLeft() {
+
+	public String getNuclSequenceFlankLeft()
+	{
 		return nuclSequenceFlankLeft;
 	}
-	public void setNuclSequenceFlankLeft(String nuclSequenceFlankLeft) {
+
+	public void setNuclSequenceFlankLeft(String nuclSequenceFlankLeft)
+	{
 		this.nuclSequenceFlankLeft = nuclSequenceFlankLeft;
 	}
-	public String getNuclSequenceFlankRight() {
+
+	public String getNuclSequenceFlankRight()
+	{
 		return nuclSequenceFlankRight;
 	}
-	public void setNuclSequenceFlankRight(String nuclSequenceFlankRight) {
+
+	public void setNuclSequenceFlankRight(String nuclSequenceFlankRight)
+	{
 		this.nuclSequenceFlankRight = nuclSequenceFlankRight;
 	}
-	public String getNuclSequence() {
+
+	public String getNuclSequence()
+	{
 		return nuclSequence;
 	}
-	public void setNuclSequence(String nuclSequence) {
+
+	public void setNuclSequence(String nuclSequence)
+	{
 		this.nuclSequence = nuclSequence;
 	}
-	public String getAaSequence() {
+
+	public String getAaSequence()
+	{
 		return aaSequence;
 	}
-	public void setAaSequence(String aaSequence) {
+
+	public void setAaSequence(String aaSequence)
+	{
 		this.aaSequence = aaSequence;
 	}
 

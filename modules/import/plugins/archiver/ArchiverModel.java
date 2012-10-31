@@ -1,7 +1,7 @@
 package plugins.archiver;
 
-
-public class ArchiverModel {
+public class ArchiverModel
+{
 
 	private String download;
 
@@ -14,7 +14,5 @@ public class ArchiverModel {
 	{
 		this.download = download;
 	}
-	
-	
 
 }

@@ -2,8 +2,13 @@
 <molgenis name="org.molgenis">
 	<module name="cms">
 		<description>Content Management Plugin for Molgenis</description>
+		<entity name="Header">
+			<field name="id" type="autoid" description="primary key"/>
+			<field name="logo" type="varchar" nillable="true" description="URL of logo/image"/>
+			<field name="title" type="varchar" nillable="true" description="Title"/>
+		</entity>
 		<entity name="Paragraph">
-			<field name="id" type="autoid" description="primary key" />
+			<field name="id" type="autoid" description="primary key"/>
 			<field name="entity" type="xref" xref_field="MolgenisEntity.id" description="The plugin this cmp element refers to"/>
 			<field name="name" description="section inside the web page"/>
 			<field name="content" type="text" description="the content of the web page section"/>

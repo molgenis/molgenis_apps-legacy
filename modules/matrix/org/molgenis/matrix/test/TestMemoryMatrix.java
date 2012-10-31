@@ -21,7 +21,7 @@ public class TestMemoryMatrix
 	public void test1() throws Exception
 	{
 		cleanMemory("start", 0);
-		
+
 		List<String> rowNames = new ArrayList<String>();
 		rowNames.add("row1");
 		rowNames.add("row2");
@@ -35,42 +35,39 @@ public class TestMemoryMatrix
 		values[1] = new Double[]
 		{ 2.1, 2.2, 2.3 };
 
-		Matrix<String, String, Double> m = new MemoryMatrix<String, String, Double>(
-				rowNames, colNames, values);
-		
-		assertEquals(m.getValue("row1","col1"), new Double(1.1d));
-		assertEquals(m.getValue("row2","col3"), new Double(2.3d));
-		
-		assertEquals(m.getValue("row2","col2"), m.getValue(1,1));
-		assertEquals(m.getValue("row1","col3"), m.getValue(0,2));
-		
-		assertEquals(m.getRow(0),values[0]);
-		
-		DoubleCsvMemoryMatrix m2  = new DoubleCsvMemoryMatrix(m);
-		
+		Matrix<String, String, Double> m = new MemoryMatrix<String, String, Double>(rowNames, colNames, values);
+
+		assertEquals(m.getValue("row1", "col1"), new Double(1.1d));
+		assertEquals(m.getValue("row2", "col3"), new Double(2.3d));
+
+		assertEquals(m.getValue("row2", "col2"), m.getValue(1, 1));
+		assertEquals(m.getValue("row1", "col3"), m.getValue(0, 2));
+
+		assertEquals(m.getRow(0), values[0]);
+
+		DoubleCsvMemoryMatrix m2 = new DoubleCsvMemoryMatrix(m);
+
 		CsvStringWriter csvWriter = new CsvStringWriter(new StringWriter());
 		m2.write(csvWriter);
-		
+
 		System.out.println(csvWriter.toString());
-		
-		
-		cleanMemory("end", rowNames.size()*colNames.size());
-		
-		
+
+		cleanMemory("end", rowNames.size() * colNames.size());
+
 	}
-	
+
 	@Test
 	public void testMemoryUsage() throws MatrixException
 	{
 		cleanMemory("start", 0);
-		
-		Matrix<String,String,Double> matrix = MemoryMatrixFactory.create(1000,2000);
-		
-		cleanMemory("end", matrix.getRowNames().size()*matrix.getColNames().size());
-		
+
+		Matrix<String, String, Double> matrix = MemoryMatrixFactory.create(1000, 2000);
+
+		cleanMemory("end", matrix.getRowNames().size() * matrix.getColNames().size());
+
 		matrix.getCol(0);
 	}
-	
+
 	private static void cleanMemory(String message, int count)
 	{
 		timestampAfter = System.currentTimeMillis();

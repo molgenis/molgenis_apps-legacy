@@ -36,16 +36,14 @@ public class GerardParser
 		writeMatrixFiles(inputDir, outputDir, colNames);
 	}
 
-	public static List<String> writeIndividualFile(File inputDir, File outputDir)
-			throws Exception
+	public static List<String> writeIndividualFile(File inputDir, File outputDir) throws Exception
 	{
 		final List<String> result = new ArrayList<String>();
 
 		for (File f : inputDir.listFiles())
 		{
 
-			File outfile = new File(outputDir.getCanonicalFile()
-					+ "/individual.txt");
+			File outfile = new File(outputDir.getCanonicalFile() + "/individual.txt");
 			CsvReader reader = new CsvFileReader(f);
 			CsvFileWriter writer = new CsvFileWriter(outfile);
 
@@ -67,8 +65,7 @@ public class GerardParser
 		return result;
 	}
 
-	public static void writeMarkerFile(final File inputDir, final File outputDir)
-			throws Exception
+	public static void writeMarkerFile(final File inputDir, final File outputDir) throws Exception
 	{
 		File outfile = new File(outputDir.getCanonicalFile() + "/marker.txt");
 		final CsvFileWriter writer = new CsvFileWriter(outfile);
@@ -96,17 +93,15 @@ public class GerardParser
 		writer.close();
 	}
 
-	public static void writeMatrixFiles(final File inputDir,
-			final File outputDir, final List<String> colNames) throws Exception
+	public static void writeMatrixFiles(final File inputDir, final File outputDir, final List<String> colNames)
+			throws Exception
 	{
 		for (File f : inputDir.listFiles())
 		{
 			CsvReader reader = new CsvFileReader(f);
 
-			File outfile = new File(outputDir.getCanonicalFile() + "/"
-					+ f.getName() + ".txt");
-			final PrintWriter writer = new PrintWriter(new BufferedWriter(
-					new FileWriter(outfile)));
+			File outfile = new File(outputDir.getCanonicalFile() + "/" + f.getName() + ".txt");
+			final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outfile)));
 
 			int line_number = 1;
 			for (Tuple tuple : reader)

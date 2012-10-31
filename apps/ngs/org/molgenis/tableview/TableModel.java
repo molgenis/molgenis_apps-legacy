@@ -6,27 +6,28 @@ import org.molgenis.util.Tuple;
 
 public class TableModel
 {
-	//table source. Could be table name, or protocolName or any other identifiable source.
+	// table source. Could be table name, or protocolName or any other
+	// identifiable source.
 	String name;
-	
-	//limit
+
+	// limit
 	int limit;
-	
-	//offset
+
+	// offset
 	int offset;
-	
-	//current records
+
+	// current records
 	List<Tuple> records;
-	
-	//current count
+
+	// current count
 	int count;
-	
-	//current columns
+
+	// current columns
 	List<TableViewColumn> columns;
 
 	public TableModel(String name)
 	{
-		assert(name != null);
+		assert (name != null);
 		this.name = name;
 	}
 
@@ -89,7 +90,5 @@ public class TableModel
 	{
 		this.columns = columns;
 	}
-	
-	
-	
+
 }

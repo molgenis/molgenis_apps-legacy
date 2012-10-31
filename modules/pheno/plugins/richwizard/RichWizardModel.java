@@ -8,9 +8,9 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.organization.Investigation;
 
-public class RichWizardModel extends SimpleScreenModel {
+public class RichWizardModel extends SimpleScreenModel
+{
 
-	
 	public RichWizardModel(ScreenController controller)
 	{
 		super(controller);
@@ -24,11 +24,9 @@ public class RichWizardModel extends SimpleScreenModel {
 	private List<String> entityNames;
 	private ArrayList<String> uniqueAncestorsOfEntities;
 	private HashMap<String, String> exampleCsvs;
-	
+
 	private HashMap<String, Integer> importProgress;
-	
-	
-	
+
 	public HashMap<String, Integer> getImportProgress()
 	{
 		return importProgress;
@@ -115,7 +113,5 @@ public class RichWizardModel extends SimpleScreenModel {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
 
 }

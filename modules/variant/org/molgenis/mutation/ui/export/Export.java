@@ -1,4 +1,3 @@
-
 package org.molgenis.mutation.ui.export;
 
 import org.molgenis.framework.db.Database;
@@ -10,11 +9,12 @@ import org.molgenis.mutation.service.ExportService;
 
 /**
  * ExportController takes care of all user requests and application logic.
- *
- * <li>Each user request is handled by its own method based action=methodName. 
- * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>ExportModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>ExportView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * 
+ * <li>Each user request is handled by its own method based action=methodName.
+ * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
+ * user <li>ExportModel holds application state and business logic on top of
+ * domain model. Get it via this.getModel()/setModel(..) <li>ExportView holds
+ * the template to show the layout. Get/set it via this.getView()/setView(..).
  */
 public class Export extends EasyPluginController<ExportModel>
 {
@@ -25,7 +25,7 @@ public class Export extends EasyPluginController<ExportModel>
 		super(name, parent);
 		this.setModel(new ExportModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("ExportView.ftl", getModel());

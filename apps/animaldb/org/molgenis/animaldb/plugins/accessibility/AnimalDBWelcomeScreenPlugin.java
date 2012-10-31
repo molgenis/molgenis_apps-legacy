@@ -20,12 +20,11 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.news.MolgenisNews;
 
-
 public class AnimalDBWelcomeScreenPlugin extends EasyPluginController
 {
 	private static final long serialVersionUID = -5861419875983400033L;
 	List<MolgenisNews> news;
-	
+
 	public AnimalDBWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -33,27 +32,32 @@ public class AnimalDBWelcomeScreenPlugin extends EasyPluginController
 
 	public ScreenView getView()
 	{
-		return new FreemarkerView("org/molgenis/animaldb/plugins/accessibility/AnimalDBWelcomeScreenPlugin.ftl",this);
+		return new FreemarkerView("org/molgenis/animaldb/plugins/accessibility/AnimalDBWelcomeScreenPlugin.ftl", this);
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		// Entry point when logging in, so good place to (re)set the ObservationTarget label map
+		// Entry point when logging in, so good place to (re)set the
+		// ObservationTarget label map
 		CommonService cs = CommonService.getInstance();
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(db.getLogin().getUserName(), true);
-		
+
 		news = new ArrayList<MolgenisNews>();
 		List<MolgenisNews> tmpNews;
-		try {
+		try
+		{
 			tmpNews = db.query(MolgenisNews.class).sortDESC(MolgenisNews.DATE_).find();
 			for (MolgenisNews newsItem : tmpNews)
 			{
-				//newsItem.setText(StringUtils.abbreviate(newsItem.getText(), 100));
+				// newsItem.setText(StringUtils.abbreviate(newsItem.getText(),
+				// 100));
 				news.add(newsItem);
 			}
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			MolgenisNews tmpItem = new MolgenisNews();
 			tmpItem.setAuthor("Administrator");
 			tmpItem.setDate(new Date());
@@ -63,9 +67,10 @@ public class AnimalDBWelcomeScreenPlugin extends EasyPluginController
 			news.add(tmpItem);
 		}
 	}
-	
-	public List<MolgenisNews> getNews() {
+
+	public List<MolgenisNews> getNews()
+	{
 		return news;
 	}
-	
+
 }

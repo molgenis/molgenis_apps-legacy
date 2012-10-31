@@ -43,7 +43,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * 
 	 * @param type
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws Exception
 	 */
 	public File getStorageDirFor(String type, Database db) throws Exception
@@ -85,7 +85,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * take care of deleting the file by removing the MolgenisFile.
 	 * 
 	 * @param mf
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void deleteFile(MolgenisFile mf, Database db) throws Exception
 	{
@@ -117,7 +117,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @param db
 	 * @param mf
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public File getFile(MolgenisFile mf, Database db) throws Exception
 	{
@@ -131,14 +131,15 @@ public class MolgenisFileHandler extends StorageHandler
 		return dataSource;
 
 	}
-	
+
 	/**
-	 * Get the file pointer for this filename / extension / type, bypassing MolgenisFile to handle it.
+	 * Get the file pointer for this filename / extension / type, bypassing
+	 * MolgenisFile to handle it.
 	 * 
 	 * @param db
 	 * @param mf
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public File getFileDirectly(String fileName, String extension, String mfType, Database db) throws Exception
 	{
@@ -157,7 +158,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * 
 	 * @param name
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public File getFile(String name, Database db) throws Exception
 	{
@@ -180,7 +181,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @param db
 	 * @param mf
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws Exception
 	 */
 	public String findFile(MolgenisFile mf, Database db) throws Exception

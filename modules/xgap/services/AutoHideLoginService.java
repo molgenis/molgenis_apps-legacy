@@ -19,20 +19,21 @@ import org.molgenis.framework.ui.ApplicationController;
 import plugins.autohidelogin.AutoHideLogin;
 
 /**
- * Hide/unhide the login tab via a boolean and this service to flip it.
- * See: /molgenis_apps/modules/xgap/plugins/autohidelogin/AutoHideLogin.java
+ * Hide/unhide the login tab via a boolean and this service to flip it. See:
+ * /molgenis_apps/modules/xgap/plugins/autohidelogin/AutoHideLogin.java
+ * 
  * @author joerivandervelde
  */
-public class AutoHideLoginService  implements MolgenisService
+public class AutoHideLoginService implements MolgenisService
 {
-	
+
 	private MolgenisContext mc;
-	
+
 	public AutoHideLoginService(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
-	
+
 	private static Logger logger = Logger.getLogger(AutoHideLoginService.class);
 
 	@Override
@@ -43,37 +44,38 @@ public class AutoHideLoginService  implements MolgenisService
 		HttpServletResponse res = response.getResponse();
 		res.setStatus(HttpServletResponse.SC_OK);
 		res.setContentType("text/html;charset=UTF8");
-		
+
 		OutputStream out = res.getOutputStream();
 		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
 
-		ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
-		
+		ApplicationController molgenis = (ApplicationController) request.getRequest().getSession()
+				.getAttribute("application");
+
 		try
 		{
-			//if null, make true
-			if(molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == null)
+			// if null, make true
+			if (molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == null)
 			{
 				molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, true);
 			}
 			else
 			{
-				//if true, make false
-				if((Boolean)molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == true)
+				// if true, make false
+				if ((Boolean) molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == true)
 				{
 					molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, false);
 				}
-				
-				//if false, make true
+
+				// if false, make true
 				else
 				{
 					molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, true);
 				}
 			}
 
-			//write a meta refresh back to the login tab
+			// write a meta refresh back to the login tab
 			p.println("<HTML><HEAD><META HTTP-EQUIV=\"refresh\" CONTENT=\"0;URL=molgenis.do?__target=main&select=UserLogin\"></HEAD><BODY></BODY></HTML>");
-			
+
 			logger.info("serving " + request.getRequest().getRequestURI());
 		}
 		catch (Exception e)

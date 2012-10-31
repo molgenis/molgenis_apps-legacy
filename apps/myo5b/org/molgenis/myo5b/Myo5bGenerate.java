@@ -1,4 +1,5 @@
 package org.molgenis.myo5b;
+
 import org.molgenis.Molgenis;
 
 /**

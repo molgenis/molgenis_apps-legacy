@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component.legacy;
 
-
 public class SomeRowType
 {
 	Integer id;
@@ -8,7 +7,7 @@ public class SomeRowType
 	String lastName;
 	String city;
 	Integer yearOfBirth;
-	
+
 	public SomeRowType(Integer id, String firstName, String lastName, String city, Integer yearOfBirth)
 	{
 		this.id = id;
@@ -43,5 +42,4 @@ public class SomeRowType
 		return yearOfBirth;
 	}
 
-	
 }

@@ -15,11 +15,11 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.molgenis.core.Publication;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 
 import org.molgenis.mutation.dto.ExonDTO;
+import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationSearchCriteriaDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
@@ -28,23 +28,18 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.variant.Exon;
+import org.molgenis.variant.Gene;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.ProteinDomain;
 import org.molgenis.variant.Variant;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SearchService extends MolgenisVariantService
 {
-	@Autowired
-	public SearchService(Database db)
-	{
-		super(db);
-	}
-
 	/**
 	 * Find exon by its primary key
+	 * 
 	 * @param id
 	 * @return ExonDTO
 	 */
@@ -53,6 +48,9 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			Exon exon = this.em.find(Exon.class, id);
+
+			if (exon == null) throw new SearchServiceException("No exon found for " + id);
+
 			return this.exonToExonDTO(exon);
 		}
 		catch (Exception e)
@@ -64,6 +62,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Get all mutations sorted by their position
+	 * 
 	 * @return list of VariantDTO's
 	 */
 	public List<VariantDTO> getAllVariants()
@@ -81,8 +80,26 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	public List<String> getAllVariantTypes()
+	{
+		try
+		{
+			String sql = "SELECT DISTINCT type_ FROM Variant";
+			TypedQuery<String> query = this.em.createQuery(sql, String.class);
+			List<String> typeList = query.getResultList();
+
+			return typeList;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
 	/**
 	 * Get all exons sorted by their position
+	 * 
 	 * @return list of ExonDTOs
 	 */
 	public List<ExonDTO> getAllExons()
@@ -104,6 +121,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Get all mutations sorted by their position
+	 * 
 	 * @return list of MutationSummaryVOs
 	 */
 	public List<MutationSummaryDTO> findAllMutationSummaries()
@@ -138,16 +156,18 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Get all protein domains
-	 * @param orientation 
+	 * 
+	 * @param orientation
 	 * @return protein domains
-	 * @throws ParseException 
-	 * @throws DatabaseException 
+	 * @throws ParseException
+	 * @throws DatabaseException
 	 */
 	public List<ProteinDomainDTO> findAllProteinDomains()
 	{
 		try
 		{
-			return this.proteinDomainListToProteinDomainDTOList(this.db.query(ProteinDomain.class).sortASC(ProteinDomain.STARTCDNA).find());
+			return this.proteinDomainListToProteinDomainDTOList(this.db.query(ProteinDomain.class)
+					.sortASC(ProteinDomain.STARTCDNA).find());
 		}
 		catch (Exception e)
 		{
@@ -158,6 +178,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find the first exon in order
+	 * 
 	 * @return ExonDTO
 	 */
 	public ExonDTO findFirstExon()
@@ -168,6 +189,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find the first mutation in order
+	 * 
 	 * @return MutationSummaryDTO
 	 */
 	public MutationSummaryDTO findFirstMutation()
@@ -178,31 +200,31 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find previous exon in order
-	 * @param id of exon for which previous exon is requested
+	 * 
+	 * @param id
+	 *            of exon for which previous exon is requested
 	 * @return ExonDTO
 	 */
 	public ExonDTO findPrevExon(final Integer id)
 	{
-		if (id == null)
-			return null;
+		if (id == null) return null;
 
 		try
 		{
 			List<ExonDTO> exonDTOList = this.getAllExons();
-			
+
 			for (int i = 0; i < exonDTOList.size(); i++)
 			{
 				ExonDTO exonDTO = exonDTOList.get(i);
-				
+
 				if (exonDTO.getId().equals(id))
 				{
-					if (i == 0)
-						return exonDTOList.get(i);
+					if (i == 0) return exonDTOList.get(i);
 					else
 						return exonDTOList.get(i - 1);
 				}
 			}
-	
+
 			// If we are here we did not find anything :-(
 			return null;
 		}
@@ -215,31 +237,31 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find previous mutation in order
-	 * @param id of mutation for which previous mutation is requested
+	 * 
+	 * @param id
+	 *            of mutation for which previous mutation is requested
 	 * @return MutationSummaryDTO
 	 */
 	public MutationSummaryDTO findPrevMutation(final String identifier)
 	{
-		if (StringUtils.isEmpty(identifier))
-			return null;
+		if (StringUtils.isEmpty(identifier)) return null;
 
 		try
 		{
 			List<MutationSummaryDTO> mutationSummaryVOList = this.findAllMutationSummaries();
-			
+
 			for (int i = 0; i < mutationSummaryVOList.size(); i++)
 			{
 				MutationSummaryDTO mutationSummaryVO = mutationSummaryVOList.get(i);
-				
+
 				if (mutationSummaryVO.getIdentifier().equals(identifier))
 				{
-					if (i == 0)
-						return mutationSummaryVOList.get(i);
+					if (i == 0) return mutationSummaryVOList.get(i);
 					else
 						return mutationSummaryVOList.get(i - 1);
 				}
 			}
-	
+
 			// If we are here we did not find anything :-(
 			return null;
 		}
@@ -252,31 +274,31 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find next exon in order
-	 * @param id of exon for which next exon is requested
+	 * 
+	 * @param id
+	 *            of exon for which next exon is requested
 	 * @return ExonDTO
 	 */
 	public ExonDTO findNextExon(final Integer id)
 	{
-		if (id == null)
-			return null;
+		if (id == null) return null;
 
 		try
 		{
 			List<ExonDTO> exonDTOList = this.getAllExons();
-			
+
 			for (int i = 0; i < exonDTOList.size(); i++)
 			{
 				ExonDTO exonDTO = exonDTOList.get(i);
-				
+
 				if (exonDTO.getId().equals(id))
 				{
-					if (i == exonDTOList.size() - 1)
-						return exonDTOList.get(i);
+					if (i == exonDTOList.size() - 1) return exonDTOList.get(i);
 					else
 						return exonDTOList.get(i + 1);
 				}
 			}
-	
+
 			// If we are here we did not find anything :-(
 			return null;
 		}
@@ -289,31 +311,31 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find next mutation in order
-	 * @param id of mutation for which next mutation is requested
+	 * 
+	 * @param id
+	 *            of mutation for which next mutation is requested
 	 * @return MutationSummaryDTO
 	 */
 	public MutationSummaryDTO findNextMutation(final String identifier)
 	{
-		if (StringUtils.isEmpty(identifier))
-			return null;
+		if (StringUtils.isEmpty(identifier)) return null;
 
 		try
 		{
 			List<MutationSummaryDTO> mutationSummaryVOList = this.findAllMutationSummaries();
-			
+
 			for (int i = 0; i < mutationSummaryVOList.size(); i++)
 			{
 				MutationSummaryDTO mutationSummaryVO = mutationSummaryVOList.get(i);
-				
+
 				if (mutationSummaryVO.getIdentifier().equals(identifier))
 				{
-					if (i == mutationSummaryVOList.size() - 1)
-						return mutationSummaryVOList.get(i);
+					if (i == mutationSummaryVOList.size() - 1) return mutationSummaryVOList.get(i);
 					else
 						return mutationSummaryVOList.get(i + 1);
 				}
 			}
-	
+
 			// If we are here we did not find anything :-(
 			return null;
 		}
@@ -326,6 +348,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find the last exon in order
+	 * 
 	 * @return ExonDTO
 	 */
 	public ExonDTO findLastExon()
@@ -336,6 +359,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find the last mutation in order
+	 * 
 	 * @return MutationSummaryDTO
 	 */
 	public MutationSummaryDTO findLastMutation()
@@ -346,6 +370,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find variants in a specific exon/intron
+	 * 
 	 * @param exonId
 	 * @return list of VariantSummaryDTO's
 	 */
@@ -367,7 +392,7 @@ public class SearchService extends MolgenisVariantService
 				query = query.lessOrEqual(Variant.ENDGDNA, exon.getEndGdna());
 			}
 			List<Variant> result = query.find();
-			
+
 			return this.variantListToMutationSummaryDTOList(result);
 		}
 		catch (Exception e)
@@ -376,9 +401,10 @@ public class SearchService extends MolgenisVariantService
 			throw new SearchServiceException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Find a variant by its identifier
+	 * 
 	 * @param mutationIdentifier
 	 * @return VariantSummaryDTO
 	 */
@@ -391,11 +417,10 @@ public class SearchService extends MolgenisVariantService
 			query.setParameter("name", mutationIdentifier);
 			List<Variant> variantList = query.getResultList();
 
-			if (variantList.size() > 1)
-				throw new SearchServiceException("Not exactly one variant matching " + mutationIdentifier);
+			if (variantList.size() > 1) throw new SearchServiceException("Not exactly one variant matching "
+					+ mutationIdentifier);
 
-			if (variantList.size() == 1)
-				return this.variantToMutationSummaryDTO(variantList.get(0));
+			if (variantList.size() == 1) return this.variantToMutationSummaryDTO(variantList.get(0));
 			else
 				return null;
 		}
@@ -412,32 +437,30 @@ public class SearchService extends MolgenisVariantService
 		{
 			Set<MutationSummaryDTO> mutations = new HashSet<MutationSummaryDTO>();
 
-			if (StringUtils.isNotEmpty(criteria.getVariation()))
-				mutations.addAll(this.findMutationsByCdnaNotation(criteria.getVariation()));
-			if (StringUtils.isNotEmpty(criteria.getConsequence()))
-				mutations.addAll(this.findMutationsByObservedValue("consequence", criteria.getConsequence()));
+			if (StringUtils.isNotEmpty(criteria.getVariation())) mutations.addAll(this
+					.findMutationsByCdnaNotation(criteria.getVariation()));
+			if (StringUtils.isNotEmpty(criteria.getConsequence())) mutations.addAll(this.findMutationsByObservedValue(
+					"consequence", criteria.getConsequence()));
 			if (StringUtils.isNotEmpty(criteria.getMid()))
 			{
 				MutationSummaryDTO tmp = this.findMutationByIdentifier(criteria.getMid());
-				if (tmp != null)
-					mutations.add(tmp);
+				if (tmp != null) mutations.add(tmp);
 			}
-			if (criteria.getCdnaPosition() != null)
-				mutations.addAll(this.findMutationsByPosition(criteria.getCdnaPosition()));
-			if (criteria.getCodonChangeNumber() != null)
-				mutations.addAll(this.findMutationsByCodonChangeNumber(criteria.getCodonChangeNumber()));
-			if (criteria.getExonId() != null)
-				mutations.addAll(this.findMutationsByExonId(criteria.getExonId()));
-			if (StringUtils.isNotEmpty(criteria.getType()))
-				mutations.addAll(this.findMutationsByObservedValue("Type of mutation", criteria.getType()));
-			if (criteria.getProteinDomainId() != null)
-				mutations.addAll(this.findMutationsByDomainId(criteria.getProteinDomainId()));
-			if (StringUtils.isNotEmpty(criteria.getPhenotypeName()))
-				mutations.addAll(this.findMutationsByObservedValue("Phenotype", criteria.getPhenotypeName()));
-			if (StringUtils.isNotEmpty(criteria.getInheritance()))
-				mutations.addAll(this.findMutationsByObservedValue("inheritance", criteria.getInheritance()));
-//			if (criteria.getReportedAsSNP() != null)
-				//TODO: implement
+			if (criteria.getCdnaPosition() != null) mutations.addAll(this.findMutationsByPosition(criteria
+					.getCdnaPosition()));
+			if (criteria.getCodonChangeNumber() != null) mutations.addAll(this
+					.findMutationsByCodonChangeNumber(criteria.getCodonChangeNumber()));
+			if (criteria.getExonId() != null) mutations.addAll(this.findMutationsByExonId(criteria.getExonId()));
+			if (StringUtils.isNotEmpty(criteria.getType())) mutations.addAll(this.findMutationsByObservedValue(
+					"Type of mutation", criteria.getType()));
+			if (criteria.getProteinDomainId() != null) mutations.addAll(this.findMutationsByDomainId(criteria
+					.getProteinDomainId()));
+			if (StringUtils.isNotEmpty(criteria.getPhenotypeName())) mutations.addAll(this
+					.findMutationsByObservedValue("Phenotype", criteria.getPhenotypeName()));
+			if (StringUtils.isNotEmpty(criteria.getInheritance())) mutations.addAll(this.findMutationsByObservedValue(
+					"inheritance", criteria.getInheritance()));
+			// if (criteria.getReportedAsSNP() != null)
+			// TODO: implement
 
 			return Arrays.asList(mutations.toArray(new MutationSummaryDTO[0]));
 		}
@@ -450,6 +473,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find patients by related mutation identifiers
+	 * 
 	 * @param mutationIdentifier
 	 * @return list of PatientSummaryDTO's
 	 */
@@ -473,6 +497,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find patient by its identifier
+	 * 
 	 * @param patientIdentifier
 	 * @return PatientSummaryDTO
 	 */
@@ -485,11 +510,10 @@ public class SearchService extends MolgenisVariantService
 			query.setParameter("name", patientIdentifier);
 			List<Patient> patientList = query.getResultList();
 
-			if (patientList.size() > 1)
-				throw new SearchServiceException("Not exactly one patient matches " + patientIdentifier);
-			
-			if (patientList.size() == 1)
-				return this.patientToPatientSummaryDTO(patientList.get(0));
+			if (patientList.size() > 1) throw new SearchServiceException("Not exactly one patient matches "
+					+ patientIdentifier);
+
+			if (patientList.size() == 1) return this.patientToPatientSummaryDTO(patientList.get(0));
 			else
 				return null;
 		}
@@ -506,15 +530,15 @@ public class SearchService extends MolgenisVariantService
 
 		result.put("variation", this.findMutationsByCdnaNotation(term));
 
-		result.put("PID", this.findMutationsByPatientIdentifier(term));
+		result.put("PID", this.findMutationsByPatientIdentifier(StringUtils.upperCase(term)));
 
-		MutationSummaryDTO tmp = this.findMutationByIdentifier(term);
+		MutationSummaryDTO tmp = this.findMutationByIdentifier(StringUtils.upperCase(term));
 		if (tmp != null)
 		{
 			result.put("MID", new ArrayList<MutationSummaryDTO>());
 			result.get("MID").add(tmp);
 		}
-	
+
 		result.put("publication", this.findMutationsByPublication(term));
 
 		result.put("measurement", this.findMutationsByMeasurement(term));
@@ -524,7 +548,7 @@ public class SearchService extends MolgenisVariantService
 		{
 			result.put("position", this.findMutationsByPosition(Integer.parseInt(term)));
 		}
-		
+
 		return result;
 	}
 
@@ -546,7 +570,8 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, position).or().equals(Variant.STARTGDNA, position).or().equals(Variant.STARTAA, position).find();
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, position).or()
+					.equals(Variant.STARTGDNA, position).or().equals(Variant.STARTAA, position).find();
 			return this.variantListToMutationSummaryDTOList(variantList);
 		}
 		catch (DatabaseException e)
@@ -590,7 +615,9 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find mutations given a publication title
-	 * @param title term
+	 * 
+	 * @param title
+	 *            term
 	 * @return list of variants
 	 */
 	public List<MutationSummaryDTO> findMutationsByPublication(final String term)
@@ -654,7 +681,7 @@ public class SearchService extends MolgenisVariantService
 			result.put("PID", new ArrayList<PatientSummaryDTO>());
 			result.get("PID").add(tmp);
 		}
-	
+
 		result.put("publication", this.findPatientsByPublication(term));
 
 		result.put("measurement", this.findPatientsByMeasurement(term));
@@ -664,7 +691,7 @@ public class SearchService extends MolgenisVariantService
 		{
 			result.put("mutation position", this.findPatientsByPosition(Integer.parseInt(term)));
 		}
-		
+
 		return result;
 	}
 
@@ -677,13 +704,12 @@ public class SearchService extends MolgenisVariantService
 		return this.patientListToPatientSummaryDTOList(query.getResultList());
 	}
 
-
-	public List<PatientSummaryDTO> findPatientsByExonNumber(final int exonNumber)
-	{
-		// TODO Auto-generated method stub
-		return new ArrayList<PatientSummaryDTO>();
-	}
-
+	// public List<PatientSummaryDTO> findPatientsByExonNumber(final int
+	// exonNumber)
+	// {
+	// // TODO Auto-generated method stub
+	// return new ArrayList<PatientSummaryDTO>();
+	// }
 
 	public List<PatientSummaryDTO> findPatientsByObservedValue(final String value)
 	{
@@ -710,7 +736,7 @@ public class SearchService extends MolgenisVariantService
 		return this.patientListToPatientSummaryDTOList(patientList);
 	}
 
-
+	@SuppressWarnings("unchecked")
 	public List<PatientSummaryDTO> findPatientsByMeasurement(final String featureName)
 	{
 		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.feature f JOIN ov.target p WHERE p.__Type = 'Patient' AND f.name = :name AND ov.value IN ('yes', 'true')";
@@ -719,7 +745,6 @@ public class SearchService extends MolgenisVariantService
 
 		return this.patientListToPatientSummaryDTOList(query.getResultList());
 	}
-
 
 	public List<PatientSummaryDTO> findPatientsByPublication(final String term)
 	{
@@ -742,7 +767,6 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
-
 	public List<PatientSummaryDTO> findPatientsByMutationNotation(final String notation)
 	{
 		String sql = "SELECT DISTINCT p FROM Patient p JOIN p.mutations m WHERE m.nameCdna = :notation OR m.nameGdna = :notation OR m.nameAa = :notation";
@@ -754,6 +778,7 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find mutations on the same position as the given one
+	 * 
 	 * @param mutationSummaryVO
 	 * @return list of VariantDTO
 	 * @throws DatabaseException
@@ -762,7 +787,8 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, mutationSummaryVO.getCdnaStart()).find();
+			List<Variant> variantList = this.db.query(Variant.class)
+					.equals(Variant.STARTCDNA, mutationSummaryVO.getCdnaStart()).find();
 			return this.variantListToVariantDTOList(variantList);
 		}
 		catch (Exception e)
@@ -774,41 +800,48 @@ public class SearchService extends MolgenisVariantService
 
 	/**
 	 * Find mutations in the same codon as the given one
+	 * 
 	 * @param mutationSummaryVO
 	 * @return list of VariantDTO
 	 */
 	public List<VariantDTO> findCodonMutations(final MutationSummaryDTO mutationSummaryVO)
 	{
-//		List<MutationSummaryVO> result = new ArrayList<MutationSummaryVO>();
-//		if (mutationSummaryVO.getAaPosition() != null)
-//		{
-//			List<Mutation> codonMutations = this.db.query(Mutation.class).equals(Mutation.AA_POSITION, mutationSummaryVO.getAaPosition()).find();
-//			for (Mutation codonMutation : codonMutations)
-//			{
-//				if (!codonMutation.getId().equals(mutationSummaryVO.getId()))
-//				{
-//					MutationSummaryVO tmp = new MutationSummaryVO();
-//					tmp.setIdentifier(codonMutation.getIdentifier());
-//					tmp.setCdnaNotation(codonMutation.getCdna_Notation());
-//					result.add(tmp);
-//				}
-//			}
-//		}
-//		return result;
+		// List<MutationSummaryVO> result = new ArrayList<MutationSummaryVO>();
+		// if (mutationSummaryVO.getAaPosition() != null)
+		// {
+		// List<Mutation> codonMutations =
+		// this.db.query(Mutation.class).equals(Mutation.AA_POSITION,
+		// mutationSummaryVO.getAaPosition()).find();
+		// for (Mutation codonMutation : codonMutations)
+		// {
+		// if (!codonMutation.getId().equals(mutationSummaryVO.getId()))
+		// {
+		// MutationSummaryVO tmp = new MutationSummaryVO();
+		// tmp.setIdentifier(codonMutation.getIdentifier());
+		// tmp.setCdnaNotation(codonMutation.getCdna_Notation());
+		// result.add(tmp);
+		// }
+		// }
+		// }
+		// return result;
 		return new ArrayList<VariantDTO>();
 	}
-	
+
 	/**
-	 * Find a protein domain by its id
+	 * Find a gene by its id
 	 * @param id
-	 * @param noIntrons
-	 * @return protein domain
+	 * @return GeneDTO
 	 */
-	public ProteinDomainDTO findProteinDomain(final Integer id, final Boolean noIntrons)
+	public GeneDTO findGene(final Integer id)
 	{
 		try
 		{
-			return this.proteinDomainToProteinDomainDTO(this.em.find(ProteinDomain.class, id), noIntrons);
+			Gene gene = this.em.find(Gene.class, id);
+
+			if (gene == null)
+				throw new SearchServiceException("No gene found for " + id);
+
+			return this.geneToGeneDTO(gene);
 		}
 		catch (Exception e)
 		{
@@ -817,6 +850,29 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	/**
+	 * Find a protein domain by its id
+	 * 
+	 * @param id
+	 * @param noIntrons
+	 * @return ProteinDomainDTO
+	 */
+	public ProteinDomainDTO findProteinDomain(final Integer id, final Boolean noIntrons)
+	{
+		try
+		{
+			ProteinDomain domain = this.em.find(ProteinDomain.class, id);
+
+			if (domain == null) throw new SearchServiceException("No domain found for " + id);
+
+			return this.proteinDomainToProteinDomainDTO(domain, noIntrons);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
 
 	public List<PatientSummaryDTO> findPatientsByUserId(Integer userId)
 	{
@@ -826,7 +882,6 @@ public class SearchService extends MolgenisVariantService
 
 		return this.patientListToPatientSummaryDTOList(query.getResultList());
 	}
-
 
 	public List<MutationSummaryDTO> findMutationsByDomainId(Integer domainId)
 	{
@@ -846,7 +901,7 @@ public class SearchService extends MolgenisVariantService
 				query = query.lessOrEqual(Variant.ENDGDNA, proteinDomain.getEndGdna());
 			}
 			List<Variant> result = query.find();
-			
+
 			return this.variantListToMutationSummaryDTOList(result);
 		}
 		catch (Exception e)

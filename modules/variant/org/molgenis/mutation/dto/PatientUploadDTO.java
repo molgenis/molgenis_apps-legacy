@@ -17,40 +17,63 @@ public class PatientUploadDTO implements Serializable
 	private List<ObservedValueDTO> observedValueDTOList;
 	private List<String> pubmedStringList;
 
-	public String getPatientLocalId() {
+	public String getPatientLocalId()
+	{
 		return patientLocalId;
 	}
-	public void setPatientLocalId(String patientLocalId) {
+
+	public void setPatientLocalId(String patientLocalId)
+	{
 		this.patientLocalId = patientLocalId;
 	}
-	public String getPatientName() {
+
+	public String getPatientName()
+	{
 		return patientName;
 	}
-	public void setPatientName(String patientName) {
+
+	public void setPatientName(String patientName)
+	{
 		this.patientName = patientName;
 	}
-	public Integer getSubmissionId() {
+
+	public Integer getSubmissionId()
+	{
 		return submissionId;
 	}
-	public void setSubmissionId(Integer submissionId) {
+
+	public void setSubmissionId(Integer submissionId)
+	{
 		this.submissionId = submissionId;
 	}
-	public List<String> getVariantCdnaNotationList() {
+
+	public List<String> getVariantCdnaNotationList()
+	{
 		return variantCdnaNotationList;
 	}
-	public void setVariantCdnaNotationList(List<String> variantCdnaNotationList) {
+
+	public void setVariantCdnaNotationList(List<String> variantCdnaNotationList)
+	{
 		this.variantCdnaNotationList = variantCdnaNotationList;
 	}
-	public List<ObservedValueDTO> getObservedValueDTOList() {
+
+	public List<ObservedValueDTO> getObservedValueDTOList()
+	{
 		return observedValueDTOList;
 	}
-	public void setObservedValueDTOList(List<ObservedValueDTO> observedValueDTOList) {
+
+	public void setObservedValueDTOList(List<ObservedValueDTO> observedValueDTOList)
+	{
 		this.observedValueDTOList = observedValueDTOList;
 	}
-	public List<String> getPubmedStringList() {
+
+	public List<String> getPubmedStringList()
+	{
 		return pubmedStringList;
 	}
-	public void setPubmedStringList(List<String> pubmedStringList) {
+
+	public void setPubmedStringList(List<String> pubmedStringList)
+	{
 		this.pubmedStringList = pubmedStringList;
 	}
 }

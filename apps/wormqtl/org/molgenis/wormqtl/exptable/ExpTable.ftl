@@ -346,6 +346,79 @@
 			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=31">31</a>
 		</td>
 	</tr>
+	<tr>
+		<td>
+			Lifespan, Recovery and reproduction after heat-shock
+		</td>
+		<td>
+			n/a
+		</td>
+		<td>
+			58 RILs
+		</td>
+		<td>
+			CB4856; N2
+		</td>
+		<td>
+			<b>Rodriguez et al. 2012;</b> Genetic variation for stress-response hormesis in C. elegans lifespan.
+		</td>
+		<td>
+			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/22613270">22613270</a>
+		</td>
+		<td>
+			20oC and 35oC heat-shock
+		</td>
+		<td>
+			L4 and Adult
+		</td>
+		<td>
+			OP50
+		</td>
+		<td>
+			NGM Plate
+		</td>
+		<td>
+			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=39">39</a>, 
+			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=40">40</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Gene expression
+		</td>
+		<td>
+			Washington State University
+		</td>
+		<td>
+			CB4856 and N2
+		</td>
+		<td>
+			CB4856; N2
+		</td>
+		<td>
+			<b>Vinuela & Snoek et al. 2012;</b> Aging Uncouples Heritability and Expression-QTL in Caenorhabditis elegans.
+		</td>
+		<td>
+			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/22670229">22670229</a>
+		</td>
+		<td>
+			24oC
+		</td>
+		<td>
+			(40h, 96h and 214h) L4, Adult, Old
+		</td>
+		<td>
+			OP50
+		</td>
+		<td>
+			NGM Plate
+		</td>
+		<td>
+			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=41">41</a>, 
+			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=42">42</a>, 
+			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=43">43</a>
+		</td>
+	</tr>
 </table>
 <br>
 

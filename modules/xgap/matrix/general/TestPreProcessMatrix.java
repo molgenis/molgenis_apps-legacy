@@ -74,7 +74,7 @@ public class TestPreProcessMatrix
 		expected += "row3\tval7\tval8\tval9\n";
 		Assert.assertEquals(actual, expected);
 	}
-	
+
 	@Test
 	public void testEscapeColNames() throws Exception
 	{

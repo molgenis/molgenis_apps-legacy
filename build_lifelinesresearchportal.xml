@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project>
+<project name="lifelinesresearchportal">
 	<!-- this name is used to name the war file -->
 	<property name="app_name" value="lifelines_researchportal" />
 
@@ -15,6 +15,7 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
+		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/xgap" />
 		<pathelement location="modules/webserver" />
 		<pathelement location="modules/datatable" />

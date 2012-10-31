@@ -18,8 +18,9 @@
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 		</form>
-<!-- 		<plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" />
-		<plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" /> -->
+		<!-- <plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" 
+			/> <plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" 
+			/> -->
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">
 				<form name="OntologyTerms" entity="OntologyTerm" />

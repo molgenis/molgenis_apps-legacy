@@ -14,28 +14,43 @@ public class ProtocolApplicationDTO implements Serializable
 	private Integer protocolId;
 	private List<Integer> performerIdList;
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
-	public void setName(String name) {
+
+	public void setName(String name)
+	{
 		this.name = name;
 	}
-	public Date getTime() {
+
+	public Date getTime()
+	{
 		return time;
 	}
-	public void setTime(Date time) {
+
+	public void setTime(Date time)
+	{
 		this.time = time;
 	}
-	public Integer getProtocolId() {
+
+	public Integer getProtocolId()
+	{
 		return protocolId;
 	}
-	public void setProtocolId(Integer protocolId) {
+
+	public void setProtocolId(Integer protocolId)
+	{
 		this.protocolId = protocolId;
 	}
-	public List<Integer> getPerformerIdList() {
+
+	public List<Integer> getPerformerIdList()
+	{
 		return performerIdList;
 	}
-	public void setPerformerIdList(List<Integer> performerIdList) {
+
+	public void setPerformerIdList(List<Integer> performerIdList)
+	{
 		this.performerIdList = performerIdList;
 	}
 }

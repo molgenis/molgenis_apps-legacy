@@ -5,31 +5,28 @@ import java.util.HashMap;
 import org.molgenis.data.Data;
 import org.molgenis.organization.Investigation;
 
-public class InvestigationOverviewModel{
+public class InvestigationOverviewModel
+{
 
 	private Investigation selectedInv;
 
 	private HashMap<String, String> annotationList;
-	
+
 	private HashMap<String, Data> expList;
-	
+
 	private HashMap<String, String> expDimensions;
-	
+
 	private HashMap<String, String> otherList;
-	
+
 	private Boolean showAllAnnotations;
-	
+
 	private Boolean showAllExperiments;
-	
+
 	private Boolean showAllOther;
-	
+
 	private Boolean viewDataByTags;
-	
-	
+
 	private Boolean fileLinkoutIsVisible;
-	
-	
-	
 
 	public Boolean getFileLinkoutIsVisible()
 	{
@@ -130,7 +127,5 @@ public class InvestigationOverviewModel{
 	{
 		this.expList = expList;
 	}
-
-	
 
 }

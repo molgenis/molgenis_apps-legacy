@@ -44,10 +44,10 @@ public class emptyDatabase
 
 		if (insertMetadata == true)
 		{
-			//USE DISCOURAGED!
-			//Please use:
-			//new emptyDatabase(db, false);
-			//FillMetadata.fillMetadata(db, false);
+			// USE DISCOURAGED!
+			// Please use:
+			// new emptyDatabase(db, false);
+			// FillMetadata.fillMetadata(db, false);
 			System.out.println("opening stream to insert_metadata.sql");
 			fis = this.getClass().getResourceAsStream("../../insert_metadata.sql");
 			System.out.println("start running insert_metadata.sql");
