@@ -62,10 +62,15 @@
 				nillable="true" />
 			<field name="Department" type="string" nillable="true" 
 				description="Added from the old definition of MolgenisUser. Department of this contact." />	
-			<field name="Roles" type="xref" xref_field="OntologyTerm.id"
+			<field name="Roles" type="xref" xref_field="PersonRole.id"
 				nillable="true" description="Indicate role of the contact, e.g. lab worker or PI. Changed from mref to xref in oct 2011." />
 			<unique fields="FirstName,MidInitials,LastName" />
 		</entity>
+		
+		<entity name="PersonRole" extends="OntologyTerm">
+		<description>Seperate type of ontologyTerm to administrate roles.</description>
+		</entity>
+		
 		<entity name="Institute" implements="Contact" xref_label="name">
 			<description> A contact is either a person or an organization. Copied
 				from FuGE::Contact.</description>
@@ -93,9 +98,9 @@
 		</entity>
 		<entity name="Authorizable" abstract="true" decorator="decorators.AuthorizableDecorator">
 			<description>Interface for row level security</description>
-			<field name="canRead" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name" nillable="true"/>
+			<field name="canRead" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name" nillable="true" />
 			<field name="canWrite" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name" nillable="true"/>
-			<field name="owns" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name"/>
+			<field name="owns" nillable="false" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name" default="2"/>
 		</entity>
 	</module>
 </molgenis>

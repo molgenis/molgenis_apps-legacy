@@ -16,17 +16,17 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 
-<#assign individualDTO = model.individualDTO>
+<#assign observationElementDTO = model.observationElementDTO>
 
 <#list model.protocolDTOList as protocol>
 	<#assign protocolKey = "Protocol" + protocol.protocolId>
 
-	<#if individualDTO.observedValues?keys?seq_contains(protocolKey)>
+	<#if observationElementDTO.observedValues?keys?seq_contains(protocolKey)>
 
 		<h3>${protocol.protocolName}</h3>
 
-		<#list individualDTO.observedValues[protocolKey]?keys as paKey>
-			<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
+		<#list observationElementDTO.observedValues[protocolKey]?keys as paKey>
+			<#assign observedValueDTOValList = observationElementDTO.observedValues[protocolKey][paKey]>
 			<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
 	
 			<h4>${tmpObservedValueDTO.protocolApplicationName}
@@ -60,10 +60,10 @@
 
 <#if model.isEditable()>
 <form method="post" action="molgenis.do">
-${model.individualForm.__action}
-${model.individualForm.__target}
-<@action name="edit" label="Edit"/>
-<@action name="select" label="Apply Protocol"/>
+${model.observationTargetForm.__action}
+${model.observationTargetForm.__target}
+${model.observationTargetForm.edit}
+${model.observationTargetForm.select}
 </form>
 </#if>
 

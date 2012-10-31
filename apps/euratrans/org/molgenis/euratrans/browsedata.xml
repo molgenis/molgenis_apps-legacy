@@ -45,8 +45,8 @@
 						label="Viewer v2 (IN DEV)" group="biologist" / -->
 				</menu>
 			</form>
-			<form name="FilesPerInvestigation" entity="InvestigationFile" label="Files"
-				header="Navigate files" group="biologist">
+			<form name="FilesPerInvestigation" entity="InvestigationFile"
+				label="Files" header="Navigate files" group="biologist">
 				<plugin name="FilesPerInvestigationViewer" type="plugins.molgenisfile.MolgenisFileManager"
 					group="biologist" />
 			</form>

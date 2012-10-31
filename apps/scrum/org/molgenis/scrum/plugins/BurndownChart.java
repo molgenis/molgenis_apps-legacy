@@ -57,8 +57,9 @@ public class BurndownChart extends PluginModel<Entity>
 	{
 		// no edits
 	}
-	
-	private Sprint getSelectedSprint() {
+
+	private Sprint getSelectedSprint()
+	{
 		ScreenController parent = this.getParent().getParent();
 		FormModel<Sprint> form = (FormModel<Sprint>) parent.getModel();
 		List<Sprint> sprintList = form.getRecords();
@@ -74,55 +75,60 @@ public class BurndownChart extends PluginModel<Entity>
 			this.unplanned.clear();
 			this.dates.clear();
 			this.taskHistory.clear();
-			
+
 			// load all stories for this sprint
 			Sprint sprint = getSelectedSprint();
 			List<Story> stories = db.query(Story.class).eq(Story.SPRINT, sprint.getId()).find();
 
 			// load the story ids
 			List<Integer> storyIds = new ArrayList<Integer>();
-			for (Story story : stories) {
+			for (Story story : stories)
+			{
 				storyIds.add(story.getId());
 			}
 
 			// get the current history
-			taskHistory = db.query(TaskHistory.class).in(TaskHistory.STORY, storyIds)
-					.sortASC(TaskHistory.CHANGEDON).find();
-			
-			if(taskHistory.size() == 0) throw new Exception("no task history known for this sprint (did it already start?)");
-			
+			taskHistory = db.query(TaskHistory.class).in(TaskHistory.STORY, storyIds).sortASC(TaskHistory.CHANGEDON)
+					.find();
+
+			if (taskHistory.size() == 0) throw new Exception(
+					"no task history known for this sprint (did it already start?)");
+
 			// check sprint start and end date
 			Calendar start = Calendar.getInstance();
 			start.setTime(sprint.getStartOfSprint());
 			start.set(Calendar.HOUR, 0);
 			start.set(Calendar.MINUTE, 0);
-			start.set(Calendar.SECOND,0);
-			
+			start.set(Calendar.SECOND, 0);
+
 			Calendar end = Calendar.getInstance();
 			end.setTime(sprint.getEndOfSprint());
 			end.set(Calendar.HOUR, 0);
 			end.set(Calendar.MINUTE, 0);
-			end.set(Calendar.SECOND,0);
-			end.add(Calendar.DATE, 1); //so it actually ends at 0:00:00 next day.
-			
-			if (end.before(start) ) throw new Exception("start of sprint data is later than end of sprint date");
-			
-			//we use a calendar to iterate through the days (we count each day by 23:59:59 hours)
+			end.set(Calendar.SECOND, 0);
+			end.add(Calendar.DATE, 1); // so it actually ends at 0:00:00 next
+										// day.
+
+			if (end.before(start)) throw new Exception("start of sprint data is later than end of sprint date");
+
+			// we use a calendar to iterate through the days (we count each day
+			// by 23:59:59 hours)
 			Calendar calendar = Calendar.getInstance();
 			calendar.clear();
 			calendar.setTime(start.getTime());
 			calendar.set(Calendar.HOUR, 23);
 			calendar.set(Calendar.MINUTE, 59);
-			calendar.set(Calendar.SECOND,59);
-			
-			//per day, we get for each tasks the (last known) state and then count
-			
-			//the board is a map of taskId and its details
-			Map<Integer,TaskHistory> currentBoard = new LinkedHashMap<Integer,TaskHistory>();
-			//we manage unplanned separately
-			Map<Integer,TaskHistory> currentUnplanned = new LinkedHashMap<Integer,TaskHistory>();
-			
-			//first fill the board for start of sprint
+			calendar.set(Calendar.SECOND, 59);
+
+			// per day, we get for each tasks the (last known) state and then
+			// count
+
+			// the board is a map of taskId and its details
+			Map<Integer, TaskHistory> currentBoard = new LinkedHashMap<Integer, TaskHistory>();
+			// we manage unplanned separately
+			Map<Integer, TaskHistory> currentUnplanned = new LinkedHashMap<Integer, TaskHistory>();
+
+			// first fill the board for start of sprint
 			Date firstScrumDay = calendar.getTime();
 			int historyIndex = 0;
 			TaskHistory currentHistory = taskHistory.get(historyIndex);
@@ -135,44 +141,48 @@ public class BurndownChart extends PluginModel<Entity>
 			this.burndown.add(storyPointCount(currentBoard, false));
 			this.unplanned.add(0.0);
 			this.dates.add(df.format(calendar.getTime()));
-			
-			//then iterate through the days until end of sprint OR today, update board and check for unplanned
+
+			// then iterate through the days until end of sprint OR today,
+			// update board and check for unplanned
 			Calendar now = Calendar.getInstance();
 			now.set(Calendar.HOUR, 23);
 			now.set(Calendar.MINUTE, 59);
-			now.set(Calendar.SECOND,59);
-			//if now is weekend, change it to next monday
-			if(now.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) now.add(Calendar.DATE,2);
-			if(now.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) now.add(Calendar.DATE,2);
-			
-			while(calendar.getTime().before(end.getTime()) )
+			now.set(Calendar.SECOND, 59);
+			// if now is weekend, change it to next monday
+			if (now.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) now.add(Calendar.DATE, 2);
+			if (now.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) now.add(Calendar.DATE, 2);
+
+			while (calendar.getTime().before(end.getTime()))
 			{
 				calendar.add(Calendar.DATE, 1);
 				Date scrumDay = calendar.getTime();
-				
-				//get the board updated for the current day
-				while (currentHistory != null && (currentHistory.getChangedOn().before(scrumDay) || currentHistory.getChangedOn().equals(scrumDay)))
+
+				// get the board updated for the current day
+				while (currentHistory != null
+						&& (currentHistory.getChangedOn().before(scrumDay) || currentHistory.getChangedOn().equals(
+								scrumDay)))
 				{
-					//scan for new/unplanned tickets
-					if( !currentBoard.containsKey(currentHistory.getHistoryForTask_Id()) || 
-							currentUnplanned.containsKey(currentHistory.getHistoryForTask_Id()) )
+					// scan for new/unplanned tickets
+					if (!currentBoard.containsKey(currentHistory.getHistoryForTask_Id())
+							|| currentUnplanned.containsKey(currentHistory.getHistoryForTask_Id()))
 					{
 						currentUnplanned.put(currentHistory.getHistoryForTask_Id(), currentHistory);
 					}
-					//put current tickets on the board
+					// put current tickets on the board
 					currentBoard.put(currentHistory.getHistoryForTask_Id(), currentHistory);
-					
-					if(historyIndex < taskHistory.size())
-						currentHistory = taskHistory.get(historyIndex++);
+
+					if (historyIndex < taskHistory.size()) currentHistory = taskHistory.get(historyIndex++);
 					else
 						currentHistory = null;
 				}
-				
-				//we don't scrum on weekends, unless it is today, otherwise update the count
-				if(calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY)
+
+				// we don't scrum on weekends, unless it is today, otherwise
+				// update the count
+				if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY
+						&& calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY)
 				{
-					//update the currentBoard list
-					if(calendar.getTime().before(now.getTime()) || calendar.getTime().equals(now.getTime()))
+					// update the currentBoard list
+					if (calendar.getTime().before(now.getTime()) || calendar.getTime().equals(now.getTime()))
 					{
 						this.burndown.add(storyPointCount(currentBoard, false));
 						this.unplanned.add(storyPointCount(currentUnplanned, true));
@@ -201,37 +211,39 @@ public class BurndownChart extends PluginModel<Entity>
 		}
 		return count;
 	}
-	
-	//getter to freemarker
+
+	// getter to freemarker
 	public String getBurndownJSON()
 	{
-		//[25,19,15,17,13];
+		// [25,19,15,17,13];
 		String result = "";
-		for(int i = 0; i < this.burndown.size(); i++ )
+		for (int i = 0; i < this.burndown.size(); i++)
 		{
-			if(i != 0) result += ",";
+			if (i != 0) result += ",";
 			result += this.burndown.get(i);
 		}
-		return "["+result+"]";
+		return "[" + result + "]";
 	}
+
 	public String getUnplannedJSON()
 	{
 		String result = "";
-		for(int i = 0; i < this.unplanned.size(); i++ )
+		for (int i = 0; i < this.unplanned.size(); i++)
 		{
-			if(i != 0) result += ",";
+			if (i != 0) result += ",";
 			result += this.unplanned.get(i);
 		}
-		return "["+result+"]";
+		return "[" + result + "]";
 	}
+
 	public String getDaysJSON()
 	{
 		String result = "";
-		for(int i = 0; i < this.dates.size(); i++ )
+		for (int i = 0; i < this.dates.size(); i++)
 		{
-			if(i != 0) result += ",";
-			result += "'"+this.dates.get(i)+"'";
+			if (i != 0) result += ",";
+			result += "'" + this.dates.get(i) + "'";
 		}
-		return "["+result+"]";
+		return "[" + result + "]";
 	}
 }

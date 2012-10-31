@@ -40,7 +40,7 @@ import org.molgenis.util.Tuple;
  * 
  */
 public class MatrixViewer extends HtmlInput<Matrix>
-{	
+{
 	// map of rowids and the widget to show as rowheader
 	private Map<String, AbstractHtmlElement> rows = null;
 	// map of colids and the widget to show as colheader
@@ -49,54 +49,54 @@ public class MatrixViewer extends HtmlInput<Matrix>
 	private int rowLimit = 10;
 	// limit of cols to be shown
 	private int colLimit = 10;
-	
+
 	/**
 	 * Default constructor that will select all row and col identifiers from the
 	 * matrix for view. Large matrices will paginate the columns as well as the
 	 * rows.
-	 * @throws NameNotUniqueException 
+	 * 
+	 * @throws NameNotUniqueException
 	 */
-	public MatrixViewer(ScreenController<?> controller, String name, Matrix<String,String,String> values) throws MatrixViewException,
-			MatrixException, NameNotUniqueException
+	public MatrixViewer(ScreenController<?> controller, String name, Matrix<String, String, String> values)
+			throws MatrixViewException, MatrixException, NameNotUniqueException
 	{
-		this(controller,name,values.getRowNames(),values.getColNames(),values);
+		this(controller, name, values.getRowNames(), values.getColNames(), values);
 	}
 
 	/**
 	 * Constructure where it is selected which rows and columns of the data will
 	 * be visible to the user.
 	 */
-	public MatrixViewer(ScreenController<?> controller, String name, List<String> rows, List<String> cols, Matrix<String,String,String> values)
-			throws MatrixViewException, NameNotUniqueException
+	public MatrixViewer(ScreenController<?> controller, String name, List<String> rows, List<String> cols,
+			Matrix<String, String, String> values) throws MatrixViewException, NameNotUniqueException
 	{
 		super(name, null);
-		
-		//controller.getApplicationController().addService(this);
-		
+
+		// controller.getApplicationController().addService(this);
+
 		this.setCols(cols);
 		this.setRows(rows);
 		this.setValue(values);
 	}
 
-	public Show handleRequest(Database db, Tuple request,
-			PrintWriter outputStream) throws ParseException,
+	public Show handleRequest(Database db, Tuple request, PrintWriter outputStream) throws ParseException,
 			DatabaseException, IOException
 	{
-		//write result to outputStream
-		//TODO
-		
+		// write result to outputStream
+		// TODO
+
 		// TODO Auto-generated method stub
 		return ScreenModel.Show.SHOW_JSON;
 	}
-	
+
 	@Override
 	public String toHtml()
 	{
-		Map<String,Object> templateArgs = new LinkedHashMap<String,Object>();
-		templateArgs.put("model",this);
-		return new FreemarkerView("MatrixView.ftl", templateArgs).render();	
+		Map<String, Object> templateArgs = new LinkedHashMap<String, Object>();
+		templateArgs.put("model", this);
+		return new FreemarkerView("MatrixView.ftl", templateArgs).render();
 	}
-	
+
 	/**
 	 * Set the row identifiers that are selected for view. Values should be
 	 * unique. For more complicated layouts use setRows(Map<String,HtmlInput>)
@@ -108,8 +108,7 @@ public class MatrixViewer extends HtmlInput<Matrix>
 		Map<String, AbstractHtmlElement> temp = new LinkedHashMap<String, AbstractHtmlElement>();
 		for (String id : rowIds)
 		{
-			if (temp.containsKey(id)) throw new MatrixViewException(
-					"rowIds should be unique");
+			if (temp.containsKey(id)) throw new MatrixViewException("rowIds should be unique");
 			temp.put(id, new Label(id, id));
 		}
 
@@ -133,11 +132,9 @@ public class MatrixViewer extends HtmlInput<Matrix>
 	 * 
 	 * @throws MatrixViewException
 	 */
-	public void setRows(Map<String, AbstractHtmlElement> rowIds)
-			throws MatrixViewException
+	public void setRows(Map<String, AbstractHtmlElement> rowIds) throws MatrixViewException
 	{
-		if (rowIds == null) throw new MatrixViewException(
-				"rowIds cannot be null");
+		if (rowIds == null) throw new MatrixViewException("rowIds cannot be null");
 		this.rows = rowIds;
 	}
 
@@ -151,12 +148,12 @@ public class MatrixViewer extends HtmlInput<Matrix>
 	{
 		return this.rows;
 	}
-	
+
 	public Matrix getVisibleMatrix()
 	{
 		return getObject();
 	}
-	
+
 	/**
 	 * Set the col identifiers. Values should be unique. For more complicated
 	 * layouts use setCols(Map<String,HtmlInput>)
@@ -168,8 +165,7 @@ public class MatrixViewer extends HtmlInput<Matrix>
 		Map<String, AbstractHtmlElement> temp = new LinkedHashMap<String, AbstractHtmlElement>();
 		for (String id : colIds)
 		{
-			if (temp.containsKey(id)) throw new MatrixViewException(
-					"colIds should be unique");
+			if (temp.containsKey(id)) throw new MatrixViewException("colIds should be unique");
 			temp.put(id, new Label(id, id));
 		}
 
@@ -193,11 +189,9 @@ public class MatrixViewer extends HtmlInput<Matrix>
 	 * 
 	 * @throws MatrixViewException
 	 */
-	public void setCols(Map<String, AbstractHtmlElement> colIds)
-			throws MatrixViewException
+	public void setCols(Map<String, AbstractHtmlElement> colIds) throws MatrixViewException
 	{
-		if (colIds == null) throw new MatrixViewException(
-				"colIds cannot be null");
+		if (colIds == null) throw new MatrixViewException("colIds cannot be null");
 		this.cols = colIds;
 	}
 
@@ -211,13 +205,15 @@ public class MatrixViewer extends HtmlInput<Matrix>
 	{
 		return this.cols;
 	}
-	
-	/** Set the values of the data table 
-	 * @throws MatrixViewException */
-	public void setValue(Matrix<?,?,?> values) throws MatrixViewException
+
+	/**
+	 * Set the values of the data table
+	 * 
+	 * @throws MatrixViewException
+	 */
+	public void setValue(Matrix<?, ?, ?> values) throws MatrixViewException
 	{
-		if (values == null) throw new MatrixViewException(
-				"values matrix cannot be null");
+		if (values == null) throw new MatrixViewException("values matrix cannot be null");
 		super.setValue(values);
 	}
 
@@ -240,7 +236,7 @@ public class MatrixViewer extends HtmlInput<Matrix>
 	{
 		this.colLimit = colLimit;
 	}
-	
+
 	public static final class MatrixViewException extends Exception
 	{
 		public MatrixViewException(String string)

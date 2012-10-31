@@ -91,7 +91,7 @@ public class TableModelProtocolApp extends TableModel
 		sql += "\nfrom ProtocolApplication pa join Characteristic target on (pa.target=target.id and pa.protocolUsed="
 				+ protocol.getId() + ") left join ObservedValue v on v.protocolApplication=pa.id ";
 		sql += "\ngroup by pa.id";
-	
+
 		System.out.println(sql);
 
 		List<Tuple> result = db.sql(sql);

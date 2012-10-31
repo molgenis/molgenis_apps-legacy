@@ -20,22 +20,23 @@ public class Validator
 
 	@XmlAttribute
 	String metadata_name;
-	
+
 	@XmlAttribute
 	String metadata_column;
-	
+
 	@XmlAttribute
 	String message;
-	
+
 	@XmlAttribute
 	String max;
-	
+
 	@XmlAttribute
 	String size;
-	
+
 	public String toString()
 	{
-		return String.format("Validator(type='%s' filename='%s' message='%s' metadata_name='%s' metadata_column='%s' max='%s' size='%s')",
-				type, filename, message, metadata_name, metadata_column, max, size);
+		return String
+				.format("Validator(type='%s' filename='%s' message='%s' metadata_name='%s' metadata_column='%s' max='%s' size='%s')",
+						type, filename, message, metadata_name, metadata_column, max, size);
 	}
 }

@@ -1,4 +1,5 @@
 package org.molgenis.matrix.component.legacy;
+
 //package org.molgenis.matrix.component;
 //
 //import java.util.ArrayList;
@@ -353,4 +354,4 @@ package org.molgenis.matrix.component.legacy;
 //		return null;
 //	}
 //
-//}
+// }

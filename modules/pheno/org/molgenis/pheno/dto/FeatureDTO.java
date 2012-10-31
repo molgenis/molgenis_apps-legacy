@@ -12,28 +12,43 @@ public class FeatureDTO implements Serializable
 	private String featureName;
 	private String featureType;
 
-	public Integer getFeatureId() {
+	public Integer getFeatureId()
+	{
 		return featureId;
 	}
-	public void setFeatureId(Integer featureId) {
+
+	public void setFeatureId(Integer featureId)
+	{
 		this.featureId = featureId;
 	}
-	public String getFeatureKey() {
+
+	public String getFeatureKey()
+	{
 		return featureKey;
 	}
-	public void setFeatureKey(String featureKey) {
+
+	public void setFeatureKey(String featureKey)
+	{
 		this.featureKey = featureKey;
 	}
-	public String getFeatureName() {
+
+	public String getFeatureName()
+	{
 		return featureName;
 	}
-	public void setFeatureName(String featureName) {
+
+	public void setFeatureName(String featureName)
+	{
 		this.featureName = featureName;
 	}
-	public String getFeatureType() {
+
+	public String getFeatureType()
+	{
 		return featureType;
 	}
-	public void setFeatureType(String featureType) {
+
+	public void setFeatureType(String featureType)
+	{
 		this.featureType = featureType;
 	}
 }

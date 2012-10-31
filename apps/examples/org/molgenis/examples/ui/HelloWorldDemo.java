@@ -30,23 +30,23 @@ public class HelloWorldDemo extends EasyPluginController
 	@Override
 	public ScreenView getView()
 	{
-		//return new FreemarkerView("HelloWorld.ftl", this.getModel());
-		
+		// return new FreemarkerView("HelloWorld.ftl", this.getModel());
+
 		MolgenisForm f = new MolgenisForm(this, new FlowLayout());
-		
+
 		f.add(new Paragraph("<h3>This is a code example of a complete plugin.</h3>"));
-		
-		f.add(new Paragraph("Hello "+ name+"!<br/><br/>Type your name below:"));
+
+		f.add(new Paragraph("Hello " + name + "!<br/><br/>Type your name below:"));
 		f.add(new StringInput("name"));
-		//action below maps to public void sayHello()
+		// action below maps to public void sayHello()
 		f.add(new ActionInput("sayHello"));
-		
+
 		f.add(new Paragraph("<h3>Code example:</h3>"));
-		f.add(new Paragraph("<div style=\"background: lightyellow\">To get it to work you need <ul>" +
-				"<li>Add to ui.xml <plugin name=\"HelloWorld\" type=\"package.of.your.HelloWorldDemo\"</li>" +
-				"<li>Put the code below as a java class file</li></ul></div>"));
+		f.add(new Paragraph("<div style=\"background: lightyellow\">To get it to work you need <ul>"
+				+ "<li>Add to ui.xml <plugin name=\"HelloWorld\" type=\"package.of.your.HelloWorldDemo\"</li>"
+				+ "<li>Put the code below as a java class file</li></ul></div>"));
 		f.add(new JavaInput("CodeExample", theCode).setHeight(50));
-		
+
 		return f;
 	}
 
@@ -76,9 +76,7 @@ public class HelloWorldDemo extends EasyPluginController
 			+ "\n  	private static final long serialVersionUID = 7794050660074280454L;"
 			+ "\n  	public HelloWorldDemo(String name, ScreenController<?> parent)" + "\n  	{"
 			+ "\n  		super(name, parent);" + "\n     }" + "\n" + "\n  	@Override\n  	public ScreenView getView()"
-			+ "\n  	{" 
-			+ "\n  		MolgenisForm f = new MolgenisForm(this, new FlowLayout());" 
-			+ "\n"
+			+ "\n  	{" + "\n  		MolgenisForm f = new MolgenisForm(this, new FlowLayout());" + "\n"
 			+ "\n       f.add(new Paragraph(\"<h3>This is a code example of a complete plugin.</h3>\"));"
 			+ "\n  		f.add(new Paragraph(\"Hello \"+ name+\"!<br/><br/>Type your name below:\"));"
 			+ "\n  		f.add(new StringInput(\"name\"));" + "\n  		//action below maps to public void sayHello()"

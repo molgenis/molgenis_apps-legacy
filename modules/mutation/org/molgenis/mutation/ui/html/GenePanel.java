@@ -15,8 +15,8 @@ import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 public class GenePanel extends HtmlInput
 {
 	private List<ProteinDomainSummaryVO> proteinDomainSummaryVOList = new ArrayList<ProteinDomainSummaryVO>();
-	private String baseUrl                                          = "";
-	private Boolean showNames                                       = true;
+	private String baseUrl = "";
+	private Boolean showNames = true;
 
 	public void setShowNames(Boolean showNames)
 	{
@@ -38,10 +38,12 @@ public class GenePanel extends HtmlInput
 			for (ProteinDomainSummaryVO proteinDomainSummaryVO : proteinDomainSummaryVOList)
 			{
 				List<Exon> exons = proteinDomainSummaryVO.getExons();
-	
+
 				if (exons.size() > 0)
 				{
-					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exons.size() + "\" width=\"1%\">" + proteinDomainSummaryVO.getProteinDomain().getName() + " (exon " + exons.get(0).getNumber() + " - " + exons.get(exons.size() - 1).getNumber() + ")</td>");
+					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exons.size()
+							+ "\" width=\"1%\">" + proteinDomainSummaryVO.getProteinDomain().getName() + " (exon "
+							+ exons.get(0).getNumber() + " - " + exons.get(exons.size() - 1).getNumber() + ")</td>");
 				}
 			}
 			result.appendln("</tr>");
@@ -55,11 +57,14 @@ public class GenePanel extends HtmlInput
 			for (Exon exon : proteinDomainSummaryVO.getExons())
 			{
 				result.append("<td align=\"left\">");
-				result.append("<div class=\"pd" + proteinDomainSummaryVO.getProteinDomain().getId() + "\" style=\"display: block; width: " + exon.getLength() / 10 + "px; height: 26px;\">");
+				result.append("<div class=\"pd" + proteinDomainSummaryVO.getProteinDomain().getId()
+						+ "\" style=\"display: block; width: " + exon.getLength() / 10 + "px; height: 26px;\">");
 				String url = this.baseUrl;
-				url = StringUtils.replace(url, "domain_id=", "domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId());
+				url = StringUtils.replace(url, "domain_id=", "domain_id="
+						+ proteinDomainSummaryVO.getProteinDomain().getId());
 				url = StringUtils.replace(url, "#exon", "#exon" + exon.getId());
-				result.append("<a style=\"display: block; height: 100%; width: 100%;\" href=\"" + url + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
+				result.append("<a style=\"display: block; height: 100%; width: 100%;\" href=\"" + url + "\" alt=\""
+						+ exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
 				result.append("</div>");
 				result.appendln("</td>");
 			}
@@ -72,18 +77,19 @@ public class GenePanel extends HtmlInput
 		return result.toString();
 	}
 
-	public List<ProteinDomainSummaryVO> getProteinDomainSummaryVOList() {
+	public List<ProteinDomainSummaryVO> getProteinDomainSummaryVOList()
+	{
 		return proteinDomainSummaryVOList;
 	}
 
-	public void setProteinDomainSummaryVOList(
-			List<ProteinDomainSummaryVO> proteinDomainSummaryVOList) {
+	public void setProteinDomainSummaryVOList(List<ProteinDomainSummaryVO> proteinDomainSummaryVOList)
+	{
 		this.proteinDomainSummaryVOList = proteinDomainSummaryVOList;
 	}
 
-	public void setBaseUrl(String baseUrl) {
+	public void setBaseUrl(String baseUrl)
+	{
 		this.baseUrl = baseUrl;
 	}
-
 
 }

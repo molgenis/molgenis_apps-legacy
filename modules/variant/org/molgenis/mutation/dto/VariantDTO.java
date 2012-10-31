@@ -16,66 +16,127 @@ public class VariantDTO implements Serializable
 	private Integer aaStart;
 	private Integer exonId;
 	private String exonName;
+	private String consequence;
+	private String inheritance;
 	private String observedValue;
 
-	public Integer getId() {
+	public Integer getId()
+	{
 		return id;
 	}
-	public void setId(Integer id) {
+
+	public void setId(Integer id)
+	{
 		this.id = id;
 	}
-	public String getIdentifier() {
+
+	public String getIdentifier()
+	{
 		return identifier;
 	}
-	public void setIdentifier(String identifier) {
+
+	public void setIdentifier(String identifier)
+	{
 		this.identifier = identifier;
 	}
-	public String getCdnaNotation() {
+
+	public String getCdnaNotation()
+	{
 		return cdnaNotation;
 	}
-	public void setCdnaNotation(String cdnaNotation) {
+
+	public void setCdnaNotation(String cdnaNotation)
+	{
 		this.cdnaNotation = cdnaNotation;
 	}
-	public Integer getCdnaStart() {
+
+	public Integer getCdnaStart()
+	{
 		return cdnaStart;
 	}
-	public void setCdnaStart(Integer cdnaStart) {
+
+	public void setCdnaStart(Integer cdnaStart)
+	{
 		this.cdnaStart = cdnaStart;
 	}
-	public Integer getAaStart() {
+
+	public Integer getAaStart()
+	{
 		return aaStart;
 	}
-	public void setAaStart(Integer aaStart) {
+
+	public void setAaStart(Integer aaStart)
+	{
 		this.aaStart = aaStart;
 	}
-	public Integer getGdnaStart() {
+
+	public Integer getGdnaStart()
+	{
 		return gdnaStart;
 	}
-	public void setGdnaStart(Integer gdnaStart) {
+
+	public void setGdnaStart(Integer gdnaStart)
+	{
 		this.gdnaStart = gdnaStart;
 	}
-	public String getAaNotation() {
+
+	public String getAaNotation()
+	{
 		return aaNotation;
 	}
-	public void setAaNotation(String aaNotation) {
+
+	public void setAaNotation(String aaNotation)
+	{
 		this.aaNotation = aaNotation;
 	}
-	public Integer getExonId() {
+
+	public Integer getExonId()
+	{
 		return exonId;
 	}
-	public void setExonId(Integer exonId) {
+
+	public void setExonId(Integer exonId)
+	{
 		this.exonId = exonId;
 	}
-	public String getExonName() {
+
+	public String getExonName()
+	{
 		return exonName;
 	}
-	public void setExonName(String exonName) {
+
+	public void setExonName(String exonName)
+	{
 		this.exonName = exonName;
 	}
-	public String getObservedValue() {
+
+	public String getConsequence()
+	{
+		return consequence;
+	}
+
+	public void setConsequence(String consequence)
+	{
+		this.consequence = consequence;
+	}
+
+	public String getInheritance()
+	{
+		return inheritance;
+	}
+
+	public void setInheritance(String inheritance)
+	{
+		this.inheritance = inheritance;
+	}
+
+	public String getObservedValue()
+	{
 		return observedValue;
 	}
-	public void setObservedValue(String observedValue) {
+
+	public void setObservedValue(String observedValue)
+	{
 		this.observedValue = observedValue;
 	}
 }

@@ -22,7 +22,7 @@ public class DatabaseDataMatrixWriter
 	 * @param dataMatrix
 	 * @param inputFile
 	 * @param db
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public DatabaseDataMatrixWriter(Data dataMatrix, File inputFile, Database db) throws Exception
 	{

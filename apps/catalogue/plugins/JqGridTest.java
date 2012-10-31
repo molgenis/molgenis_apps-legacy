@@ -26,7 +26,7 @@ public class JqGridTest extends EasyPluginController<JqGridTestModel>
 		super(name, parent);
 		this.setModel(new JqGridTestModel(this)); // the default model
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("DataTableTestView.ftl", getModel());

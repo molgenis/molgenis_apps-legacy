@@ -78,9 +78,9 @@ public class GeneNetwork extends PluginModel
 				{
 
 					String resp = postData(request.getFile("theFile"));
-					
+
 					model.setUploadResponse(resp);
-					
+
 				}
 
 			}
@@ -155,12 +155,12 @@ public class GeneNetwork extends PluginModel
 	{
 		String response = "";
 		String data = URLEncoder.encode("RISet", "UTF-8") + "=" + URLEncoder.encode("BXD", "UTF-8");
-		
-		data += "&" + URLEncoder.encode("batchdatafile", "UTF-8") + "=" + URLEncoder.encode(readFromFile(theFile), "UTF-8");
+
+		data += "&" + URLEncoder.encode("batchdatafile", "UTF-8") + "="
+				+ URLEncoder.encode(readFromFile(theFile), "UTF-8");
 		data += "&" + URLEncoder.encode("FormID", "UTF-8") + "=" + URLEncoder.encode("batSubmitResult", "UTF-8");
-	//	data += "&" + URLEncoder.encode("Default_Name", "UTF-8") );
-		
-		
+		// data += "&" + URLEncoder.encode("Default_Name", "UTF-8") );
+
 		URL url = new URL(baseurl);
 		URLConnection conn = url.openConnection();
 		conn.setDoOutput(true);

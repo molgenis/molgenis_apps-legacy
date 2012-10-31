@@ -11,14 +11,14 @@ public class ForgotForm extends Container
 
 	public ForgotForm()
 	{
-		TextLineInput usernameInput    = new TextLineInput("username");
+		TextLineInput usernameInput = new TextLineInput("username");
 		usernameInput.setLabel("Username");
 		this.add(usernameInput);
-		ActionInput addUserInput       = new ActionInput("sendPassword");
+		ActionInput addUserInput = new ActionInput("sendPassword");
 		addUserInput.setLabel("Send new password");
 		addUserInput.setTooltip("Send new password");
 		this.add(addUserInput);
-		ActionInput cancelInput        = new ActionInput("Cancel");
+		ActionInput cancelInput = new ActionInput("Cancel");
 		cancelInput.setLabel("Cancel");
 		cancelInput.setTooltip("Cancel");
 		this.add(cancelInput);

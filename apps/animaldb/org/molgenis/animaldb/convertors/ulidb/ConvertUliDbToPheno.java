@@ -44,10 +44,8 @@ public class ConvertUliDbToPheno
 	private Map<String, String> appMap;
 	private Map<String, ObservedValue> activeMap;
 	private Calendar calendar;
-	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm",
-			Locale.US);
-	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat(
-			"yyyy-MM-dd", Locale.US);
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
 	private int highestNr;
@@ -84,38 +82,20 @@ public class ConvertUliDbToPheno
 		}
 
 		// Add some measurements that we'll need:
-		ct.makeMeasurement(invName, "OldUliDbTiernummer", "String", null, null,
-				false, "string",
-				"To set an animal's Tiernummer in the old Uli Eisel DB.",
-				userName);
-		ct.makeMeasurement(
-				invName,
-				"OldUliDbId",
-				"String",
-				null,
-				null,
-				false,
-				"string",
-				"To set an animal's ID (laufende Nummer) in the old Uli Eisel DB.",
-				userName);
-		ct.makeMeasurement(invName, "OldUliDbMotherInfo", "String", null, null,
-				false, "string",
-				"To set an animal's mother info in the old Uli Eisel DB.",
-				userName);
-		ct.makeMeasurement(invName, "OldUliDbFatherInfo", "String", null, null,
-				false, "string",
-				"To set an animal's father info in the old Uli Eisel DB.",
-				userName);
-		ct.makeMeasurement(invName, "OldUliDbLine", "String", null, null,
-				false, "string",
+		ct.makeMeasurement(invName, "OldUliDbTiernummer", "String", null, null, false, "string",
+				"To set an animal's Tiernummer in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbId", "String", null, null, false, "string",
+				"To set an animal's ID (laufende Nummer) in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbMotherInfo", "String", null, null, false, "string",
+				"To set an animal's mother info in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbFatherInfo", "String", null, null, false, "string",
+				"To set an animal's father info in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbLine", "String", null, null, false, "string",
 				"To set an animal's line in the old Uli Eisel DB.", userName);
-		ct.makeMeasurement(invName, "OldUliDbGene", "String", null, null,
-				false, "string",
+		ct.makeMeasurement(invName, "OldUliDbGene", "String", null, null, false, "string",
 				"To set an animal's gene(s) in the old Uli Eisel DB.", userName);
-		ct.makeMeasurement(invName, "OldUliDbBackground", "String", null, null,
-				false, "string",
-				"To set an animal's background info in the old Uli Eisel DB.",
-				userName);
+		ct.makeMeasurement(invName, "OldUliDbBackground", "String", null, null, false, "string",
+				"To set an animal's background info in the old Uli Eisel DB.", userName);
 
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
@@ -159,8 +139,7 @@ public class ConvertUliDbToPheno
 
 		db.add(animalsToAddList);
 		// Make entry in name prefix table with highest animal nr.
-		List<NamePrefix> prefixList = db.query(NamePrefix.class)
-				.eq(NamePrefix.TARGETTYPE, "animal")
+		List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal")
 				.eq(NamePrefix.PREFIX, "mm_").find();
 		if (prefixList.size() == 1)
 		{
@@ -205,8 +184,7 @@ public class ConvertUliDbToPheno
 		{
 			int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
 			db.add(valuesToAddList.subList(valueStart, valueEnd));
-			logger.debug("Values " + valueStart + " through " + valueEnd
-					+ " successfully added");
+			logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
 		}
 
 		ct.makeObservationTargetNameMap(userName, true);
@@ -218,11 +196,9 @@ public class ConvertUliDbToPheno
 		CsvFileReader reader = new CsvFileReader(file);
 		for (Tuple tuple : reader)
 		{
-			String animalName = "mm_"
-					+ ct.prependZeros(Integer.toString(highestNr++), 6);
+			String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividual(invName, animalName,
-					userName);
+			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 			animalsToAddList.add(newAnimal);
 		}
 	}
@@ -274,41 +250,34 @@ public class ConvertUliDbToPheno
 		{
 			Date now = calendar.getTime();
 
-			String newAnimalName = animalsToAddList.get(line_number - 1)
-					.getName();
+			String newAnimalName = animalsToAddList.get(line_number - 1).getName();
 
 			// Tiernummer -> OldUliDbTiernummer
 			String tiernummer = tuple.getString("Tiernummer");
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetOldUliDbTiernummer"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbTiernummer"), now, null,
 					"OldUliDbTiernummer", newAnimalName, tiernummer, null));
 			oldUliDbTiernummerMap.put(tiernummer, newAnimalName);
 
 			// laufende Nr -> OldUliDbId
 			String oldUliDbId = tuple.getString("laufende Nr");
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetOldUliDbId"), now, null, "OldUliDbId",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbId"), now, null, "OldUliDbId",
 					newAnimalName, oldUliDbId, null));
 			oldUliDbIdMap.put(oldUliDbId, newAnimalName);
 
 			// Tierkategorie -> Species (always Mus musculus)
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetSpecies"), now, null, "Species",
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species",
 					newAnimalName, null, speciesName));
 
 			// AnimalType (always "B. Transgeen dier", except for PKU mice)
-			if (tuple.getString("OldUliDbLine") != null
-					&& tuple.getString("OldUliDbLine").equals("PKU"))
+			if (tuple.getString("OldUliDbLine") != null && tuple.getString("OldUliDbLine").equals("PKU"))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetAnimalType"), now, null, "AnimalType",
-						newAnimalName, "A. normaal dier", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, null,
+						"AnimalType", newAnimalName, "A. normaal dier", null));
 			}
 			else
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetAnimalType"), now, null, "AnimalType",
-						newAnimalName, "B. Transgeen dier", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, null,
+						"AnimalType", newAnimalName, "B. Transgeen dier", null));
 			}
 			// Eingangsdatum, Abgangsdatum and StatusNew ->
 			// DateOfBirth, DeathDate and Active + start and end time
@@ -321,8 +290,7 @@ public class ConvertUliDbToPheno
 			{
 				startDate = dbFormat.parse(startDateString);
 				String dateOfBirth = newDateOnlyFormat.format(startDate);
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetDateOfBirth"), startDate, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), startDate, null,
 						"DateOfBirth", newAnimalName, dateOfBirth, null));
 			}
 			// Default end date is 31-12-2011
@@ -332,10 +300,8 @@ public class ConvertUliDbToPheno
 			if (endDateString != null)
 			{
 				endDate = dbFormat.parse(endDateString);
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetDeathDate"), startDate, null,
-						"DeathDate", newAnimalName,
-						newDateOnlyFormat.format(endDate), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), startDate, null,
+						"DeathDate", newAnimalName, newDateOnlyFormat.format(endDate), null));
 			}
 			String state = tuple.getString("StatusNew");
 			if (state != null)
@@ -347,9 +313,8 @@ public class ConvertUliDbToPheno
 			{
 				state = "Dead";
 			}
-			activeMap.put(newAnimalName, ct.createObservedValue(invName,
-					appMap.get("SetActive"), startDate, endDate, "Active",
-					newAnimalName, state, null));
+			activeMap.put(newAnimalName, ct.createObservedValue(invName, appMap.get("SetActive"), startDate, endDate,
+					"Active", newAnimalName, state, null));
 
 			// Herkunft -> Source
 			Integer uliSourceId = tuple.getInt("Herkunft");
@@ -377,8 +342,7 @@ public class ConvertUliDbToPheno
 				}
 				if (uliSourceId != 0)
 				{
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetSource"), now, null, "Source",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 							newAnimalName, null, sourceName));
 				}
 			}
@@ -387,13 +351,11 @@ public class ConvertUliDbToPheno
 			String remark = tuple.getString("Bemerkungen");
 			if (remark != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetRemark"), now, null, "Remark",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
 						newAnimalName, remark, null));
 			}
 
-			valuesToAddList.add(ct.createObservedValue(invName,
-					appMap.get("SetResponsibleResearcher"), now, null,
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), now, null,
 					"ResponsibleResearcher", newAnimalName, "Uli Eisel", null));
 
 			// BeschrGeschlecht -> Sex
@@ -409,9 +371,8 @@ public class ConvertUliDbToPheno
 				{
 					sexName = "Male";
 				}
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetSex"), now, null, "Sex", newAnimalName,
-						null, sexName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSex"), now, null, "Sex",
+						newAnimalName, null, sexName));
 			}
 
 			// Farbe -> Color
@@ -430,8 +391,7 @@ public class ConvertUliDbToPheno
 				if (color.equals("schwarz-gray")) colorName = "black-gray";
 				if (color.equals("weiss")) colorName = "white";
 				if (color.equals("zimt")) colorName = "cinnamon";
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetColor"), now, null, "Color",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetColor"), now, null, "Color",
 						newAnimalName, colorName, null));
 			}
 
@@ -439,8 +399,7 @@ public class ConvertUliDbToPheno
 			String earmark = tuple.getString("Ohrmarkierung1");
 			if (earmark != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetEarmark"), now, null, "Earmark",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetEarmark"), now, null, "Earmark",
 						newAnimalName, earmark, null));
 			}
 
@@ -457,16 +416,13 @@ public class ConvertUliDbToPheno
 				{
 					createLine(lineName, lineFullName, null, invName);
 				}
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetLine"), now, null, "Line",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
 						newAnimalName, null, lineName));
 			}
 			if (oldLineName != null && !oldLineName.equals(lineName))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetRemark"), now, null, "Remark",
-						newAnimalName, "Line changed from " + oldLineName
-								+ " to " + lineName
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
+						newAnimalName, "Line changed from " + oldLineName + " to " + lineName
 								+ " during conversion to AnimalDB", null));
 			}
 
@@ -483,10 +439,8 @@ public class ConvertUliDbToPheno
 				}
 				if (oldGeneName != null && !oldGeneName.equals(geneName))
 				{
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetRemark"), now, null, "Remark",
-							newAnimalName, "Gene changed from " + oldGeneName
-									+ " to " + geneName
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
+							newAnimalName, "Gene changed from " + oldGeneName + " to " + geneName
 									+ " during conversion to AnimalDB", null));
 				}
 				String geneState = tuple.getString("tg"); // Allowed
@@ -504,18 +458,15 @@ public class ConvertUliDbToPheno
 					geneState = "wt";
 				}
 				// Then check if geneState is singular or double
-				if (!geneState.equals("+/+") && !geneState.equals("+/-")
-						&& !geneState.equals("-/-") && !geneState.equals("ntg")
-						&& !geneState.equals("transgenic")
-						&& !geneState.equals("unknown")
+				if (!geneState.equals("+/+") && !geneState.equals("+/-") && !geneState.equals("-/-")
+						&& !geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("unknown")
 						&& !geneState.equals("wt"))
 				{
 					// Double geneState, so split (first 3 chars and last 3
 					// chars, ignoring all the spaces and slashes in
 					// between)
 					String geneState1 = geneState.substring(0, 3);
-					String geneState2 = geneState.substring(
-							geneState.length() - 3, geneState.length());
+					String geneState2 = geneState.substring(geneState.length() - 3, geneState.length());
 					// Try to split geneName, on slash (if present)
 					// TODO: find out from Uli if this is OK!
 					String geneName1 = geneName;
@@ -527,32 +478,22 @@ public class ConvertUliDbToPheno
 						geneName2 = geneNames[1];
 					}
 					// Add to values list
-					valuesToAddList
-							.add(ct.createObservedValue(invName,
-									appMap.get("SetGenotype1"), now, null,
-									"GeneModification", newAnimalName,
-									geneName1, null));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype1"), now, null, "GeneState",
-							newAnimalName, geneState1, null));
-					valuesToAddList
-							.add(ct.createObservedValue(invName,
-									appMap.get("SetGenotype2"), now, null,
-									"GeneModification", newAnimalName,
-									geneName2, null));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype2"), now, null, "GeneState",
-							newAnimalName, geneState2, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), now, null,
+							"GeneModification", newAnimalName, geneName1, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), now, null,
+							"GeneState", newAnimalName, geneState1, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), now, null,
+							"GeneModification", newAnimalName, geneName2, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), now, null,
+							"GeneState", newAnimalName, geneState2, null));
 				}
 				else
 				{
 					// geneName and geneState can remain as is
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype1"), now, null,
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), now, null,
 							"GeneModification", newAnimalName, geneName, null));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetGenotype1"), now, null, "GeneState",
-							newAnimalName, geneState, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), now, null,
+							"GeneState", newAnimalName, geneState, null));
 				}
 			}
 
@@ -565,16 +506,13 @@ public class ConvertUliDbToPheno
 				{
 					createBackground(background, invName);
 				}
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetBackground"), now, null, "Background",
-						newAnimalName, null, background));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), now, null,
+						"Background", newAnimalName, null, background));
 			}
 			if (oldBackground != null && !oldBackground.equals(background))
 			{
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetRemark"), now, null, "Remark",
-						newAnimalName, "Background changed from "
-								+ oldBackground + " to " + background
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
+						newAnimalName, "Background changed from " + oldBackground + " to " + background
 								+ " during conversion to AnimalDB", null));
 			}
 			line_number++;
@@ -592,8 +530,7 @@ public class ConvertUliDbToPheno
 		{
 			Date now = calendar.getTime();
 
-			String newAnimalName = animalsToAddList.get(line_number - 1)
-					.getName();
+			String newAnimalName = animalsToAddList.get(line_number - 1).getName();
 
 			// Eingangsdatum -> DateOfBirth
 			String birthDateString = tuple.getString("Eingangsdatum");
@@ -610,10 +547,8 @@ public class ConvertUliDbToPheno
 			if (motherIdsString != null)
 			{
 				// First, store literal value
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetOldUliDbMotherInfo"), now, null,
-						"OldUliDbMotherInfo", newAnimalName, motherIdsString,
-						null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbMotherInfo"), now, null,
+						"OldUliDbMotherInfo", newAnimalName, motherIdsString, null));
 				for (Integer oldMotherId : SplitParentIdsString(motherIdsString))
 				{
 					// Find corresponding animal
@@ -626,8 +561,7 @@ public class ConvertUliDbToPheno
 					}
 					else
 					{
-						motherName = oldUliDbTiernummerMap.get(oldMotherId
-								.toString());
+						motherName = oldUliDbTiernummerMap.get(oldMotherId.toString());
 					}
 					if (motherName != null)
 					{
@@ -642,10 +576,8 @@ public class ConvertUliDbToPheno
 			if (fatherIdsString != null)
 			{
 				// First, store literal value
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetOldUliDbFatherInfo"), now, null,
-						"OldUliDbFatherInfo", newAnimalName, fatherIdsString,
-						null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbFatherInfo"), now, null,
+						"OldUliDbFatherInfo", newAnimalName, fatherIdsString, null));
 				for (Integer oldFatherId : SplitParentIdsString(fatherIdsString))
 				{
 					// Find corresponding animal
@@ -658,8 +590,7 @@ public class ConvertUliDbToPheno
 					}
 					else
 					{
-						fatherName = oldUliDbTiernummerMap.get(oldFatherId
-								.toString());
+						fatherName = oldUliDbTiernummerMap.get(oldFatherId.toString());
 					}
 					if (fatherName != null)
 					{
@@ -671,28 +602,24 @@ public class ConvertUliDbToPheno
 			// Put date of birth, mother info and father info into one
 			// string and check if we've
 			// seen this combination before
-			String litterInfo = birthDateString + motherList.toString()
-					+ fatherList.toString();
+			String litterInfo = birthDateString + motherList.toString() + fatherList.toString();
 			if (litterMap.containsKey(litterInfo))
 			{
 
 				// This combination of birth date and parents has been seen
 				// before,
 				// so retrieve litter and link animal directly to it
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetLitter"), now, null, "Litter",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), now, null, "Litter",
 						newAnimalName, null, litterMap.get(litterInfo)));
 				// Set parents also on animal
 				for (String motherName : motherList)
 				{
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetMother"), now, null, "Mother",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), now, null, "Mother",
 							newAnimalName, null, motherName));
 				}
 				for (String fatherName : fatherList)
 				{
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetFather"), now, null, "Father",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), now, null, "Father",
 							newAnimalName, null, fatherName));
 				}
 
@@ -716,47 +643,34 @@ public class ConvertUliDbToPheno
 					parentgroupNr = parentgroupNrMap.get(lineName) + 1;
 				}
 				parentgroupNrMap.put(lineName, parentgroupNr);
-				String parentgroupNrPart = ct.prependZeros("" + parentgroupNr,
-						6);
-				String parentgroupName = "PG_" + lineName + "_"
-						+ parentgroupNrPart;
-				panelsToAddList.add(ct.createPanel(invName, parentgroupName,
-						userName));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
-						parentgroupName, "Parentgroup", null));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetActive"), now, null, "Active",
+				String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
+				String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
+				panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null,
+						"TypeOfGroup", parentgroupName, "Parentgroup", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
 						parentgroupName, "Active", null));
 
 				// Link parent(s) to parentgroup and animal
 				for (String motherName : motherList)
 				{
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetParentgroupMother"), now, null,
-							"ParentgroupMother", parentgroupName, null,
-							motherName));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetMother"), now, null, "Mother",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), now, null,
+							"ParentgroupMother", parentgroupName, null, motherName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), now, null, "Mother",
 							newAnimalName, null, motherName));
 				}
 				for (String fatherName : fatherList)
 				{
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetParentgroupFather"), now, null,
-							"ParentgroupFather", parentgroupName, null,
-							fatherName));
-					valuesToAddList.add(ct.createObservedValue(invName,
-							appMap.get("SetFather"), now, null, "Father",
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), now, null,
+							"ParentgroupFather", parentgroupName, null, fatherName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), now, null, "Father",
 							newAnimalName, null, fatherName));
 				}
 
 				// Set Line and Source of parentgroup
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetLine"), now, null, "Line",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
 						parentgroupName, null, lineName));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetSource"), now, null, "Source",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 						parentgroupName, null, sourceName));
 
 				// Make a litter and set wean and genotype dates
@@ -768,32 +682,24 @@ public class ConvertUliDbToPheno
 				litterNrMap.put(lineName, litterNr);
 				String litterNrPart = ct.prependZeros("" + litterNr, 6);
 				String litterName = "LT_" + lineName + "_" + litterNrPart;
-				panelsToAddList.add(ct.createPanel(invName, litterName,
-						userName));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
-						litterName, "Litter", null));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetWeanDate"), now, null, "WeanDate",
+				panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null,
+						"TypeOfGroup", litterName, "Litter", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
 						litterName, weanDate, null));
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetGenotypeDate"), now, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), now, null,
 						"GenotypeDate", litterName, weanDate, null));
 				// Set source also on litter
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetSource"), now, null, "Source",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 						litterName, null, sourceName));
 				// Set line also on litter
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetLine"), now, null, "Line", litterName,
-						null, lineName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
+						litterName, null, lineName));
 				// Link litter to parentgroup
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetParentgroup"), now, null, "Parentgroup",
-						litterName, null, parentgroupName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), now, null,
+						"Parentgroup", litterName, null, parentgroupName));
 				// Link animal to litter
-				valuesToAddList.add(ct.createObservedValue(invName,
-						appMap.get("SetLitter"), now, null, "Litter",
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), now, null, "Litter",
 						newAnimalName, null, litterName));
 				// Add litter to hashmap for reuse with siblings of this
 				// animal
@@ -803,37 +709,32 @@ public class ConvertUliDbToPheno
 		}
 	}
 
-	private void createLine(String lineName, String lineFullName,
-			String remark, String investigationName) throws DatabaseException,
-			IOException, ParseException
+	private void createLine(String lineName, String lineFullName, String remark, String investigationName)
+			throws DatabaseException, IOException, ParseException
 	{
 		Date now = new Date();
 
 		// Make line panel
 		ct.makePanel(investigationName, lineName, userName);
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
-		db.add(ct.createObservedValueWithProtocolApplication(investigationName,
-				now, null, "SetTypeOfGroup", "TypeOfGroup", lineName, "Line",
-				null));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup",
+				"TypeOfGroup", lineName, "Line", null));
 		// Set the source of the line
-		db.add(ct.createObservedValueWithProtocolApplication(investigationName,
-				now, null, "SetSource", "Source", lineName, null, sourceName));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetSource", "Source",
+				lineName, null, sourceName));
 		// Set the species of the line (always House mouse)
-		db.add(ct.createObservedValueWithProtocolApplication(investigationName,
-				now, null, "SetSpecies", "Species", lineName, null,
-				"House mouse"));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetSpecies", "Species",
+				lineName, null, "House mouse"));
 		// Set full name (if known)
 		if (lineFullName != null)
 		{
-			db.add(ct.createObservedValueWithProtocolApplication(
-					investigationName, now, null, "SetLineFullName",
+			db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetLineFullName",
 					"LineFullName", lineName, lineFullName, null));
 		}
 		// Set remark (if known)
 		if (remark != null)
 		{
-			db.add(ct.createObservedValueWithProtocolApplication(
-					investigationName, now, null, "SetRemark", "Remark",
+			db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetRemark", "Remark",
 					lineName, remark, null));
 		}
 	}
@@ -843,8 +744,7 @@ public class ConvertUliDbToPheno
 		ct.makeCategory(geneName, geneName, "GeneModification");
 	}
 
-	public void createBackground(String bkgName, String investigationName)
-			throws Exception
+	public void createBackground(String bkgName, String investigationName) throws Exception
 	{
 		Date now = new Date();
 
@@ -852,13 +752,11 @@ public class ConvertUliDbToPheno
 		ct.makePanel(investigationName, bkgName, login.getUserName());
 		// Label it as background using the (Set)TypeOfGroup protocol and
 		// feature
-		db.add(ct.createObservedValueWithProtocolApplication(investigationName,
-				now, null, "SetTypeOfGroup", "TypeOfGroup", bkgName,
-				"Background", null));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup",
+				"TypeOfGroup", bkgName, "Background", null));
 		// Set the species of the background (always House mouse)
-		db.add(ct.createObservedValueWithProtocolApplication(investigationName,
-				now, null, "SetSpecies", "Species", bkgName, null,
-				"House mouse"));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetSpecies", "Species",
+				bkgName, null, "House mouse"));
 	}
 
 	public List<Integer> SplitParentIdsString(String parentIdsString)
@@ -906,18 +804,15 @@ public class ConvertUliDbToPheno
 		return idsList;
 	}
 
-	public void makeProtocolApplication(String protocolName)
-			throws ParseException, DatabaseException, IOException
+	public void makeProtocolApplication(String protocolName) throws ParseException, DatabaseException, IOException
 	{
 		makeProtocolApplication(protocolName, protocolName);
 	}
 
-	public void makeProtocolApplication(String protocolName,
-			String protocolLabel) throws ParseException, DatabaseException,
-			IOException
+	public void makeProtocolApplication(String protocolName, String protocolLabel) throws ParseException,
+			DatabaseException, IOException
 	{
-		ProtocolApplication app = ct.createProtocolApplication(invName,
-				protocolName);
+		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
 	}

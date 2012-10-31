@@ -16,7 +16,7 @@ import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.service.StatisticsService;
 
 /**
- * Background page specific to col7a1
+ * Background page specific to deb-central
  */
 public class Background extends EasyPluginController<BackgroundModel>
 {
@@ -28,7 +28,7 @@ public class Background extends EasyPluginController<BackgroundModel>
 		super(name, parent);
 		this.setModel(new BackgroundModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Background.ftl", getModel());
@@ -40,14 +40,15 @@ public class Background extends EasyPluginController<BackgroundModel>
 		try
 		{
 			StatisticsService statisticsService = ServiceLocator.instance().getStatisticsService();
+			statisticsService.setDatabase(db);
 			this.getModel().setNumMutations(statisticsService.getNumMutations());
 			this.getModel().setNumPatients(statisticsService.getNumPatients());
 			this.getModel().setNumPatientsUnpub(statisticsService.getNumUnpublishedPatients());
 			this.getModel().setPhenotypeCountHash(statisticsService.getPhenotypeCounts());
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			//...
+			// ...
 		}
 	}
 }

@@ -13,13 +13,13 @@ public class LoadFromDirectory
 	public static void main(String[] args) throws Exception
 	{
 		BasicConfigurator.configure();
-		
+
 		File directory = new File("/tmp/");
-		
+
 		Database db = DatabaseFactory.create();
-		
+
 		CsvImport.importAll(directory, db, null);
-		
+
 		System.out.println("upload complete");
 	}
 }

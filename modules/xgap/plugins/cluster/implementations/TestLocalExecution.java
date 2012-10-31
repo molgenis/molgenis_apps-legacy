@@ -14,7 +14,8 @@ public class TestLocalExecution
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		Database db = DatabaseFactory.create("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties");
+		Database db = DatabaseFactory
+				.create("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties");
 		LocalComputationResource lc = new LocalComputationResource();
 
 		// project dir

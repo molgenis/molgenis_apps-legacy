@@ -75,9 +75,9 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		for (String name : backends.keySet())
 			hostSel.addOption(name, name);
 		view.add(hostSel);
-		
-		view.add(new ActionInput("submitJob","Submit Job"));
-		view.add(new ActionInput("submitPilot", "Submit Pilot"));
+
+		view.add(new ActionInput("submitJob", "Submit Job"));
+		view.add(new ActionInput("submitPilotGrid", "Submit Pilot"));
 
 		view.add(new Paragraph("<h1>Currently running jobs</h1>"));
 
@@ -135,20 +135,19 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		jobs.add(j);
 	}
 
-    public void submitPilot(Database db, Tuple request) throws IOException
-    	{
-    		Job j = new Job();
-    		j.setScript(request.getString("script"));
+	public void submitPilot(Database db, Tuple request) throws IOException
+	{
+		Job j = new Job();
+		j.setScript(request.getString("script"));
 
-    		//get suitable backend
-    		String host = request.getString("backend");
-    		backends.get(host).submitPilot(j);
+		// get suitable backend
+		String host = request.getString("backend");
+		backends.get(host).submitPilot(j);
 
-    		//remember ...
-    		j.setHost(host);
-    		jobs.add(j);
-    	}
-
+		// remember ...
+		j.setHost(host);
+		jobs.add(j);
+	}
 
 	@Override
 	public void reload(Database db) throws Exception

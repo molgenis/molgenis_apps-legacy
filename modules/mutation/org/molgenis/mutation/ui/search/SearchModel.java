@@ -40,30 +40,30 @@ public class SearchModel extends EasyPluginModel
 	private int numPatients;
 	private int numUnpublished;
 	private int numMutations;
-	private SimpleSearchForm simpleSearchForm                 = new SimpleSearchForm();
-	private ListAllMutationsForm listAllMutationsForm         = new ListAllMutationsForm();
-	private ListAllPatientsForm listAllPatientsForm           = new ListAllPatientsForm();
-	private ToExpertSearchForm toExpertSearchForm             = new ToExpertSearchForm();
-	private ToSimpleSearchForm toSimpleSearchForm             = new ToSimpleSearchForm();
-	private ExpertSearchForm expertSearchForm                 = new ExpertSearchForm();
-	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
-	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
+	private SimpleSearchForm simpleSearchForm = new SimpleSearchForm();
+	private ListAllMutationsForm listAllMutationsForm = new ListAllMutationsForm();
+	private ListAllPatientsForm listAllPatientsForm = new ListAllPatientsForm();
+	private ToExpertSearchForm toExpertSearchForm = new ToExpertSearchForm();
+	private ToSimpleSearchForm toSimpleSearchForm = new ToSimpleSearchForm();
+	private ExpertSearchForm expertSearchForm = new ExpertSearchForm();
+	private ShowMutationForm showMutationForm = new ShowMutationForm();
+	private DisplayOptionsForm displayOptionsForm = new DisplayOptionsForm();
 
-	private ExonSearchCriteriaVO exonSearchCriteriaVO         = new ExonSearchCriteriaVO();
+	private ExonSearchCriteriaVO exonSearchCriteriaVO = new ExonSearchCriteriaVO();
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
-	private PatientSearchCriteriaVO patientSearchCriteriaVO   = new PatientSearchCriteriaVO();
-	private QueryParametersVO queryParametersVO               = new QueryParametersVO();
+	private PatientSearchCriteriaVO patientSearchCriteriaVO = new PatientSearchCriteriaVO();
+	private QueryParametersVO queryParametersVO = new QueryParametersVO();
 
 	private MutationGene gene;
 	private ExonSummaryVO exonSummaryVO;
 	private MutationSummaryVO mutationSummaryVO;
-	private List<MutationSummaryVO> mutationSummaryVOs        = new ArrayList<MutationSummaryVO>();
+	private List<MutationSummaryVO> mutationSummaryVOs = new ArrayList<MutationSummaryVO>();
 	private HashMap<String, String> mutationSummaryVOHash;
-	private List<PatientSummaryVO> patientSummaryVOs          = new ArrayList<PatientSummaryVO>();
+	private List<PatientSummaryVO> patientSummaryVOs = new ArrayList<PatientSummaryVO>();
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
 	private List<ProteinDomainSummaryVO> proteinDomainList;
 	private PatientSummaryVO patientSummaryVO;
-//	private List<PatientDetailsVO> patientDetailsVO;
+	// private List<PatientDetailsVO> patientDetailsVO;
 	private PhenotypeDetailsVO phenotypeDetailsVO;
 	private HashMap<String, String> patientSummaryVOHash;
 	private String rawOutput; // for output from included sources
@@ -71,13 +71,13 @@ public class SearchModel extends EasyPluginModel
 	private List<MolgenisNews> news;
 	private LimitOffsetPager<?> pager;
 
-	private MBrowseVO mBrowseVO                               = new MBrowseVO();
-	
-	private String textWelcome                                = "";
-	private String textSearch                                 = "";
-	private String textRemarks                                = "";
-	private String textCollaborations                         = "";
-	
+	private MBrowseVO mBrowseVO = new MBrowseVO();
+
+	private String textWelcome = "";
+	private String textSearch = "";
+	private String textRemarks = "";
+	private String textCollaborations = "";
+
 	private List<MutationSummaryVO> positionMutations;
 	private List<MutationSummaryVO> codonMutations;
 
@@ -91,27 +91,33 @@ public class SearchModel extends EasyPluginModel
 		this.geneName = geneName;
 	}
 
-	public String getPatientPager() {
+	public String getPatientPager()
+	{
 		return patientPager;
 	}
 
-	public void setPatientPager(String patientPager) {
+	public void setPatientPager(String patientPager)
+	{
 		this.patientPager = patientPager;
 	}
 
-	public String getMutationPager() {
+	public String getMutationPager()
+	{
 		return mutationPager;
 	}
 
-	public void setMutationPager(String mutationPager) {
+	public void setMutationPager(String mutationPager)
+	{
 		this.mutationPager = mutationPager;
 	}
 
-	public String getPatientViewer() {
+	public String getPatientViewer()
+	{
 		return patientViewer;
 	}
 
-	public void setPatientViewer(String patientViewer) {
+	public void setPatientViewer(String patientViewer)
+	{
 		this.patientViewer = patientViewer;
 	}
 
@@ -119,17 +125,19 @@ public class SearchModel extends EasyPluginModel
 	{
 		return action;
 	}
-	
+
 	public void setAction(String action)
 	{
 		this.action = action;
 	}
 
-	public String getResult() {
+	public String getResult()
+	{
 		return result;
 	}
 
-	public void setResult(String result) {
+	public void setResult(String result)
+	{
 		this.result = result;
 	}
 
@@ -268,8 +276,7 @@ public class SearchModel extends EasyPluginModel
 		return mutationSearchCriteriaVO;
 	}
 
-	public void setMutationSearchCriteriaVO(
-			MutationSearchCriteriaVO mutationSearchCriteriaVO)
+	public void setMutationSearchCriteriaVO(MutationSearchCriteriaVO mutationSearchCriteriaVO)
 	{
 		this.mutationSearchCriteriaVO = mutationSearchCriteriaVO;
 	}
@@ -279,8 +286,7 @@ public class SearchModel extends EasyPluginModel
 		return patientSearchCriteriaVO;
 	}
 
-	public void setPatientSearchCriteriaVO(
-			PatientSearchCriteriaVO patientSearchCriteriaVO)
+	public void setPatientSearchCriteriaVO(PatientSearchCriteriaVO patientSearchCriteriaVO)
 	{
 		this.patientSearchCriteriaVO = patientSearchCriteriaVO;
 	}
@@ -295,11 +301,13 @@ public class SearchModel extends EasyPluginModel
 		this.queryParametersVO = queryParametersVO;
 	}
 
-	public void setGene(MutationGene gene) {
+	public void setGene(MutationGene gene)
+	{
 		this.gene = gene;
 	}
 
-	public MutationGene getGene() {
+	public MutationGene getGene()
+	{
 		return gene;
 	}
 
@@ -353,21 +361,21 @@ public class SearchModel extends EasyPluginModel
 		this.patientSummaryVOs = patientSummaryVOs;
 	}
 
-//	public List<PatientDetailsVO> getPatientDetailsVO() {
-//		return patientDetailsVO;
-//	}
-//
-//	public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO) {
-//		this.patientDetailsVO = patientDetailsVO;
-//	}
+	// public List<PatientDetailsVO> getPatientDetailsVO() {
+	// return patientDetailsVO;
+	// }
+	//
+	// public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO)
+	// {
+	// this.patientDetailsVO = patientDetailsVO;
+	// }
 
 	public ProteinDomainSummaryVO getProteinDomainSummaryVO()
 	{
 		return proteinDomainSummaryVO;
 	}
 
-	public void setProteinDomainSummaryVO(
-			ProteinDomainSummaryVO proteinDomainSummaryVO)
+	public void setProteinDomainSummaryVO(ProteinDomainSummaryVO proteinDomainSummaryVO)
 	{
 		this.proteinDomainSummaryVO = proteinDomainSummaryVO;
 	}
@@ -402,27 +410,33 @@ public class SearchModel extends EasyPluginModel
 		this.phenotypeDetailsVO = phenotypeDetailsVO;
 	}
 
-	public HashMap<String, String> getPatientSummaryVOHash() {
+	public HashMap<String, String> getPatientSummaryVOHash()
+	{
 		return patientSummaryVOHash;
 	}
 
-	public void setPatientSummaryVOHash(HashMap<String, String> patientSummaryVOHash) {
+	public void setPatientSummaryVOHash(HashMap<String, String> patientSummaryVOHash)
+	{
 		this.patientSummaryVOHash = patientSummaryVOHash;
 	}
 
-	public String getRawOutput() {
+	public String getRawOutput()
+	{
 		return rawOutput;
 	}
 
-	public void setRawOutput(String rawOutput) {
+	public void setRawOutput(String rawOutput)
+	{
 		this.rawOutput = rawOutput;
 	}
 
-	public List<MolgenisNews> getNews() {
+	public List<MolgenisNews> getNews()
+	{
 		return news;
 	}
 
-	public void setNews(List<MolgenisNews> news) {
+	public void setNews(List<MolgenisNews> news)
+	{
 		this.news = news;
 	}
 
@@ -436,60 +450,78 @@ public class SearchModel extends EasyPluginModel
 		this.pager = pager;
 	}
 
-	public MBrowseVO getmBrowseVO() {
+	public MBrowseVO getmBrowseVO()
+	{
 		return mBrowseVO;
 	}
 
-	public void setmBrowseVO(MBrowseVO mBrowseVO) {
+	public void setmBrowseVO(MBrowseVO mBrowseVO)
+	{
 		this.mBrowseVO = mBrowseVO;
 	}
 
-	public String getTextWelcome() {
+	public String getTextWelcome()
+	{
 		return textWelcome;
 	}
 
-	public void setTextWelcome(String textWelcome) {
+	public void setTextWelcome(String textWelcome)
+	{
 		this.textWelcome = textWelcome;
 	}
 
-	public String getTextSearch() {
+	public String getTextSearch()
+	{
 		return textSearch;
 	}
 
-	public void setTextSearch(String textSearch) {
+	public void setTextSearch(String textSearch)
+	{
 		this.textSearch = textSearch;
 	}
 
-	public String getTextRemarks() {
+	public String getTextRemarks()
+	{
 		return textRemarks;
 	}
 
-	public void setTextRemarks(String textRemarks) {
+	public void setTextRemarks(String textRemarks)
+	{
 		this.textRemarks = textRemarks;
 	}
 
-	public String getTextCollaborations() {
+	public String getTextCollaborations()
+	{
 		return textCollaborations;
 	}
 
-	public void setTextCollaborations(String textCollaborations) {
+	public void setTextCollaborations(String textCollaborations)
+	{
 		this.textCollaborations = textCollaborations;
 	}
 
-	public List<MutationSummaryVO> getPositionMutations() {
+	public List<MutationSummaryVO> getPositionMutations()
+	{
 		return positionMutations;
 	}
-	public void setPositionMutations(List<MutationSummaryVO> positionMutations) {
+
+	public void setPositionMutations(List<MutationSummaryVO> positionMutations)
+	{
 		this.positionMutations = positionMutations;
 	}
-	public List<MutationSummaryVO> getCodonMutations() {
+
+	public List<MutationSummaryVO> getCodonMutations()
+	{
 		return codonMutations;
 	}
-	public void setCodonMutations(List<MutationSummaryVO> codonMutations) {
+
+	public void setCodonMutations(List<MutationSummaryVO> codonMutations)
+	{
 		this.codonMutations = codonMutations;
 	}
-	
-	public SearchModel(SearchPlugin controller) {
+
+	public SearchModel(SearchPlugin controller)
+	{
 		super(controller);
 		// TODO Auto-generated constructor stub
 	}

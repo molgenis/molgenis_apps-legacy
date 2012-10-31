@@ -8,11 +8,5 @@ public class TableModelNgsAnalysisWorksheet extends TableModel
 		super(name);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
-	
 
-	
-	
 }

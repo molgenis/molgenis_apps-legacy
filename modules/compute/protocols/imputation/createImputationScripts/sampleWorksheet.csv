@@ -1,0 +1,2 @@
+project,studyInputDir,referencePanel,imputationResultDir,imputationPipeline,genomeBuild
+1240Blood_b37,${root}/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood_b37/,gonl_release3.1,${root}/groups/gonl/projects/imputationBenchmarking/testImputations/1240Blood_b37Impute2,impute2,b37

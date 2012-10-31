@@ -6,21 +6,23 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 
-public class EbiStyleLoader extends EasyPluginController {
+public class EbiStyleLoader extends EasyPluginController
+{
 
-	public EbiStyleLoader(String name, 
-			ScreenController parent) {
+	public EbiStyleLoader(String name, ScreenController parent)
+	{
 		super(name, parent);
 		this.setModel(new EbiStyleLoaderModel(this));
-		//this.setView();
+		// this.setView();
 
-		
-		//change the view of the main application
-//		this.getApplicationController().setView(new FreemarkerView("org/molgenis/phenoflow/ui/UserInterface-EBI.ftl", this.getApplicationController()
-//						.getModel()));
+		// change the view of the main application
+		// this.getApplicationController().setView(new
+		// FreemarkerView("org/molgenis/phenoflow/ui/UserInterface-EBI.ftl",
+		// this.getApplicationController()
+		// .getModel()));
 
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("EbiStyleLoader.ftl", this.getModel());
@@ -33,11 +35,9 @@ public class EbiStyleLoader extends EasyPluginController {
 	}
 
 	@Override
-	public void reload(Database db) throws Exception {
+	public void reload(Database db) throws Exception
+	{
 		// TODO Auto-generated method stub
 	}
-	
-
-
 
 }

@@ -53,7 +53,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		super(name, parent);
 		this.setModel(new SimpleUserLoginModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("UserLogin.ftl", getModel());
@@ -63,31 +63,34 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	{
 		this.getModel().setAction("Login");
 
-		if ("Google".equals(request.getString("op")) || "Yahoo".equalsIgnoreCase(request.getString("op")) || "authenticated".equals(request.getString("op")))
+		if ("Google".equals(request.getString("op")) || "Yahoo".equalsIgnoreCase(request.getString("op"))
+				|| "authenticated".equals(request.getString("op")))
 		{
 			try
 			{
 				// get the http request that is encapsulated inside the tuple
-				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-				HttpServletRequest httpRequest   = rt.getRequest();
+				HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+				HttpServletRequest httpRequest = rt.getRequest();
 
 				// get the http response that is used in this handleRequest
 				HttpServletResponse httpResponse = rt.getResponse();
 
-				String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getName() + "&__action=" + request.getAction() + "&op=authenticated";
+				String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getName() + "&__action="
+						+ request.getAction() + "&op=authenticated";
 
-				if (!(this.getApplicationController().getLogin() instanceof OpenIdLogin))
-					throw new Exception("Wrong parameter.");
+				if (!(this.getApplicationController().getLogin() instanceof OpenIdLogin)) throw new Exception(
+						"Wrong parameter.");
 
-				((OpenIdLogin) this.getApplicationController().getLogin()).authenticate(db, httpRequest, httpResponse, returnURL, request.getString("op"));
-				
+				((OpenIdLogin) this.getApplicationController().getLogin()).authenticate(db, httpRequest, httpResponse,
+						returnURL, request.getString("op"));
+
 				this.getModel().setLabel("My Account");
 
-//				this.getDatabaseUser(db);
+				// this.getDatabaseUser(db);
 
 				// login.authRequest(request.getString("name"));
 				// login.verifyResponse();
-				
+
 				this.getApplicationController().getLogin().reload(db);
 			}
 			catch (Exception e)
@@ -95,33 +98,37 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				throw new DatabaseException("OpenID login failed: " + e.getMessage());
 			}
 		}
-		else if (StringUtils.isNotEmpty(request.getString("username")) && StringUtils.isNotEmpty(request.getString("password")))
+		else if (StringUtils.isNotEmpty(request.getString("username"))
+				&& StringUtils.isNotEmpty(request.getString("password")))
 		{
 			String username = request.getString("username");
 			String password = request.getString("password");
 
 			boolean loggedIn = this.getApplicationController().getLogin().login(db, username, password);
 
-			if (!loggedIn)
-				throw new DatabaseException("Login failed: username or password unknown");
-			
-			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest   = rt.getRequest();
+			if (!loggedIn) throw new DatabaseException("Login failed: username or password unknown");
+
+			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
-			
+
 			if (StringUtils.isNotEmpty(this.getApplicationController().getLogin().getRedirect()))
 			{
-				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
+				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select="
+						+ this.getApplicationController().getLogin().getRedirect();
 				httpResponse.sendRedirect(redirectURL);
-				//workaround - see comment @ EasyPluginController.HTML_WAS_ALREADY_SERVED
+				// workaround - see comment @
+				// EasyPluginController.HTML_WAS_ALREADY_SERVED
 				EasyPluginController.HTML_WAS_ALREADY_SERVED = true;
-				//no use: all caught as InvocationTargetException
-				//throw new RedirectedException();
+				// no use: all caught as InvocationTargetException
+				// throw new RedirectedException();
 			}
-			
+
 			this.getModel().setLabel("My Account");
-			
-		} else {
+
+		}
+		else
+		{
 			this.getModel().setLabel("Login");
 			throw new DatabaseException("Login failed: username or password empty");
 		}
@@ -134,7 +141,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		this.getApplicationController().getLogin().reload(db);
 		this.getModel().setLabel("Login");
 	}
-	
+
 	public void Cancel(Database db, Tuple request)
 	{
 		this.getModel().setAction("Cancel");
@@ -147,45 +154,47 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		try
 		{
 			// get the http request that is encapsulated inside the tuple
-			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest   = rt.getRequest();
+			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest = rt.getRequest();
 
-			Captcha captcha                  = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
+			Captcha captcha = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
 
-			if (!captcha.isCorrect(request.getString("code")))
-				throw new Exception("Code was wrong.");
-			
+			if (!captcha.isCorrect(request.getString("code"))) throw new Exception("Code was wrong.");
+
 			// save current login and then set to null, to bypass security
 			Login saveLogin = db.getLogin();
 			db.setLogin(null);
-			
+
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
-			MolgenisUser user               = this.toMolgenisUser(db, request);
-			
+			MolgenisUser user = this.toMolgenisUser(db, request);
+
 			// Get the email address of admin user.
-			MolgenisUser admin              = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
-			if (StringUtils.isEmpty(admin.getEmail()))
-				throw new DatabaseException("Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
-			
-			//only insert if admin has an email set
+			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+			if (StringUtils.isEmpty(admin.getEmail())) throw new DatabaseException(
+					"Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
+
+			// only insert if admin has an email set
 			userService.insert(user);
 
 			// Email the admin
-			String activationURL =
-				httpRequest.getRequestURL().toString() +
-				"?__target=" + this.getName() +
-				"&select=" + this.getName() +
-				"&__action=Activate&actCode=" + user.getActivationCode();
+			String activationURL = httpRequest.getRequestURL().toString() + "?__target=" + this.getName() + "&select="
+					+ this.getName() + "&__action=Activate&actCode=" + user.getActivationCode();
 			String emailContents = "User registration for " + this.getRoot().getLabel() + "\n";
-			emailContents		+= "User name: " + user.getName() + " Full name: " + user.getFirstName() + " " + user.getLastName() + "\n";
-			emailContents       += "In order to activate the user visit the following URL:\n";
-			emailContents       += activationURL + "\n\n";
-			
-			//assuming: 'encoded' p.w. (setting deObf = true)
-			this.getEmailService().email("User registration for " + this.getRoot().getLabel(), emailContents, admin.getEmail(), true);
-			
-			this.getModel().getMessages().add(new ScreenMessage("Thank you for registering. Your request has been sent to the adminstrator for approval.", true));
-		
+			emailContents += "User name: " + user.getName() + " Full name: " + user.getFirstName() + " "
+					+ user.getLastName() + "\n";
+			emailContents += "In order to activate the user visit the following URL:\n";
+			emailContents += activationURL + "\n\n";
+
+			// assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("User registration for " + this.getRoot().getLabel(), emailContents,
+					admin.getEmail(), true);
+
+			this.getModel()
+					.getMessages()
+					.add(new ScreenMessage(
+							"Thank you for registering. Your request has been sent to the adminstrator for approval.",
+							true));
+
 			// restore login
 			db.setLogin(saveLogin);
 		}
@@ -206,22 +215,21 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	{
 		this.getModel().setAction("Activate");
 
-	    try
+		try
 		{
-    		// save current login and then set to null, to bypass security
-    		Login saveLogin = db.getLogin();
-    		db.setLogin(null);
+			// save current login and then set to null, to bypass security
+			Login saveLogin = db.getLogin();
+			db.setLogin(null);
 
 			MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
 			criteria.setActivationCode(request.getString("actCode"));
 
-			MolgenisUserService userService       = MolgenisUserService.getInstance(db);
-			List<MolgenisUser> users              = userService.find(criteria);
+			MolgenisUserService userService = MolgenisUserService.getInstance(db);
+			List<MolgenisUser> users = userService.find(criteria);
 
-			if (users.size() != 1)
-				throw new MolgenisUserException("No user found for activation code.");
-			
-			MolgenisUser user                     = users.get(0);
+			if (users.size() != 1) throw new MolgenisUserException("No user found for activation code.");
+
+			MolgenisUser user = users.get(0);
 			user.setActive(true);
 			userService.update(user);
 
@@ -229,10 +237,10 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 
 			// Email the user
 			String emailContents = "Dear " + user.getFirstName() + " " + user.getLastName() + ",\n\n";
-			emailContents       += "your registration request for " + this.getRoot().getLabel() + " was approved.\n";
-			emailContents       += "Your account is now active.\n";
+			emailContents += "your registration request for " + this.getRoot().getLabel() + " was approved.\n";
+			emailContents += "Your account is now active.\n";
 			this.getEmailService().email("Your registration request", emailContents, user.getEmail(), true);
-			
+
 			// restore login
 			db.setLogin(saveLogin);
 		}
@@ -246,56 +254,58 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			this.getApplicationController().getLogin().logout(db);
 		}
 	}
-	
+
 	public void sendPassword(Database db, Tuple request) throws Exception
 	{
-	    try
+		try
 		{
 
-    		if (this.getApplicationController().getLogin().isAuthenticated())
-    		{
-    			 // if logged in, log out first
-    			this.getApplicationController().getLogin().logout(db);
-    		}
-    		
-    		// login as admin
-    		// (a bit evil but less so than giving anonymous write-rights on the
-    		// MolgenisUser table)
-    		this.getApplicationController().getLogin().login(db, "admin", "admin"); //TODO
-    		this.getApplicationController().getLogin().reload(db);
-	    	// save current login and then set to null, to bypass security
-    		Login saveLogin = db.getLogin();
-    		db.setLogin(null);
+			if (this.getApplicationController().getLogin().isAuthenticated())
+			{
+				// if logged in, log out first
+				this.getApplicationController().getLogin().logout(db);
+			}
 
-    		MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
-    		criteria.setName(request.getString("username"));
+			// login as admin
+			// (a bit evil but less so than giving anonymous write-rights on the
+			// MolgenisUser table)
+			this.getApplicationController().getLogin().login(db, "admin", "admin"); // TODO
+			this.getApplicationController().getLogin().reload(db);
+			// save current login and then set to null, to bypass security
+			Login saveLogin = db.getLogin();
+			db.setLogin(null);
 
-    		MolgenisUserService userService = MolgenisUserService.getInstance(db);
-    		List<MolgenisUser> users        = userService.find(criteria);
-		
-    		if (users.size() != 1) {
-    			throw new MolgenisUserException("No user found with this username.");
-    		}
-    		
-    		MolgenisUser user  = users.get(0);
-  
-    		String newPassword = UUID.randomUUID().toString().substring(0, 8);
-    		user.setPassword(newPassword);
-    		userService.update(user);   //exception
+			MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
+			criteria.setName(request.getString("username"));
 
-    		String emailContents = "Somebody, probably you, requested a new password for " + 
-    		this.getRoot().getLabel() + ".\n";
-    		emailContents += "The new password is: " + newPassword + "\n";
-    		emailContents += "Note: we strongly recommend you reset your password after log-in!";
-    		// TODO: make this mandatory (password that was sent is valid only once)
+			MolgenisUserService userService = MolgenisUserService.getInstance(db);
+			List<MolgenisUser> users = userService.find(criteria);
 
-    		//assuming: 'encoded' p.w. (setting deObf = true)
-    		this.getEmailService().email("Your new password request", emailContents, user.getEmail(), true);
-    		
-    		this.getModel().getMessages().add(new ScreenMessage("Sending new password successful", true));
-    		
-    		// restore login
-    		db.setLogin(saveLogin);
+			if (users.size() != 1)
+			{
+				throw new MolgenisUserException("No user found with this username.");
+			}
+
+			MolgenisUser user = users.get(0);
+
+			String newPassword = UUID.randomUUID().toString().substring(0, 8);
+			user.setPassword(newPassword);
+			userService.update(user); // exception
+
+			String emailContents = "Somebody, probably you, requested a new password for " + this.getRoot().getLabel()
+					+ ".\n";
+			emailContents += "The new password is: " + newPassword + "\n";
+			emailContents += "Note: we strongly recommend you reset your password after log-in!";
+			// TODO: make this mandatory (password that was sent is valid only
+			// once)
+
+			// assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("Your new password request", emailContents, user.getEmail(), true);
+
+			this.getModel().getMessages().add(new ScreenMessage("Sending new password successful", true));
+
+			// restore login
+			db.setLogin(saveLogin);
 		}
 		catch (Exception e)
 		{
@@ -308,19 +318,22 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 	}
 
-	public void ChgUser(Database db, Tuple request) throws NoSuchAlgorithmException, MolgenisUserException, DatabaseException, ParseException, IOException
+	public void ChgUser(Database db, Tuple request) throws NoSuchAlgorithmException, MolgenisUserException,
+			DatabaseException, ParseException, IOException
 	{
 		this.getModel().setAction("ChgUser");
 
 		MolgenisUserService userService = MolgenisUserService.getInstance(db);
 
-		if (StringUtils.isNotEmpty(request.getString("oldpwd")) || StringUtils.isNotEmpty(request.getString("newpwd")) || StringUtils.isNotEmpty(request.getString("newpwd2")))
+		if (StringUtils.isNotEmpty(request.getString("oldpwd")) || StringUtils.isNotEmpty(request.getString("newpwd"))
+				|| StringUtils.isNotEmpty(request.getString("newpwd2")))
 		{
-			String oldPwd  = request.getString("oldpwd");
+			String oldPwd = request.getString("oldpwd");
 			String newPwd1 = request.getString("newpwd");
 			String newPwd2 = request.getString("newpwd2");
 
-			userService.checkPassword(this.getApplicationController().getLogin().getUserName(), oldPwd, newPwd1, newPwd2);
+			userService.checkPassword(this.getApplicationController().getLogin().getUserName(), oldPwd, newPwd1,
+					newPwd2);
 		}
 
 		MolgenisUser user = userService.findById(this.getApplicationController().getLogin().getUserId());
@@ -334,73 +347,75 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	{
 		this.getModel().setAction("Forgot");
 	}
-	
+
 	private Integer getInstitute(String instName, Database db) throws DatabaseException
 	{
-		if(instName != null && !instName.isEmpty())
+		if (instName != null && !instName.isEmpty())
 		{
-			List<Institute> institutes = db.find(Institute.class, new QueryRule(Institute.NAME, Operator.EQUALS, instName));
-			if(institutes.size() == 0)
+			List<Institute> institutes = db.find(Institute.class, new QueryRule(Institute.NAME, Operator.EQUALS,
+					instName));
+			if (institutes.size() == 0)
 			{
 				Institute newInst = new Institute();
 				newInst.setName(instName);
 				db.add(newInst);
 				return newInst.getId();
 			}
-			else if(institutes.size() == 1)
+			else if (institutes.size() == 1)
 			{
 				return institutes.get(0).getId();
 			}
 			else
 			{
-				throw new DatabaseException("Multiple institutes named '"+instName+"' found");
+				throw new DatabaseException("Multiple institutes named '" + instName + "' found");
 			}
 		}
 		return null;
-		//throw new DatabaseException("Error when finding/creating Institute");
+		// throw new DatabaseException("Error when finding/creating Institute");
 	}
-	
+
 	private Integer getRole(String roleName, Database db) throws DatabaseException
 	{
-		if(roleName != null && !roleName.isEmpty())
+		if (roleName != null && !roleName.isEmpty())
 		{
-			List<OntologyTerm> roles = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, roleName));
-			if(roles.size() == 0)
+			List<OntologyTerm> roles = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS,
+					roleName));
+			if (roles.size() == 0)
 			{
 				OntologyTerm newRole = new OntologyTerm();
 				newRole.setName(roleName);
 				db.add(newRole);
 				return newRole.getId();
 			}
-			else if(roles.size() == 1)
+			else if (roles.size() == 1)
 			{
 				return roles.get(0).getId();
 			}
 			else
 			{
-				throw new DatabaseException("Multiple ontologyTerms for role '"+roleName+"' found");
+				throw new DatabaseException("Multiple ontologyTerms for role '" + roleName + "' found");
 			}
 		}
 		return null;
-		//throw new DatabaseException("Error when finding/creating Role");
+		// throw new DatabaseException("Error when finding/creating Role");
 	}
-	
+
 	private MolgenisUser toMolgenisUser(Database db, Tuple request) throws MolgenisUserException, DatabaseException
 	{
-		MolgenisUser user  = new MolgenisUser();
+		MolgenisUser user = new MolgenisUser();
 
-		if (!StringUtils.equals(request.getString("password"), request.getString("password2")))
-			throw new MolgenisUserException("Passwords do not match.");
+		if (!StringUtils.equals(request.getString("password"), request.getString("password2"))) throw new MolgenisUserException(
+				"Passwords do not match.");
 
 		user.setName(request.getString("username"));
 		user.setPassword(request.getString("password"));
 		user.setEmail(request.getString("email"));
-		
+
 		user.setPhone(request.getString("phone"));
 		user.setFax(request.getString("fax"));
 		user.setTollFreePhone(request.getString("tollFreePhone"));
 		user.setAddress(request.getString("address"));
-		
+
 		user.setTitle(request.getString("title"));
 		user.setLastName(request.getString("lastname"));
 		user.setFirstName(request.getString("firstname"));
@@ -409,47 +424,37 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		user.setRoles_Id(getRole(request.getString("position"), db));
 		user.setCity(request.getString("city"));
 		user.setCountry(request.getString("country"));
-		Calendar cal   = Calendar.getInstance();
-		Date now       = cal.getTime();
+		Calendar cal = Calendar.getInstance();
+		Date now = cal.getTime();
 		String actCode = Integer.toString(Math.abs(now.hashCode()));
 		user.setActivationCode(actCode);
 		user.setActive(false);
-		
+
 		return user;
 	}
 
 	private void toMolgenisUser(Tuple request, MolgenisUser user, Database db) throws DatabaseException
 	{
-		if (StringUtils.isNotEmpty(request.getString("newpwd")))
-			user.setPassword(request.getString("newpwd"));
-		if (StringUtils.isNotEmpty(request.getString("emailaddress")))
-			user.setEmail(request.getString("emailaddress"));
-		
-		if (StringUtils.isNotEmpty(request.getString("phone")))
-			user.setPhone(request.getString("phone"));
-		if (StringUtils.isNotEmpty(request.getString("fax")))
-			user.setFax(request.getString("fax"));
-		if (StringUtils.isNotEmpty(request.getString("tollFreePhone")))
-			user.setTollFreePhone(request.getString("tollFreePhone"));
-		if (StringUtils.isNotEmpty(request.getString("address")))
-			user.setAddress(request.getString("address"));
-				
-		if (StringUtils.isNotEmpty(request.getString("title")))
-			user.setTitle(request.getString("title"));
-		if (StringUtils.isNotEmpty(request.getString("lastname")))
-			user.setLastName(request.getString("lastname"));
-		if (StringUtils.isNotEmpty(request.getString("firstname")))
-			user.setFirstName(request.getString("firstname"));
-		if (StringUtils.isNotEmpty(request.getString("institute")))
-			user.setAffiliation(getInstitute(request.getString("institute"), db));
-		if (StringUtils.isNotEmpty(request.getString("department")))
-			user.setDepartment(request.getString("department"));
-		if (StringUtils.isNotEmpty(request.getString("position")))
-			user.setRoles(getRole(request.getString("position"), db));
-		if (StringUtils.isNotEmpty(request.getString("city")))
-			user.setCity(request.getString("city"));
-		if (StringUtils.isNotEmpty(request.getString("country")))
-			user.setCountry(request.getString("country"));
+		if (StringUtils.isNotEmpty(request.getString("newpwd"))) user.setPassword(request.getString("newpwd"));
+		if (StringUtils.isNotEmpty(request.getString("emailaddress"))) user.setEmail(request.getString("emailaddress"));
+
+		if (StringUtils.isNotEmpty(request.getString("phone"))) user.setPhone(request.getString("phone"));
+		if (StringUtils.isNotEmpty(request.getString("fax"))) user.setFax(request.getString("fax"));
+		if (StringUtils.isNotEmpty(request.getString("tollFreePhone"))) user.setTollFreePhone(request
+				.getString("tollFreePhone"));
+		if (StringUtils.isNotEmpty(request.getString("address"))) user.setAddress(request.getString("address"));
+
+		if (StringUtils.isNotEmpty(request.getString("title"))) user.setTitle(request.getString("title"));
+		if (StringUtils.isNotEmpty(request.getString("lastname"))) user.setLastName(request.getString("lastname"));
+		if (StringUtils.isNotEmpty(request.getString("firstname"))) user.setFirstName(request.getString("firstname"));
+		if (StringUtils.isNotEmpty(request.getString("institute"))) user.setAffiliation(getInstitute(
+				request.getString("institute"), db));
+		if (StringUtils.isNotEmpty(request.getString("department"))) user
+				.setDepartment(request.getString("department"));
+		if (StringUtils.isNotEmpty(request.getString("position"))) user.setRoles(getRole(request.getString("position"),
+				db));
+		if (StringUtils.isNotEmpty(request.getString("city"))) user.setCity(request.getString("city"));
+		if (StringUtils.isNotEmpty(request.getString("country"))) user.setCountry(request.getString("country"));
 	}
 
 	@Override
@@ -465,8 +470,10 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		if (this.getApplicationController().getLogin() instanceof OpenIdLogin)
 		{
 			Container form = new OpenIdAuthenticationForm();
-			((ActionInput) form.get("google")).setJavaScriptAction("document.forms." + this.getName() + ".op.value='Google';document.forms." + this.getName() + ".submit();");
-			((ActionInput) form.get("yahoo")).setJavaScriptAction("document.forms." + this.getName() + ".op.value='Yahoo';document.forms." + this.getName() + ".submit();");
+			((ActionInput) form.get("google")).setJavaScriptAction("document.forms." + this.getName()
+					+ ".op.value='Google';document.forms." + this.getName() + ".submit();");
+			((ActionInput) form.get("yahoo")).setJavaScriptAction("document.forms." + this.getName()
+					+ ".op.value='Yahoo';document.forms." + this.getName() + ".submit();");
 			this.getModel().setAuthenticationForm(form);
 		}
 		else
@@ -481,16 +488,16 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		try
 		{
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
-			MolgenisUser user               = userService.findById(this.getApplicationController().getLogin().getUserId());
-			
-			UserAreaForm userAreaForm       = new UserAreaForm();
+			MolgenisUser user = userService.findById(this.getApplicationController().getLogin().getUserId());
+
+			UserAreaForm userAreaForm = new UserAreaForm();
 			((TablePanel) userAreaForm.get("personal")).get("emailaddress").setValue(user.getEmail());
-			
+
 			((TablePanel) userAreaForm.get("personal")).get("phone").setValue(user.getPhone());
 			((TablePanel) userAreaForm.get("personal")).get("fax").setValue(user.getFax());
 			((TablePanel) userAreaForm.get("personal")).get("tollFreePhone").setValue(user.getTollFreePhone());
 			((TablePanel) userAreaForm.get("personal")).get("address").setValue(user.getAddress());
-						
+
 			((TablePanel) userAreaForm.get("personal")).get("title").setValue(user.getTitle());
 			((TablePanel) userAreaForm.get("personal")).get("firstname").setValue(user.getFirstName());
 			((TablePanel) userAreaForm.get("personal")).get("lastname").setValue(user.getLastName());
@@ -499,7 +506,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			((TablePanel) userAreaForm.get("personal")).get("position").setValue(user.getRoles_Name());
 			((TablePanel) userAreaForm.get("personal")).get("city").setValue(user.getCity());
 			((TablePanel) userAreaForm.get("personal")).get("country").setValue(user.getCountry());
-			
+
 			this.getModel().setUserAreaForm(userAreaForm);
 		}
 		catch (Exception e)
@@ -507,7 +514,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			this.getModel().setUserAreaForm(new UserAreaForm());
 		}
 	}
-	
+
 	private void populateForgotForm()
 	{
 		this.getModel().setForgotForm(new ForgotForm());

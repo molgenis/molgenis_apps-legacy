@@ -1,0 +1,3 @@
+name,protocol_name,PreviousSteps_name
+impute2_s1,phase_study_with_mach,
+impute2_s2,impute_with_minimac,impute2_s1

@@ -27,9 +27,24 @@
 	<tr>
 		<td align="center" colspan="7" >
 			<div align="left">
+			<#if screen.userIsAdminAndDatabaseIsEmpty == true>
+				<table bgcolor="white" border="3" bordercolor="red">
+					<tr>
+						<td>
+							<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations or other users. Automated setup is now possible. Database additions will disable this notice. <b>Please be patient: loading the test data will take a few minutes.</b></font></i><br><br>
+							<#if screen.validFileStorage == true>
+							<input type="submit" value="Load" id="loadExamples" onclick="document.forms.${screen.name}.__action.value = 'setPathAndLoad'; document.forms.${screen.name}.submit();"/>
+							<#else>
+							<h2>Please setup your file storage location first:</h2><h3>Go to <u>Admin</u> -> <u>File Storage</u>, validate a location, and come back here.</h3>
+							</#if>
+							<br><br>
+						</td>
+					</tr>
+				</table>
+			</#if>
 			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
 			<br><br>
-			<h3>Welcome to the LifeLines Research Platform<#if screen.studyInfo??> for study ${screen.studyInfo}</#if></h3>
+			<h3>Welcome to the Molgenis Research Platform<#if screen.studyInfo??> for study ${screen.studyInfo}</#if></h3>
 			<br /><br />
 			This Research Platform is based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data<br />
 			For manuals and more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>
@@ -57,13 +72,13 @@
 			<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
 				<tr>
 					<td align="center">
-						<a target="_blank" href="http://www.molgenis.org/"><img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis"></a>
-						<a target="_blank" href="http://wiki.gcc.rug.nl/"><img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"></a>
-						<a target="_blank" href="http://www.rug.nl/"><img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG"></a><br>
-						<a target="_blank" href="http://www.xgap.org/"><img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP"></a>
-						<a target="_blank" href="http://www.umcg.nl/"><img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG"></a>
-						<a target="_blank" href="http://www.rug.nl/target/index"><img src="clusterdemo/logos/targetlogo.jpg" width="100px" height="55px" alt="logo Target"></a>
-						<a target="_blank" href="http://tcc.umcg.nl/"><img src="clusterdemo/logos/tcc_logo.gif" width="100px" height="92px" alt="logo TCC"></a>
+						<a target="_blank" href="http://www.molgenis.org/"><img src="clusterdemo/logos/molgenis_logo.png" width="75" height="50" alt="logo Molgenis"></a>
+						<a target="_blank" href="http://wiki.gcc.rug.nl/"><img src="clusterdemo/logos/gcc_logo.png" width="300" height="50" alt="logo GCC"></a>
+						<a target="_blank" href="http://www.rug.nl/"><img src="clusterdemo/logos/rug_logo.png" width="150" height="50" alt="logo RUG"></a><br>
+						<a target="_blank" href="http://www.xgap.org/"><img src="clusterdemo/logos/xgap_logo.png" width="75" height="50" alt="logo XGAP"></a>
+						<a target="_blank" href="http://www.umcg.nl/"><img src="clusterdemo/logos/umcg_logo.png" width="150" height="50" alt="logo UMCG"></a>
+						<a target="_blank" href="http://www.rug.nl/target/index"><img src="clusterdemo/logos/targetlogo.jpg" width="100" height="55" alt="logo Target"></a>
+						<a target="_blank" href="http://tcc.umcg.nl/"><img src="clusterdemo/logos/tcc_logo.gif" width="100" height="92" alt="logo TCC"></a>
 					</td>
 				</tr>
 			</table>
