@@ -29,18 +29,18 @@ public class MappingList
 
 		LinkedInformation inf = new LinkedInformation(expandedQuery, matchedItem, similarity, measurementName);
 
-		if (uniqueElements.containsKey(inf.expandedQuery + measurementName))
+		if (uniqueElements.containsKey(expandedQuery + measurementName))
 		{
 
 			if (similarity > uniqueElements.get(inf.expandedQuery + measurementName).similarity)
 			{
-				uniqueElements.get(inf.expandedQuery + measurementName).similarity = similarity;
+				uniqueElements.get(expandedQuery + measurementName).similarity = similarity;
 			}
 		}
 		else
 		{
 			links.add(inf);
-			uniqueElements.put(inf.expandedQuery + measurementName, inf);
+			uniqueElements.put(expandedQuery + measurementName, inf);
 		}
 	}
 
