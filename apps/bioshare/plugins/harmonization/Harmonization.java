@@ -401,13 +401,18 @@ public class Harmonization extends PluginModel<Entity>
 
 						if (measurementsInStudy.size() > 0)
 						{
-							// TODO ontocat dynamically searching ontology terms
-							String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
+							if (owlFunction == null)
+							{
+								// TODO ontocat dynamically searching ontology
+								// terms
+								String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
 
-							owlFunction = new OWLFunction(ontologyFileName);
+								owlFunction = new OWLFunction(ontologyFileName);
+							}
 
-							status.put("success", true);
 						}
+
+						status.put("success", true);
 					}
 
 				}
@@ -422,10 +427,17 @@ public class Harmonization extends PluginModel<Entity>
 
 					PredictorInfo predictor = predictors.get(eachKey);
 
-					for (String eachDefintion : predictor.getBuildingBlocks())
+					for (String eachBlock : predictor.getBuildingBlocks())
 					{
-						predictor.getExpandedQuery().addAll(createExpandQuery(eachDefintion.split(","), owlFunction));
+						predictor.getExpandedQuery().addAll(createExpandQuery(eachBlock.split(","), owlFunction));
 					}
+
+					if (!predictor.getExpandedQuery().contains(predictor.getLabel()))
+					{
+						predictor.getExpandedQuery().add(predictor.getLabel());
+					}
+
+					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
 
 					executeMapping(predictor, measurementsInStudy);
 
@@ -706,11 +718,17 @@ public class Harmonization extends PluginModel<Entity>
 
 		matchedVariable = matchedVariable.replaceAll(predictorInfo.getIdentifier() + "_", "");
 
+		StringBuilder expandedQueryIdentifier = new StringBuilder();
+
 		for (String query : predictorInfo.getExpandedQueryForOneMapping(matchedVariable))
 		{
+			expandedQueryIdentifier.delete(0, expandedQueryIdentifier.length());
+
+			expandedQueryIdentifier.append(query).append("_").append(matchedVariable);
+
 			table.append("<tr style=\"font-size:12px;text-align:center;\"><td>").append(query).append("</td><td>")
-					.append(matchedVariable).append("</td><td>").append(predictorInfo.getSimilarity(query))
-					.append("</td></tr>");
+					.append(matchedVariable).append("</td><td>")
+					.append(predictorInfo.getSimilarity(expandedQueryIdentifier.toString())).append("</td></tr>");
 		}
 		table.append("</table></div>");
 
@@ -855,11 +873,18 @@ public class Harmonization extends PluginModel<Entity>
 				{
 					fields.add(m.getDescription());
 
+					StringBuilder combinedString = new StringBuilder();
+
 					if (m.getCategories_Name().size() > 0)
 					{
 						for (String categoryName : m.getCategories_Name())
 						{
-							fields.add(categoryName + " " + m.getDescription());
+							combinedString.delete(0, combinedString.length());
+
+							combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(" ")
+									.append(m.getDescription());
+
+							fields.add(combinedString.toString().replaceAll("_", " "));
 						}
 					}
 				}
@@ -881,7 +906,19 @@ public class Harmonization extends PluginModel<Entity>
 							matchedDataItem = question;
 						}
 						maxSimilarity = similarity;
+
 						measurementName = m.getName();
+					}
+
+					if (question.toLowerCase().matches(".*" + eachQuery.toLowerCase() + ".*"))
+					{
+						if (m.getName().equals("V55C_1") && eachQuery.equalsIgnoreCase("hypertension"))
+						{
+							double checkSimilarity = model.calculateScore(dataItemTokens, tokens);
+							System.out.println(checkSimilarity);
+						}
+						mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()),
+								model.calculateScore(dataItemTokens, tokens), m.getName());
 					}
 				}
 			}
@@ -893,79 +930,136 @@ public class Harmonization extends PluginModel<Entity>
 
 	private List<String> createExpandQuery(String[] buildingBlocksArray, OWLFunction owlFunction)
 	{
-		List<String> buildingBlocks = new ArrayList<String>(Arrays.asList(buildingBlocksArray));
-
 		List<String> expandedQueries = new ArrayList<String>();
 
-		if (buildingBlocks.size() == 1)
+		HashMap<String, List<String>> mapForBlocks = new HashMap<String, List<String>>();
+
+		List<String> buildingBlocks = new ArrayList<String>(Arrays.asList(buildingBlocksArray));
+
+		for (String eachBlock : buildingBlocks)
 		{
-			expandedQueries.addAll(collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction));
+			mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), owlFunction));
+
+			if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
+			{
+				mapForBlocks.get(eachBlock).add(eachBlock.toLowerCase().trim());
+			}
 		}
-		else if (buildingBlocks.size() >= 2)
+
+		String previousBlock = buildingBlocksArray[0];
+
+		List<String> combinedList = mapForBlocks.get(previousBlock);
+
+		if (buildingBlocksArray.length > 1)
 		{
-			List<String> expansionForFirst = collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction);
-
-			List<String> expansionForSeconed = collectInfoFromOntology(buildingBlocks.get(1).trim(), owlFunction);
-
-			List<String> concatenatedString = new ArrayList<String>();
-
-			for (String tokenFromFirst : expansionForFirst)
+			for (int j = 1; j < buildingBlocksArray.length; j++)
 			{
-				expandedQueries.add(tokenFromFirst);
+				String nextBlock = buildingBlocksArray[j];
 
-				for (String tokenFromSecond : expansionForSeconed)
-				{
-					expandedQueries.add(tokenFromSecond);
-					concatenatedString.add(tokenFromFirst + " " + tokenFromSecond);
-				}
+				combinedList = combineLists(combinedList, mapForBlocks.get(nextBlock));
 			}
-
-			String first = buildingBlocks.get(0);
-
-			String second = buildingBlocks.get(1);
-
-			buildingBlocks.remove(first);
-
-			buildingBlocks.remove(second);
-
-			while (buildingBlocks.size() > 0)
-			{
-				List<String> expansionForNext = collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction);
-
-				List<String> fragments = new ArrayList<String>();
-
-				for (String fragmentString : concatenatedString)
-				{
-					for (String tokenForNext : expansionForNext)
-					{
-						fragments.add(fragmentString + " " + tokenForNext);
-
-						expandedQueries.add(tokenForNext);
-					}
-				}
-
-				String next = buildingBlocks.get(0);
-
-				buildingBlocks.remove(next);
-
-				concatenatedString = fragments;
-			}
-
-			expandedQueries.addAll(concatenatedString);
 		}
+
+		expandedQueries.addAll(combinedList);
 
 		return expandedQueries;
 	}
 
+	// private List<String> createExpandQuery(String[] buildingBlocksArray,
+	// OWLFunction owlFunction)
+	// {
+	// List<String> buildingBlocks = new
+	// ArrayList<String>(Arrays.asList(buildingBlocksArray));
+	//
+	// List<String> expandedQueries = new ArrayList<String>();
+	//
+	// HashMap<String, List<String>> mapForBlocks = new HashMap<String,
+	// List<String>>();
+	//
+	// for (String eachBlock : buildingBlocks)
+	// {
+	// mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock,
+	// owlFunction));
+	//
+	// if (!mapForBlocks.get(eachBlock).contains(eachBlock))
+	// {
+	// mapForBlocks.get(eachBlock).add(eachBlock);
+	// }
+	// }
+	//
+	// for (int i = 0; i < buildingBlocksArray.length; i++)
+	// {
+	// String previousBlock = buildingBlocksArray[i];
+	//
+	// expandedQueries.addAll(mapForBlocks.get(previousBlock));
+	//
+	// if (buildingBlocksArray.length > 1)
+	// {
+	// List<String> combinedList = mapForBlocks.get(previousBlock);
+	//
+	// for (int j = 1; j < buildingBlocksArray.length; j++)
+	// {
+	// String nextBlock = buildingBlocksArray[j];
+	//
+	// expandedQueries.addAll(mapForBlocks.get(nextBlock));
+	//
+	// combinedList = combineLists(combinedList, mapForBlocks.get(nextBlock));
+	//
+	// expandedQueries.addAll(combinedList);
+	// }
+	// }
+	// }
+	//
+	// return expandedQueries;
+	// }
+
 	public List<String> collectInfoFromOntology(String queryToExpand, OWLFunction owlFunction)
 	{
-
 		List<String> expandedQueries = new ArrayList<String>();
 		expandedQueries.add(queryToExpand);
 		expandedQueries.addAll(owlFunction.getSynonyms(queryToExpand));
 		expandedQueries.addAll(owlFunction.getAllChildren(queryToExpand, new ArrayList<String>(), 1));
 
 		return expandedQueries;
+	}
+
+	public List<String> uniqueList(List<String> uncleanedList)
+	{
+		List<String> uniqueList = new ArrayList<String>();
+
+		for (String eachString : uncleanedList)
+		{
+			if (!uniqueList.contains(eachString.toLowerCase().trim()))
+			{
+				uniqueList.add(eachString.toLowerCase().trim());
+			}
+		}
+
+		return uniqueList;
+	}
+
+	public List<String> combineLists(List<String> listOne, List<String> listTwo)
+	{
+		List<String> combinedList = new ArrayList<String>();
+
+		StringBuilder combinedString = new StringBuilder();
+
+		for (String first : listOne)
+		{
+			for (String second : listTwo)
+			{
+				combinedString.delete(0, combinedString.length());
+
+				combinedString.append(first).append(" ").append(second);
+
+				if (!combinedList.contains(combinedString.toString()))
+				{
+					combinedList.add(combinedString.toString());
+				}
+			}
+		}
+
+		return combinedList;
 	}
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
