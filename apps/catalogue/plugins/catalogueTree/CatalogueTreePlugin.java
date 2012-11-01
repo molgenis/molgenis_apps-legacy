@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import jxl.Workbook;
@@ -47,14 +46,13 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
 //import org.molgenis.util.XlsWriter;
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-public class catalogueTreePlugin extends PluginModel<Entity> {
-=======
 public class CatalogueTreePlugin extends PluginModel<Entity>
 {
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
@@ -62,9 +60,9 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree;
 
 	// private List<Measurement> shoppingCart = new ArrayList<Measurement>();
-	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
+	private List<String> arrayInvestigations = new ArrayList<String>();
 	private List<String> listOfJSONs = new ArrayList<String>();
-	private JSONObject inheritance = new JSONObject();
+	private JSONObject variableInformation = new JSONObject();
 
 	private String selectedInvestigation = null;
 	// private String InputToken = null;
@@ -98,12 +96,8 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 	private List<String> listOfMeasurements = new ArrayList<String>();
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	public catalogueTreePlugin(String name, ScreenController<?> parent) {
-=======
 	public CatalogueTreePlugin(String name, ScreenController<?> parent)
 	{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 		super(name, parent);
 	}
 
@@ -113,14 +107,9 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 	@Override
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	public String getViewName() {
-		return "plugins_catalogueTree_catalogueTreePlugin";
-=======
 	public String getViewName()
 	{
 		return "plugins_catalogueTree_CatalogueTreePlugin";
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 	}
 
 	@Override
@@ -130,9 +119,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 	@Override
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	public void handleRequest(Database db, Tuple request) throws Exception {
-=======
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
 	{
 
@@ -197,15 +183,10 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	{
 		MolgenisRequest req = (MolgenisRequest) request;
 		HttpServletResponse response = req.getResponse();
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 		appLoc = ((MolgenisRequest) request).getAppLocation();
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
-
-		List<Measurement> allMeasList = db.find(Measurement.class,
-				new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-						selectedInvestigation));
 
 		// for now the cohorts are investigations
 		if ("cohortSelect".equals(request.getAction()))
@@ -213,20 +194,12 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			System.out.println("----------------------" + request);
 			selectedInvestigation = request.getString("cohortSelectSubmit");
 			this.setSelectedInvestigation(selectedInvestigation);
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-			System.out.println("The selected investigation is : "
-					+ selectedInvestigation);
-			arrayInvestigations.clear();
-=======
 			System.out.println("The selected investigation is : " + selectedInvestigation);
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 		}
 		else if (request.getAction().equals("downloadButtonEMeasure"))
 		{
 			// do output stream ourselves
-			MolgenisRequest req = (MolgenisRequest) request;
-			HttpServletResponse response = req.getResponse();
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
 			Date date = new Date();
 			response.setContentType("application/x-download");
@@ -236,22 +209,8 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			PrintWriter pw = response.getWriter();
 
 			// Make E-Measure XML file
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-
-			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
-			for (Measurement m : allMeasList) {
-				if (request.getBool(m.getId().toString()) != null) {
-					selectedMeasList.add(m);
-				}
-
-			}
-
-			EMeasure em = new EMeasure(db, "EMeasure_"
-					+ dateFormat.format(date));
-=======
 			List<Measurement> selectedMeasList = getSelectedMeasurements(db, request);
 			EMeasure em = new EMeasure(db, "EMeasure_" + dateFormat.format(date));
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 			String result = em.convert(selectedMeasList);
 
@@ -271,27 +230,16 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult, ws);
 
-			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
+			final WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
-			int startingRow = 1;
+			int row = 0;
 
-			outputExcel.addCell(new Label(0, 0, "Selected variables"));
+			outputExcel.addCell(new Label(0, row, "Selected variables"));
 
-			outputExcel.addCell(new Label(1, 0, "Descriptions"));
+			outputExcel.addCell(new Label(1, row, "Descriptions"));
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-			outputExcel.addCell(new Label(2, 0, "Sector/Protocol"));
+			outputExcel.addCell(new Label(2, row, "Sector/Protocol"));
 
-			for (Measurement m : allMeasList) {
-
-				if (request.getBool(m.getId().toString()) != null) {
-					outputExcel.addCell(new Label(0, startingRow, m.getName()));
-					if (m.getDescription() != null) {
-						outputExcel.addCell(new Label(1, startingRow, m
-								.getDescription()));
-					} else {
-						outputExcel.addCell(new Label(1, startingRow, ""));
-=======
 			List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME,
 					Operator.EQUALS, selectedInvestigation));
 
@@ -327,29 +275,15 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 						outputExcel.addCell(new Label(2, row, protocol.getName()));
 
 						row++;
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 					}
-					startingRow++;
+
 				}
 			}
-			// setMessages(new ScreenMessage("Your request has been downloaded",
-			// true));
 
 			workbook.write();
 			workbook.close();
 
 			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest = rt.getRequest();
-			HttpServletResponse httpResponse = rt.getResponse();
-			// System.out.println(">>> " + this.getParent().getName()+
-			// "or >>>  "+ this.getSelected().getLabel());
-			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
-			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
-
-			// String redirectURL = "tmpfile/selectedVariables.xls";
-
-			// httpResponse.sendRedirect(redirectURL);
-
 			OutputStream outSpecial = rt.getResponse().getOutputStream();
 			URL localURL = mappingResult.toURI().toURL();
 			URLConnection conn = localURL.openConnection();
@@ -368,59 +302,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			outSpecial.flush();
 			outSpecial.close();
 			EasyPluginController.HTML_WAS_ALREADY_SERVED = true;
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-		}
-
-		// else if ("SaveSelectionSubmit".equals(request.getAction())) {
-		//
-		// if (!this.getLogin().isAuthenticated()) {
-		// this.getModel().getMessages().add(new
-		// ScreenMessage("You must register in order to save a selection. Please select register from the main menu. ",
-		// true));
-		// this.setStatus("<h4> You must register in order to save a selection. Please select register from the main menu. "+
-		// "</h4>" ) ;
-		// } else {
-		//
-		// try {
-		// this.setSelectionName("empty");
-		//
-		// if (request.getString("SelectionName") != null) {
-		//
-		// this.setSelectionName(request.getString("SelectionName").trim());
-		// System.out.println("The SelectionName is >>> : " +
-		// this.getSelectionName());
-		// System.out.println("Selection request >>>>>>" + request);
-		// } else {
-		// //this.setError("Please insert a name for your selection and try again.");
-		// this.getModel().getMessages().add(new
-		// ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",
-		// true));
-		// this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+
-		// "</h4>" ) ;
-		// }
-		//
-		// DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-		// Date dat = new Date();
-		// String dateOfDownload = dateFormat.format(dat);
-		// System.out.println("selected investigaton >>>> "+
-		// selectedInvestigation);
-		// this.addMeasurementsForDownload(db, request, selectedInvestigation,
-		// dateOfDownload, this.getSelectionName());
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// } catch (WriteException e1) {
-		// e1.printStackTrace();
-		// }
-		// }
-		// } else if (request.getAction().startsWith("DeleteMeasurement")) {
-		//
-		// String measurementName = request.getString("measurementName");
-		// measurementName = request.getAction().substring(
-		// "DeleteMeasurement".length() + 2+ "measurementName".length(),
-		// request.getAction().length());
-		// this.deleteShoppingItem(measurementName);
-		// }
-=======
 		}
 		else if (request.getAction().equals("viewButton"))
 		{
@@ -472,46 +353,18 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		}
 
 		return checkboxName.substring(startIndex, endIndex);
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 	}
 
 	@Override
 	public void reload(Database db)
 	{
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-		// where is request oeo???
-		// request content: select='CatalogueTreePlugin' measurementId='1'
-		// __target='main'
-
-		// this.getParent().getRoot().getModel().getController()
-		// Login login =
-		// (Login)request.getRequest().getSession().getAttribute("login");
-
-		// db.getLogin().getClass().getGenericSuperclass().g
-		System.out.println("-------------In reload---------------------"
-				+ appLoc);
-
-		try {
-			// if (this.request!=null && this.request.getString("measurementId")
-			// != null) {
-			// System.out.println("-request.getString(measurementId-----------"
-			// + request.getString("measurementId"));
-			// }
-=======
 		System.out.println("-------------In reload---------------------" + appLoc);
 
 		try
 		{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 			// default set selected investigation to first
-			if (this.getSelectedInvestigation() == null) {
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-				List<Investigation> listOfInvestigation = db.query(
-						Investigation.class).find();
-				if (listOfInvestigation.size() > 0) {
-=======
 			arrayInvestigations.clear();
 
 			List<Investigation> listOfInvestigation = db.query(Investigation.class).find();
@@ -527,48 +380,26 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 					{
 						if (count == 0 && getSelectedInvestigation() == null)
 						{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
-					for (Investigation inv : listOfInvestigation) {
-						if (db.find(
-								Protocol.class,
-								new QueryRule(Protocol.INVESTIGATION_NAME,
-										Operator.EQUALS, inv.getName())).size() > 0) {
 							this.setSelectedInvestigation(inv.getName());
-							break;
+							count++;
 						}
+						arrayInvestigations.add(inv.getName());
 					}
 				}
 			}
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-=======
 			if (this.getSelectedInvestigation() == null && arrayInvestigations.size() > 0)
 			{
 				selectedInvestigation = arrayInvestigations.get(0);
 			}
 
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 			arraySearchFields.clear();
-			// this.searchingInvestigation = null;
-			// this.selectedInvestigation = null;
 
-			arraySearchFields.add("All fields");
+			arraySearchFields.add("All");
 			arraySearchFields.add("Protocols");
 			arraySearchFields.add("Measurements");
-			arraySearchFields.add("Details");
 
-			this.arrayInvestigations.clear();
-
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-			for (Investigation i : db.find(Investigation.class)) {
-				this.arrayInvestigations.add(i);
-			}
-
-			RetrieveProtocols(db);
-
-		} catch (Exception e) {
-=======
 			if (this.getSelectedInvestigation() != null)
 			{
 				treeView = null;
@@ -578,7 +409,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 			e.printStackTrace();
 		}
 	}
@@ -605,7 +435,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
-		inheritance = new JSONObject();
+		variableInformation = new JSONObject();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 		multipleInheritance.clear();
 		listOfMeasurements.clear();
@@ -690,19 +520,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		// Variable indicating whether the input token has been found.
 		boolean foundInputToken = false;
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-		if (topProtocols.size() == 0) { // The protocols don`t have
-			// sub-protocols and we could directly
-			// find the measurements of protocols
-			recursiveAddingNodesToTree(bottomProtocols,
-					protocolsTree.getName(), protocolsTree, db,
-					foundInputToken, mode);
-
-		} else { // The protocols that have sub-protocols, then we recursively
-			// find sub-protocols
-			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(),
-					protocolsTree, db, foundInputToken, mode);
-=======
 		if (topProtocols.size() == 0)
 		{ // The protocols don`t have
 			// sub-protocols and we could directly
@@ -715,7 +532,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		{ // The protocols that have sub-protocols, then we recursively
 			// find sub-protocols
 			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(), protocolsTree, db, foundInputToken, mode);
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 		}
 
 		directChildrenOfTop = protocolsTree.getChildren();
@@ -747,18 +563,11 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			this.getModel()
 					.getMessages()
 					.add(new ScreenMessage(
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-							"There are no results to show. Please, redifine your search or import some data.",
-							true));
-			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
-					+ "</h4>");
-=======
 							"There are no results to show. Please, redifine your search or import some data.", true));
 
 			// this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
 			// + "</h4>");
 
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
@@ -886,30 +695,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 					// On the last branch of the tree, we`ll find measurements
 					// and
 					// add them to the tree.
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-					if (subProtocolRepeatProtocol == false
-							&& protocol.getFeatures_Name() != null
-							&& protocol.getFeatures_Name().size() > 0) { // error
-						// checking
-
-						addingMeasurementsToTree(protocol.getFeatures_Name(),
-								childTree, db, false, mode); // .. so normally
-																// it goes
-																// always
-						// this way
-					}
-
-				} else if (protocolName.equals(parentClassName)) {
-
-					if (protocol.getFeatures_Name() != null
-							&& protocol.getFeatures_Name().size() > 0) { // error
-						// checking
-
-						addingMeasurementsToTree(protocol.getFeatures_Name(),
-								childTree, db, false, mode); // .. so normally
-																// it goes
-																// always
-=======
 					if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
 							&& protocol.getFeatures_Name().size() > 0)
 					{ // error
@@ -938,7 +723,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 																						// it
 																						// goes
 																						// always
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 						// this way
 					}
 				}
@@ -955,15 +739,11 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	 * @param db
 	 * @throws DatabaseException
 	 */
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	public boolean addingMeasurementsToTree(List<String> childNode,
-			JQueryTreeViewElement parentNode, Database db,
-			boolean foundInParent, Integer mode) {
-=======
 	public boolean addingMeasurementsToTree(Protocol protocol, JQueryTreeViewElement parentNode, Database db,
 			boolean foundInParent, Integer mode)
 	{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
+
+		List<String> childNode = protocol.getFeatures_Name();
 
 		// Create a variable to store the boolean value with which we could know
 		// whether we need to skip these measurements of the protocol.
@@ -1110,15 +890,8 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 				else
 				{
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-					childTree = new JQueryTreeViewElement(displayName,
-							Measurement.class.getSimpleName()
-									+ measurement.getId().toString(),
-							parentNode);
-=======
 					childTree = new JQueryTreeViewElement(displayName, Measurement.class.getSimpleName()
 							+ measurement.getId() + Protocol.class.getSimpleName() + protocol.getId(), parentNode);
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 					uniqueName = displayName;
 
@@ -1126,7 +899,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
-
 				// Query the all the detail information about this measurement,
 				// in molgenis terminology, the detail information
 				// are all the observedValue and some of the fields from the
@@ -1141,20 +913,11 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 				{
 
 					json.put(uniqueName.replaceAll(" ", "_"), htmlValue);
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-					inheritance.put(uniqueName.replaceAll(" ", "_"), htmlValue);
-					// json.put("tableID", measurement.getName().replaceAll(" ",
-					// "_") + "_table");
-					// json.put("table", htmlValue);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-=======
 
 					variableInformation.put(uniqueName.replaceAll(" ", "_"), htmlValue);
 				}
 				catch (JSONException e)
 				{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 					e.printStackTrace();
 				}
 
@@ -1296,13 +1059,10 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		// for (Measurement m : shoppingCart) {
 		// selected.add(m.getName());
 		// }
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-=======
 		if (treeView == null)
 		{
 			return "";
 		}
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 		String htmlTreeView = treeView.toHtml(selected);
 
@@ -1336,189 +1096,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		return htmlTreeView;
 	}
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	/**
-	 * 
-	 * @param db
-	 * @param request
-	 * @param selectedInvestigation
-	 * @param dateOfDownload
-	 * @param selectionName
-	 * @param x
-	 * @throws Exception
-	 */
-	// private void addMeasurementsForDownload(Database db, Tuple request,
-	// String selectedInvestigation, String dateOfDownload, String
-	// selectionName) throws Exception {
-	//
-	// // fill shopping cart using selected selectboxes (measurements)
-	// // the ID's and names of the selectboxes are the same as the measurement
-	// // names,
-	// // so we can easily get them from the request
-	//
-	// this.shoppingCart.clear();
-	//
-	// List<Measurement> allMeasList = db.find(Measurement.class);
-	// for (Measurement m : allMeasList) {
-	// if (request.getBool(m.getId().toString()) != null) {
-	// this.shoppingCart.add(m);
-	// }
-	// }
-	//
-	// List<Integer> DownloadedMeasurementIds = new ArrayList<Integer>();
-	//
-	// if (this.shoppingCart.isEmpty()) {
-	// this.getModel().getMessages().add(new
-	// ScreenMessage("Your download list is empty. Please select item and proceed to download",true));
-	// this.setStatus("<h4> Your download list is empty. Please select item and proceed to download"
-	// + "</h4>" ) ;
-	// this.setError("Your download list is empty. Please select item and proceed to download");
-	//
-	// } else {
-	//
-	// // System.out.println("DownloadedMeasurementIds >>>: " +
-	// this.shoppingCart);
-	// for (Measurement m : this.shoppingCart) {
-	// DownloadedMeasurementIds.add(m.getId());
-	//
-	// //x.writeRow(m);// System.out.println("DownloadedMeasurementIds >>>: " +
-	// m.getId());
-	// }
-	//
-	// // REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS-- there are no
-	// shopping carts any more .
-	//
-	// // Query<ShoppingCart> q = db.query(ShoppingCart.class); //
-	// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS,
-	// this.getLogin().getUserName())); // q.addRules(new
-	// QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
-	// List<ShoppingCart> result = new ArrayList<ShoppingCart>(); // q.find();
-	// System.out.println("save selection step 0");
-	//
-	// if (result.isEmpty()) {
-	// String shoppingCartName ;
-	//
-	// // Add to database
-	// ShoppingCart shoppingCart = new ShoppingCart();
-	// if (selectionName.compareTo("empty") == 0) {
-	// shoppingCartName = this.getLogin().getUserName() + "_" +
-	// System.currentTimeMillis();
-	// }else {
-	// shoppingCartName = selectionName;
-	// }
-	// shoppingCart.setName(shoppingCartName );
-	//
-	// System.out.println("save selection step1");
-	// // shoppingCart.setMeasurements(DownloadedMeasurementIds);
-	// shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
-	// shoppingCart.setUserID(this.getLogin().getUserName());
-	// // shoppingCart.setCheckedOut(false);
-	// // shoppingCart.setDateOfOrder(dateOfDownload);
-	// System.out.println("save selection step2");
-	//
-	// shoppingCart.setApproved(false);
-	//
-	// //check for duplicates
-	// Query<ShoppingCart> q = db.query(ShoppingCart.class);
-	// q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS,
-	// shoppingCartName));
-	//
-	// if (q.find().size() > 0) {
-	// //if user selection already exists use an automated name
-	// String shoppingCartName2 = this.getLogin().getUserName() + "_" +
-	// System.currentTimeMillis();
-	//
-	// this.setError("A user selection with name : "+ shoppingCartName
-	// +" already exists. An automatic generated name will be used: "+
-	// shoppingCartName2);
-	// //this.getModel().getMessages().add(new
-	// ScreenMessage("A user selection with name : "+ shoppingCartName
-	// +" already exists. Please insert another name for your selection and try again.",
-	// true));
-	// this.setStatus("<h4> A user selection with name : "+ shoppingCartName
-	// +" already exists. An automatic generated name will be used: "+
-	// shoppingCartName2+ "</h4>" ) ;
-	// shoppingCartName = shoppingCartName2;
-	//
-	// } else {
-	// try {
-	// db.add(shoppingCart);
-	// // System.out.println("Download list has been added to the DB");
-	//
-	// this.getModel().getMessages().add(new
-	// ScreenMessage("Selection saved to 'My Selections' under name "+
-	// shoppingCartName , true));
-	// this.setStatus("<h4> Selection saved to 'My Selections' under name "+
-	// shoppingCartName + "</h4>" ) ;
-	// this.setSuccess("Selection saved to 'My Selections' under name "+
-	// shoppingCartName);
-	//
-	// } catch (DatabaseException e) {
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// } else {
-	// ShoppingCart shoppingCart = result.get(0); // assuming user can have only
-	// one shopping cart that's NOT checked out
-	// // shoppingCart.setMeasurements(DownloadedMeasurementIds);
-	// shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
-	// db.update(shoppingCart);
-	//
-	// this.getModel().getMessages().add(new
-	// ScreenMessage("Selection saved to 'My Selections' under name " +
-	// shoppingCart.getName() +
-	// "You can browse them from menu \"My selections\"" , true));
-	// this.setStatus("<h4> Selection saved to 'My Selections' under name " +
-	// shoppingCart.getName() +
-	// "You can browse them from menu \"My selections\""+ "</h4>" ) ;
-	// this.setSuccess("Selection saved to 'My Selections' under name " +
-	// shoppingCart.getName() +
-	// "You can browse them from menu \"My selections\"");
-	// // System.out.println("Shopping cart has been updated in the DB");
-	// }
-	//
-	// HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
-	// HttpServletRequest httpRequest = rt.getRequest();
-	// HttpServletResponse httpResponse = rt.getResponse();
-	// // System.out.println(">>> " + this.getParent().getName()+
-	// // "or >>>  "+ this.getSelected().getLabel());
-	// // String redirectURL = httpRequest.getRequestURL() + "?__target=" +
-	// // this.getParent().getName() + "&select=MeasurementsDownloadForm";
-	// String redirectURL = httpRequest.getRequestURL() + "?__target="
-	// + "Downloads" + "&select=MeasurementsDownloadForm";
-	//
-	// httpResponse.sendRedirect(redirectURL);
-	//
-	// }
-	//
-	// }
-
-	// private void deleteShoppingItem(String selected) {
-	// // search the item
-	// for (int i = 0; i < this.shoppingCart.size(); i++) {
-	// if (this.shoppingCart.get(i).getName().equals(selected)) {
-	// this.shoppingCart.remove(i);
-	// this.getModel().getMessages().add(new ScreenMessage("The item \"" +
-	// selected + "\" has been successfully removed from your shopping cart",
-	// true));
-	// this.setStatus("<h4> The item \"" + selected +
-	// "\" has been successfully removed from your shopping cart"+ "</h4>" ) ;
-	//
-	// }
-	// }
-	// }
-
-	// public List<Measurement> getShoppingCart() {
-	// return shoppingCart;
-	// }
-
-	public void setArrayInvestigations(List<Investigation> arrayInvestigations) {
-		this.arrayInvestigations = arrayInvestigations;
-	}
-
-	public List<Investigation> getArrayInvestigations() {
-=======
 	public void setArrayInvestigations(List<String> arrayInvestigations)
 	{
 		this.arrayInvestigations = arrayInvestigations;
@@ -1527,7 +1104,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	public List<String> getArrayInvestigations()
 	{
 
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 		return arrayInvestigations;
 	}
 
@@ -1561,20 +1137,8 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		return arraySearchFields;
 	}
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	// public void setInputToken(String inputToken) {
-	// InputToken = inputToken;
-	// }
-	//
-	// public String getInputToken() {
-	// return InputToken;
-	// }
-
-	public void setSelectedField(String selectedField) {
-=======
 	public void setSelectedField(String selectedField)
 	{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 		this.selectedField = selectedField;
 	}
 
@@ -1583,40 +1147,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		return selectedField;
 	}
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	public List<String> getFilters() {
-		// if (!SearchFilters.isEmpty()) {
-		// return this.SearchFilters;
-		// }
-		// return "filters";
-		return SearchFilters;
-	}
-
-	public String getInheritance() {
-		return inheritance.toString();
-	}
-
-	// @Override
-	// public boolean isVisible()
-	// {
-	// // always visible
-	// return true;
-	// }
-	//
-	// @Override
-	// public boolean isVisible()
-	// {
-	// //you can use this to hide this plugin, e.g. based on user rights.
-	// //e.g.
-	// //if(!this.getLogin().hasEditPermission(myEntity)) return false;
-	// if (!this.getLogin().isAuthenticated()) {
-	// return false;
-	// }
-	// return true;
-	// }
-
-	public List<String> getListOfJSONs() {
-=======
 	public List<String> getFilters()
 	{
 		return SearchFilters;
@@ -1629,7 +1159,6 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 	public List<String> getListOfJSONs()
 	{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 		return listOfJSONs;
 	}
 
@@ -1653,39 +1182,10 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 		return Status;
 	}
 
-<<<<<<< HEAD:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java.old
-	// /**
-	// * This function is used by the user interface template to show rules on
-	// the
-	// * screen.
-	// *
-	// * @return a list of query rules that can be managed by the user.
-	// * @throws DatabaseException
-	// */
-	// public Vector<String> getFilters() throws DatabaseException
-	// {
-	// Vector<String> filters = new Vector<String>();
-	// //Map<String, String> nameLabelMap = new TreeMap<String, String>();
-	//
-	// if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
-	// else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol");
-	// else if (mode == SEARCHINGMEASUREMENT)
-	// filters.add("SearchingMeasurement");
-	// else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
-	// else if (mode == SEARCHINGALL) filters.add("SearchingAll");
-	//
-	// //filters.add(label + " " + rule.getOperator().toString() + " "+
-	// rule.getValue());
-	//
-	//
-	//
-	// return filters;
-	// }
-=======
 	public String getUrl()
 	{
 		return "molgenis.do?__target=" + this.getName();
 	}
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f:apps/catalogue/plugins/catalogueTree/CatalogueTreePlugin.java
 
 }
+
