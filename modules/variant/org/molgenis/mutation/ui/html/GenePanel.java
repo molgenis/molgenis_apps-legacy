@@ -1,6 +1,7 @@
 package org.molgenis.mutation.ui.html;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,12 +29,6 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 		this.showNames = showNames;
 	}
 
-	@Override
-	public String toHtml()
-	{
-		StrBuilder result = new StrBuilder();
-
-		result.appendln("<div class=\"scrollable\">");
 	@Override
 	public String toHtml()
 	{
@@ -88,3 +83,19 @@ public class GenePanel extends HtmlInput<List<ProteinDomainDTO>> implements Seri
 
 		return result.toString();
 	}
+
+	public List<ProteinDomainDTO> getProteinDomainSummaryVOList()
+	{
+		return proteinDomainSummaryVOList;
+	}
+
+	public void setProteinDomainSummaryVOList(List<ProteinDomainDTO> proteinDomainSummaryVOList)
+	{
+		this.proteinDomainSummaryVOList = proteinDomainSummaryVOList;
+	}
+
+	public void setBaseUrl(String baseUrl)
+	{
+		this.baseUrl = baseUrl;
+	}
+}

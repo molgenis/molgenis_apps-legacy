@@ -68,7 +68,7 @@
 			<unique fields="Name,Identifier" />
 		</entity>
 		<entity name="Characteristic" implements="Identifiable"
-			xref_label="Name,Identifier">
+			xref_label="Identifier">
 			<description> Characteristics are yes-no
 				statements about things in
 				the world. These can be used as part of an observation, as
@@ -196,6 +196,7 @@
 			<field name="TargetType" type="string"
 				description="Filter string to find suitable targets for this protocol. Should be an xref?" />
 			<!-- FeatureType???? -->
+			<field name="subprotocols" type="mref" xref_entity="Protocol" nillable="true" description="Subprotocols of this protocol"/>
 			<field name="Features" type="mref" nillable="true" xref_entity="ObservableFeature"
 				description="parameters (in/out) that are used or produced by this protocol." />
 <!-- 			<field name="PersonRoles" type="mref" nillable="true"
