@@ -5,7 +5,7 @@ It should be used via 'import' plus passing of properties
 <project xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<mkdir dir="WebContent/WEB-INF/lib" />
-		
+
 	<!-- requires app_name, app_properties properties and app_src path -->
 	<fail unless="app_properties">app_properties is not set. Did you use the right build_xyz.xml?</fail>
 	<available file="${app_properties}" property="isFileAvail" />
@@ -163,11 +163,11 @@ It should be used via 'import' plus passing of properties
 		</javac>
 
 	</target>
-	
-	<target name="test" depends="cb" />
-	
+
+	<target name="test" depends="cb,findbugs" />
+
 	<target name="testng">
-		
+
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
 			<path refid="molgenis.classpath" />
@@ -197,14 +197,22 @@ It should be used via 'import' plus passing of properties
 		</junitreport-->
 
 	</target>
-		
 
-	<findbugs home="${findbugs.home}"
+	<!-- findbugs -->
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="molgenis.classpath"/>
+  	<property name="findbugs.home" value="${molgenis.dir}/lib/findbugs-2.0.1" />
+ 
+	<target name="findbugs">
+		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
+			<map from="${basedir}/" to="" />
+		</pathconvert>
+
+   		<findbugs home="${findbugs.home}" 
        		output="html" outputFile="${basedir}/dist/findbugs.xml"
        		jvmargs="-Xms1024M -Xmx1024M ">
-      		<
+      		<!--
       		<sourcePath path="${molgenis.dir}/src" />
-      		>
+      		-->
       		<sourcePath path="${app_src}" />
        		<class location="${build.molgenis.dir}" />
        		<class location="${build.molgenis_apps.dir}" />
@@ -213,7 +221,6 @@ It should be used via 'import' plus passing of properties
 			</auxclasspath>
    		</findbugs>
 	</target>
-	
 
 	<!--  cobertura -->
 	<property name="cb.file" location="${basedir}/dist/cobertura.ser" />
@@ -222,7 +229,7 @@ It should be used via 'import' plus passing of properties
 			<include name="*.jar" />
 		</fileset>
 	</path>
-	
+
 	<target name="cb.init">
    		<!-- output directory -->
    		<property name="cb.report.dir" value="${basedir}/dist/cobertura" />
@@ -259,11 +266,11 @@ It should be used via 'import' plus passing of properties
       		<path refid="cb.classpath" />
    		</path>
 	</target>
-	
+
 	<target name="cb.run" depends="init.cb.path, testng" />
-	
+
 	<target name="cb.gen" depends="cb.init, cb.instrument, cb.run" />
-	
+
 	<target name="cb.html">
    		<cobertura-report format="html"
                      destdir="${cb.report.dir}"
@@ -283,11 +290,11 @@ It should be used via 'import' plus passing of properties
      		 </fileset>
    		</cobertura-report>
 	</target>
-	
-	
-	
-	
-	
+
+
+
+
+
 	<!--
 	<target name="javadoc">
 		<javadoc access="public" destdir="${dir.javadoc}" author="true" version="true" noindex="false" use="true" classpathref="classpath">
@@ -367,7 +374,7 @@ It should be used via 'import' plus passing of properties
 		</xmltask>
 
 		<antcall target="download-jars"/>
-		
+
 	</target>
 
 	<target name="generate-compile" depends="generate,compile" />
@@ -464,11 +471,11 @@ It should be used via 'import' plus passing of properties
 			<fileset dir="${lib.dir}" includes="ivy.jar"/>
 		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
-	
+
 		<echo message="resolving dependecies ..." />
-		
+
 		<ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar,bundle" sync="true" />
-		
+
 	</target>
-	
+
 </project>
