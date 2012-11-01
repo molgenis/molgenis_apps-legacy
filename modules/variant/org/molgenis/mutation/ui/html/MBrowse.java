@@ -13,6 +13,13 @@ public class MBrowse implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	private String target;
+	private List<ProteinDomainDTO> proteinDomainDTOList;
+	private ProteinDomainDTO proteinDomainDTO;
+	private List<MutationSummaryDTO> mutationSummaryDTOList;
+	private String mutationPager;
+	private GeneDTO geneDTO;
+	private ExonDTO exonDTO;
+	private List<ExonDTO> exonDTOList;
 	private Boolean showNames;
 	private Boolean isVisible;
 
@@ -32,7 +39,78 @@ public class MBrowse implements Serializable
 		this.target = target;
 	}
 
-	public Boolean getShowNames() {
+	public List<ProteinDomainDTO> getProteinDomainDTOList()
+	{
+		return proteinDomainDTOList;
+	}
+
+	public void setProteinDomainDTOList(List<ProteinDomainDTO> proteinDomainDTOList)
+	{
+		this.proteinDomainDTOList = proteinDomainDTOList;
+	}
+
+	public ProteinDomainDTO getProteinDomainDTO()
+	{
+		return proteinDomainDTO;
+	}
+
+	public void setProteinDomainDTO(ProteinDomainDTO proteinDomainDTO)
+	{
+		this.proteinDomainDTO = proteinDomainDTO;
+	}
+
+	public List<MutationSummaryDTO> getMutationSummaryDTOList()
+	{
+		return mutationSummaryDTOList;
+	}
+
+	public void setMutationSummaryDTOList(List<MutationSummaryDTO> mutationSummaryDTOList)
+	{
+		this.mutationSummaryDTOList = mutationSummaryDTOList;
+	}
+
+	public String getMutationPager()
+	{
+		return mutationPager;
+	}
+
+	public void setMutationPager(String mutationPager)
+	{
+		this.mutationPager = mutationPager;
+	}
+
+	public GeneDTO getGeneDTO()
+	{
+		return geneDTO;
+	}
+
+	public void setGeneDTO(GeneDTO geneDTO)
+	{
+		this.geneDTO = geneDTO;
+	}
+
+	public ExonDTO getExonDTO()
+	{
+		return exonDTO;
+	}
+
+	public void setExonDTO(ExonDTO exonDTO)
+	{
+		this.exonDTO = exonDTO;
+	}
+
+	public List<ExonDTO> getExonDTOList()
+	{
+		return exonDTOList;
+	}
+
+	public void setExonDTOList(List<ExonDTO> exonDTOList)
+	{
+		this.exonDTOList = exonDTOList;
+	}
+
+	public Boolean getShowNames()
+	{
 		return showNames;
 	}
 
@@ -41,45 +119,45 @@ public class MBrowse implements Serializable
 		this.showNames = showNames;
 	}
 
-	public GenomePanel createGenomePanel(List<GeneDTO> geneDTOList)
+	public GenePanel createGenePanel()
 	{
-		String baseUrl = "molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showGene&gene_id=";
-		GenomePanel genomePanel = new GenomePanel(geneDTOList, baseUrl);
-		genomePanel.setShowNames(this.showNames);
-		
-		return genomePanel;
-	}
-
-	public GenePanel createGenePanel(List<ProteinDomainDTO> proteinDomainDTOList)
-	{
-		String baseUrl = "molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon";
-		GenePanel genePanel = new GenePanel(proteinDomainDTOList, baseUrl);
+		GenePanel genePanel = new GenePanel();
 		genePanel.setShowNames(this.showNames);
+		genePanel.setProteinDomainSummaryVOList(this.getProteinDomainDTOList());
+		genePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
 
 		return genePanel;
 	}
 
-	public ProteinDomainPanel createProteinDomainPanel(ProteinDomainDTO proteinDomainDTO)
+	public ProteinDomainPanel createProteinDomainPanel()
 	{
-		String baseUrl = "molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon";
-		ProteinDomainPanel proteinDomainPanel = new ProteinDomainPanel(proteinDomainDTO, baseUrl);
+		ProteinDomainPanel proteinDomainPanel = new ProteinDomainPanel();
+		proteinDomainPanel.setProteinDomainDTO(this.getProteinDomainDTO());
+		proteinDomainPanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
 
 		return proteinDomainPanel;
 	}
 
-	public ExonIntronPanel createExonIntronPanel(List<ExonDTO> exonDTOList)
+	public ExonIntronPanel createExonIntronPanel()
 	{
-		String baseUrl = "molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showExon&exon_id=#results";
-		ExonIntronPanel exonIntronPanel = new ExonIntronPanel(exonDTOList, baseUrl);
+		ExonIntronPanel exonIntronPanel = new ExonIntronPanel();
+		exonIntronPanel.setExons(this.getExonDTOList());
 		exonIntronPanel.setShowIntrons(true);
+		exonIntronPanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showExon&exon_id=#results");
 
 		return exonIntronPanel;
 	}
 
-	public SequencePanel createSequencePanel(ExonDTO exonDTO, List<MutationSummaryDTO> mutationSummaryDTOList)
+	public SequencePanel createSequencePanel()
 	{
-		String baseUrl = "molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showMutation&mid=#results";
-		SequencePanel sequencePanel = new SequencePanel(exonDTO, mutationSummaryDTOList, baseUrl);
+		SequencePanel sequencePanel = new SequencePanel();
+		sequencePanel.setExonDTO(this.getExonDTO());
+		sequencePanel.setMutationSummaryVOs(this.getMutationSummaryDTOList());
+		sequencePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget()
+				+ "&__action=showMutation&mid=#results");
 
 		return sequencePanel;
 	}

@@ -6,10 +6,10 @@
 			<#if field?starts_with(" ")>
 				<#assign rawOutput = resultHash[field]>
 <p>
-<img id="catimg${field?trim}" src="res/img/open.png" onclick="toggleDiv('cat${field?trim}', 'catimg${field?trim}');">
-${vo.result} found in "${field?trim}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
+<img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');">
+${vo.result} found in "${field}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
 </p>
-<div id="cat${field?trim}" style="display:none">
+<div id="cat${field}" style="display:none">
 				${rawOutput}
 </div>
 			</#if>
@@ -20,10 +20,10 @@ ${vo.result} found in "${field?trim}"<#-- (total ${screen.getNumPatients(pager.e
 			<#if field?starts_with(" ")>
 				<#assign rawOutput = resultHash[field]>
 <p>
-<img id="catimg${field?trim}" src="res/img/open.png" onclick="toggleDiv('cat${field?trim}', 'catimg${field?trim}');">
-${vo.result} found in "${field?trim}".
+<img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');">
+${vo.result} found in "${field}".
 </p>
-<div id="cat${field?trim}" style="display:none">
+<div id="cat${field}" style="display:none">
 				${rawOutput}
 </div>
 			</#if>

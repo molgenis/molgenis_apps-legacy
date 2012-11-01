@@ -28,7 +28,7 @@
 </table>
 </div>
 
-${model.mBrowsePanel}
+${model.mbrowse.createSequencePanel()}
 
 ${vo.rawOutput}
 

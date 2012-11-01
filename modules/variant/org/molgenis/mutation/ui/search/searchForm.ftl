@@ -83,9 +83,18 @@ ${muta.expertSearch}
 	
 -->
 <#if model.mbrowse.isVisible>
-<div class="mbrowse">
-${model.getMBrowsePanel().toHtml()}
-</div>
+<br/><br/>
+<h3>Browse the ${model.geneDTO.symbol} gene</h3>
+<p>
+Click anywhere on this schematic representation of the ${model.geneDTO.symbol} gene to graphically browse the gene. With every click you will zoom in deeper on the ${model.geneDTO.symbol} gene. Mutated nucleotides are depicted in red. If the cursor is placed over the mutated nucleotide(s), the corresponding mutation is shown.
+</p>
+<br/>
+<p>
+<#--
+${model.controller.getChild("MBrowse").render()}
+-->
+${model.mbrowse.createGenePanel()}
+</p>
 </#if>
 
 <br/>

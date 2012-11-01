@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.mutation.dto.ExonDTO;
 import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationSearchCriteriaDTO;
@@ -43,27 +42,25 @@ public class SearchModel extends EasyPluginModel
 	private Map<String, Integer> numMutationsByPathogenicity;
 	private Map<String, Integer> numPatientsByPathogenicity;
 	private HtmlFormWrapper expertSearchFormWrapper;
-	private SimpleSearchForm simpleSearchForm                 = new SimpleSearchForm();
-	private ListAllMutationsForm listAllMutationsForm         = new ListAllMutationsForm();
-	private ListAllPatientsForm listAllPatientsForm           = new ListAllPatientsForm();
-	private ToExpertSearchForm toExpertSearchForm             = new ToExpertSearchForm();
-	private ToSimpleSearchForm toSimpleSearchForm             = new ToSimpleSearchForm();
-	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
-	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
-	private HtmlInput<?> mBrowsePanel;
+	private SimpleSearchForm simpleSearchForm = new SimpleSearchForm();
+	private ListAllMutationsForm listAllMutationsForm = new ListAllMutationsForm();
+	private ListAllPatientsForm listAllPatientsForm = new ListAllPatientsForm();
+	private ToExpertSearchForm toExpertSearchForm = new ToExpertSearchForm();
+	private ToSimpleSearchForm toSimpleSearchForm = new ToSimpleSearchForm();
+	private ShowMutationForm showMutationForm = new ShowMutationForm();
+	private DisplayOptionsForm displayOptionsForm = new DisplayOptionsForm();
+
 	private MutationSearchCriteriaDTO mutationSearchCriteriaVO = new MutationSearchCriteriaDTO();
 	private QueryParametersDTO queryParametersVO = new QueryParametersDTO();
 
 	private GeneDTO geneDTO;
-	private List<GeneDTO> geneDTOList;
 	private ExonDTO exonDTO;
-	private List<ExonDTO> exonDTOList;
 	private MutationSummaryDTO mutationSummaryVO;
 	private List<MutationSummaryDTO> mutationSummaryDTOList = new ArrayList<MutationSummaryDTO>();
 	private Map<String, String> mutationSummaryVOHash;
 	private List<PatientSummaryDTO> patientSummaryVOs = new ArrayList<PatientSummaryDTO>();
 	private ProteinDomainDTO proteinDomainDTO;
-	private List<ProteinDomainDTO> proteinDomainDTOList;
+	private List<ProteinDomainDTO> proteinDomainList;
 	private PatientSummaryDTO patientSummaryVO;
 	private ObservationElementDTO individualDTO;
 	private Map<String, String> patientSummaryVOHash;
@@ -297,16 +294,6 @@ public class SearchModel extends EasyPluginModel
 		this.displayOptionsForm = displayOptionsForm;
 	}
 
-	public HtmlInput<?> getMBrowsePanel()
-	{
-		return mBrowsePanel;
-	}
-
-	public void setMBrowsePanel(HtmlInput<?> mBrowsePanel)
-	{
-		this.mBrowsePanel = mBrowsePanel;
-	}
-
 	public MutationSearchCriteriaDTO getMutationSearchCriteriaVO()
 	{
 		return mutationSearchCriteriaVO;
@@ -337,16 +324,6 @@ public class SearchModel extends EasyPluginModel
 		return geneDTO;
 	}
 
-	public List<GeneDTO> getGeneDTOList()
-	{
-		return geneDTOList;
-	}
-
-	public void setGeneDTOList(List<GeneDTO> geneDTOList)
-	{
-		this.geneDTOList = geneDTOList;
-	}
-
 	public ExonDTO getExonDTO()
 	{
 		return exonDTO;
@@ -355,16 +332,6 @@ public class SearchModel extends EasyPluginModel
 	public void setExonDTO(ExonDTO exonDTO)
 	{
 		this.exonDTO = exonDTO;
-	}
-
-	public List<ExonDTO> getExonDTOList()
-	{
-		return exonDTOList;
-	}
-
-	public void setExonDTOList(List<ExonDTO> exonDTOList)
-	{
-		this.exonDTOList = exonDTOList;
 	}
 
 	public MutationSummaryDTO getMutationSummaryVO()
@@ -417,14 +384,14 @@ public class SearchModel extends EasyPluginModel
 		this.proteinDomainDTO = proteinDomainDTO;
 	}
 
-	public List<ProteinDomainDTO> getProteinDomainDTOList()
+	public List<ProteinDomainDTO> getProteinDomainList()
 	{
-		return proteinDomainDTOList;
+		return proteinDomainList;
 	}
 
-	public void setProteinDomainDTOList(List<ProteinDomainDTO> proteinDomainDTOList)
+	public void setProteinDomainList(List<ProteinDomainDTO> proteinDomainList)
 	{
-		this.proteinDomainDTOList = proteinDomainDTOList;
+		this.proteinDomainList = proteinDomainList;
 	}
 
 	public PatientSummaryDTO getPatientSummaryVO()

@@ -7,14 +7,15 @@
 
 package plugins.keggplugin;
 
+import miscellaneous.kegg.KEGGGene;
+import miscellaneous.kegg.KEGGOrthologue;
+import miscellaneous.kegg.KEGGTools;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import plugins.kegg.KEGGGene;
 
 public class KeggToolsPlugin extends PluginModel<Entity>
 {
@@ -135,11 +136,10 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 				String id = s.replace("\r", "");
 				try
 				{
-					// KEGGGene sourceGene =
-					// KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-					// outputSimple += id + "\t" + sourceGene.getEntry() + "\n";
-					// outputAdvanced += id + "\t" +
-					// sourceGene.toStringMedium("\t");
+					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
+
+					outputSimple += id + "\t" + sourceGene.getEntry() + "\n";
+					outputAdvanced += id + "\t" + sourceGene.toStringMedium("\t");
 				}
 				catch (Exception e)
 				{
@@ -173,17 +173,20 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 
 				try
 				{
-					// KEGGGene sourceGene =
-					// KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-					// KEGGOrthologue orthology =
-					// KEGGTools.getClosestOrthologue(sourceGene.getEntry(),
-					// targetOrganism);
-					// KEGGGene targetGene =
-					// KEGGTools.getKeggGene(orthology.getTargetEntry());
-					// outputSimple += id + "\t" + orthology.getTargetEntry() +
+
+					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
+					KEGGOrthologue orthology = KEGGTools.getClosestOrthologue(sourceGene.getEntry(), targetOrganism);
+					KEGGGene targetGene = KEGGTools.getKeggGene(orthology.getTargetEntry());
+
+					outputSimple += id + "\t" + orthology.getTargetEntry() + "\n";
+					// outputAdvanced += id + "\t" + orthology.getTargetEntry()
+					// + "\t" +
+					// sourceGene.getDefinition() + "\t" +
+					// targetGene.getDefinition() +
 					// "\n";
-					// outputAdvanced += id + "\t" +
-					// targetGene.toStringMedium("\t");
+
+					outputAdvanced += id + "\t" + targetGene.toStringMedium("\t");
+
 				}
 				catch (Exception e)
 				{
