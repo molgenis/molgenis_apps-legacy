@@ -16,7 +16,7 @@
 		<form name="Citations" entity="Citation" />
 		<form name="Individuals" entity="Individual" />
 		<form name="Features" entity="ObservableFeature">
-			<form name="PermittedValues" entity="PermittedValue" />
+			<form name="Categories" entity="Category" />
 		</form>
 		<form name="Protocols" entity="Protocol">
 			<form name="Values" entity="DataSet" />

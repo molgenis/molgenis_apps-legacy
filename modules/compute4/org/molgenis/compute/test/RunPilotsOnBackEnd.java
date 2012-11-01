@@ -27,17 +27,17 @@ public class RunPilotsOnBackEnd
 		ComputeExecutor executor = new ComputeExecutorPilotDB();
 		executor.startHostWithCredentials(host, user, pass, 22);
 
-		while (true)
-		{
-			executor.executeTasks(backendType);
-			try
-			{
-				Thread.sleep(20000);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
+        while (true)
+        {
+            executor.executeTasks(host, backendType);
+            try
+            {
+                Thread.sleep(30000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }

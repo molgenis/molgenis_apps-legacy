@@ -6,9 +6,9 @@ package org.molgenis.compute.test.executor;
  */
 public interface ComputeExecutor
 {
-	void executeTasks(String backend);
 
-	void startHost(String name);
+    void executeTasks(String backend, String backendType);
+    void startHost(String name);
+    void startHostWithCredentials(String host, String user, String password, int port);
 
-	void startHostWithCredentials(String host, String user, String password, int port);
 }

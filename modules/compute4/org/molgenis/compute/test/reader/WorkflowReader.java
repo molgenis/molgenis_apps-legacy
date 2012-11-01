@@ -1,6 +1,9 @@
 package org.molgenis.compute.test.reader;
 
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 10:07
@@ -8,5 +11,8 @@ import org.molgenis.compute.design.Workflow;
  */
 public interface WorkflowReader
 {
-	Workflow getWorkflow(String name);
+
+    Workflow getWorkflow(String name);
+    List<ComputeParameter> getParameters();
+
 }
