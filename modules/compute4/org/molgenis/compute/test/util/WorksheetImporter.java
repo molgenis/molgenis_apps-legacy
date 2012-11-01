@@ -1,9 +1,8 @@
 package org.molgenis.compute.test.util;
 
-import java.io.File;
-import java.util.List;
-
+import app.DatabaseFactory;
 import org.molgenis.compute.commandline.WorksheetHelper;
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.test.generator.ComputeGenerator;
 import org.molgenis.compute.test.generator.ComputeGeneratorDBWorksheet;
@@ -13,7 +12,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.cmdline.CmdLineException;
 
-import app.DatabaseFactory;
+import java.io.File;
+import java.util.List;
 
 public class WorksheetImporter
 {
@@ -31,6 +31,8 @@ public class WorksheetImporter
 		if (wf_query.count() < 1) throw new RuntimeException("Workflow name=" + options.workflow_name
 				+ " not known in database. Please import");
 		Workflow workflow = wf_query.find().get(0);
+
+        List<ComputeParameter> parameters = db.query(ComputeParameter.class).find();
 
 		// load targets from a worksheet
 		List<Tuple> worksheet = null;
@@ -57,7 +59,7 @@ public class WorksheetImporter
 		// generate ComputeTasks
 		ComputeGenerator generator = new ComputeGeneratorDBWorksheet();
 
-		generator.generateTasks(workflow, worksheet);
+		generator.generateTasks(workflow, parameters, worksheet, options.backend_name);
 
 		System.out.println("... generated");
 	}

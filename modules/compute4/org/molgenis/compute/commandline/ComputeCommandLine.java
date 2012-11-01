@@ -1,20 +1,9 @@
 package org.molgenis.compute.commandline;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.compute.design.ComputeParameter;
@@ -24,9 +13,8 @@ import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.*;
+import java.util.*;
 
 //import nl.vu.psy.rite.exceptions.RiteException;
 //import nl.vu.psy.rite.operations.Recipe;
@@ -88,8 +76,10 @@ public class ComputeCommandLine
 
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
-		// create hash of all workflow elements (needed for dependencies)
-		Map<String, WorkflowElement> wfeMap = new HashMap<String, WorkflowElement>();
+
+		// create map of all workflow elements (needed for dependencies)
+		Map<String, WorkflowElement> wfeMap = new LinkedHashMap<String, WorkflowElement>();
+
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
 		{
 			wfeMap.put(wfe.getName(), wfe);
@@ -114,37 +104,23 @@ public class ComputeCommandLine
 				targets.add("line_number");
 			}
 
-			// add path to loader
-			// FileTemplateLoader ftl1 = new
-			// FileTemplateLoader(this.workflowdir);
 
-			// Configuration cfg = new Configuration();
-			// cfg.setDirectoryForTemplateLoading(this.protocoldir);
-			// String documentation = protocol.getDescription();
-			// Template template = new Template("a template", new
-			// StringReader(documentation), cfg);
-			// StringWriter filledtemplate = new StringWriter();
-			// template.process(parameters, filledtemplate);
-
-			// System.out.println(">>> " + documentation);
-			// System.out.println(">>> " + filledtemplate.toString());
-
+			// task_number will be added by folding
 			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet,
 					this.computeBundle.getComputeParameters(), targets);
-			// Worksheet.reduceTargets(targets);
-			// print("folded worksheet: " + this.worksheet.folded.size() + ":" +
-			// this.worksheet.folded.toString());
-			// print("reduced worksheet: " + this.worksheet.reduced.size() + ":"
-			// + this.worksheet.reduced.toString());
 
-			// each element of reduced worksheet produces one
+			// each element of folded worksheet produces one
 			// protocolApplication (i.e. a script)
+
+
 			for (Tuple work : folded)
 			{
 				// fill template with work and put in script
 				ComputeTask job = new ComputeTask();
 				job.setName(this.createJobName(wfe, work));
-				job.setInterpreter(protocol.getScriptInterpreter());
+
+				job.setInterpreter(protocol.getScriptInterpreter() == null ? worksheet.getdefaultvalue("interpreter")
+						: protocol.getScriptInterpreter());
 
 				// if walltime, cores, mem not specified in protocol, then use
 				// value from worksheet
@@ -160,10 +136,7 @@ public class ComputeCommandLine
 				// FIXME: Here I make queue dependent on walltime and memory per
 				// node..., which is specifically for Millipede..
 				// This you can find out on the cluster
-				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores"))
-						: protocol.getCores());
-				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
-						.getMem().toString());
+
 				// int m = Integer.parseInt(mem); // memory in GB?
 				// queue = (4 < m && 2 < cores ? "quads" : "nodes");
 
@@ -181,12 +154,17 @@ public class ComputeCommandLine
 				// ". Maximum is 240h.");
 
 				// work.set("clusterQueue", queue);
-				work.set("cores", cores);
-				work.set("mem", mem + "gb");
 				// done with FIXME
 
-				job.setInterpreter(protocol.getScriptInterpreter() == null ? worksheet.getdefaultvalue("interpreter")
-						: protocol.getScriptInterpreter());
+
+				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores"))
+						: protocol.getCores());
+				work.set("cores", cores);
+
+				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
+						.getMem().toString());
+				work.set("mem", mem + "gb");
+
 
 				// set jobname. If a job starts/completes, we put this in a
 				// logfile
@@ -220,22 +198,31 @@ public class ComputeCommandLine
 					}
 
 					// we calculate dependencies
-					Set<String> dependencies = new HashSet<String>();
+					Set<String> dependencies = new LinkedHashSet<String>();
+
 					for (int i = 0; i < size; i++)
 					{
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name())
 						{
-							if (work.getObject(target) instanceof List)
+
+							// if (work.getList(target).size() > 1) {
 							// replace target by number
-							jobName += "_" + work.getList(target).get(i);
+
+							int i_fix = Math.min(work.getList(target).size() - 1, i);
+							jobName += "_" + work.getList(target).get(i_fix);
+
+
 							// jobName += "_XXX" + i;
-							else
-								jobName += "_" + work.getString(target);
+							// } else {
+							// jobName += "_" + i;// work.getString(target);
 							// jobName += "_YYY";
+							// }
+
 						}
 						dependencies.add(stepnr(previousWfe.getName()) + jobName);
 					}
+
 					job.getPrevSteps_Name().addAll(dependencies);
 				}
 
@@ -316,18 +303,23 @@ public class ComputeCommandLine
 	private String createJobName(WorkflowElement wfe, Tuple tuple)
 	{
 		String jobName = wfe.getName();
+
 		ComputeProtocol wfeProtocol = findProtocol(wfe.getProtocol_Name(), computeBundle.getComputeProtocols());
 
 		// in case no targets, we number
 		List<String> targets = wfeProtocol.getIterateOver_Name();
-		// if (0 == targets.size()) {
-		jobName += "_" + tuple.getString("task_number");
-		// }
+		if (0 == targets.size())
+		{
+			jobName += "_" + tuple.getString("line_number");
+		}
 		// // otherwise use targets
-		// else
-		// for (String target : targets) {
-		// jobName += "_" + tuple.getString(target);
-		// }
+		else
+		{
+			for (String target : targets)
+			{
+				jobName += "_" + tuple.getString(target);
+			}
+		}
 
 		return stepnr(wfe.getName()) + jobName;
 	}
@@ -402,6 +394,7 @@ public class ComputeCommandLine
 
 	public static void main(String[] args)
 	{
+
 		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
 
 		opt.getSet().addOption("parameters", false, Options.Separator.EQUALS);
@@ -467,7 +460,7 @@ public class ComputeCommandLine
 		// opt.getSet().getOption(WorkflowGeneratorCommandLine.CLUSTER).getResultValue(0));
 		// }
 
-		System.out.println("Script generation for PBS clusters.");
+		System.out.println("Starting script generation for PBS clusters.");
 		// ccl.backend = WorkflowGeneratorCommandLine.CLUSTER;
 		ccl.backend = "cluster";
 
@@ -504,8 +497,24 @@ public class ComputeCommandLine
 		{
 			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile, this.parametersfile))
 			{
-				String sourcepath = f.toString();
-				String[] filenamelist = sourcepath.split(File.separator);
+
+
+				String sourcepath = f.getCanonicalPath();
+
+				// make this part windows compentible
+				String fileSeparatorPatternString;
+
+				if (File.separator.equalsIgnoreCase("/"))
+				{
+					fileSeparatorPatternString = "/";
+				}
+				else
+				{
+					fileSeparatorPatternString = "\\\\";
+				}
+
+				String[] filenamelist = sourcepath.split(fileSeparatorPatternString);
+
 				String filename = filenamelist[filenamelist.length - 1];
 				// Files.copy(f, new File(this.outputdir + File.separator +
 				// filename));
@@ -526,7 +535,21 @@ public class ComputeCommandLine
 
 	private String getworkflowfilename()
 	{
-		String[] workflowfilenamelist = this.workflowfile.toString().split(File.separator);
+
+
+		// make this part windows compentible
+		String fileSeparatorPatternString;
+		if (File.separator.equals("/"))
+		{
+			fileSeparatorPatternString = "/";
+		}
+		else
+		{
+			fileSeparatorPatternString = "\\\\";
+		}
+
+		String[] workflowfilenamelist = this.workflowfile.toString().split(fileSeparatorPatternString);
+
 		String f = workflowfilenamelist[workflowfilenamelist.length - 1];
 
 		// replace dots with underscore, because qsub does not allow for dots in

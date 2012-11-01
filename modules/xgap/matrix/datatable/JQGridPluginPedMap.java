@@ -82,11 +82,11 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			// construct the gridview
 			JQGridSearchOptions searchOptions = new JQGridSearchOptions();
-			searchOptions.multipleGroup = false;
-			searchOptions.multipleSearch = false;
-			searchOptions.showQuery = false;
-			searchOptions.sopt = Arrays.asList(new JQGridRule.JQGridOp[]
-			{ JQGridRule.JQGridOp.eq });
+			searchOptions.setMultipleGroup(false);
+			searchOptions.setMultipleSearch(false);
+			searchOptions.setShowQuery(false);
+			searchOptions.setSopt(Arrays.asList(new JQGridRule.JQGridOp[]
+			{ JQGridRule.JQGridOp.eq }));
 
 			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, searchOptions);
 			tableView.setLabel("Genotypes");

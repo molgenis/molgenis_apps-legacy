@@ -18,7 +18,7 @@ public class ExecutionHost extends Ssh
 		System.out.println("... " + host + " is started");
 	}
 
-	public void submitPilotGrid() throws IOException
+    public void submitPilotGrid() throws IOException
 	{
 		// do wee need any unique id here? - if yes why?
 		String uniqueID = "pilot-one";
@@ -52,6 +52,5 @@ public class ExecutionHost extends Ssh
 
 		String sOut = result.getStdOut();
 		System.out.println(sOut);
-
 	}
 }
