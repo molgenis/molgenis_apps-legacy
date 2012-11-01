@@ -1188,3 +1188,4 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 }
+
