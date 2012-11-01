@@ -116,6 +116,7 @@
 			});
 			
 			$('#startNewValidation').button().click(function(){
+				$('#selectCohortStudyPanel').hide();
 				$('#beforeMapping').show();
 				$('#afterMapping').hide();
 			});
@@ -218,7 +219,7 @@
 						
 				$('#afterMapping').show();
 				
-				createScreenMessage("Loading ontology...");
+				createScreenMessage("Loading ontology...", "50%");
 				
 				$.ajax({
 					url : "${screen.getUrl()}&__action=download_json_validateStudy&predictionModel=" + predictionModel 
@@ -487,7 +488,7 @@
 			
 			predictionModel = $('#matchingPredictionModel').text();
 			
-			createScreenMessage("Save mappings!");
+			createScreenMessage("Save mappings!", "50%");
 			
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_saveMapping&mappingResult=" 
@@ -918,7 +919,12 @@
 			$('#statusMessage').effect('bounce').delay(2000).fadeOut().delay(2000);
 		}
 		
-		function createScreenMessage(showMessage){
+		function createScreenMessage(showMessage, height){
+			
+			if(height == null)
+			{
+				height = "50%";
+			}
 			
 			showModal();
 				
@@ -926,7 +932,7 @@
 		
 			$('.middleBar').css({
 				'left' : '46%',
-				'top' : '70%',
+				'top' : height,
 				'height' : 50,
 				'width' : 300,
 			    'position' : 'absolute',
@@ -1054,7 +1060,7 @@
 		
 		function searchTree(token){
 			
-			createScreenMessage("Searching...");
+			createScreenMessage("Searching...","70%");
 			
 			if(token != ""){
 				array = {};

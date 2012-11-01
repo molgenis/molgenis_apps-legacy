@@ -405,8 +405,7 @@ public class Harmonization extends PluginModel<Entity>
 							{
 								// TODO ontocat dynamically searching ontology
 								// terms
-								String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
-
+								String ontologyFileName = "/Users/pc_iverson/Desktop/Input/Thesaurus.owl";
 								owlFunction = new OWLFunction(ontologyFileName);
 							}
 
@@ -1075,6 +1074,7 @@ public class Harmonization extends PluginModel<Entity>
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
 
 		cp.getFeatures_Id().remove(m.getId());
+
 		cp.getFeatures_Name().remove(m.getName());
 
 		db.update(cp);
