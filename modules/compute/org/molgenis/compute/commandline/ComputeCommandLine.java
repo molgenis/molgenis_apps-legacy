@@ -38,7 +38,7 @@ public class ComputeCommandLine
 	protected ComputeBundle computeBundle;
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
-	protected Hashtable<String, Object> userValues = new Hashtable<String, Object>();
+	protected Linkedtable<String, Object> userValues = new Linkedtable<String, Object>();
 	private List<ComputeJob> jobs = new ArrayList<ComputeJob>();
 	private Worksheet worksheet;
 
@@ -88,9 +88,14 @@ public class ComputeCommandLine
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
 		// create hash of all workflow elements (needed for dependencies)
+<<<<<<< HEAD
+		Map<String, WorkflowElement> wfeMap = new LinkedMap<String, WorkflowElement>();
+		for (WorkflowElement wfe : computeBundle.getWorkflowElements()) {
+=======
 		Map<String, WorkflowElement> wfeMap = new HashMap<String, WorkflowElement>();
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
 		{
+>>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 			wfeMap.put(wfe.getName(), wfe);
 		}
 
@@ -218,9 +223,14 @@ public class ComputeCommandLine
 					}
 
 					// we calculate dependencies
+<<<<<<< HEAD
+					Set<String> dependencies = new LinkedSet<String>();
+					for (int i = 0; i < size; i++) {
+=======
 					Set<String> dependencies = new HashSet<String>();
 					for (int i = 0; i < size; i++)
 					{
+>>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name())
 						{
@@ -336,7 +346,7 @@ public class ComputeCommandLine
 			TemplateException
 	{
 		// first create map
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new LinkedMap<String, Object>();
 
 		// add the helper
 		parameters.put("freemarkerHelper", new FreemarkerHelper(this.computeBundle));

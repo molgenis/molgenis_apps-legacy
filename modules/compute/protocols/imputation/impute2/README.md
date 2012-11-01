@@ -1,4 +1,4 @@
-Compute using Impute2 manual
+Imputation using Molgenis Compute
 ============================
 
 Blaat blaat blaat etc.
@@ -99,21 +99,94 @@ Workflow
 Imputation
 ==========
 
-All imputation protocols are stored in the protocols/imputation/ directory. This
+All imputation protocols are stored in the *protocols/imputation/* directory. This
 directory contains multiple sub-directories:
-
+  
 * beagle
 * impute2
 * mach_minimach
 * prepareReference
+  
+Each of these directories contain the following files to be used as input for Molgenis
+Compute:
+
+* parameters.csv
+* workflow.csv
+* worksheet.csv
+* protocols (*.ftl files)
+  
+  
+Preparing the reference dataset
+-------------------------------
+  
+  
+To start imputation on a cohort one first has to prepare the reference data. The
+*prepareReference* directory contains several protocols to prepare this data. 
+  
+###Generating a reference data set
+This workflow requires a VCF file containing phased genotypes as input. The workflow requires the VCF files to be split per chromosome in a folder named *vcf*. When executing this workflow two folders containing the data in Impute2 and TriTyper format per chromosome are generated. 
+  
+  
+An example test reference set can be created using the following command:
+>sh molgenis_compute.sh \\  
+>*-*worksheet=protocols/imputation/prepareReference/prepareReferenceWorksheetSample.csv \\  
+>*-*parameters=protocols/imputation/prepareReference/parameters.csv \\  
+>*-*workflow=protocols/imputation/prepareReference/prepareReferenceWorkflow.csv \\  
+>*-*protocols=protocols/imputation/prepareReference/ \\  
+>*-*templates=protocols/imputation/prepareReference/ \\  
+>*-*scripts=/your/output/directory/here/ \\  
+>*-*id=runXX 
+  
+###Output example  
+Executing the above mentioned command will result in a directory with the following structure:
+  
 
 
+       -referenceName
+			-Impute2
+				chrNumber.impute.hap
+				chrNumber.impute.hap.indv
+				chrNumber.impute.legend
+			-TriTyper
+				-ChrchrNumber
+					GenotypeMatrix.dat
+					Individuals.txt
+					PhenotypeInformation.txt
+					SNPMappings.txt
+					SNPs.txt
+			-vcf
+				chrNumber.vcf
+				chrNumber.vcf.vcfidx  
+
+	Note: 
+	- The vcf directory contains the input VCF files split per chromosome. The *.vcf.vcfidx file is 	generated in this workflow.
+	- Genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
+	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.
+
+  
+**HOW CAN NOTE 2 BE EXPLAINED BETTER?**
+
+When all these files are present the reference dataset is ready to be used.
+  
+  
 Imputation using Impute2
 ------------------------
+  
+  
+All protocols and files to run an imputation using Impute2 can be found in the *protocols/imputation/impute2/* directory.
 
 
 
 
+
+
+Imputation using Beagle
+-----------------------
+
+
+
+Imputation using Mach
+---------------------
 
 
 
