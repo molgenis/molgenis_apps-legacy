@@ -1,0 +1,2 @@
+project,studyInputDir,referencePanel,imputationResultDir,imputationPipeline,genomeBuild,chr,autostart
+1240Blood_b37,${root}/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood_b37/,gonl_release3.1,${root}/home/fvandijk/minimac/test2,minimac,b37,20,TRUE
