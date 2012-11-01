@@ -26,7 +26,7 @@ public class PublicationService
 	private final int BATCH_SIZE = 50;
 	public static final String PUBMED_URL = "http://www.ncbi.nlm.nih.gov/pubmed/";
 
-	//@Autowired
+	// @Autowired
 	public void setDatabase(final Database db)
 	{
 		this.db = db;
@@ -35,7 +35,8 @@ public class PublicationService
 
 	public List<PublicationDTO> getAll() throws DatabaseException
 	{
-		return this.publicationListToPublicationDTOList(this.db.query(Publication.class).sortASC(Publication.TITLE).find());
+		return this.publicationListToPublicationDTOList(this.db.query(Publication.class).sortASC(Publication.TITLE)
+				.find());
 	}
 
 	public int insert(final List<PublicationDTO> publicationDTOList)
@@ -50,14 +51,14 @@ public class PublicationService
 				this.em.persist(publication.getPubmedID());
 				this.em.persist(publication);
 				count += 2;
-				
+
 				if (count % BATCH_SIZE == 0)
 				{
 					this.em.flush();
 					this.em.clear();
 				}
 			}
-			
+
 			this.em.flush();
 			this.em.clear();
 
@@ -78,9 +79,9 @@ public class PublicationService
 	public void insert(final PublicationDTO publicationDTO)
 	{
 		List<PublicationDTO> publicationDTOList = new ArrayList<PublicationDTO>();
-		
+
 		publicationDTOList.add(publicationDTO);
-		
+
 		this.insert(publicationDTOList);
 	}
 
@@ -90,10 +91,10 @@ public class PublicationService
 
 		for (Publication publication : publications)
 			result.add(this.publicationToPublicationDTO(publication));
-		
+
 		return result;
 	}
-	
+
 	public PublicationDTO publicationToPublicationDTO(final Publication publication)
 	{
 		PublicationDTO publicationDTO = new PublicationDTO();
@@ -104,26 +105,28 @@ public class PublicationService
 		publicationDTO.setName(publication.getName());
 		publicationDTO.setPubmedId(publication.getName());
 		publicationDTO.setPubmedUrl(PublicationService.PUBMED_URL + publicationDTO.getPubmedId());
-//		if (publication.getPubmedID_Id() != null)
-//		{
-//			try
-//			{
-//				OntologyTerm pubmedId = this.db.findById(OntologyTerm.class, publication.getPubmedID_Id());
-//				publicationVO.setPubmedId(pubmedId.getName());
-//				publicationVO.setPubmedUrl(PublicationService.PUBMED_URL + pubmedId.getName());
-//			}
-//			catch (DatabaseException e)
-//			{
-//				publicationVO.setPubmedId("NA");
-//			}
-//		}
+		// if (publication.getPubmedID_Id() != null)
+		// {
+		// try
+		// {
+		// OntologyTerm pubmedId = this.db.findById(OntologyTerm.class,
+		// publication.getPubmedID_Id());
+		// publicationVO.setPubmedId(pubmedId.getName());
+		// publicationVO.setPubmedUrl(PublicationService.PUBMED_URL +
+		// pubmedId.getName());
+		// }
+		// catch (DatabaseException e)
+		// {
+		// publicationVO.setPubmedId("NA");
+		// }
+		// }
 		publicationDTO.setStatus(publication.getStatus_Name());
 		publicationDTO.setTitle(publication.getTitle());
 		publicationDTO.setYear(publication.getYear());
-		
+
 		return publicationDTO;
 	}
-	
+
 	public Publication publicationDTOToPublication(final PublicationDTO publicationDTO)
 	{
 		Publication publication = new Publication();
@@ -132,18 +135,18 @@ public class PublicationService
 		publication.setName(publicationDTO.getName());
 		publication.setTitle(publicationDTO.getTitle());
 		publication.setYear(publicationDTO.getYear());
-		
+
 		OntologyTerm ontologyTerm = new OntologyTerm();
 		ontologyTerm.setName(publicationDTO.getPubmedId());
 		publication.setPubmedID(ontologyTerm);
 
 		return publication;
 	}
-	
+
 	public PublicationDTO pubmedArticleToPublicationDTO(final PubmedArticle pubmedArticle)
 	{
 		List<Author> authorList = pubmedArticle.MedlineCitation.article.Authors;
-		List<String> authors    = new ArrayList<String>();
+		List<String> authors = new ArrayList<String>();
 		for (Author author : authorList)
 			authors.add(author.toInitials());
 
@@ -154,16 +157,15 @@ public class PublicationService
 		publicationDTO.setTitle(pubmedArticle.MedlineCitation.article.ArticleTitle);
 		publicationDTO.setJournal(pubmedArticle.MedlineCitation.article.Journal.Title);
 		publicationDTO.setYear(pubmedArticle.MedlineCitation.article.Journal.JournalIssue.PubDate.Year);
-		if (publicationDTO.getYear() == null)
-			publicationDTO.setYear("");
-		
+		if (publicationDTO.getYear() == null) publicationDTO.setYear("");
+
 		return publicationDTO;
 	}
-	
+
 	public Publication pubmedArticleToPublication(final PubmedArticle pubmedArticle)
 	{
 		List<Author> authorList = pubmedArticle.MedlineCitation.article.Authors;
-		List<String> authors    = new ArrayList<String>();
+		List<String> authors = new ArrayList<String>();
 		for (Author author : authorList)
 			authors.add(author.toInitials());
 
@@ -173,12 +175,11 @@ public class PublicationService
 		publication.setTitle(pubmedArticle.MedlineCitation.article.ArticleTitle);
 		publication.setJournal(pubmedArticle.MedlineCitation.article.Journal.Title);
 		publication.setYear(pubmedArticle.MedlineCitation.article.Journal.JournalIssue.PubDate.Year);
-		if (publication.getYear() == null)
-			publication.setYear("");
-		
-//		OntologyTerm ontologyTerm = new OntologyTerm();
-//		ontologyTerm.setName(pubmedArticle.MedlineCitation.PMID);
-//		publication.setPubmedID(ontologyTerm);
+		if (publication.getYear() == null) publication.setYear("");
+
+		// OntologyTerm ontologyTerm = new OntologyTerm();
+		// ontologyTerm.setName(pubmedArticle.MedlineCitation.PMID);
+		// publication.setPubmedID(ontologyTerm);
 
 		return publication;
 	}
@@ -188,15 +189,15 @@ public class PublicationService
 		try
 		{
 			PubmedService pubmedService = new PubmedService();
-			List<Integer> pubmedIdList  = new ArrayList<Integer>();
-	
+			List<Integer> pubmedIdList = new ArrayList<Integer>();
+
 			for (String pubmed : pubmedStringList)
 				pubmedIdList.add(Integer.parseInt(pubmed));
-	
-			List<PubmedArticle> pubmedArticles      = pubmedService.getPubmedArticlesForIds(pubmedIdList);
-	
+
+			List<PubmedArticle> pubmedArticles = pubmedService.getPubmedArticlesForIds(pubmedIdList);
+
 			List<PublicationDTO> publicationDTOList = new ArrayList<PublicationDTO>();
-	
+
 			for (PubmedArticle pubmedArticle : pubmedArticles)
 			{
 				PublicationDTO publicationDTO = this.pubmedArticleToPublicationDTO(pubmedArticle);
@@ -217,19 +218,18 @@ public class PublicationService
 		try
 		{
 			PubmedService pubmedService = new PubmedService();
-			List<Integer> pubmedIdList  = new ArrayList<Integer>();
-	
+			List<Integer> pubmedIdList = new ArrayList<Integer>();
+
 			for (String pubmed : pubmedStringList)
 			{
-				if (StringUtils.isEmpty(pubmed))
-					continue;
+				if (StringUtils.isEmpty(pubmed)) continue;
 				pubmedIdList.add(Integer.parseInt(pubmed));
 			}
 
 			List<PubmedArticle> pubmedArticles = pubmedService.getPubmedArticlesForIds(pubmedIdList);
-	
-			List<Publication> publicationList  = new ArrayList<Publication>();
-	
+
+			List<Publication> publicationList = new ArrayList<Publication>();
+
 			for (PubmedArticle pubmedArticle : pubmedArticles)
 			{
 				Publication publication = this.pubmedArticleToPublication(pubmedArticle);
@@ -249,23 +249,22 @@ public class PublicationService
 	{
 		try
 		{
-			List<Integer> pubmedIdList  = new ArrayList<Integer>();
-	
+			List<Integer> pubmedIdList = new ArrayList<Integer>();
+
 			for (String pubmed : pubmedStringList)
 			{
-				if (StringUtils.isEmpty(pubmed))
-					continue;
+				if (StringUtils.isEmpty(pubmed)) continue;
 				pubmedIdList.add(Integer.parseInt(pubmed));
 			}
 
-			List<Publication> publicationList  = new ArrayList<Publication>();
+			List<Publication> publicationList = new ArrayList<Publication>();
 
 			for (Integer pubmedId : pubmedIdList)
 			{
 				Publication publication = new Publication();
 				publication.setName(pubmedId.toString());
 				publication.setTitle("The Pubmed article formerly known as " + pubmedId);
-				
+
 				publicationList.add(publication);
 			}
 
