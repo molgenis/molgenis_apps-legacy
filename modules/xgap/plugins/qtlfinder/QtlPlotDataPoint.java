@@ -5,7 +5,7 @@ public class QtlPlotDataPoint
 	double lodScore;
 	long bpLoc;
 	String chromosome;
-	
+
 	public QtlPlotDataPoint(double lodScore, long bpLoc, String chromosome)
 	{
 		super();
@@ -43,5 +43,5 @@ public class QtlPlotDataPoint
 	{
 		this.chromosome = chromosome;
 	}
-	
+
 }

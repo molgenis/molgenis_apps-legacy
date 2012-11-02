@@ -11,12 +11,12 @@ import org.molgenis.framework.db.QueryRule.Operator;
 
 import app.DatabaseFactory;
 
-public class bioshareUpdateDatabase {
-	public static void main(String[] args) throws Exception {
+public class bioshareUpdateDatabase
+{
+	public static void main(String[] args) throws Exception
+	{
 		// PropertyConfigurator.configure("apps/catalogue/org/molgenis/catalogue/catalogue_log4j.properties");
-		new Molgenis(
-				"apps/bioshare/org/molgenis/bioshare/bioshare.molgenis.properties")
-				.updateDb(true);
+		new Molgenis("apps/bioshare/org/molgenis/bioshare/bioshare.molgenis.properties").updateDb(true);
 
 		// final Map<String, Object> config = new HashMap<String, Object>();
 		// config.put("hibernate.hbm2ddl.auto", "create-drop");
@@ -24,8 +24,7 @@ public class bioshareUpdateDatabase {
 		//
 		// FillMetadata.fillMetadata(db, false);
 		//
-		Database db = DatabaseFactory
-				.create("apps/biosahre/org/molgenis/bioshare/bioshare.molgenis.properties");
+		Database db = DatabaseFactory.create("apps/biosahre/org/molgenis/bioshare/bioshare.molgenis.properties");
 
 		// Only add user if type of Login allows for this
 		// if (!(db.getLogin() instanceof SimpleLogin)) {
@@ -60,8 +59,7 @@ public class bioshareUpdateDatabase {
 
 		// TODO: add anonymous user in Simple users
 		MolgenisRoleGroupLink mrgl2 = db.query(MolgenisRoleGroupLink.class)
-				.eq(MolgenisRoleGroupLink.ROLE__NAME, "anonymous").find()
-				.get(0);
+				.eq(MolgenisRoleGroupLink.ROLE__NAME, "anonymous").find().get(0);
 		mrgl2.setGroup_Name("SimpleUsers");
 		System.out.println(mrgl2);
 		db.update(mrgl2);
@@ -76,7 +74,8 @@ public class bioshareUpdateDatabase {
 		// System.out.println("Inserting molgenis permisssion for :" + i);
 		// }
 
-		for (int i = 2; i < 95; i++) {
+		for (int i = 2; i < 95; i++)
+		{
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setRole_Name("AllUsers");
 			mp.setEntity_Id(i);
@@ -87,74 +86,60 @@ public class bioshareUpdateDatabase {
 
 		// except from : admin
 		MolgenisPermission mp = new MolgenisPermission();
-		System.out.println(db.find(MolgenisPermission.class, new QueryRule(
-				MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS,
-				"app.ui.AdminMenu")));
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.AdminMenu")).get(0);
+		System.out.println(db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
+				Operator.EQUALS, "app.ui.AdminMenu")));
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.AdminMenu")).get(0);
 		db.remove(mp);
 
 		// requests form controller
 		mp = new MolgenisPermission();
 		System.out.println(mp);
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.RequestsFormController")).get(
-				0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.RequestsFormController"))
+				.get(0);
 		System.out.println(mp);
 
 		db.remove(mp);
 
 		// import data menu
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.ImportDataMenu")).get(0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.ImportDataMenu")).get(0);
 		db.remove(mp);
 
 		// BiobankImporterPlugin
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.BiobankImporterPlugin"))
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.BiobankImporterPlugin"))
 				.get(0);
 		db.remove(mp);
 
 		// generic wizard
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.GenericWizardPlugin")).get(0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.GenericWizardPlugin")).get(
+				0);
 		db.remove(mp);
 
 		// settings
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.SettingsPlugin")).get(0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.SettingsPlugin")).get(0);
 		db.remove(mp);
 
 		// usermanagement
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.usermanagementMenu")).get(0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.usermanagementMenu"))
+				.get(0);
 		db.remove(mp);
 
 		// app.ui.MolgenisUserFormController
 		mp = new MolgenisPermission();
 		mp = db.find(
 				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.MolgenisUserFormController"))
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.MolgenisUserFormController"))
 				.get(0);
 		db.remove(mp);
 
@@ -162,33 +147,28 @@ public class bioshareUpdateDatabase {
 		mp = new MolgenisPermission();
 		mp = db.find(
 				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.MolgenisGroupFormController"))
-				.get(0);
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS,
+						"app.ui.MolgenisGroupFormController")).get(0);
 		db.remove(mp);
 
 		// app.ui.MappingsMenu
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.MappingsMenu")).get(0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.MappingsMenu")).get(0);
 		db.remove(mp);
 
 		// app.ui.selectionModelMenu
 		mp = new MolgenisPermission();
-		mp = db.find(
-				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS, "app.ui.selectionModelMenu")).get(0);
+		mp = db.find(MolgenisPermission.class,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.selectionModelMenu"))
+				.get(0);
 		db.remove(mp);
 
 		// PredictionModelSelection
 		mp = new MolgenisPermission();
 		mp = db.find(
 				MolgenisPermission.class,
-				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
-						Operator.EQUALS,
+				new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS,
 						"app.ui.PredictionModelSelectionPlugin")).get(0);
 		db.remove(mp);
 	}

@@ -8,7 +8,7 @@ public class SomeColType
 	String keggId;
 	Integer bpPos;
 	String chromosome;
-	
+
 	public SomeColType(Integer id, String commonName, String ncbiId, String keggId, Integer bpPos, String chromosome)
 	{
 		this.id = id;
@@ -48,5 +48,5 @@ public class SomeColType
 	{
 		return chromosome;
 	}
-	
+
 }

@@ -16,34 +16,53 @@ public class PhenotypeDetailsVO implements Serializable
 	// (protocolName, List<ObservedValueVO>)
 	private HashMap<String, List<ObservedValueVO>> observedValues = new HashMap<String, List<ObservedValueVO>>();
 
-	public Integer getPatientId() {
+	public Integer getPatientId()
+	{
 		return patientId;
 	}
-	public void setPatientId(Integer patientId) {
+
+	public void setPatientId(Integer patientId)
+	{
 		this.patientId = patientId;
 	}
-	public String getPatientIdentifier() {
+
+	public String getPatientIdentifier()
+	{
 		return patientIdentifier;
 	}
-	public void setPatientIdentifier(String patientIdentifier) {
+
+	public void setPatientIdentifier(String patientIdentifier)
+	{
 		this.patientIdentifier = patientIdentifier;
 	}
-	public List<String> getProtocolNames() {
+
+	public List<String> getProtocolNames()
+	{
 		return protocolNames;
 	}
-	public void setProtocolNames(List<String> protocolNames) {
+
+	public void setProtocolNames(List<String> protocolNames)
+	{
 		this.protocolNames = protocolNames;
 	}
-	public String getProtocolName() {
+
+	public String getProtocolName()
+	{
 		return protocolName;
 	}
-	public void setProtocolName(String protocolName) {
+
+	public void setProtocolName(String protocolName)
+	{
 		this.protocolName = protocolName;
 	}
-	public HashMap<String, List<ObservedValueVO>> getObservedValues() {
+
+	public HashMap<String, List<ObservedValueVO>> getObservedValues()
+	{
 		return observedValues;
 	}
-	public void setObservedValues(HashMap<String, List<ObservedValueVO>> featureValues) {
+
+	public void setObservedValues(HashMap<String, List<ObservedValueVO>> featureValues)
+	{
 		this.observedValues = featureValues;
 	}
 }

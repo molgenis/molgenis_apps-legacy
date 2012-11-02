@@ -8,6 +8,6 @@ public class LifelinesResearchPortalUpdateDatabase
 	{
 		new Molgenis(
 				"apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties")
-				.updateDb(true);
+				.updateDb(false);
 	}
 }

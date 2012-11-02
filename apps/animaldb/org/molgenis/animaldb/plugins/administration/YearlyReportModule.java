@@ -17,7 +17,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class YearlyReportModule extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -9028427140087603225L;
@@ -25,17 +24,19 @@ public class YearlyReportModule extends PluginModel<Entity>
 	private int year;
 	private String form;
 	private List<Integer> lastYearsList;
-	
+
 	public String getCustomHtmlHeaders()
-    {
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
-	
-	public AnimalDBReport getReport() {
+	}
+
+	public AnimalDBReport getReport()
+	{
 		return report;
 	}
 
-	public void setReport(AnimalDBReport report) {
+	public void setReport(AnimalDBReport report)
+	{
 		this.report = report;
 	}
 
@@ -45,12 +46,14 @@ public class YearlyReportModule extends PluginModel<Entity>
 		Calendar calendar = Calendar.getInstance();
 		int currentYear = calendar.get(Calendar.YEAR);
 		this.lastYearsList = new ArrayList<Integer>();
-		for (int earlier = 0; earlier < 5; earlier++) {
+		for (int earlier = 0; earlier < 5; earlier++)
+		{
 			this.lastYearsList.add(currentYear - earlier);
 		}
 	}
-	
-	public List<Integer> getLastYearsList() {
+
+	public List<Integer> getLastYearsList()
+	{
 		return lastYearsList;
 	}
 
@@ -65,24 +68,29 @@ public class YearlyReportModule extends PluginModel<Entity>
 	{
 		return "org/molgenis/animaldb/plugins/administration/YearlyReportModule.ftl";
 	}
-	
-	private void makeReport(Database db) {
-		
+
+	private void makeReport(Database db)
+	{
+
 		String userName = this.getLogin().getUserName();
-		
-		if (form.equals("4A")) {
+
+		if (form.equals("4A"))
+		{
 			report = new VWAReport4(db, userName);
 			report.makeReport(year, "A");
 		}
-		if (form.equals("4B")) {
+		if (form.equals("4B"))
+		{
 			report = new VWAReport4(db, userName);
 			report.makeReport(year, "B");
 		}
-		if (form.equals("4C")) {
+		if (form.equals("4C"))
+		{
 			report = new VWAReport4(db, userName);
 			report.makeReport(year, "C");
 		}
-		if (form.equals("5")) {
+		if (form.equals("5"))
+		{
 			report = new VWAReport5(db, userName);
 			report.makeReport(year, "");
 		}
@@ -94,14 +102,15 @@ public class YearlyReportModule extends PluginModel<Entity>
 		try
 		{
 			String action = request.getString("__action");
-		
-			if( action.equals("generateYearlyReport") )
+
+			if (action.equals("generateYearlyReport"))
 			{
 				this.year = request.getInt("year");
 				this.form = request.getString("form");
 				makeReport(db);
 			}
-		} catch(Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

@@ -21,11 +21,12 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
-//	public String getCustomHtmlHeaders()
-//    {
-//        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-//    }
+
+	// public String getCustomHtmlHeaders()
+	// {
+	// return
+	// "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+	// }
 
 	@Override
 	public String getViewName()
@@ -42,17 +43,20 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		
+
 		String action = request.getAction();
-		
-		if( action.equals("load") )
+
+		if (action.equals("load"))
 		{
 			String zipFileName = request.getString("zip");
 			int study = request.getInt("study");
-			try {
+			try
+			{
 				ImportMapper.importData(zipFileName, study);
 				this.setSuccess("LifeLines Publish data import complete!");
-			} catch(Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
 				this.setError("LifeLines Publish data import failed");
 			}
@@ -62,19 +66,19 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		// try
+		// {
+		// Database db = this.getDatabase();
+		// Query q = db.query(Experiment.class);
+		// q.like("name", "test");
+		// List<Experiment> recentExperiments = q.find();
+		//
+		// //do something
+		// }
+		// catch(Exception e)
+		// {
+		// //...
+		// }
 	}
-	
+
 }

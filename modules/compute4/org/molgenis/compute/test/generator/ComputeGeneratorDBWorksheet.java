@@ -1,18 +1,9 @@
 package org.molgenis.compute.test.generator;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
+import app.DatabaseFactory;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.FreemarkerHelper;
 import org.molgenis.compute.commandline.Worksheet;
@@ -29,10 +20,11 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.util.Pair;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 12:05
@@ -55,7 +47,6 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 	 * Create a script, given a tuple from folded worksheet, taskName,
 	 * workflowElementsList and ComputeParameter list
 	 * 
-	 * @param template
 	 * @param work
 	 * @param taskName
 	 * @param workflowElementsList
@@ -114,7 +105,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 	/**
 	 * Generate tasks and put them into the database
 	 */
-	public void generateTasks(Workflow workflow, List<ComputeParameter> pList, List<Tuple> worksheet)
+	public void generateTasks(Workflow workflow, List<ComputeParameter> pList, List<Tuple> worksheet, String backend_name)
     {
         List<ComputeParameter> parameterList = pList;
         try
@@ -159,6 +150,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 		// we want to use Freemarker to handle the includes. Doing the includes
 		// ourselves (in memory) would mean that we would have to deal with many
 		// exceptional cases, which are now automatically handled by Freemarker.
+
 
 		String protocolsDirName = System.getProperty("java.io.tmpdir")
 				+ System.getProperty("file.separator")
@@ -235,6 +227,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 				ComputeTask task = new ComputeTask();
 				task.setName(taskName);
 				task.setComputeScript(script);
+                task.setBackEndName(backend_name);
 				task.setInterpreter(workflowElement.getProtocol()
 						.getScriptInterpreter());
 				task.setRequirements(workflowElement.getProtocol()

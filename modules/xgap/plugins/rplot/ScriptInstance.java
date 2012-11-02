@@ -45,7 +45,7 @@ public class ScriptInstance
 
 	private boolean checkIfObjectIsDecimal(Object[] values)
 	{
-		//boolean doubleCastSucces = false;
+		// boolean doubleCastSucces = false;
 		for (Object o : values)
 		{
 			if (o != null)
@@ -53,7 +53,7 @@ public class ScriptInstance
 				try
 				{
 					Double.parseDouble(o.toString());
-				//	return true;
+					// return true;
 				}
 				catch (NumberFormatException e)
 				{

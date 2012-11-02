@@ -39,11 +39,6 @@
 	<a href="<c:out value="${url}"/>"><c:out value="${variantDTO.exonName}"/></a><br>
 	</c:forEach>
 </display:column>
-<display:column media="html" title="Pathogenicity" sortable="true" headerClass="sortable">
-	<c:forEach var="variantDTO" items="${current.variantDTOList}">
-	<c:out value="${variantDTO.pathogenicity}"/><br>
-	</c:forEach>
-</display:column>
 <display:column media="html" title="Reference">
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">

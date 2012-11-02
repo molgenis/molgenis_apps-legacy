@@ -105,7 +105,7 @@ public class ComputeGeneratorDB implements ComputeGenerator
 	}
 
 
-	public void generateTasks(Workflow workflow, List<ComputeParameter> parameters, List<Tuple> targets)
+	public void generateTasks(Workflow workflow, List<ComputeParameter> parameters, List<Tuple> targets, String backend_name)
 	{
 		// TODO Auto-generated method stub
 

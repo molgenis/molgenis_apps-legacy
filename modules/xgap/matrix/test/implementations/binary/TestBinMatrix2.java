@@ -20,7 +20,7 @@ public class TestBinMatrix2
 {
 	List<String> uniqueNames = new ArrayList<String>();
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
-	
+
 	/**
 	 * WARNING: running this test will empty the contents of your selected
 	 * database and possibly overwrite matrix backend data! Consider carefully
@@ -33,8 +33,7 @@ public class TestBinMatrix2
 	 * @param sparse
 	 * @throws Exception
 	 */
-	public TestBinMatrix2(Database db, Params params)
-			throws Exception
+	public TestBinMatrix2(Database db, Params params) throws Exception
 	{
 		/**
 		 * Assumption: the list of the traits/subjects that are created of size
@@ -43,7 +42,7 @@ public class TestBinMatrix2
 		 */
 
 		String storage = "Binary";
-		
+
 		logger.info("Creating database instance and erasing all existing data..");
 		Helper h = new Helper(db);
 		h.printSettings(storage, params);
@@ -52,12 +51,13 @@ public class TestBinMatrix2
 
 		logger.info("Transforming the files into their binary counterpart in the storage directory..");
 		new BinaryDataMatrixWriter(h.getDataList(), h.getInputFilesDir(), db);
-	
+
 		logger.info("Instantiating the matrices..");
 		List<BinaryDataMatrixInstance_NEW> bmList = new ArrayList<BinaryDataMatrixInstance_NEW>();
 		for (Data data : h.getDataList())
 		{
-			BinaryDataMatrixInstance_NEW bm = new BinaryDataMatrixInstance_NEW(new DataMatrixHandler(db).findSourceFile(data, db));
+			BinaryDataMatrixInstance_NEW bm = new BinaryDataMatrixInstance_NEW(
+					new DataMatrixHandler(db).findSourceFile(data, db));
 			bmList.add(bm);
 		}
 
@@ -78,8 +78,8 @@ public class TestBinMatrix2
 			for (String method : methods)
 			{
 				System.out.println("---> METHOD: " + method);
-				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, bm, bm.getData(),
-						h.getInputFilesDir(), method, true, true));
+				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, bm, bm.getData(), h.getInputFilesDir(),
+						method, true, true));
 			}
 		}
 	}

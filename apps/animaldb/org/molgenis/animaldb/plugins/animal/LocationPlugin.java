@@ -36,7 +36,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class LocationPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
@@ -51,21 +50,24 @@ public class LocationPlugin extends PluginModel<Entity>
 	private String locName = null;
 	private String matrixLabel;
 	SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-	
+
 	public LocationPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	public String getCustomHtmlHeaders()
-    {
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
-	
-	public List<ObservationTarget> getLocationList() {
+	}
+
+	public List<ObservationTarget> getLocationList()
+	{
 		return locationList;
 	}
-	public void setLocationList(List<ObservationTarget> locationList) {
+
+	public void setLocationList(List<ObservationTarget> locationList)
+	{
 		this.locationList = locationList;
 	}
 
@@ -90,132 +92,165 @@ public class LocationPlugin extends PluginModel<Entity>
 	{
 		this.action = action;
 	}
-	
-	public String getMatrixLabel() {
+
+	public String getMatrixLabel()
+	{
 		return matrixLabel;
 	}
 
-	public void setMatrixLabel(String matrixLabel) {
+	public void setMatrixLabel(String matrixLabel)
+	{
 		this.matrixLabel = matrixLabel;
 	}
 
-	public String getSuperLocName(int locationId) {
+	public String getSuperLocName(int locationId)
+	{
 		return superLocMap.get(locationId);
 	}
-	
-	private String getSuperLoc(Database db, int locId) throws DatabaseException {
-		
+
+	private String getSuperLoc(Database db, int locId) throws DatabaseException
+	{
+
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, locId));
-		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null)); // only active one!
-		if (q.find().size() == 1) {
+		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null)); // only
+																					// active
+																					// one!
+		if (q.find().size() == 1)
+		{
 			ObservedValue currentValue = q.find().get(0);
-			if (currentValue.getRelation_Id() != null) {
+			if (currentValue.getRelation_Id() != null)
+			{
 				return currentValue.getRelation_Name();
 			}
 		}
 		return "";
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings(
+	{ "unchecked", "rawtypes" })
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
-		if (animalsInLocMatrixViewer != null) {
+		if (animalsInLocMatrixViewer != null)
+		{
 			animalsInLocMatrixViewer.setDatabase(db);
 		}
-		if (animalsNotInLocMatrixViewer != null) {
+		if (animalsNotInLocMatrixViewer != null)
+		{
 			animalsNotInLocMatrixViewer.setDatabase(db);
 		}
-		
-		try {
+
+		try
+		{
 			String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 			action = request.getString("__action");
-			
-			if (animalsInLocMatrixViewer != null && action.startsWith(animalsInLocMatrixViewer.getName())) {
+
+			if (animalsInLocMatrixViewer != null && action.startsWith(animalsInLocMatrixViewer.getName()))
+			{
 				animalsInLocMatrixViewer.handleRequest(db, request);
 				action = "Manage";
 				return;
 			}
-			
-			if (animalsNotInLocMatrixViewer != null && action.startsWith(animalsNotInLocMatrixViewer.getName())) {
+
+			if (animalsNotInLocMatrixViewer != null && action.startsWith(animalsNotInLocMatrixViewer.getName()))
+			{
 				animalsNotInLocMatrixViewer.handleRequest(db, request);
 				action = "AddAnimals";
 				return;
 			}
-			
-			if (action.equals("AddAnimals")) {
-//				String locName = ct.getObservationTargetLabel(locId);
+
+			if (action.equals("AddAnimals"))
+			{
+				// String locName = ct.getObservationTargetLabel(locId);
 				// Prepare matrix with all animals
-//				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+				// List<String> investigationNames =
+				// ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Location");
-//				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
-//						Operator.IN, investigationNames));
-//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-//						ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.NOT,
-//						locName));
-//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-//						ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
-//						null));
-				// TODO: make MQRs combinable with OR so we can have animals with location NULL OR NOT current
-				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, 
-						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, 2, false, true, null, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				// List<MatrixQueryRule> filterRules = new
+				// ArrayList<MatrixQueryRule>();
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+				// Individual.INVESTIGATION_NAME,
+				// Operator.IN, investigationNames));
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+				// ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME,
+				// Operator.NOT,
+				// locName));
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+				// ct.getMeasurementId("Location"), ObservedValue.ENDTIME,
+				// Operator.EQUALS,
+				// null));
+				// TODO: make MQRs combinable with OR so we can have animals
+				// with location NULL OR NOT current
+				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, new SliceablePhenoMatrix(
+						Individual.class, Measurement.class), true, 2, false, true, null, new MatrixQueryRule(
+						MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
 			}
-			
-			if (action.equals("ApplyAddAnimals")) {
+
+			if (action.equals("ApplyAddAnimals"))
+			{
 				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				String startDateString = request.getString("addstartdate");
 				Date startDate = newDateOnlyFormat.parse(startDateString);
 				List<ObservationElement> rows = (List<ObservationElement>) animalsNotInLocMatrixViewer.getSelection(db);
 				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(ANIMALSNOTINLOCMATRIX + "_selected_" + rowCnt) != null) {
+				for (ObservationElement row : rows)
+				{
+					if (request.getBool(ANIMALSNOTINLOCMATRIX + "_selected_" + rowCnt) != null)
+					{
 						assignAnimalToLocation(db, invName, row.getName(), locName, startDate);
 					}
 					rowCnt++;
 				}
-				
+
 				animalsInLocMatrixViewer.reloadMatrix(null, null);
 				action = "Manage";
-				this.setSuccess("Animals successfully added to " + locName + 
-						". Now showing animals in that location.");
+				this.setSuccess("Animals successfully added to " + locName + ". Now showing animals in that location.");
 				return;
 			}
-			
-			if (action.equals("Manage")) {
+
+			if (action.equals("Manage"))
+			{
 				locName = request.getString("locName");
 				prepareInLocMatrix(db, locName);
 			}
-			
-			if (action.equals("Move")) {
+
+			if (action.equals("Move"))
+			{
 				String newLocationName = request.getString("moveto");
 				String startDateString = request.getString("startdate");
 				Date startDate = newDateOnlyFormat.parse(startDateString);
 				List<ObservationElement> rows = (List<ObservationElement>) animalsInLocMatrixViewer.getSelection(db);
 				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(ANIMALSINLOCMATRIX + "_selected_" + rowCnt) != null) {
+				for (ObservationElement row : rows)
+				{
+					if (request.getBool(ANIMALSINLOCMATRIX + "_selected_" + rowCnt) != null)
+					{
 						assignAnimalToLocation(db, invName, row.getName(), newLocationName, startDate);
 					}
 					rowCnt++;
 				}
 				prepareInLocMatrix(db, newLocationName);
 				action = "Manage";
-				this.setSuccess("Animals successfully moved to " + newLocationName + ". Now switching to that location.");
+				this.setSuccess("Animals successfully moved to " + newLocationName
+						+ ". Now switching to that location.");
 				return;
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			String message = "Error";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += ": " + e.getMessage();
 			}
 			this.setError(message);
@@ -228,18 +263,16 @@ public class LocationPlugin extends PluginModel<Entity>
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Location");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
-				Operator.IN, investigationNames));
-		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-				ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.EQUALS,
-				locationName));
-		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-				ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
-				null));
-		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
-				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-				true, 2, false, true, filterRules, 
-				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, Operator.IN,
+				investigationNames));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Location"),
+				ObservedValue.RELATION_NAME, Operator.EQUALS, locationName));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Location"),
+				ObservedValue.ENDTIME, Operator.EQUALS, null));
+		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX,
+				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2, false,
+				true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+						measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
 		this.matrixLabel = "Animals in " + locationName + ":";
 	}
@@ -253,62 +286,77 @@ public class LocationPlugin extends PluginModel<Entity>
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 		List<ObservedValue> valueList = q.find();
-		if (valueList != null) {
-			for (ObservedValue value : valueList) {
+		if (valueList != null)
+		{
+			for (ObservedValue value : valueList)
+			{
 				value.setEndtime(startDate);
 				db.update(value);
 			}
 		}
 		// Then make new one
-		db.add(ct.createObservedValueWithProtocolApplication(investigationName, startDate, null, 
-				"SetLocation", "Location", animalName, null, locationName));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, startDate, null, "SetLocation",
+				"Location", animalName, null, locationName));
 	}
 
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		
+
 		// Populate location list and superloc map
-		try {
+		try
+		{
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			List<String> locationNameList = ct.getAllObservationTargetNames("Location", false, investigationNames);
-			if (locationNameList.size() > 0) {
+			if (locationNameList.size() > 0)
+			{
 				this.locationList = ct.getObservationTargets(locationNameList);
-			} else {
+			}
+			else
+			{
 				this.locationList = new ArrayList<ObservationTarget>();
 			}
-			
+
 			superLocMap = new HashMap<Integer, String>();
-			for (ObservationTarget loc : locationList) {
+			for (ObservationTarget loc : locationList)
+			{
 				superLocMap.put(loc.getId(), this.getSuperLoc(db, loc.getId()));
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			String message = "Something went wrong while loading location list";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.setError(message);
 			e.printStackTrace();
 		}
 	}
-	
-	public String renderAnimalsInLocMatrixViewer() {
-		if (animalsInLocMatrixViewer != null) {
+
+	public String renderAnimalsInLocMatrixViewer()
+	{
+		if (animalsInLocMatrixViewer != null)
+		{
 			return animalsInLocMatrixViewer.render();
 		}
 		return "Error - location matrix not initialized";
 	}
-	
-	public String renderAnimalsNotInLocMatrixViewer() {
-		if (animalsNotInLocMatrixViewer != null) {
+
+	public String renderAnimalsNotInLocMatrixViewer()
+	{
+		if (animalsNotInLocMatrixViewer != null)
+		{
 			return animalsNotInLocMatrixViewer.render();
 		}
 		return "Error - location matrix not initialized";
 	}
-	
-	public String getCurrentDate() {
+
+	public String getCurrentDate()
+	{
 		return newDateOnlyFormat.format(new Date());
 	}
-	
+
 }

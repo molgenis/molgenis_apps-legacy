@@ -20,64 +20,103 @@ public class ObservedValueDTO implements Serializable
 	private String targetName;
 	private String value;
 
-	public Integer getObservedValueId() {
+	public Integer getObservedValueId()
+	{
 		return observedValueId;
 	}
-	public void setObservedValueId(Integer observedValueId) {
+
+	public void setObservedValueId(Integer observedValueId)
+	{
 		this.observedValueId = observedValueId;
 	}
-	public Integer getProtocolApplicationId() {
+
+	public Integer getProtocolApplicationId()
+	{
 		return protocolApplicationId;
 	}
-	public void setProtocolApplicationId(Integer protocolApplicationId) {
+
+	public void setProtocolApplicationId(Integer protocolApplicationId)
+	{
 		this.protocolApplicationId = protocolApplicationId;
 	}
-	public String getProtocolApplicationName() {
+
+	public String getProtocolApplicationName()
+	{
 		return protocolApplicationName;
 	}
-	public void setProtocolApplicationName(String protocolApplicationName) {
+
+	public void setProtocolApplicationName(String protocolApplicationName)
+	{
 		this.protocolApplicationName = protocolApplicationName;
 	}
-	public Date getProtocolApplicationTime() {
+
+	public Date getProtocolApplicationTime()
+	{
 		return protocolApplicationTime;
 	}
-	public void setProtocolApplicationTime(Date protocolApplicationTime) {
+
+	public void setProtocolApplicationTime(Date protocolApplicationTime)
+	{
 		this.protocolApplicationTime = protocolApplicationTime;
 	}
-	public List<String> getPerformerNameList() {
+
+	public List<String> getPerformerNameList()
+	{
 		return performerNameList;
 	}
-	public void setPerformerNameList(List<String> performerNameList) {
+
+	public void setPerformerNameList(List<String> performerNameList)
+	{
 		this.performerNameList = performerNameList;
 	}
-	public Integer getProtocolId() {
+
+	public Integer getProtocolId()
+	{
 		return protocolId;
 	}
-	public void setProtocolId(Integer protocolId) {
+
+	public void setProtocolId(Integer protocolId)
+	{
 		this.protocolId = protocolId;
 	}
-	public FeatureDTO getFeatureDTO() {
+
+	public FeatureDTO getFeatureDTO()
+	{
 		return featureDTO;
 	}
-	public void setFeatureDTO(FeatureDTO featureDTO) {
+
+	public void setFeatureDTO(FeatureDTO featureDTO)
+	{
 		this.featureDTO = featureDTO;
 	}
-	public Integer getTargetId() {
+
+	public Integer getTargetId()
+	{
 		return targetId;
 	}
-	public void setTargetId(Integer targetId) {
+
+	public void setTargetId(Integer targetId)
+	{
 		this.targetId = targetId;
 	}
-	public String getTargetName() {
+
+	public String getTargetName()
+	{
 		return targetName;
 	}
-	public void setTargetName(String targetName) {
+
+	public void setTargetName(String targetName)
+	{
 		this.targetName = targetName;
 	}
-	public String getValue() {
+
+	public String getValue()
+	{
 		return value;
 	}
-	public void setValue(String value) {
+
+	public void setValue(String value)
+	{
 		this.value = value;
 	}
 }

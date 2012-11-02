@@ -16,21 +16,22 @@ import org.molgenis.mutation.service.FastaService;
 public class FastaServlet implements MolgenisService
 {
 	private MolgenisContext mc;
-	
+
 	public FastaServlet(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
 
 	@Override
-	public void handleRequest(MolgenisRequest req, MolgenisResponse resp) throws ParseException, DatabaseException, IOException
+	public void handleRequest(MolgenisRequest req, MolgenisResponse resp) throws ParseException, DatabaseException,
+			IOException
 	{
 		HttpServletResponse response = resp.getResponse();
 
 		response.setContentType("text/plain");
-		
+
 		String type = req.getString("type");
-		
+
 		FastaService fastaService = new FastaService();
 		fastaService.setDatabase(req.getDatabase());
 

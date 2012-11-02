@@ -12,10 +12,7 @@ import org.molgenis.framework.db.QueryRule;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 24/08/2012
- * Time: 11:17
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 24/08/2012 Time: 11:17
  * To change this template use File | Settings | File Templates.
  */
 public class WorkflowReaderDBJDBC implements WorkflowReader
@@ -61,4 +58,5 @@ public class WorkflowReaderDBJDBC implements WorkflowReader
         //TODO: we do not use JDBC workflow reader - otherwise it should be implemented
         return null;
     }
+
 }

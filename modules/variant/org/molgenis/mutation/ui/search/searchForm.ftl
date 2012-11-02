@@ -13,7 +13,7 @@ ${model.textWelcome}
 
 <#if model.geneDTO.symbol == "COL7A1">
 <p>
-The database currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
+The registry is a work in progress. It currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
 </p>
 <#elseif model.geneDTO.symbol == "MYO5B">
 <p>
@@ -83,18 +83,9 @@ ${muta.expertSearch}
 	
 -->
 <#if model.mbrowse.isVisible>
-<br/><br/>
-<h3>Browse the ${model.geneDTO.symbol} gene</h3>
-<p>
-Click anywhere on this schematic representation of the ${model.geneDTO.symbol} gene to graphically browse the gene. With every click you will zoom in deeper on the ${model.geneDTO.symbol} gene. Mutated nucleotides are depicted in red. If the cursor is placed over the mutated nucleotide(s), the corresponding mutation is shown.
-</p>
-<br/>
-<p>
-<#--
-${model.controller.getChild("MBrowse").render()}
--->
-${model.mbrowse.createGenePanel()}
-</p>
+<div class="mbrowse">
+${model.getMBrowsePanel().toHtml()}
+</div>
 </#if>
 
 <br/>

@@ -20,40 +20,47 @@ import org.molgenis.util.Tuple;
 import app.ExcelImport;
 import app.ImportWizardExcelPrognosis;
 
-public class GenericWizard extends PluginModel<Entity> {
+public class GenericWizard extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = -6011550003937663086L;
 	private GenericWizardModel model = new GenericWizardModel();
 
-	public GenericWizardModel getMyModel() {
+	public GenericWizardModel getMyModel()
+	{
 		return model;
 	}
 
-	public GenericWizard(String name, ScreenController<?> parent) {
+	public GenericWizard(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "GenericWizard";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/genericwizard/GenericWizard.ftl";
 	}
-	
+
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
 		{
 
-			try {
-				
-				//BUTTONS ON SCREEN ONE
-				if (request.getString("__action").equals("upload")) {
+			try
+			{
 
-					//get uploaded file and do checks
+				// BUTTONS ON SCREEN ONE
+				if (request.getString("__action").equals("upload"))
+				{
+
+					// get uploaded file and do checks
 					File file = request.getFile("upload");
 					if (file == null)
 					{
@@ -61,41 +68,42 @@ public class GenericWizard extends PluginModel<Entity> {
 					}
 					else if (!file.getName().endsWith(".xls"))
 					{
-						throw new Exception(
-								"File does not end with '.xls', other formats are not supported.");
+						throw new Exception("File does not end with '.xls', other formats are not supported.");
 					}
 
-					//run prognosis
-					ImportWizardExcelPrognosis iwep = new ImportWizardExcelPrognosis(
-							file);
-					
-					//if no error, set prognosis, set file, and continue
+					// run prognosis
+					ImportWizardExcelPrognosis iwep = new ImportWizardExcelPrognosis(db, file);
+
+					// if no error, set prognosis, set file, and continue
 					this.model.setIwep(iwep);
 					this.model.setCurrentFile(file);
 					this.model.setWhichScreen("two");
-					
-				//BUTTONS ON SCREEN TWO
-				} else if (request.getString("__action").equals("toScreenOne")) {
-					
-					//goto screen one
+
+					// BUTTONS ON SCREEN TWO
+				}
+				else if (request.getString("__action").equals("toScreenOne"))
+				{
+
+					// goto screen one
 					this.model.setWhichScreen("one");
-					
-					//reset stuff
+
+					// reset stuff
 					this.model.setCurrentFile(null);
 					this.model.setIwep(null);
 					this.model.setImportSuccess(false);
 
-				} else if (request.getString("__action").equals("import")) {
-					
-					//goto screen three
+				}
+				else if (request.getString("__action").equals("import"))
+				{
+
+					// goto screen three
 					this.model.setWhichScreen("three");
-					
-					//set import succes to false (again), to be sure
+
+					// set import succes to false (again), to be sure
 					this.model.setImportSuccess(false);
-					ExcelImport.importAll(this.model.getCurrentFile(), db,
-							new SimpleTuple());
-					
-					//when no error, set success to true
+					ExcelImport.importAll(this.model.getCurrentFile(), db, new SimpleTuple());
+
+					// when no error, set success to true
 					this.model.setImportSuccess(true);
 				}
 
@@ -103,14 +111,14 @@ public class GenericWizard extends PluginModel<Entity> {
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-						.getMessage() : "null", false));
+				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 
 	}
 

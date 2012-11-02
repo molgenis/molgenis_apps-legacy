@@ -23,15 +23,17 @@ public class SimpleSearchForm extends Container
 		termInput.setClazz("simple_search");
 		termInput.setSize(50);
 		this.add(termInput);
-		String[] options = new String[] { "mutations", "patients" };
-		String[] labels  = new String[] { "Show mutations", "Show patients" };
+		String[] options = new String[]
+		{ "mutations", "patients" };
+		String[] labels = new String[]
+		{ "Show mutations", "Show patients" };
 		try
 		{
 			this.add(new RadioInput("result", "", "", false, true, "", Arrays.asList(options), Arrays.asList(labels)));
 		}
 		catch (HtmlInputException e)
 		{
-			//Should never be thrown
+			// Should never be thrown
 		}
 		this.add(new ActionInput("findMutationsByTerm"));
 		((ActionInput) this.get("findMutationsByTerm")).setLabel("Search");

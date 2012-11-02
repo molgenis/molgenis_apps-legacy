@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Variable
 {
@@ -26,6 +25,6 @@ public class Variable
 	public String logical_max;
 	@XmlElement
 	public String type;
-	@XmlElement(name="value")
+	@XmlElement(name = "value")
 	public List<Value> values = new ArrayList<Value>();
 }

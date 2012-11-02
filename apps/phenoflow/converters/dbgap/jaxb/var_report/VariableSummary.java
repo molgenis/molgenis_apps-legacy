@@ -8,35 +8,28 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VariableSummary
 {
-	@XmlAttribute(name="id")
+	@XmlAttribute(name = "id")
 	public String id;
-	@XmlAttribute(name="var_name")
+	@XmlAttribute(name = "var_name")
 	public String var_name;
-	@XmlAttribute(name="calculated_type")
+	@XmlAttribute(name = "calculated_type")
 	public String calculated_type;
-	@XmlElement(name="description")
-	//description is redundant with Variable
+	@XmlElement(name = "description")
+	// description is redundant with Variable
 	public String description;
-	@XmlElement(name="total")
+	@XmlElement(name = "total")
 	public Summary total;
-	@XmlElement(name="cases")
+	@XmlElement(name = "cases")
 	public Summary cases;
-	@XmlElement(name="controls")
+	@XmlElement(name = "controls")
 	public Summary controls;
-	
+
 	public String toString()
 	{
-		return String.format("VariableSummary(" +
-				"\n\tid=%s," +
-				"\n\tvar_name=%s," +
-				"\n\tcalculated_type=%s," +
-				"\n\tdescription=%s," +
-				"\n\ttotal=%s," +
-				"\n\tcases=%s," +
-				"\n\tcontrols=%s" +
-				"\n)", id, var_name, calculated_type, description, 
-				total != null ? total.toString().replace("\n","\n\t") : null, 
-				cases != null ? cases.toString().replace("\n","\n\t") : null, 
-				controls != null ? controls.toString().replace("\n","\n\t") : null);
+		return String.format("VariableSummary(" + "\n\tid=%s," + "\n\tvar_name=%s," + "\n\tcalculated_type=%s,"
+				+ "\n\tdescription=%s," + "\n\ttotal=%s," + "\n\tcases=%s," + "\n\tcontrols=%s" + "\n)", id, var_name,
+				calculated_type, description, total != null ? total.toString().replace("\n", "\n\t") : null,
+				cases != null ? cases.toString().replace("\n", "\n\t") : null, controls != null ? controls.toString()
+						.replace("\n", "\n\t") : null);
 	}
 }

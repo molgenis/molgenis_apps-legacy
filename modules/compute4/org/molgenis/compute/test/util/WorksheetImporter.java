@@ -59,7 +59,7 @@ public class WorksheetImporter
 		// generate ComputeTasks
 		ComputeGenerator generator = new ComputeGeneratorDBWorksheet();
 
-		generator.generateTasks(workflow, parameters, worksheet);
+		generator.generateTasks(workflow, parameters, worksheet, options.backend_name);
 
 		System.out.println("... generated");
 	}

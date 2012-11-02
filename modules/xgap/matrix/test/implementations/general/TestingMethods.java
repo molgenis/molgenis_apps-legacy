@@ -17,8 +17,8 @@ import decorators.NameConvention;
 
 public class TestingMethods
 {
-	public static boolean parseToPlainAndCompare(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir, String method,
-			boolean fileWrite, boolean simpleOutput) throws Exception
+	public static boolean parseToPlainAndCompare(Logger logger, DataMatrixInstance m, Data description,
+			File inputMatrixDir, String method, boolean fileWrite, boolean simpleOutput) throws Exception
 	{
 		long start = System.currentTimeMillis();
 		long end = 0;
@@ -28,8 +28,7 @@ public class TestingMethods
 
 		if (fileWrite)
 		{
-			exported = new File(inputMatrixDir + File.separator + description.getName() + "_" + method
-					+ ".txt");
+			exported = new File(inputMatrixDir + File.separator + description.getName() + "_" + method + ".txt");
 			exported.createNewFile();
 			bfw = new BufferedWriter(new FileWriter(exported));
 		}
@@ -70,7 +69,8 @@ public class TestingMethods
 			}
 			if (method.equals("submatrixbynameoffset"))
 			{
-				newMatrix = m.getSubMatrixByOffset(m.getRowNames().get(0).toString(), m.getNumberOfRows(), m.getColNames().get(0).toString(), m.getNumberOfCols());
+				newMatrix = m.getSubMatrixByOffset(m.getRowNames().get(0).toString(), m.getNumberOfRows(), m
+						.getColNames().get(0).toString(), m.getNumberOfCols());
 			}
 
 			for (int row = 0; row < newMatrix.getNumberOfRows(); row++)
@@ -154,9 +154,9 @@ public class TestingMethods
 						}
 						if (method.equals("elementbyname"))
 						{
-							Object obj = m.getElement(m.getRowNames().get(row).toString(), m.getColNames().get(col).toString());
-							rowString += "\t"
-									+ (obj == null ? "" : obj.toString());
+							Object obj = m.getElement(m.getRowNames().get(row).toString(), m.getColNames().get(col)
+									.toString());
+							rowString += "\t" + (obj == null ? "" : obj.toString());
 						}
 
 					}
@@ -173,41 +173,41 @@ public class TestingMethods
 		if (fileWrite)
 		{
 			bfw.close();
-			File original = new File(inputMatrixDir + File.separator + NameConvention.escapeFileName(description.getName()) + ".txt");
+			File original = new File(inputMatrixDir + File.separator
+					+ NameConvention.escapeFileName(description.getName()) + ".txt");
 			filesAreEqual = DirectoryCompare.compareFileContent(original, exported);
 			if (simpleOutput)
 			{
-				logger.info("\t" + (end - start) + "\t" + description.getValueType() + ", " + method
-						+ "\teq: " + (filesAreEqual == true ? "PASS" : "FAIL"));
+				logger.info("\t" + (end - start) + "\t" + description.getValueType() + ", " + method + "\teq: "
+						+ (filesAreEqual == true ? "PASS" : "FAIL"));
 			}
 			else
 			{
-				logger.info("Exported full matrix of type '" + description.getValueType() + "' ("
-						+ m.getNumberOfCols() + "x" + m.getNumberOfRows()
-						+ ") to file, using read method '" + method + "', test equality to original ["
-						+ (filesAreEqual == true ? "PASS" : "FAIL") + "] in " + (end - start) + " ms.");
+				logger.info("Exported full matrix of type '" + description.getValueType() + "' (" + m.getNumberOfCols()
+						+ "x" + m.getNumberOfRows() + ") to file, using read method '" + method
+						+ "', test equality to original [" + (filesAreEqual == true ? "PASS" : "FAIL") + "] in "
+						+ (end - start) + " ms.");
 			}
 		}
 		else
 		{
 			if (simpleOutput)
 			{
-				logger.info("\t" + (end - start) + "\t" + description.getValueType() + ", " + method
-						+ "\tno comp.");
+				logger.info("\t" + (end - start) + "\t" + description.getValueType() + ", " + method + "\tno comp.");
 			}
 			else
 			{
-				logger.info("Queried full matrix of type '" + description.getValueType() + "' ("
-						+ m.getNumberOfCols() + "x" + m.getNumberOfRows()
-						+ "), using read method '" + method + "', without file write or equality test in "
-						+ (end - start) + " ms.");
+				logger.info("Queried full matrix of type '" + description.getValueType() + "' (" + m.getNumberOfCols()
+						+ "x" + m.getNumberOfRows() + "), using read method '" + method
+						+ "', without file write or equality test in " + (end - start) + " ms.");
 			}
 			filesAreEqual = true;
 		}
 		return filesAreEqual;
 	}
 
-	public static int readSpeed_elementbyindex(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir) throws Exception
+	public static int readSpeed_elementbyindex(Logger logger, DataMatrixInstance m, Data description,
+			File inputMatrixDir) throws Exception
 	{
 		long start = System.currentTimeMillis();
 		int rows = m.getNumberOfRows();
@@ -258,8 +258,8 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_submatrixbyindexlist(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir)
-			throws Exception
+	public static int readSpeed_submatrixbyindexlist(Logger logger, DataMatrixInstance m, Data description,
+			File inputMatrixDir) throws Exception
 	{
 		long start = System.currentTimeMillis();
 
@@ -283,8 +283,8 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_submatrixbyindexoffset(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir)
-			throws Exception
+	public static int readSpeed_submatrixbyindexoffset(Logger logger, DataMatrixInstance m, Data description,
+			File inputMatrixDir) throws Exception
 	{
 		long start = System.currentTimeMillis();
 

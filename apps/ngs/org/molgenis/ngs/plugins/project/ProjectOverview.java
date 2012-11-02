@@ -40,15 +40,15 @@ public class ProjectOverview extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		
+
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		
+
 	}
-	
+
 	@Override
 	public boolean isVisible()
 	{

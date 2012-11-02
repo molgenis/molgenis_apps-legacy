@@ -1,4 +1,5 @@
 package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
+
 //package org.molgenis.lifelines.loaders;
 //
 //import java.sql.Connection;
@@ -199,4 +200,4 @@ package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
 //        doneSignal.countDown();
 //		log.trace(String.format("[%d-%s] Thread ended", studyId, tableName));
 //	}    
-//}
+// }

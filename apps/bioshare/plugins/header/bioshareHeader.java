@@ -23,14 +23,16 @@ import org.molgenis.util.Tuple;
 
 //import plugins.autohidelogin.AutoHideLoginModel; 
 
-public class bioshareHeader extends PluginModel<Entity> {
+public class bioshareHeader extends PluginModel<Entity>
+{
 
 	private String feedback = null;
 	private static final long serialVersionUID = -4576352827620517694L;
 
 	private String userLogin = new String();
 
-	public bioshareHeader(String name, ScreenController<?> parent) {
+	public bioshareHeader(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
@@ -43,7 +45,8 @@ public class bioshareHeader extends PluginModel<Entity> {
 	// }
 
 	@Override
-	public String getCustomHtmlHeaders() {
+	public String getCustomHtmlHeaders()
+	{
 		return "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">"
@@ -52,44 +55,43 @@ public class bioshareHeader extends PluginModel<Entity> {
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "plugins_header_bioshareHeader";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/header/bioshareHeader.ftl";
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception {
-		if ("doLogout".equals(request.getAction())) {
+	public void handleRequest(Database db, Tuple request) throws Exception
+	{
+		if ("doLogout".equals(request.getAction()))
+		{
 			getLogin().logout(db);
 
 			// only for AutoHideLoginSwitchService, but harmless otherwise
 			// AutoHideLoginModel.isVisible = false; //TODO
 		}
-		if ("sendFeedback".equals(request.getAction())) {
-			feedback = "User: " + request.getString("name") + " (username: "
-					+ this.getLogin().getUserName() + ") sent:\n\n"
-					+ request.getString("feedback") + "\n\nabout: "
-					+ request.getString("plugin");
+		if ("sendFeedback".equals(request.getAction()))
+		{
+			feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName()
+					+ ") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
 
 			// get admin email
-			MolgenisUser admin = db.query(MolgenisUser.class)
-					.eq(MolgenisUser.NAME, "admin").find().get(0);
-			if (StringUtils.isEmpty(admin.getEmail()))
-				throw new DatabaseException(
-						"Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
+			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+			if (StringUtils.isEmpty(admin.getEmail())) throw new DatabaseException(
+					"Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
 
 			EmailService ses = this.getEmailService();
-			ses.email("New feedback on Lifelines Catalogue", feedback,
-					admin.getEmail(), true);
+			ses.email("New feedback on Lifelines Catalogue", feedback, admin.getEmail(), true);
 
 			this.getMessages().add(new ScreenMessage(feedback, true));
 
-			System.out.println("Email : " + admin.getEmail() + "Feedback >>>"
-					+ feedback);
+			System.out.println("Email : " + admin.getEmail() + "Feedback >>>" + feedback);
 
 			// save the feedback message in DB
 			Feedback f = new Feedback();
@@ -100,35 +102,40 @@ public class bioshareHeader extends PluginModel<Entity> {
 			db.add(f);
 		}
 
-		if ("resetFeedbackForm".equals(request.getAction())) {
+		if ("resetFeedbackForm".equals(request.getAction()))
+		{
 			feedback = null;
 		}
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		this.setUserLogin();
 	}
 
 	@Override
-	public boolean isVisible() {
+	public boolean isVisible()
+	{
 		// you can use this to hide this plugin, e.g. based on user rights.
 		// e.g.
 		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
 		return true;
 	}
 
-	public void setUserLogin() {
+	public void setUserLogin()
+	{
 
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>"
-					+ "Welcome "
+		if (this.getLogin().isAuthenticated())
+		{
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome "
 					+ ((DatabaseLogin) this.getLogin()).getUserName() + "</a>";
 			this.userLogin += "<a href='molgenis.do?__target=bioshareHeader&select=UserLogin&__action=doLogout'>"
 					+ " | Logout " + "</a>";
-		} else {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>"
-					+ "Login" + "</a>";
+		}
+		else
+		{
+			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Login" + "</a>";
 		}
 
 	}
@@ -188,29 +195,36 @@ public class bioshareHeader extends PluginModel<Entity> {
 	// }
 	// }
 
-	public String getUserLogin() {
+	public String getUserLogin()
+	{
 
 		return userLogin;
 	}
 
-	public String getFeedback() {
+	public String getFeedback()
+	{
 		return feedback;
 	}
 
-	public String getActivePlugin() {
-		if (this.getParent().getSelected() == null) {
+	public String getActivePlugin()
+	{
+		if (this.getParent().getSelected() == null)
+		{
 			return "";
 		}
 		ScreenModel model = this.getParent().getSelected();
-		while (model.getSelected() != null) {
+		while (model.getSelected() != null)
+		{
 			model = model.getSelected();
 		}
 		return model.getLabel();
 	}
 
-	public String getFullUserName() {
+	public String getFullUserName()
+	{
 
-		if (this.getLogin().isAuthenticated()) {
+		if (this.getLogin().isAuthenticated())
+		{
 			return ((DatabaseLogin) this.getLogin()).getFullUserName();
 		}
 		return null;

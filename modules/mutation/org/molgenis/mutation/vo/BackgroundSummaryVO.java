@@ -12,34 +12,53 @@ public class BackgroundSummaryVO implements Serializable
 	private int numPatientsUnpub;
 	private HashMap<String, Integer> phenotypeCountHash;
 
-	public int getNumMutations() {
+	public int getNumMutations()
+	{
 		return numMutations;
 	}
-	public void setNumMutations(int numMutations) {
+
+	public void setNumMutations(int numMutations)
+	{
 		this.numMutations = numMutations;
 	}
-	public int getNumMutationsUnpub() {
+
+	public int getNumMutationsUnpub()
+	{
 		return numMutationsUnpub;
 	}
-	public void setNumMutationsUnpub(int numMutationsUnpub) {
+
+	public void setNumMutationsUnpub(int numMutationsUnpub)
+	{
 		this.numMutationsUnpub = numMutationsUnpub;
 	}
-	public int getNumPatients() {
+
+	public int getNumPatients()
+	{
 		return numPatients;
 	}
-	public void setNumPatients(int numPatients) {
+
+	public void setNumPatients(int numPatients)
+	{
 		this.numPatients = numPatients;
 	}
-	public int getNumPatientsUnpub() {
+
+	public int getNumPatientsUnpub()
+	{
 		return numPatientsUnpub;
 	}
-	public void setNumPatientsUnpub(int numPatientsUnpub) {
+
+	public void setNumPatientsUnpub(int numPatientsUnpub)
+	{
 		this.numPatientsUnpub = numPatientsUnpub;
 	}
-	public Integer getPhenotypeCount(String phenotypeName) {
+
+	public Integer getPhenotypeCount(String phenotypeName)
+	{
 		return this.phenotypeCountHash.get(phenotypeName);
 	}
-	public void setPhenotypeCountHash(HashMap<String, Integer> phenotypeCountHash) {
+
+	public void setPhenotypeCountHash(HashMap<String, Integer> phenotypeCountHash)
+	{
 		this.phenotypeCountHash = phenotypeCountHash;
 	}
 }

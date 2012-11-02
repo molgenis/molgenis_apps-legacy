@@ -26,7 +26,7 @@ public class Statistics
 		List<String> dimNames;
 		int self = -1;
 		int iterator = -1;
-		
+
 		if (isRow)
 		{
 			dimNames = i.getRowNames();
@@ -43,12 +43,12 @@ public class Statistics
 			// swap row and col, easier to iterate
 			elements = transposeMatrix(elements);
 		}
-		
-		if(elements[self].length < 2)
+
+		if (elements[self].length < 2)
 		{
 			return null;
 		}
-		
+
 		double[] selfDoubles;
 		if (decimals)
 		{
@@ -58,14 +58,13 @@ public class Statistics
 		{
 			selfDoubles = getTextAsDoubles(elements[self]);
 		}
-		
-		
+
 		for (int index = 0; index < iterator; index++)
 		{
 			if (index != self)
 			{
 				double[] doubles;
-				
+
 				if (decimals)
 				{
 					doubles = getAsDoublesNullToZero(elements[index]);
@@ -99,16 +98,17 @@ public class Statistics
 		}
 		return t;
 	}
-	
+
 	public static int getIndexOfMax(Double[] doubles)
 	{
 		int maxIndex = -1;
 		Double max = null;
-		
-		for(int i=0; i<doubles.length; i++)
+
+		for (int i = 0; i < doubles.length; i++)
 		{
-			if(i != 0){
-				if(doubles[i] > max)
+			if (i != 0)
+			{
+				if (doubles[i] > max)
 				{
 					max = doubles[i];
 					maxIndex = i;
@@ -122,7 +122,7 @@ public class Statistics
 		}
 		return maxIndex;
 	}
-	
+
 	public static Double[] getAsDoubles(Object[] e)
 	{
 		Double[] res = new Double[e.length];
@@ -140,7 +140,7 @@ public class Statistics
 		}
 		return res;
 	}
-	
+
 	public static Double[] getAsAbsDoubles(Object[] e)
 	{
 		Double[] res = new Double[e.length];
