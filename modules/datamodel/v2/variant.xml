@@ -18,6 +18,7 @@
 		<entity name="Variant" extends="SequenceCharacteristic">
 			<description>Serves as a view on SequenceCharacteristics that are variants.</description>
 			<field name="type_" nillable="false" description="Type of the variant."/>
+			<field name="altResidues" nillable="false" description="alternative sequences observed, if multiple then seperated by ','"/>
 			<field name="nameCdna" nillable="false" index="true" description="cDNA name of the variant, e.g. c.123C>T"/>
 			<field name="startCdna" type="int" nillable="false" index="true" description="Start position on cDNA sequence."/>
 			<field name="endCdna" type="int" nillable="false" description="End position on cDNA sequence."/>
@@ -29,6 +30,7 @@
 			<field name="endAa" type="int" nillable="true" description="End position on amino acid sequence."/>
 			<field name="exon" type="xref" nillable="true" xref_field="Exon.id" description="The exon/intron this variant lies on."/>
 			<field name="gene" type="xref" nillable="false" xref_field="Gene.id" description="The gene this variant lies on."/>
+			<field name="chromosome" type="xref" nillable="true" xref_field="Chromosome.id" description="The chromosome."/>
 		</entity>
 		<entity name="Gene" extends="SequenceCharacteristic">
 			<description>Serves as a view on SequenceCharacteristics that are genes.</description>
