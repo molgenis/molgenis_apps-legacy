@@ -49,12 +49,12 @@ public class EMeasureEntityWriter
 	{
 		strBuilder.append("\t<subjectOf>\n" + "\t\t<measureAttribute>");
 		String code = m.getName();
-		String codeSystem = "TBD";
+		String codeSystem = "TBD"; // FIXME hardcoded reference
 		String displayName = m.getDescription();
 		String datatype = m.getDataType();
-		String codeDatatype = "dunno";
-		String codeSystemDatatype = "TBD";
-		String displayNameDatatype = "This should be the mappingsname";
+		String codeDatatype = "dunno"; // FIXME hardcoded reference
+		String codeSystemDatatype = "TBD"; // FIXME hardcoded reference
+		String displayNameDatatype = "This should be the mappingsname"; // FIXME hardcoded reference
 		strBuilder.append("<code code=\"").append(code).append("\" codeSystem=\"").append(codeSystem).append("\"")
 				.append(" displayName=\"").append(displayName).append("\" />");
 
