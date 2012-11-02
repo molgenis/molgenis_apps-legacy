@@ -1,11 +1,22 @@
 package org.molgenis.compute.commandline;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
-import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.WorkflowElement;
@@ -13,8 +24,9 @@ import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
-import java.io.*;
-import java.util.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 //import nl.vu.psy.rite.exceptions.RiteException;
 //import nl.vu.psy.rite.operations.Recipe;
@@ -31,9 +43,21 @@ public class ComputeCommandLine
 	private List<ComputeTask> tasks = new ArrayList<ComputeTask>();
 	private Worksheet worksheet;
 
-	private void generateJobs() throws Exception
+	private void generateJobs(LinkedHashMap<String, String> argsMap) throws Exception
 	{
 		computeBundle = new ComputeBundleFromDirectory(this);
+
+		// Add our parsed command line parameters 'as is' to the bundle:
+		for (String p : argsMap.keySet())
+		{
+			if (!p.equals("mcdir")) // <- Conficts with "McDir"...
+			{
+				ComputeParameter cp = new ComputeParameter();
+				cp.setName(p);
+				cp.setDefaultValue(argsMap.get(p));
+				computeBundle.addComputeParameter(cp);
+			}
+		}
 
 		//
 		// Append the commandline params to the list of ComputeParamters, so we
@@ -84,6 +108,7 @@ public class ComputeCommandLine
 		}
 
 		// process workflow elements
+		System.out.println("Starting script generation for PBS clusters.");
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
 		{
 			print("Starting generation of workflow element: " + wfe.getName());
@@ -381,89 +406,37 @@ public class ComputeCommandLine
 
 	public static void main(String[] args)
 	{
-		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
-
-		opt.getSet().addOption("parameters", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("workflow", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("worksheet", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("protocols", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("templates", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("scripts", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("id", false, Options.Separator.EQUALS);
-		// Directory where MOLGENIS/compute the commandline version was
-		// installed.
-		// This param is not specified by the user on the commandline but
-		// automagically determined by molgenis_compute.sh,
-		// which prepends it to the params specified by the user.
-		opt.getSet().addOption("mcdir", false, Options.Separator.EQUALS);
-		// Disabled until multiple backend support and use of the templates dir
-		// is re-enabled.
-		// opt.getSet().addOption("grid", false, Options.Separator.EQUALS,
-		// Options.Multiplicity.ZERO_OR_ONE);
-		// opt.getSet().addOption("cluster", false, Options.Separator.EQUALS,
-		// Options.Multiplicity.ZERO_OR_ONE);
-
-		// boolean isCorrect = opt.check();
-		boolean isCorrect = opt.check(opt.getSet().getSetName(), false, false);
-
-		if (!isCorrect)
-		{
-			System.out.println(opt.getCheckErrors());
-
-			// Location of scripts on backend currently not used on cluster
-			// If this changes re-enable:
-			// "-grid|cluster=<LocationOfScriptsOnBackend(Grid or Cluster)>\n" +
-			System.out.println("command line format:\n" + "-worksheet=<InputWorksheet.csv>\n"
-					+ "-parameters=<InputParameters.csv>\n" + "-workflow=<InputWorkflow.csv>\n"
-					+ "-protocols=<InputProtocolsDir>\n" + "-templates=<InputTemplatesDir>\n"
-					+ "-scripts=<OutputScriptsDir>\n" + "-id=<ScriptGenerationID>\n");
-			System.exit(1);
-		}
+		// Parse command line arguments
+		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args);
 
 		ComputeCommandLine ccl = new ComputeCommandLine();
 
-		ccl.parametersfile = new File(opt.getSet().getOption("parameters").getResultValue(0));
-		ccl.workflowfile = new File(opt.getSet().getOption("workflow").getResultValue(0));
-		ccl.worksheetfile = new File(opt.getSet().getOption("worksheet").getResultValue(0));
-		ccl.protocoldir = new File(opt.getSet().getOption("protocols").getResultValue(0));
-		ccl.templatedir = opt.getSet().getOption("templates").getResultValue(0);
-		ccl.outputdir = opt.getSet().getOption("scripts").getResultValue(0);
+		ccl.workflowfile = new File(argsMap.get("workflow"));
+		ccl.protocoldir = new File(argsMap.get("protocols"));
+		ccl.parametersfile = new File(argsMap.get("parameters"));
+		ccl.worksheetfile = new File(argsMap.get("worksheet"));
+		ccl.outputdir = argsMap.get("outputdir");
 
-		// Disabled until multiple backend support and use of the templates dir
-		// is re-enabled.
-		// if (opt.getSet().isSet(WorkflowGeneratorCommandLine.GRID))
-		// {
-		// System.out.println("generation for grid");
-		// ccl.backend = WorkflowGeneratorCommandLine.GRID;
-		// ccl.userValues.put("outputdir",
-		// opt.getSet().getOption(WorkflowGeneratorCommandLine.GRID).getResultValue(0));
-		// }
-		// else if (opt.getSet().isSet(WorkflowGeneratorCommandLine.CLUSTER))
-		// {
-		// System.out.println("generation for cluster");
-		// ccl.backend = WorkflowGeneratorCommandLine.CLUSTER;
-		// ccl.userValues.put("outputdir",
-		// opt.getSet().getOption(WorkflowGeneratorCommandLine.CLUSTER).getResultValue(0));
-		// }
+		// Put all parameters 'as is' in map
+		for (String p : argsMap.keySet())
+			ccl.userValues.put(p, argsMap.get(p));
 
-		System.out.println("Starting script generation for PBS clusters.");
-		// ccl.backend = WorkflowGeneratorCommandLine.CLUSTER;
+		// But let's also ensure backward compatability:
+		ccl.userValues.put("McDir", argsMap.get("mcdir"));
+		ccl.userValues.put("McId", argsMap.get("id"));
+		ccl.userValues.put("McParameters", argsMap.get("parameters"));
+		ccl.userValues.put("McProtocols", argsMap.get("protocols"));
+		ccl.userValues.put("McTemplates", "N/A");
+		ccl.userValues.put("McWorkflow", argsMap.get("workflow"));
+		ccl.userValues.put("McWorksheet", argsMap.get("worksheet"));
+		ccl.userValues.put("McScripts", argsMap.get("outputdir"));
+
 		ccl.backend = "cluster";
-
-		ccl.userValues.put("McDir", opt.getSet().getOption("mcdir").getResultValue(0));
-		ccl.userValues.put("McId", opt.getSet().getOption("id").getResultValue(0));
-		ccl.userValues.put("McParameters", opt.getSet().getOption("parameters").getResultValue(0));
-		ccl.userValues.put("McProtocols", opt.getSet().getOption("protocols").getResultValue(0));
-		ccl.userValues.put("McTemplates", opt.getSet().getOption("templates").getResultValue(0));
-		ccl.userValues.put("McWorkflow", opt.getSet().getOption("workflow").getResultValue(0));
-		ccl.userValues.put("McWorksheet", opt.getSet().getOption("worksheet").getResultValue(0));
-		ccl.userValues.put("McScripts", opt.getSet().getOption("scripts").getResultValue(0));
-
 		ccl.workingdir = new File(".");
 
 		try
 		{
-			ccl.generateJobs();
+			ccl.generateJobs(argsMap);
 			ccl.copyWorksheetAndWorkflow();
 			ccl.generateScripts();
 			// ccl.generateRite();
