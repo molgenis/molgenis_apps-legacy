@@ -24,8 +24,9 @@
 				Java-only -->
 			<plugin name="DataViewer"
 				type="org.molgenis.animaldb.plugins.viewers.ListPluginMatrix" label="Data viewer" />
-			<plugin name="JQGridPluginAnimal"
+			<!--  <plugin name="JQGridPluginAnimal"
 				type="org.molgenis.datatable.plugin.JQGridPluginAnimal" label="Phenotype" />
+			-->
 			<!-- ListPluginMatrix; Goal: view values for one animal, in a timeline; 
 				Flavor: Java-only -->
 			<plugin name="TimelineViewer"
