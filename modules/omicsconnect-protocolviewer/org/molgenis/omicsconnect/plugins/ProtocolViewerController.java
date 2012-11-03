@@ -1,4 +1,4 @@
-package plugins.protocolViewer;
+package org.molgenis.omicsconnect.plugins;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -25,41 +25,54 @@ import org.molgenis.observ.Category;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
-import org.molgenis.omicsconnect.EMeasureEntityWriter;
+import org.molgenis.omicsconnect.EMeasureFeatureWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
 
 import com.google.gson.Gson;
 
-public class ProtocolViewerPlugin extends PluginModel<Entity>
+/**
+ * Protocol viewer controller
+ */
+public class ProtocolViewerController extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -6143910771849972946L;
+	/** Protocol viewer model */
+	private ProtocolViewer protocolViewer;
 
-	/** all data sets */
-	private List<DataSet> dataSets;
-
-	public ProtocolViewerPlugin(String name, ScreenController<?> parent)
+	public ProtocolViewerController(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
 
-	@Override
-	public String getCustomHtmlHeaders()
+	public ProtocolViewer getMyModel()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">";
+		return protocolViewer;
 	}
 
 	@Override
 	public String getViewName()
 	{
-		return "plugins_protocolViewer_ProtocolViewerPlugin";
+		return ProtocolViewer.class.getSimpleName();
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "ProtocolViewerPlugin.ftl";
+		return ProtocolViewer.class.getName().replace('.', '/') + ".ftl";
+	}
+
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		// TODO move to head section in view
+		StringBuilder s = new StringBuilder();
+		s.append("<script type=\"text/javascript\" src=\"res/jquery-plugins/Treeview/jquery.treeview.js\"></script>");
+		s.append("<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" />");
+		s.append("<script type=\"text/javascript\" src=\"res/scripts/protocolviewer.js\"></script>");
+		s.append("<link rel=\"stylesheet\" href=\"res/css/protocolviewer.css\" type=\"text/css\" />");
+		return s.toString();
 	}
 
 	@Override
@@ -67,76 +80,38 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 	{
 		if (out == null) this.handleRequest(db, request);
 
-		Object object = null;
+		Object src = null;
 		if (request.getAction().equals("download_json_getdataset"))
 		{
-			Integer datasetId = request.getInt("datasetid");
-			DataSet selectedDataSet = null;
-			for (DataSet dataSet : dataSets)
-			{
-				if (dataSet.getId().equals(datasetId))
-				{
-					selectedDataSet = dataSet;
-					break;
-				}
-			}
-			if (selectedDataSet != null)
-			{
-				Protocol usedProtocol = findProtocol(db, selectedDataSet);
-				if (usedProtocol != null)
-				{
-					object = toJSProtocol(db, usedProtocol);
-				}
-			}
+			Integer dataSetId = request.getInt("datasetid");
+			List<DataSet> dataSets = db.find(DataSet.class, new QueryRule(DataSet.ID, Operator.EQUALS, dataSetId));
+			if (dataSets != null && !dataSets.isEmpty()) src = toJSDataSet(db, dataSets.get(0));
 		}
 		else if (request.getAction().equals("download_json_getfeature"))
 		{
 			Integer featureId = request.getInt("featureid");
 			List<ObservableFeature> features = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID,
 					Operator.EQUALS, featureId));
-			if (features == null || features.isEmpty()) throw new RuntimeException("feature does not exist: "
-					+ featureId);
-
-			ObservableFeature feature = features.get(0);
-
-			List<Category> categories = findCategories(db, feature);
-			List<JSCategory> jsCategories = null;
-			if (categories != null && !categories.isEmpty())
-			{
-				jsCategories = new ArrayList<JSCategory>(categories.size());
-				for (Category category : categories)
-					jsCategories.add(new JSCategory(category));
-			}
-
-			object = new JSFeature(feature, jsCategories);
-		}
-		else if (request.getAction().equals("download_json_searchAll"))
-		{
-			// JsonObject jsonObject = new JsonObject();
-			// for (ObservableFeature feature : getFeatures(db))
-			// {
-			// List<Category> categories = findCategories(db, feature);
-			// jsonObject.add(feature.getName(), buildJson(feature,
-			// categories));
-			// }
-			//
-			// object = jsonObject;
+			if (features != null && !features.isEmpty()) src = toJSFeature(db, features.get(0));
 		}
 		else
 		{
 			throw new RuntimeException("unknown action: " + request.getAction());
 		}
 
-		Writer writer = new OutputStreamWriter(out, Charset.forName("UTF-8"));
-		try
+		// serialize object to json
+		if (src != null)
 		{
-			new Gson().toJson(object, writer);
+			Writer writer = new OutputStreamWriter(out, Charset.forName("UTF-8"));
+			try
+			{
+				new Gson().toJson(src, writer);
+			}
+			finally
+			{
+				writer.close();
+			}
 		}
-		finally
-		{
-			writer.close();
-		}
-
 		return Show.SHOW_MAIN;
 	}
 
@@ -146,18 +121,16 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 		MolgenisRequest req = (MolgenisRequest) request;
 		HttpServletResponse response = req.getResponse();
 
+		// get data set
 		Integer dataSetId = request.getInt("datasetid");
 		DataSet dataSet = null;
-		for (DataSet aDataSet : dataSets)
-		{
-			if (aDataSet.getId().equals(dataSetId))
-			{
-				dataSet = aDataSet;
-				break;
-			}
-		}
+		List<DataSet> dataSets = db.find(DataSet.class, new QueryRule(DataSet.ID, Operator.EQUALS, dataSetId));
+		if (dataSets != null && !dataSets.isEmpty()) dataSet = dataSets.get(0);
+
+		// get features
 		String[] featuresStr = request.getString("features").split(",");
-		List<ObservableFeature> features = findFeatures(db, featuresStr);
+		List<Integer> featureIds = new ArrayList<Integer>(featuresStr.length);
+		List<ObservableFeature> features = findFeatures(db, featureIds);
 
 		if (request.getAction().equals("download_emeasure"))
 		{
@@ -170,10 +143,10 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
 			// write eMeasure XML file
-			EMeasureEntityWriter eMeasureWriter = new EMeasureEntityWriter(response.getOutputStream());
+			EMeasureFeatureWriter eMeasureWriter = new EMeasureFeatureWriter(response.getOutputStream());
 			try
 			{
-				eMeasureWriter.writeObservableFeatures(features);
+				eMeasureWriter.writeFeatures(features);
 			}
 			finally
 			{
@@ -214,27 +187,48 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 		else if (request.getAction().equals("download_viewer"))
 		{
 			req.getRequest().getSession().setAttribute("selectedObservableFeatures", features);
-			// FIXME pheno reference
-			response.sendRedirect(req.getAppLocation() + "/molgenis.do?__target=main&select=phenotypeViewer");
+			response.sendRedirect(req.getAppLocation() + "/molgenis.do?__target=main&select=DataSetViewer");
 		}
 
+	}
+
+	// TODO reload should throw DatabaseException
+	@Override
+	public void reload(Database db)
+	{
+		List<DataSet> dataSets;
+		try
+		{
+			dataSets = db.query(DataSet.class).find();
+		}
+		catch (DatabaseException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		// create new model
+		this.protocolViewer = new ProtocolViewer();
+		List<JSDataSet> jsDataSets;
+		if (dataSets != null && !dataSets.isEmpty())
+		{
+			jsDataSets = new ArrayList<JSDataSet>(dataSets.size());
+			for (DataSet dataSet : dataSets)
+				// performance: do not add protocols
+				jsDataSets.add(new JSDataSet(dataSet, null));
+		}
+		else
+		{
+			jsDataSets = Collections.emptyList();
+		}
+		this.protocolViewer.setDataSets(jsDataSets);
 	}
 
 	private List<Category> findCategories(Database db, ObservableFeature feature) throws DatabaseException
 	{
 		// TODO can we get by (internal) id instead of identifier?
-		QueryRule queryRule = new QueryRule(Category.OBSERVABLEFEATURE_IDENTIFIER, Operator.EQUALS,
-				feature.getIdentifier());
-		List<Category> categories = db.find(Category.class, queryRule);
+		List<Category> categories = db.find(Category.class, new QueryRule(Category.OBSERVABLEFEATURE_IDENTIFIER,
+				Operator.EQUALS, feature.getIdentifier()));
 		return categories;
-	}
-
-	private Protocol findProtocol(Database db, DataSet dataSet) throws DatabaseException
-	{
-		Integer protocolUsedId = dataSet.getProtocolUsed_Id();
-		if (protocolUsedId == null) return null;
-		List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.ID, Operator.EQUALS, protocolUsedId));
-		return protocols != null ? protocols.get(0) : null;
 	}
 
 	private List<Protocol> findSubProtocols(Database db, Protocol protocol) throws DatabaseException
@@ -246,131 +240,36 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 		return protocols;
 	}
 
-	private List<ObservableFeature> findFeatures(Database db, Protocol protocol) throws DatabaseException
+	private List<ObservableFeature> findFeatures(Database db, List<Integer> featureIds) throws DatabaseException
 	{
-		List<Integer> featureIds = protocol.getFeatures_Id();
 		if (featureIds == null || featureIds.isEmpty()) return null;
 		List<ObservableFeature> features = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID,
 				Operator.IN, featureIds));
 		return features;
 	}
 
-	private List<ObservableFeature> findFeatures(Database db, String[] featureStrIds) throws DatabaseException
+	private JSDataSet toJSDataSet(Database db, DataSet dataSet) throws DatabaseException
 	{
-		List<Integer> featureIds = new ArrayList<Integer>(featureStrIds.length);
-		for (String featureIdStr : featureStrIds)
-			featureIds.add(Integer.valueOf(featureIdStr));
-
-		if (featureIds == null || featureIds.isEmpty()) return null;
-		List<ObservableFeature> features = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID,
-				Operator.IN, featureIds));
-		return features;
-	}
-
-	// private JsonObject buildJson(ObservableFeature feature, List<Category>
-	// categories)
-	// {
-	// JsonObject jsonObject = new JsonObject();
-	// jsonObject.addProperty(ObservableFeature.NAME.toLowerCase(),
-	// feature.getName());
-	// jsonObject.addProperty(ObservableFeature.DESCRIPTION.toLowerCase(),
-	// feature.getDescription());
-	// jsonObject.addProperty(ObservableFeature.DATATYPE.toLowerCase(),
-	// feature.getDataType());
-	//
-	// JsonArray jsonArray = new JsonArray();
-	// for (Category category : categories)
-	// {
-	// JsonObject jsonCategoryObject = new JsonObject();
-	// jsonCategoryObject.addProperty(Category.VALUECODE.toLowerCase(),
-	// category.getValueCode());
-	// jsonCategoryObject.addProperty(Category.VALUELABEL.toLowerCase(),
-	// category.getValueLabel());
-	// jsonCategoryObject.addProperty(Category.VALUEDESCRIPTION.toLowerCase(),
-	// category.getValueDescription());
-	// jsonCategoryObject.addProperty(Category.ISMISSING.toLowerCase(),
-	// category.getIdField());
-	//
-	// jsonArray.add(jsonCategoryObject);
-	// }
-	// jsonObject.add("categories", jsonArray);
-	// return jsonObject;
-	// }
-	//
-	// private List<ObservableFeature> getFeatures(Database db) throws
-	// DatabaseException
-	// {
-	// return getFeatures(db, null);
-	// }
-	//
-	// private List<ObservableFeature> getFeatures(Database db, List<Integer>
-	// featureFilterIds) throws DatabaseException
-	// {
-	// // get protocol
-	// Protocol protocol = findProtocol(db, this.selectedDataSet);
-	// if (protocol == null) return Collections.emptyList();
-	//
-	// // find protocol features
-	// List<ObservableFeature> features = db.find(ObservableFeature.class, new
-	// QueryRule(ObservableFeature.ID,
-	// Operator.IN, protocol.getFeatures_Id()));
-	// if (features == null || features.isEmpty()) return
-	// Collections.emptyList();
-	//
-	// // filter features
-	// if (featureFilterIds != null)
-	// {
-	// Set<Integer> featureIdSet = new HashSet<Integer>(featureFilterIds);
-	// for (Iterator<ObservableFeature> it = features.iterator(); it.hasNext();)
-	// {
-	// if (!featureIdSet.contains(it.next().getId()))
-	// {
-	// it.remove();
-	// }
-	// }
-	// }
-	// return features;
-	// }
-
-	@Override
-	public void reload(Database db)
-	{
-		try
-		{
-			this.dataSets = db.query(DataSet.class).find();
-		}
-		catch (DatabaseException e)
-		{
-			// TODO reload should throw DatabaseException
-			throw new RuntimeException(e);
-		}
+		Integer protocolId = dataSet.getProtocolUsed_Id();
+		List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.ID, Operator.EQUALS, protocolId));
+		JSProtocol jsProtocol = null;
+		if (protocols != null && !protocols.isEmpty()) jsProtocol = toJSProtocol(db, protocols.get(0));
+		return new JSDataSet(dataSet, jsProtocol);
 	}
 
 	private JSProtocol toJSProtocol(Database db, Protocol protocol) throws DatabaseException
 	{
+		// get features
 		List<JSFeature> jsFeatures = null;
-		List<ObservableFeature> features = findFeatures(db, protocol);
+		List<ObservableFeature> features = findFeatures(db, protocol.getFeatures_Id());
 		if (features != null && !features.isEmpty())
 		{
 			jsFeatures = new ArrayList<JSFeature>(features.size());
 			for (ObservableFeature feature : features)
-			{
-				List<JSCategory> jsCategories = null;
-
-				List<Category> categories = findCategories(db, feature);
-				if (categories != null && !categories.isEmpty())
-				{
-					jsCategories = new ArrayList<JSCategory>(categories.size());
-					for (Category category : categories)
-					{
-						jsCategories.add(new JSCategory(category));
-					}
-				}
-
-				jsFeatures.add(new JSFeature(feature, jsCategories));
-			}
+				jsFeatures.add(toJSFeature(db, feature));
 		}
 
+		// get sub protocols (recursive)
 		List<JSProtocol> jsSubProtocols = null;
 		List<Protocol> subProtocols = findSubProtocols(db, protocol);
 		if (subProtocols != null && !subProtocols.isEmpty())
@@ -383,19 +282,47 @@ public class ProtocolViewerPlugin extends PluginModel<Entity>
 		return new JSProtocol(protocol, jsFeatures, jsSubProtocols);
 	}
 
-	public List<DataSet> getDataSets()
+	private JSFeature toJSFeature(Database db, ObservableFeature feature) throws DatabaseException
 	{
-		return dataSets;
+		List<JSCategory> jsCategories = null;
+
+		List<Category> categories = findCategories(db, feature);
+		if (categories != null && !categories.isEmpty())
+		{
+			jsCategories = new ArrayList<JSCategory>(categories.size());
+			for (Category category : categories)
+				jsCategories.add(new JSCategory(category));
+		}
+		return new JSFeature(feature, jsCategories);
 	}
 
-	public List<String> getSearchFields()
+	public static class JSDataSet
 	{
-		return Arrays.asList("All", "Protocols", "ObservableFeatures");
-	}
+		private final int id;
+		private final String name;
+		private final JSProtocol protocol;
 
-	public String getUrl()
-	{
-		return "molgenis.do?__target=" + this.getName();
+		public JSDataSet(DataSet dataSet, JSProtocol protocol)
+		{
+			this.id = dataSet.getId();
+			this.name = dataSet.getName();
+			this.protocol = protocol;
+		}
+
+		public int getId()
+		{
+			return id;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public JSProtocol getProtocol()
+		{
+			return protocol;
+		}
 	}
 
 	@SuppressWarnings("unused")
