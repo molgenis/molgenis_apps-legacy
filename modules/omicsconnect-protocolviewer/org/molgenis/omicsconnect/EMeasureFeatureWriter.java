@@ -21,26 +21,26 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class EMeasureEntityWriter implements Closeable
+public class EMeasureFeatureWriter implements Closeable
 {
 	private Writer writer;
 
-	public EMeasureEntityWriter(OutputStream os)
+	public EMeasureFeatureWriter(OutputStream os)
 	{
 		if (os == null) throw new IllegalArgumentException("writer is null");
 		this.writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 	}
 
-	public void writeObservableFeatures(List<ObservableFeature> observableFeatures) throws IOException
+	public void writeFeatures(List<ObservableFeature> features) throws IOException
 	{
 		StringBuilder strBuilder = new StringBuilder();
 
 		strBuilder
 				.append("<QualityMeasureDocument xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"REPC_MT000100UV01.Organizer\" xsi:schemaLocation=\"urn:hl7-org:v3 multicacheschemas/REPC_MT000100UV01.xsd\" classCode=\"CONTAINER\" moodCode=\"DEF\" xmlns=\"urn:hl7-org:v3\">");
 
-		for (ObservableFeature observableFeature : observableFeatures)
+		for (ObservableFeature feature : features)
 		{
-			appendObservableFeature(observableFeature, strBuilder);
+			appendFeature(feature, strBuilder);
 		}
 
 		strBuilder.append("</QualityMeasureDocument>");
@@ -49,7 +49,7 @@ public class EMeasureEntityWriter implements Closeable
 		writer.write(xmlFormatted);
 	}
 
-	private StringBuilder appendObservableFeature(ObservableFeature m, StringBuilder strBuilder)
+	private StringBuilder appendFeature(ObservableFeature m, StringBuilder strBuilder)
 	{
 		strBuilder.append("\t<subjectOf>\n" + "\t\t<measureAttribute>");
 		String code = m.getName();
