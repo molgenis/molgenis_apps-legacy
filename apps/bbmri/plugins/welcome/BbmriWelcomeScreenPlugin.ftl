@@ -47,8 +47,8 @@
 							<div class="welcomeText" id="welcomeText" name="welcomeText" columns="30000">
 							   ${screen.getWelcomeText()}
 							</div>
-							<!--input id="submitChanges" type="button" value="Submit" /-->
-							<input id="submitChanges" type="button" value="Submit changes"/>
+							<!--input id="submitChanges" type="button" value="Submit changes"/-->
+							<input type="submit" value="Submit Changes" onclick="__action.value='submitChangestoDB';return true;"/><br /><br />
 							<input type="submit" value="Restore original" onclick="__action.value='resetWelcomeTitleText';return true;"/><br /><br />
 						</#if>	
 					

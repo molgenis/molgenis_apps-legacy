@@ -240,7 +240,7 @@ fastqFilenamePE2,${filenamePrefix}${filenamePartSeperator}${filenameSuffixPE2}${
 #,,,,
 fastqChecksumFilenameSR,${fastqFilenameSR}${md5sumExtension},,,
 fastqChecksumFilenamePE1,${fastqFilenamePE1}${md5sumExtension},,,
-fastqChecksumFilenamePE2,${fastqFilenamePE1}${md5sumExtension},,,
+fastqChecksumFilenamePE2,${fastqFilenamePE2}${md5sumExtension},,,
 #,,,,
 compressedFastqFilenameSR,${fastqFilenameSR}${gzipExtension},use these for multiplexed files,string,
 compressedFastqFilenamePE1,${fastqFilenamePE1}${gzipExtension},use these for multiplexed files,string,

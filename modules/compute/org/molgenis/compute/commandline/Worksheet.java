@@ -87,7 +87,7 @@ public class Worksheet
 	 */
 	private void fillWorksheet()
 	{
-		Map<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new LinkedMap<String, String>();
 
 		// novel worksheet that combines user worksheet with parameters
 		List<Tuple> worksheet = new ArrayList<Tuple>();
@@ -206,6 +206,10 @@ public class Worksheet
 		 * targets (for easy use in FTL templates): (1, [a, b], x); (2, [a], x)
 		 */
 
+<<<<<<< HEAD
+		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]
+		Map<String, Map<String, ArrayList<Object>>> wsset = new LinkedMap<String, Map<String, ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
+=======
 		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1),
 														// (Sample: a,b,c),
 														// (Flowcell: x,y,z)]
@@ -220,6 +224,7 @@ public class Worksheet
 																													// a,b,c),
 																													// (Flowcell:
 																													// x,y,z)]]
+>>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 
 		for (Tuple t : worksheet)
 		{
@@ -242,7 +247,7 @@ public class Worksheet
 			else
 			{
 				// intialize tupleset: each field gets empty List of objects
-				tupleset = new HashMap<String, ArrayList<Object>>();
+				tupleset = new LinkedMap<String, ArrayList<Object>>();
 				for (String field : t.getFields())
 				{
 					tupleset.put(field, new ArrayList<Object>());
@@ -269,7 +274,7 @@ public class Worksheet
 			tupleset = wsset.get(key);
 
 			// this is bizarre:
-			Map<String, Object> m = new HashMap<String, Object>();
+			Map<String, Object> m = new LinkedMap<String, Object>();
 			for (String field : tupleset.keySet())
 			{
 				m.put(field, tupleset.get(field));
@@ -296,10 +301,16 @@ public class Worksheet
 
 	private static Set<String> reduceFieldSet(List<ComputeParameter> parameterlist, List<String> targets)
 	{
+<<<<<<< HEAD
+		// Let R and L be two sets. R contains 'reduce' parameters, L contains 'list' parameters.
+		Set<String> reduceParams = new LinkedSet<String>();
+		Set<String> listParams = new LinkedSet<String>();
+=======
 		// Let R and L be two sets. R contains 'reduce' parameters, L contains
 		// 'list' parameters.
 		Set<String> reduceParams = new HashSet<String>();
 		Set<String> listParams = new HashSet<String>();
+>>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 
 		// (i) put targets in R
 		for (String t : targets)
@@ -356,14 +367,19 @@ public class Worksheet
 			}
 		}
 
+<<<<<<< HEAD
+		// (v) for each parameter cp that is not in R and not in L, determine the 'set' of parameters it refers to. Put (cp, set) in map.
+		Map<String, Set<String>> map = new LinkedMap<String, Set<String>>();
+=======
 		// (v) for each parameter cp that is not in R and not in L, determine
 		// the 'set' of parameters it refers to. Put (cp, set) in map.
 		Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+>>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 		for (ComputeParameter cp : parameterlist)
 		{
 			if (!reduceParams.contains(cp.getName()) && !listParams.contains(cp.getName()))
 			{
-				Set<String> set = new HashSet<String>();
+				Set<String> set = new LinkedSet<String>();
 				for (ComputeParameter cp2 : parameterlist)
 				{
 					if (cp.getDefaultValue().contains("${" + cp2.getName() + "}"))
@@ -426,7 +442,7 @@ public class Worksheet
 		// (vii) check: are all parameters in "R u L"?
 		// print("R: " + R);
 		// print("L: " + L);
-		Set<String> allp = new HashSet<String>();
+		Set<String> allp = new LinkedSet<String>();
 		for (ComputeParameter cp : parameterlist)
 		{
 			allp.add(cp.getName());
@@ -624,7 +640,7 @@ public class Worksheet
 	{
 		if (ws1.size() != ws2.size())
 		{
-			Set<String> lineNumbers = new HashSet();
+			Set<String> lineNumbers = new LinkedSet();
 			for (Tuple t1 : ws1)
 			{
 				System.out.println(t1.getString("line_number"));
