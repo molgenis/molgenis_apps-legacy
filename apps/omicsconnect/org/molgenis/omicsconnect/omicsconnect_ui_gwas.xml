@@ -26,8 +26,7 @@
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 		</form>
-		<plugin name="ProtocolViewerPlugin" type="plugins.protocolViewer.ProtocolViewerPlugin"
-			label="Tree" />
+		<plugin name="ProtocolViewer" type="org.molgenis.omicsconnect.plugins.ProtocolViewer" />
 		
 		<form name="DataSetViewer" entity="DataSet">
 			<plugin name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
