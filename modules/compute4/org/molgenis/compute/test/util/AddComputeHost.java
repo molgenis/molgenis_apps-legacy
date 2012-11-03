@@ -24,8 +24,6 @@ public class AddComputeHost
 			host.setName("lsgrid");
 			host.setHostDir("/home/byelas/pilot");
 			host.setHostName("ui.grid.sara.nl");
-			host.setHostUsername("byelas");
-			host.setHostPassword("lala");// K960u4jT
 			host.setHostType("glite");
 			db.add(host);
 
@@ -33,8 +31,6 @@ public class AddComputeHost
 			host.setName("gcc");
 			host.setHostDir("/home/byelas/pilot");
 			host.setHostName("cluster.gcc.rug.nl");
-			host.setHostUsername("mdijkstra");
-			host.setHostPassword("lala");// K960u4jT
 			host.setHostType("pbs");
 			db.add(host);
 

@@ -21,4 +21,8 @@ public class ImportWorksheetOptions
 	@Option(name = "workflow_name", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "This is the workflow name as in database")
 	public String workflow_name = null;
 
+    @Option(name = "backend_name", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT,
+            usage = "This is the back-end name, where tasks should be submitted")
+    public String backend_name = null;
+
 }
