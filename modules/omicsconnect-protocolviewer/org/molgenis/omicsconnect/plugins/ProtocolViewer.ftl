@@ -25,148 +25,111 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
-					<tr>
-						<td class="box-header" colspan="2">
-							<div id="datasets">  
-						        <label style='font-size:14px'>
-						        	<#if (model.dataSets?size == 1)>Catalog:<#elseif (model.dataSets?size > 1)>Choose a Catalog:</#if>
-									<#list model.dataSets as dataSet>
-										<input type="button" value="${dataSet.name}" id="dataset${dataSet.id}">
-									</#list>
-								</label>
+				<div id="plugin-container">
+					<div id="plugin-header">
+					<#if (model.dataSets?size == 0)>
+						<span>No available catalogs</span>
+					<#else>
+						<label>Choose a catalog:</label>
+						<div id="datasets">
+						<#list model.dataSets as dataSet>
+							<input type="radio" id="dataset${dataSet.id}" name="radio"><label for="dataset${dataSet.id}">${dataSet.name}</label>
+						</#list>
+						</div>
+						<#-- store dataset ids with dataset input elements -->
+						<script type="text/javascript">
+							var ids = new Array(<#list model.dataSets as dataset>${dataset.id}<#if (dataset_has_next)>, </#if></#list>);
+		 					for(i in ids)
+		 						$('#dataset' + ids[i]).data('id', ids[i]);
+						</script>
+					</#if>
+					</div>
+					<div id="plugin-content">
+						<div id="plugin-content-left">
+							<p class="box-title">Browse variables</p>
+							<div id="search-controls">
+								<select id="search-filter">
+									<option value="filter_all" selected>All</option>
+									<option value="filter_protocols">Protocols</option>
+									<option value="filter_variables">Variables</option>
+								</select>
+								<input type="text" title="Enter your search term" id="search-text">	
+								<input type="button" value="Search" id="search-button">
+								<input type="button" value="Clear" id="search-clear-button">
 							</div>
- 						</td>
-		    		</tr>
-		    		<tr>
-		    			<td class="box-body" style="width:50%;">
-							<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
-								<#assign searchFilters = ["All", "Protocols", "Variables"]>
-								<#list searchFilters as searchFilter>
-									<option value="${searchFilter}" <#if searchFilter_index == 0>selected</#if>Search ${searchFilter}		
-								</#list>
-							</select>
-							<input title="fill in search term" type="text" name="InputToken" id="InputToken"
-								onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-								onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){;return whetherReload();}">
-								
-							
-							<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
-							value="search" style="font-size:0.8em" onclick="whetherReload()"/>
-							<input type="button" id="clearSearchingResult" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="clearSearchingResult" 
-							value="clear" style="font-size:0.8em"/>
-				    	</td>
-				    <td class="box-body" style="width: 50%"><div >Details:</div></td></tr>
-				    <tr>
-				    	<td class="box-body">
-				    		<div id="treeHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View all the data items in the study</div>
-							<div id="dataset-view">
+							<div id="dataset-browser">
+								<div id="dataset-view">
+								</div>
 							</div>
-						</td>
-					    <td class="box-body" id="showInformation"> 
-					    	<table  style="height:500px;width:100% ">
-						    	<tr>
-							    	<td style="height:250px; padding:0px" >
-								    	<div id="showDetailsHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View the variable details here</div>
-								    	<div id="feature-details" style="height:250px;overflow:auto">
-								    		
-		      							</div>
-  									</td>
-								</tr>
-								<tr>
-							    	<td style="height:20px; border-top:1px solid lightgray;">
-										<div id="selectionInformationHeader" style="display:none;background:#DDDDDD;height:30px;font-size:20px;text-align:center">View your selection here</div>
-										<div id="selectionState" >Your selection:
-											<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
-											<div id="traceBack" style="float:right;display:none">Locate the variable in the tree</div>
-											<div id="selectNotification" style="font-size:20px" ></br></br>Please select a variable in the tree</div>
-										</div>
-									</td>
-								</tr>
-								<tr>
-						    		<td>
-		  								<div id="selectionHeader" style="margin:0px"></div>
-									</td>
-								</tr>
-								<tr>
-						    		<td style="height:185px" >
-		  								<div id="feature-selection" style="height:185px; overflow:auto; width:100%"></div>
-									</td>
-								</tr>
-								<tr>
-									<td style="height:25px; border-top:1px solid lightgray; margin:0px;padding:0px">
-			  							<div id="selection" style="height:25px; margin:0px;padding:0px">
-											<div style="float:right">
-					 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
-												 onclick="__action.value='downloadButton';"/>
-			 								</div>
-			 								<div style="float:right">
-					 							<input type="submit" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
-												 onclick="__action.value='downloadButtonEMeasure';"/>
-			 								</div>
-			 								<div style="float:right">
-					 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="viewButton" name="viewButton" value="View" 
-												 onclick="__action.value='viewButton';"/>
-			 								</div>
-										</div>
-									</td>
-								</tr>
-							</table>
-					   </td>
-					</tr>
-					<tr>
-						<td class="box-body">
-						
-						</td>
-						<td class="box-body">
-						<!--<label>Fill in selection name</label>
-						<input title="fill in selection name" type="text" name="SelectionName" >
-						<input class="saveSubmit" type="submit" id="SaveSelectionSubmit" name="SaveSelectionSubmit" value="Save selection" 
-								onclick="__action.value='SaveSelectionSubmit';"/>-->
-						</td>
-					</tr>
-				</table>
- 				<!-- The detailed table bound to the branch is store in a click event. Therefore this table is not available
- 							until the branch has been clicked. As checkbox is part of this branch therefore when the checkbox is ticked
- 							the table shows up on the right as well. Another event is fired when the checkbox is checked which is
- 							adding a new variable in the selection table and it happens before the detailed table pops up. But we want to
- 							use the information (description) from the datailed table. Therefore we have to trigger the click event on branch
- 							here first and create the detailed table!-->
- 				<script type="text/javascript">					
-					// assign ids to dataset inputs
-					var dataSetIds = new Array(<#list model.dataSets as dataset>${dataset.id}<#if (dataset_has_next)>, </#if></#list>);
- 					for(i in dataSetIds) {
- 						var dataSetId = dataSetIds[i];
- 						$('#dataset' + dataSetId).data('id', dataSetId);
-	 					$('#dataset' + dataSetId).click(function() {
-	 						var dataSetId = $(this).data('id');
-							$.getJSON('${url_base}&__action=download_json_getdataset&datasetid=' + dataSetId, function(data) {
-								updateDataSetView(data, dataSetId);
-								$('#feature-details').empty();
-								$('#feature-selection').empty();
-							});
-							return false;
-						});
- 					}
+						</div>
+						<div id="plugin-content-right">
+							<div id="feature-information">
+								<p class="box-title">Description</p>
+								<div id="feature-details">
+								</div>
+							</div>
+							<div id="feature-shopping">
+								<p class="box-title">Your selection</p>
+								<div id="feature-selection">
+								</div>
+								<div id="download-controls">
+		 							<input type="button" value="Download as Excel" id="download-xls-button">
+									<input type="button" value="Download as eMeasure" id="download-emeasure-button">
+									<input type="button" value="View" id="view-features-button">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="plugin-footer">
+					</div>
+				</div>
+ 				<script type="text/javascript">
+ 					// render inputs
+ 					$('input[type=button]').button();
+ 					$('#datasets input[type=radio]').first().attr('checked', 'checked');
+ 					$('#datasets').buttonset();
  					
  					// create event handlers
- 					$('#downloadButton').click(function() {
+ 					$('#datasets input').click(function(e) {
+ 						e.preventDefault();
+ 						selectDataSet($(this).data('id'));
+					});
+ 					
+ 					$("#search-text").keyup(function(e){
+ 						e.preventDefault();
+					    if(e.keyCode == 13) // enter
+					        $("#search-button").click();
+					});
+ 					
+ 					$('#search-button').click(function(e) {
+ 						e.preventDefault();
+ 						processSearch($('#search-text').val());
+ 					});
+ 					
+ 					$('#search-clear-button').click(function(e) {
+ 						e.preventDefault();
+ 						console.log("todo: implement clear search");
+ 					});
+ 					
+ 					$('#download-xls-button').click(function(e) {
+ 						e.preventDefault();
  						window.location = getSelectedFeaturesURL('xls');
- 						return false;
  					});
  					
- 					$('#downloadButtonEMeasure').click(function() {
+ 					$('#download-emeasure-button').click(function(e) {
+ 						e.preventDefault();
  						window.location = getSelectedFeaturesURL('emeasure');
- 						return false;
  					});
  					
- 					$('#viewButton').click(function() {
+ 					$('#view-features-button').click(function(e) {
+ 						e.preventDefault();
  						window.location = getSelectedFeaturesURL('viewer');
- 						return false;
  					});
  					
+ 					// on ready
 					$(function() {
-						$('#datasets').find('input:first-child').click();
+						// select first dataset
+						$('#datasets input').first().click();
 					});
  				</script>
 			</div>

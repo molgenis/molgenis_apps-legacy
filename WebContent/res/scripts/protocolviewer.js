@@ -1,13 +1,39 @@
+function selectDataSet(id) {
+	// get/create data sets
+	var dataSets = $(document).data('datasets');
+	if(typeof dataSets === 'undefined') {
+		dataSets = {};
+		$(document).data('datasets', dataSets);
+	}
+	
+	if(!dataSets[id]) {
+		// load and store data set
+		$.getJSON('molgenis.do?__target=ProtocolViewer&__action=download_json_getdataset&datasetid=' + id, function(data) {
+			dataSets[id] = data;
+			updateDataSet(data, id);
+		});
+	} else {
+		// use stored data set
+		updateDataSet(dataSets[id], id);
+	}
+}
+
+function updateDataSet(data, id) {
+	// store current dataset
+	$(document).data('dataset', data);
+	$('#feature-details').empty();
+	$('#feature-selection').empty();
+	updateDataSetView(data, id);
+}
+
 function updateDataSetView(data) {
 	$('#dataset-view').empty();
 	$('#dataset-view').data('id', data.id);
 	
 	if(typeof data.protocol === 'undefined') {
-		$('#dataset-view').append("<h3>Catalog does not describe variables</h3>");
+		$('#dataset-view').append("<p>Catalog does not describe variables</p>");
 		return;
 	}
-	
-	$('#dataset-view').append("<h3>Catalog: " + data.name + "</h3>");
 	
 	// recursively build tree for protocol (+ store data with elements)	
 	function buildTree(protocol) {
@@ -48,7 +74,6 @@ function updateDataSetView(data) {
 	
 	// add protocol click handlers
 	$('#protocol-tree .folder').change(function(){
-		console.log("change");
 		if($(this).is(":checked")) {
 			// expand all children
 			$(this).siblings('ul').show();
@@ -80,35 +105,36 @@ function updateDataSetView(data) {
 
 function updateFeatureDetails(data) {
 	$('#feature-details').empty();
-	var table = $('<table class="feature-table" />');
+	var table = $('<table />');
 	table.append('<tr><td>' + "Current selection:" + '</td><td>' + data.name + '</td></tr>');
 	table.append('<tr><td>' + "Description:" + '</td><td>' + data.description + '</td></tr>');
 	table.append('<tr><td>' + "Data type:" + '</td><td>' + data.dataType + '</td></tr>');
 	
+	table.addClass('listtable feature-table');
+	table.find('td:first-child').addClass('feature-table-col1');
+	$('#feature-details').append(table);
+	
 	if(data.categories) {
-		$('#details').append('<h3>Categories</h3>');
-		var innertable = $('<table class="category-table" />');
-		$('<thead />').append('<th>Code</th><th>Label</th><th>Description</th><th></th>').appendTo(innertable);
+		var categoryTable = $('<table />');
+		$('<thead />').append('<th>Code</th><th>Label</th><th>Description</th>').appendTo(categoryTable);
 		$.each(data.categories, function(i, category){
 			var row = $('<tr />');
 			$('<td />').text(category.code).appendTo(row);
 			$('<td />').text(category.label).appendTo(row);
 			$('<td />').text(category.description).appendTo(row);
-			row.appendTo(innertable);		
+			row.appendTo(categoryTable);		
 		});
-		var row = $('<tr />');
-		$('<td />').text("Category:").appendTo(row);
-		$('<td />').append(innertable).appendTo(row);
-		row.appendTo(table);
+		
+		categoryTable.addClass('listtable');
+		$('#feature-details').append(categoryTable);
 	}
-	
-	$('#feature-details').append(table);
 }
 
 function updateFeatureSelection() {
 	$('#feature-selection').empty();
-	var table = $('<table class="featureselecttable" />');
+	var table = $('<table />');
 	$('<thead />').append('<th>Variables</th><th>Description</th><th>Protocol</th><th></th>').appendTo(table);
+	var odd = false;
 	$('#protocol-tree input:checkbox[name=feature]:checked').each(function() {
 		var name = $(this).data('name');
 		var description = $(this).data('description');
@@ -127,8 +153,13 @@ function updateFeatureSelection() {
 		}, this));
 		$('<td />').append(deleteButton).appendTo(row);
 		
+		if(odd)
+			row.addClass('form_listrow1');
+		odd = !odd;
+		
 		row.appendTo(table);
 	});
+	table.addClass('listtable selection-table');
 	$('#feature-selection').append(table);
 }
 
@@ -137,6 +168,58 @@ function getSelectedFeaturesURL(format) {
 	$('#protocol-tree input:checkbox[name=feature]:checked').each(function() {
 		features.push($(this).data('id'));	
 	});
-	var dataSetId = $('#dataset-view').data('id');
-	return '${url_base}&__action=download_' + format + '&datasetid=' + dataSetId + '&features=' + features.join();
+	var id = $(document).data('dataset').id;
+	return '${url_base}&__action=download_' + format + '&datasetid=' + id + '&features=' + features.join();
+}
+
+function processSearch(query) {
+	if(query) {
+		var dataSet = $(document).data('dataset');
+		if(dataSet && dataSet.protocol) {
+			searchProtocol(dataSet.protocol, new RegExp(query, 'i'));
+		}
+	}
+}
+
+function searchProtocol(protocol, regexp) {
+	if(matchProtocol(protocol, regexp))
+		console.log("found protocol: " + protocol.name);
+	
+	if(protocol.features) {
+		$.each(protocol.features, function(i, feature) {
+			if(matchFeature(feature, regexp))
+				console.log("found feature: " + feature.name);
+		});
+	}
+	
+	if(protocol.subProtocols) {
+		$.each(protocol.subProtocols, function(i, subProtocol) {
+			searchProtocol(subProtocol, regexp);
+		});
+	}
+}
+
+function matchProtocol(protocol, regexp) {
+	return protocol.name && protocol.name.search(regexp) != -1;
+}
+
+function matchFeature(feature, regexp) {
+	if(feature.name && feature.name.search(regexp) != -1)
+		return true;
+	if(feature.description && feature.description.search(regexp) != -1)
+		return true;
+	
+	if(feature.categories) {
+		$.each(feature.categories, function(i, category) {
+			if(matchCategory(category, regexp))
+				console.log("found category: " + category);
+		});
+	}
+}
+
+function matchCategory(category, regexp) {
+	if(category.description && category.description.search(regexp) != -1)
+		return true;
+	if(category.label && category.label.search(regexp) != -1)
+		return true;
 }
