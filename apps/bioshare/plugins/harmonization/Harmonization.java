@@ -428,13 +428,17 @@ public class Harmonization extends PluginModel<Entity>
 
 					for (String eachBlock : predictor.getBuildingBlocks())
 					{
-						predictor.getExpandedQuery().addAll(createExpandQuery(eachBlock.split(","), owlFunction));
+						predictor.getExpandedQuery().addAll(
+								expandQueryByDefinedBlocks(eachBlock.split(","), owlFunction));
 					}
 
 					if (!predictor.getExpandedQuery().contains(predictor.getLabel()))
 					{
 						predictor.getExpandedQuery().add(predictor.getLabel());
 					}
+
+					predictor.getExpandedQuery().addAll(
+							expandByPotentialBuildingBlocks(predictor.getLabel(), owlFunction));
 
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
 
@@ -927,7 +931,58 @@ public class Harmonization extends PluginModel<Entity>
 		predictor.setMappings(mappings);
 	}
 
-	private List<String> createExpandQuery(String[] buildingBlocksArray, OWLFunction owlFunction)
+	private List<String> expandByPotentialBuildingBlocks(String predictorLabel, OWLFunction owlFunction)
+	{
+		List<String> expandedQueries = new ArrayList<String>();
+
+		ArrayList<List<String>> potentialBlocks = Terms.getTermsLists(Arrays.asList(predictorLabel.split(" ")));
+
+		HashMap<String, List<String>> mapForBlocks = new HashMap<String, List<String>>();
+
+		boolean possibleBlocks = false;
+
+		for (List<String> eachSetOfBlocks : potentialBlocks)
+		{
+			for (String eachBlock : eachSetOfBlocks)
+			{
+				mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), owlFunction));
+
+				if (mapForBlocks.get(eachBlock).size() > 1)
+				{
+					possibleBlocks = true;
+				}
+
+				if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
+				{
+					mapForBlocks.get(eachBlock).add(eachBlock.toLowerCase().trim());
+				}
+
+			}
+
+			if (possibleBlocks == true)
+			{
+				List<String> combinedList = mapForBlocks.get(eachSetOfBlocks.get(0));
+
+				if (eachSetOfBlocks.size() > 1)
+				{
+					for (int i = 1; i < eachSetOfBlocks.size(); i++)
+					{
+						combinedList = combineLists(combinedList, mapForBlocks.get(eachSetOfBlocks.get(i)));
+					}
+				}
+				expandedQueries.addAll(combinedList);
+			}
+
+			mapForBlocks.clear();
+
+			possibleBlocks = false;
+
+		}
+
+		return expandedQueries;
+	}
+
+	private List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, OWLFunction owlFunction)
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
