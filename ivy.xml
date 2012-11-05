@@ -67,6 +67,7 @@
 		<dependency org="org.apache.lucene" name="lucene-core" rev="3.0.2" />
 		<dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.0.2" />
 		<dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1.1"/>
+		<dependency org="displaytag" name="displaytag" rev="1.2"/>
 	
 	</dependencies>
 </ivy-module>
