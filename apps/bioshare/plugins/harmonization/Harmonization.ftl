@@ -25,8 +25,8 @@
 		var settings = {};
 		var searchNode = new Array();
 	
-		$(document).ready(function(){
-			
+		$(document).ready(function()
+		{	
 			//Styling for the dropDown box
 			$('#selectPredictionModel').chosen().change(function(){
 				selected = $('#selectPredictionModel').val();
@@ -187,8 +187,8 @@
 			});
 		});
 		
-		function validateStudy(){
-		
+		function validateStudy()
+		{
 			if($('#listOfCohortStudies option').length == 0){
 				
 				showMessage("There are no cohort studies to validate the prediction model", false);
@@ -263,8 +263,8 @@
 			}
 		}
 		
-		function loadMappingResult(validationStudy){
-			
+		function loadMappingResult(validationStudy)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_loadMappingResult&validationStudy=" + validationStudy,
 				async: false,
@@ -379,8 +379,8 @@
 			});
 		}
 		
-		function addMappingFromTree(){
-			
+		function addMappingFromTree()
+		{	
 			mappedVariableId = $('#clickedVariable').val();
 			
 			measurementName = new Array();
@@ -396,8 +396,8 @@
 			saveMapping(mappings);
 		}
 		
-		function removeSingleMapping(element){
-		
+		function removeSingleMapping(element)
+		{
 			data = {};
 			
 			data["measurementName"] = $(element).parents('tr').eq(0).find('td:first-child span').text();
@@ -424,8 +424,8 @@
 			});
 		}
 		
-		function trackInTree(measurementName){
-			
+		function trackInTree(measurementName)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_getPosition&measurementName=" + measurementName,
 				async: false,
@@ -451,8 +451,8 @@
 			});
 		}
 		
-		function collectMappingFromCandidate(){
-			
+		function collectMappingFromCandidate()
+		{	
 			mappings = {};
 			
 			$('#mappingResult input:checkbox').each(function(){
@@ -482,8 +482,8 @@
 			saveMapping(mappings);
 		}
 		
-		function saveMapping(mappings){
-			
+		function saveMapping(mappings)
+		{	
 			validationStudy = $('#matchingValidationStudy').text();
 			
 			predictionModel = $('#matchingPredictionModel').text();
@@ -532,8 +532,8 @@
 			destroyScreenMessage();
 		}
 		
-		function retrieveExpandedQueries(predictor, matchedVariable){
-			
+		function retrieveExpandedQueries(predictor, matchedVariable)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_retrieveExpandedQuery&predictor="
 					+ predictor + "&matchedVariable=" + matchedVariable,
@@ -560,8 +560,8 @@
 			});
 		}
 		
-		function insertNewRow(){
-			
+		function insertNewRow()
+		{	
 			message = {};
 			message["message"] = "You successfully added a new predictor!";
 			message["success"] = true;
@@ -606,8 +606,8 @@
 			return message;
 		}
 		
-		function populateRowInTable(data){
-			
+		function populateRowInTable(data)
+		{
 			name = data["name"];
 			description = data["description"];
 			dataType = data["dataType"];
@@ -671,8 +671,8 @@
 			cancelAddPredictorPanel();
 		}
 		
-		function addNewPredictionModel(){
-			
+		function addNewPredictionModel()
+		{	
 			if($('#addPredictionModel').val() != ""){
 				selected = $('#addPredictionModel').val();
 				if($('#selectPredictionModel').find("option[name=\"" + selected +"\"]").length > 0){
@@ -701,8 +701,8 @@
 			}
 		}
 		
-		function removePredictionModel(){
-			
+		function removePredictionModel()
+		{	
 			if($('#selectPredictionModel option').length > 0){
 				selected = $('#selectPredictionModel').val();
 				
@@ -725,8 +725,8 @@
 			}
 		}
 		
-		function addPredictor(){
-		
+		function addPredictor()
+		{
 			message = ""
 			success = "";
 			
@@ -748,8 +748,8 @@
 			showMessage(message, success);
 		}
 		
-		function removePredictor(element){
-			
+		function removePredictor(element)
+		{	
 			predictor = $(element).parents('td').eq(0).text();
 			selected = $('#selectPredictionModel').val();
 			$.ajax({
@@ -767,8 +767,8 @@
 			});
 		}
 		
-		function showPredictors(predictionModelName){
-			
+		function showPredictors(predictionModelName)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_showPredictors&name=" + predictionModelName,
 				async: false,
@@ -794,8 +794,8 @@
 			});
 		}
 		
-		function defineFormula(){
-		
+		function defineFormula()
+		{
 			selected = $('#selectPredictionModel').val();
 			data = {};
 			data["selected"] = selected;
@@ -815,8 +815,8 @@
 		}
 		
 		//Make the add predictor panel disappear
-		function cancelAddPredictorPanel(){
-			
+		function cancelAddPredictorPanel()
+		{	
 			$('#defineVariablePanel').fadeOut();
 			$('#defineVariablePanel input[type="text"]').val('');
 			$('#dataTypeOfPredictor option:first-child').attr('selected',true);
@@ -824,16 +824,17 @@
 		}
 		
 		//Create list with unique elements
-		function uniqueElements(anArray){
+		function uniqueElements(anArray)
+		{
 			var result = [];
-	       $.each(anArray, function(i,v){
-	           if ($.inArray(v, result) == -1) result.push(v);
-	       });
-	       return result;
+	    	$.each(anArray, function(i,v){
+	        	if ($.inArray(v, result) == -1) result.push(v);
+	    	});
+	    	return result;
 		}
 		
-		function uniqueElementToString(anArray, separator){
-			
+		function uniqueElementToString(anArray, separator)
+		{	
 			unique = uniqueElements(anArray);
 			
 			backToString = "";
@@ -852,8 +853,8 @@
 		}
 		
 		//Create a jquery chosen multiple select element
-		function createMultipleSelect(listOfTerms){
-			
+		function createMultipleSelect(listOfTerms)
+		{	
 			listOfTerms = uniqueElements(listOfTerms);
 			
 			selectBlocks = "<select multiple=\"true\" style=\"width:90%;\">";
@@ -866,8 +867,8 @@
 			return selectBlocks;
 		}
 		
-		function summaryAddOne(identifier){
-			
+		function summaryAddOne(identifier)
+		{	
 			numberOfPredcitors = $('#numberOfPredictors').val();
 			buildingBlocksDefine = $('#buildingBlocksDefined').val();
 			$('#numberOfPredictors').val(++numberOfPredcitors);
@@ -877,7 +878,8 @@
 			$('#buildingBlocksDefined').val(buildingBlocksDefine);
 		}
 		
-		function summaryRemoveOne(identifier){
+		function summaryRemoveOne(identifier)
+		{
 			numberOfPredcitors = $('#numberOfPredictors').val();
 			buildingBlocksDefine = $('#buildingBlocksDefined').val();
 			$('#numberOfPredictors').val(--numberOfPredcitors);
@@ -887,8 +889,8 @@
 			$('#buildingBlocksDefined').val(buildingBlocksDefine);
 		}
 		
-		function showMessage(message, success){
-			
+		function showMessage(message, success)
+		{	
 			messagePanel = "<fieldset id=\"statusMessage\" class=\"ui-tabs-panel ui-widget-content ui-corner-bottom\">"
 						 + "<legend style=\"font-style:italic;\">Status</legend>"
 						 + "<div align=\"justify\" style=\"font-size:14px;padding:4px;\">"
@@ -919,8 +921,8 @@
 			$('#statusMessage').effect('bounce').delay(2000).fadeOut().delay(2000);
 		}
 		
-		function createScreenMessage(showMessage, height){
-			
+		function createScreenMessage(showMessage, height)
+		{	
 			if(height == null)
 			{
 				height = "50%";
@@ -940,15 +942,15 @@
 			});
 		}
 		
-		function destroyScreenMessage(){
-					
+		function destroyScreenMessage()
+		{			
 			$('.modalWindow').remove();
 			
 			$('#progressbar').remove();
 		}
 		
-		function createProgressBar(showMessage){
-			
+		function createProgressBar(showMessage)
+		{	
 			showModal();
 						
 			$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
@@ -967,20 +969,22 @@
 			});
 		}
 		
-		function updateProgressBar(percentage){
+		function updateProgressBar(percentage)
+		{
 			$("#progressbar").progressbar({
 				value: percentage * 100
 			});
 		}
 		
-		function destroyProgressBar(){
-			
+		function destroyProgressBar()
+		{	
 			$('.middleBar').remove();
 			$('.modalWindow').remove();
 			$('#progressbar').remove();
 		}
 		
-		function toggler() {
+		function toggler() 
+		{
 			$(this)
 				.parent()
 				// swap classes for hitarea
@@ -1010,8 +1014,8 @@
 			}
 		}
 		
-		function toggleNodeEvent(clickedNode){
-			
+		function toggleNodeEvent(clickedNode)
+		{	
 			$(clickedNode).children('span').click(function(){
 				
 				var nodeName = $(this).parent().attr('id');
@@ -1058,8 +1062,8 @@
 			});
 		}
 		
-		function searchTree(token){
-			
+		function searchTree(token)
+		{	
 			createScreenMessage("Searching...","70%");
 			
 			if(token != ""){
@@ -1086,8 +1090,8 @@
 			});
 		}
 		
-		function loadTree(){
-			
+		function loadTree()
+		{	
 			status = {};
 			
 			$.ajax({
@@ -1104,8 +1108,8 @@
 			}
 		}
 		
-		function showModal(){
-			
+		function showModal()
+		{	
 			$('body').append("<div class=\"modalWindow\"></div>");
 			
 			$('.modalWindow').css({
@@ -1120,8 +1124,8 @@
 			});
 		}
 		
-		function highlightClick(clickedBranch){
-			
+		function highlightClick(clickedBranch)
+		{	
 			$(clickedBranch).children('span').css({
 				'color':'#778899',
 				'font-size':17,
@@ -1152,8 +1156,8 @@
 			$('#clickedVariable').val(measurementID);
 		}
 		
-		function initializeTree(){
-			
+		function initializeTree()
+		{	
 			$('#search').button().click(function()
 			{
 				token = $('#searchField').val();
@@ -1197,16 +1201,16 @@
 			$('#treePanel').show();
 		}
 		
-		function checkSearchingStatus(){
-			
+		function checkSearchingStatus()
+		{	
 			if($('#searchField').val() === "")
 			{
 				$('#clearButton').trigger('click');
 			}
 		}
 		
-		function whetherReload(){
-			
+		function whetherReload()
+		{	
 			var value = $('#searchField').val();
 			
 			if(value.search(new RegExp("\\w", "gi")) != -1)

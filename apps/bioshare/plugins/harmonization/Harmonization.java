@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
@@ -426,6 +427,12 @@ public class Harmonization extends PluginModel<Entity>
 
 					PredictorInfo predictor = predictors.get(eachKey);
 
+					for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+							predictor.getFinalMappings())))
+					{
+						predictor.setDescription(m.getName(), m.getDescription());
+					}
+
 					for (String eachBlock : predictor.getBuildingBlocks())
 					{
 						predictor.getExpandedQuery().addAll(
@@ -775,7 +782,7 @@ public class Harmonization extends PluginModel<Entity>
 		return table.toString();
 	}
 
-	private String makeExistingMappingTable(PredictorInfo predictor)
+	private String makeExistingMappingTable(PredictorInfo predictor) throws JSONException
 	{
 		StringBuilder table = new StringBuilder();
 
@@ -789,7 +796,9 @@ public class Harmonization extends PluginModel<Entity>
 
 		for (String measurementName : predictor.getFinalMappings())
 		{
-			String description = predictor.getDescription(measurementName);
+
+			String description = (predictor.getDescription(measurementName) == null ? catalogue.getDescriptions(
+					measurementName).getString("description") : predictor.getDescription(measurementName));
 
 			StringBuilder identifier = new StringBuilder();
 
@@ -978,7 +987,6 @@ public class Harmonization extends PluginModel<Entity>
 			possibleBlocks = false;
 
 		}
-
 		return expandedQueries;
 	}
 
@@ -1018,54 +1026,6 @@ public class Harmonization extends PluginModel<Entity>
 
 		return expandedQueries;
 	}
-
-	// private List<String> createExpandQuery(String[] buildingBlocksArray,
-	// OWLFunction owlFunction)
-	// {
-	// List<String> buildingBlocks = new
-	// ArrayList<String>(Arrays.asList(buildingBlocksArray));
-	//
-	// List<String> expandedQueries = new ArrayList<String>();
-	//
-	// HashMap<String, List<String>> mapForBlocks = new HashMap<String,
-	// List<String>>();
-	//
-	// for (String eachBlock : buildingBlocks)
-	// {
-	// mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock,
-	// owlFunction));
-	//
-	// if (!mapForBlocks.get(eachBlock).contains(eachBlock))
-	// {
-	// mapForBlocks.get(eachBlock).add(eachBlock);
-	// }
-	// }
-	//
-	// for (int i = 0; i < buildingBlocksArray.length; i++)
-	// {
-	// String previousBlock = buildingBlocksArray[i];
-	//
-	// expandedQueries.addAll(mapForBlocks.get(previousBlock));
-	//
-	// if (buildingBlocksArray.length > 1)
-	// {
-	// List<String> combinedList = mapForBlocks.get(previousBlock);
-	//
-	// for (int j = 1; j < buildingBlocksArray.length; j++)
-	// {
-	// String nextBlock = buildingBlocksArray[j];
-	//
-	// expandedQueries.addAll(mapForBlocks.get(nextBlock));
-	//
-	// combinedList = combineLists(combinedList, mapForBlocks.get(nextBlock));
-	//
-	// expandedQueries.addAll(combinedList);
-	// }
-	// }
-	// }
-	//
-	// return expandedQueries;
-	// }
 
 	public List<String> collectInfoFromOntology(String queryToExpand, OWLFunction owlFunction)
 	{

@@ -81,6 +81,14 @@ public class PredictorInfo
 		this.finalMappings = finalMappings;
 	}
 
+	public void setDescription(String name, String measurementDescription)
+	{
+		if (!description.containsKey(name))
+		{
+			description.put(name, measurementDescription);
+		}
+	}
+
 	public void setMappings(MappingList mappings)
 	{
 		this.mappings = mappings;
