@@ -37,7 +37,7 @@ ${model.observationTargetForm.__target}
 			<tr><th>Feature</th><th>Value</th></tr>
 				
 			<#list observedValueDTOValList as observedValueDTO>
-				<#assign ovKey = "ObservedValue" + observedValueDTO.observedValueId>
+				<#assign ovKey = "ObservedValue" + observedValueDTO.observedValueId?c>
 				<#if observedValueDTO.protocolId == protocol.protocolId>
 					<tr><th>${observedValueDTO.featureDTO.featureName}</th><td>${model.createIndividualInput(ovKey)}</td></tr>
 				</#if>

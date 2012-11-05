@@ -389,6 +389,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						cdnaVariant.setStartAa(mutationUploadDTO.getAaStart());
 						cdnaVariant.setEndAa(mutationUploadDTO.getAaEnd());
 
+						cdnaVariant.setNameGdna(mutationUploadDTO.getGdnaNotation());
 						cdnaVariant.setStartGdna(mutationUploadDTO.getGdnaStart());
 						cdnaVariant.setEndGdna(mutationUploadDTO.getGdnaEnd());
 
