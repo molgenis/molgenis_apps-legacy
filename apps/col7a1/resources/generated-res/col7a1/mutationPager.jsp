@@ -23,7 +23,7 @@
 <display:column media="html" title="Mutation ID">
 <div class="unwrapped">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.identifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.identifier}"/></a>
+	<a href="<c:out value="${url}"/>"><c:out value="${current.identifier}"/></a><br/>
 </div>
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
@@ -32,6 +32,15 @@
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${patientDTO.variantDTOList[0].identifier}#results"/>
 	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.variantDTOList[0].identifier}"/></a>
 	</c:if>
+	<br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -56,6 +65,15 @@
 		</c:choose>
 	</c:otherwise>
 	</c:choose>
+	<br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -70,6 +88,14 @@
 	<c:out value="${patientDTO.variantDTOList[0].aaNotation}"/>
 	</c:if>
 	<br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -86,6 +112,14 @@
 	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.variantDTOList[0].exonName}"/></a>
 	</c:if>
 	<br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -100,6 +134,14 @@
 	<c:out value="${patientDTO.variantDTOList[0].consequence}"/>
 	</c:if>
 	<br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -114,6 +156,14 @@
 	<c:out value="${patientDTO.variantDTOList[0].inheritance}"/>
 	</c:if>
 	<br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -124,7 +174,15 @@
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=${patientDTO.patientIdentifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.patientIdentifier}"/></a>
+	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.patientIdentifier}"/></a><br/>
+	<c:choose>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/></c:forEach>
+	</c:when>
+	<c:otherwise>
+	<br/>
+	</c:otherwise>
+	</c:choose>
 </div>
 	</c:forEach>
 </display:column>
@@ -135,22 +193,12 @@
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:out value="${patientDTO.phenotypeMajor}"/><c:if test="${fn:length(patientDTO.phenotypeSub) > 1}">, <c:out value="${patientDTO.phenotypeSub}"/></c:if>
-</div>
-	</c:forEach>
-</display:column>
-<display:column media="html" title="Reference">
-<div class="unwrapped">
-	<br/>
-</div>
-	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
-<div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
-	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a>&nbsp;</c:forEach>
-<!-- 	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>-->
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}"><br/><a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a>&nbsp;</c:forEach>
 	</c:when>
 	<c:otherwise>
-	<c:out value="Unpublished"/>, <c:out value="${patientDTO.submitterDepartment}, ${patientDTO.submitterInstitute}, ${patientDTO.submitterCity}, ${patientDTO.submitterCountry}"/>
+	<br/><c:out value="Unpublished"/>
 	</c:otherwise>
 	</c:choose>
 </div>
