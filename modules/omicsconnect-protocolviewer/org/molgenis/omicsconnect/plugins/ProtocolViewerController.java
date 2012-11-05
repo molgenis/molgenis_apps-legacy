@@ -175,6 +175,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 				{
 					xlsWriter.writeCell(0, row, feature.getName());
 					xlsWriter.writeCell(1, row, feature.getDescription());
+					// TODO not consistent with eMeasure output
 					xlsWriter.writeCell(2, row, dataSet.getProtocolUsed_Identifier());
 					row++;
 				}

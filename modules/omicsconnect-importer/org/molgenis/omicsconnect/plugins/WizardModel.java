@@ -1,4 +1,4 @@
-package plugins.importwizard;
+package org.molgenis.omicsconnect.plugins;
 
 public abstract class WizardModel
 {

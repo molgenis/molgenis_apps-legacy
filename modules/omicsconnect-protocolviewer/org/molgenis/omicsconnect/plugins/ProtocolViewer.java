@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.molgenis.omicsconnect.plugins.ProtocolViewerController.JSDataSet;
 
+/**
+ * Protocol viewer model
+ */
 public class ProtocolViewer
 {
 	private List<JSDataSet> dataSets;

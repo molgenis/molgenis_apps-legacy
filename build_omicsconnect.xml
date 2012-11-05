@@ -9,7 +9,6 @@
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/omicsconnect-importer" />
-		<pathelement location="modules/omicsconnect-hl7parser" />
 		<pathelement location="modules/omicsconnect-protocolviewer" />
 	    <pathelement location="modules/webserver" />
 	    <pathelement location="modules/minigui" />

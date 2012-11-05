@@ -1,4 +1,4 @@
-package plugins.importwizard;
+package org.molgenis.omicsconnect.dataset;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -81,7 +81,8 @@ public class DataSetImporter
 		}
 	}
 
-	private void importCSV(File file, String identifier, DatabaseAction targetDbAction, DatabaseAction featureDbAction) throws IOException, DatabaseException
+	private void importCSV(File file, String identifier, DatabaseAction targetDbAction, DatabaseAction featureDbAction)
+			throws IOException, DatabaseException
 	{
 		LOG.info("importing dataset " + identifier + " from file " + file + "...");
 
