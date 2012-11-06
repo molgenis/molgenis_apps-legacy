@@ -435,7 +435,7 @@
 										</#list>
 									<#elseif (screen.getArrayDataSets()?size > 0)>
 										Catalog: 
-										<#assign invName = screen.getArrayDataSets()[0]> ${datasetsName}
+										<#assign dataSet = screen.getArrayDataSets()[0]> ${dataSet}
 									</#if>
 								</#if>
 								</label>
