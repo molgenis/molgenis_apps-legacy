@@ -7,7 +7,7 @@
 ${model.mbrowse.createProteinDomainPanel()}
 -->
 <br/>
-${model.mBrowsePanel}
+${model.getMBrowsePanel().toHtml()}
 <br/>
 </#if>
 
