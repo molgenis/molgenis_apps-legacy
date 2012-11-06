@@ -40,6 +40,10 @@ then
 	echo "name, step, nSNPs, PercDbSNP, Ti/Tv_known, Ti/Tv_Novel, All_comp_het_called_het, Known_comp_het_called_het, Non-Ref_Sensitivity, Non-Ref_discrepancy, Overall_concordance" > ${sampleconcordancefile}
 	echo "[1] NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA" >> ${sampleconcordancefile} 
 else
+	#Check finalreport on "missing" alleles. Also, see if we can fix missing alleles somewhere in GenomeStudio
+	awk '{ if ($3 != "-" || $4 != "-") print $0};' ${finalreport} \
+	> ${sample}_FinalReport.txt.tmp
+
 	##Set R library path
 	export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
 	export R_LIBS=${R_LIBS}
@@ -99,7 +103,7 @@ else
 	unset ready
 	while [ -z $ready ]
 	do
-	    position=`awk '$1 == "'<#noparse>${rs[$i]}</#noparse>'" {print $7}' ${finalreport}`
+	    position=`awk '$1 == "'<#noparse>${rs[$i]}</#noparse>'" {print $7}' ${sample}_FinalReport.txt.tmp`
 
 		echo "<#noparse>${rs[$i]}</#noparse> has position <#noparse>${position}</#noparse>"
 
@@ -147,10 +151,10 @@ else
 	
 	if [ $increase1 == "false" ]
 	then
-		cp ${finalreport} ${finalreporttmpdir}
+		cp ${sample}_FinalReport.txt.tmp ${finalreporttmpdir}
 	elif [ $increase1 == "true" ]
 	then
-		awk '{$7=$7+1; print $1,$2,$3,$4,$5,$6,$7}' OFS="\t" ${finalreport} > ${finalreporttmpdir} 
+		awk '{$7=$7+1; print $1,$2,$3,$4,$5,$6,$7}' OFS="\t" ${sample}_FinalReport.txt.tmp > ${finalreporttmpdir} 
 	else
 		echo "ERROR, variable increase1 should be either false or true"
 	fi
