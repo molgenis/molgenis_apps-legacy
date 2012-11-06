@@ -22,162 +22,23 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	Logger logger = Logger.getLogger(ComputeBundleFromDirectory.class);
 
 	/**
-	 * Minimal constructor only requiring path to workflow directory + worksheet
-	 * file. This uses defaults:
-	 * <ul>
-	 * <li>workflowDir/parameters.txt -> loads ComputeParameter
-	 * <li>workflowDir/workflow.txt -> loads WorkflowElement
-	 * <li>workflowDir/protocols -> reads all ftl in that directory into
-	 * protocol
-	 * <li>workflowDir/workflowelementparameters.txt -> optional: read
-	 * WorkflowElementParameter
-	 * <li>(DISCUSSION: can we not merge with ComputeParameter???)
-	 * </ul>
-	 * 
-	 * @param workflowDir
-	 * @param worksheetFile
-	 * @throws Exception
+	 * Load ComputeBundle
 	 */
 	public ComputeBundleFromDirectory(ComputeCommandLine options) throws Exception
 	{
+		// validate headers
+		ComputeBundleValidator cbv = new ComputeBundleValidator(this);
+		cbv.validateFileHeaders(options);
+
 		// load files
-		this.setComputeParameters(options.parametersfile);
 		this.setWorkflowElements(options.workflowfile);
-
-		// put names of workflowElement into parameters (so we can refer to them
-		// in worksheet for dependencies)
-		// for(WorkflowElement wfe: this.getWorkflowElements())
-		// {
-		// ComputeParameter pm = new ComputeParameter();
-		// pm.setName(wfe.getName());
-		// this.getComputeParameters().add(pm);
-		// }
-
-		// try
-		// {
-		// this.setWorkflowElementParameters(new
-		// File(workflowDir.getAbsolutePath() + File.separator
-		// + "workflowparameters.txt"));
-		// }
-		// catch (Exception e)
-		// {
-		// // if file does not exists, do nothing
-		// }
-		// read user parameters
+		this.setComputeProtocols(options.protocoldir);
+		this.setComputeParameters(options.parametersfile);
 		this.setWorksheet(options.worksheetfile);
 
-		// combine computeParameters (parameters.txt) and userParameters
-		// (worksheetFile)
-		// into one file, called worksheet
-		// this.fillWorksheet();
-
-		// load the protocols
-		this.setComputeProtocols(options.protocoldir);
-
+		// validate parsed files
+		cbv.validateBundle();
 	}
-
-	// private void fillWorksheet()
-	// {
-	// List<ComputeParameter> parameterlist = getComputeParameters(); //
-	// parameters.txt
-	// List<Tuple> userworksheet = getUserParameters(); // original user
-	// worksheet
-	//
-	// Map<String, String> parameters = new HashMap<String, String>();
-	//
-	// // novel worksheet that combines user worksheet with parameters
-	// List<Tuple> worksheet = new ArrayList<Tuple>();
-	//
-	// // fill worksheet and iteratively substitute values that point to
-	// parameters
-	// for (Tuple usertuple : userworksheet)
-	// {
-	// // first put all parameters/values in map
-	// parameters.clear();
-	//
-	// // add parameters.txt fields to parameters
-	// for (ComputeParameter cp : parameterlist)
-	// {
-	// String field = cp.getName();
-	// String value = cp.getDefaultValue();
-	// // only add if it not exists yet
-	// if (!parameters.containsKey(field)) {
-	// parameters.put(cp.getName(), value == null ? "" : value);
-	// } else {
-	// // // check whether existing value is empty
-	// // // if not: error
-	// // if (value != null && value != "") {
-	// throw new RuntimeException("Parameter " + field +
-	// " occurs > 1 times in your parameter.txt file.");
-	// // }
-	// }
-	// }
-	//
-	// // add user worksheet values to wt, for this tuple
-	// for (String field : usertuple.getFields())
-	// {
-	// String value = usertuple.getString(field);
-	// parameters.put(field, value == null ? "" : value);
-	// }
-	//
-	// // iteratively substitute values that point to parameters
-	// String fieldtemplate, value, originalvalue;
-	// Template template;
-	// Configuration conf = new Configuration();
-	// StringWriter filledtemplate;
-	//
-	// boolean done = false;
-	// while (!done)
-	// {
-	// boolean updated = false;
-	// for (String field : parameters.keySet())
-	// {
-	// try
-	// {
-	// // do substitution for field
-	// originalvalue = parameters.get(field);
-	// fieldtemplate = new String(originalvalue == null ? "" : originalvalue);
-	// template = new Template(field, new StringReader(fieldtemplate), conf);
-	// filledtemplate = new StringWriter();
-	// template.process(parameters, filledtemplate);
-	//
-	// value = filledtemplate.toString();
-	//
-	// if (!value.equalsIgnoreCase(originalvalue))
-	// {
-	// // update value of field in parameter list
-	// parameters.put(field, value);
-	// updated = true;
-	// }
-	// }
-	// catch (Exception e)
-	// {
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// if (!updated) done = true; // nothing changed, so we're done
-	// }
-	//
-	// // all values in parameters for this usertupele + parameters.txt are now
-	// iteratively filled
-	//
-	// // put these parameters in worksheet tuple (wt)
-	//
-	// Tuple wt = new SimpleTuple();
-	//
-	// for (String field : parameters.keySet())
-	// {
-	// value = parameters.get(field);
-	// wt.set(field, value == null ? "" : value);
-	// }
-	//
-	// // add wt to worksheet
-	// worksheet.add(wt);
-	// }
-	//
-	// setWorksheet(worksheet);
-	// }
 
 	public void setWorksheet(File worksheetFile) throws Exception
 	{
