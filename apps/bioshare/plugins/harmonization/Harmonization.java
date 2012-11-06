@@ -427,10 +427,14 @@ public class Harmonization extends PluginModel<Entity>
 
 					PredictorInfo predictor = predictors.get(eachKey);
 
-					for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
-							predictor.getFinalMappings())))
+					// Set description to the mapped variables
+					if (predictor.getFinalMappings().size() > 0)
 					{
-						predictor.setDescription(m.getName(), m.getDescription());
+						for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+								predictor.getFinalMappings())))
+						{
+							predictor.setDescription(m.getName(), m.getDescription());
+						}
 					}
 
 					for (String eachBlock : predictor.getBuildingBlocks())
@@ -1033,7 +1037,7 @@ public class Harmonization extends PluginModel<Entity>
 		expandedQueries.add(queryToExpand);
 		expandedQueries.addAll(owlFunction.getSynonyms(queryToExpand));
 		expandedQueries.addAll(owlFunction.getAllChildren(queryToExpand, new ArrayList<String>(), 1));
-
+		expandedQueries.remove("sy");
 		return expandedQueries;
 	}
 
