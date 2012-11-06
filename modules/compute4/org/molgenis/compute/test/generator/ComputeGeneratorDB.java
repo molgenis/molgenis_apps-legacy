@@ -1,11 +1,6 @@
 package org.molgenis.compute.test.generator;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
-
+import app.DatabaseFactory;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
@@ -16,7 +11,10 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 12:05
@@ -41,11 +39,11 @@ public class ComputeGeneratorDB implements ComputeGenerator
 
 	Database db = null;
 
-	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config)
+	public void generate(Workflow workflow, List<ComputeParameter> parameters, List<Target> targets, Hashtable<String, String> config)
 	{
 		this.userValues = config;
 
-		Collection<ComputeParameter> listParameters = workflow.getWorkflowComputeParameterCollection();
+		Collection<ComputeParameter> listParameters = parameters;
 		Collection<WorkflowElement> listWorkflowElements = workflow.getWorkflowWorkflowElementCollection();
 
 		try
@@ -106,8 +104,8 @@ public class ComputeGeneratorDB implements ComputeGenerator
 
 	}
 
-	@Override
-	public void generateTasks(Workflow workflow, List<Tuple> targets)
+
+	public void generateTasks(Workflow workflow, List<ComputeParameter> parameters, List<Tuple> targets, String backend_name)
 	{
 		// TODO Auto-generated method stub
 

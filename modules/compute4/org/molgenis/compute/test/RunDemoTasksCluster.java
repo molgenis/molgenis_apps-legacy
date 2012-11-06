@@ -9,25 +9,26 @@ import org.molgenis.compute.test.executor.ComputeExecutorPilotDB;
  */
 public class RunDemoTasksCluster
 {
-	public static void main(String[] args)
-	{
-		System.out.println("execute with pilots on the cluster");
-		// execute generated tasks with pilots
-		ComputeExecutor executor = new ComputeExecutorPilotDB();
-		executor.startHost("gcc");
-		executor.executeTasks(ComputeExecutorPilotDB.BACK_END_CLUSTER);
 
-		while (true)
-		{
-			executor.executeTasks(ComputeExecutorPilotDB.BACK_END_CLUSTER);
-			try
-			{
-				Thread.sleep(10000);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
+    public static void main(String[] args)
+    {
+        System.out.println("execute with pilots on the cluster");
+        // execute generated tasks with pilots
+        ComputeExecutor executor = new ComputeExecutorPilotDB();
+        executor.startHost("gcc");
+        executor.executeTasks("cluster.gcc.rug.nl", ComputeExecutorPilotDB.BACK_END_CLUSTER);
+
+        while (true)
+        {
+            executor.executeTasks("cluster.gcc.rug.nl", ComputeExecutorPilotDB.BACK_END_CLUSTER);
+            try
+            {
+                Thread.sleep(10000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }

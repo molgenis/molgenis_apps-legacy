@@ -50,6 +50,7 @@ public class SearchModel extends EasyPluginModel
 	private ToSimpleSearchForm toSimpleSearchForm             = new ToSimpleSearchForm();
 	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
 	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
+	private HtmlInput<?> topPanel;
 	private HtmlInput<?> mBrowsePanel;
 	private MutationSearchCriteriaDTO mutationSearchCriteriaVO = new MutationSearchCriteriaDTO();
 	private QueryParametersDTO queryParametersVO = new QueryParametersDTO();
@@ -295,6 +296,16 @@ public class SearchModel extends EasyPluginModel
 	public void setDisplayOptionsForm(DisplayOptionsForm displayOptionsForm)
 	{
 		this.displayOptionsForm = displayOptionsForm;
+	}
+
+	public HtmlInput<?> getTopPanel()
+	{
+		return topPanel;
+	}
+
+	public void setTopPanel(HtmlInput<?> topPanel)
+	{
+		this.topPanel = topPanel;
 	}
 
 	public HtmlInput<?> getMBrowsePanel()

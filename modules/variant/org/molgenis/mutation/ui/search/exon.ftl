@@ -28,7 +28,7 @@
 </table>
 </div>
 
-${model.mBrowsePanel}
+${model.getMBrowsePanel().toHtml()}
 
 ${vo.rawOutput}
 
