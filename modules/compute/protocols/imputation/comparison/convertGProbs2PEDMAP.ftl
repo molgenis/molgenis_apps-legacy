@@ -6,7 +6,7 @@ getFile ${tooldir}/python_scripts/convertGProbs2PEDMAP.py
 module load Python/2.7.3
 python -V
 
-python ${tooldir}/python_scripts/convertGProbs2PEDMAP.py ${aposterioriThreshold} ${resultsDir}/OUTPUT.tped
+python ${tooldir}/python_scripts/convertGProbs2PEDMAP.py ${resultsDir}/OUTPUT.gprobs ${aposterioriThreshold} ${resultsDir}/OUTPUT.tped
 
 putFile ${resultsDir}/OUTPUT.tped
 
