@@ -1,9 +1,13 @@
 package org.molgenis.omicsconnect;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,26 +21,26 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class EMeasureEntityWriter
+public class EMeasureFeatureWriter implements Closeable
 {
 	private Writer writer;
 
-	public EMeasureEntityWriter(Writer writer)
+	public EMeasureFeatureWriter(OutputStream os)
 	{
-		if (writer == null) throw new IllegalArgumentException("writer is null");
-		this.writer = writer;
+		if (os == null) throw new IllegalArgumentException("writer is null");
+		this.writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 	}
 
-	public void writeObservableFeatures(List<ObservableFeature> observableFeatures) throws IOException
+	public void writeFeatures(List<ObservableFeature> features) throws IOException
 	{
 		StringBuilder strBuilder = new StringBuilder();
 
 		strBuilder
 				.append("<QualityMeasureDocument xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"REPC_MT000100UV01.Organizer\" xsi:schemaLocation=\"urn:hl7-org:v3 multicacheschemas/REPC_MT000100UV01.xsd\" classCode=\"CONTAINER\" moodCode=\"DEF\" xmlns=\"urn:hl7-org:v3\">");
 
-		for (ObservableFeature observableFeature : observableFeatures)
+		for (ObservableFeature feature : features)
 		{
-			appendObservableFeature(observableFeature, strBuilder);
+			appendFeature(feature, strBuilder);
 		}
 
 		strBuilder.append("</QualityMeasureDocument>");
@@ -45,16 +49,18 @@ public class EMeasureEntityWriter
 		writer.write(xmlFormatted);
 	}
 
-	private StringBuilder appendObservableFeature(ObservableFeature m, StringBuilder strBuilder)
+	private StringBuilder appendFeature(ObservableFeature m, StringBuilder strBuilder)
 	{
 		strBuilder.append("\t<subjectOf>\n" + "\t\t<measureAttribute>");
 		String code = m.getName();
-		String codeSystem = "TBD";
+		String codeSystem = "TBD"; // FIXME hardcoded reference
 		String displayName = m.getDescription();
 		String datatype = m.getDataType();
-		String codeDatatype = "dunno";
-		String codeSystemDatatype = "TBD";
-		String displayNameDatatype = "This should be the mappingsname";
+		String codeDatatype = "dunno"; // FIXME hardcoded reference
+		String codeSystemDatatype = "TBD"; // FIXME hardcoded reference
+		String displayNameDatatype = "This should be the mappingsname"; // FIXME
+																		// hardcoded
+																		// reference
 		strBuilder.append("<code code=\"").append(code).append("\" codeSystem=\"").append(codeSystem).append("\"")
 				.append(" displayName=\"").append(displayName).append("\" />");
 
@@ -98,5 +104,11 @@ public class EMeasureEntityWriter
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void close() throws IOException
+	{
+		this.writer.close();
 	}
 }
