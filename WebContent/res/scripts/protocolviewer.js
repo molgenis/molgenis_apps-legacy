@@ -169,7 +169,7 @@ function getSelectedFeaturesURL(format) {
 		features.push($(this).data('id'));	
 	});
 	var id = $(document).data('dataset').id;
-	return '${url_base}&__action=download_' + format + '&datasetid=' + id + '&features=' + features.join();
+	return 'molgenis.do?__target=ProtocolViewer&__action=download_' + format + '&datasetid=' + id + '&features=' + features.join();
 }
 
 function processSearch(query) {
