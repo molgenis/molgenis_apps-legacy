@@ -24,6 +24,9 @@ public class ComputeCommandLine
 {
     //now, the default scheduler is PBS
     public static final String SCHEDULER_BSUB = "BSUB";
+    public static final String SCHEDULER_PBS = "PBS";
+    //we find out scheduler during jobs generation and then use it in submit generator
+    private String currentScheduler = "null";
 
 	protected ComputeBundle computeBundle;
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
@@ -130,11 +133,17 @@ public class ComputeCommandLine
 
             if(schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
             {
+                currentScheduler = SCHEDULER_BSUB;
                 //change walltime format hh:mm:ss -> hh:mm
                 String strWalltime = protocol.getWalltime();
                 int lastDots = strWalltime.lastIndexOf(":");
                 strWalltime = strWalltime.substring(0, lastDots);
                 protocol.setWalltime(strWalltime);
+            }
+            else
+            {
+                //default is PBS
+                currentScheduler = SCHEDULER_PBS;
             }
 
 			for (Tuple work : folded)
@@ -570,6 +579,7 @@ public class ComputeCommandLine
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("jobs", tasks);
 		params.put("workflowfilename", this.getworkflowfilename());
+        params.put("scheduler", currentScheduler);
 
 		String result = new FreemarkerView(this.protocoldir + File.separator + "CustomSubmit.sh.ftl", params).render();
 
