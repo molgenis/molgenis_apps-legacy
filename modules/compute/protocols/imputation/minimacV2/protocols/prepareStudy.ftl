@@ -12,9 +12,9 @@ mkdir -p ${studyPedMapChrDir}
 mkdir -p ${studyMerlinChrDir}
 
 #Load java
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 #Load plink
-module load plink/${plinkversion}
+${stage} plink/${plinkversion}
 
 #Create fam file from PED file
 awk '{print $1,$2,"0","0","1","2"}' ${studyInputPedMapChr}.ped > ${studyPedMapChr}.fam
@@ -140,9 +140,6 @@ do
 	
 done
 
-
-#Merge worksheets
-module load jdk/${javaversion}
 
 #Run Jar to create full worksheet
 

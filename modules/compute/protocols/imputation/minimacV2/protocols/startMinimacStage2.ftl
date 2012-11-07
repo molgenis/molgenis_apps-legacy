@@ -16,7 +16,7 @@ alloutputsexist \
 	"${projectPhasingJobsDirTarGz}"
 
 
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 java -jar ${concatWorksheetsJar} \
 	${tmpConcattedChunkWorksheet} \

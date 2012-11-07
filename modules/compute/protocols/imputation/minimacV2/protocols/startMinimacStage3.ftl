@@ -13,7 +13,7 @@ alloutputsexist \
 
 
 #Call compute to generate phasing jobs
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 mkdir -p ${projectImputationJobsDir}
 
