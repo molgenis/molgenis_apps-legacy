@@ -48,12 +48,12 @@ mkdir -p ${projectPhasingJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
+	-inputdir=. \
 	-worksheet="${concattedChunkWorksheet}" \
 	-parameters="${McParameters}" \
 	-workflow="${McProtocols}/../workflowMinimacStage2.csv" \
 	-protocols="${McProtocols}/" \
-	-templates="${McTemplates}/" \
-	-scripts="${projectPhasingJobsDir}/" \
+	-outputdir="${projectPhasingJobsDir}/" \
 	-id="${McId}"
 
 
