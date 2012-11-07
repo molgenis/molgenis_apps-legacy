@@ -911,31 +911,40 @@ public class Harmonization extends PluginModel<Entity>
 
 					double similarity = model.calculateScore(dataItemTokens, tokens);
 
-					if (similarity > maxSimilarity)
+					if (m.getDescription() != null)
 					{
-						if (m.getDescription() != null)
-						{
-							matchedDataItem = m.getDescription();
-						}
-						else
-						{
-							matchedDataItem = question;
-						}
-						maxSimilarity = similarity;
-
-						measurementName = m.getName();
+						matchedDataItem = m.getDescription();
+					}
+					else
+					{
+						matchedDataItem = question;
 					}
 
-					if (question.toLowerCase().matches(".*" + eachQuery.toLowerCase() + ".*"))
-					{
-						if (m.getName().equals("V55C_1") && eachQuery.equalsIgnoreCase("hypertension"))
-						{
-							double checkSimilarity = model.calculateScore(dataItemTokens, tokens);
-							System.out.println(checkSimilarity);
-						}
-						mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()),
-								model.calculateScore(dataItemTokens, tokens), m.getName());
-					}
+					mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()),
+							similarity, m.getName());
+					// if (similarity > maxSimilarity)
+					// {
+					// if (m.getDescription() != null)
+					// {
+					// matchedDataItem = m.getDescription();
+					// }
+					// else
+					// {
+					// matchedDataItem = question;
+					// }
+					// maxSimilarity = similarity;
+					//
+					// measurementName = m.getName();
+					// }
+					//
+					// if (question.toLowerCase().matches(".*" +
+					// eachQuery.toLowerCase() + ".*"))
+					// {
+					// mappings.add(eachQuery, (m.getDescription() == null ?
+					// m.getName() : m.getDescription()),
+					// model.calculateScore(dataItemTokens, tokens),
+					// m.getName());
+					// }
 				}
 			}
 			mappings.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);

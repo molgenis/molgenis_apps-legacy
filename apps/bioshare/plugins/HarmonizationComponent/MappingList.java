@@ -12,12 +12,6 @@ public class MappingList
 
 	private HashMap<String, LinkedInformation> uniqueElements = new HashMap<String, LinkedInformation>();
 
-	public List<LinkedInformation> getSortedInformation()
-	{
-		sorting();
-		return links;
-	}
-
 	public void add(String expandedQuery, String matchedItem, Double similarity, String measurementName)
 			throws Exception
 	{
@@ -31,7 +25,6 @@ public class MappingList
 
 		if (uniqueElements.containsKey(expandedQuery + measurementName))
 		{
-
 			if (similarity > uniqueElements.get(inf.expandedQuery + measurementName).similarity)
 			{
 				uniqueElements.get(expandedQuery + measurementName).similarity = similarity;
@@ -53,14 +46,13 @@ public class MappingList
 		}
 	}
 
-	public void sorting()
+	public List<LinkedInformation> getSortedInformation()
 	{
 
 		LinkedInformation[] columns = new LinkedInformation[links.size()];
 
 		if (links != null)
 		{
-
 			int i = 0;
 
 			for (LinkedInformation eachElement : links)
@@ -69,13 +61,17 @@ public class MappingList
 				i++;
 			}
 			Arrays.sort(columns);
+
 			links = Arrays.asList(columns);
-
-			for (LinkedInformation inf : links)
-			{
-				System.out.println(inf.expandedQuery + " ------------ similarity: " + inf.similarity);
-
-			}
+			//
+			// for (LinkedInformation inf : links)
+			// {
+			// System.out.println(inf.expandedQuery +
+			// " ------------ similarity: " + inf.similarity);
+			//
+			// }
 		}
+
+		return (links.size() > 100 ? links.subList(links.size() - 100, links.size()) : links);
 	}
 }
