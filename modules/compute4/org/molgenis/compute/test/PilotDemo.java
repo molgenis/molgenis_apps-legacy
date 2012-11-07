@@ -1,9 +1,6 @@
 package org.molgenis.compute.test;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.test.generator.ComputeGenerator;
 import org.molgenis.compute.test.generator.ComputeGeneratorDB;
@@ -11,12 +8,17 @@ import org.molgenis.compute.test.reader.WorkflowReader;
 import org.molgenis.compute.test.reader.WorkflowReaderDBJPA;
 import org.molgenis.compute.test.temp.Target;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 public class PilotDemo
 {
 	public static void main(String[] args)
 	{
 		WorkflowReader reader = new WorkflowReaderDBJPA();
 		// WorkflowReader reader = new WorkflowReaderDBJDBC();
+        List<ComputeParameter> parameters = reader.getParameters();
 
 		// read test workflow
 		Workflow workflow = reader.getWorkflow("TestWorkflow");
@@ -33,7 +35,7 @@ public class PilotDemo
 
 		// generate ComputeTasks
 		ComputeGenerator generator = new ComputeGeneratorDB();
-		generator.generate(workflow, targetList, userValues);
+		generator.generate(workflow, parameters, targetList, userValues);
 
 		System.out.println("... generated");
 	}

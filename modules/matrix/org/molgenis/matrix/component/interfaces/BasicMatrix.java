@@ -68,17 +68,17 @@ public interface BasicMatrix<R, C, V>
 
 	/**
 	 * Will reload the matrix from backend (if applicable).
-	 * @throws MatrixException 
+	 * 
+	 * @throws MatrixException
 	 */
 	void refresh() throws MatrixException;
 
 	/**
 	 * For multivalued results
+	 * 
 	 * @return
 	 * @throws MatrixException
 	 */
 	List<? extends V>[][] getValueLists() throws MatrixException;
-
-
 
 }

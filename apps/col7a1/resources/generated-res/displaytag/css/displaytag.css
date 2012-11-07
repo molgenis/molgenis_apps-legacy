@@ -1,6 +1,4 @@
-
-table {
-	/*border: 1px solid #666*/;
+table { /*border: 1px solid #666*/;
 	/*width: 100%*/;
 	margin: 10px 0 10px 0 !important;
 }
@@ -12,7 +10,6 @@ th,td {
 	white-space: nowrap;
 }
 */
-
 thead tr {
 	background-color: #CACACA;
 	white-space: nowrap;
@@ -59,8 +56,7 @@ tr.tableRowEven,tr.even {
 	background-color: #CACACA; /* #fea */
 }
 
-div.exportlinks {
-	/*background-color: #eee*/;
+div.exportlinks { /*background-color: #eee*/;
 	/*border: 1px dotted #999*/;
 	padding: 2px 4px 2px 4px;
 	margin: 2px 0 10px 0;
@@ -96,8 +92,7 @@ span.rtf {
 	background-image: url(../img/ico_file_rtf.png);
 }
 
-span.pagebanner {
-	/*background-color: #eee*/;
+span.pagebanner { /*background-color: #eee*/;
 	/*border: 1px dotted #999*/;
 	padding: 2px 4px 2px 4px;
 	width: 100%;
@@ -109,8 +104,7 @@ span.pagebanner {
 	display: none;
 }
 
-span.pagelinks {
-	/*font-size: 13pt*/;
+span.pagelinks { /*font-size: 13pt*/;
 	vertical-align: middle;
 	/*background-color: #eee*/;
 	/*border: 1px dotted #999*/;
@@ -122,40 +116,45 @@ span.pagelinks {
 	text-align: center;
 }
 
-
 .group-1 {
-    font-weight:bold;
-    padding-bottom:10px;
-    border-top:1px solid black;
+	font-weight: bold;
+	padding-bottom: 10px;
+	border-top: 1px solid black;
 }
+
 .group-2 {
-    font-style:italic;
-    border-top: 1px solid black;
+	font-style: italic;
+	border-top: 1px solid black;
+}
 
+.subtotal-sum,.grandtotal-sum {
+	font-weight: bold;
+	text-align: right;
 }
-.subtotal-sum, .grandtotal-sum {
-    font-weight:bold;
-    text-align:right;
-}
+
 .subtotal-header {
-    padding-bottom: 0px;
-    border-top: 1px solid white;
-}
-.subtotal-label, .grandtotal-label {
-    border-top: 1px solid white;
-    font-weight: bold;
-}
-.grouped-table tr.even {
-    background-color: #CACACA /* #fff; */
-}
-.grouped-table tr.odd {
-    background-color: #EEEEEE; /* #fff; */
-}
-.grandtotal-row {
-    border-top: 2px solid black;
+	padding-bottom: 0px;
+	border-top: 1px solid white;
 }
 
-th, a {
+.subtotal-label,.grandtotal-label {
+	border-top: 1px solid white;
+	font-weight: bold;
+}
+
+.grouped-table tr.even {
+	background-color: #CACACA /* #fff; */
+}
+
+.grouped-table tr.odd {
+	background-color: #EEEEEE; /* #fff; */
+}
+
+.grandtotal-row {
+	border-top: 2px solid black;
+}
+
+th,a {
 	margin: 0;
 	padding: 0;
 	font-size: 1em;

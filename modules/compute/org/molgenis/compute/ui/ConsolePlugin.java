@@ -26,160 +26,155 @@ import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-
 public class ConsolePlugin extends EasyPluginController
 {
-    private static final String COLOR_SUMMARY_FINISHED = "#99FF66";
-    private static final String COLOR_SUMMARY_ACTIVE = "#8BFEA8";
-    private static final String COLOR_TITLE = "#666666";
-    private static final String COLOR_READY = "#008000";
-    private static final String COLOR_ACTIVE = "#F0E68C";
-    private static final String COLOR_WAITING = "#FFA500";
+	private static final String COLOR_SUMMARY_FINISHED = "#99FF66";
+	private static final String COLOR_SUMMARY_ACTIVE = "#8BFEA8";
+	private static final String COLOR_TITLE = "#666666";
+	private static final String COLOR_READY = "#008000";
+	private static final String COLOR_ACTIVE = "#F0E68C";
+	private static final String COLOR_WAITING = "#FFA500";
 
+	private MCF mcf = null;
+	private TablePanel tablePanel = new TablePanel("", "");
 
-    private MCF mcf = null;
-    private TablePanel tablePanel = new TablePanel("","");
+	private ActionInput buttonRefresh = new ActionInput("buttonRefresh", "Refresh");
 
-    private ActionInput buttonRefresh = new ActionInput("buttonRefresh", "Refresh");
+	public ConsolePlugin(String name, ScreenController parent)
+	{
+		super(name, parent);
+	}
 
+	public ScreenView getView()
+	{
+		if (mcf != null)
+		{
+			int numberOfActive = mcf.getNumberActivePipelines();
 
-    public ConsolePlugin(String name, ScreenController parent)
-    {
-        super(name, parent);
-    }
+			Table finishedTable = new Table("Finished Pipelines", "");
+			finishedTable.addRow("");
+			finishedTable.addColumn("");
+			finishedTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_FINISHED + ";");
+			finishedTable.setCell(0, 0, "pipelines finished: " + mcf.getNumberFinishedPipelines());
+			tablePanel.add(finishedTable);
 
-    public ScreenView getView()
-    {
-        if (mcf != null)
-        {
-            int numberOfActive = mcf.getNumberActivePipelines();
+			Table activeTable = new Table("Active Pipelines", "");
+			activeTable.addRow("");
+			activeTable.addColumn("");
+			activeTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_ACTIVE + ";");
+			activeTable.setCell(0, 0, "pipelines active: " + mcf.getNumberActivePipelines());
+			tablePanel.add(activeTable);
 
-            Table finishedTable = new Table("Finished Pipelines","");
-            finishedTable.addRow("");
-            finishedTable.addColumn("");
-            finishedTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_FINISHED + ";");
-            finishedTable.setCell(0,0, "pipelines finished: " + mcf.getNumberFinishedPipelines());
-            tablePanel.add(finishedTable);
+			if (numberOfActive > 0)
+			{
+				Table progressTable = new Table("progress", "");
 
-            Table activeTable = new Table("Active Pipelines","");
-            activeTable.addRow("");
-            activeTable.addColumn("");
-            activeTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_ACTIVE + ";");
-            activeTable.setCell(0,0, "pipelines active: " + mcf.getNumberActivePipelines());
-            tablePanel.add(activeTable);
+				int numberOfRows = -1;
 
-            if (numberOfActive > 0)
-            {
-                Table progressTable = new Table("progress","");
+				// set table size
+				for (int i = 0; i < numberOfActive; i++)
+				{
+					Pipeline pipeline = mcf.getActivePipeline(i);
+					int n = pipeline.getNumberOfSteps();
+					if (n > numberOfRows) numberOfRows = n;
+				}
+				// add one extra row to show pipeline name
+				int numberOfColumn = numberOfActive;
 
-                int numberOfRows = -1;
+				// create table
+				for (int i = 0; i < numberOfRows + 1; i++)
+					progressTable.addRow("");
+				for (int i = 0; i < numberOfColumn; i++)
+					progressTable.addColumn("");
 
-                //set table size
-                for (int i = 0; i < numberOfActive; i++)
-                {
-                    Pipeline pipeline = mcf.getActivePipeline(i);
-                    int n = pipeline.getNumberOfSteps();
-                    if (n > numberOfRows)
-                        numberOfRows = n;
-                }
-                //add one extra row to show pipeline name
-                int numberOfColumn = numberOfActive;
+				for (int i = 0; i < numberOfActive; i++)
+				{
+					Pipeline pipeline = mcf.getActivePipeline(i);
+					progressTable.setCell(i, 0, pipeline.getId());
+					progressTable.setCellStyle(i, 0, "background-color: " + COLOR_TITLE + ";color: white;");
 
-                //create table
-                for (int i = 0; i < numberOfRows + 1; i++)
-                    progressTable.addRow("");
-                for (int i = 0; i < numberOfColumn; i++)
-                    progressTable.addColumn("");
+					for (int j = 0; j < pipeline.getNumberOfSteps(); j++)
+					{
+						Step step = pipeline.getStep(j);
 
-                for (int i = 0; i < numberOfActive; i++)
-                {
-                    Pipeline pipeline = mcf.getActivePipeline(i);
-                    progressTable.setCell(i, 0, pipeline.getId());
-                    progressTable.setCellStyle(i, 0, "background-color: " + COLOR_TITLE + ";color: white;");
+						if (step.isFinished())
+						{
+							progressTable.setCellStyle(i, j + 1, "background-color: " + COLOR_READY + ";color: white;");
+							progressTable.setCell(i, j + 1, step.getId() + " Finished # " + step.getNumberOfScripts());
+						}
+						else if (step.isActive())
+						{
+							progressTable.setCellStyle(i, j + 1, "background-color: " + COLOR_ACTIVE + ";");
+							progressTable.setCell(i, j + 1, step.getId() + " Started: " + step.getScriptsStarted()
+									+ " Finished: " + step.getScriptsFinished() + "  of " + step.getNumberOfScripts());
+						}
+						else
+						{
+							progressTable.setCellStyle(i, j + 1, "background-color: " + COLOR_WAITING + ";");
+							progressTable.setCell(i, j + 1, step.getId() + " # " + step.getNumberOfScripts());
+						}
+					}
+				}
 
-                    for (int j = 0; j < pipeline.getNumberOfSteps(); j++)
-                    {
-                        Step step = pipeline.getStep(j);
+				tablePanel.add(progressTable);
 
-                        if (step.isFinished())
-                        {
-                            progressTable.setCellStyle(i, j + 1, "background-color: " + COLOR_READY + ";color: white;");
-                            progressTable.setCell(i, j + 1, step.getId() + " Finished # " + step.getNumberOfScripts());
-                        }
-                        else if (step.isActive())
-                        {
-                            progressTable.setCellStyle(i, j + 1, "background-color: " + COLOR_ACTIVE + ";");
-                            progressTable.setCell(i, j + 1, step.getId() + " Started: " + step.getScriptsStarted() +
-                                    " Finished: " + step.getScriptsFinished() + "  of " + step.getNumberOfScripts());
-                        }
-                        else
-                        {
-                            progressTable.setCellStyle(i, j + 1, "background-color: " + COLOR_WAITING + ";");
-                            progressTable.setCell(i, j + 1, step.getId() + " # " + step.getNumberOfScripts());
-                        }
-                    }
-                }
+				Table legendTable = new Table("legend", "");
+				for (int i = 0; i < 0; i++)
+					legendTable.addRow("");
+				for (int i = 0; i < 3; i++)
+					legendTable.addColumn("");
 
-                tablePanel.add(progressTable);
+				{
+					legendTable.setCellStyle(0, 0, "background-color: " + COLOR_READY + ";color: white;");
+					legendTable.setCell(0, 0, "FINISHED");
+					legendTable.setCellStyle(1, 0, "background-color: " + COLOR_ACTIVE + ";");
+					legendTable.setCell(1, 0, "RUNNING");
+					legendTable.setCellStyle(2, 0, "background-color: " + COLOR_WAITING + ";");
+					legendTable.setCell(2, 0, "IN QUEUE");
+				}
 
-                Table legendTable = new Table("legend","");
-                for (int i = 0; i < 0; i++)
-                    legendTable.addRow("");
-                for (int i = 0; i < 3; i++)
-                    legendTable.addColumn("");
+				tablePanel.add(legendTable);
+				// tablePanel.add(buttonRefresh);
+			}
+		}
+		else
+		{
 
-                {
-                    legendTable.setCellStyle(0, 0, "background-color: " + COLOR_READY + ";color: white;");
-                    legendTable.setCell(0, 0, "FINISHED");
-                    legendTable.setCellStyle(1, 0, "background-color: " + COLOR_ACTIVE + ";");
-                    legendTable.setCell(1, 0, "RUNNING");
-                    legendTable.setCellStyle(2, 0, "background-color: " + COLOR_WAITING + ";");
-                    legendTable.setCell(2, 0, "IN QUEUE");
-                }
+			Table finishedTable = new Table("Finished Pipelines", "");
+			finishedTable.addRow("");
+			finishedTable.addColumn("");
+			finishedTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_FINISHED + ";");
+			finishedTable.setCell(0, 0, "pipelines finished: 0");
+			tablePanel.add(finishedTable);
 
-                tablePanel.add(legendTable);
-                //tablePanel.add(buttonRefresh);
-            }
-        }
-        else
-        {
+			Table activeTable = new Table("Active Pipelines", "");
+			activeTable.addRow("");
+			activeTable.addColumn("");
+			activeTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_ACTIVE + ";");
+			activeTable.setCell(0, 0, "pipelines active: 0");
+			tablePanel.add(activeTable);
+		}
+		tablePanel.add(buttonRefresh);
 
-            Table finishedTable = new Table("Finished Pipelines","");
-            finishedTable.addRow("");
-            finishedTable.addColumn("");
-            finishedTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_FINISHED + ";");
-            finishedTable.setCell(0,0, "pipelines finished: 0");
-            tablePanel.add(finishedTable);
+		return tablePanel;
+	}
 
-            Table activeTable = new Table("Active Pipelines","");
-            activeTable.addRow("");
-            activeTable.addColumn("");
-            activeTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_ACTIVE + ";");
-            activeTable.setCell(0,0, "pipelines active: 0");
-            tablePanel.add(activeTable);
-        }
-        tablePanel.add(buttonRefresh);
-
-        return tablePanel;
-    }
-
-    @Override
-    public void handleRequest(Database db, Tuple request)
-    {
-        if (mcf == null)
-        {
-            HttpServletRequestTuple req = (HttpServletRequestTuple) request;
-            ServletContext servletContext = req.getRequest().getSession().getServletContext();
-            mcf = (MCF) servletContext.getAttribute("MCF");
-        }
-    }
+	@Override
+	public void handleRequest(Database db, Tuple request)
+	{
+		if (mcf == null)
+		{
+			HttpServletRequestTuple req = (HttpServletRequestTuple) request;
+			ServletContext servletContext = req.getRequest().getSession().getServletContext();
+			mcf = (MCF) servletContext.getAttribute("MCF");
+		}
+	}
 
 	@Override
 	public void reload(Database db) throws Exception
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 }

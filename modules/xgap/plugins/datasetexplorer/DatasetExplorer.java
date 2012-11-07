@@ -74,12 +74,11 @@ public class DatasetExplorer extends PluginModel
 
 				if (action.equals("buildReport"))
 				{
-				
-					
+
 				}
-				else if(action.startsWith("disambig_"))
+				else if (action.startsWith("disambig_"))
 				{
-				
+
 				}
 
 			}
@@ -91,19 +90,12 @@ public class DatasetExplorer extends PluginModel
 		}
 	}
 
-	
-
-
-
 	@Override
 	public void reload(Database db)
 	{
 
 		try
 		{
-			
-			
-			
 
 		}
 		catch (Exception e)

@@ -17,14 +17,12 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 15/08/2012
- * Time: 13:15
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 15/08/2012 Time: 13:15
  * To change this template use File | Settings | File Templates.
  */
 public class WorkflowImporterPilotDemo
 {
+
     private File workflowDir, parametersFile, workflowElements, protocolsDir;
 
     public static void main(String[] args)
@@ -102,7 +100,6 @@ public class WorkflowImporterPilotDemo
                     parameter.setDataType("string");
                 else
                     parameter.setDataType(dataType);
-                parameter.setWorkflow(workflow);
 
                 if (hasOne_name != null)
                 {
@@ -288,4 +285,5 @@ public class WorkflowImporterPilotDemo
         bis.close();
         return new String(bytes);
     }
+
 }

@@ -11,7 +11,6 @@ import org.molgenis.compute.ComputeJob;
 public interface ComputeBackend
 {
 
-	
 	/** Refresh the status of this list of compute applications */
 	public void refresh(List<ComputeJob> running);
 

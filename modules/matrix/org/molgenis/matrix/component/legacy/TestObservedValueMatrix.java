@@ -1,4 +1,5 @@
 package org.molgenis.matrix.component.legacy;
+
 //package org.molgenis.matrix.component.test;
 //
 //import java.io.FileNotFoundException;
@@ -50,4 +51,4 @@ package org.molgenis.matrix.component.legacy;
 //		
 //		List<SequenceVariant> rows = m.getRowHeaders();
 //	}
-//}
+// }

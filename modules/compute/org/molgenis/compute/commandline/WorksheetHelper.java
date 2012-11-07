@@ -37,11 +37,9 @@ public class WorksheetHelper
 {
 	Logger logger = Logger.getLogger(WorksheetHelper.class);
 
-	static List<String> fieldsToInclude = Arrays
-			.asList(new String[]
-			{ "sample_name", "status", "sampletype", "investigation_name",
-					"flowcell_name", "lane", "barcode_barcode",
-					"capturing_capturing" });
+	static List<String> fieldsToInclude = Arrays.asList(new String[]
+	{ "sample_name", "status", "sampletype", "investigation_name", "flowcell_name", "lane", "barcode_barcode",
+			"capturing_capturing" });
 
 	/** Read tuples of user parameters from a file */
 	public List<Tuple> readTuplesFromFile(File worksheetFile) throws Exception
@@ -77,11 +75,9 @@ public class WorksheetHelper
 	 */
 	public void convertTuplesToEntites(List<Tuple> worksheet,
 
-	List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList)
-			throws Exception
+	List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList) throws Exception
 	{
-		this.convertTuplesToEntites(worksheet, LibraryLane.class, sampleList,
-				laneList, trioList);
+		this.convertTuplesToEntites(worksheet, LibraryLane.class, sampleList, laneList, trioList);
 	}
 
 	/**
@@ -92,10 +88,8 @@ public class WorksheetHelper
 	 * 
 	 * @throws Exception
 	 */
-	public void convertTuplesToEntites(List<Tuple> worksheet,
-			Class<? extends ObservationElement> iterationLevel,
-			List<NgsSample> sampleList, List<LibraryLane> laneList,
-			List<Trio> trioList) throws Exception
+	public void convertTuplesToEntites(List<Tuple> worksheet, Class<? extends ObservationElement> iterationLevel,
+			List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList) throws Exception
 	{
 		// problem is that LibraryLane don't have unique names. To be solved
 		// using decorator.
@@ -136,8 +130,7 @@ public class WorksheetHelper
 		}
 		else
 		{
-			throw new RuntimeException("iterationLevel "
-					+ iterationLevel.getSimpleName() + " not yet supported");
+			throw new RuntimeException("iterationLevel " + iterationLevel.getSimpleName() + " not yet supported");
 		}
 
 	}
@@ -148,8 +141,7 @@ public class WorksheetHelper
 	 * 
 	 * @param fieldsToInclude
 	 */
-	public List<Tuple> convertLanesToTuples(List<LibraryLane> laneList,
-			List<NgsSample> sampleList, List<Trio> trioList)
+	public List<Tuple> convertLanesToTuples(List<LibraryLane> laneList, List<NgsSample> sampleList, List<Trio> trioList)
 	{
 		// load trios into hashmap
 		Map<Integer, Trio> trios = this.createMap(trioList);
@@ -210,8 +202,7 @@ public class WorksheetHelper
 	 * @param dir
 	 * @return
 	 */
-	public List<Tuple> convertSamplesToTuples(List<NgsSample> sampleList,
-			List<LibraryLane> laneList)
+	public List<Tuple> convertSamplesToTuples(List<NgsSample> sampleList, List<LibraryLane> laneList)
 	{
 		// load samples into hashmap of id -> Sample
 		Map<Integer, NgsSample> samples = this.createMap(sampleList);
@@ -249,14 +240,12 @@ public class WorksheetHelper
 				{
 					for (String field : l.getFields())
 					{
-						if (fieldsToInclude.contains(field.toLowerCase())
-								&& l.get(field) != null)
+						if (fieldsToInclude.contains(field.toLowerCase()) && l.get(field) != null)
 						{
 							List<String> values;
 							if (currentRow.getList(field) != null)
 							{
-								values = (List<String>) currentRow
-										.getList(field);
+								values = (List<String>) currentRow.getList(field);
 
 							}
 							else
@@ -277,8 +266,7 @@ public class WorksheetHelper
 		return result;
 	}
 
-	private <E extends ObservationElement> Map<Integer, E> createMap(
-			List<E> entities)
+	private <E extends ObservationElement> Map<Integer, E> createMap(List<E> entities)
 	{
 		Map<Integer, E> entityMap = new LinkedMap<Integer, E>();
 		for (E e : entities)
@@ -288,11 +276,9 @@ public class WorksheetHelper
 		return entityMap;
 	}
 
-	public List<Tuple> convertTriosToTuples(List<Trio> trios,
-			List<NgsSample> samples, List<LibraryLane> lanes)
+	public List<Tuple> convertTriosToTuples(List<Trio> trios, List<NgsSample> samples, List<LibraryLane> lanes)
 	{
-		throw new UnsupportedOperationException(
-				"This method is not yet implemented but planned");
+		throw new UnsupportedOperationException("This method is not yet implemented but planned");
 	}
 
 	/**
@@ -306,8 +292,7 @@ public class WorksheetHelper
 
 		WorksheetHelper test = new WorksheetHelper();
 
-		System.out
-				.println("Part 1: load from file into Trio, NgsSample, LaneLibrary");
+		System.out.println("Part 1: load from file into Trio, NgsSample, LaneLibrary");
 
 		System.out.println("Load worksheet");
 		File f = new File(
@@ -351,8 +336,7 @@ public class WorksheetHelper
 		sampleList = new ArrayList<NgsSample>();
 		laneList = new ArrayList<LibraryLane>();
 
-		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList,
-				laneList, trioList);
+		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList, laneList, trioList);
 
 		System.out.println("LANES (entities)");
 		for (LibraryLane l : laneList)

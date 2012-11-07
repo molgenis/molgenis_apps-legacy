@@ -13,7 +13,7 @@ public class Sex
 	public String female;
 	@XmlElement
 	public String other;
-	
+
 	public String toString()
 	{
 		return String.format("Sex(male=%s, female=%s, other=%s)", male, female, other);

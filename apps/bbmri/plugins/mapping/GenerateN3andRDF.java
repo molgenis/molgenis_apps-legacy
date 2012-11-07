@@ -53,57 +53,59 @@ public class GenerateN3andRDF extends PluginModel
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		if ("GenerateN3".equals(request.getAction())) {
-				
-			//./generate-mapping -u root -p root -d com.mysql.jdbc.Driver -o molgenis_rdf_mapping_GCC_30_january.n3 jdbc:mysql://127.0.0.1/LLcatalogue
-			//./d2r-server -p 2020 molgenis_rdf_mapping_GCC_30_january.n3
+		if ("GenerateN3".equals(request.getAction()))
+		{
 
+			// ./generate-mapping -u root -p root -d com.mysql.jdbc.Driver -o
+			// molgenis_rdf_mapping_GCC_30_january.n3
+			// jdbc:mysql://127.0.0.1/LLcatalogue
+			// ./d2r-server -p 2020 molgenis_rdf_mapping_GCC_30_january.n3
 
-				/*Object d2rq = new D2RQ(); 
-				
-				Object mapping = new Mapping();
-				
-				String tmp = null;
-				Object MappingGenerator = new MappingGenerator(tmp);
-			   */
-				// Set up the ModelD2RQ using a mapping file
-				Model m = new ModelD2RQ("/Users/despoina/Documents/d2r-server-0.7/molgenis_rdf_mapping.n3");
-				Model JenaMapping = FileManager.get().loadModel("/Users/despoina/Documents/d2r-server-0.7/molgenis_rdf_mapping.n3");
-				// Set up the GraphD2RQ
-				GraphD2RQ g = new GraphD2RQ((Model) JenaMapping, "http://localhost:2020/");
+			/*
+			 * Object d2rq = new D2RQ();
+			 * 
+			 * Object mapping = new Mapping();
+			 * 
+			 * String tmp = null; Object MappingGenerator = new
+			 * MappingGenerator(tmp);
+			 */
+			// Set up the ModelD2RQ using a mapping file
+			Model m = new ModelD2RQ("/Users/despoina/Documents/d2r-server-0.7/molgenis_rdf_mapping.n3");
+			Model JenaMapping = FileManager.get().loadModel(
+					"/Users/despoina/Documents/d2r-server-0.7/molgenis_rdf_mapping.n3");
+			// Set up the GraphD2RQ
+			GraphD2RQ g = new GraphD2RQ((Model) JenaMapping, "http://localhost:2020/");
 
-				// Create a find(spo) pattern 
-				Node subject = Node.ANY;
-				Node predicate = DC.date.asNode();
-				Node object = Node.createLiteral("2003", null, XSDDatatype.XSDgYear);
-				Triple pattern = new Triple(subject, predicate, object);
+			// Create a find(spo) pattern
+			Node subject = Node.ANY;
+			Node predicate = DC.date.asNode();
+			Node object = Node.createLiteral("2003", null, XSDDatatype.XSDgYear);
+			Triple pattern = new Triple(subject, predicate, object);
 
-				// Query the graph
-				ExtendedIterator<Triple> it =  g.find(pattern);
+			// Query the graph
+			ExtendedIterator<Triple> it = g.find(pattern);
 
-				// Output query results
-				
-				while ((it).hasNext()) {
-				    Triple t = (Triple) (it).next();
-				    System.out.println(">>>Published in 2003: " + t.getSubject());
-				}
-				
-				
-				String sparql = 
-				    "PREFIX dc: <http://purl.org/dc/elements/1.1/>" +
-				    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
-				    "SELECT ?Investigation ?Investigation_name WHERE {" +
-				    "    ?Investigation_name dc:Investigation.name 'Hippocrates' . " +
-				    "}";
-				
-				com.hp.hpl.jena.query.Query q = QueryFactory.create(sparql); 
-				ResultSet rs = QueryExecutionFactory.create(q, m).execSelect();
-				while (rs.hasNext()) {
-				    QuerySolution row = rs.nextSolution();
-				    System.out.println("Title: " + row.getLiteral("paperTitle").getString());
-				    System.out.println("Author: " + row.getLiteral("authorName").getString());
-				}
+			// Output query results
+
+			while ((it).hasNext())
+			{
+				Triple t = (Triple) (it).next();
+				System.out.println(">>>Published in 2003: " + t.getSubject());
 			}
+
+			String sparql = "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
+					+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" + "SELECT ?Investigation ?Investigation_name WHERE {"
+					+ "    ?Investigation_name dc:Investigation.name 'Hippocrates' . " + "}";
+
+			com.hp.hpl.jena.query.Query q = QueryFactory.create(sparql);
+			ResultSet rs = QueryExecutionFactory.create(q, m).execSelect();
+			while (rs.hasNext())
+			{
+				QuerySolution row = rs.nextSolution();
+				System.out.println("Title: " + row.getLiteral("paperTitle").getString());
+				System.out.println("Author: " + row.getLiteral("authorName").getString());
+			}
+		}
 	}
 
 	@Override
@@ -111,5 +113,5 @@ public class GenerateN3andRDF extends PluginModel
 	{
 
 	}
-	
+
 }

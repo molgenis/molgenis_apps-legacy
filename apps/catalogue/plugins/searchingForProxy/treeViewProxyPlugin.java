@@ -4,7 +4,6 @@ import gcc.catalogue.ShoppingCart;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,14 +44,12 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import plugins.emeasure.EMeasure;
-
+import plugins.emeasure.EMeasureEntityWriter;
 
 //import org.molgenis.util.XlsWriter;
 
-
-
-public class treeViewProxyPlugin extends PluginModel<Entity> {
+public class treeViewProxyPlugin extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
@@ -66,7 +63,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 	private String selectedInvestigation = null;
 	private String selectedPredictionModel = null;
-	//	private String InputToken = null;
+	// private String InputToken = null;
 	private String selectedField = null;
 	private String SelectionName = "empty";
 
@@ -76,93 +73,99 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
-	
+
 	private String appLoc;
 
-	/** Multiple inheritance: some measurements might have multiple parents therefore it
-	 *  will complain about the branch already exists when constructing the tree, cheating by
-	 *  changing the name of the branch but keeping display name the same
+	/**
+	 * Multiple inheritance: some measurements might have multiple parents
+	 * therefore it will complain about the branch already exists when
+	 * constructing the tree, cheating by changing the name of the branch but
+	 * keeping display name the same
 	 */
 
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 	private List<String> listOfMeasurements = new ArrayList<String>();
 
-	public treeViewProxyPlugin(String name, ScreenController<?> parent) {
+	public treeViewProxyPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
-	public String getCustomHtmlHeaders() {
+	public String getCustomHtmlHeaders()
+	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">";
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "plugins_searchingForProxy_treeViewProxyPlugin";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/searchingForProxy/treeViewProxyPlugin.ftl";
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception {
+	public void handleRequest(Database db, Tuple request) throws Exception
+	{
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
 
 		appLoc = ((MolgenisRequest) request).getAppLocation();
 
-		List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+		List<Measurement> allMeasList = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+				Operator.EQUALS, selectedInvestigation));
 
-
-
-		//for now the cohorts are investigations 
-		if ("cohortSelect".equals(request.getAction())) {
-			System.out.println("----------------------"+request);
+		// for now the cohorts are investigations
+		if ("cohortSelect".equals(request.getAction()))
+		{
+			System.out.println("----------------------" + request);
 			selectedInvestigation = request.getString("cohortSelectSubmit");
 			this.setSelectedInvestigation(selectedInvestigation);
-			System.out.println("The selected investigation is : "+ selectedInvestigation);
+			System.out.println("The selected investigation is : " + selectedInvestigation);
 			arrayInvestigations.clear();
 
-		}else if (request.getAction().equals("chooseInvestigation")) {
+		}
+		else if (request.getAction().equals("chooseInvestigation"))
+		{
 
 			selectedInvestigation = request.getString("selectedStudy");
 			selectedPredictionModel = request.getString("selectedModel");
 			this.setSelectedInvestigation(selectedInvestigation);
 			arrayInvestigations.clear();
 
-		}else if(request.getAction().equals("downloadButtonEMeasure")){
-			//do output stream ourselves
-			MolgenisRequest req = (MolgenisRequest)request;
+		}
+		else if (request.getAction().equals("downloadButtonEMeasure"))
+		{
+			// do output stream ourselves
+			MolgenisRequest req = (MolgenisRequest) request;
 			HttpServletResponse response = req.getResponse();
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
 			Date date = new Date();
 			response.setContentType("application/x-download");
-			response.setHeader("Content-Disposition",
-					"attachment; filename="+"EMeasure_"+dateFormat.format(date)+".xml");
+			response.setHeader("Content-Disposition", "attachment; filename=" + "EMeasure_" + dateFormat.format(date)
+					+ ".xml");
 
-			PrintWriter pw = response.getWriter();
-
-			//Make E-Measure XML file
+			// Make E-Measure XML file
 
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
-			for (Measurement m : allMeasList) {
-				if(request.getBool(m.getId().toString()) != null){
+			for (Measurement m : allMeasList)
+			{
+				if (request.getBool(m.getId().toString()) != null)
+				{
 					selectedMeasList.add(m);
 				}
 
-
 			}
-
-			EMeasure em = new EMeasure(db, "EMeasure_"+dateFormat.format(date));
-
-			String result = em.convert(selectedMeasList);
-
-			pw.print(result);
-			pw.close();
+			EMeasureEntityWriter eMeasureWriter = new EMeasureEntityWriter(response.getWriter());
+			eMeasureWriter.writeMeasurements(selectedMeasList);
 		}
-		else if(request.getAction().equals("downloadButton")){
+		else if (request.getAction().equals("downloadButton"))
+		{
 
 			WorkbookSettings ws = new WorkbookSettings();
 
@@ -178,106 +181,148 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 			int startingRow = 1;
 
-
 			outputExcel.addCell(new Label(0, 0, "Selected variables"));
 
 			outputExcel.addCell(new Label(1, 0, "Descriptions"));
 
 			outputExcel.addCell(new Label(1, 0, "Sector/Protocol"));
 
+			for (Measurement m : allMeasList)
+			{
 
-			for (Measurement m : allMeasList) {
-
-				if(request.getBool(m.getId().toString()) != null){
+				if (request.getBool(m.getId().toString()) != null)
+				{
 					outputExcel.addCell(new Label(0, startingRow, m.getName()));
-					if(m.getDescription() != null){
-						outputExcel.addCell(new Label(1, startingRow,  m.getDescription()));
-					}else{
+					if (m.getDescription() != null)
+					{
+						outputExcel.addCell(new Label(1, startingRow, m.getDescription()));
+					}
+					else
+					{
 						outputExcel.addCell(new Label(1, startingRow, ""));
 					}
 					startingRow++;
 				}
 			}
-			//setMessages(new ScreenMessage("Your request has been downloaded", true));
+			// setMessages(new ScreenMessage("Your request has been downloaded",
+			// true));
 
 			workbook.write();
 			workbook.close();
 
-			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest   = rt.getRequest();
+			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
 			HttpServletResponse httpResponse = rt.getResponse();
-			//System.out.println(">>> " + this.getParent().getName()+ "or >>>  "+ this.getSelected().getLabel());
-			//String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
+			// System.out.println(">>> " + this.getParent().getName()+
+			// "or >>>  "+ this.getSelected().getLabel());
+			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
+			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
 
 			String redirectURL = "tmpfile/selectedVariables.xls";
 
 			httpResponse.sendRedirect(redirectURL);
 
-		}else if ("SaveSelectionSubmit".equals(request.getAction())) {
+		}
+		else if ("SaveSelectionSubmit".equals(request.getAction()))
+		{
 
-			if (!this.getLogin().isAuthenticated()) {
-				this.getModel().getMessages().add(new ScreenMessage("You must register in order to save a selection. Please select register from the main menu. ",  true));
-				this.setStatus("<h4> You must register in order to save a selection. Please select register from the main menu. "+ "</h4>" ) ;
-			} else {
+			if (!this.getLogin().isAuthenticated())
+			{
+				this.getModel()
+						.getMessages()
+						.add(new ScreenMessage(
+								"You must register in order to save a selection. Please select register from the main menu. ",
+								true));
+				this.setStatus("<h4> You must register in order to save a selection. Please select register from the main menu. "
+						+ "</h4>");
+			}
+			else
+			{
 
-				try	{
+				try
+				{
 					this.setSelectionName("empty");
 
-					if (request.getString("SelectionName") != null) {
+					if (request.getString("SelectionName") != null)
+					{
 
 						this.setSelectionName(request.getString("SelectionName").trim());
-						System.out.println("The SelectionName is >>> : " + this.getSelectionName());					
+						System.out.println("The SelectionName is >>> : " + this.getSelectionName());
 						System.out.println("Selection request >>>>>>" + request);
-					} else {
-						//this.setError("Please insert a name for your selection and try again.");
-						this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
-						this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
+					}
+					else
+					{
+						// this.setError("Please insert a name for your selection and try again.");
+						this.getModel()
+								.getMessages()
+								.add(new ScreenMessage(
+										"No name was inserted for the selection. An automatic name will be generated. ",
+										true));
+						this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "
+								+ "</h4>");
 					}
 
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 					Date dat = new Date();
 					String dateOfDownload = dateFormat.format(dat);
-					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
-					this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
-				} catch (IOException e) {
+					System.out.println("selected investigaton >>>> " + selectedInvestigation);
+					this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload,
+							this.getSelectionName());
+				}
+				catch (IOException e)
+				{
 					e.printStackTrace();
-				} catch (WriteException e1) {
+				}
+				catch (WriteException e1)
+				{
 					e1.printStackTrace();
 				}
 			}
-		} else if (request.getAction().startsWith("DeleteMeasurement")) {
+		}
+		else if (request.getAction().startsWith("DeleteMeasurement"))
+		{
 
-			String measurementName = request.getString("measurementName"); 
-			measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
+			String measurementName = request.getString("measurementName");
+			measurementName = request.getAction().substring(
+					"DeleteMeasurement".length() + 2 + "measurementName".length(), request.getAction().length());
 			this.deleteShoppingItem(measurementName);
 		}
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 
-		//where is request oeo???
-		//request content: select='CatalogueTreePlugin' measurementId='1' __target='main' 
+		// where is request oeo???
+		// request content: select='CatalogueTreePlugin' measurementId='1'
+		// __target='main'
 
-		//		this.getParent().getRoot().getModel().getController()
-		//		Login login = (Login)request.getRequest().getSession().getAttribute("login");
+		// this.getParent().getRoot().getModel().getController()
+		// Login login =
+		// (Login)request.getRequest().getSession().getAttribute("login");
 
-		//db.getLogin().getClass().getGenericSuperclass().g
+		// db.getLogin().getClass().getGenericSuperclass().g
 		System.out.println("-------------In reload---------------------" + appLoc);
 
-
-		try{
-			//			if (this.request!=null && this.request.getString("measurementId") != null) {
-			//			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
-			//		}
+		try
+		{
+			// if (this.request!=null && this.request.getString("measurementId")
+			// != null) {
+			// System.out.println("-request.getString(measurementId-----------"
+			// + request.getString("measurementId"));
+			// }
 			// default set selected investigation to first
-			if (this.getSelectedInvestigation() == null) {
+			if (this.getSelectedInvestigation() == null)
+			{
 
 				List<Investigation> listOfInvestigation = db.query(Investigation.class).find();
-				if (listOfInvestigation.size() > 0){
+				if (listOfInvestigation.size() > 0)
+				{
 
-					for(Investigation inv : listOfInvestigation){
-						if(db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, inv.getName())).size() > 0){
+					for (Investigation inv : listOfInvestigation)
+					{
+						if (db.find(Protocol.class,
+								new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, inv.getName())).size() > 0)
+						{
 							this.setSelectedInvestigation(inv.getName());
 							break;
 						}
@@ -285,20 +330,23 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 				}
 			}
 
-			if(selectedPredictionModel == null){
-				
-				List<Protocol> predictionModelInv = db.find(Protocol.class, 
-						new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Prediction Model"));
-				
+			if (selectedPredictionModel == null)
+			{
+
+				List<Protocol> predictionModelInv = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME,
+						Operator.EQUALS, "Prediction Model"));
+
 				listOfPredictionModels.clear();
-				
-				for(Protocol p : predictionModelInv){
+
+				for (Protocol p : predictionModelInv)
+				{
 					listOfPredictionModels.add(p.getName());
 				}
-				if(listOfPredictionModels.size() > 0){
+				if (listOfPredictionModels.size() > 0)
+				{
 					selectedPredictionModel = listOfPredictionModels.get(0);
 				}
-				
+
 			}
 			arraySearchFields.clear();
 			// this.searchingInvestigation = null;
@@ -311,17 +359,19 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 			this.arrayInvestigations.clear();
 
-			for (Investigation i : db.find(Investigation.class)) {
+			for (Investigation i : db.find(Investigation.class))
+			{
 				this.arrayInvestigations.add(i);
 			}
 
 			RetrieveProtocols(db);
 
-		}catch(Exception e){
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
-
 
 	/**
 	 * This method is used to retrieve all the protocols from the database.
@@ -339,7 +389,8 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 	 * @param db
 	 * @param mode
 	 */
-	public void RetrieveProtocols(Database db) {
+	public void RetrieveProtocols(Database db)
+	{
 
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
@@ -351,53 +402,62 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 		nameToProtocol = new HashMap<String, Protocol>();
 
-		try {
+		try
+		{
 
 			Query<Protocol> q = db.query(Protocol.class);
 
-			q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME,
-					Operator.EQUALS, this.selectedInvestigation));
+			q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.selectedInvestigation));
 
 			// Iterate through all the found protocols
-			for (Protocol p : q.find()) {
+			for (Protocol p : q.find())
+			{
 
-				if(!p.getName().equalsIgnoreCase("generic")){
+				if (!p.getName().equalsIgnoreCase("generic"))
+				{
 
 					setSelectedInv(true);
 					List<String> subNames = p.getSubprotocols_Name();
 
 					// keep a record of each protocol in a hashmap. Later on we
 					// could reference to the Protocol by name
-					if (!nameToProtocol.containsKey(p.getName())) {
+					if (!nameToProtocol.containsKey(p.getName()))
+					{
 						nameToProtocol.put(p.getName(), p);
 					}
 
 					/**
-					 *  Algorithm to find the topmost protocols. There are three kind
-					 *   of protocols needed.
-					 *   1. The protocols that are parents of other protocols
-					 *   2. The protocols that are children of some other protocols
-					 *   and at the same time are parents of some other protocols
-					 *   3. The protocols that are only children of other protocols
-					 *   Therefore we could do protocol2 =
-					 *   protocol2.removeAll(protocol3) ----> parent protocols but not topmost
-					 *   we then do protocol1 = protocol1.removeAll(protocol2) 
-					 *   topmost parent protocols
+					 * Algorithm to find the topmost protocols. There are three
+					 * kind of protocols needed. 1. The protocols that are
+					 * parents of other protocols 2. The protocols that are
+					 * children of some other protocols and at the same time are
+					 * parents of some other protocols 3. The protocols that are
+					 * only children of other protocols Therefore we could do
+					 * protocol2 = protocol2.removeAll(protocol3) ----> parent
+					 * protocols but not topmost we then do protocol1 =
+					 * protocol1.removeAll(protocol2) topmost parent protocols
 					 */
-					if (!subNames.isEmpty()) {
+					if (!subNames.isEmpty())
+					{
 
-						if (!topProtocols.contains(p.getName())) {
+						if (!topProtocols.contains(p.getName()))
+						{
 							topProtocols.add(p.getName());
 						}
-						for (String subProtocol : subNames) {
-							if (!middleProtocols.contains(subProtocol)) {
+						for (String subProtocol : subNames)
+						{
+							if (!middleProtocols.contains(subProtocol))
+							{
 								middleProtocols.add(subProtocol);
 							}
 						}
 
-					} else {
+					}
+					else
+					{
 
-						if (!bottomProtocols.contains(p.getName())) {
+						if (!bottomProtocols.contains(p.getName()))
+						{
 							bottomProtocols.add(p.getName());
 						}
 					}
@@ -406,52 +466,65 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 				topProtocols.removeAll(middleProtocols);
 			}
 
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 
 		// Create a starting point of the tree! The root of the tree!
-		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement(
-				"Study_" + this.getSelectedInvestigation().replaceAll(" ", "_"), "", null);
+		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement("Study_"
+				+ this.getSelectedInvestigation().replaceAll(" ", "_"), "", null);
 		protocolsTree.setLabel("Study: " + this.getSelectedInvestigation());
 
 		// Variable indicating whether the input token has been found.
 		boolean foundInputToken = false;
 
-		if (topProtocols.size() == 0) { // The protocols don`t have
+		if (topProtocols.size() == 0)
+		{ // The protocols don`t have
 			// sub-protocols and we could directly
 			// find the measurements of protocols
-			recursiveAddingNodesToTree(bottomProtocols,
-					protocolsTree.getName(), protocolsTree, db,
-					foundInputToken);
+			recursiveAddingNodesToTree(bottomProtocols, protocolsTree.getName(), protocolsTree, db, foundInputToken);
 
-		} else { // The protocols that have sub-protocols, then we recursively
+		}
+		else
+		{ // The protocols that have sub-protocols, then we recursively
 			// find sub-protocols
-			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(),
-					protocolsTree, db, foundInputToken);
+			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(), protocolsTree, db, foundInputToken);
 		}
 
 		directChildrenOfTop = protocolsTree.getChildren();
 
 		System.out.println(protocolsTree.getName());
-		System.out.println(">>>Protocols tree: "+ protocolsTree + "tree elements: "+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
+		System.out.println(">>>Protocols tree: " + protocolsTree + "tree elements: "
+				+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
 
 		boolean freshTree = false;
 
-		for(JQueryTreeViewElement element : directChildrenOfTop){
-			if(protocolsTree.getTreeElements().containsKey(element.getName())){
+		for (JQueryTreeViewElement element : directChildrenOfTop)
+		{
+			if (protocolsTree.getTreeElements().containsKey(element.getName()))
+			{
 				freshTree = true;
 			}
 		}
 
-		if (freshTree) { 
-			// After traverse through the tree, all the elements should have fallen
+		if (freshTree)
+		{
+			// After traverse through the tree, all the elements should have
+			// fallen
 			// in the right places of the tree, now create the tree view
 			treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
-		} else {
-			//Search result is empty or tree is empty 
-			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
-			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data." + "</h4>" ) ;
+		}
+		else
+		{
+			// Search result is empty or tree is empty
+			this.getModel()
+					.getMessages()
+					.add(new ScreenMessage(
+							"There are no results to show. Please, redifine your search or import some data.", true));
+			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data."
+					+ "</h4>");
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
@@ -474,49 +547,59 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 	 * @return
 	 */
 
-	public void recursiveAddingNodesToTree(List<String> nextNodes,
-			String parentClassName, JQueryTreeViewElement parentNode,
-			Database db, boolean foundTokenInParentProtocol) {
+	public void recursiveAddingNodesToTree(List<String> nextNodes, String parentClassName,
+			JQueryTreeViewElement parentNode, Database db, boolean foundTokenInParentProtocol)
+	{
 
 		// Create a findInputInNextAllToken variable to keep track of whether
 		// the sub-nodes contain any input token. If neither of the children
 		// contains the input token
 		// this variable should be false.
-		//		boolean findInputTokenInNextAllNodes = false;
+		// boolean findInputTokenInNextAllNodes = false;
 
 		// Create a variable to keep track of ONLY ONE sub-node of the current
 		// node. If the variable is false, that means there is no token found in
 		// this one branch.
 
 		// Loop through all the nodes on this level.
-		for (String protocolName : nextNodes) {
+		for (String protocolName : nextNodes)
+		{
 
 			Protocol protocol = nameToProtocol.get(protocolName);
 
 			JQueryTreeViewElement childTree = null;
 
-			if (protocol != null) {
+			if (protocol != null)
+			{
 
 				/**
-				 *  Resolve the issue of duplicated names in the tree. For any
-				 *  sub-protocols or measurements could	 belong to multiple parent class, so it`ll throw an error if
-				 *  we try to create the same element twice
-				 *  Therefore we need to give a unique identifier to the tree element but assign the same value to the display name.
+				 * Resolve the issue of duplicated names in the tree. For any
+				 * sub-protocols or measurements could belong to multiple parent
+				 * class, so it`ll throw an error if we try to create the same
+				 * element twice Therefore we need to give a unique identifier
+				 * to the tree element but assign the same value to the display
+				 * name.
 				 */
 
-				if (protocolsAndMeasurementsinTree.containsKey(protocolName)) {
-					if (!multipleInheritance.containsKey(protocolName)) {
+				if (protocolsAndMeasurementsinTree.containsKey(protocolName))
+				{
+					if (!multipleInheritance.containsKey(protocolName))
+					{
 						multipleInheritance.put(protocolName, 1);
-					} else {
+					}
+					else
+					{
 						int number = multipleInheritance.get(protocolName);
 						multipleInheritance.put(protocolName, ++number);
 					}
 
-					childTree = new JQueryTreeViewElement(protocolName
-							+ "_identifier_" + multipleInheritance.get(protocolName),
-							protocolName, protocol.getId().toString() + "_identifier_" + multipleInheritance.get(protocolName),parentNode);
+					childTree = new JQueryTreeViewElement(protocolName + "_identifier_"
+							+ multipleInheritance.get(protocolName), protocolName, protocol.getId().toString()
+							+ "_identifier_" + multipleInheritance.get(protocolName), parentNode);
 
-				} else {
+				}
+				else
+				{
 
 					// The tree first time is being created.
 					childTree = new JQueryTreeViewElement(protocolName, protocol.getId().toString(), parentNode);
@@ -524,63 +607,77 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
 
-				if(protocolName.equalsIgnoreCase("GenericDCM")){
+				if (protocolName.equalsIgnoreCase("GenericDCM"))
+				{
 					childTree.setCheckBox(true);
 				}
-				if(protocolName.equalsIgnoreCase("stageCatalogue")){
+				if (protocolName.equalsIgnoreCase("stageCatalogue"))
+				{
 					childTree.setCheckBox(true);
 				}
-				//				else{
-				//					childTree.setCheckBox(false);
-				//				}
+				// else{
+				// childTree.setCheckBox(false);
+				// }
 
-				if(childTree.getParent().getCheckBox()){
+				if (childTree.getParent().getCheckBox())
+				{
 					childTree.setCheckBox(true);
 				}
 
-				if(!protocolName.equals(parentClassName)){
+				if (!protocolName.equals(parentClassName))
+				{
 
 					boolean subProtocolRepeatProtocol = false;
 
 					// find all the sub-protocols and recursively call itself
-					if (protocol.getSubprotocols_Name() != null
-							&& protocol.getSubprotocols_Name().size() > 0) {
+					if (protocol.getSubprotocols_Name() != null && protocol.getSubprotocols_Name().size() > 0)
+					{
 
 						List<String> subProtocolNames = protocol.getSubprotocols_Name();
 
-						if(subProtocolNames.contains(protocolName)){
+						if (subProtocolNames.contains(protocolName))
+						{
 							subProtocolRepeatProtocol = true;
 						}
-						if(subProtocolNames.contains(parentClassName)){
+						if (subProtocolNames.contains(parentClassName))
+						{
 							subProtocolNames.remove(parentClassName);
 						}
-						recursiveAddingNodesToTree(
-								subProtocolNames,
-								protocol.getName(), childTree, db,
+						recursiveAddingNodesToTree(subProtocolNames, protocol.getName(), childTree, db,
 								foundTokenInParentProtocol);
 					}
 
-					// On the last branch of the tree, we`ll find measurements and
+					// On the last branch of the tree, we`ll find measurements
+					// and
 					// add them to the tree.
 					if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
-							&& protocol.getFeatures_Name().size() > 0) { // error
+							&& protocol.getFeatures_Name().size() > 0)
+					{ // error
 						// checking
 
-						addingMeasurementsToTree(
-								protocol.getFeatures_Name(), childTree, db,
-								false); // .. so normally it goes always
+						addingMeasurementsToTree(protocol.getFeatures_Name(), childTree, db, false); // ..
+																										// so
+																										// normally
+																										// it
+																										// goes
+																										// always
 						// this way
 					}
 
-				}else if(protocolName.equals(parentClassName)){
+				}
+				else if (protocolName.equals(parentClassName))
+				{
 
-					if (protocol.getFeatures_Name() != null
-							&& protocol.getFeatures_Name().size() > 0) { // error
+					if (protocol.getFeatures_Name() != null && protocol.getFeatures_Name().size() > 0)
+					{ // error
 						// checking
 
-						addingMeasurementsToTree(
-								protocol.getFeatures_Name(), childTree, db,
-								false); // .. so normally it goes always
+						addingMeasurementsToTree(protocol.getFeatures_Name(), childTree, db, false); // ..
+																										// so
+																										// normally
+																										// it
+																										// goes
+																										// always
 						// this way
 					}
 				}
@@ -595,11 +692,11 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 	 * @param childNode
 	 * @param parentNode
 	 * @param db
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
-	public boolean addingMeasurementsToTree(List<String> childNode,
-			JQueryTreeViewElement parentNode, Database db,
-			boolean foundInParent) {
+	public boolean addingMeasurementsToTree(List<String> childNode, JQueryTreeViewElement parentNode, Database db,
+			boolean foundInParent)
+	{
 
 		// Create a variable to store the boolean value with which we could know
 		// whether we need to skip these measurements of the protocol.
@@ -609,34 +706,41 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 		// indicate with the input token has been found in detail information in
 		// the measurement.
-		//		boolean findTokenInDetailInformation = false;
+		// boolean findTokenInDetailInformation = false;
 
 		// This variables store the measurements that conform to the
 		// requirements by the mode that has been selected.
 		// For example, it only contains the measurement where the input token
 		// has been found under mode searchingMeasurement
-		//		List<String> filteredNode = new ArrayList<String>();
+		// List<String> filteredNode = new ArrayList<String>();
 
-		try {
+		try
+		{
 
-			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(
-					Measurement.NAME, Operator.IN, childNode));
+			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+					childNode));
 
 			List<Measurement> filteredMeasurementsList = new ArrayList<Measurement>();
 
-			for (Measurement m : measurementList) {
-				if(m.getName().equals("PA_ID") || m.getName().equals("ID") || m.getName().equals("BEZOEKNR")){
+			for (Measurement m : measurementList)
+			{
+				if (m.getName().equals("PA_ID") || m.getName().equals("ID") || m.getName().equals("BEZOEKNR"))
+				{
 
-				}else{
-					filteredMeasurementsList.add(m);	//FILTERED LIST WITHOUT PA_ID, ID and BEZOEKNR
+				}
+				else
+				{
+					filteredMeasurementsList.add(m); // FILTERED LIST WITHOUT
+														// PA_ID, ID and
+														// BEZOEKNR
 				}
 			}
 
-
-			for (Measurement measurement : filteredMeasurementsList) {
+			for (Measurement measurement : filteredMeasurementsList)
+			{
 
 				// reset the the variable to false
-				//				findTokenInDetailInformation = false;
+				// findTokenInDetailInformation = false;
 
 				JQueryTreeViewElement childTree = null;
 
@@ -646,47 +750,56 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 				// use the measurement name as label
 				String displayName = "";
 
-				if (measurement.getLabel() != null && !measurement.getLabel().equals("")) {
+				if (measurement.getLabel() != null && !measurement.getLabel().equals(""))
+				{
 
 					displayName = measurement.getLabel();
-				} else {
+				}
+				else
+				{
 					displayName = measurement.getName();
 				}
 				String description = "";
-				if(measurement.getDescription() != null)
-					description = measurement.getDescription();
+				if (measurement.getDescription() != null) description = measurement.getDescription();
 				// Check if the tree has already had the treeElement with the
 				// same name cos the name can not be duplicated in
 				// jquery tree here. Therefore if the element already existed, a
 				// suffix will be added at the end of string to
 				// make the name unique
 
-				//				displayName = displayName.replaceAll("[%#]", "");
+				// displayName = displayName.replaceAll("[%#]", "");
 
 				String uniqueName = "";
 
-				if(displayName.equalsIgnoreCase("VALCOMM_1")){
+				if (displayName.equalsIgnoreCase("VALCOMM_1"))
+				{
 					System.out.println();
 				}
 
-				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
+				if (protocolsAndMeasurementsinTree.containsKey(displayName))
+				{
 
-					if (!multipleInheritance.containsKey(displayName)) {
+					if (!multipleInheritance.containsKey(displayName))
+					{
 						multipleInheritance.put(displayName, 1);
-					} else {
+					}
+					else
+					{
 						int number = multipleInheritance.get(displayName);
 						multipleInheritance.put(displayName, ++number);
 					}
 
-					childTree = new JQueryTreeViewElement(displayName
-							+ "_identifier_" + multipleInheritance.get(displayName),
-							displayName, measurement.getId().toString() + "_identifier_" + multipleInheritance.get(displayName), parentNode);
+					childTree = new JQueryTreeViewElement(displayName + "_identifier_"
+							+ multipleInheritance.get(displayName), displayName, measurement.getId().toString()
+							+ "_identifier_" + multipleInheritance.get(displayName), parentNode);
 
 					uniqueName = displayName + "_identifier_" + multipleInheritance.get(displayName);
 
 					listOfMeasurements.add(uniqueName);
 
-				} else {
+				}
+				else
+				{
 
 					childTree = new JQueryTreeViewElement(displayName, measurement.getId().toString(), parentNode);
 
@@ -707,13 +820,17 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 				JSONObject json = new JSONObject();
 
-				try {
+				try
+				{
 
 					json.put(uniqueName.replaceAll(" ", "_"), htmlValue);
 					inheritance.put(uniqueName.replaceAll(" ", "_"), htmlValue);
-					//					json.put("tableID", measurement.getName().replaceAll(" ", "_") + "_table");
-					//					json.put("table", htmlValue);
-				} catch (JSONException e) {
+					// json.put("tableID", measurement.getName().replaceAll(" ",
+					// "_") + "_table");
+					// json.put("table", htmlValue);
+				}
+				catch (JSONException e)
+				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -722,7 +839,9 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 			}
 
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 
@@ -739,8 +858,9 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public String htmlTableForTreeInformation(Database db,
-			Measurement measurement, String nodeName) throws DatabaseException {
+	public String htmlTableForTreeInformation(Database db, Measurement measurement, String nodeName)
+			throws DatabaseException
+	{
 
 		List<String> categoryNames = measurement.getCategories_Name();
 
@@ -750,36 +870,44 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 		String displayName = measurement.getName();
 
-		if(measurement.getLabel() != null && !measurement.getLabel().equals("")){
+		if (measurement.getLabel() != null && !measurement.getLabel().equals(""))
+		{
 			displayName = measurement.getLabel();
 		}
 
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
 		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
 				+ nodeName + "_table'>";
-		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName + "_itemName\"style=\"cursor:pointer\">"
-				+ displayName + "</td></tr>";
+		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName
+				+ "_itemName\"style=\"cursor:pointer\">" + displayName + "</td></tr>";
 
-		if (categoryNames.size() > 0) {
+		if (categoryNames.size() > 0)
+		{
 
-			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
+			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
+					categoryNames));
 
 			htmlValue += "<tr id='" + nodeName + "_category'><td  class='box-body-label'>Category:</td><td><table>";
 
 			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
 
-			for (Category c : listOfCategory) {
+			for (Category c : listOfCategory)
+			{
 
 				String codeString = c.getCode_String();
 
-				if(!codeString.equals("")){
+				if (!codeString.equals(""))
+				{
 					codeString += " = ";
 				}
-				if(!c.getIsMissing()){
+				if (!c.getIsMissing())
+				{
 					htmlValue += "<tr><td>";
 					htmlValue += codeString + c.getDescription();
 					htmlValue += "</td></tr>";
-				}else{
+				}
+				else
+				{
 					missingCategory += "<tr><td>";
 					missingCategory += codeString + c.getDescription();
 					missingCategory += "</td></tr>";
@@ -797,31 +925,36 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 		htmlValue += "<tr id='" + nodeName + "_dataType'><td class='box-body-label'>Data type:</th><td>"
 				+ measurementDataType + "</td></tr>";
 
-		Query<ObservedValue> queryDetailInformation = db
-				.query(ObservedValue.class);
+		Query<ObservedValue> queryDetailInformation = db.query(ObservedValue.class);
 
-		queryDetailInformation.addRules(new QueryRule(
-				ObservedValue.TARGET_NAME, Operator.EQUALS, measurement
-				.getName()));
+		queryDetailInformation
+				.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
 
-		if (!queryDetailInformation.find().isEmpty()) {
+		if (!queryDetailInformation.find().isEmpty())
+		{
 
-			for (ObservedValue ov : queryDetailInformation.find()) {
+			for (ObservedValue ov : queryDetailInformation.find())
+			{
 
 				String featureName = ov.getFeature_Name();
 				String value = ov.getValue();
 
-				if (featureName.startsWith("SOP")) {
-					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td><a href="
-							+ value + ">" + value + "</a></td></tr>";
-				} else {
+				if (featureName.startsWith("SOP"))
+				{
+					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td><a href=" + value + ">"
+							+ value + "</a></td></tr>";
+				}
+				else
+				{
 
-					if (featureName.startsWith("display name")) {
+					if (featureName.startsWith("display name"))
+					{
 						featureName = "display name";
 					}
 
-					//					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
-					//							+ value + "</td></tr>";
+					// htmlValue += "<tr><td class='box-body-label'>" +
+					// featureName + "</td><td> "
+					// + value + "</td></tr>";
 				}
 			}
 		}
@@ -831,7 +964,8 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 		return htmlValue;
 	}
 
-	public String getTreeView() {
+	public String getTreeView()
+	{
 
 		List<String> selected = new ArrayList<String>();
 
@@ -842,30 +976,32 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 		String htmlTreeView = treeView.toHtml(selected);
 
-		// This piece of javascript need to be here because some java calls are needed.  
-		//		String measurementClickEvent = "<script>";
+		// This piece of javascript need to be here because some java calls are
+		// needed.
+		// String measurementClickEvent = "<script>";
 		//
-		//		List<String> uniqueMeasurementName = new ArrayList<String>();
+		// List<String> uniqueMeasurementName = new ArrayList<String>();
 		//
-		//		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
+		// System.out.println("listOfMeasurements>>>"+listOfMeasurements);
 		//
-		//		for(String eachMeasurement : listOfMeasurements){
+		// for(String eachMeasurement : listOfMeasurements){
 		//
-		//			if(!uniqueMeasurementName.contains(eachMeasurement)){
+		// if(!uniqueMeasurementName.contains(eachMeasurement)){
 		//
-		//				uniqueMeasurementName.add(eachMeasurement);
+		// uniqueMeasurementName.add(eachMeasurement);
 		//
-		//				if(eachMeasurement.equals("Year partner son daughter 3")){
-		//					System.out.println();
-		//				}
-		//				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
-		//						+ "getHashMapContent(\"" + eachMeasurement + "\");});"
-		//						+ "";
-		//			}
-		//		}
-		//		measurementClickEvent += "</script>";
+		// if(eachMeasurement.equals("Year partner son daughter 3")){
+		// System.out.println();
+		// }
+		// measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ",
+		// "_") + "').click(function() {"
+		// + "getHashMapContent(\"" + eachMeasurement + "\");});"
+		// + "";
+		// }
+		// }
+		// measurementClickEvent += "</script>";
 		//
-		//		htmlTreeView += measurementClickEvent;
+		// htmlTreeView += measurementClickEvent;
 
 		return htmlTreeView;
 	}
@@ -876,11 +1012,13 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 	 * @param request
 	 * @param selectedInvestigation
 	 * @param dateOfDownload
-	 * @param selectionName 
-	 * @param x 
-	 * @throws Exception 
+	 * @param selectionName
+	 * @param x
+	 * @throws Exception
 	 */
-	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload, String selectionName) throws Exception {
+	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation,
+			String dateOfDownload, String selectionName) throws Exception
+	{
 
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement
@@ -890,45 +1028,65 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 		this.shoppingCart.clear();
 
 		List<Measurement> allMeasList = db.find(Measurement.class);
-		for (Measurement m : allMeasList) {
-			if (request.getBool(m.getId().toString()) != null) {
+		for (Measurement m : allMeasList)
+		{
+			if (request.getBool(m.getId().toString()) != null)
+			{
 				this.shoppingCart.add(m);
 			}
 		}
 
 		List<Integer> DownloadedMeasurementIds = new ArrayList<Integer>();
 
-		if (this.shoppingCart.isEmpty()) {
-			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download",true));
-			this.setStatus("<h4> Your download list is empty. Please select item and proceed to download" + "</h4>" ) ;
+		if (this.shoppingCart.isEmpty())
+		{
+			this.getModel()
+					.getMessages()
+					.add(new ScreenMessage("Your download list is empty. Please select item and proceed to download",
+							true));
+			this.setStatus("<h4> Your download list is empty. Please select item and proceed to download" + "</h4>");
 			this.setError("Your download list is empty. Please select item and proceed to download");
 
-		} else {
+		}
+		else
+		{
 
-			// System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
-			for (Measurement m : this.shoppingCart) {
+			// System.out.println("DownloadedMeasurementIds >>>: " +
+			// this.shoppingCart);
+			for (Measurement m : this.shoppingCart)
+			{
 				DownloadedMeasurementIds.add(m.getId());
 
-				//x.writeRow(m);// System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
+				// x.writeRow(m);//
+				// System.out.println("DownloadedMeasurementIds >>>: " +
+				// m.getId());
 			}
 
-			// REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS-- there are no shopping carts any more . 
+			// REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS-- there are no
+			// shopping carts any more .
 
-			// Query<ShoppingCart> q = db.query(ShoppingCart.class);	// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));	// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
-			List<ShoppingCart> result = new ArrayList<ShoppingCart>();  // q.find();
+			// Query<ShoppingCart> q = db.query(ShoppingCart.class); //
+			// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS,
+			// this.getLogin().getUserName())); // q.addRules(new
+			// QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+			List<ShoppingCart> result = new ArrayList<ShoppingCart>(); // q.find();
 			System.out.println("save selection step 0");
 
-			if (result.isEmpty()) {
-				String shoppingCartName ;
+			if (result.isEmpty())
+			{
+				String shoppingCartName;
 
 				// Add to database
 				ShoppingCart shoppingCart = new ShoppingCart();
-				if (selectionName.compareTo("empty") == 0) {
+				if (selectionName.compareTo("empty") == 0)
+				{
 					shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
-				}else {
+				}
+				else
+				{
 					shoppingCartName = selectionName;
 				}
-				shoppingCart.setName(shoppingCartName );
+				shoppingCart.setName(shoppingCartName);
 
 				System.out.println("save selection step1");
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
@@ -940,42 +1098,70 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 				shoppingCart.setApproved(false);
 
-				//check for duplicates
+				// check for duplicates
 				Query<ShoppingCart> q = db.query(ShoppingCart.class);
 				q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS, shoppingCartName));
 
-				if (q.find().size() > 0) {
-					//if user selection already exists use an automated name 
+				if (q.find().size() > 0)
+				{
+					// if user selection already exists use an automated name
 					String shoppingCartName2 = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
 
-					this.setError("A user selection with name : "+ shoppingCartName +" already exists. An automatic generated name will be used: "+ shoppingCartName2);
-					//this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
-					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. An automatic generated name will be used: "+ shoppingCartName2+ "</h4>" ) ;
+					this.setError("A user selection with name : " + shoppingCartName
+							+ " already exists. An automatic generated name will be used: " + shoppingCartName2);
+					// this.getModel().getMessages().add(new
+					// ScreenMessage("A user selection with name : "+
+					// shoppingCartName
+					// +" already exists. Please insert another name for your selection and try again.",
+					// true));
+					this.setStatus("<h4> A user selection with name : " + shoppingCartName
+							+ " already exists. An automatic generated name will be used: " + shoppingCartName2
+							+ "</h4>");
 					shoppingCartName = shoppingCartName2;
 
-				} else {
-					try {
+				}
+				else
+				{
+					try
+					{
 						db.add(shoppingCart);
 						// System.out.println("Download list has been added to the DB");
 
-						this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name "+ shoppingCartName , true));
-						this.setStatus("<h4> Selection saved to 'My Selections' under name "+ shoppingCartName + "</h4>" ) ;
-						this.setSuccess("Selection saved to 'My Selections' under name "+ shoppingCartName);
+						this.getModel()
+								.getMessages()
+								.add(new ScreenMessage("Selection saved to 'My Selections' under name "
+										+ shoppingCartName, true));
+						this.setStatus("<h4> Selection saved to 'My Selections' under name " + shoppingCartName
+								+ "</h4>");
+						this.setSuccess("Selection saved to 'My Selections' under name " + shoppingCartName);
 
-					}  catch (DatabaseException e) {
+					}
+					catch (DatabaseException e)
+					{
 						e.printStackTrace();
 					}
 				}
 
-			} else {
-				ShoppingCart shoppingCart = result.get(0); // assuming user can  have only one shopping cart that's NOT checked out
+			}
+			else
+			{
+				ShoppingCart shoppingCart = result.get(0); // assuming user can
+															// have only one
+															// shopping cart
+															// that's NOT
+															// checked out
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
 
-				this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"" , true));
-				this.setStatus("<h4> Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\""+ "</h4>" ) ;
-				this.setSuccess("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"");
+				this.getModel()
+						.getMessages()
+						.add(new ScreenMessage("Selection saved to 'My Selections' under name "
+								+ shoppingCart.getName() + "You can browse them from menu \"My selections\"", true));
+				this.setStatus("<h4> Selection saved to 'My Selections' under name " + shoppingCart.getName()
+						+ "You can browse them from menu \"My selections\"" + "</h4>");
+				this.setSuccess("Selection saved to 'My Selections' under name " + shoppingCart.getName()
+						+ "You can browse them from menu \"My selections\"");
 				// System.out.println("Shopping cart has been updated in the DB");
 			}
 
@@ -986,8 +1172,8 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 			// "or >>>  "+ this.getSelected().getLabel());
 			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
 			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
-			String redirectURL = httpRequest.getRequestURL() + "?__target="
-					+ "Downloads" + "&select=MeasurementsDownloadForm";
+			String redirectURL = httpRequest.getRequestURL() + "?__target=" + "Downloads"
+					+ "&select=MeasurementsDownloadForm";
 
 			httpResponse.sendRedirect(redirectURL);
 
@@ -995,102 +1181,123 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 	}
 
-	private void deleteShoppingItem(String selected) {
+	private void deleteShoppingItem(String selected)
+	{
 		// search the item
-		for (int i = 0; i < this.shoppingCart.size(); i++) {
-			if (this.shoppingCart.get(i).getName().equals(selected)) {
+		for (int i = 0; i < this.shoppingCart.size(); i++)
+		{
+			if (this.shoppingCart.get(i).getName().equals(selected))
+			{
 				this.shoppingCart.remove(i);
-				this.getModel().getMessages().add(new ScreenMessage("The item \"" + selected + "\" has been successfully removed from your shopping cart", true));
-				this.setStatus("<h4> The item \"" + selected + "\" has been successfully removed from your shopping cart"+ "</h4>" ) ;
+				this.getModel()
+						.getMessages()
+						.add(new ScreenMessage("The item \"" + selected
+								+ "\" has been successfully removed from your shopping cart", true));
+				this.setStatus("<h4> The item \"" + selected
+						+ "\" has been successfully removed from your shopping cart" + "</h4>");
 
 			}
 		}
 	}
 
-	public List<Measurement> getShoppingCart() {
+	public List<Measurement> getShoppingCart()
+	{
 		return shoppingCart;
 	}
 
-	public void setArrayInvestigations(List<Investigation> arrayInvestigations) {
+	public void setArrayInvestigations(List<Investigation> arrayInvestigations)
+	{
 		this.arrayInvestigations = arrayInvestigations;
 	}
 
-	public List<Investigation> getArrayInvestigations() {
+	public List<Investigation> getArrayInvestigations()
+	{
 		return arrayInvestigations;
 	}
 
-	public void setSelectedInv(boolean isSelectedInv) {
+	public void setSelectedInv(boolean isSelectedInv)
+	{
 		this.isSelectedInv = isSelectedInv;
 	}
 
-	public boolean isSelectedInv() {
+	public boolean isSelectedInv()
+	{
 		return isSelectedInv;
 	}
 
-	public String getSelectedInvestigation() {
+	public String getSelectedInvestigation()
+	{
 		return selectedInvestigation;
 	}
 
-	public void setSelectedInvestigation(String selectedInvestigation) {
+	public void setSelectedInvestigation(String selectedInvestigation)
+	{
 		this.selectedInvestigation = selectedInvestigation;
 	}
 
-	public void setArraySearchFields(List<String> arraySearchFields) {
+	public void setArraySearchFields(List<String> arraySearchFields)
+	{
 		this.arraySearchFields = arraySearchFields;
 	}
 
-	public List<String> getArraySearchFields() {
+	public List<String> getArraySearchFields()
+	{
 		return arraySearchFields;
 	}
 
-	//	public void setInputToken(String inputToken) {
-	//		InputToken = inputToken;
-	//	}
+	// public void setInputToken(String inputToken) {
+	// InputToken = inputToken;
+	// }
 	//
-	//	public String getInputToken() {
-	//		return InputToken;
-	//	}
+	// public String getInputToken() {
+	// return InputToken;
+	// }
 
-	public void setSelectedField(String selectedField) {
+	public void setSelectedField(String selectedField)
+	{
 		this.selectedField = selectedField;
 	}
 
-	public String getSelectedField() {
+	public String getSelectedField()
+	{
 		return selectedField;
 	}
 
-	public List<String> getFilters() {
-		//		if (!SearchFilters.isEmpty()) {
-		//			return this.SearchFilters;
-		//		}
-		//return "filters";
+	public List<String> getFilters()
+	{
+		// if (!SearchFilters.isEmpty()) {
+		// return this.SearchFilters;
+		// }
+		// return "filters";
 		return SearchFilters;
 	}
 
-	public String getInheritance(){
+	public String getInheritance()
+	{
 		return inheritance.toString();
 	}
 
-	//	@Override
-	//	public boolean isVisible()
-	//	{
-	//		// always visible
-	//		return true;
-	//	}
-	//	
-	//	@Override
-	//	public boolean isVisible()
-	//	{
-	//		//you can use this to hide this plugin, e.g. based on user rights.
-	//		//e.g.
-	//		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-	//		if (!this.getLogin().isAuthenticated()) {
-	//			return false;
-	//		}
-	//		return true;
-	//	}
+	// @Override
+	// public boolean isVisible()
+	// {
+	// // always visible
+	// return true;
+	// }
+	//
+	// @Override
+	// public boolean isVisible()
+	// {
+	// //you can use this to hide this plugin, e.g. based on user rights.
+	// //e.g.
+	// //if(!this.getLogin().hasEditPermission(myEntity)) return false;
+	// if (!this.getLogin().isAuthenticated()) {
+	// return false;
+	// }
+	// return true;
+	// }
 
-	public List<String> getListOfJSONs() {
+	public List<String> getListOfJSONs()
+	{
 		return listOfJSONs;
 	}
 
@@ -1103,14 +1310,17 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 	{
 		return SelectionName;
 	}
-	public List<String> getListOfPredictionModels() {
+
+	public List<String> getListOfPredictionModels()
+	{
 		return listOfPredictionModels;
 	}
 
-	public String getSelectedPredictionModel() {
+	public String getSelectedPredictionModel()
+	{
 		return selectedPredictionModel;
 	}
-	
+
 	public void setStatus(String status)
 	{
 		Status = status;
@@ -1121,30 +1331,32 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 		return Status;
 	}
 
-	//	/**
-	//	 * This function is used by the user interface template to show rules on the
-	//	 * screen.
-	//	 * 
-	//	 * @return a list of query rules that can be managed by the user.
-	//	 * @throws DatabaseException
-	//	 */
-	//	public Vector<String> getFilters() throws DatabaseException
-	//	{
-	//		Vector<String> filters = new Vector<String>();
-	//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
+	// /**
+	// * This function is used by the user interface template to show rules on
+	// the
+	// * screen.
+	// *
+	// * @return a list of query rules that can be managed by the user.
+	// * @throws DatabaseException
+	// */
+	// public Vector<String> getFilters() throws DatabaseException
+	// {
+	// Vector<String> filters = new Vector<String>();
+	// //Map<String, String> nameLabelMap = new TreeMap<String, String>();
 	//
-	//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
-	//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
-	//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
-	//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
-	//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
+	// if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
+	// else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol");
+	// else if (mode == SEARCHINGMEASUREMENT)
+	// filters.add("SearchingMeasurement");
+	// else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
+	// else if (mode == SEARCHINGALL) filters.add("SearchingAll");
 	//
-	//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
+	// //filters.add(label + " " + rule.getOperator().toString() + " "+
+	// rule.getValue());
 	//
-	//		
 	//
-	//		return filters;
-	//	}
-
+	//
+	// return filters;
+	// }
 
 }

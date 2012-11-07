@@ -27,7 +27,7 @@ public class News extends EasyPluginController<NewsModel>
 		super(name, parent);
 		this.setModel(new NewsModel(this));
 	}
-	
+
 	public ScreenView getView()
 	{
 		return new FreemarkerView("News.ftl", getModel());
@@ -45,7 +45,7 @@ public class News extends EasyPluginController<NewsModel>
 		this.getModel().setAction(request.getAction());
 		// rest will be done by reload()
 	}
-	
+
 	public void all(Database db, Tuple request) throws DatabaseException, ParseException
 	{
 		this.getModel().setAction(request.getAction());

@@ -44,22 +44,31 @@
 				</li>
 			</ul>
 		</description>
+		<entity name="Autoid" abstract="true" system="true">
+			<description>This interface assigns an automatic 'id'.
+			</description>
+			<field name="id" type="autoid" hidden="true"
+				description="automatically generated internal id, only for internal use." />
+		</entity>
 		<entity name="Identifiable" implements="Autoid" abstract="true"
-			system="true" xref_label="Identifier" decorator="org.molgenis.omicsconnect.decorators.IdentifiableDecorator">
+			system="true" xref_label="Identifier"
+			decorator="org.molgenis.omicsconnect.decorators.IdentifiableDecorator">
 			<description>This interface assigns an automatic 'id', globally
 				unique identifier
 				'identifier' field, and possibly not unique 'name'
 				to all entities that implement it.
 			</description>
 			<field name="Identifier" type="string"
-				description="unique and short identifier, e.g. MA1234" />
+				description="user supplied or automatically assigned (using a decorator) unique and short identifier, e.g. MA1234" />
 			<field name="Name" type="string"
-				description="human readible name, not necessary unique" />
+				description="human readible name, not necessary unique." />
+			<!-- we expect that in a lookup box we get something like [HGVST301 ("this 
+				is the name of the study")] -->
 			<unique fields="Identifier" />
 			<unique fields="Name,Identifier" />
 		</entity>
 		<entity name="Characteristic" implements="Identifiable"
-			xref_label="Name,Identifier">
+			xref_label="Identifier">
 			<description> Characteristics are yes-no
 				statements about things in
 				the world. These can be used as part of an observation, as
@@ -82,8 +91,6 @@
 			<field name="description" type="text" nillable="true"
 				description="(Optional) Rudimentary meta data about the observable feature. Use of ontology 
 					terms references to establish unambigious descriptions is recommended" />
-			<unique fields="identifier,__Type"
-				description="identifier is unique across all Characteristic (and its subclasses)" />
 		</entity>
 		<entity name="ObservationTarget" extends="Characteristic">
 			<description> ObservationTarget defines subjects of
@@ -124,27 +131,25 @@
 				description="(Optional) Reference to the well-defined measurement unit used to observe this feature 
 					(if feature is that concrete). E.g. mmHg" />
 			<field name="dataType" type="enum" default="string"
-				enum_options="[xref,string,nominal,ordinal,date,datetime,int,code,image,decimal,bool,file,log,data,exe]"
+				enum_options="[xref,string,categorical,nominal,ordinal,date,datetime,int,code,image,decimal,bool,file,log,data,exe]"
 				description="(Optional) Reference to the technical data type. E.g. 'int'" />
 			<field name="temporal" type="boolean" default="false"
 				description="Whether this feature is time dependent and can have different values when measured 
 					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
 					temporal=false) " />
-			<!-- todo alternative accessions -->
-
-			<!-- todo: link ontology annotations -->
+			<!-- todo: link ontology annotations and/or alternative accessions -->
+			<!-- todo: can we parameterize the target types this can be applied to 
+				(e.g. Sample) AND optionally also give a characteristic types (e.g. SNP) -->
 		</entity>
-
-		<entity name="PermittedValue" implements="Autoid">
-			<description>PermittedValue is partOf ObservableFeature to define
-				permitted values for an
+		<entity name="Category" implements="Autoid">
+			<description>Category is partOf ObservableFeature to define
+				categories for an
 				ObservableFeature, such as the categorical
-				answer codes that are
-				often used in Questionaires. For example the
-				Measurement 'sex' has
+				answer codes that are often used in Questionaires. 
+				For example the ObservableFeature 'sex' has
 				{code_string = 1, label=male} and {code_string
 				= 2, label=female}.
-				PermittedValue can be linked to well-defined
+				Category can be linked to well-defined
 				ontology terms via the
 				ontologyReference. Category
 				extends
@@ -154,8 +159,8 @@
 				The Category class maps to
 				METABASE::Category
 			</description>
-			<field name="forFeature" type="xref" xref_entity="ObservableFeature"
-				description="The ObservableFeature these permitted values are part of." />
+			<field name="observableFeature" type="xref" xref_entity="ObservableFeature"
+				description="The Measurement these permitted values are part of." />
 			<field name="valueCode" type="string"
 				description="The value used to store this category in ObservedValue. For example '1', '2'." />
 			<field name="valueLabel"
@@ -172,7 +177,7 @@
 				definition for this code." /> -->
 			<!-- discussion: do we need multiple ontologyReferences here? -->
 		</entity>
-		<entity name="Protocol" implements="Identifiable">
+		<entity name="Protocol" extends="Characteristic">
 			<!-- has name, identifier, description, accession, accessionVersion. Should 
 				be part of a submission -->
 			<description>
@@ -188,28 +193,30 @@
 			</description>
 			<field name="ProtocolType" nillable="true" type="xref"
 				xref_entity="OntologyTerm" description="classification of protocol" />
-			<field name="Description" type="richtext" nillable="true"
-				description="Description, or reference to a description, of the protocol" />
 			<field name="TargetType" type="string"
-				description="Filter string to find suitable targets for this protocol. Should be an xref?" />
+				description="Filter string to find suitable targets for this protocol. Should be an xref?" nillable="true"/>
+			<!-- FeatureType???? -->
+			<field name="subprotocols" type="mref" xref_entity="Protocol" nillable="true" description="Subprotocols of this protocol"/>
 			<field name="Features" type="mref" nillable="true" xref_entity="ObservableFeature"
 				description="parameters (in/out) that are used or produced by this protocol." />
-			<field name="Contact" type="xref" nillable="true" xref_entity="Person"
-				description="Contact person for this protocol. TODO: Check if there can be multiple contacts." />
+<!-- 			<field name="PersonRoles" type="mref" nillable="true"
+				xref_entity="PersonRole"
+				description="Contact person for this protocol. TODO: Check if there can be multiple contacts." /> -->
 			<!-- should this not be mref to 'role', such as 'contact=Jones, submitter=Smith -->
 		</entity>
-		<entity name="DataSet" implements="Identifiable">
+		<entity name="DataSet" extends="Characteristic">
 			<description>Container for one or more observations that are measured
 				using the same protocol and by the same performer(s). The dataset
 				may be a file (having the same
 				identifier) but in most cases it is a
 				data table consisting of rows (Observation).
 
-				This entity replaces ProtocolApplication.
+				This entity replaces
+				ProtocolApplication.
 			</description>
-			<field name="Performers" type="mref" xref_entity="Person"
+<!-- 			<field name="PersonRoles" type="mref" xref_entity="PersonRole"
 				nillable="true"
-				description="(Optional)Persons involved in the production of this DataSet" />
+				description="(Optional)Persons involved in the production of this DataSet" /> -->
 			<field name="ProtocolUsed" type="xref" xref_entity="Protocol"
 				nillable="true"
 				description="Reference to the protocol that is being used (if available)" />
@@ -217,17 +224,19 @@
 				description="time when the protocol started." />
 			<field auto="true" name="endTime" type="datetime" nillable="true"
 				description="(Optional) time when the protocol ended." />
+			<!-- DataSets come in all kinds backends, like database, ped/map, vcf, 
+				etc; we need some kind of 'driver' or 'configuration' for that. See also 
+				xQTL 'Data' -->
 		</entity>
-		<entity name="ObservationSet" implements="Autoid" xref_label="name">
+		<entity name="ObservationSet" implements="Autoid">
 			<description>In practice: Observation is one row within a DataSet.
 			</description>
-			<field name="name" nillable="true" unique="true" description="Only needed as unique xref_label"/>
 			<field name="partOfDataSet" type="xref" xref_entity="DataSet"
 				description="DataSet this ValueSet is part of." />
-			<field name="Target" type="xref" xref_entity="ObservationTarget"
+			<field name="Target" type="xref" xref_entity="Characteristic"
 				description="References the target for which this data was recorded. For example 'individual1'." />
-			<unique fields="partOfDataSet,Target"
-				description="No single secondary key" />
+			<field name="Time" type="datetime" description="Time of this observationSet" nillable="true" />
+			<unique fields="partOfDataSet,Target,Time" description="No single secondary key" />
 		</entity>
 		<entity name="ObservedValue" implements="Autoid">
 			<description>
@@ -254,20 +263,14 @@
 			<field name="Feature" type="xref" xref_entity="ObservableFeature"
 				description="References the ObservableFeature that this observation was made on. For example 'probe123'." />
 			<field name="Characteristic" nillable="true" type="xref"
-				xref_entity="Characteristic"
-				description="Is brother of [charaacteristic], or Average of [height]" />
+				xref_entity="Characteristic" description="Is brother of [characteristic], or Average of [height]" />
 			<field name="Value" nillable="true" description="The value observed" />
 		</entity>
-		<entity name="FeatureAnnotation">
-			<description>Enable the adding of annotations to a feature and
-				indicate if the annotation
-				is perfect description
-			</description>
-			<field name="id" type="autoid" />
-			<field name="Feature" type="xref" xref_entity="ObservableFeature" />
-			<field name="OntologyTerm" type="xref" xref_entity="OntologyTerm" />
-			<field name="ExactMatch" type="bool" />
-		</entity>
+		<!-- <entity name="FeatureAnnotation"> <description>Enable the adding of 
+			annotations to a feature and indicate if the annotation is perfect description 
+			</description> <field name="id" type="autoid" /> <field name="Feature" type="xref" 
+			xref_entity="ObservableFeature" /> <field name="OntologyTerm" type="xref" 
+			xref_entity="OntologyTerm" /> <field name="ExactMatch" type="bool" /> </entity> -->
 	</module>
 	<module name="observ.target">
 		<entity name="Species" extends="OntologyTerm">
@@ -318,7 +321,7 @@
 		</entity>
 		<entity name="PanelSource" implements="Autoid">
 			<!-- todo: this should probably be a subclass of protocolApplication? -->
-
+			<!-- experimental -->
 			<description>PanelSources is partOf Panel to define how panels are
 				related panels, founder panels,
 				such as overlap,

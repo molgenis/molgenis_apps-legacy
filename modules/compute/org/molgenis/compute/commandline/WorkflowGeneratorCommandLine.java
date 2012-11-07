@@ -15,7 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Created by IntelliJ IDEA. User: georgebyelas Date: 18/10/2011 Time: 10:43 To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: georgebyelas Date: 18/10/2011 Time: 10:43 To
+ * change this template use File | Settings | File Templates.
  */
 public class WorkflowGeneratorCommandLine
 {
@@ -26,7 +27,8 @@ public class WorkflowGeneratorCommandLine
 	public static final String GRID = "grid";
 	public static final String CLUSTER = "cluster";
 
-	private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
+	private static final String LOG = "log";// reserved word for logging feature
+											// type used in ComputeFeature
 
 	private static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm-ss";
 	private SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
@@ -56,7 +58,8 @@ public class WorkflowGeneratorCommandLine
 	private List<WorkflowElementParameter> wfeParameters = null;
 
 	// quick solution
-	// can be refactored later to have the same basis for command-line and db solutions
+	// can be refactored later to have the same basis for command-line and db
+	// solutions
 
 	private List<ComputeJob> applications = null;
 
@@ -127,8 +130,20 @@ public class WorkflowGeneratorCommandLine
 
 	private List<Tuple> targetWorksheet(List<Tuple> worksheet, String target)
 	{
-		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]
-		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String,ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
+		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1),
+														// (Sample: a,b,c),
+														// (Flowcell: x,y,z)]
+		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String, ArrayList<Object>>>(); // Suppose
+																													// target
+																													// is
+																													// lane:
+																													// [1:
+																													// [(Lane:
+																													// 1,1,1),
+																													// (Sample:
+																													// a,b,c),
+																													// (Flowcell:
+																													// x,y,z)]]
 
 		for (Tuple t : worksheet)
 		{
@@ -168,20 +183,23 @@ public class WorkflowGeneratorCommandLine
 		for (String key : wsset.keySet())
 		{
 			tupleset = wsset.get(key);
-			
+
 			// this is bizarre:
 			Map<String, Object> m = new HashMap<String, Object>();
-			for (String field : tupleset.keySet()) {
+			for (String field : tupleset.keySet())
+			{
 				if (field.equals(target))
 				{
 					m.put(field, key);
-				} else {
+				}
+				else
+				{
 					m.put(field, tupleset.get(field));
 				}
 			}
-			
+
 			SimpleTuple st = new SimpleTuple(m);
-			
+
 			ws.add(st);
 		}
 
@@ -227,7 +245,8 @@ public class WorkflowGeneratorCommandLine
 
 			System.out.println(">>> workflow element: " + workflowElement.getName());
 
-			// create complex features, which will be processed after simple features
+			// create complex features, which will be processed after simple
+			// features
 			Vector<ComputeParameter> featuresToDerive = new Vector<ComputeParameter>();
 
 			// process compute features
@@ -299,8 +318,12 @@ public class WorkflowGeneratorCommandLine
 
 		String runId = this.weavingValues.get("runID");
 
-		// String appName = applicationName + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
-		String appName = runId + applicationName + targetID + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
+		// String appName = applicationName + "_" + workflowElement.getName();//
+		// + "_" + pipelineElementNumber;
+		String appName = runId + applicationName + targetID + "_" + workflowElement.getName();// +
+																								// "_"
+																								// +
+																								// pipelineElementNumber;
 
 		app.setName(appName);
 		System.out.println("---application---> " + appName);
@@ -360,7 +383,8 @@ public class WorkflowGeneratorCommandLine
 			else if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
 			{
 				pipelineScript = makeRScript(scriptID, scriptRemoteLocation, result);
-				// TODO here also set script result to app like in cluster version
+				// TODO here also set script result to app like in cluster
+				// version
 			}
 		}
 		else if (backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.GRID))
@@ -398,7 +422,8 @@ public class WorkflowGeneratorCommandLine
 
 		submit += depend;
 
-		if (strPreviousWorkflowElements.size() == 0)// script does not depend on other scripts
+		if (strPreviousWorkflowElements.size() == 0)// script does not depend on
+													// other scripts
 		{
 			if (currentStep == null) // it is a first script in the pipeline
 			{

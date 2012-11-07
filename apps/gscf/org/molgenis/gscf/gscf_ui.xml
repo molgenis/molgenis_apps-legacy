@@ -3,7 +3,7 @@
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
 
 		<form name="assay" entity="assay" view="list" label="Assays" />
-				
+
 	</menu>
 
 </molgenis>

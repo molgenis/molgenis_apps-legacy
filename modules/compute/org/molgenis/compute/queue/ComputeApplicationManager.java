@@ -37,8 +37,7 @@ public class ComputeApplicationManager
 	public void registerBackend(ComputeBackend backend)
 	{
 		if (backends == null) backends = new ArrayList<ComputeBackend>();
-		if (backend == null) throw new IllegalArgumentException(
-				"backend cannot be null");
+		if (backend == null) throw new IllegalArgumentException("backend cannot be null");
 		backends.add(backend);
 	}
 

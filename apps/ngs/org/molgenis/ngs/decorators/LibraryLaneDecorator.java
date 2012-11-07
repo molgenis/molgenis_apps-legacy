@@ -33,7 +33,8 @@ public class LibraryLaneDecorator extends MapperDecorator<LibraryLane>
 		{
 			if (e.getBarcode_Name() != null)
 			{
-				e.setIdentifier(e.getFlowcell_Identifier() + "_L" + e.getLane() + "_" + e.getBarcode_Name() + "_" + e.getSample_Identifier());
+				e.setIdentifier(e.getFlowcell_Identifier() + "_L" + e.getLane() + "_" + e.getBarcode_Name() + "_"
+						+ e.getSample_Identifier());
 			}
 			else
 			{

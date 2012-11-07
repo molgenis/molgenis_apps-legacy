@@ -16,19 +16,19 @@
 			<div class="screenpadding">
 
 <form method="post" action="molgenis.do">
-${model.individualForm.__action}
-${model.individualForm.__target}
-<#assign individualDTO = model.individualDTO>
+${model.observationTargetForm.__action}
+${model.observationTargetForm.__target}
+<#assign observationElementDTO = model.observationElementDTO>
 
 <#list model.protocolDTOList as protocol>
 	<#assign protocolKey = "Protocol" + protocol.protocolId>
 
-	<#if individualDTO.observedValues?keys?seq_contains(protocolKey)>
+	<#if observationElementDTO.observedValues?keys?seq_contains(protocolKey)>
 
 		<h3>${protocol.protocolName}</h3>
 
-		<#list individualDTO.observedValues[protocolKey]?keys as paKey>
-			<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
+		<#list observationElementDTO.observedValues[protocolKey]?keys as paKey>
+			<#assign observedValueDTOValList = observationElementDTO.observedValues[protocolKey][paKey]>
 			<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
 	
 			<h4>${tmpObservedValueDTO.protocolApplicationName} (${tmpObservedValueDTO.protocolApplicationTime?string.medium_short})</h4>
@@ -37,7 +37,7 @@ ${model.individualForm.__target}
 			<tr><th>Feature</th><th>Value</th></tr>
 				
 			<#list observedValueDTOValList as observedValueDTO>
-				<#assign ovKey = "ObservedValue" + observedValueDTO.observedValueId>
+				<#assign ovKey = "ObservedValue" + observedValueDTO.observedValueId?c>
 				<#if observedValueDTO.protocolId == protocol.protocolId>
 					<tr><th>${observedValueDTO.featureDTO.featureName}</th><td>${model.createIndividualInput(ovKey)}</td></tr>
 				</#if>
@@ -50,9 +50,9 @@ ${model.individualForm.__target}
 
 </#list>
 
-<@action name="show" label="Back to List mode"/>
-<@action name="update" label="Save"/>
-<@action name="select" label="Apply Protocol"/>
+${model.observationTargetForm.show}
+${model.observationTargetForm.update}
+${model.observationTargetForm.select}
 </form>
 
 			</div>

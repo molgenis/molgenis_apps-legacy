@@ -5,7 +5,8 @@ import java.util.List;
 import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.auth.Person;
 
-public class PersonToUserModel {
+public class PersonToUserModel
+{
 
 	List<Person> personList;
 	List<MolgenisGroup> groupList;
@@ -29,6 +30,5 @@ public class PersonToUserModel {
 	{
 		this.groupList = groupList;
 	}
-	
-	
+
 }

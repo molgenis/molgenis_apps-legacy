@@ -8,21 +8,24 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
 
 /**
- * Help to create a browser instance 
+ * Help to create a browser instance
  */
 public class CreateBrowserInstance
 {
 	private Browser br;
-	
+
 	public Browser getBrowser()
 	{
 		return br;
 	}
-	
+
 	public CreateBrowserInstance(Database db, Data data, ApplicationController ac) throws Exception
 	{
 		boolean verifiedBackend = false;
-		DataMatrixHandler dmh = new DataMatrixHandler(db); //must create new because function is static (reused)
+		DataMatrixHandler dmh = new DataMatrixHandler(db); // must create new
+															// because function
+															// is static
+															// (reused)
 		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage(), db);
 		if (verifiedBackend)
 		{

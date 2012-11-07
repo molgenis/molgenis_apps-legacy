@@ -1,6 +1,7 @@
 package org.molgenis.compute.test.reader;
 
 import app.DatabaseFactory;
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
@@ -11,10 +12,7 @@ import org.molgenis.framework.db.QueryRule;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 24/08/2012
- * Time: 11:17
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 24/08/2012 Time: 11:17
  * To change this template use File | Settings | File Templates.
  */
 public class WorkflowReaderDBJDBC implements WorkflowReader
@@ -54,4 +52,11 @@ public class WorkflowReaderDBJDBC implements WorkflowReader
         }
         return null;
     }
+
+    public List<ComputeParameter> getParameters()
+    {
+        //TODO: we do not use JDBC workflow reader - otherwise it should be implemented
+        return null;
+    }
+
 }
