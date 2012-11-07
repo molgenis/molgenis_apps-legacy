@@ -550,8 +550,8 @@ public class MolgenisVariantService
 				variantDTO.setExonId(exon.getId());
 				variantDTO.setExonName(exon.getName());
 			}
-//			variantDTO.setExonId(variant.getExon().getId());
-//			variantDTO.setExonName(variant.getExon().getName());
+			
+			variantDTO.setGeneName(variant.getGene().getName());
 
 			/* Find prominent value to be displayed in table view */
 			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'Consequence' OR f.name = 'Inheritance')";
@@ -906,6 +906,8 @@ public class MolgenisVariantService
 			{
 				mutationSummaryDTO.getProteinDomainNameList().add(proteinDomain.getName());
 			}
+			
+			mutationSummaryDTO.setGeneName(variant.getGene().getName());
 
 			if (StringUtils.isNotEmpty(mutationSummaryDTO.getAaNotation()))
 				mutationSummaryDTO.setNiceNotation(mutationSummaryDTO.getCdnaNotation() + " (" + mutationSummaryDTO.getAaNotation() + ")");

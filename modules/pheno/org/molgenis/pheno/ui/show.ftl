@@ -35,7 +35,7 @@
 			</h4>
 
 			<table class="listtable" cellpadding="4">
-			<tr><td width="50%"><b>Feature</b></th><td width="50%">Value</th></tr>
+			<tr><td width="50%"><b>Feature</b></td><td width="50%">Value</td></tr>
 				
 			<#list observedValueDTOValList as observedValueDTO>
 				<#assign even = 1>

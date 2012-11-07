@@ -37,8 +37,8 @@ mkdir -p ${qcdir}
 	<#if seqType[sample_index] == "SR">
 		
 		<#if barcode[sample_index] == "None">
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenameSR[sample_index]} ${projectrawdatadir}/
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenameSR[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenameSR[sample_index]} ${projectrawdatadir}/${compressedFastqFilenameNoBarcodeSR[sample_index]}
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenameSR[sample_index]} ${projectrawdatadir}/${fastqChecksumFilenameNoBarcodeSR[sample_index]}
 		<#else>
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenameSR[sample_index]} ${projectrawdatadir}/
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${demultiplexedSampleFastqChecksumFilenameSR} ${projectrawdatadir}/
@@ -47,10 +47,10 @@ mkdir -p ${qcdir}
 	<#elseif seqType[sample_index] == "PE">
 		
 		<#if barcode[sample_index] == "None">
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE1[sample_index]} ${projectrawdatadir}/
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE2[sample_index]} ${projectrawdatadir}/
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenamePE1[sample_index]} ${projectrawdatadir}/
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenamePE2[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE1[sample_index]} ${projectrawdatadir}/${compressedFastqFilenameNoBarcodePE1[sample_index]}
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE2[sample_index]} ${projectrawdatadir}/${compressedFastqFilenameNoBarcodePE2[sample_index]}
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenamePE1[sample_index]} ${projectrawdatadir}/${fastqChecksumFilenameNoBarcodePE1[sample_index]}
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenamePE2[sample_index]} ${projectrawdatadir}/${fastqChecksumFilenameNoBarcodePE2[sample_index]}
 		<#else>
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenamePE1[sample_index]} ${projectrawdatadir}/
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenamePE2[sample_index]} ${projectrawdatadir}/
