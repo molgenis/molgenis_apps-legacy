@@ -647,7 +647,7 @@ public class ComputeCommandLine
 				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " "
 						+ job.getName() + ".sh)");
 				submitWriter.println("echo $" + job.getName());
-				submitWriter.println("sleep 8");
+				submitWriter.println("sleep 0");
 
 				// do stuff for submitlocal.sh
 				submitWriterLocal.println("echo Starting with " + job.getName() + "...");
