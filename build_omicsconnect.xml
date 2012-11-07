@@ -9,10 +9,10 @@
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/omicsconnect-importer" />
-		<pathelement location="modules/omicsconnect-protocolviewer" />
+		<pathelement location="modules/omicsconnect-hl7parser" />
+		<pathelement location="modules/omicsconnect-protocolViewer" />
 	    <pathelement location="modules/webserver" />
 	    <pathelement location="modules/minigui" />
-		<pathelement location="test/modules/omicsconnect-protocolviewer" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
