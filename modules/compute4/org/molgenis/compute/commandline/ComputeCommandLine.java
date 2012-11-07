@@ -24,6 +24,8 @@ import java.util.*;
 
 public class ComputeCommandLine
 {
+    public static final String SCHEDULER_BSUB = "BSUB";
+
 	protected ComputeBundle computeBundle;
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
@@ -112,6 +114,16 @@ public class ComputeCommandLine
 			// each element of folded worksheet produces one
 			// protocolApplication (i.e. a script)
 
+            String schedulerName = folded.get(0).getString("scheduler");
+
+            if(schedulerName.equalsIgnoreCase("BSUB"))
+            {
+                //change walltime format hh:mm:ss -> hh:mm
+                String strWalltime = protocol.getWalltime();
+                int lastDots = strWalltime.lastIndexOf(":");
+                strWalltime = strWalltime.substring(0, lastDots);
+                protocol.setWalltime(strWalltime);
+            }
 
 			for (Tuple work : folded)
 			{
@@ -163,7 +175,7 @@ public class ComputeCommandLine
 
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
 						.getMem().toString());
-				work.set("mem", mem + "gb");
+				//work.set("mem", mem + "gb"); WTF?
 
 
 				// set jobname. If a job starts/completes, we put this in a
