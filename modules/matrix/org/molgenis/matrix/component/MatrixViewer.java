@@ -1143,7 +1143,7 @@ public class MatrixViewer extends HtmlWidget
 			throws IOException, MatrixException
 	{
 		CsvWriter writer = new CsvFileWriter(file);
-		writer.setSeparator(",");
+		writer.setSeparator(',');
 
 		// write headers
 		List<String> headers = new ArrayList<String>();
