@@ -1038,7 +1038,7 @@ public class Harmonization extends PluginModel<Entity>
 
 		expandedQueries.addAll(combinedList);
 
-		return expandedQueries;
+		return uniqueList(expandedQueries);
 	}
 
 	public List<String> collectInfoFromOntology(String queryToExpand, BioportalOntologyService os)
@@ -1063,10 +1063,10 @@ public class Harmonization extends PluginModel<Entity>
 					{
 						expandedQueries.add(childOt.getLabel());
 
-						for (String synonymChild : os.getSynonyms(childOt))
-						{
-							expandedQueries.add(synonymChild);
-						}
+						// for (String synonymChild : os.getSynonyms(childOt))
+						// {
+						// expandedQueries.add(synonymChild);
+						// }
 					}
 				}
 				catch (Exception e)
@@ -1076,7 +1076,7 @@ public class Harmonization extends PluginModel<Entity>
 			}
 		}
 
-		return expandedQueries;
+		return uniqueList(expandedQueries);
 	}
 
 	public List<String> uniqueList(List<String> uncleanedList)
