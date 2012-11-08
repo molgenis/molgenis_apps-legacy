@@ -31,6 +31,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 	// the database
 	Database db;
 
+	int rows = -1;
+
 	// cache of features
 	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
 
@@ -77,10 +79,11 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 			List<Tuple> result = new ArrayList<Tuple>();
 			List<QueryRule> filters = getFilters();
 			System.out.println("Filters:" + filters);
-
+			rows = 0;
 			// load visible ObservationSet
 			if (filters.isEmpty())
 			{
+				rows = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, set.getId()).count();
 				for (ObservationSet os : getDb().query(ObservationSet.class)
 						.eq(ObservationSet.PARTOFDATASET, set.getId()).find())
 				{
@@ -106,7 +109,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 					Tuple t = new SimpleTuple();
 					// TODO : remove the empty rows that do not much the filters
 					// from t
-					t.set("target", os.getTarget_Identifier());
+
+					Integer rowId = 0;
 
 					// for (QueryRule queryRule : filters)
 					// {os.
@@ -121,10 +125,25 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 						{
 							// set the filter to the Observable features here
 							if (queryRule.getField().equals(v.getFeature_Identifier())
-									&& queryRule.getValue().equals(v.getValue())) t.set(v.getFeature_Identifier(),
-									v.getValue());
+									&& queryRule.getValue().equals(v.getValue()))
+							{
+								// t.set(v.getFeature_Identifier(),v.getValue());
+								rowId = v.getObservationSet_Id();
+								break;
+							}
+						}
+						//
+					}
+					if (rowId != 0)
+					{
+						t.set("target", os.getTarget_Identifier());
+						for (ObservedValue v : getDb().query(ObservedValue.class)
+								.eq(ObservedValue.OBSERVATIONSET, rowId).find())
+						{
+							t.set(v.getFeature_Identifier(), v.getValue());
 						}
 						result.add(t);
+						this.rows++;
 					}
 
 					// boolean keep = false;
@@ -145,12 +164,14 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 					// }
 				}
 			}
+
 			return result;
 		}
 		catch (Exception e)
 		{
 			throw new TableException(e);
 		}
+
 	}
 
 	public void add(TupleTable table) throws TableException
@@ -248,14 +269,20 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 	public int getCount() throws TableException
 	{
 		// unfiltered
-		try
-		{
-			return getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, set.getId()).count();
-		}
-		catch (DatabaseException e)
-		{
-			throw new TableException(e);
-		}
+		// try
+		// {
+		getRows();
+
+		return this.rows;
+
+		// return
+		// getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET,
+		// set.getId()).count();
+		// }
+		// catch (DatabaseException e)
+		// {
+		// throw new TableException(e);
+		// }
 	}
 
 	public Database getDb()
