@@ -1,6 +1,7 @@
 package org.molgenis.omicsconnect.dataset;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,6 +34,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 
 	int rows = -1;
 
+	private List<Field> columns;
+
 	// cache of features
 	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
 
@@ -47,6 +50,12 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 	@Override
 	public List<Field> getAllColumns() throws TableException
 	{
+		if (columns == null) initColumnsFromDb();
+		return Collections.unmodifiableList(columns);
+	}
+
+	private void initColumnsFromDb() throws TableException
+	{
 		try
 		{
 			// instead ask for protocol.features?
@@ -55,21 +64,20 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 					+ set.getId()
 					+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
 
-			List<Field> result = new ArrayList<Field>();
-			result.add(new Field("target"));
+			this.columns = new ArrayList<Field>();
+			columns.add(new Field("target"));
 
 			for (Tuple t : getDb().sql(sql))
 			{
 				Field f = new Field(t.getString("name"));
-				result.add(f);
+				System.out.println("getAllColumns : " + f.getName() + " - visible: " + !f.isHidden());
+				columns.add(f);
 			}
-			return result;
 		}
 		catch (Exception e)
 		{
 			throw new TableException(e);
 		}
-
 	}
 
 	public List<Tuple> getRows() throws TableException
