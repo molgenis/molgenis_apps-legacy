@@ -39,8 +39,10 @@ import org.molgenis.util.Tuple;
 
 import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.MappingList;
-import plugins.HarmonizationComponent.OWLFunction;
 import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
+import uk.ac.ebi.ontocat.OntologyService.SearchOptions;
+import uk.ac.ebi.ontocat.OntologyServiceException;
+import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
 //import plugins.autohidelogin.AutoHideLoginModel; 
 
@@ -53,7 +55,7 @@ public class Harmonization extends PluginModel<Entity>
 	private static final long serialVersionUID = 4255876428416189905L;
 
 	private int loadingProcess = 0;
-	private OWLFunction owlFunction = null;
+	private BioportalOntologyService os = null;
 	private catalogueTreeComponent catalogue = null;
 	private List<Measurement> measurementsInStudy = null;
 	private List<String> listOfPredictionModels = new ArrayList<String>();
@@ -61,6 +63,12 @@ public class Harmonization extends PluginModel<Entity>
 	private List<String> reservedInv = new ArrayList<String>();
 	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
 	private HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
+
+	private String[] ontologies =
+	{ "1032" };
+
+	private List<String> ontologyAccessions = Arrays.asList(ontologies);
 
 	public Harmonization(String name, ScreenController<?> parent)
 	{
@@ -402,14 +410,7 @@ public class Harmonization extends PluginModel<Entity>
 
 						if (measurementsInStudy.size() > 0)
 						{
-							if (owlFunction == null)
-							{
-								// TODO ontocat dynamically searching ontology
-								// terms
-								String ontologyFileName = "/Users/pc_iverson/Desktop/Input/Thesaurus.owl";
-								owlFunction = new OWLFunction(ontologyFileName);
-							}
-
+							os = new BioportalOntologyService();
 						}
 
 						status.put("success", true);
@@ -439,8 +440,7 @@ public class Harmonization extends PluginModel<Entity>
 
 					for (String eachBlock : predictor.getBuildingBlocks())
 					{
-						predictor.getExpandedQuery().addAll(
-								expandQueryByDefinedBlocks(eachBlock.split(","), owlFunction));
+						predictor.getExpandedQuery().addAll(expandQueryByDefinedBlocks(eachBlock.split(","), os));
 					}
 
 					if (!predictor.getExpandedQuery().contains(predictor.getLabel()))
@@ -448,8 +448,7 @@ public class Harmonization extends PluginModel<Entity>
 						predictor.getExpandedQuery().add(predictor.getLabel());
 					}
 
-					predictor.getExpandedQuery().addAll(
-							expandByPotentialBuildingBlocks(predictor.getLabel(), owlFunction));
+					predictor.getExpandedQuery().addAll(expandByPotentialBuildingBlocks(predictor.getLabel(), os));
 
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
 
@@ -953,7 +952,8 @@ public class Harmonization extends PluginModel<Entity>
 		predictor.setMappings(mappings);
 	}
 
-	private List<String> expandByPotentialBuildingBlocks(String predictorLabel, OWLFunction owlFunction)
+	private List<String> expandByPotentialBuildingBlocks(String predictorLabel, BioportalOntologyService os)
+			throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -967,7 +967,7 @@ public class Harmonization extends PluginModel<Entity>
 		{
 			for (String eachBlock : eachSetOfBlocks)
 			{
-				mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), owlFunction));
+				mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), os));
 
 				if (mapForBlocks.get(eachBlock).size() > 1)
 				{
@@ -1003,7 +1003,8 @@ public class Harmonization extends PluginModel<Entity>
 		return expandedQueries;
 	}
 
-	private List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, OWLFunction owlFunction)
+	private List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, BioportalOntologyService owlFunction)
+			throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -1040,13 +1041,41 @@ public class Harmonization extends PluginModel<Entity>
 		return expandedQueries;
 	}
 
-	public List<String> collectInfoFromOntology(String queryToExpand, OWLFunction owlFunction)
+	public List<String> collectInfoFromOntology(String queryToExpand, BioportalOntologyService os)
+			throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
-		expandedQueries.add(queryToExpand);
-		expandedQueries.addAll(owlFunction.getSynonyms(queryToExpand));
-		expandedQueries.addAll(owlFunction.getAllChildren(queryToExpand, new ArrayList<String>(), 1));
-		expandedQueries.remove("sy");
+
+		for (uk.ac.ebi.ontocat.OntologyTerm ot : os.searchAll(queryToExpand, SearchOptions.EXACT))
+		{
+			if (ontologyAccessions.contains(ot.getOntologyAccession()))
+			{
+				expandedQueries.add(ot.getLabel());
+
+				for (String synonym : os.getSynonyms(ot))
+				{
+					expandedQueries.add(synonym);
+				}
+
+				try
+				{
+					for (uk.ac.ebi.ontocat.OntologyTerm childOt : os.getChildren(ot))
+					{
+						expandedQueries.add(childOt.getLabel());
+
+						for (String synonymChild : os.getSynonyms(childOt))
+						{
+							expandedQueries.add(synonymChild);
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					System.out.println("The ontology term " + ot.getLabel() + " doesn not have any children!");
+				}
+			}
+		}
+
 		return expandedQueries;
 	}
 
