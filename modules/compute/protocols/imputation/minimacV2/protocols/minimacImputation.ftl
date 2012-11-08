@@ -28,9 +28,9 @@ ${minimacBin} \
 	--vcfReference \
 	--haps ${prePhasingChrResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.gz \
 	--snps ${studyMerlinChrDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.dat.snps \
-	--prefix ${imputationResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed \
+	--prefix ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed \
 	--autoClip ${studyMerlinChrDir}/autoChunk-chr${chr}_sampleChunk${sampleChunk}.dat \
-	2>&1 | tee ${imputationResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed-minimac.log
+	2>&1 | tee ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed-minimac.log
 
 
 #Get return code from last program call

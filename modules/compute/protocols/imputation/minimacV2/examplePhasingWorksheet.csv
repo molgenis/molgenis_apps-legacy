@@ -5,15 +5,3 @@ project,prePhasingResultDir,referencePanel,imputationPipeline,genomeBuild,chr,sa
 1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,2,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
 1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,2,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
 1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,2,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,3,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,3,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,3,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,4,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,4,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,4,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,5,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,5,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,5,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,6,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,6,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,6,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult

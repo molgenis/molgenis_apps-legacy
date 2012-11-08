@@ -6,10 +6,10 @@
 
 getFile ${imputationResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${chnk}.imputed.dose
 inputs "${imputationResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${chnk}.imputed.dose"
+getFile ${studyPedMapChrDir}/~chr${chr}_sampleChunk${chnk}.ped
+inputs "${studyPedMapChrDir}/~chr${chr}_sampleChunk${chnk}.ped"
 
 </#list>
-getFile ${studyPedMapChr}.ped
-inputs "${studyPedMapChr}.ped"
 
 
 #Cat sampleChunks together
@@ -38,13 +38,39 @@ else
 
 fi
 
+cat \
+<#list sampleChunk as chnk>
+${studyPedMapChrDir}/~chr${chr}_sampleChunk${chnk}.ped \
+</#list>
+> ${imputationResultDir}/~chr${chr}.ped
+
+#Get return code from last program call
+returnCode=$?
+
+
+if [ $returnCode -eq 0 ]
+then
+
+	mv ${imputationResultDir}/~chr${chr}.ped ${imputationResultDir}/chr${chr}.ped
+
+	putFile ${imputationResultDir}/chr${chr}.ped
+	
+else
+  
+	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n"
+	#Return non zero return code
+	exit 1
+
+fi
+
+
 #Create *.fam file from *.imputed.dose and original ped file
 
 awk '{print $1}' ${imputationResultDir}/chunk${chrChunk}-chr${chr}.imputed.dose \
 	| awk '{print $1,$2}' FS="->" OFS="_" > ${imputationResultDir}/chunk${chrChunk}-chr${chr}_fam_sample.txt
 
 awk '{$7=$1"_"$2;print $7,$1,$2,$3,$4,$5,$6}' \
-	${studyPedMapChr}.ped \
+	${imputationResultDir}/chr${chr}.ped \
 	> ${imputationResultDir}/chr${chr}.tmp.ped
 
 awk ' FILENAME=="${imputationResultDir}/chr${chr}.tmp.ped" \
