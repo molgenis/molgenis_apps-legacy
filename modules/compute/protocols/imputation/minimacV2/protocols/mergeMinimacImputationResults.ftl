@@ -40,7 +40,7 @@ fi
 
 cat \
 <#list sampleChunk as chnk>
-${studyPedMapChrDir}/~chr${chr}_sampleChunk${chnk}.ped \
+${studyPedMapChrDir}/chr${chr}_sampleChunk${chnk}.ped \
 </#list>
 > ${imputationResultDir}/~chr${chr}.ped
 
