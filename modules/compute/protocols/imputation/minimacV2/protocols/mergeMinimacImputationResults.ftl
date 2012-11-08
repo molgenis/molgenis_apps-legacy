@@ -6,8 +6,8 @@
 
 getFile ${imputationResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${chnk}.imputed.dose
 inputs "${imputationResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${chnk}.imputed.dose"
-getFile ${studyPedMapChrDir}/~chr${chr}_sampleChunk${chnk}.ped
-inputs "${studyPedMapChrDir}/~chr${chr}_sampleChunk${chnk}.ped"
+getFile ${studyPedMapChrDir}/chr${chr}_sampleChunk${chnk}.ped
+inputs "${studyPedMapChrDir}/chr${chr}_sampleChunk${chnk}.ped"
 
 </#list>
 
