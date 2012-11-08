@@ -126,6 +126,7 @@ An error occurred validating the input data. Please resolve the errors and try a
 <@controls screen.name model />
 <#elseif model.page == 3>
 <h2>Data Import options - Step ${model.page + 1} of ${model.nrPages}</h2>
+<p style="color:red;">TODO: Use data import options in backend</p>
 <h3>Target options</h3>
 <table class="listtable" style="width: 75%;">
 	<tr>

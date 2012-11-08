@@ -1,11 +1,4 @@
-/* Date:        February 2, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
-
-package plugins.importwizard;
+package org.molgenis.omicsconnect.plugins;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +22,7 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.omicsconnect.dataset.DataSetImporter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -36,34 +30,37 @@ import org.molgenis.util.Tuple;
 import app.ExcelImport;
 import app.ImportWizardExcelPrognosis;
 
-public class ImportWizard extends PluginModel<Entity>
+/**
+ * Import wizard controller
+ */
+public class ImportWizardController extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -6011550003937663086L;
-	private static final Logger LOG = Logger.getLogger(ImportWizard.class);
+	private static final Logger LOG = Logger.getLogger(ImportWizardController.class);
 	private static final int NR_WIZARD_PAGES = 5;
-	private ImportWizardModel model;
+	private ImportWizard importWizard;
 
-	public ImportWizard(String name, ScreenController<?> parent)
+	public ImportWizardController(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.model = new ImportWizardModel(NR_WIZARD_PAGES);
+		this.importWizard = new ImportWizard(NR_WIZARD_PAGES);
 	}
 
-	public ImportWizardModel getMyModel()
+	public ImportWizard getMyModel()
 	{
-		return model;
+		return importWizard;
 	}
 
 	@Override
 	public String getViewName()
 	{
-		return "ImportWizard";
+		return ImportWizard.class.getSimpleName();
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/importwizard/ImportWizard.ftl";
+		return ImportWizard.class.getName().replace('.', '/') + ".ftl";
 	}
 
 	public void handleRequest(Database db, Tuple request)
@@ -75,40 +72,41 @@ public class ImportWizard extends PluginModel<Entity>
 		{
 			if (action.equals("screen0")) // select input
 			{
-				this.model.setPage(0);
+				this.importWizard.setPage(0);
 			}
 			else if (action.equals("screen1")) // input validation report
 			{
-				this.model.setPage(1);
+				this.importWizard.setPage(1);
 				File file = request.getFile("upload");
-				if (file == null) file = model.getFile();
+				if (file == null) file = importWizard.getFile();
 				if (file == null) throw new IOException("input file is null");
 				validateInput(db, file);
 			}
 			else if (action.equals("screen2")) // select entity import options
 			{
-				this.model.setPage(2);
+				this.importWizard.setPage(2);
 			}
 			else if (action.equals("screen3")) // select data import options
 			{
-				this.model.setPage(3);
+				this.importWizard.setPage(3);
 				String entityImportOption = request.getString("entity_option");
-				if (entityImportOption != null) this.model.setEntityImportOption(entityImportOption);
+				if (entityImportOption != null) this.importWizard.setEntityImportOption(entityImportOption);
 			}
 			else if (action.equals("screen4")) // import summary
 			{
-				this.model.setPage(4);
+				this.importWizard.setPage(4);
 				String dataTargetImportOption = request.getString("data_target_option");
-				if (dataTargetImportOption != null) this.model.setDataTargetImportOption(dataTargetImportOption);
+				if (dataTargetImportOption != null) this.importWizard.setDataTargetImportOption(dataTargetImportOption);
 				String dataFeatureImportOption = request.getString("data_feature_option");
-				if (dataFeatureImportOption != null) this.model.setDataFeatureImportOption(dataFeatureImportOption);
+				if (dataFeatureImportOption != null) this.importWizard
+						.setDataFeatureImportOption(dataFeatureImportOption);
 
-				doImport(db, this.model.getEntityImportOption(), this.model.getDataTargetImportOption(),
-						this.model.getDataFeatureImportOption());
+				doImport(db, this.importWizard.getEntityImportOption(), this.importWizard.getDataTargetImportOption(),
+						this.importWizard.getDataFeatureImportOption());
 			}
 			else if (action.equals("cancel") || action.equals("finish"))
 			{
-				this.model = new ImportWizardModel(NR_WIZARD_PAGES);
+				this.importWizard = new ImportWizard(NR_WIZARD_PAGES);
 			}
 			else
 			{
@@ -164,14 +162,14 @@ public class ImportWizard extends PluginModel<Entity>
 		}
 
 		// if no error, set prognosis, set file, and continue
-		this.model.setFile(file);
-		this.model.setEntitiesImportable(entitiesImportable);
-		this.model.setDataImportable(dataSetsImportable);
-		this.model.setFieldsDetected(xlsValidator.getFieldsImportable());
-		this.model.setFieldsRequired(xlsValidator.getFieldsRequired());
-		this.model.setFieldsAvailable(xlsValidator.getFieldsAvailable());
-		this.model.setFieldsUnknown(xlsValidator.getFieldsUnknown());
-		this.model.setValidationError(!ok);
+		this.importWizard.setFile(file);
+		this.importWizard.setEntitiesImportable(entitiesImportable);
+		this.importWizard.setDataImportable(dataSetsImportable);
+		this.importWizard.setFieldsDetected(xlsValidator.getFieldsImportable());
+		this.importWizard.setFieldsRequired(xlsValidator.getFieldsRequired());
+		this.importWizard.setFieldsAvailable(xlsValidator.getFieldsAvailable());
+		this.importWizard.setFieldsUnknown(xlsValidator.getFieldsUnknown());
+		this.importWizard.setValidationError(!ok);
 	}
 
 	private void doImport(Database db, String entityAction, String targetAction, String featureAction) throws Exception
@@ -183,10 +181,10 @@ public class ImportWizard extends PluginModel<Entity>
 			if (entityDbAction == null) throw new IOException("unknown database action: " + entityAction);
 
 			// import entities
-			ExcelImport.importAll(this.model.getFile(), db, new SimpleTuple(), null, entityDbAction, "", true);
+			ExcelImport.importAll(this.importWizard.getFile(), db, new SimpleTuple(), null, entityDbAction, "", true);
 
 			// import dataset instances
-			if (this.model.getDataImportable() != null)
+			if (this.importWizard.getDataImportable() != null)
 			{
 				DatabaseAction targetDbAction = toDatabaseAction(targetAction);
 				if (targetDbAction == null) throw new IOException("unknown database action: " + targetDbAction);
@@ -195,18 +193,18 @@ public class ImportWizard extends PluginModel<Entity>
 				if (featureDbAction == null) throw new IOException("unknown database action: " + featureDbAction);
 
 				List<String> dataSetSheetNames = new ArrayList<String>();
-				for (Entry<String, Boolean> entry : this.model.getDataImportable().entrySet())
+				for (Entry<String, Boolean> entry : this.importWizard.getDataImportable().entrySet())
 					if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
 
-				new DataSetImporter(db).importXLS(this.model.getFile(), dataSetSheetNames, targetDbAction,
+				new DataSetImporter(db).importXLS(this.importWizard.getFile(), dataSetSheetNames, targetDbAction,
 						featureDbAction);
 			}
 
-			this.model.setImportError(false);
+			this.importWizard.setImportError(false);
 		}
 		catch (Exception e)
 		{
-			this.model.setImportError(true);
+			this.importWizard.setImportError(true);
 			throw e;
 		}
 	}

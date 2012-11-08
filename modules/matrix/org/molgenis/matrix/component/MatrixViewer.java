@@ -1029,7 +1029,7 @@ public class MatrixViewer extends HtmlWidget
 			int maxRow = matrix.getRowCount();
 
 			CsvWriter writer = new CsvFileWriter(file);
-			writer.setSeparator(",");
+			writer.setSeparator(',');
 
 			// batch size = 100
 			matrix.setRowLimit(BATCHSIZE);
