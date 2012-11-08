@@ -203,8 +203,15 @@ public class PlinkDownload extends EasyPluginController
 				}
 			}
 
-			ffw.writeAll(entries);
-			ffw.close();
+			try {
+				ffw.writeAll(entries);
+				ffw.close();
+			} catch(IOException e) {
+				this.setError("Something went wrong while writing the entries: " + e.getMessage());
+				e.printStackTrace();
+				return;
+			}
+			
 
 			downloadPanel = new DivPanel();
 			downloadPanel.setStyle("border: 1px solid red; margin: 10px 10px 10px 0px; padding: 10px; width: auto");
