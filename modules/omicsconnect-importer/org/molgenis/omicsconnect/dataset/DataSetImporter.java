@@ -1,7 +1,6 @@
-package plugins.importwizard;
+package org.molgenis.omicsconnect.dataset;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -81,7 +80,8 @@ public class DataSetImporter
 		}
 	}
 
-	private void importCSV(File file, String identifier, DatabaseAction targetDbAction, DatabaseAction featureDbAction) throws IOException, DatabaseException
+	private void importCSV(File file, String identifier, DatabaseAction targetDbAction, DatabaseAction featureDbAction)
+			throws IOException, DatabaseException
 	{
 		LOG.info("importing dataset " + identifier + " from file " + file + "...");
 
@@ -193,7 +193,7 @@ public class DataSetImporter
 		}
 	}
 
-	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException
+	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException
 	{
 		// get headers
 		Cell[] headerCells = sheet.getRow(0);

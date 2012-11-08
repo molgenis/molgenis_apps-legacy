@@ -38,7 +38,7 @@
 						</div>
 						<#-- store dataset ids with dataset input elements -->
 						<script type="text/javascript">
-							var ids = new Array(<#list model.dataSets as dataset>${dataset.id}<#if (dataset_has_next)>, </#if></#list>);
+							var ids = [<#list model.dataSets as dataset>${dataset.id}<#if (dataset_has_next)>, </#if></#list>];
 		 					for(i in ids)
 		 						$('#dataset' + ids[i]).data('id', ids[i]);
 						</script>

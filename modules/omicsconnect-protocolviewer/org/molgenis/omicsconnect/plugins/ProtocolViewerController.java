@@ -130,6 +130,8 @@ public class ProtocolViewerController extends PluginModel<Entity>
 		// get features
 		String[] featuresStr = request.getString("features").split(",");
 		List<Integer> featureIds = new ArrayList<Integer>(featuresStr.length);
+		for (String featureStr : featuresStr)
+			featureIds.add(Integer.valueOf(featureStr));
 		List<ObservableFeature> features = findFeatures(db, featureIds);
 
 		if (request.getAction().equals("download_emeasure"))
@@ -175,6 +177,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 				{
 					xlsWriter.writeCell(0, row, feature.getName());
 					xlsWriter.writeCell(1, row, feature.getDescription());
+					// TODO not consistent with eMeasure output
 					xlsWriter.writeCell(2, row, dataSet.getProtocolUsed_Identifier());
 					row++;
 				}

@@ -5,23 +5,174 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.gwascentral.Investigation;
 import org.molgenis.observ.Category;
+import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
 import org.molgenis.observ.target.Ontology;
+import org.molgenis.observ.target.OntologyTerm;
 import org.omicsconnect.io.hl7.lra.HL7ObservationLRA;
 import org.omicsconnect.io.hl7.lra.HL7OrganizerLRA;
 import org.omicsconnect.io.hl7.lra.HL7ValueSetAnswerLRA;
 import org.omicsconnect.io.hl7.lra.HL7ValueSetLRA;
 
-import uk.ac.ebi.ontocat.OntologyTerm;
-
 public class HL7OmicsConnectImporter
 {
+
+	// private Protocol protocol;
+
+	// private ObservableFeature feature;
+
+	/** make a dataset named 'datasetName', if it is not already existing * */
+	private DataSet findDataSet(Database db, String datasetName) throws DatabaseException
+	{
+		DataSet dataset = new DataSet();
+		if (db.find(DataSet.class, new QueryRule(DataSet.NAME, Operator.EQUALS, datasetName)).size() == 0)
+		{
+			dataset.setName(datasetName);
+			dataset.setIdentifier(datasetName);
+			db.add(dataset);
+		}
+		else
+		{
+			dataset = db.find(DataSet.class, new QueryRule(DataSet.NAME, Operator.EQUALS, datasetName)).get(0);
+		}
+
+		return dataset;
+	}
+
+	/** make a Protocol named 'protName', if it is not already existing * */
+	private Protocol makeProtocol(Database db, DataSet dataSet, String protName) throws DatabaseException
+	{
+		Protocol protocol;
+		if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protName)).size() == 0)
+		{
+			protocol = new Protocol();
+			protocol.setIdentifier(protName);
+			protocol.setName(protName);
+
+			dataSet.setProtocolUsed_Identifier(protName);
+			db.add(protocol);
+			db.update(dataSet);
+
+		}
+		else
+		{
+			protocol = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protName)).get(0);
+
+		}
+		return protocol;
+	}
+
+	private ObservableFeature checkFeatures(Database db, DataSet dataSet, HL7ObservationLRA meas, Protocol subP)
+			throws DatabaseException
+	{
+		ObservableFeature obsFeature;
+		if (db.find(ObservableFeature.class,
+				new QueryRule(ObservableFeature.NAME, Operator.EQUALS, meas.getMeasurementName())).size() == 1)
+		{
+			obsFeature = db.find(ObservableFeature.class,
+					new QueryRule(ObservableFeature.NAME, Operator.EQUALS, meas.getMeasurementName())).get(0);
+		}
+		else
+		{
+			obsFeature = new ObservableFeature();
+			// set the description/label
+			obsFeature.setDescription(meas.getMeasurementLabel());
+			obsFeature.setName(meas.getMeasurementName());
+			obsFeature.setIdentifier(subP.getIdentifier() + "." + meas.getMeasurementName());
+			// set the datatype
+			String dataType = meas.getMeasurementDataType();
+			obsFeature.setDataType(setFeatureDataType(dataType));
+
+			db.add(obsFeature);
+
+		}
+
+		return obsFeature;
+	}
+
+	private Protocol makeSubProtocols(Database db, DataSet dataset, String protName) throws DatabaseException
+	{
+		Protocol subProtocol;
+		if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protName)).size() == 0)
+		{
+			subProtocol = new Protocol();
+			subProtocol.setIdentifier(protName);
+			subProtocol.setName(protName);
+		}
+		else
+		{
+			subProtocol = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protName)).get(0);
+		}
+		return subProtocol;
+
+	}
+
+	private void makeCategory(Database db, ObservableFeature obsFeature, String categoryName, String codeValue)
+			throws DatabaseException
+	{
+		Category c = new Category();
+		c.setValueLabel(categoryName);
+		c.setValueCode(codeValue);
+		c.setValueDescription(categoryName);
+		c.setObservableFeature(obsFeature);
+		db.add(c);
+
+	}
+
+	/** Select which datatype to use */
+	private String setFeatureDataType(String dataType)
+	{
+
+		String datatype = "";
+		if (!dataType.equals("CO") && !dataType.equals("INT"))
+		{
+			System.out.println();
+		}
+		if (dataType.equals("INT"))
+		{
+			datatype = "int";
+		}
+		else if (dataType.equals("ST"))
+		{
+			datatype = "string";
+		}
+		else if (dataType.equals("CO"))
+		{
+			datatype = "categorical";
+		}
+		else if (dataType.equals("CD"))
+		{
+			datatype = "code";
+		}
+		else if (dataType.equals("PQ"))
+		{
+			datatype = "decimal";
+		}
+		else if (dataType.equals("TS"))
+		{
+			datatype = "datetime";
+		}
+		else if (dataType.equals("REAL"))
+		{
+			datatype = "decimal";
+		}
+		else if (dataType.equals("BL"))
+		{
+			datatype = "bool";
+		}
+		else
+		{
+			datatype = "string";
+		}
+		return datatype;
+
+	}
 
 	public void start(HL7Data ll, Database db) throws Exception
 	{
@@ -30,255 +181,105 @@ public class HL7OmicsConnectImporter
 
 			db.beginTx();
 
-			String investigationName = "LifeLines";
+			String datasetName = "LifeLines";
+			DataSet dataset = findDataSet(db, datasetName);
 
-			Investigation inv = null;
+			/**
+			 * make a protocol named (name is in last column), if it is not
+			 * already existing *
+			 */
 
-			if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName))
-					.size() == 0)
-			{
-
-				inv = new Investigation();
-
-				inv.setName(investigationName);
-
-				db.add(inv);
-
-			}
-			else
-			{
-				inv = db.find(Investigation.class,
-						new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
-			}
-
-			Protocol stageCatalogue;
-
-			if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).size() == 0)
-			{
-				stageCatalogue = new Protocol();
-				stageCatalogue.setName("stageCatalogue");
-				// stageCatalogue.setInvestigation_Name(investigationName);
-				// TODO delete?
-
-				db.add(stageCatalogue);
-			}
-			else
-			{
-				stageCatalogue = db.find(Protocol.class,
-						new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).get(0);
-			}
+			Protocol protocol = makeProtocol(db, dataset, "stageCatalogue");
 
 			HashMap<String, HL7ValueSetLRA> hashValueSetLRA = ll.getHashValueSetLRA();
 
-			List<Integer> listOfProtocolIds = new ArrayList<Integer>();
-
-			List<String> uniqueListOfObservableFeatureNames = new ArrayList<String>();
-			List<ObservableFeature> uniqueListOfObservableFeatures = new ArrayList<ObservableFeature>();
-			List<Category> uniqueListOfCategory = new ArrayList<Category>();
-			List<String> uniqueCategoryName = new ArrayList<String>();
 			List<Protocol> uniqueProtocol = new ArrayList<Protocol>();
 			List<String> uniqueListOfProtocolName = new ArrayList<String>();
 
+			/**
+			 * Every HL7Organizer object is 1 subprotocol of stageCatalogue
+			 * protocol
+			 * 
+			 * Make a subprotocol with a list of all the measurements of that
+			 * protocol and all the categories that belong to the measurement
+			 */
 			for (HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA())
 			{
 
 				System.out.println(organizer.getHL7OrganizerNameLRA());
 				String protocolName = organizer.getHL7OrganizerNameLRA().trim();
-				Protocol protocol = new Protocol();
-				protocol.setName(protocolName);
-				// protocol.setInvestigation(inv); // TODO delete?
 
-				List<String> protocolFeature = new ArrayList<String>();
+				Protocol subProtocol = makeSubProtocols(db, dataset, protocolName);
+
+				List<String> listProtocolFeatures = new ArrayList<String>();
+				List<Integer> listProtocolFeaturesId = new ArrayList<Integer>();
+
+				/** Every HL7Observation is an ObservableFeature */
 
 				for (HL7ObservationLRA meas : organizer.measurements)
 				{
 
-					List<String> measurementCategory = new ArrayList<String>();
+					ObservableFeature feat = checkFeatures(db, dataset, meas, subProtocol);
 
-					if (db.find(ObservableFeature.class,
-							new QueryRule(ObservableFeature.NAME, Operator.EQUALS, meas.getMeasurementName())).size() > 0)
+					listProtocolFeatures.add(feat.getIdentifier());
+					listProtocolFeaturesId.add(feat.getId());
+
+					if (hashValueSetLRA.containsKey(protocolName + "." + meas.getMeasurementName().trim()))
 					{
-						ObservableFeature m = db.find(ObservableFeature.class,
-								new QueryRule(ObservableFeature.NAME, Operator.EQUALS, meas.getMeasurementName())).get(
-								0);
 
-						m.setDescription(meas.getMeasurementLabel());
-						// m.setInvestigation(inv); // TODO delete?
+						HL7ValueSetLRA valueSetLRA = hashValueSetLRA
+								.get(protocolName + "." + meas.getMeasurementName());
 
-						protocolFeature.add(m.getName());
-
-						if (hashValueSetLRA.containsKey(protocolName + "." + meas.getMeasurementName().trim()))
+						for (HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers())
 						{
 
-							HL7ValueSetLRA valueSetLRA = hashValueSetLRA.get(protocolName + "."
-									+ meas.getMeasurementName());
-
-							for (HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers())
-							{
-
-								String codeValue = eachAnswer.getCodeValue();
-								String categoryName = eachAnswer.getName().trim().toLowerCase();
-
-								if (!uniqueCategoryName.contains(categoryName))
-								{
-									uniqueCategoryName.add(categoryName);
-									Category c = new Category();
-									String indentifier = codeValue + categoryName.replaceAll("[^(a-zA-Z0-9)]", "");
-									c.setValueLabel(indentifier.trim().toLowerCase());
-									c.setValueCode(codeValue);
-									c.setValueDescription(categoryName);
-									// c.setInvestigation(inv); // TODO delete?
-									uniqueListOfCategory.add(c);
-								}
-								String indentifier = codeValue + categoryName.replaceAll("[^(a-zA-Z0-9)]", "");
-								measurementCategory.add(indentifier.trim().toLowerCase());
-							}
+							String codeValue = eachAnswer.getCodeValue();
+							String categoryName = eachAnswer.getName().trim().toLowerCase();
+							makeCategory(db, feat, categoryName, codeValue);
 						}
-						// m.setCategories_Name(measurementCategory); //TODO
-						// delete?
-
-						String dataType = meas.getMeasurementDataType();
-
-						if (dataType.equals("INT"))
-						{
-							m.setDataType("int");
-						}
-						else if (dataType.equals("ST"))
-						{
-							m.setDataType("string");
-						}
-						else if (dataType.equals("CO"))
-						{
-							m.setDataType("categorical");
-						}
-						else if (dataType.equals("CD"))
-						{
-							m.setDataType("code");
-						}
-						else if (dataType.equals("PQ"))
-						{
-							m.setDataType("decimal");
-						}
-						else if (dataType.equals("TS"))
-						{
-							m.setDataType("datetime");
-						}
-						else if (dataType.equals("REAL"))
-						{
-							m.setDataType("decimal");
-						}
-						else if (dataType.equals("BL"))
-						{
-							m.setDataType("bool");
-						}
-
-						if (!uniqueListOfObservableFeatureNames.contains(m.getName()))
-						{
-							uniqueListOfObservableFeatureNames.add(m.getName());
-							uniqueListOfObservableFeatures.add(m);
-						}
-					}
-					protocol.setFeatures_Name(protocolFeature);
-					if (protocol.getFeatures_Name().size() > 0)
-					{
-						uniqueProtocol.add(protocol);
-						uniqueListOfProtocolName.add(protocolName);
 					}
 				}
-			}
 
-			for (Category c : uniqueListOfCategory)
-			{
-				System.out.println("-------------." + c.getValueLabel());
-			}
-
-			db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.VALUELABEL);
-
-			for (ObservableFeature m : uniqueListOfObservableFeatures)
-			{
-
-				if (m.getCategories_Name().size() > 0)
+				List<String> uniqueList = new ArrayList<String>();
+				for (String each : listProtocolFeatures)
 				{
-
-					List<Category> listOfCategory = db.find(Category.class,
-							new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name()));
-
-					List<Integer> listOfCategoryID = new ArrayList<Integer>();
-
-					for (Category c : listOfCategory)
+					if (!uniqueList.contains(each))
 					{
-						listOfCategoryID.add(c.getId());
+						uniqueList.add(each);
 					}
-					m.setCategories_Id(listOfCategoryID);
-				}
-			}
-			db.update(uniqueListOfObservableFeatures);
-
-			for (Protocol p : uniqueProtocol)
-			{
-
-				if (p.getFeatures_Name().size() > 0)
-				{
-
-					List<ObservableFeature> listOfObservableFeature = db.find(ObservableFeature.class, new QueryRule(
-							ObservableFeature.NAME, Operator.IN, p.getFeatures_Name()));
-
-					List<Integer> listOfObservableFeatureID = new ArrayList<Integer>();
-
-					for (ObservableFeature m : listOfObservableFeature)
+					else
 					{
-						listOfObservableFeatureID.add(m.getId());
+						System.out.println("............................>" + each);
 					}
-					p.setFeatures_Id(listOfObservableFeatureID);
 				}
-			}
+				subProtocol.setFeatures_Identifier(uniqueList);
 
-			db.update(uniqueProtocol, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+				uniqueProtocol.add(subProtocol);
 
-			uniqueProtocol = db.find(Protocol.class,
-					new QueryRule(Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
-
-			for (Protocol p : uniqueProtocol)
-			{
-				listOfProtocolIds.add(p.getId());
-			}
-
-			Protocol otherProtocol = new Protocol();
-			otherProtocol.setName("NotClassified");
-			otherProtocol.setInvestigation_Name(investigationName);
-			List<Integer> listOfFeaturesID = new ArrayList<Integer>();
-			for (ObservableFeature m : db.find(ObservableFeature.class, new QueryRule(
-					ObservableFeature.INVESTIGATION_NAME, Operator.EQUALS, investigationName)))
-			{
-
-				if (!uniqueListOfObservableFeatureNames.contains(m.getName()))
-				{
-					listOfFeaturesID.add(m.getId());
-				}
+				uniqueListOfProtocolName.add(protocolName);
 
 			}
-			if (listOfFeaturesID.size() > 0)
-			{
-				otherProtocol.setFeatures_Id(listOfFeaturesID);
 
-				db.add(otherProtocol);
-				listOfProtocolIds.add(otherProtocol.getId());
-			}
+			db.add(uniqueProtocol);
 
-			stageCatalogue.setSubprotocols_Id(listOfProtocolIds);
+			protocol.setSubprotocols_Identifier(uniqueListOfProtocolName);
 
-			db.update(stageCatalogue);
+			db.update(protocol);
 
 			db.commitTx();
-
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			db.rollbackTx();
+			e.printStackTrace();
 		}
+
 	}
 
+	/**
+	 * adding OntologyTerm is a part of the adding of the GenericDCM part in the
+	 * LifeLines project
+	 */
 	public List<Integer> addingOntologyTerm(List<HL7OntologyTerm> listOfHL7OntologyTerms, Database db) throws Exception
 	{
 

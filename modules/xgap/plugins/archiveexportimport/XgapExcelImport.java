@@ -100,7 +100,7 @@ public class XgapExcelImport
 	}
 
 	/** NOTE: Copied from InvestigationExcelReader */
-	private void writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException
+	private void writeSheetToFile(Sheet sheet, File file) throws IOException
 	{
 		List<String> headers = new ArrayList<String>();
 		Cell[] headerCells = sheet.getRow(0); // assume headers are on first

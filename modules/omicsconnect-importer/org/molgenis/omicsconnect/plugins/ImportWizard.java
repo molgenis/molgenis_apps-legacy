@@ -1,10 +1,13 @@
-package plugins.importwizard;
+package org.molgenis.omicsconnect.plugins;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
-public class ImportWizardModel extends WizardModel
+/**
+ * Import wizard model
+ */
+public class ImportWizard extends WizardModel
 {
 	private File file;
 
@@ -22,7 +25,7 @@ public class ImportWizardModel extends WizardModel
 	private String dataFeatureImportOption;
 	private String dataTargetImportOption;
 
-	public ImportWizardModel(int nrPages)
+	public ImportWizard(int nrPages)
 	{
 		super(nrPages);
 	}
