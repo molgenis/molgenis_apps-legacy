@@ -1,2 +1,2 @@
-project,imputationResultDir,chr
-proj001,/target/gpfs2/gcc/home/akanterakis/runs/Mach_5_Sep_2012/RESULTS,1
+project,aposterioriThreshold,chr
+proj001,0.5,1
