@@ -1,7 +1,6 @@
 package org.molgenis.omicsconnect.dataset;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -194,7 +193,7 @@ public class DataSetImporter
 		}
 	}
 
-	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException
+	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException
 	{
 		// get headers
 		Cell[] headerCells = sheet.getRow(0);
