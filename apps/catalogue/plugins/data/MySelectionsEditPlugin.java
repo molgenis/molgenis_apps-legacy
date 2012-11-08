@@ -1,6 +1,5 @@
 package plugins.data;
 
-
 import gcc.catalogue.ShoppingCart;
 
 import java.util.ArrayList;
@@ -22,69 +21,70 @@ public class MySelectionsEditPlugin extends PluginModel<Entity>
 	private List<ShoppingCart> usersSelections = new ArrayList<ShoppingCart>();
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
 
+	public MySelectionsEditPlugin(String name, ScreenController<?> parent)
+	{
+		super(name, parent);
+	}
 
+	@Override
+	public String getViewName()
+	{
+		return "plugins_data_MySelectionsEditPlugin";
+	}
 
-		public MySelectionsEditPlugin(String name, ScreenController<?> parent)
+	@Override
+	public String getViewTemplate()
+	{
+		return "plugins/data/MySelectionsEditPlugin.ftl";
+	}
+
+	public String getCustomHtmlHeaders()
+	{
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/catalogue.css\">";
+	}
+
+	@Override
+	public void handleRequest(Database db, Tuple request) throws Exception
+	{
+
+		if ("editSelection".equals(request.getAction()))
 		{
-			super(name, parent);
+			System.out.println(">>aaaaaaaaaaaaaaa<<<<<<<<<<<<<<<<<<<<<<<<");
+
+			List<String> selected = new ArrayList<String>();
+			String htmlTreeView = treeView.toHtml(selected);
+
 		}
+	}
 
-
-		@Override
-		public String getViewName()
+	@Override
+	public void reload(Database db)
+	{
+		this.usersSelections.clear();
+		try
 		{
-			return "plugins_data_MySelectionsEditPlugin";
-		}
-	
-		@Override
-		public String getViewTemplate()
-		{
-			return "plugins/data/MySelectionsEditPlugin.ftl";
-		}
-		
-		public String getCustomHtmlHeaders()
-	    {
-	        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">" +
-	        		"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/catalogue.css\">";
-	    }
-	
-		@Override
-		public void handleRequest(Database db, Tuple request) throws Exception	{
-	
-			if ("editSelection".equals(request.getAction())) {
-				System.out.println(">>aaaaaaaaaaaaaaa<<<<<<<<<<<<<<<<<<<<<<<<" );
-				
-				List<String> selected = new ArrayList<String>();
-				String htmlTreeView = treeView.toHtml(selected);
-
-			} 
-		}
-		
-		@Override
-		public void reload(Database db) {
-			this.usersSelections.clear();
-			try {
-				for (ShoppingCart sc: db.find(ShoppingCart.class)) {
-					this.usersSelections.add(sc);
-					//System.out.println(">>>>"+sc);
-				}
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-				logger.error(e.getMessage());
+			for (ShoppingCart sc : db.find(ShoppingCart.class))
+			{
+				this.usersSelections.add(sc);
+				// System.out.println(">>>>"+sc);
 			}
 		}
-	
-		public List<ShoppingCart> getUsersSelections() {
-			return usersSelections;
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
-		
-		public String getChoiceLabel() {
-			return "User Selections Below";
-		}
-		
-		
-		
-	
-		
-	
+	}
+
+	public List<ShoppingCart> getUsersSelections()
+	{
+		return usersSelections;
+	}
+
+	public String getChoiceLabel()
+	{
+		return "User Selections Below";
+	}
+
 }

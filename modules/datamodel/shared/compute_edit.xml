@@ -33,10 +33,13 @@
 				ComputeProtocol.
 			</description>
 			<field name="dataType" type="enum" enum_options="[string,int,date,datetime,text]" />
-			<field name="defaultValue" type="text" nillable="true" description="the value of the parameter for ComputeProtocols" />
+            <!-- The default value should stay here as well for using in the command-line version -->
+			<field name="defaultValue" type="text" nillable="true" description="the value of the parameter for ComputeProtocols." />
 			<field name="hasOne" type="mref" xref_entity="ComputeParameter" nillable="true" description="relationship between parameters, enables parameter 'flattening'" />
 			<unique fields="name" />
-			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name" description="Workflow this element is part of" />
+			<!--
+			now ComputeParameter can be shared between different workflows
+			field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name" description="Workflow this element is part of" /-->
 		</entity>
 		<entity name="Workflow" implements="Identifiable,Nameable,Describable" xref_label="name">
 			<description>A workflow is a plan to execute a series of subprotocols
@@ -63,7 +66,8 @@
 			<description>A protocolApplication that reports the application of running a ComputeProtocol.</description>
 			<field name="ComputeScript" type="text" description="The actual command to be sent to the cluster, is a filled in version of the one define in the ComputeProtocol" />
 			<field name="RunLog" type="text" description="Log of the task execution" nillable="true" />
-			<field name="WorkflowElement" nillable="true" type="xref" xref_entity="WorkflowElement" description="Reference to the workflow element that generated this script." />
+            <field name="BackEndName" type="text" description="Name of the backend, where ComputeTask should be executed" nillable="false" />
+            <field name="WorkflowElement" nillable="true" type="xref" xref_entity="WorkflowElement" description="Reference to the workflow element that generated this script." />
 			<field name="Interpreter" type="enum" enum_options="[bash,R]" description="the interpreter used to run this command. For example 'shellTemplate'" />
 			<field name="PrevSteps" type="mref" xref_entity="ComputeTask" nillable="true" description="To keep track of calculation dependencies" />
 			<field name="requirements" type="xref" nillable="true" xref_entity="ComputeRequirement" description="requirements of the compation." />
@@ -99,17 +103,21 @@
 			<field name="requirements" type="xref" nillable="true" xref_entity="ComputeRequirement" description="requirements of the computation." />
 			<unique fields="name" />
 		</entity>
-		<entity name="ComputeHost" implements="Identifiable,Nameable" xref_label="name">
-			<description>Declaration of a compute resource, including username
-				and password
+		<entity name="ComputeParameterDefaultValue" implements="Identifiable">
+			<description>DefaultValue allows multiple default values for ComputeParameters in different Workflows
 			</description>
-			<field name="hostName" description="ssh host of the headnode of this grid, cluster or standalone worker." />
-			<field name="hostType" type="enum" enum_options="[pbs,glite,local]" description="type of the host" />
-			<field name="hostDir" description="working directory on the remote host. This is were the scripts will be put" />
-			<field name="hostQueue" nillable="true" description="the queue of the remote system, if applicable." />
-			<field name="hostUsername" description="username on the remote system. Should be protected!!!" />
-			<field name="hostPassword" description="password on the remote cluster. Should be protected!!!" />
-			<unique fields="name" />
+            <field name="ComputeParameter" type="xref" xref_entity="ComputeParameter" xref_label="name" description="ComputeParameter, to which the default value belongs" />
+            <field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name" description="Workflow, to which the default value belongs" />
+            <field name="defaultValue" type="text" nillable="false" description="the value of the parameter" />
 		</entity>
+        <entity name="ComputeHost" implements="Identifiable,Nameable" xref_label="name">
+      			<description>Declaration of a compute resource, including username
+      				and password
+      			</description>
+      			<field name="hostName" description="ssh host of the headnode of this grid, cluster or standalone worker." />
+      			<field name="hostType" type="enum" enum_options="[pbs,glite,local]" description="type of the host" />
+      			<field name="hostDir" description="working directory on the remote host. This is were the scripts will be put" />
+      			<unique fields="name" />
+      		</entity>
 	</module>
 </molgenis>

@@ -13,15 +13,14 @@ public class WorksheetLoader
 {
 	public List<Project> loadProjects(TupleReader reader)
 	{
-		//assume 'project' only for now
-		Map<String,Project> projectMap = new LinkedHashMap<String,Project>();
-		
-		for(Tuple t: reader)
+		// assume 'project' only for now
+		Map<String, Project> projectMap = new LinkedHashMap<String, Project>();
+
+		for (Tuple t : reader)
 		{
-			
+
 		}
-		
-		
+
 		return new ArrayList<Project>(projectMap.values());
 	}
 }

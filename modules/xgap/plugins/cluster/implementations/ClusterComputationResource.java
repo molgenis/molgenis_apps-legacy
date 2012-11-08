@@ -23,47 +23,52 @@ import com.mindbright.util.Util;
 
 /**
  * PBS cluster implementation of ComputeResource
+ * 
  * @author joerivandervelde
- *
+ * 
  */
 public class ClusterComputationResource implements ComputationResource
 {
 	private boolean verbose = true;
 	private String res;
 	private String err;
-	
+
 	@Override
-	public void addResultLine(String line){
+	public void addResultLine(String line)
+	{
 		res += line + "\n";
 	}
-	
+
 	@Override
-	public void addErrorLine(String line){
+	public void addErrorLine(String line)
+	{
 		err += line + "\n";
 	}
-	
+
 	@Override
-	public String getResultLine() {
+	public String getResultLine()
+	{
 		return res;
 	}
 
 	@Override
-	public String getErrorLine() {
+	public String getErrorLine()
+	{
 		return err;
 	}
-	
-	
-	public ClusterComputationResource(LoginSettings ls){
+
+	public ClusterComputationResource(LoginSettings ls)
+	{
 		this.ls = ls;
 	}
-	
+
 	private LoginSettings ls;
 
 	@Override
 	public boolean cleanupJob(int jobId) throws Exception
 	{
 
-		//TODO: make advanced, do checks, etc.
+		// TODO: make advanced, do checks, etc.
 
 		List<Command> commands = new ArrayList<Command>();
 
@@ -73,7 +78,7 @@ public class ClusterComputationResource implements ComputationResource
 
 		return true;
 	}
-	
+
 	@Override
 	/**
 	 * Based on from 'BasicClient.java',
@@ -81,11 +86,12 @@ public class ClusterComputationResource implements ComputationResource
 	 */
 	public List<String> executeCommands(List<Command> commands) throws Exception
 	{
-		SSH2Transport      transport;
-	    SSH2SimpleClient   sshclient;
-	    SSH2ConsoleRemote  console;
-	    Properties         props = new Properties();
-		ArrayList<String> results = new ArrayList<String>(); //TODO: put results in
+		SSH2Transport transport;
+		SSH2SimpleClient sshclient;
+		SSH2ConsoleRemote console;
+		Properties props = new Properties();
+		ArrayList<String> results = new ArrayList<String>(); // TODO: put
+																// results in
 		RandomSeed seed = new RandomSeed();
 		String host = ls.host;
 		int port = getPort(ls.port);
@@ -95,27 +101,31 @@ public class ClusterComputationResource implements ComputationResource
 		port = Util.getPort(host, port);
 		host = Util.getHost(host);
 		SSH2Preferences prefs = new SSH2Preferences(props);
-        SecureRandomAndPad secureRandom = new SecureRandomAndPad(new SecureRandom(seed.getBytesBlocking(20, false)));
+		SecureRandomAndPad secureRandom = new SecureRandomAndPad(new SecureRandom(seed.getBytesBlocking(20, false)));
 
-        transport = new SSH2Transport(new Socket(host, port), prefs, secureRandom);
-        String fingerprint = props.getProperty("fingerprint." + host + "." + port);
-        if(fingerprint != null) {
-            transport.setEventHandler(new SSH2HostKeyVerifier(fingerprint));
-        }
-        sshclient = new SSH2SimpleClient(transport, user, pw);
-        console = new SSH2ConsoleRemote(sshclient.getConnection());
-		for (Command cmd : commands){
+		transport = new SSH2Transport(new Socket(host, port), prefs, secureRandom);
+		String fingerprint = props.getProperty("fingerprint." + host + "." + port);
+		if (fingerprint != null)
+		{
+			transport.setEventHandler(new SSH2HostKeyVerifier(fingerprint));
+		}
+		sshclient = new SSH2SimpleClient(transport, user, pw);
+		console = new SSH2ConsoleRemote(sshclient.getConnection());
+		for (Command cmd : commands)
+		{
 			console.command(cmd.getCommand());
-			System.out.println("executing: "+ cmd.getCommand());
+			System.out.println("executing: " + cmd.getCommand());
 			BufferedReader in = new BufferedReader(new InputStreamReader(console.getStdOut()));
 			String line;
-	        while ((line = in.readLine()) != null) {
-	        	if(verbose){
-	        		System.out.println(line);
-	         	}
-	        	addResultLine(line);
-	        	results.add(line);
-	        }
+			while ((line = in.readLine()) != null)
+			{
+				if (verbose)
+				{
+					System.out.println(line);
+				}
+				addResultLine(line);
+				results.add(line);
+			}
 			Thread.sleep(100);
 		}
 		console.close();
@@ -146,17 +156,23 @@ public class ClusterComputationResource implements ComputationResource
 	@Override
 	public boolean installDependencies()
 	{
-		//not yet possible: we don't know how long each command will take.
-		//doable by enhancing SSH communication with Cluster to be able to 'talk back'
-		//so we know when to execute the next command.
-		//ALSO possible to make this into a 'Job'!
-		//for now: execute manuall, see: http://www.xgap.org/wiki/RqtlCluster
-		
-//		List<Command> commands = new ArrayList<Command>();
-//		commands.add(new Command("wget -r -l2 http://www.xgap.org/svn/xgap_1_4_distro/handwritten/java/plugins/cluster/R/ClusterJobs/", false, false));
-//		commands.add(new Command("cd www.xgap.org/svn/xgap_1_4_distro/handwritten/java/plugins/cluster/R/", false, false));
-//		commands.add(new Command("R CMD INSTALL ClusterJobs --library=~/libs", false, false));	
-//		
+		// not yet possible: we don't know how long each command will take.
+		// doable by enhancing SSH communication with Cluster to be able to
+		// 'talk back'
+		// so we know when to execute the next command.
+		// ALSO possible to make this into a 'Job'!
+		// for now: execute manuall, see: http://www.xgap.org/wiki/RqtlCluster
+
+		// List<Command> commands = new ArrayList<Command>();
+		// commands.add(new
+		// Command("wget -r -l2 http://www.xgap.org/svn/xgap_1_4_distro/handwritten/java/plugins/cluster/R/ClusterJobs/",
+		// false, false));
+		// commands.add(new
+		// Command("cd www.xgap.org/svn/xgap_1_4_distro/handwritten/java/plugins/cluster/R/",
+		// false, false));
+		// commands.add(new
+		// Command("R CMD INSTALL ClusterJobs --library=~/libs", false, false));
+		//
 		return false;
 	}
 

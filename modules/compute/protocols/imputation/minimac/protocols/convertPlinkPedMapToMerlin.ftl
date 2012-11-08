@@ -18,7 +18,7 @@ alloutputsexist \
 
 mkdir -p ${studyMerlinChrDir}
 
-#Conver SNP ID to chr_pos and remove 3e column to adhere to merlin
+#Convert SNP ID to chr_pos and remove 3e column to adhere to merlin
 gawk '
 	BEGIN {$1="CHROMOSOME";$2="MARKER";$3="POSITION";print $0}
 	{$2=$1":"$4;print $1,$2,$4}

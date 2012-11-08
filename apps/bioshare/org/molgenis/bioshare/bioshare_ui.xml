@@ -15,16 +15,19 @@
 			<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 				<menu name="InvestigationMenu">
 					<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+					<form name="computeProtocol" entity="ComputeProtocol" label="Compute protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter" />
 					<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
 						<form name="ProtocolDocuments" entity="ProtocolDocument" />
 					</form>
 					<form name="observationTarget" entity="ObservationTarget" label="Targets" />
 					<form name="observedValue" entity="ObservedValue" label="Values"/>
+					<form name="studyDescription" entity="StudyDescription" label="Study description"/>
 				</menu>
 			</form>
 		</menu>
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
-			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
+			<plugin name="Harmonization" type="plugins.harmonization.Harmonization" label="Matching parameters"/>
+			<!-- <plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/> -->
 			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
 			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
 			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>

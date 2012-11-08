@@ -13,17 +13,20 @@ public class UserLoginModel extends SimpleUserLoginModel
 {
 	private static final long serialVersionUID = 1L;
 
-	private Container registrationForm         = new Container();
+	private Container registrationForm = new Container();
 
 	public UserLoginModel(UserLogin controller)
 	{
 		super(controller);
 	}
 
-	public Container getRegistrationForm() {
+	public Container getRegistrationForm()
+	{
 		return registrationForm;
 	}
-	public void setRegistrationForm(Container registrationForm) {
+
+	public void setRegistrationForm(Container registrationForm)
+	{
 		this.registrationForm = registrationForm;
 	}
 }

@@ -1,9 +1,10 @@
 Name,defaultValue,description,dataType,hasOne_name
 clusterQueue,default,,,
-mem,4,Memory in GB,,
-walltime,23:59:00,,,
+mem,4GB,Memory,,
+walltime,23:59:00,walltime,,
 cores,1,,,
-scheduler,PBS,,,
+scheduler,BSUB,,,
+stage,module load,,,
 defaultInterpreter,#!/bin/bash,,,
 jobname,jobname,,string,
 root,/target/gpfs2/gcc/,the root to your tools and data,string,

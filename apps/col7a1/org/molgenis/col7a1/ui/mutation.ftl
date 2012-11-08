@@ -49,7 +49,7 @@
 -->
 <tr class="form_listrow1"><th width="50%">Found in number of patients</th><td><a href="molgenis.do?__target=${screen.name}&__action=findPatients&mid=${mutationSummaryDTO.identifier}#results">${mutationSummaryDTO.patientSummaryDTOList?size}</a></td></tr>
 <tr class="form_listrow0"><th width="50%">Phenotypes associated with mutation</th><td><#list mutationSummaryDTO.phenotypeNameList as phenotypeName>${phenotypeName}<br/></#list></td></tr>
-<tr class="form_listrow1"><th width="50%">References</th><td><#list mutationSummaryDTO.publicationDTOList as publicationDTO><a href="${mutationSummaryDTO.pubmedURL}${publicationDTO.pubmedId}" target="_new">${publicationDTO.title}</a><#--<a href="${publication.pdf}" target="_new"><img src="res/img/pdf.gif"></a>--><br/></#list></td></tr>
+<tr class="form_listrow1"><th width="50%">References</th><td><#list mutationSummaryDTO.publicationDTOList as publicationDTO><a href="${mutationSummaryDTO.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new">${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}</a><br/></#list></td></tr>
 <#--
 <tr class="form_listrow0"><th width="50%">Conserved amino acid?</th><td><#if mutationSummaryDTO.mutation.conservedAA??>${mutationSummaryDTO.mutation.conservedAA?string("yes", "no")}</#if></td></tr>
 <tr class="form_listrow1"><th width="50%">Predicted effect on splicing?</th><td><#if mutationSummaryDTO.mutation.effectOnSplicing??>${mutationSummaryDTO.mutation.effectOnSplicing?string("yes", "no")}</#if></td></tr>
@@ -62,7 +62,7 @@
 
 
 <p>
-[<a href="javascript:history.back();" onclick="javascript:history.back();">Back to results</a>]
+[<a href="javascript:window.history.back();" onclick="javascript:window.history.back();">Back to results</a>]
 </p>
 <p>
 [<a href="#">Back to top</a>]

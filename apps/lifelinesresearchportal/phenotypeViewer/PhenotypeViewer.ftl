@@ -423,7 +423,7 @@
 					<script>
 						$('#messageForm').empty();
 						if("${screen.getImportMessage()}" == "success"){
-							errorMessage = "<p style=\"color:green\"><i>Your import has been successful! You can know upload a new file</br>"
+							errorMessage = "<p style=\"color:green\"><i>Your import has been successful! You can now upload a new file</br>"
 						}else{
 							errorMessage = "<p style=\"color:red\"><i>${screen.getImportMessage()}</br>"
 						}

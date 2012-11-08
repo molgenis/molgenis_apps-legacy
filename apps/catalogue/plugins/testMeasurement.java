@@ -6,9 +6,11 @@ import org.molgenis.pheno.Measurement;
 
 import app.DatabaseFactory;
 
-public class testMeasurement {
+public class testMeasurement
+{
 
-	public static void main(String args[]) throws DatabaseException {
+	public static void main(String args[]) throws DatabaseException
+	{
 
 		Database db = DatabaseFactory.create();
 

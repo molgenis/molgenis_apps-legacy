@@ -7,7 +7,6 @@
 
 package org.molgenis.auth.ui;
 
-
 import org.molgenis.auth.ui.form.RegistrationForm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -31,22 +30,21 @@ public class UserLogin extends SimpleUserLogin
 		this.setModel(new UserLoginModel(this));
 	}
 
-
 	public ScreenView getView()
 	{
 		return new FreemarkerView("UserLogin.ftl", getModel());
 	}
-	
+
 	public void Register(Database db, Tuple request)
 	{
 		this.getModel().setAction("Register");
 	}
-	
+
 	@Override
 	public void reload(Database db)
 	{
 		super.reload(db);
-		
+
 		this.populateRegistrationForm();
 	}
 

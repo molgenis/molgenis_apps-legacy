@@ -15,58 +15,88 @@ public class MBrowseVO implements Serializable
 	ProteinDomainSummaryVO proteinDomainSummaryVO;
 	List<ExonSummaryVO> exonList;
 	ExonSummaryVO exonSummaryVO;
-	GenePanel genePanel                   = new GenePanel();
+	GenePanel genePanel = new GenePanel();
 	ProteinDomainPanel proteinDomainPanel = new ProteinDomainPanel();
-	ExonIntronPanel exonIntronPanel       = new ExonIntronPanel();
-	SequencePanel sequencePanel           = new SequencePanel();
+	ExonIntronPanel exonIntronPanel = new ExonIntronPanel();
+	SequencePanel sequencePanel = new SequencePanel();
 
-	public List<ProteinDomainSummaryVO> getProteinDomainList() {
+	public List<ProteinDomainSummaryVO> getProteinDomainList()
+	{
 		return proteinDomainList;
 	}
-	public void setProteinDomainList(List<ProteinDomainSummaryVO> proteinDomainList) {
+
+	public void setProteinDomainList(List<ProteinDomainSummaryVO> proteinDomainList)
+	{
 		this.proteinDomainList = proteinDomainList;
 	}
-	public ProteinDomainSummaryVO getProteinDomainSummaryVO() {
+
+	public ProteinDomainSummaryVO getProteinDomainSummaryVO()
+	{
 		return proteinDomainSummaryVO;
 	}
-	public void setProteinDomainSummaryVO(
-			ProteinDomainSummaryVO proteinDomainSummaryVO) {
+
+	public void setProteinDomainSummaryVO(ProteinDomainSummaryVO proteinDomainSummaryVO)
+	{
 		this.proteinDomainSummaryVO = proteinDomainSummaryVO;
 	}
-	public List<ExonSummaryVO> getExonList() {
+
+	public List<ExonSummaryVO> getExonList()
+	{
 		return exonList;
 	}
-	public void setExonList(List<ExonSummaryVO> exonList) {
+
+	public void setExonList(List<ExonSummaryVO> exonList)
+	{
 		this.exonList = exonList;
 	}
-	public ExonSummaryVO getExonSummaryVO() {
+
+	public ExonSummaryVO getExonSummaryVO()
+	{
 		return exonSummaryVO;
 	}
-	public void setExonSummaryVO(ExonSummaryVO exonSummaryVO) {
+
+	public void setExonSummaryVO(ExonSummaryVO exonSummaryVO)
+	{
 		this.exonSummaryVO = exonSummaryVO;
 	}
-	public GenePanel getGenePanel() {
+
+	public GenePanel getGenePanel()
+	{
 		return genePanel;
 	}
-	public void setGenePanel(GenePanel genePanel) {
+
+	public void setGenePanel(GenePanel genePanel)
+	{
 		this.genePanel = genePanel;
 	}
-	public ProteinDomainPanel getProteinDomainPanel() {
+
+	public ProteinDomainPanel getProteinDomainPanel()
+	{
 		return proteinDomainPanel;
 	}
-	public void setProteinDomainPanel(ProteinDomainPanel proteinDomainPanel) {
+
+	public void setProteinDomainPanel(ProteinDomainPanel proteinDomainPanel)
+	{
 		this.proteinDomainPanel = proteinDomainPanel;
 	}
-	public ExonIntronPanel getExonIntronPanel() {
+
+	public ExonIntronPanel getExonIntronPanel()
+	{
 		return exonIntronPanel;
 	}
-	public void setExonIntronPanel(ExonIntronPanel exonIntronPanel) {
+
+	public void setExonIntronPanel(ExonIntronPanel exonIntronPanel)
+	{
 		this.exonIntronPanel = exonIntronPanel;
 	}
-	public SequencePanel getSequencePanel() {
+
+	public SequencePanel getSequencePanel()
+	{
 		return sequencePanel;
 	}
-	public void setSequencePanel(SequencePanel sequencePanel) {
+
+	public void setSequencePanel(SequencePanel sequencePanel)
+	{
 		this.sequencePanel = sequencePanel;
 	}
 }

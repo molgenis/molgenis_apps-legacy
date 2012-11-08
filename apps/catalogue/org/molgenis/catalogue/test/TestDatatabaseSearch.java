@@ -12,39 +12,39 @@ import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
-public class TestDatatabaseSearch {
+public class TestDatatabaseSearch
+{
 
 	private Database db;
 
 	@BeforeClass
-	public void setUp() throws DatabaseException {
+	public void setUp() throws DatabaseException
+	{
 		BasicConfigurator.configure();
 		db = DatabaseFactory.create();
 	}
-	
+
 	@Test
 	public void testSearch() throws DatabaseException
 	{
-		//ensure something is there
-		if(0 == db.query(Measurement.class).eq(Measurement.NAME, "testmonkey").count())
+		// ensure something is there
+		if (0 == db.query(Measurement.class).eq(Measurement.NAME, "testmonkey").count())
 		{
 			Measurement m = new Measurement();
 			m.setName("testmonkey");
 			db.add(m);
 		}
-		
+
 		List<Measurement> mList = db.query(Measurement.class).limit(100).search("monkey").find();
-		
+
 		boolean found = false;
-		for(Measurement m: mList)
+		for (Measurement m : mList)
 		{
-			//if it runs, and finds something, it is okay.
-			if("testmonkey".equals(m.getName())) found = true;
+			// if it runs, and finds something, it is okay.
+			if ("testmonkey".equals(m.getName())) found = true;
 		}
-		Assert.assertEquals(true,found);
-		
-		
+		Assert.assertEquals(true, found);
+
 	}
-	
-	
+
 }

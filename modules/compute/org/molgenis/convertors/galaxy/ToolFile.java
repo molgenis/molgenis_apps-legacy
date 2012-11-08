@@ -9,11 +9,12 @@ public class ToolFile
 {
 	@XmlAttribute
 	String file;
-	
+
 	public String getFile()
 	{
 		return file;
 	}
+
 	public void setFile(String file)
 	{
 		this.file = file;
@@ -21,6 +22,6 @@ public class ToolFile
 
 	public String toString()
 	{
-		return "ToolFile(file="+getFile()+")";
+		return "ToolFile(file=" + getFile() + ")";
 	}
 }

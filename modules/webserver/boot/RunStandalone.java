@@ -66,7 +66,7 @@ public class RunStandalone
 				srv.serve();
 			}
 		}).start();
-		
+
 		// display app location
 		System.out.println("*********************************************************");
 		System.out.println("APPLICATION IS RUNNING AT: http://localhost:" + port + "/" + variant + "/");

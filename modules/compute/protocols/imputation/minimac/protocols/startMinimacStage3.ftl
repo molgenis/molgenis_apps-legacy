@@ -15,18 +15,18 @@ alloutputsexist \
 
 
 #Call compute to generate phasing jobs
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 mkdir -p ${projectImputationJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
+	-inputdir=. \
 	-worksheet="${concattedChunkWorksheet}" \
 	-parameters="${McParameters}" \
 	-workflow="${McProtocols}/../workflowMinimacStage3.csv" \
 	-protocols="${McProtocols}/" \
-	-templates="${McTemplates}/" \
-	-scripts="${projectImputationJobsDir}/" \
+	-outputdir="${projectImputationJobsDir}/" \
 	-id="${McId}"
 
 

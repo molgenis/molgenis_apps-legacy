@@ -1,18 +1,9 @@
 package org.molgenis.compute.test.generator;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
+import app.DatabaseFactory;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.commandline.FreemarkerHelper;
 import org.molgenis.compute.commandline.Worksheet;
@@ -20,6 +11,7 @@ import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
+import org.molgenis.compute.runtime.ComputeParameterDefaultValue;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.compute.test.temp.Target;
 import org.molgenis.framework.db.Database;
@@ -28,10 +20,11 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.util.Pair;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 12:05
@@ -46,7 +39,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 
 	Database db = null;
 
-	public void generate(Workflow workflow, List<Target> targets,
+	public void generate(Workflow workflow, List<ComputeParameter> parameters, List<Target> targets,
 			Hashtable<String, String> config) {
 	}
 
@@ -54,7 +47,6 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 	 * Create a script, given a tuple from folded worksheet, taskName,
 	 * workflowElementsList and ComputeParameter list
 	 * 
-	 * @param template
 	 * @param work
 	 * @param taskName
 	 * @param workflowElementsList
@@ -104,28 +96,61 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 		return null;
 	}
 
-	@Override
 	public void generateWithTuple(Workflow workflow, List<Tuple> targets,
 			Hashtable<String, String> config) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	/**
 	 * Generate tasks and put them into the database
 	 */
-	public void generateTasks(Workflow workflow, List<Tuple> worksheet) {
-		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
-				.getWorkflowComputeParameterCollection();
-		Collection<WorkflowElement> workflowElementsList = workflow
-				.getWorkflowWorkflowElementCollection();
+	public void generateTasks(Workflow workflow, List<ComputeParameter> pList, List<Tuple> worksheet, String backend_name)
+    {
+        List<ComputeParameter> parameterList = pList;
+        try
+        {
+            db = DatabaseFactory.create();
+
+        }
+        catch (DatabaseException e)
+        {
+            e.printStackTrace();
+        }
+
+
+        //here, substitute default values of compute parameters with actual one for workflow
+        for(ComputeParameter parameter : parameterList)
+        {
+            if(parameter.getDefaultValue() != null)
+            {
+                try
+                {
+                    List<ComputeParameterDefaultValue> defaultValues = db.query(ComputeParameterDefaultValue.class)
+                            .equals(ComputeParameterDefaultValue.COMPUTEPARAMETER_NAME, parameter.getName())
+                            .equals(ComputeParameterDefaultValue.WORKFLOW_NAME, workflow.getName()).find();
+
+                    if(defaultValues.size() > 0)
+                    {
+                        String value = defaultValues.get(0).getDefaultValue();
+                        parameter.setDefaultValue(value);
+                    }
+                }
+                catch (DatabaseException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
 
 		// Put protocols in a temporary directory to enable a protocol to
 		// include other protocols while generating. We do it this way because
 		// we want to use Freemarker to handle the includes. Doing the includes
 		// ourselves (in memory) would mean that we would have to deal with many
 		// exceptional cases, which are now automatically handled by Freemarker.
+
 
 		String protocolsDirName = System.getProperty("java.io.tmpdir")
 				+ System.getProperty("file.separator")
@@ -134,14 +159,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 
 		File protocolsDir = new File(protocolsDirName);
 
-		try {
-			db = DatabaseFactory.create();
-			saveProtocolsInDir(db, protocolsDir);
-
-			db.beginTx();
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
+		saveProtocolsInDir(db, protocolsDir);
 
 		// I guess, we should also add line_number as a 'ComputeParameter'...
 		ComputeParameter line_number = new ComputeParameter();
@@ -209,6 +227,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 				ComputeTask task = new ComputeTask();
 				task.setName(taskName);
 				task.setComputeScript(script);
+                task.setBackEndName(backend_name);
 				task.setInterpreter(workflowElement.getProtocol()
 						.getScriptInterpreter());
 				task.setRequirements(workflowElement.getProtocol()
@@ -235,10 +254,14 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 			}
 		}
 
-		try {
+		try
+        {
+            db.beginTx();
 			db.add(tasks);
 			db.commitTx();
-		} catch (DatabaseException e) {
+		}
+        catch (DatabaseException e)
+        {
 			e.printStackTrace();
 		}
 

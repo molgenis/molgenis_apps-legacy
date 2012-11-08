@@ -10,13 +10,13 @@ import java.util.List;
 
 import org.molgenis.datatable.model.QueryCreator;
 import org.molgenis.datatable.model.QueryTable;
-import org.molgenis.datatable.model.TableException;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 import org.testng.annotations.BeforeMethod;

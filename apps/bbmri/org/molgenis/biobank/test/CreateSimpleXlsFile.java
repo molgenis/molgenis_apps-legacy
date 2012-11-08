@@ -21,18 +21,21 @@ import jxl.write.WritableFont;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
-public class CreateSimpleXlsFile {
-	
-	private String inputFile = 	System.getProperty("java.io.tmpdir");
+public class CreateSimpleXlsFile
+{
+
+	private String inputFile = System.getProperty("java.io.tmpdir");
 
 	private WritableCellFormat timesBoldUnderline;
 	private WritableCellFormat times;
-	
-	public void setOutputFile(String inputFile) {
+
+	public void setOutputFile(String inputFile)
+	{
 		this.inputFile = inputFile;
 	}
 
-	public void write() throws IOException, WriteException {
+	public void write() throws IOException, WriteException
+	{
 		File file = new File(inputFile);
 		WorkbookSettings wbSettings = new WorkbookSettings();
 
@@ -48,8 +51,8 @@ public class CreateSimpleXlsFile {
 		workbook.close();
 	}
 
-	private void createLabel(WritableSheet sheet)
-			throws WriteException {
+	private void createLabel(WritableSheet sheet) throws WriteException
+	{
 		// Lets create a times font
 		WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
 		// Define the cell format
@@ -57,9 +60,8 @@ public class CreateSimpleXlsFile {
 		// Lets automatically wrap the cells
 		times.setWrap(true);
 
-		// Create create a bold font with underlines 
-		WritableFont times10ptBoldUnderline = new WritableFont(
-				WritableFont.TIMES, 10, WritableFont.BOLD, false,
+		// Create create a bold font with underlines
+		WritableFont times10ptBoldUnderline = new WritableFont(WritableFont.TIMES, 10, WritableFont.BOLD, false,
 				UnderlineStyle.SINGLE);
 		timesBoldUnderline = new WritableCellFormat(times10ptBoldUnderline);
 		// Lets automatically wrap the cells
@@ -73,14 +75,14 @@ public class CreateSimpleXlsFile {
 		// Write a few headers
 		addCaption(sheet, 0, 0, "Header 1");
 		addCaption(sheet, 1, 0, "This is another header");
-		
 
 	}
 
-	private void createContent(WritableSheet sheet) throws WriteException,
-			RowsExceededException {
+	private void createContent(WritableSheet sheet) throws WriteException, RowsExceededException
+	{
 		// Write a few number
-		for (int i = 1; i < 10; i++) {
+		for (int i = 1; i < 10; i++)
+		{
 			// First column
 			addNumber(sheet, 0, i, i + 10);
 			// Second column
@@ -97,7 +99,8 @@ public class CreateSimpleXlsFile {
 		sheet.addCell(f);
 
 		// Now a bit of text
-		for (int i = 12; i < 20; i++) {
+		for (int i = 12; i < 20; i++)
+		{
 			// First column
 			addLabel(sheet, 0, i, "Boring text " + i);
 			// Second column
@@ -105,36 +108,38 @@ public class CreateSimpleXlsFile {
 		}
 	}
 
-	private void addCaption(WritableSheet sheet, int column, int row, String s)
-			throws RowsExceededException, WriteException {
+	private void addCaption(WritableSheet sheet, int column, int row, String s) throws RowsExceededException,
+			WriteException
+	{
 		Label label;
 		label = new Label(column, row, s, timesBoldUnderline);
 		sheet.addCell(label);
 	}
 
-	private void addNumber(WritableSheet sheet, int column, int row,
-			Integer integer) throws WriteException, RowsExceededException {
+	private void addNumber(WritableSheet sheet, int column, int row, Integer integer) throws WriteException,
+			RowsExceededException
+	{
 		Number number;
 		number = new Number(column, row, integer, times);
 		sheet.addCell(number);
 	}
 
-	private void addLabel(WritableSheet sheet, int column, int row, String s)
-			throws WriteException, RowsExceededException {
+	private void addLabel(WritableSheet sheet, int column, int row, String s) throws WriteException,
+			RowsExceededException
+	{
 		Label label;
 		label = new Label(column, row, s, times);
 		sheet.addCell(label);
 	}
 
-	public static void main(String[] args) throws WriteException, IOException {
+	public static void main(String[] args) throws WriteException, IOException
+	{
 		CreateSimpleXlsFile test = new CreateSimpleXlsFile();
-		String inputFile = 	System.getProperty("java.io.tmpdir");
+		String inputFile = System.getProperty("java.io.tmpdir");
 
 		test.setOutputFile(inputFile + "desp.xls");
 		test.write();
-		System.out.println("Please check the result file .xls "+ inputFile + "desp.xls");
+		System.out.println("Please check the result file .xls " + inputFile + "desp.xls");
 	}
-
-	
 
 }

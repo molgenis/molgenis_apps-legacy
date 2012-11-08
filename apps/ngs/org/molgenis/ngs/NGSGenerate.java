@@ -1,8 +1,6 @@
 package org.molgenis.ngs;
 
-
 import org.molgenis.Molgenis;
-
 
 public class NGSGenerate
 {

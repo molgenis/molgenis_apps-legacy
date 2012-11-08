@@ -29,55 +29,54 @@ import org.molgenis.util.Tuple;
  * this.getModel()/setModel(..) <li>catalogueWelcomeScreenPluginView holds the
  * template to show the layout. Get/set it via this.getView()/setView(..).
  */
-public class bioshareWelcomeScreenPlugin extends
-		EasyPluginController<bioshareWelcomeScreenPluginModel> {
+public class bioshareWelcomeScreenPlugin extends EasyPluginController<bioshareWelcomeScreenPluginModel>
+{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5739079926760041071L;
 
-	public bioshareWelcomeScreenPlugin(String name, ScreenController<?> parent) {
+	public bioshareWelcomeScreenPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 		this.setModel(new bioshareWelcomeScreenPluginModel(this)); // the
 																	// default
 																	// model
 	}
 
-	public ScreenView getView() {
-		return new FreemarkerView("bioshareWelcomeScreenPluginView.ftl",
-				getModel());
+	public ScreenView getView()
+	{
+		return new FreemarkerView("bioshareWelcomeScreenPluginView.ftl", getModel());
 	}
 
-	public void preLoadData(Database db, String investigationName,
-			String protocolName, HashMap<String, String> featuresForStudies)
-			throws DatabaseException {
+	public void preLoadData(Database db, String investigationName, String protocolName,
+			HashMap<String, String> featuresForStudies) throws DatabaseException
+	{
 
 		// Pre-load the catalogueStudy investigation to hold the information
 		// to describe the cohort studies and prediction models
-		if (db.find(
-				Investigation.class,
-				new QueryRule(Investigation.NAME, Operator.EQUALS,
-						investigationName)).size() == 0) {
+		if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).size() == 0)
+		{
 			Investigation inv = new Investigation();
 			inv.setName(investigationName);
 			db.add(inv);
 		}
 
-		List<String> listOfFeatures = new ArrayList<String>(
-				featuresForStudies.keySet());
+		List<String> listOfFeatures = new ArrayList<String>(featuresForStudies.keySet());
 
-		for (Measurement m : db.find(Measurement.class, new QueryRule(
-				Measurement.NAME, Operator.IN, new ArrayList<String>(
-						featuresForStudies.keySet())))) {
+		for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+				new ArrayList<String>(featuresForStudies.keySet()))))
+		{
 			featuresForStudies.remove(m.getName());
 		}
 
-		if (featuresForStudies.size() > 0) {
+		if (featuresForStudies.size() > 0)
+		{
 
 			List<Measurement> newMeasurements = new ArrayList<Measurement>();
 
-			for (Entry<String, String> newFeature : featuresForStudies
-					.entrySet()) {
+			for (Entry<String, String> newFeature : featuresForStudies.entrySet())
+			{
 
 				Measurement m = new Measurement();
 				m.setName(newFeature.getKey());
@@ -90,18 +89,17 @@ public class bioshareWelcomeScreenPlugin extends
 
 		// Add the protocol to which the features belong
 		Protocol p = null;
-		if (db.find(Protocol.class,
-				new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName))
-				.size() == 0) {
+		if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName)).size() == 0)
+		{
 			p = new Protocol();
 			p.setName(protocolName);
 			p.setInvestigation_Name(investigationName);
 			p.setFeatures_Name(listOfFeatures);
 			db.add(p);
-		} else {
-			p = db.find(Protocol.class,
-					new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName))
-					.get(0);
+		}
+		else
+		{
+			p = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName)).get(0);
 			p.setFeatures_Name(listOfFeatures);
 			db.update(p);
 		}
@@ -114,45 +112,39 @@ public class bioshareWelcomeScreenPlugin extends
 	 * setMessages(). All db actions are within one transaction.
 	 */
 	@Override
-	public void reload(Database db) throws Exception {
+	public void reload(Database db) throws Exception
+	{
 
 		HashMap<String, String> featuresForStudies = new HashMap<String, String>();
 
 		featuresForStudies.put("studyName_catalogueCohortStudy", "Study name");
-		featuresForStudies.put("studyDescription_catalogueCohortStudy",
-				"Study description");
-		featuresForStudies.put("launchYear_catalogueCohortStudy",
-				"Launched year");
-		featuresForStudies.put("countryOfStudy_catalogueCohortStudy",
-				"Country of study");
-		featuresForStudies.put("studyDesign_catalogueCohortStudy",
-				"Study design");
-		featuresForStudies.put("numberOfParticipants_catalogueCohortStudy",
-				"Number of participants");
+		featuresForStudies.put("studyDescription_catalogueCohortStudy", "Study description");
+		featuresForStudies.put("launchYear_catalogueCohortStudy", "Launched year");
+		featuresForStudies.put("countryOfStudy_catalogueCohortStudy", "Country of study");
+		featuresForStudies.put("studyDesign_catalogueCohortStudy", "Study design");
+		featuresForStudies.put("numberOfParticipants_catalogueCohortStudy", "Number of participants");
 		featuresForStudies.put("ageGroup_catalogueCohortStudy", "Age group");
-		featuresForStudies.put("ethnicGroup_catalogueCohortStudy",
-				"Ethnic group");
+		featuresForStudies.put("ethnicGroup_catalogueCohortStudy", "Ethnic group");
 		// Pre-load the metadata that is used to describe the cohort studies.
-		preLoadData(db, "catalogueCohortStudy", "studyCharacteristic",
-				featuresForStudies);
+		preLoadData(db, "catalogueCohortStudy", "studyCharacteristic", featuresForStudies);
 
 		// Pre-load the metadata that is used to describe the prediction model.
 		featuresForStudies.clear();
-		featuresForStudies.put("predictionModelName_cataloguePredictionModel",
-				"Prediction model");
-		featuresForStudies.put("numberOfPredictors_cataloguePredictionModel",
-				"Number of predictors");
-		featuresForStudies.put("statisticalModel_cataloguePredictionModel",
-				"Statistical model");
-		featuresForStudies.put("diseasePrediction_cataloguePredictionModel",
-				"Predicted disease");
-		featuresForStudies.put("discrimination_cataloguePredictionModel",
-				"Discrimination");
-		featuresForStudies.put("calibration_cataloguePredictionModel",
-				"Calibration");
+		featuresForStudies.put("predictionModelName_cataloguePredictionModel", "Prediction model");
+		featuresForStudies.put("numberOfPredictors_cataloguePredictionModel", "Number of predictors");
+		featuresForStudies.put("statisticalModel_cataloguePredictionModel", "Statistical model");
+		featuresForStudies.put("diseasePrediction_cataloguePredictionModel", "Predicted disease");
+		featuresForStudies.put("discrimination_cataloguePredictionModel", "Discrimination");
+		featuresForStudies.put("calibration_cataloguePredictionModel", "Calibration");
 		// Pre-load the metadata that is used to describe the cohort studies.
-		preLoadData(db, "cataloguePredictionModel",
-				"predictionModelCharacteristic", featuresForStudies);
+		preLoadData(db, "cataloguePredictionModel", "predictionModelCharacteristic", featuresForStudies);
+
+		if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "Prediction Model")).size() == 0)
+		{
+			Investigation inv = new Investigation();
+			inv.setName("Prediction Model");
+			db.add(inv);
+		}
 	}
 
 	/**
@@ -161,7 +153,8 @@ public class bioshareWelcomeScreenPlugin extends
 	 * Exceptions will be logged and shown to the user automatically. All db
 	 * actions are within one transaction.
 	 */
-	public void updateDate(Database db, Tuple request) throws Exception {
+	public void updateDate(Database db, Tuple request) throws Exception
+	{
 		getModel().date = request.getDate("date");
 
 		// //Easily create object from request and add to database

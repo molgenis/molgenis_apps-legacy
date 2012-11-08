@@ -10,7 +10,7 @@
 		<form name="Panels" entity="Panel" />
 		<form name="Individuals" entity="Individual" />
 		<form name="Features" entity="ObservableFeature">
-			<form name="PermittedValues" entity="PermittedValue" />
+			<form name="Categories" entity="Category" />
 		</form>
 		<form name="Protocols" entity="Protocol" />
 		<form name="DataSets" entity="DataSet">
@@ -18,8 +18,9 @@
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 		</form>
-<!-- 		<plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" />
-		<plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" /> -->
+		<!-- <plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" 
+			/> <plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" 
+			/> -->
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">
 				<form name="OntologyTerms" entity="OntologyTerm" />

@@ -1,4 +1,5 @@
 package org.molgenis.lifelinesresearchportal.legacy;
+
 // DEPRECATED! We will use a non-JPA version instead.
 
 //package org.molgenis.xgap.other.xqtlworkbench_lifelines;
@@ -116,4 +117,4 @@ package org.molgenis.lifelinesresearchportal.legacy;
 //		
 //	}
 //	
-//}
+// }

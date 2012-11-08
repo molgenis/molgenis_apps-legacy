@@ -18,7 +18,8 @@ import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
-public class DuplicatesPlugin extends PluginModel<Entity> {
+public class DuplicatesPlugin extends PluginModel<Entity>
+{
 
 	private static final long serialVersionUID = 3285351881759871383L;
 	public String input;
@@ -26,19 +27,23 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 
 	// public String unique;
 
-	public String getInput() {
+	public String getInput()
+	{
 		return input;
 	}
 
-	public void setInput(String input) {
+	public void setInput(String input)
+	{
 		this.input = input;
 	}
 
-	public String getOutput() {
+	public String getOutput()
+	{
 		return output;
 	}
 
-	public void setOutput(String output) {
+	public void setOutput(String output)
+	{
 		this.output = output;
 	}
 
@@ -50,50 +55,66 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 	// this.unique = unique;
 	// }
 
-	public DuplicatesPlugin(String name, ScreenController<?> parent) {
+	public DuplicatesPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "plugins_help_duplicates_DuplicatesPlugin";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/help/duplicates/DuplicatesPlugin.ftl";
 	}
-	
-	public static ArrayList<String> renameDuplicates(ArrayList<String> inputs){
+
+	public static ArrayList<String> renameDuplicates(ArrayList<String> inputs)
+	{
 		ArrayList<String> out = new ArrayList<String>();
-		
-		for(String s : inputs){
-			if(out.contains(s)){
+
+		for (String s : inputs)
+		{
+			if (out.contains(s))
+			{
 				boolean highestDupFound = false;
 				int dupNumber = 1;
-				while(!highestDupFound){
-					if(out.contains(s + "_DUP" + dupNumber)){
+				while (!highestDupFound)
+				{
+					if (out.contains(s + "_DUP" + dupNumber))
+					{
 						dupNumber++;
-					}else{
+					}
+					else
+					{
 						out.add(s + "_DUP" + (dupNumber));
 						highestDupFound = true;
 					}
 				}
-			}else{
+			}
+			else
+			{
 				out.add(s);
 			}
 		}
-		
+
 		return out;
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
-		if (request.getString("__action") != null) {
-			if (request.getString("__action").equals("convertNames")) {
+	public void handleRequest(Database db, Tuple request)
+	{
+		if (request.getString("__action") != null)
+		{
+			if (request.getString("__action").equals("convertNames"))
+			{
 				String rawInput = request.getString("input");
 
-				if (rawInput != null) {
+				if (rawInput != null)
+				{
 					this.setInput(rawInput);
 
 					String[] split = rawInput.split("\\r?\\n");
@@ -102,8 +123,10 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 
 					ArrayList<String> inputs = new ArrayList<String>();
 
-					for (String s : split) {
-						if (s.length() != 0) {
+					for (String s : split)
+					{
+						if (s.length() != 0)
+						{
 							s = s.trim();
 							try
 							{
@@ -116,29 +139,37 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 							inputs.add(s);
 						}
 					}
-					
+
 					ArrayList<String> outputs = renameDuplicates(inputs);
-					
-					for(String s : outputs){
+
+					for (String s : outputs)
+					{
 						output += s + "\n";
 					}
 
 					this.setOutput(output);
-				} else {
+				}
+				else
+				{
 					this.setInput(null);
 					this.setOutput(null);
 				}
 
-			} else if (request.getString("__action").equals("loadExample")) {
+			}
+			else if (request.getString("__action").equals("loadExample"))
+			{
 				this.setInput(example());
-			} else if (request.getString("__action").equals("clear")) {
+			}
+			else if (request.getString("__action").equals("clear"))
+			{
 				this.setInput(null);
 				this.setOutput(null);
 			}
 		}
 	}
 
-	private String example() {
+	private String example()
+	{
 		String example = "At5g44840\n";
 		example += "At1g31870\n";
 		example += "At4g36730\n";
@@ -155,7 +186,8 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 
 	}
 

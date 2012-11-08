@@ -13,8 +13,10 @@ import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 
 /**
- * MyCOL7A1Model takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
+ * MyCOL7A1Model takes care of all state and it can have helper methods to query
+ * the database. It should not contain layout or application logic which are
+ * solved in View and Controller.
+ * 
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
 public class MyMutationModel extends EasyPluginModel
@@ -24,35 +26,40 @@ public class MyMutationModel extends EasyPluginModel
 	private List<PatientSummaryVO> patientSummaryVOList;
 	private String rawOutput = "";
 
-	public String getPatientPager() {
+	public String getPatientPager()
+	{
 		return patientPager;
 	}
 
-	public void setPatientPager(String patientPager) {
+	public void setPatientPager(String patientPager)
+	{
 		this.patientPager = patientPager;
 	}
 
-	public List<PatientSummaryVO> getPatientSummaryVOList() {
+	public List<PatientSummaryVO> getPatientSummaryVOList()
+	{
 		return patientSummaryVOList;
 	}
 
-	public void setPatientSummaryVOList(List<PatientSummaryVO> patientSummaryVOList) {
+	public void setPatientSummaryVOList(List<PatientSummaryVO> patientSummaryVOList)
+	{
 		this.patientSummaryVOList = patientSummaryVOList;
 	}
 
-	public String getRawOutput() {
+	public String getRawOutput()
+	{
 		return rawOutput;
 	}
 
-	public void setRawOutput(String rawOutput) {
+	public void setRawOutput(String rawOutput)
+	{
 		this.rawOutput = rawOutput;
 	}
 
 	public MyMutationModel(MyMutation controller)
 	{
-		//each Model can access the controller to notify it when needed.
+		// each Model can access the controller to notify it when needed.
 		super(controller);
 	}
-	
-	
+
 }
