@@ -2,34 +2,14 @@ package org.molgenis.col7a1.ui;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.displaytag.decorator.TableDecorator;
 import org.molgenis.core.dto.PublicationDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.VariantDTO;
+import org.molgenis.mutation.ui.html.DisplaytagTableDecorator;
 
-public class MutationPagerDecorator extends TableDecorator
+public class MutationPagerDecorator extends DisplaytagTableDecorator
 {
-	private String createMutationLink(String mid)
-	{
-		return "<a href=\"molgenis.do?__target=SearchPlugin&__action=showMutation&mid=" + mid + "#results\">" + mid + "</a>";
-	}
-
-	private String createExonLink(String exonId, String exonName)
-	{
-		return "<a href=\"molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=" + exonId + "#results\">" + exonName + "</a>";
-	}
-
-	private String createPatientLink(String pid)
-	{
-		return "<a href=\"molgenis.do?__target=SearchPlugin&__action=showPatient&pid=" + pid + "#results\">" + pid + "</a>";
-	}
-
-	private String createPublicationLink(String pubmedUrl, PublicationDTO publicationDTO)
-	{
-		return "<a href=\"" + pubmedUrl + publicationDTO.getPubmedId() + "\" title=\"" + publicationDTO.getTitle() + "\" target=\"_new\">" + publicationDTO.getFirstAuthor() + " (" + publicationDTO.getYear() + ") " + publicationDTO.getJournal() + "</a>";
-	}
-
 	private String createPublicationRows(int numRows)
 	{
 		StringBuffer result = new StringBuffer();
