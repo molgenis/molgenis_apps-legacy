@@ -2,6 +2,7 @@ package org.molgenis.mutation;
 
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.core.service.PublicationService;
+import org.molgenis.mutation.service.CafeVariomeService;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.FastaService;
 import org.molgenis.mutation.service.GffService;
@@ -58,6 +59,11 @@ public class ServiceLocator
 	public synchronized void shutdown()
 	{
 //		((org.springframework.context.annotation.AnnotationConfigApplicationContext) this.getContext()).close();
+	}
+
+	public final CafeVariomeService getCafeVariomeService()
+	{
+		return (CafeVariomeService) this.getContext().getBean("cafeVariomeService");
 	}
 
 	public final CmsService getCmsService()
