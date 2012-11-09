@@ -26,7 +26,7 @@
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			<plugin name="Harmonization" type="plugins.harmonization.Harmonization" label="Matching parameters"/>
 			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>
-		</menu
+		</menu>
 		<menu name="Admin">
 			<menu name="ImportData" label="Import Data">
 				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter" label="Biobank Importer" />
@@ -48,4 +48,3 @@
 
 	</menu>
 </molgenis>
-
