@@ -199,7 +199,7 @@ function loadMappingResult(validationStudy, url)
 	});
 }
 
-function addMappingFromTree()
+function addMappingFromTree(url)
 {	
 	mappedVariableId = $('#clickedVariable').val();
 
@@ -213,7 +213,7 @@ function addMappingFromTree()
 
 	mappings[predictor] = measurementName;
 
-	saveMapping(mappings);
+	saveMapping(mappings, url);
 }
 
 function removeSingleMapping(element, url)
@@ -494,7 +494,7 @@ function addNewPredictionModel(url)
 	}
 }
 
-function removePredictionModel()
+function removePredictionModel(url)
 {	
 	if($('#selectPredictionModel option').length > 0){
 		selected = $('#selectPredictionModel').val();

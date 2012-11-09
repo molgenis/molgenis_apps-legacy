@@ -85,7 +85,7 @@
             	modal: true,
             	buttons: {
 	                Confirm: function() {
-	                	removePredictionModel();
+	                	removePredictionModel(URL);
 	                },
 	                Cancel: function() {
 	                    $( this ).dialog( "close" );
@@ -118,7 +118,7 @@
 			});
 			
 			$('#addMappingFromTree').button().click(function(){
-				addMappingFromTree();
+				addMappingFromTree(URL);
 			});
 			
 			$('#startNewValidation').button().click(function(){
