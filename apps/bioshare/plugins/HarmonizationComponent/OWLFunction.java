@@ -796,15 +796,32 @@ public class OWLFunction
 
 			OWLClass cls = labelToClass.get(classLabel.toLowerCase().trim());
 
-			OWLAnnotationProperty synonymsAnnotationProperty = factory.getOWLAnnotationProperty(IRI.create(ontologyIRI
-					+ "#alternative_term"));
+			OWLAnnotationProperty synonymsAnnotationProperty = factory.getOWLAnnotationProperty(IRI
+					.create("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"));
+
+			Pattern pattern = Pattern.compile(">[a-zA-Z0-9\\s]+<");
+
+			Matcher matcher = pattern.matcher("");
+
+			String sysnonym = "";
 
 			for (OWLAnnotation annotation : cls.getAnnotations(owlontology, synonymsAnnotationProperty))
 			{
+
 				if (annotation.getValue() instanceof OWLLiteral)
 				{
 					OWLLiteral val = (OWLLiteral) annotation.getValue();
-					synonyms.add(val.getLiteral().toString());
+
+					sysnonym = val.getLiteral().toLowerCase();
+
+					matcher.reset(sysnonym);
+
+					if (matcher.find())
+					{
+						sysnonym = matcher.group(0);
+						sysnonym = sysnonym.substring(1, sysnonym.length() - 1);
+						synonyms.add(sysnonym.trim());
+					}
 				}
 			}
 		}
