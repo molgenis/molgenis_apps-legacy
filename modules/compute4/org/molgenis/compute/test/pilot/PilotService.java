@@ -27,7 +27,6 @@ public class PilotService implements MolgenisService
 	public synchronized void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
-		System.out.println(request);
 		System.out.println(">> In handleRequest!");
 		System.out.println(request);
 
