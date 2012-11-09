@@ -7,11 +7,9 @@
 	<menu name="main" position="top_left" startswith="bioshareWelcomeScreen">
 
 		<plugin name="bioshareWelcomeScreen" type="plugins.welcome.bioshareWelcomeScreenPlugin" label="Welcome" />
-		
 		<menu name="dataManagement" label="Data management" position="top_left" startswith="CatalogueTreePlugin">
 			<plugin name="bioshareImportWizard" type="plugins.importDataWizard.bioshareImportWizard" label="import wizard" />
 			<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.CatalogueTreePlugin" label="Search variables" />
-			<plugin name="CatalogueTreePluginNew" type="plugins.catalogueTreeNewVersion.catalogueTreePluginNew" label="Tree developing" />
 			<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 				<menu name="InvestigationMenu">
 					<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
@@ -27,18 +25,11 @@
 		</menu>
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			<plugin name="Harmonization" type="plugins.harmonization.Harmonization" label="Matching parameters"/>
-			<!-- <plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/> -->
-			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
-			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
 			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>
-		</menu>
-
+		</menu
 		<menu name="Admin">
-			
-			<form name="Requests" entity="LifeLinesRequest" />
 			<menu name="ImportData" label="Import Data">
 				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter" label="Biobank Importer" />
-				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"	label="Batch Upload" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
@@ -51,9 +42,6 @@
 				<plugin label="Upgrade person to user" name="UserToPersonPlugin"
 					type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
-			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
-			<form name="OntologyTerms" entity="OntologyTerm" />
-
 		</menu>
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
 			label="Register/Login" />
