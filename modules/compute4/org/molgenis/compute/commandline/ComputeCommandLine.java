@@ -1,21 +1,8 @@
 package org.molgenis.compute.commandline;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
@@ -24,9 +11,8 @@ import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.*;
+import java.util.*;
 
 //import nl.vu.psy.rite.exceptions.RiteException;
 //import nl.vu.psy.rite.operations.Recipe;
@@ -36,6 +22,12 @@ import freemarker.template.TemplateException;
 
 public class ComputeCommandLine
 {
+    //now, the default scheduler is PBS
+    public static final String SCHEDULER_BSUB = "BSUB";
+    public static final String SCHEDULER_PBS = "PBS";
+    //we find out scheduler during jobs generation and then use it in submit generator
+    private String currentScheduler = "null";
+
 	protected ComputeBundle computeBundle;
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
@@ -137,6 +129,22 @@ public class ComputeCommandLine
 			// each element of folded worksheet produces one
 			// protocolApplication (i.e. a script)
 
+            String schedulerName = folded.get(0).getString("scheduler");
+
+            if(schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
+            {
+                currentScheduler = SCHEDULER_BSUB;
+                //change walltime format hh:mm:ss -> hh:mm
+                String strWalltime = protocol.getWalltime();
+                int lastDots = strWalltime.lastIndexOf(":");
+                strWalltime = strWalltime.substring(0, lastDots);
+                protocol.setWalltime(strWalltime);
+            }
+            else
+            {
+                //default is PBS
+                currentScheduler = SCHEDULER_PBS;
+            }
 
 			for (Tuple work : folded)
 			{
@@ -188,8 +196,18 @@ public class ComputeCommandLine
 
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
 						.getMem().toString());
-				work.set("mem", mem + "gb");
 
+                if(schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
+                {
+                    //for BSBS, the memory is specified in KB
+                    mem = Integer.parseInt(mem) * 1024 * 1024 + "";
+                    work.set("mem", mem);
+                }
+                else
+                {
+                    //the default scheduler is PBS, gb is added to the memory size
+                    work.set("mem", mem + "gb");
+                }
 
 				// set jobname. If a job starts/completes, we put this in a
 				// logfile
@@ -561,27 +579,28 @@ public class ComputeCommandLine
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("jobs", tasks);
 		params.put("workflowfilename", this.getworkflowfilename());
+        params.put("scheduler", currentScheduler);
 
-		String result = new FreemarkerView(this.protocoldir + File.separator + "CustomSubmit.sh.ftl", params).render();
+		String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
 
 		try
 		{
-			FileUtils.write(new File(outputdir + File.separator + "submitCustom.sh"), result);
+			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
 
 			// and produce submit.sh
-			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
+//			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
 
 			// also produce a runlocal.sh
-			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "runlocal.sh"));
+//			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "runlocal.sh"));
 
 			// touch "workflow file name".started in same directory as
 			// submit.sh, when starting submit.sh
 			String cmd = "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"";
-			submitWriter.println(cmd);
-			submitWriterLocal.println(cmd);
+//			submitWriter.println(cmd);
+//			submitWriterLocal.println(cmd);
 			cmd = "touch $DIR" + File.separator + getworkflowfilename() + ".started";
-			submitWriter.println(cmd);
-			submitWriterLocal.println(cmd);
+//			submitWriter.println(cmd);
+//			submitWriterLocal.println(cmd);
 
 			//
 			// Temporary hack for executing scripts with runlocal hence directly
@@ -592,46 +611,46 @@ public class ComputeCommandLine
 			// resides.
 			//
 			cmd = "export PBS_O_WORKDIR=${DIR}";
-			submitWriterLocal.println(cmd);
+//			submitWriterLocal.println(cmd);
 
 			for (ComputeTask job : this.tasks)
 			{
-				// create submit in submit.sh
+//				// create submit in submit.sh
 				String dependency = "";
-				if (job.getPrevSteps_Name().size() > 0)
-				{
-					dependency = "-W depend=afterok";
-
-					for (String previous : job.getPrevSteps_Name())
-					{
-						dependency += ":$" + previous;
-					}
-				}
-
-				// do stuff for submit.sh
-				submitWriter.println("#" + job.getName());
-				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " "
-						+ job.getName() + ".sh)");
-				submitWriter.println("echo $" + job.getName());
-				submitWriter.println("sleep 8");
-
-				// do stuff for submitlocal.sh
-				submitWriterLocal.println("echo Starting with " + job.getName() + "...");
-				submitWriterLocal.println("sh " + job.getName() + ".sh");
-				submitWriterLocal.println("#Dependencies: " + dependency);
-				submitWriterLocal.println("");
-
-				// produce .sh file in outputdir for each job
+//				if (job.getPrevSteps_Name().size() > 0)
+//				{
+//					dependency = "-W depend=afterok";
+//
+//					for (String previous : job.getPrevSteps_Name())
+//					{
+//						dependency += ":$" + previous;
+//					}
+//				}
+//
+//				// do stuff for submit.sh
+//				submitWriter.println("#" + job.getName());
+//				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " "
+//						+ job.getName() + ".sh)");
+//				submitWriter.println("echo $" + job.getName());
+//				submitWriter.println("sleep 8");
+//
+//				// do stuff for submitlocal.sh
+//				submitWriterLocal.println("echo Starting with " + job.getName() + "...");
+//				submitWriterLocal.println("sh " + job.getName() + ".sh");
+//				submitWriterLocal.println("#Dependencies: " + dependency);
+//				submitWriterLocal.println("");
+//
+//				// produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
-
-				// write the script
+//
+//				// write the script
 				jobWriter.println(job.getComputeScript());
-
+//
 				jobWriter.close();
 			}
-
-			submitWriter.close();
-			submitWriterLocal.close();
+//
+//			submitWriter.close();
+//			submitWriterLocal.close();
 
 		}
 		catch (FileNotFoundException e)
