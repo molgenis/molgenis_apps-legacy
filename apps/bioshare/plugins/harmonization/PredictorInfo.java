@@ -81,6 +81,14 @@ public class PredictorInfo
 		this.finalMappings = finalMappings;
 	}
 
+	public void setDescription(String name, String measurementDescription)
+	{
+		if (!description.containsKey(name))
+		{
+			description.put(name, measurementDescription);
+		}
+	}
+
 	public void setMappings(MappingList mappings)
 	{
 		this.mappings = mappings;
@@ -94,10 +102,12 @@ public class PredictorInfo
 			String matchedItem = eachRow.matchedItem;
 			Double similarity = eachRow.similarity;
 			String measurementName = eachRow.measurementName;
+			StringBuilder expandedQueryIdentifier = new StringBuilder();
+			expandedQueryIdentifier.append(expandedQuery).append("_").append(measurementName);
 
-			if (!this.similarity.containsKey(expandedQuery))
+			if (!this.similarity.containsKey(expandedQueryIdentifier.toString()))
 			{
-				this.similarity.put(expandedQuery, similarity);
+				this.similarity.put(expandedQueryIdentifier.toString(), similarity);
 			}
 
 			if (!this.description.containsKey(measurementName))
