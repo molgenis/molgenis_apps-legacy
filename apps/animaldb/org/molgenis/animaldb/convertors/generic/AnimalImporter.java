@@ -176,9 +176,9 @@ public class AnimalImporter
 		}
 		// Run convertor steps
 		populateProtocolApplication();
-		populateImportDefaults(path + "importDefaults.csv");
-		populateAnimal(path + "IDtable.csv");
-		parseParentRelations(path + "Litters.csv");
+		populateImportDefaults(path + "settings.csv");
+		populateAnimal(path + "animals.csv");
+		// parseParentRelations(path + "litters.csv");
 		// populateDec(path + "Experiments.csv");
 		// parseDecRelations(path + "IDsInExp.csv");
 
@@ -499,7 +499,6 @@ public class AnimalImporter
 			if (parentgroupNrMap.containsKey(lineName))
 			{
 				parentgroupNr = parentgroupNrMap.get(lineName) + 1;
-				System.out.println("#########pg nr: " + parentgroupNr);
 			}
 			parentgroupNrMap.put(lineName, parentgroupNr);
 			String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
@@ -511,11 +510,13 @@ public class AnimalImporter
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
 					parentgroupName, "Active", null));
 			// Link parents to parentgroup (if known)
+			System.out.println("#########pgM: " + motherName);
 			if (motherName != null)
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), now, null,
 						"ParentgroupMother", parentgroupName, null, motherName));
 			}
+			System.out.println("#########pgM: " + fatherName);
 			if (fatherName != null)
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), now, null,
