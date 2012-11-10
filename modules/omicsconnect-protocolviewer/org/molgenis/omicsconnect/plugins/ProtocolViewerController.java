@@ -128,11 +128,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 		if (dataSets != null && !dataSets.isEmpty()) dataSet = dataSets.get(0);
 
 		// get features
-		String[] featuresStr = request.getString("features").split(",");
-		List<Integer> featureIds = new ArrayList<Integer>(featuresStr.length);
-		for (String featureStr : featuresStr)
-			featureIds.add(Integer.valueOf(featureStr));
-		List<ObservableFeature> features = findFeatures(db, featureIds);
+		String featuresStr = request.getString("features");
+		List<ObservableFeature> features = null;
+		if (featuresStr != null && !featuresStr.isEmpty())
+		{
+			String[] featuresStrArr = request.getString("features").split(",");
+			List<Integer> featureIds = new ArrayList<Integer>(featuresStrArr.length);
+			for (String featureStr : featuresStrArr)
+				featureIds.add(Integer.valueOf(featureStr));
+			features = findFeatures(db, featureIds);
+		}
 
 		if (request.getAction().equals("download_emeasure"))
 		{
