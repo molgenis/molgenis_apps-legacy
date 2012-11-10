@@ -17,6 +17,8 @@ import org.molgenis.util.Tuple;
 /** Simple plugin that only shows a data table for testing */
 public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugin>
 {
+	private static final long serialVersionUID = 1L;
+
 	JQGridView tableView;
 
 	public DataSetViewerPlugin(String name, ScreenController<?> parent)

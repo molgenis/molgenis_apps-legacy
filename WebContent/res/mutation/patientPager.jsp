@@ -15,6 +15,9 @@
 <display:setProperty name="export.csv.filename" value="patients.csv"/>
 <display:setProperty name="export.excel.filename" value="patients.xls"/>
 <display:setProperty name="export.pdf.filename" value="patients.pdf"/>
+<display:setProperty name="export.types" value="csv excel pdf" />
+<display:setProperty name="export.pdf" value="true" />
+<display:setProperty name="export.xml" value="false" />
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column media="html" property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=#results" paramId="pid" paramProperty="patientIdentifier"/>
@@ -37,6 +40,11 @@
 	<c:forEach var="variantDTO" items="${current.variantDTOList}">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${variantDTO.exonId}#results"/>
 	<a href="<c:out value="${url}"/>"><c:out value="${variantDTO.exonName}"/></a><br>
+	</c:forEach>
+</display:column>
+<display:column media="html" title="Gene" sortable="true" headerClass="sortable">
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.geneName}"/><br>
 	</c:forEach>
 </display:column>
 <display:column media="html" title="Reference">
@@ -67,19 +75,14 @@
 	<c:out value="${variantDTO.exonName}" escapeXml="false"/>
 	</c:forEach>
 </display:column>
-<display:column media="csv excel pdf" title="Pathogenicity">
+<display:column media="csv excel pdf" title="Gene">
 	<c:forEach var="variantDTO" items="${current.variantDTOList}">
-	<c:out value="${variantDTO.pathogenicity}" escapeXml="false"/>
+	<c:out value="${variantDTO.geneName}" escapeXml="false"/>
 	</c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">
 <c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="${publicationDTO.name}" escapeXml="false"/>;
-</c:forEach>
-</display:column>
-<display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="PM:${publicationDTO.pubmedId}" escapeXml="false"/>;
+	<c:out value="${publicationDTO.pubmedId}" escapeXml="false"/>
 </c:forEach>
 </display:column>
 
