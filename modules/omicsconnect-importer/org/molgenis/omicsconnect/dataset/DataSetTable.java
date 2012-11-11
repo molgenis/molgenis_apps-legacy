@@ -1,14 +1,17 @@
 package org.molgenis.omicsconnect.dataset;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.tupletable.AbstractTupleTable;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.DatabaseTupleTable;
+import org.molgenis.framework.tupletable.EditableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
@@ -21,13 +24,17 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /** Unfilterable */
-public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTable
+public class DataSetTable extends AbstractFilterableTupleTable implements EditableTupleTable, DatabaseTupleTable
 {
 	// the data set that is wrapped
 	DataSet set;
 
 	// the database
 	Database db;
+
+	int rows = -1;
+
+	private List<Field> columns;
 
 	// cache of features
 	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
@@ -43,6 +50,12 @@ public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTab
 	@Override
 	public List<Field> getAllColumns() throws TableException
 	{
+		if (columns == null) initColumnsFromDb();
+		return Collections.unmodifiableList(columns);
+	}
+
+	private void initColumnsFromDb() throws TableException
+	{
 		try
 		{
 			// instead ask for protocol.features?
@@ -51,21 +64,20 @@ public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTab
 					+ set.getId()
 					+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
 
-			List<Field> result = new ArrayList<Field>();
-			result.add(new Field("target"));
+			this.columns = new ArrayList<Field>();
+			columns.add(new Field("target"));
 
 			for (Tuple t : getDb().sql(sql))
 			{
 				Field f = new Field(t.getString("name"));
-				result.add(f);
+				System.out.println("getAllColumns : " + f.getName() + " - visible: " + !f.isHidden());
+				columns.add(f);
 			}
-			return result;
 		}
 		catch (Exception e)
 		{
 			throw new TableException(e);
 		}
-
 	}
 
 	public List<Tuple> getRows() throws TableException
@@ -73,20 +85,92 @@ public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTab
 		try
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
-
+			List<QueryRule> filters = getFilters();
+			System.out.println("Filters:" + filters);
+			rows = 0;
 			// load visible ObservationSet
-			for (ObservationSet os : getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, set.getId())
-					.find())
+			if (filters.isEmpty())
 			{
-				Tuple t = new SimpleTuple();
-				t.set("target", os.getTarget_Identifier());
-
-				for (ObservedValue v : getDb().query(ObservedValue.class).eq(ObservedValue.OBSERVATIONSET, os.getId())
-						.find())
+				rows = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, set.getId()).count();
+				for (ObservationSet os : getDb().query(ObservationSet.class)
+						.eq(ObservationSet.PARTOFDATASET, set.getId()).find())
 				{
-					t.set(v.getFeature_Identifier(), v.getValue());
+
+					Tuple t = new SimpleTuple();
+					t.set("target", os.getTarget_Identifier());
+
+					for (ObservedValue v : getDb().query(ObservedValue.class)
+							.eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
+					{
+						t.set(v.getFeature_Identifier(), v.getValue());
+					}
+					result.add(t);
 				}
-				result.add(t);
+			}
+			else
+			{
+
+				for (ObservationSet os : getDb().query(ObservationSet.class)
+						.eq(ObservationSet.PARTOFDATASET, set.getId()).find())
+				{
+
+					Tuple t = new SimpleTuple();
+					// TODO : remove the empty rows that do not much the filters
+					// from t
+
+					Integer rowId = 0;
+
+					// for (QueryRule queryRule : filters)
+					// {os.
+					// if (os.getTarget_Identifier().equals(os.) t.set("target",
+					// os.getTarget_Identifier());
+					// }
+
+					for (QueryRule queryRule : filters)
+					{
+						for (ObservedValue v : getDb().query(ObservedValue.class)
+								.eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
+						{
+							// set the filter to the Observable features here
+							if (queryRule.getField().equals(v.getFeature_Identifier())
+									&& queryRule.getValue().equals(v.getValue()))
+							{
+								// t.set(v.getFeature_Identifier(),v.getValue());
+								rowId = v.getObservationSet_Id();
+								break;
+							}
+						}
+						//
+					}
+					if (rowId != 0)
+					{
+						t.set("target", os.getTarget_Identifier());
+						for (ObservedValue v : getDb().query(ObservedValue.class)
+								.eq(ObservedValue.OBSERVATIONSET, rowId).find())
+						{
+							t.set(v.getFeature_Identifier(), v.getValue());
+						}
+						result.add(t);
+						this.rows++;
+					}
+
+					// boolean keep = false;
+					//
+					// for (ObservedValue v : getDb().query(ObservedValue.class)
+					// .eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
+					// {
+					// for (QueryRule queryRule : filters)
+					// {
+					// // set the filter to the Observable features here
+					// if
+					// (queryRule.getField().equals(v.getFeature_Identifier())
+					// && queryRule.getValue().equals(v.getValue()))
+					// t.set(v.getFeature_Identifier(),
+					// v.getValue());
+					// }
+					// result.add(t);
+					// }
+				}
 			}
 
 			return result;
@@ -95,6 +179,7 @@ public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTab
 		{
 			throw new TableException(e);
 		}
+
 	}
 
 	public void add(TupleTable table) throws TableException
@@ -192,14 +277,20 @@ public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTab
 	public int getCount() throws TableException
 	{
 		// unfiltered
-		try
-		{
-			return getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, set.getId()).count();
-		}
-		catch (DatabaseException e)
-		{
-			throw new TableException(e);
-		}
+		// try
+		// {
+		getRows();
+
+		return this.rows;
+
+		// return
+		// getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET,
+		// set.getId()).count();
+		// }
+		// catch (DatabaseException e)
+		// {
+		// throw new TableException(e);
+		// }
 	}
 
 	public Database getDb()
@@ -210,5 +301,26 @@ public class DataSetTable extends AbstractTupleTable implements DatabaseTupleTab
 	public void setDb(Database db)
 	{
 		this.db = db;
+	}
+
+	@Override
+	public void add(Tuple tuple) throws TableException
+	{
+		System.out.println("Add");
+
+	}
+
+	@Override
+	public void update(Tuple tuple) throws TableException
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void remove(Tuple tuple) throws TableException
+	{
+		// TODO Auto-generated method stub
+
 	}
 }

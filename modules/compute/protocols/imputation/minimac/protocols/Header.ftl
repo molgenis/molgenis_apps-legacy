@@ -18,6 +18,16 @@
 #$ -e ${jobname}.err
 #$ -o ${jobname}.out
 
+<#elseif scheduler == "BSUB">
+#!/bin/bash
+#BSUB -J ${jobname}
+#BSUB -q ${clusterQueue}
+#BSUB -C ${cores}
+#BSUB -c ${walltime}
+#BSUB -M ${mem}
+#BSUB -e ${jobname}.err
+#BSUB -o ${jobname}.out
+
 <#elseif scheduler == "GRID">
 
 </#if>

@@ -25,8 +25,8 @@
 		var settings = {};
 		var searchNode = new Array();
 	
-		$(document).ready(function(){
-			
+		$(document).ready(function()
+		{	
 			//Styling for the dropDown box
 			$('#selectPredictionModel').chosen().change(function(){
 				selected = $('#selectPredictionModel').val();
@@ -111,13 +111,46 @@
 				$('#candidateMapping').fadeIn();
 			});
 			
+			$('#addMappingFromTree').button().click(function(){
+				addMappingFromTree();
+			});
+			
 			$('#startNewValidation').button().click(function(){
+				$('#selectCohortStudyPanel').hide();
 				$('#beforeMapping').show();
 				$('#afterMapping').hide();
 			});
 			
 			$('#saveMapping').button().click(function(){
-				saveMapping();
+				collectMappingFromCandidate();
+			});
+			
+			$('#openMapping').button().click(function(){
+				
+				if($('#mappingResult table').length > 0)
+				{	
+					$('#mappingResultDialog').append($('#mappingResult table:visible'));
+					
+					$('#mappingResultDialog').dialog({
+					
+						title : "Mapping result",
+						height: 600,
+		            	width: 700,
+		            	modal: true,
+		            	close: function() {
+				        	$('#mappingResult').append($(this).find('table'));
+				        },
+		            	buttons: {
+			                Save : function(){
+			                	$( this ).dialog( "close" );
+			                	collectMappingFromCandidate();
+			                },
+			                Cancel : function() {
+			                    $( this ).dialog( "close" );
+			                },
+		            	},
+					});
+				}
 			});
 			
 			$('#cancelSelectCohortStudy').button().click(function(){
@@ -154,8 +187,8 @@
 			});
 		});
 		
-		function validateStudy(){
-		
+		function validateStudy()
+		{
 			if($('#listOfCohortStudies option').length == 0){
 				
 				showMessage("There are no cohort studies to validate the prediction model", false);
@@ -186,7 +219,7 @@
 						
 				$('#afterMapping').show();
 				
-				createScreenMessage("Loading ontology...");
+				createScreenMessage("Loading ontology...", "50%");
 				
 				$.ajax({
 					url : "${screen.getUrl()}&__action=download_json_validateStudy&predictionModel=" + predictionModel 
@@ -197,7 +230,6 @@
 					
 					if(status["success"] == true)
 					{
-					
 						destroyScreenMessage();
 					
 						$('#mappingResult').empty();
@@ -222,129 +254,158 @@
 						destroyProgressBar();
 						
 						initializeTree();
+						
+						$('#validatePredictors option:first-child').attr('selected', true).click();
+						
+						$('#mappingResult table:first-child').show();
 					}
 				});
 			}
 		}
 		
-		function loadMappingResult(validationStudy){
-			
+		function loadMappingResult(validationStudy)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_loadMappingResult&validationStudy=" + validationStudy,
 				async: false,
 			}).done(function(status){
 				
-				label = status["label"];
-				
-				table = status["mappingResult"];
-				
-				existingMapping = status["existingMapping"];
-				
-				$('#validatePredictors').append("<option id=\"" + status["identifier"].replace(/\s/g,"_") 
-					+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
-				
-				$('#validatePredictors option').each(function(){
-					$(this).hover(
-						function(){
-							$(this).css({
-								"font-weight" : "bolder",
-								"color" : "grey"
-							});
-						},function(){
-							$(this).css({
-								"font-weight" : "normal",
-								"color" : "black"
-							});
-						}
-					);
-				});
-				
-				$('#mappingResult').append(table);
-				
-				$('#existingMappings').append(existingMapping);
-				
-				if(status["loadingProcess"] == status["total"])
+				if(status["success"] == false)
 				{
-					$('#browser').empty().append(status["treeView"]);
-					
-					$('#mappingResult tr td:first-child').each(function(){
+					showMessage(status["message"], false);
+					destroyProgressBar();
+				}else
+				{
+					label = status["label"];
 				
-						identifier = $(this).parent().attr('id');
-						identifier = identifier.replace("_row", "_details");
-						$('#' + identifier).show();
-						$('#' + identifier).click(function(){
-							predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
-							retrieveExpandedQueries(predictor, identifier.replace("_details", ""));
-						});	
-						
+					table = status["mappingResult"];
+					
+					existingMapping = status["existingMapping"];
+					
+					$('#validatePredictors').append("<option id=\"" + status["identifier"].replace(/\s/g,"_") 
+						+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+					
+					$('#validatePredictors option').each(function(){
 						$(this).hover(
-							function () {
-								$(this).css("font-weight", "bolder");
-								identifier = $(this).parent().attr('id');
-								identifier = identifier.replace("_row", "_details");
-								$('#' + identifier).show();
-							}, 
-							function () {
-								$(this).css("font-weight", "normal");
-								//identifier = $(this).parent().attr('id');
-								//identifier = identifier.replace("_row", "_details");
-								//$('#' + identifier).hide();
+							function(){
+								$(this).css({
+									"font-weight" : "bolder",
+									"color" : "grey"
+								});
+							},function(){
+								$(this).css({
+									"font-weight" : "normal",
+									"color" : "black"
+								});
 							}
 						);
-						
-						$(this).children('span').click(function(){
-							
-							measurementName = $(this).text();
-							
-							trackInTree(measurementName);
-						});
 					});
 					
-					$('#validatePredictors').change(function(){
-						
-						predictorName = $(this).find('option:selected').eq(0).text();
-						
-						$('#matchingSelectedPredictor').text(predictorName);
-						
-						$('#mappingResult table').hide();
-						
-						$('#existingMappings table').hide();
-						
-						id = $("#validatePredictors option:selected").attr('id');
-						
-						identifierForNew = "mapping_" + id;
-						
-						$('#' + identifierForNew).show();
-						
-						identifierForExisting = "matched_" + id;
-						
-						$('#' + identifierForExisting).show();
-					});
+					$('#mappingResult').append(table);
 					
-					$('#existingMappings tr td:last-child >div').each(function()
+					$('#existingMappings').append(existingMapping);
+					
+					if(status["loadingProcess"] == status["total"])
 					{
-						$(this).click(function(){
-							removeSingleMapping($(this));
-						});
+						$('#browser').empty().append(status["treeView"]);
 						
-						span = $(this).parents('tr').eq(0).find('td >span');
-						
-						measurementName = $(span).text();
-						
-						$(span).click(function(){
-							trackInTree($(this).text());
-						});
-					});
+						$('#mappingResult tr td:first-child').each(function(){
 					
-				}else{
-					updateProgressBar(status["loadingProcess"]/status["total"]);
-					loadMappingResult(validationStudy);
+							identifier = $(this).parent().attr('id');
+							identifier = identifier.replace("_row", "_details");
+							$('#' + identifier).show();
+							$('#' + identifier).click(function(){
+								predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
+								retrieveExpandedQueries(predictor, identifier.replace("_details", ""));
+							});	
+							
+							$(this).hover(
+								function () {
+									$(this).css("font-weight", "bolder");
+									identifier = $(this).parent().attr('id');
+									identifier = identifier.replace("_row", "_details");
+									$('#' + identifier).show();
+								}, 
+								function () {
+									$(this).css("font-weight", "normal");
+									//identifier = $(this).parent().attr('id');
+									//identifier = identifier.replace("_row", "_details");
+									//$('#' + identifier).hide();
+								}
+							);
+							
+							$(this).children('span').click(function(){
+								
+								measurementName = $(this).text();
+								
+								trackInTree(measurementName);
+							});
+						});
+						
+						$('#validatePredictors').click(function(){
+							
+							predictorName = $(this).find('option:selected').eq(0).text();
+							
+							$('#matchingSelectedPredictor').text(predictorName);
+							
+							$('#mappingResult table').hide();
+							
+							$('#existingMappings table').hide();
+							
+							id = $("#validatePredictors option:selected").attr('id');
+							
+							identifierForNew = "mapping_" + id;
+							
+							$('#' + identifierForNew).show();
+							
+							identifierForExisting = "matched_" + id;
+							
+							$('#' + identifierForExisting).show();
+						});
+						
+						$('#existingMappings tr td:last-child >div').each(function()
+						{
+							$(this).click(function(){
+								removeSingleMapping($(this));
+							});
+							
+							span = $(this).parents('tr').eq(0).find('td >span');
+							
+							measurementName = $(span).text();
+							
+							$(span).click(function(){
+								trackInTree($(this).text());
+							});
+						});
+						
+					}else{
+						updateProgressBar(status["loadingProcess"]/status["total"]);
+						loadMappingResult(validationStudy);
+					}
+				
 				}
 			});
 		}
 		
-		function removeSingleMapping(element){
+		function addMappingFromTree()
+		{	
+			mappedVariableId = $('#clickedVariable').val();
+			
+			measurementName = new Array();
+			
+			measurementName[0] = $('#' + mappedVariableId).find('span').text();
+			
+			predictor = $('#validatePredictors option:selected').attr('id');
 		
+			mappings = {};
+			
+			mappings[predictor] = measurementName;
+		
+			saveMapping(mappings);
+		}
+		
+		function removeSingleMapping(element)
+		{
 			data = {};
 			
 			data["measurementName"] = $(element).parents('tr').eq(0).find('td:first-child span').text();
@@ -371,8 +432,8 @@
 			});
 		}
 		
-		function trackInTree(measurementName){
-			
+		function trackInTree(measurementName)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_getPosition&measurementName=" + measurementName,
 				async: false,
@@ -397,8 +458,9 @@
 				
 			});
 		}
-		function saveMapping(){
-			
+		
+		function collectMappingFromCandidate()
+		{	
 			mappings = {};
 			
 			$('#mappingResult input:checkbox').each(function(){
@@ -425,10 +487,16 @@
 				}
 			});
 			
+			saveMapping(mappings);
+		}
+		
+		function saveMapping(mappings)
+		{	
 			validationStudy = $('#matchingValidationStudy').text();
+			
 			predictionModel = $('#matchingPredictionModel').text();
 			
-			createScreenMessage("Save mappings!");
+			createScreenMessage("Save mappings!", "50%");
 			
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_saveMapping&mappingResult=" 
@@ -472,8 +540,8 @@
 			destroyScreenMessage();
 		}
 		
-		function retrieveExpandedQueries(predictor, matchedVariable){
-			
+		function retrieveExpandedQueries(predictor, matchedVariable)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_retrieveExpandedQuery&predictor="
 					+ predictor + "&matchedVariable=" + matchedVariable,
@@ -500,8 +568,8 @@
 			});
 		}
 		
-		function insertNewRow(){
-			
+		function insertNewRow()
+		{	
 			message = {};
 			message["message"] = "You successfully added a new predictor!";
 			message["success"] = true;
@@ -546,8 +614,8 @@
 			return message;
 		}
 		
-		function populateRowInTable(data){
-			
+		function populateRowInTable(data)
+		{
 			name = data["name"];
 			description = data["description"];
 			dataType = data["dataType"];
@@ -611,8 +679,8 @@
 			cancelAddPredictorPanel();
 		}
 		
-		function addNewPredictionModel(){
-			
+		function addNewPredictionModel()
+		{	
 			if($('#addPredictionModel').val() != ""){
 				selected = $('#addPredictionModel').val();
 				if($('#selectPredictionModel').find("option[name=\"" + selected +"\"]").length > 0){
@@ -641,8 +709,8 @@
 			}
 		}
 		
-		function removePredictionModel(){
-			
+		function removePredictionModel()
+		{	
 			if($('#selectPredictionModel option').length > 0){
 				selected = $('#selectPredictionModel').val();
 				
@@ -665,8 +733,8 @@
 			}
 		}
 		
-		function addPredictor(){
-		
+		function addPredictor()
+		{
 			message = ""
 			success = "";
 			
@@ -688,8 +756,8 @@
 			showMessage(message, success);
 		}
 		
-		function removePredictor(element){
-			
+		function removePredictor(element)
+		{	
 			predictor = $(element).parents('td').eq(0).text();
 			selected = $('#selectPredictionModel').val();
 			$.ajax({
@@ -707,8 +775,8 @@
 			});
 		}
 		
-		function showPredictors(predictionModelName){
-			
+		function showPredictors(predictionModelName)
+		{	
 			$.ajax({
 				url : "${screen.getUrl()}&__action=download_json_showPredictors&name=" + predictionModelName,
 				async: false,
@@ -734,8 +802,8 @@
 			});
 		}
 		
-		function defineFormula(){
-		
+		function defineFormula()
+		{
 			selected = $('#selectPredictionModel').val();
 			data = {};
 			data["selected"] = selected;
@@ -755,8 +823,8 @@
 		}
 		
 		//Make the add predictor panel disappear
-		function cancelAddPredictorPanel(){
-			
+		function cancelAddPredictorPanel()
+		{	
 			$('#defineVariablePanel').fadeOut();
 			$('#defineVariablePanel input[type="text"]').val('');
 			$('#dataTypeOfPredictor option:first-child').attr('selected',true);
@@ -764,16 +832,17 @@
 		}
 		
 		//Create list with unique elements
-		function uniqueElements(anArray){
+		function uniqueElements(anArray)
+		{
 			var result = [];
-	       $.each(anArray, function(i,v){
-	           if ($.inArray(v, result) == -1) result.push(v);
-	       });
-	       return result;
+	    	$.each(anArray, function(i,v){
+	        	if ($.inArray(v, result) == -1) result.push(v);
+	    	});
+	    	return result;
 		}
 		
-		function uniqueElementToString(anArray, separator){
-			
+		function uniqueElementToString(anArray, separator)
+		{	
 			unique = uniqueElements(anArray);
 			
 			backToString = "";
@@ -792,8 +861,8 @@
 		}
 		
 		//Create a jquery chosen multiple select element
-		function createMultipleSelect(listOfTerms){
-			
+		function createMultipleSelect(listOfTerms)
+		{	
 			listOfTerms = uniqueElements(listOfTerms);
 			
 			selectBlocks = "<select multiple=\"true\" style=\"width:90%;\">";
@@ -806,8 +875,8 @@
 			return selectBlocks;
 		}
 		
-		function summaryAddOne(identifier){
-			
+		function summaryAddOne(identifier)
+		{	
 			numberOfPredcitors = $('#numberOfPredictors').val();
 			buildingBlocksDefine = $('#buildingBlocksDefined').val();
 			$('#numberOfPredictors').val(++numberOfPredcitors);
@@ -817,7 +886,8 @@
 			$('#buildingBlocksDefined').val(buildingBlocksDefine);
 		}
 		
-		function summaryRemoveOne(identifier){
+		function summaryRemoveOne(identifier)
+		{
 			numberOfPredcitors = $('#numberOfPredictors').val();
 			buildingBlocksDefine = $('#buildingBlocksDefined').val();
 			$('#numberOfPredictors').val(--numberOfPredcitors);
@@ -827,8 +897,8 @@
 			$('#buildingBlocksDefined').val(buildingBlocksDefine);
 		}
 		
-		function showMessage(message, success){
-			
+		function showMessage(message, success)
+		{	
 			messagePanel = "<fieldset id=\"statusMessage\" class=\"ui-tabs-panel ui-widget-content ui-corner-bottom\">"
 						 + "<legend style=\"font-style:italic;\">Status</legend>"
 						 + "<div align=\"justify\" style=\"font-size:14px;padding:4px;\">"
@@ -859,7 +929,12 @@
 			$('#statusMessage').effect('bounce').delay(2000).fadeOut().delay(2000);
 		}
 		
-		function createScreenMessage(showMessage){
+		function createScreenMessage(showMessage, height)
+		{	
+			if(height == null)
+			{
+				height = "50%";
+			}
 			
 			showModal();
 				
@@ -867,7 +942,7 @@
 		
 			$('.middleBar').css({
 				'left' : '46%',
-				'top' : '50%',
+				'top' : height,
 				'height' : 50,
 				'width' : 300,
 			    'position' : 'absolute',
@@ -875,15 +950,15 @@
 			});
 		}
 		
-		function destroyScreenMessage(){
-					
+		function destroyScreenMessage()
+		{			
 			$('.modalWindow').remove();
 			
 			$('#progressbar').remove();
 		}
 		
-		function createProgressBar(showMessage){
-			
+		function createProgressBar(showMessage)
+		{	
 			showModal();
 						
 			$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
@@ -902,20 +977,22 @@
 			});
 		}
 		
-		function updateProgressBar(percentage){
+		function updateProgressBar(percentage)
+		{
 			$("#progressbar").progressbar({
 				value: percentage * 100
 			});
 		}
 		
-		function destroyProgressBar(){
-			
+		function destroyProgressBar()
+		{	
 			$('.middleBar').remove();
 			$('.modalWindow').remove();
 			$('#progressbar').remove();
 		}
 		
-		function toggler() {
+		function toggler() 
+		{
 			$(this)
 				.parent()
 				// swap classes for hitarea
@@ -945,8 +1022,8 @@
 			}
 		}
 		
-		function toggleNodeEvent(clickedNode){
-			
+		function toggleNodeEvent(clickedNode)
+		{	
 			$(clickedNode).children('span').click(function(){
 				
 				var nodeName = $(this).parent().attr('id');
@@ -993,9 +1070,9 @@
 			});
 		}
 		
-		function searchTree(token){
-			
-			createScreenMessage("Searching...");
+		function searchTree(token)
+		{	
+			createScreenMessage("Searching...","70%");
 			
 			if(token != ""){
 				array = {};
@@ -1021,8 +1098,10 @@
 			});
 		}
 		
-		function loadTree(){
+		function loadTree()
+		{	
 			status = {};
+			
 			$.ajax({
 				url:"${screen.getUrl()}&__action=download_json_loadingTree",
 				async: false,
@@ -1037,8 +1116,8 @@
 			}
 		}
 		
-		function showModal(){
-			
+		function showModal()
+		{	
 			$('body').append("<div class=\"modalWindow\"></div>");
 			
 			$('.modalWindow').css({
@@ -1053,8 +1132,8 @@
 			});
 		}
 		
-		function highlightClick(clickedBranch){
-			
+		function highlightClick(clickedBranch)
+		{	
 			$(clickedBranch).children('span').css({
 				'color':'#778899',
 				'font-size':17,
@@ -1085,16 +1164,17 @@
 			$('#clickedVariable').val(measurementID);
 		}
 		
-		function initializeTree(){
-			
-			$('#search').button();
-			$('#search').click(function(){
+		function initializeTree()
+		{	
+			$('#search').button().click(function()
+			{
 				token = $('#searchField').val();
 				searchTree(token);
 			});
 			
-			$('#clearButton').button();
-			$('#clearButton').click(function(){
+			$('#clearButton').button().click(function()
+			{
+				
 				array = {};
 				$.ajax({
 					url:"${screen.getUrl()}&__action=download_json_clearSearch",
@@ -1128,6 +1208,25 @@
 			
 			$('#treePanel').show();
 		}
+		
+		function checkSearchingStatus()
+		{	
+			if($('#searchField').val() === "")
+			{
+				$('#clearButton').trigger('click');
+			}
+		}
+		
+		function whetherReload()
+		{	
+			var value = $('#searchField').val();
+			
+			if(value.search(new RegExp("\\w", "gi")) != -1)
+			{
+				searchTree(value);
+			}
+			return false;
+		}
 	</script>
 	<form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -1147,7 +1246,7 @@
 					<div id="messagePanel"></div>
 					<div id="afterMapping" style="display:none;height:800px;width:100%;">
 						<div style="width:100%;height:140px;">
-							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:50%;height:130px;margin:2px;float:left">
+							<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:130px;margin:2px;float:left">
 								<div class="ui-widget-header ui-corner-all" style="height:30px;">
 									<div style="margin:3px;float:left;">Matching result</div>
 									<input type="button" id="startNewValidation" value="Validate a new model" 
@@ -1164,50 +1263,59 @@
 								</div>
 							</div>
 						</div>
-						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:30%;float:left;margin-left:4px;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:12px;text-align:center;">Predictors</span>
-							</div>
-							<div style="float:left;width:100%;height:80%;">
-								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:25px;width:100%;height:95%;">
-								</select>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+						<div style="height:40%;width:100%;float:left;">
+							<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:30%;float:left;">
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+									<span style="display:block;margin:12px;text-align:center;">Predictors</span>
+								</div>
+								<div style="float:left;width:100%;height:80%;">
+									<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:16px;width:100%;height:95%;">
+									</select>
+									<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+									</div>
 								</div>
 							</div>
-						</div>
-						<div id="candidateMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:40%;width:69%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:12px;float:left;">Candidate variables</span>
-								<input type="button" id="showMatchedMapping" style="font-size:12px;float:right;margin:12px;" 
-									value="Matched variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-									<input type="button" id="saveMapping" value="Save the mappings" style="font-size:12px;margin:12px;float:right;" 
+							<div id="candidateMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:69%;float:left;">
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+									<span style="display:block;margin:12px;float:left;">Candidate variables</span>
+									<input type="button" id="showMatchedMapping" style="font-size:40%;float:right;margin-top:12px;margin-right:4px" 
+										value="Matched variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+									<input type="button" id="saveMapping" value="Save the mappings" style="font-size:40%;margin-top:12px;margin-right:4px;float:right;" 
 										class="ui-button ui-widget ui-state-default ui-corner-all"/>
-							</div>
-							<div style="float:left;width:100%;height:80%;">
-								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
+									<input type="button" id="openMapping" value="open mappings" style="font-size:40%;margin-top:12px;margin-right:4px;float:right;" 
+										class="ui-button ui-widget ui-state-default ui-corner-all"/>
 								</div>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+								<div style="float:left;width:100%;height:80%;">
+									<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
+									</div>
+									<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+									</div>
+									<div id="mappingResultDialog">
+									</div>
+								</div>
+							</div>
+							<div id="matchedMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="display:none;height:100%;width:69%;float:left;">
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+									<span style="display:block;margin:12px;float:left;">Matched variables</span>
+									<input type="button" id="showCandidateMapping" style="font-size:40%;float:right;margin:12px;" 
+										value="Candidate variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+									<input type="button" id="addMappingFromTree" style="font-size:40%;float:right;margin:12px;" 
+										value="Add variable from tree" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+								</div>
+								<div style="float:left;width:100%;height:80%;">
+									<div id="existingMappings" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
+									</div>
+									<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
+									</div>
 								</div>
 							</div>
 						</div>
-						<div id="matchedMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="display:none;height:40%;width:69%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:12px;float:left;">Matched variables</span>
-								<input type="button" id="showCandidateMapping" style="font-size:12px;float:right;margin:12px;" 
-									value="Candidate variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-							</div>
-							<div style="float:left;width:100%;height:80%;">
-								<div id="existingMappings" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
-								</div>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
-							</div>
-						</div>
-						<div id="treePanel" style="float:left;width:100%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
+						<div id="treePanel" style="float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
 							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
 								<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
 								<div id="treeSearchPanel" style="float:left;margin:7px;">
-									<input type="text" id="searchField" style="font-size:12px;"/>
+									<input type="text" id="searchField" style="font-size:12px;"
+										onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){;return whetherReload();}"/>
 									<input type="button" id="search" style="font-size:12px;" value="search"/>
 									<input type="button" id="clearButton" style="font-size:12px;" value="clear"/>
 								</div>

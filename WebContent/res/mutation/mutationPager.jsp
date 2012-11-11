@@ -15,11 +15,15 @@
 <display:setProperty name="export.csv.filename" value="mutations.csv"/>
 <display:setProperty name="export.excel.filename" value="mutations.xls"/>
 <display:setProperty name="export.pdf.filename" value="mutations.pdf"/>
+<display:setProperty name="export.pdf" value="true"/>
+<display:setProperty name="export.types" value="csv excel pdf"/>
+<display:setProperty name="export.xml" value="false"/>
 
 <display:column media="html" property="identifier" title="Mutation ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=#results" paramId="mid" paramProperty="identifier"/>
 <display:column property="cdnaNotation" title="cDNA change" sortable="true" headerClass="sortable" sortProperty="gdnaStart"/>
 <display:column property="aaNotation" title="Protein change" sortable="true" headerClass="sortable" sortProperty="gdnaStart"/>
 <display:column property="exonName" title="Exon/Intron" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=#results" paramId="exon_id" paramProperty="exonId"/>
+<display:column property="geneName" title="Gene" sortable="true" headerClass="sortable"/>
 <display:column media="html" title="Patient ID">
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=${patientDTO.patientIdentifier}#results"/>
@@ -47,7 +51,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="${publicationDTO.name}"/>
+	<c:out value="${publicationDTO.pubmedId}"/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
