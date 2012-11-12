@@ -3,12 +3,12 @@
 
 module load plink/1.07-x86_64
 
-getFile {plinkInput}.tped
-getFile {plinkInput}.tfam
+getFile ${resultsDir}/{plinkInput}.tped
+getFile ${resultsDir}/{plinkInput}.tfam
 
-plink --tfile {plinkInput} --recode --make-bed --noweb --out {plinkOutput}
+plink --tfile ${resultsDir}/{plinkInput} --recode --make-bed --noweb --out ${resultsDir}/{plinkOutput}
 
-putFile {plinkOutput}.bed
-putFile {plinkOutput}.bim
-putFile {plinkOutput}.fam
+putFile ${resultsDir}/{plinkOutput}.bed
+putFile ${resultsDir}/{plinkOutput}.bim
+putFile ${resultsDir}/{plinkOutput}.fam
 
