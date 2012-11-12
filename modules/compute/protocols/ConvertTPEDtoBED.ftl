@@ -8,7 +8,7 @@ getFile {plinkInput}.tfam
 
 plink --tfile {plinkInput} --recode --make-bed --noweb --out {plinkOutput}
 
-putFile {plinkInput}.bed
-putFile {plinkInput}.bim
-putFile {plinkInput}.fam
+putFile {plinkOutput}.bed
+putFile {plinkOutput}.bim
+putFile {plinkOutput}.fam
 
