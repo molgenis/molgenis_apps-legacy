@@ -38,11 +38,13 @@ public class EMeasureFeatureWriter implements Closeable
 		strBuilder
 				.append("<QualityMeasureDocument xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"REPC_MT000100UV01.Organizer\" xsi:schemaLocation=\"urn:hl7-org:v3 multicacheschemas/REPC_MT000100UV01.xsd\" classCode=\"CONTAINER\" moodCode=\"DEF\" xmlns=\"urn:hl7-org:v3\">");
 
-		for (ObservableFeature feature : features)
+		if (features != null)
 		{
-			appendFeature(feature, strBuilder);
+			for (ObservableFeature feature : features)
+			{
+				appendFeature(feature, strBuilder);
+			}
 		}
-
 		strBuilder.append("</QualityMeasureDocument>");
 
 		String xmlFormatted = this.format(strBuilder.toString());
