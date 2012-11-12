@@ -1,5 +1,16 @@
 function selectDataSet(id) {
-	// get/create data sets
+	// get
+	getDataSet(id, function(data) {
+		// update
+		setFeatureDetails(null);
+		updateFeatureSelection(null);
+		updateProtocolView(data.protocol);
+		// set selected data set
+		$(document).data('datasets').selected = id;
+	});
+}
+
+function getDataSet(id, callback) {
 	var dataSets = $(document).data('datasets');
 	if(typeof dataSets === 'undefined') {
 		dataSets = {};
@@ -7,117 +18,103 @@ function selectDataSet(id) {
 	}
 	
 	if(!dataSets[id]) {
-		// load and store data set
 		$.getJSON('molgenis.do?__target=ProtocolViewer&__action=download_json_getdataset&datasetid=' + id, function(data) {
 			dataSets[id] = data;
-			updateDataSet(data, id);
+			callback(data);
 		});
 	} else {
-		// use stored data set
-		updateDataSet(dataSets[id], id);
+		callback(dataSets[id]);
 	}
 }
 
-function updateDataSet(data, id) {
-	// store current dataset
-	$(document).data('dataset', data);
-	$('#feature-details').empty();
-	$('#feature-selection').empty();
-	updateDataSetView(data, id);
+function getFeature(id, callback) {
+	$.getJSON('molgenis.do?__target=ProtocolViewer&__action=download_json_getfeature&featureid=' + id, function(data) {
+		callback(data);
+	});
 }
 
-function updateDataSetView(data) {
-	$('#dataset-view').empty();
-	$('#dataset-view').data('id', data.id);
+function updateProtocolView(protocol) {
+	var container = $('#dataset-browser');
+	if(container.children('ul').length > 0) {
+		container.dynatree('destroy');
+	}
 	
-	if(typeof data.protocol === 'undefined') {
-		$('#dataset-view').append("<p>Catalog does not describe variables</p>");
+	container.empty();
+	if(typeof protocol === 'undefined') {
+		container.append("<p>Catalog does not describe variables</p>");
 		return;
 	}
 	
-	// recursively build tree for protocol (+ store data with elements)	
+	// recursively build tree for protocol	
 	function buildTree(protocol) {
 		// add protocol
-		var item = $('<li />');
-		var input = $('<input type="checkbox" name="protocol" class="folder">').attr('id', 'protocol' + protocol.id);
-		input.data({'id': protocol.id, 'name': protocol.name, 'description': protocol.description});
-		var label = $('<label />').attr('for', 'protocol' + protocol.id).text(protocol.name);
-		item.append(input).append(label);
-		
-		var list = $('<ul />');
-		
+		var item = $('<li class="folder"/>').attr('data', 'key: "' + protocol.id + '", title:"' + protocol.name + '"');
 		// add protocol: features
+		var list = $('<ul />');
 		if(protocol.features) {
-			$.each(protocol.features, function(i, feature){
-				var item = $('<li />');
-				var input = $('<input type="checkbox" name="feature" class="point">').attr('id', 'feature' + feature.id);
-				input.data({'id': feature.id, 'name': feature.name, 'description': feature.description, 'protocol_name': protocol.name});
-				var label = $('<label />').attr('for', 'feature' + feature.id).text(feature.name);
-				item.append(input).append(label).appendTo(list);
+			$.each(protocol.features, function(i, feature) {
+				var item = $('<li />').attr('data', 'key: "' + feature.id + '", title:"' + feature.name + '"');
+				item.appendTo(list);
 			});
 		}
-		
 		// add protocol: subprotocols
 		if(protocol.subProtocols) {
-			$.each(protocol.subProtocols, function(i, subProtocol){
+			$.each(protocol.subProtocols, function(i, subProtocol) {
 				list.append(buildTree(subProtocol));
 			});
 		}
+		list.appendTo(item);
 		
-		item.append(list);
 		return item;
 	};
 	
 	// append tree to DOM
-	var tree =  $('<ul id="protocol-tree"/>').append(buildTree(data.protocol));
-	$('#dataset-view').append(tree);
-	
-	// add protocol click handlers
-	$('#protocol-tree .folder').change(function(){
-		if($(this).is(":checked")) {
-			// expand all children
-			$(this).siblings('ul').show();
-			var list = $(this).nextAll('ul');
-			list.find('input:checkbox:unchecked').attr('checked', true).trigger('change'); // note: setting attr doesn't fire change event
-		} else {
-			var list = $(this).nextAll('ul');
-			list.find('input:checkbox:checked').attr('checked', false).trigger('change');
-		}
-		updateFeatureSelection();
-	});
-	
-	// add feature click handlers
-	$('#protocol-tree .point').change(function(){
-		if($(this).is(":checked")) {
-			var featureId = $(this).data('id');
-			$.getJSON('molgenis.do?__target=ProtocolViewer&__action=download_json_getfeature&featureid=' + featureId, function(data) {
-				if(data != null)
-					updateFeatureDetails(data);
-			});
-		}
-		updateFeatureSelection();
-	});
-	
+	var tree = $('<ul />').append(buildTree(protocol));
+	container.append(tree);
+
 	// render tree and open first branch
-	$('#protocol-tree li').first().addClass('open');
-	$('#protocol-tree').treeview({'collapsed': true});
+	container.dynatree({
+		checkbox: true,
+		selectMode: 3,
+		minExpandLevel: 2,
+		debugLevel: 0,
+		onClick: function(node, event) {
+			if(node.getEventTargetType(event) == "title" && !node.data.isFolder)
+				getFeature(node.data.key, function(data) { setFeatureDetails(data); });
+		},
+		onSelect: function(select, node) {
+			// update feature details
+			if(select && !node.data.isFolder)
+				getFeature(node.data.key, function(data) { setFeatureDetails(data); });
+			else
+				setFeatureDetails(null);
+
+			// update feature selection
+			updateFeatureSelection(node.tree);
+		}	
+	});
 }
 
-function updateFeatureDetails(data) {
-	$('#feature-details').empty();
+function setFeatureDetails(feature) {
+	var container = $('#feature-details').empty(); 
+	if(feature == null) {
+		container.append("<p>Select a variable to display variable details</p>");
+		return;
+	}
+	
 	var table = $('<table />');
-	table.append('<tr><td>' + "Current selection:" + '</td><td>' + data.name + '</td></tr>');
-	table.append('<tr><td>' + "Description:" + '</td><td>' + data.description + '</td></tr>');
-	table.append('<tr><td>' + "Data type:" + '</td><td>' + data.dataType + '</td></tr>');
+	table.append('<tr><td>' + "Name:" + '</td><td>' + feature.name + '</td></tr>');
+	table.append('<tr><td>' + "Description:" + '</td><td>' + feature.description + '</td></tr>');
+	table.append('<tr><td>' + "Data type:" + '</td><td>' + feature.dataType + '</td></tr>');
 	
 	table.addClass('listtable feature-table');
 	table.find('td:first-child').addClass('feature-table-col1');
-	$('#feature-details').append(table);
+	container.append(table);
 	
-	if(data.categories) {
-		var categoryTable = $('<table />');
+	if(feature.categories) {
+		var categoryTable = $('<table class="table table-striped table-condensed" />');
 		$('<thead />').append('<th>Code</th><th>Label</th><th>Description</th>').appendTo(categoryTable);
-		$.each(data.categories, function(i, category){
+		$.each(feature.categories, function(i, category){
 			var row = $('<tr />');
 			$('<td />').text(category.code).appendTo(row);
 			$('<td />').text(category.label).appendTo(row);
@@ -125,56 +122,61 @@ function updateFeatureDetails(data) {
 			row.appendTo(categoryTable);		
 		});
 		
-		categoryTable.addClass('listtable');
-		$('#feature-details').append(categoryTable);
+		container.append(categoryTable);
 	}
 }
 
-function updateFeatureSelection() {
-	$('#feature-selection').empty();
-	var table = $('<table />');
-	$('<thead />').append('<th>Variables</th><th>Description</th><th>Protocol</th><th></th>').appendTo(table);
-	var odd = false;
-	$('#protocol-tree input:checkbox[name=feature]:checked').each(function() {
-		var name = $(this).data('name');
-		var description = $(this).data('description');
-		var protocol_name = $(this).data('protocol_name');
-		
-		var row = $('<tr />');
-		$('<td />').text(name !== undefined ? name : "").appendTo(row);
-		$('<td />').text(description !== undefined ? description : "").appendTo(row);
-		$('<td />').text(protocol_name != undefined ? protocol_name : "").appendTo(row);
-		
-		var deleteButton = $('<input type="image" src="generated-res/img/cancel.png" alt="delete">');
-		deleteButton.click($.proxy(function() {
-			$('#feature' + $(this).data('id')).attr('checked', false);
-			updateFeatureSelection();
-			return false;
-		}, this));
-		$('<td />').append(deleteButton).appendTo(row);
-		
-		if(odd)
-			row.addClass('form_listrow1');
-		odd = !odd;
-		
-		row.appendTo(table);
+function updateFeatureSelection(tree) {
+	var container = $('#feature-selection').empty();
+	if(tree == null) {
+		container.append("<p>No variables selected</p>");
+		return;
+	}
+	
+	var nodes = tree.getSelectedNodes();
+	if(nodes == null || nodes.length == 0) {
+		container.append("<p>No variables selected</p>");
+		return;
+	}
+	
+	var table = $('<table class="table table-striped table-condensed table-hover" />');
+	$('<thead />').append('<th>Variables</th><th>Protocol</th><th>Delete</th>').appendTo(table);
+	$.each(nodes, function(i, node) {
+		if(!node.data.isFolder) {
+			var name = node.data.title;
+			var protocol_name = node.parent.data.title;
+			
+			var row = $('<tr />');
+			$('<td />').text(name !== undefined ? name : "").appendTo(row);
+			$('<td />').text(protocol_name != undefined ? protocol_name : "").appendTo(row);
+			
+			var deleteButton = $('<input type="image" src="generated-res/img/cancel.png" alt="delete">');
+			deleteButton.click($.proxy(function() {
+				tree.getNodeByKey(node.data.key).select(false);
+				return false;
+			}, this));
+			$('<td />').append(deleteButton).appendTo(row);
+			
+			row.appendTo(table);
+		}
 	});
 	table.addClass('listtable selection-table');
-	$('#feature-selection').append(table);
+	container.append(table);
 }
 
 function getSelectedFeaturesURL(format) {
- 	var features = [];
-	$('#protocol-tree input:checkbox[name=feature]:checked').each(function() {
-		features.push($(this).data('id'));	
-	});
-	var id = $(document).data('dataset').id;
+ 	var tree = $('#dataset-browser').dynatree("getTree");;
+	var features = $.map(tree.getSelectedNodes(), function(node){
+        return node.data.isFolder ? null : node.data.key;
+    });
+	
+	var id = $(document).data('datasets').selected;
 	return 'molgenis.do?__target=ProtocolViewer&__action=download_' + format + '&datasetid=' + id + '&features=' + features.join();
 }
 
 function processSearch(query) {
 	if(query) {
-		var dataSet = $(document).data('dataset');
+		var dataSet = $(document).data('datasets').selected;
 		if(dataSet && dataSet.protocol) {
 			searchProtocol(dataSet.protocol, new RegExp(query, 'i'));
 		}
