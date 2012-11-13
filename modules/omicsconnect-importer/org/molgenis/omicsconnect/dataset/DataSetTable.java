@@ -11,7 +11,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.DatabaseTupleTable;
-import org.molgenis.framework.tupletable.EditableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
@@ -23,26 +22,20 @@ import org.molgenis.observ.ObservedValue;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-/** Unfilterable */
-public class DataSetTable extends AbstractFilterableTupleTable implements EditableTupleTable, DatabaseTupleTable
+public class DataSetTable extends AbstractFilterableTupleTable implements DatabaseTupleTable
 {
-	// the data set that is wrapped
-	DataSet set;
+	private DataSet dataSet;
 
-	// the database
-	Database db;
+	private Database db;
 
-	int rows = -1;
+	private int rows = -1;
 
 	private List<Field> columns;
-
-	// cache of features
-	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
 
 	public DataSetTable(DataSet set, Database db) throws TableException
 	{
 		if (set == null) throw new TableException("DataSet cannot be null");
-		this.set = set;
+		this.dataSet = set;
 		if (db == null) throw new TableException("db cannot be null");
 		this.setDb(db);
 	}
@@ -61,7 +54,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 			// instead ask for protocol.features?
 
 			String sql = "SELECT DISTINCT Characteristic.identifier as name FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
-					+ set.getId()
+					+ dataSet.getId()
 					+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
 
 			this.columns = new ArrayList<Field>();
@@ -70,7 +63,6 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 			for (Tuple t : getDb().sql(sql))
 			{
 				Field f = new Field(t.getString("name"));
-				System.out.println("getAllColumns : " + f.getName() + " - visible: " + !f.isHidden());
 				columns.add(f);
 			}
 		}
@@ -80,20 +72,20 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 		}
 	}
 
+	@Override
 	public List<Tuple> getRows() throws TableException
 	{
 		try
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
 			List<QueryRule> filters = getFilters();
-			System.out.println("Filters:" + filters);
 			rows = 0;
 			// load visible ObservationSet
 			if (filters.isEmpty())
 			{
-				rows = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, set.getId()).count();
+				rows = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, dataSet.getId()).count();
 				for (ObservationSet os : getDb().query(ObservationSet.class)
-						.eq(ObservationSet.PARTOFDATASET, set.getId()).find())
+						.eq(ObservationSet.PARTOFDATASET, dataSet.getId()).find())
 				{
 
 					Tuple t = new SimpleTuple();
@@ -111,7 +103,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 			{
 
 				for (ObservationSet os : getDb().query(ObservationSet.class)
-						.eq(ObservationSet.PARTOFDATASET, set.getId()).find())
+						.eq(ObservationSet.PARTOFDATASET, dataSet.getId()).find())
 				{
 
 					Tuple t = new SimpleTuple();
@@ -229,7 +221,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 				if (targets.size() == 1)
 				{
 					ObservationSet es = new ObservationSet();
-					es.setPartOfDataSet(set.getId());
+					es.setPartOfDataSet(dataSet.getId());
 					es.setTarget(targets.get(0).getId());
 					getDb().add(es);
 
@@ -276,51 +268,19 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Editab
 	@Override
 	public int getCount() throws TableException
 	{
-		// unfiltered
-		// try
-		// {
 		getRows();
-
 		return this.rows;
-
-		// return
-		// getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET,
-		// set.getId()).count();
-		// }
-		// catch (DatabaseException e)
-		// {
-		// throw new TableException(e);
-		// }
 	}
 
+	@Override
 	public Database getDb()
 	{
 		return db;
 	}
 
+	@Override
 	public void setDb(Database db)
 	{
 		this.db = db;
-	}
-
-	@Override
-	public void add(Tuple tuple) throws TableException
-	{
-		System.out.println("Add");
-
-	}
-
-	@Override
-	public void update(Tuple tuple) throws TableException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void remove(Tuple tuple) throws TableException
-	{
-		// TODO Auto-generated method stub
-
 	}
 }
