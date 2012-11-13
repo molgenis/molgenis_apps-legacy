@@ -61,7 +61,7 @@ public class Harmonization extends PluginModel<Entity>
 	private List<String> listOfPredictionModels = new ArrayList<String>();
 	private List<String> listOfCohortStudies = new ArrayList<String>();
 	private List<String> reservedInv = new ArrayList<String>();
-	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
+	private LevenshteinDistanceModel model = null;
 	private HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
 	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
 
@@ -411,6 +411,8 @@ public class Harmonization extends PluginModel<Entity>
 						if (measurementsInStudy.size() > 0)
 						{
 							os = new BioportalOntologyService();
+
+							model = new LevenshteinDistanceModel();
 						}
 
 						status.put("success", true);
@@ -470,6 +472,8 @@ public class Harmonization extends PluginModel<Entity>
 						String validationStudy = request.getString("validationStudy");
 
 						catalogue = new catalogueTreeComponent(validationStudy);
+
+						model = null;
 
 						status.put("treeView", catalogue.getTreeView());
 					}
@@ -834,9 +838,13 @@ public class Harmonization extends PluginModel<Entity>
 		try
 		{
 			// clear the old variable content
+			catalogue = null;
+			measurementsInStudy = null;
 			listOfPredictionModels.clear();
 			listOfCohortStudies.clear();
 			predictors.clear();
+
+			System.gc();
 
 			if (reservedInv.size() == 0)
 			{

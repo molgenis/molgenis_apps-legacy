@@ -164,7 +164,7 @@
 			});
 			
 			$('#addPredictorButton').click(function(){
-				$('#defineVariablePanel').fadeIn();
+				$('#defineVariablePanel').fadeIn().draggable();
 			});
 			
 			$('#addPredictor').button().click(function(){
@@ -185,7 +185,7 @@
 			
 			//Add a new prediction model in the dropdown menu
 			$('#addModelButton').click(function(){
-				addNewPredictionModel(url);
+				addNewPredictionModel(URL);
 			});
 			//Remove a prediction model in the dropdown menu
 			$('#removeModelButton').click(function(){
@@ -371,8 +371,8 @@
 							</div>
 						</div>
 						<div class="ui-corner-all" style="margin-top:20px;width:100%;height:60%;float:left;">
-							<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:280px;width:400px;float:left;margin:5px;">
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:14%;width:100%;">
+							<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:280px;width:400px;float:left;margin:5px;z-index:1500;">
+								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="height:14%;width:100%;cursor:pointer;">
 									<span style="margin:10px;font-size:28px;font-style:italic;">Define a predictor</span>
 								</div>
 								<table style="margin-top:10px;margin-left:2px;width:100%;">
