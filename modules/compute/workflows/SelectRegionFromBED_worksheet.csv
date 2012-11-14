@@ -1,2 +1,2 @@
-project,plinkInput,plinkOutput,fromKB,toKB
-proj001,input,output,0,1000000
+project,plinkInput,plinkOutput,fromKB,toKB,chr
+proj001,input,output,0,1000000,1
