@@ -62,7 +62,7 @@ copyFile()
 	fi
     	
     echo "copy file from cluster to UI as a buffer place"
-    echo "scp -i $CLUSTERROOT$clusterFile $HOME/tmptransfer/$name"
+    echo "scp $CLUSTERROOT$clusterFile $HOME/tmptransfer/$name"
     scp $CLUSTERROOT$clusterFile $HOME/tmptransfer/$name
     echo " "
     echo "copy file from UI to srm"
@@ -96,7 +96,6 @@ getFile()
 		#mkdir -p $(dirname "$myFile")
 		#echo " "
 				
-		# 2. check if file exist
 		echo "check if file exists in srm storage"
     	echo "srmls -l $remoteFile"
     	srmls -l $remoteFile
@@ -141,5 +140,53 @@ getFile()
 	fi
 }
 
-export -f getFile
+putFile()
+{
+    ARGS=($@)
+    NUMBER="${#ARGS[@]}";
+    if [ "$NUMBER" -eq "1" ]
+	then
 
+		echo " "
+		myFile=${ARGS[0]}
+		
+		remoteFile=`getRemoteLocation $myFile`
+
+		echo "check if file exists in srm storage"
+    	echo "srmls -l $remoteFile"
+    	srmls -l $remoteFile
+    	returnCode=$?
+    
+		if [ $returnCode -eq "0" ];
+    	then
+			name=${remoteFile##*/}
+    		xpath=${remoteFile%/*}
+    		echo "name = $name"
+    		echo "path = $xpath"
+    		simplePath=`getRemoteLocationSimple $xpath`
+			echo "Path = $simplePath"
+			clusterFile="$simplePath"/"$name"
+			echo "clusterFile = $clusterFile"
+
+			echo "srmcp -server_mode=passive $remoteFile file:///$HOME/tmptransfer/$name"
+			srmcp -server_mode=passive $remoteFile file:///$HOME/tmptransfer/$name
+			echo " "
+			echo "scp $HOME/tmptransfer/$name $CLUSTERROOT$clusterFile"
+    		scp $HOME/tmptransfer/$name $CLUSTERROOT$clusterFile 
+			echo " "
+			echo "remove file at UI node"
+    		echo "rm $HOME/tmptransfer/$name"
+    		rm $HOME/tmptransfer/$name
+    		echo " "
+    	else
+    		echo "file $remoteFile does not exist at SRM"
+		fi
+    	
+	else
+		echo "Example usage: putData \"\$WORKDIR/datadir/myfile.txt\""
+	fi
+}
+
+
+export -f getFile
+export -f putFile
