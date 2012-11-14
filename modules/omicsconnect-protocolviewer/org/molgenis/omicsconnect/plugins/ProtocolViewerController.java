@@ -68,8 +68,10 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	{
 		// TODO move to head section in view
 		StringBuilder s = new StringBuilder();
-		s.append("<script type=\"text/javascript\" src=\"res/jquery-plugins/Treeview/jquery.treeview.js\"></script>");
-		s.append("<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" />");
+		s.append("<link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.min.css\" type=\"text/css\" />");
+		s.append("<script type=\"text/javascript\" src=\"bootstrap/js/bootstrap.min.js\"></script>");
+		s.append("<link rel=\"stylesheet\" href=\"res/jquery-plugins/dynatree/skin-vista/ui.dynatree.css\" type=\"text/css\" />");
+		s.append("<script type=\"text/javascript\" src=\"res/jquery-plugins/dynatree/jquery.dynatree.min.js\"></script>");
 		s.append("<script type=\"text/javascript\" src=\"res/scripts/protocolviewer.js\"></script>");
 		s.append("<link rel=\"stylesheet\" href=\"res/css/protocolviewer.css\" type=\"text/css\" />");
 		return s.toString();
@@ -78,7 +80,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
 	{
-		if (out == null) this.handleRequest(db, request);
+		if (out == null)
+		{
+			this.handleRequest(db, request);
+			return Show.SHOW_MAIN;
+		}
 
 		Object src = null;
 		if (request.getAction().equals("download_json_getdataset"))
@@ -128,9 +134,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 		if (dataSets != null && !dataSets.isEmpty()) dataSet = dataSets.get(0);
 
 		// get features
-		String[] featuresStr = request.getString("features").split(",");
-		List<Integer> featureIds = new ArrayList<Integer>(featuresStr.length);
-		List<ObservableFeature> features = findFeatures(db, featureIds);
+		String featuresStr = request.getString("features");
+		List<ObservableFeature> features = null;
+		if (featuresStr != null && !featuresStr.isEmpty())
+		{
+			String[] featuresStrArr = request.getString("features").split(",");
+			List<Integer> featureIds = new ArrayList<Integer>(featuresStrArr.length);
+			for (String featureStr : featuresStrArr)
+				featureIds.add(Integer.valueOf(featureStr));
+			features = findFeatures(db, featureIds);
+		}
 
 		if (request.getAction().equals("download_emeasure"))
 		{

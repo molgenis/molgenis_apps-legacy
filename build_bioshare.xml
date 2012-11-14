@@ -26,14 +26,13 @@
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml"/>
-	
-	<target name="runOn" description="Start the application">
-	    <java maxmemory="128m" classname="boot.RunStandalone" fork="yes" failonerror="true">
-	        <arg value="${port}"/>
-	        <classpath>
-	            <path refid="molgenis.classpath" />
-	            <path location="${build.dir}" />
-	        </classpath>
+	<target name="runWithMoreMemory" description="Start the application">
+	    <java maxmemory="2048m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+	    	<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
+			</classpath>
 	    </java>
 	</target>
 </project>

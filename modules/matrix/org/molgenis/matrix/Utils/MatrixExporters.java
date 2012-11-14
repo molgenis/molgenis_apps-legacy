@@ -129,17 +129,6 @@ public class MatrixExporters
 			throw new RuntimeException(e);
 		}
 		out.flush();
-		// werkt niet zonder rowHeaders (deze heeft de slicableMatrix niet)
-		// CsvWriter csvWriter = new CsvWriter(outputStream);
-		// ObservedValue[][] elements;
-		// try {
-		// elements = (ObservedValue[][]) matrix.getValues();
-		// csvWriter.writeMatrix(matrix.getRowNames(),
-		// matrix.getColPropertyNames(), elements);
-		// } catch (MatrixException e) {
-		// throw new RuntimeException(e);
-		// }
-
 	}
 
 	public static File getAsCSV(final SliceableMatrix matrix, Database db, String fileName) throws Exception
