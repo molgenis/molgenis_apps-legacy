@@ -91,10 +91,10 @@ getFile()
 		
 		remoteFile=`getRemoteLocation $myFile`
 
-		echo "create directory on execution node"
-		echo "mkdir -p $(dirname "$myFile")"
-		mkdir -p $(dirname "$myFile")
-		echo " "
+		#echo "create directory on execution node"
+		#echo "mkdir -p $(dirname "$myFile")"
+		#mkdir -p $(dirname "$myFile")
+		#echo " "
 				
 		# 2. check if file exist
 		echo "check if file exists in srm storage"
@@ -128,13 +128,13 @@ getFile()
 		fi
     	
     	#put file to execution node
-			echo "copy file from srm storage to the execution node"
-			echo "srmcp -server_mode=passive $remoteFile file:///$myFile"
-			srmcp -server_mode=passive $remoteFile file:///$myFile
-			echo " "
-			echo "change permission of the transfered file, that is needed for executables"
-			echo "chmod 755 $myFile"
-			chmod 755 $myFile
+		#echo "copy file from srm storage to the execution node"
+		#echo "srmcp -server_mode=passive $remoteFile file:///$myFile"
+		#srmcp -server_mode=passive $remoteFile file:///$myFile
+		#echo " "
+		#echo "change permission of the transfered file, that is needed for executables"
+		#echo "chmod 755 $myFile"
+		#chmod 755 $myFile
     	
 	else
 		echo "Example usage: getData \"\$WORKDIR/datadir/myfile.txt\" [-rest|-force]"
