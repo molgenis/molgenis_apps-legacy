@@ -1011,7 +1011,7 @@ public class Harmonization extends PluginModel<Entity>
 		return expandedQueries;
 	}
 
-	private List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, BioportalOntologyService owlFunction)
+	private List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, BioportalOntologyService os)
 			throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
@@ -1022,7 +1022,7 @@ public class Harmonization extends PluginModel<Entity>
 
 		for (String eachBlock : buildingBlocks)
 		{
-			mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), owlFunction));
+			mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), os));
 
 			if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
 			{
