@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
@@ -32,6 +33,8 @@ import org.molgenis.variant.Variant;
  */
 public class ConvertVcfToPheno
 {
+	private static final Logger logger = Logger.getLogger(ConvertVcfToPheno.class);
+
 	public static final int BATCH_SIZE = 100000;
 
 	public static void main(String[] args) throws Exception
@@ -46,7 +49,8 @@ public class ConvertVcfToPheno
 		}
 		else
 		{
-			vcfFile = new File("/Users/despoina/Downloads/example__3.vcf");
+			vcfFile = new File(
+					"/Users/despoina/Documents/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport.vcf");
 			outputDir = new File("/tmp/");
 		}
 
@@ -57,7 +61,7 @@ public class ConvertVcfToPheno
 	public void convertVariants(final File vcfFile, final File outputDir) throws Exception
 	{
 		System.out.println("converting aggregate data from vcf=" + vcfFile + " to directory " + outputDir);
-		VcfReader vcf = new VcfReader(vcfFile);
+		final VcfReader vcf = new VcfReader(vcfFile);
 
 		final List<Variant> variants = new ArrayList<Variant>();
 		final List<ObservedValue> values = new ArrayList<ObservedValue>();
@@ -134,7 +138,23 @@ public class ConvertVcfToPheno
 					v.setDescription("" + record.getId());
 
 					// put alt allele counts in description
-					o.setValue(record.getInfo("AC").get(i));
+					System.out.println(vcf.getInfoFields());
+					for (int j = 0; j != vcf.getInfoFields().size(); j++)
+					{
+						System.out.println(vcf.getInfoFields().get(j));
+						if (record.getInfo(vcf.getInfoFields().get(j)) != null)
+						{
+							// System.out.println(record.getInfo(vcf.getInfoFields().get(j)).get(i));
+							List<String> var3 = vcf.getInfoFields();
+							String key = var3.get(j);
+							List<String> info = record.getInfo(key);
+							if (info == null | info.isEmpty()) o.setValue(info.get(0));
+							else
+								logger.warn("unknown key: " + key);
+
+						}
+						// o.setValue(record.getInfo("AC").get(i));
+					}
 					// TODO: fetch panel and relation from VCF if possible...
 					// and create it first, so we can use it here.
 					o.setTarget_Name("GoNL_release1");
