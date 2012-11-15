@@ -87,7 +87,7 @@ public class UploadBatchExcelReader
 		return headers;
 	}
 
-	private boolean writeSheetToFile(Sheet sheet, File file) throws FileNotFoundException
+	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException
 	{
 		List<String> headers = new ArrayList<String>();
 		Cell[] headerCells = sheet.getRow(0); // assume headers are on first

@@ -11,10 +11,14 @@
 <display:setProperty name="paging.banner.item_name" value="patient"/>
 <display:setProperty name="paging.banner.items_name" value="patients"/>
 <display:setProperty name="paging.banner.page.separator" value=" "/>
+<display:setProperty name="paging.banner.placement" value="both"/>
 <display:setProperty name="export.banner"><div class="exportlinks">Export: {0}</div></display:setProperty>
 <display:setProperty name="export.csv.filename" value="patients.csv"/>
 <display:setProperty name="export.excel.filename" value="patients.xls"/>
 <display:setProperty name="export.pdf.filename" value="patients.pdf"/>
+<display:setProperty name="export.types" value="csv excel pdf"/>
+<display:setProperty name="export.pdf" value="true"/>
+<display:setProperty name="export.xml" value="false"/>
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column media="html" property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=#results" paramId="pid" paramProperty="patientIdentifier"/>
@@ -28,29 +32,36 @@
 </display:column>
 <display:column media="html" title="cDNA change">
 <div class="unwrapped">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantSummaryVOList[0].identifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[0].cdnaNotation}"/></a>
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantDTOList[0].identifier}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${current.variantDTOList[0].cdnaNotation}"/></a>
 </div>
 <div class="unwrapped">
 	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantSummaryVOList[1].identifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[1].cdnaNotation}"/></a>
+	<c:when test="${fn:length(current.variantDTOList) > 1}">
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantDTOList[1].identifier}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${current.variantDTOList[1].cdnaNotation}"/></a>
 	</c:when>
 	<c:otherwise>
-	<c:out value="${current.variantComment}"/>
+		<c:choose>
+		<c:when test="${fn:contains(current.variantDTOList[0].inheritance, 'dominant')}">
+			NA
+		</c:when>
+		<c:otherwise>
+			Unknown
+		</c:otherwise>
+		</c:choose>
 	</c:otherwise>
 	</c:choose>
 </div>
 </display:column>
 <display:column media="html" title="Protein change">
 <div class="unwrapped">
-	<c:out value="${current.variantSummaryVOList[0].aaNotation}"/>
+	<c:out value="${current.variantDTOList[0].aaNotation}"/>
 </div>
 <div class="unwrapped">
 	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].aaNotation}"/>
+	<c:when test="${fn:length(current.variantDTOList) > 1}">
+	<c:out value="${current.variantDTOList[1].aaNotation}"/>
 	</c:when>
 	<c:otherwise>
 	&nbsp;
@@ -60,14 +71,14 @@
 </display:column>
 <display:column media="html" title="Exon">
 <div class="unwrapped">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantSummaryVOList[0].exonId}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[0].exonName}"/></a>
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantDTOList[0].exonId}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${current.variantDTOList[0].exonName}"/></a>
 </div>
 <div class="unwrapped">
 	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantSummaryVOList[1].exonId}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[1].exonName}"/></a>
+	<c:when test="${fn:length(current.variantDTOList) > 1}">
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantDTOList[1].exonId}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${current.variantDTOList[1].exonName}"/></a>
 	</c:when>
 	<c:otherwise>
 	&nbsp;
@@ -77,12 +88,12 @@
 </display:column>
 <display:column media="html" title="Consequence">
 <div class="unwrapped">
-	<c:out value="${current.variantSummaryVOList[0].consequence}"/>
+	<c:out value="${current.variantDTOList[0].consequence}"/>
 </div>
 <div class="unwrapped">
 	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].consequence}"/>
+	<c:when test="${fn:length(current.variantDTOList) > 1}">
+	<c:out value="${current.variantDTOList[1].consequence}"/>
 	</c:when>
 	<c:otherwise>
 	&nbsp;
@@ -91,59 +102,55 @@
 </div>
 </display:column>
 <display:column media="html" title="Reference">
+<div>
 	<c:choose>
-	<c:when test="${fn:length(current.publicationVOList) > 0}">
-	<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="${publicationVO.name}"/></a><br/>
+	<c:when test="${fn:length(current.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
-	<c:out value="Unpublished"/><br/>
-	<c:out value="${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
+	<c:out value="Unpublished, ${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
 	</c:otherwise>
 	</c:choose>
+</div>
 </display:column>
 
 <display:column media="csv excel pdf" title="cDNA change 1">
-	<c:out value="${current.variantSummaryVOList[0].cdnaNotation}" escapeXml="false"/>
+	<c:out value="${current.variantDTOList[0].cdnaNotation}" escapeXml="false"/>
 </display:column>
 <display:column media="csv excel pdf" title="Protein change 1">
-	<c:out value="${current.variantSummaryVOList[0].aaNotation}" escapeXml="false"/>
+	<c:out value="${current.variantDTOList[0].aaNotation}" escapeXml="false"/>
 </display:column>
 <display:column media="csv excel pdf" title="Exon/Intron 1">
-	<c:out value="${current.variantSummaryVOList[0].exonName}" escapeXml="false"/>
+	<c:out value="${current.variantDTOList[0].exonName}" escapeXml="false"/>
 </display:column>
 <display:column media="csv excel pdf" title="Consequence 1">
-	<c:out value="${current.variantSummaryVOList[0].consequence}" escapeXml="false"/>
+	<c:out value="${current.variantDTOList[0].observedValue}" escapeXml="false"/>
 </display:column>
 <display:column media="csv excel pdf" title="cDNA change 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].cdnaNotation}" escapeXml="false"/>
+	<c:if test="${fn:length(current.variantDTOList) > 1}">
+	<c:out value="${current.variantDTOList[1].cdnaNotation}" escapeXml="false"/>
 	</c:if>
 </display:column>
 <display:column media="csv excel pdf" title="Protein change 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].aaNotation}" escapeXml="false"/>
+	<c:if test="${fn:length(current.variantDTOList) > 1}">
+	<c:out value="${current.variantDTOList[1].aaNotation}" escapeXml="false"/>
 	</c:if>
 </display:column>
 <display:column media="csv excel pdf" title="Exon/Intron 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].exonName}" escapeXml="false"/>
+	<c:if test="${fn:length(current.variantDTOList) > 1}">
+	<c:out value="${current.variantDTOList[1].exonName}" escapeXml="false"/>
 	</c:if>
 </display:column>
 <display:column media="csv excel pdf" title="Consequence 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].consequence}" escapeXml="false"/>
+	<c:if test="${fn:length(current.variantDTOList) > 1}">
+	<c:out value="${current.variantDTOList[1].observedValue}" escapeXml="false"/>
 	</c:if>
 </display:column>
-<display:column media="csv excel pdf" title="Reference">
-<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="${publicationVO.name}" escapeXml="false"/>;
-</c:forEach>
-</display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="${publicationDTO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 

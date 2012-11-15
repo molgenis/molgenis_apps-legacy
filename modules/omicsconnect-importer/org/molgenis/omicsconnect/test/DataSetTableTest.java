@@ -102,4 +102,22 @@ public class DataSetTableTest
 		Assert.assertEquals("value1", rows.get(0).getString("feature1"));
 		Assert.assertEquals("value2", rows.get(0).getString("feature2"));
 	}
+
+	@Test
+	public void testHideColumn() throws TableException
+	{
+		String csv = "target\tfeature1\tfeature2\npatient1\tvalue1\tvalue2";
+		TupleTable source = new CsvTable(csv);
+
+		DataSetTable table = new DataSetTable(ds, db);
+
+		table.add(source);
+
+		// columns
+		table.hideColumn("feature1");
+		List<Field> columns = table.getColumns();
+		for (Field field : columns)
+			System.out.println(field.getName());
+	}
+
 }

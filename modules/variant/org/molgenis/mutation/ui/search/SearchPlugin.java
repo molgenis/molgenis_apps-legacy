@@ -1,10 +1,3 @@
-/* Date:        February 22, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
-
 package org.molgenis.mutation.ui.search;
 
 import java.io.OutputStream;
@@ -52,10 +45,10 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
 	private static final long serialVersionUID = 651270609185006020L;
 
-	private transient CmsService cmsService;
-	private transient PhenoService phenoService;
-	private transient SearchService searchService;
-	private transient StatisticsService statisticsService;
+	protected transient CmsService cmsService;
+	protected transient PhenoService phenoService;
+	protected transient SearchService searchService;
+	protected transient StatisticsService statisticsService;
 
 	public SearchPlugin(String name, ScreenController<?> parent)
 	{
@@ -209,7 +202,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			}
 			else
 			{
-				this.init();
 				this.setView(new FreemarkerView("init.ftl", this.getModel()));
 			}
 
@@ -232,7 +224,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		return Show.SHOW_MAIN;
 	}
 
-	private void handleFindMutations(Tuple request)
+	protected void handleFindMutations(Tuple request)
 	{
 		this.getModel().setMutationSearchCriteriaVO(new MutationSearchCriteriaDTO());
 		if (StringUtils.isNotEmpty(request.getString("variation"))) this.getModel().getMutationSearchCriteriaVO()
@@ -273,7 +265,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
-	private void handleShowMutation(Tuple request)
+	protected void handleShowMutation(Tuple request)
 	{
 		if (StringUtils.isNotEmpty(request.getString("mid")))
 		{
@@ -296,7 +288,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		}
 	}
 
-	private void handleFindPatients(Tuple request)
+	protected void handleFindPatients(Tuple request)
 	{
 		if (StringUtils.isNotEmpty(request.getString("mid")))
 		{
@@ -313,7 +305,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		}
 	}
 
-	private void handleFindMutationsByTerm(Tuple request)
+	protected void handleFindMutationsByTerm(Tuple request)
 	{
 		// if (StringUtils.isNotEmpty(request.getString("term")) &&
 		// request.getString("term").length() < 3)
@@ -372,35 +364,35 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.setView(new FreemarkerView("freetext.ftl", this.getModel()));
 	}
 
-	private void handleShowNextMutation(Tuple request)
+	protected void handleShowNextMutation(Tuple request)
 	{
 		MutationSummaryDTO mutationSummaryDTO = searchService.findNextMutation(request.getString("mid"));
 		request.set("mid", mutationSummaryDTO.getIdentifier());
 		this.handleShowMutation(request);
 	}
 
-	private void handleShowPrevMutation(Tuple request)
+	protected void handleShowPrevMutation(Tuple request)
 	{
 		MutationSummaryDTO mutationSummaryVO = searchService.findPrevMutation(request.getString("mid"));
 		request.set("mid", mutationSummaryVO.getIdentifier());
 		this.handleShowMutation(request);
 	}
 
-	private void handleShowLastMutation(Tuple request)
+	protected void handleShowLastMutation(Tuple request)
 	{
 		MutationSummaryDTO mutationSummaryVO = searchService.findLastMutation();
 		request.set("mid", mutationSummaryVO.getIdentifier());
 		this.handleShowMutation(request);
 	}
 
-	private void handleShowFirstMutation(Tuple request)
+	protected void handleShowFirstMutation(Tuple request)
 	{
 		MutationSummaryDTO mutationSummaryVO = searchService.findFirstMutation();
 		request.set("mid", mutationSummaryVO.getIdentifier());
 		this.handleShowMutation(request);
 	}
 
-	private void listAllMutations(Tuple request)
+	protected void listAllMutations(Tuple request)
 	{
 		this.getModel().setMutationSummaryDTOList(searchService.findAllMutationSummaries());
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList",
@@ -412,7 +404,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.setView(new FreemarkerView("included.ftl", getModel()));
 	}
 
-	private void handleShowPatient(Tuple request)
+	protected void handleShowPatient(Tuple request)
 	{
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
@@ -428,7 +420,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		}
 	}
 
-	private void listAllPatients(Tuple request)
+	protected void listAllPatients(Tuple request)
 	{
 		// MolgenisUser user = new MolgenisUser();
 		// user.setId(this.getLogin().getUserId());
@@ -444,7 +436,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
-	private void handleShowPhenotypeDetails(Tuple request) throws Exception
+	protected void handleShowPhenotypeDetails(Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
@@ -460,7 +452,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		}
 	}
 
-	private void handleShowGene(Tuple request) throws Exception
+	protected void handleShowGene(Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("gene_id")))
 		{
@@ -477,7 +469,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		}
 	}
 
-	private void handleShowProteinDomain(Tuple request) throws Exception
+	protected void handleShowProteinDomain(Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("domain_id"))) this.getModel().getMutationSearchCriteriaVO()
 				.setProteinDomainId(request.getInt("domain_id"));
@@ -490,16 +482,14 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 				this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
-//		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
-
-//		if (this.getModel().getExonDTOList() == null)
-//			this.getModel().setExonDTOList(searchService.findAllExons());
+		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
 
 		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createExonIntronPanel(searchService.findAllExons()));
+//		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createProteinDomainPanel(this.getModel().getProteinDomainDTO()));
 		this.setView(new FreemarkerView("proteindomain.ftl", getModel()));
 	}
 
-	private void handleShowExon(Tuple request)
+	protected void handleShowExon(Tuple request)
 	{
 		Integer exonId = request.getInt("exon_id");
 
@@ -517,7 +507,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.setView(new FreemarkerView("exon.ftl", getModel()));
 	}
 
-	private void handleShowNextExon(Tuple request)
+	protected void handleShowNextExon(Tuple request)
 	{
 		ExonDTO exonDTO = searchService.findNextExon(request.getInt("exon_id"));
 		request.set("__action", "showExon");
@@ -525,7 +515,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.handleShowExon(request);
 	}
 
-	private void handleShowPrevExon(Tuple request)
+	protected void handleShowPrevExon(Tuple request)
 	{
 		ExonDTO exonDTO = searchService.findPrevExon(request.getInt("exon_id"));
 		request.set("__action", "showExon");
@@ -533,14 +523,14 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.handleShowExon(request);
 	}
 
-	private void handleShowLastExon(Tuple request)
+	protected void handleShowLastExon(Tuple request)
 	{
 		ExonDTO exonDTO = searchService.findLastExon();
 		request.set("exon_id", exonDTO.getId());
 		this.handleShowExon(request);
 	}
 
-	private void handleShowFirstExon(Tuple request)
+	protected void handleShowFirstExon(Tuple request)
 	{
 		ExonDTO exonDTO = searchService.findFirstExon();
 		request.set("exon_id", exonDTO.getId());
@@ -562,10 +552,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 				this.getModel().setGeneDTO(searchService.findGene());
 			}
 
-			if ("init".equals(this.getModel().getAction()))
-			{
-				this.init();
-			}
+			this.initTopPanel();
 
 			this.getModel().setTextRemarks(cmsService.findContentByName("remarks"));
 			this.getModel().setTextCollaborations(cmsService.findContentByName("collaborators"));
@@ -672,7 +659,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	//
 	// }
 
-	private void init()
+	private void initTopPanel()
 	{
 		if (this.getModel().getMbrowse().getIsVisible())
 		{
@@ -682,18 +669,14 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 				GeneDTO geneDTO = geneDTOList.get(0);
 				GenePanel genePanel = this.getModel().getMbrowse().createGenePanel(geneDTO.getProteinDomainDTOList());
 				genePanel.setLabel("Browse the " + geneDTO.getName() + " gene");
-				this.getModel().setMBrowsePanel(genePanel);
+				this.getModel().setTopPanel(genePanel);
 			}
 			else
 			{
 				GenomePanel genomePanel = this.getModel().getMbrowse().createGenomePanel(geneDTOList);
 				genomePanel.setLabel("Browse the genome");
-				this.getModel().setMBrowsePanel(genomePanel);
+				this.getModel().setTopPanel(genomePanel);
 			}
-
-//				if (CollectionUtils.isEmpty(this.getModel().getGeneDTOList()))
-//					this.getModel().setGeneDTOList(this.searchService.findAllGenes());
-
 		}
 	}
 
@@ -778,16 +761,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		else
 			((SelectInput) expertSearchForm.get("type")).setValue("Select");
 
-//		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
-//		consequenceOptions.add(0, new ValueLabel("", "Select"));
-//		for (String consequence : phenoService.findObservedValues("consequence"))
-//			consequenceOptions.add(new ValueLabel(consequence, consequence));
-//		((SelectInput) expertSearchForm.get("consequence")).setOptions(consequenceOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
-//			((SelectInput) expertSearchForm.get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
-//		else
-//			((SelectInput) expertSearchForm.get("consequence")).setValue("Select");
-
 		List<ValueLabel> domainOptions = new ArrayList<ValueLabel>();
 		domainOptions.add(new ValueLabel("", "Select"));
 		for (ProteinDomainDTO domainVO : searchService.findAllProteinDomains())
@@ -807,16 +780,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 				.get("phenotype")).setValue(this.getModel().getMutationSearchCriteriaVO().getPhenotypeId());
 		else
 			((SelectInput) expertSearchForm.get("phenotype")).setValue("Select");
-
-//		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
-//		inheritanceOptions.add(0, new ValueLabel("", "Select"));
-//		for (String inheritance : phenoService.findObservedValues("Inheritance"))
-//			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
-//		((SelectInput) expertSearchForm.get("inheritance")).setOptions(inheritanceOptions);
-//		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
-//			((SelectInput) expertSearchForm.get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
-//		else
-//			((SelectInput) expertSearchForm.get("inheritance")).setValue("Select");
 	}
 
 	private void populateDisplayOptionsForm()

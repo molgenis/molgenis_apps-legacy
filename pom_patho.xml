@@ -19,6 +19,16 @@
     <name>${app.name}</name>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.1.1.RELEASE</version>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.1.1.RELEASE</version>
+        </dependency>
 		<!-- database hibernate, connectionpool, driver -->
 		<dependency>
             <groupId>org.molgenis</groupId>
@@ -96,12 +106,74 @@
 			</exclusions>
 		</dependency>
 
+		<!-- RSS Feeds -->
+		<dependency>
+			<groupId>org.apache.abdera</groupId>
+			<artifactId>abdera-bundle</artifactId>
+			<version>1.1.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>        
+
 		<!-- Collections -->
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
 		</dependency>        
+
+		<dependency>
+			<groupId>displaytag</groupId>
+			<artifactId>displaytag</artifactId>
+			<version>1.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>jcl104-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>displaytag</groupId>
+			<artifactId>displaytag-export-poi</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<!-- Logging for displaytag -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+		<!-- taglibs -->
+        <dependency>
+            <groupId>taglibs</groupId> 
+            <artifactId>standard</artifactId> 
+            <version>1.1.2</version> 
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId> 
+            <artifactId>jstl</artifactId> 
+            <version>1.2</version>
+			<scope>runtime</scope>
+        </dependency>
 	</dependencies>
 
 
@@ -122,9 +194,28 @@
                 </includes>
             </resource>
             <resource>
-                <directory>modules/pheno/</directory>
+                <directory>modules/auth</directory>
                 <includes>
                     <include>**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>modules/news</directory>
+                <includes>
+                    <include>**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>modules/pheno</directory>
+                <includes>
+                    <include>**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>modules/variant</directory>
+                <includes>
+                    <include>**/*.ftl</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>
@@ -149,8 +240,10 @@
                                 <source>modules/file</source>
                                 <source>modules/import</source>
 								<source>modules/matrix</source>
+								<source>modules/news</source>
                                 <source>modules/pheno</source>
                                 <source>modules/settings</source>
+                                <source>modules/variant</source>
                                 <source>modules/decorators/core</source>
                                 <source>modules/decorators/pheno</source>
                                 <source>modules/decorators/auth</source>
@@ -176,8 +269,10 @@
                                 <source>modules/file</source>
                                 <source>modules/import</source>
 								<source>modules/matrix</source>
+								<source>modules/news</source>
                                 <source>modules/pheno</source>
                                 <source>modules/settings</source>
+                                <source>modules/variant</source>
                                 <source>modules/decorators/core</source>
                                 <source>modules/decorators/pheno</source>
                                 <source>modules/decorators/auth</source>

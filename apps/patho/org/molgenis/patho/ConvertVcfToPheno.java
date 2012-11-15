@@ -22,7 +22,7 @@ import org.molgenis.util.vcf.VcfReaderListener;
 import org.molgenis.util.vcf.VcfRecord;
 import org.molgenis.variant.Chromosome;
 import org.molgenis.variant.GenomeBuild;
-import org.molgenis.variant.SequenceVariant;
+import org.molgenis.variant.Variant;
 
 /**
  * This method can extract cohort level or individual level data from vcf files
@@ -46,7 +46,7 @@ public class ConvertVcfToPheno
 		}
 		else
 		{
-			vcfFile = new File("/tmp/merged20110920_stripped.vcf");
+			vcfFile = new File("/Users/despoina/Downloads/example__3.vcf");
 			outputDir = new File("/tmp/");
 		}
 
@@ -59,7 +59,7 @@ public class ConvertVcfToPheno
 		System.out.println("converting aggregate data from vcf=" + vcfFile + " to directory " + outputDir);
 		VcfReader vcf = new VcfReader(vcfFile);
 
-		final List<SequenceVariant> variants = new ArrayList<SequenceVariant>();
+		final List<Variant> variants = new ArrayList<Variant>();
 		final List<ObservedValue> values = new ArrayList<ObservedValue>();
 		final List<String> chromosomes = new ArrayList<String>();
 		final List<String> dbXrefs = new ArrayList<String>();
@@ -69,20 +69,20 @@ public class ConvertVcfToPheno
 		final List<ObservableFeature> features = new ArrayList<ObservableFeature>();
 
 		// create file names
-		final File sequenceVariants = new File(outputDir.getAbsolutePath() + File.separatorChar + "SequenceVariant.txt");
-		final File observedValues = new File(outputDir.getAbsolutePath() + File.separatorChar + "ObservedValue.txt");
+		final File fileVariants = new File(outputDir.getAbsolutePath() + File.separatorChar + "Variant.txt");
+		final File fileObservedValues = new File(outputDir.getAbsolutePath() + File.separatorChar + "ObservedValue.txt");
 
 		// create file headers
-		final String[] svHeaders = new String[]
-		{ SequenceVariant.NAME, SequenceVariant.CHR_NAME, SequenceVariant.STARTBP, SequenceVariant.ENDBP,
-				SequenceVariant.REF, SequenceVariant.ALT, SequenceVariant.DESCRIPTION, SequenceVariant.DBREFS_NAME };
+		final String[] variantHeaders = new String[]
+		{ Variant.NAME, Variant.CHROMOSOME_NAME, Variant.STARTGDNA, Variant.ENDGDNA, Variant.RESIDUES,
+				Variant.ALTRESIDUES, Variant.DESCRIPTION, Variant.ALTERNATEID_NAME };
 
 		final String[] ovHeaders = new String[]
 		{ ObservedValue.TARGET_NAME, ObservedValue.RELATION_NAME, ObservedValue.FEATURE_NAME, ObservedValue.VALUE };
 
 		// create files
-		createFileAndHeader(sequenceVariants, svHeaders);
-		createFileAndHeader(observedValues, ovHeaders);
+		createFileAndHeader(fileVariants, variantHeaders);
+		createFileAndHeader(fileObservedValues, ovHeaders);
 
 		final List<Integer> count = new ArrayList<Integer>();
 		count.add(0);
@@ -99,27 +99,27 @@ public class ConvertVcfToPheno
 				List<String> alt = record.getAlt();
 				for (int i = 0; i < alt.size(); i++)
 				{
-					SequenceVariant v = new SequenceVariant();
+					Variant v = new Variant();
 					ObservedValue o = new ObservedValue();
 
 					String result = "chr" + record.getChrom() + ":g.";
 					v.setName("chr" + record.getChrom() + ":g." + record.getPos() + record.getRef() + ">" + alt.get(i));
 
 					// ref
-					v.setRef(record.getRef());
+					v.setResidues(record.getRef());
 
 					// alt
-					v.setAlt(alt.get(i));
+					v.setAltResidues(alt.get(i));
 
 					// chr
-					v.setChr_Name(record.getChrom());
+					v.setChromosome_Name(record.getChrom());
 
 					// check if chrom exists, otherwise add
 					if (!chromosomes.contains(record.getChrom())) chromosomes.add(record.getChrom());
 
 					// pos
-					v.setStartBP(record.getPos());
-					v.setEndBP(record.getPos());
+					v.setStartGdna(record.getPos());
+					v.setEndGdna(record.getPos());
 
 					// dbrefs name
 					// if (record.getId().size() > 0
@@ -147,9 +147,9 @@ public class ConvertVcfToPheno
 
 				if (variants.size() >= BATCH_SIZE)
 				{
-					writeBatch(variants, sequenceVariants, svHeaders);
+					writeBatch(variants, fileVariants, variantHeaders);
 					variants.clear();
-					writeBatch(values, observedValues, ovHeaders);
+					writeBatch(values, fileObservedValues, ovHeaders);
 					values.clear();
 
 					count.set(0, count.get(0) + BATCH_SIZE);
@@ -160,8 +160,8 @@ public class ConvertVcfToPheno
 		});
 
 		// write remaining data for last batch.
-		writeBatch(variants, sequenceVariants, svHeaders);
-		writeBatch(values, observedValues, ovHeaders);
+		writeBatch(variants, fileVariants, variantHeaders);
+		writeBatch(values, fileObservedValues, ovHeaders);
 
 		// write chromsomes
 		List<Chromosome> chrList = new ArrayList<Chromosome>();
@@ -192,7 +192,7 @@ public class ConvertVcfToPheno
 
 		File chrFile = new File(outputDir.getAbsolutePath() + File.separatorChar + "Chromosome.txt");
 		String[] chrHeader = new String[]
-		{ "name", "genomeBuild_name", "orderNr", "autosomal" };
+		{ Chromosome.NAME, Chromosome.GENOMEBUILD_NAME, Chromosome.ORDERNR, Chromosome.ISAUTOSOMAL };
 		createFileAndHeader(chrFile, chrHeader);
 		writeBatch(chrList, chrFile, chrHeader);
 
