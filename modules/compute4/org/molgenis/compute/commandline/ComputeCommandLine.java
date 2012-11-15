@@ -48,9 +48,14 @@ public class ComputeCommandLine
 		computeBundle = new ComputeBundleFromDirectory(this);
 
 		// Add our parsed command line parameters 'as is' to the bundle:
+		// Exception 1: "mcdir" conficts with "McDir".
+		// Exception 2: "parameters" here refers to the parameters.csv file.
+		// However, "parameters" in the *.ftl files refers to _all_ parameters,
+		// i.e. the content of parameters.csv + worksheet.csv + the command line
+		// options...
 		for (String p : argsMap.keySet())
 		{
-			if (!p.equals("mcdir")) // <- Conficts with "McDir"...
+			if (!p.equals("mcdir") && !p.equals("parameters"))
 			{
 				ComputeParameter cp = new ComputeParameter();
 				cp.setName(p);
@@ -100,7 +105,6 @@ public class ComputeCommandLine
 
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
-
 		// create map of all workflow elements (needed for dependencies)
 		Map<String, WorkflowElement> wfeMap = new LinkedHashMap<String, WorkflowElement>();
 
@@ -129,14 +133,12 @@ public class ComputeCommandLine
 				targets.add("line_number");
 			}
 
-
 			// task_number will be added by folding
 			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet,
 					this.computeBundle.getComputeParameters(), targets);
 
 			// each element of folded worksheet produces one
 			// protocolApplication (i.e. a script)
-
 
 			for (Tuple work : folded)
 			{
@@ -181,7 +183,6 @@ public class ComputeCommandLine
 				// work.set("clusterQueue", queue);
 				// done with FIXME
 
-
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores"))
 						: protocol.getCores());
 				work.set("cores", cores);
@@ -189,7 +190,6 @@ public class ComputeCommandLine
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
 						.getMem().toString());
 				work.set("mem", mem + "gb");
-
 
 				// set jobname. If a job starts/completes, we put this in a
 				// logfile
@@ -236,7 +236,6 @@ public class ComputeCommandLine
 
 							int i_fix = Math.min(work.getList(target).size() - 1, i);
 							jobName += "_" + work.getList(target).get(i_fix);
-
 
 							// jobName += "_XXX" + i;
 							// } else {
@@ -465,7 +464,6 @@ public class ComputeCommandLine
 			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile, this.parametersfile))
 			{
 
-
 				String sourcepath = f.getCanonicalPath();
 
 				// make this part windows compentible
@@ -502,7 +500,6 @@ public class ComputeCommandLine
 
 	private String getworkflowfilename()
 	{
-
 
 		// make this part windows compentible
 		String fileSeparatorPatternString;
