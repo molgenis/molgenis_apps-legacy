@@ -3,6 +3,10 @@
 getFile ${impute2ResultsBinsLocation}
 getFile ${tooldir}/python_scripts/AssemblyImpute2GprobsBins.py
 
+module load Python/2.7.3
+
+
+
 getFile ${gprobsBinsDir}/chr1_0_499
 getFile ${gprobsBinsDir}/chr1_500_999
 getFile ${gprobsBinsDir}/chr1_1000_1499
@@ -16,7 +20,7 @@ getFile ${gprobsBinsDir}/chr1_4500_4999
 
 inputs "${impute2ResultsBinsLocation}"
 
-module load Python/2.7.3
+
 python -V
 
 mkdir -p ${resultsDir}
