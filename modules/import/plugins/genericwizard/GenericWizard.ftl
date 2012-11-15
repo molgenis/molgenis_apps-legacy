@@ -46,7 +46,8 @@
 
 <div style="height: 25px;">&nbsp;</div>
 
-<a href="clusterdemo/ExampleExcel.xls"><img src="clusterdemo/excel.gif"/></a><label>Download example Excel file</label>
+ <#-->href="clusterdemo/ExampleExcel.xls"-->
+<a href="https://github.com/downloads/joerivandervelde/files/wormqtl_set1_annotations_minusUSAprobes.xls"><img src="clusterdemo/excel.gif"/></a><label>Download example Excel file</label>
 
 
 
@@ -77,7 +78,9 @@
 		<td>Import order</td>
 		<td>Sheet name</td>
 		<td>Importable fields</td>
+		<td>Missing required fields</td>
 		<td>Unknown fields</td>
+		<td>Available optional fields</td>
 	</tr>
 <#assign count = 1>
 <#list model.iwep.importOrder as sheet>
@@ -87,7 +90,12 @@
 		
 		<td><#if model.iwep.fieldsImportable[sheet]?size gt 0><#list model.iwep.fieldsImportable[sheet] as field>${greenBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="errormessage">No importable fields</p></#if></td>
 		
-		<td><#if model.iwep.fieldsUnknown[sheet]?size gt 0><#list model.iwep.fieldsUnknown[sheet] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">No unknown fields</p></#if></td>
+		<td><#if model.iwep.fieldsRequired[sheet]?size gt 0><#list model.iwep.fieldsRequired[sheet] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">None</p></#if></td>
+	
+		<td><#if model.iwep.fieldsUnknown[sheet]?size gt 0><#list model.iwep.fieldsUnknown[sheet] as field>${redBg}${field}${endFont}<#if field_has_next>, </#if></#list><#else><p class="successmessage">None</p></#if></td>
+		
+		<td><#if model.iwep.fieldsAvailable[sheet]?size gt 0><#list model.iwep.fieldsAvailable[sheet] as field>${field}<#if field_has_next>, </#if></#list><#else><p class="successmessage">None</p></#if></td>
+		
 	</tr>
 <#assign count = count+1>
 </#list>
