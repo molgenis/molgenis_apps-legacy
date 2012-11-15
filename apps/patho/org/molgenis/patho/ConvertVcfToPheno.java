@@ -49,8 +49,7 @@ public class ConvertVcfToPheno
 		}
 		else
 		{
-			vcfFile = new File(
-					"/Users/despoina/Documents/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport.vcf");
+			vcfFile = new File("vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport.vcf");
 			outputDir = new File("/tmp/");
 		}
 
