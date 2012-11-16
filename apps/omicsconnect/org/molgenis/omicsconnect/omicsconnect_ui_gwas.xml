@@ -24,9 +24,7 @@
 			</form>
 		</form>
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omicsconnect.plugins.ProtocolViewerController" />
-		<form name="DataSetViewer" entity="DataSet">
-			<plugin name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
-		</form>
+		<plugin name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
 		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omicsconnect.plugins.ImportWizardController" />
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">

@@ -26,11 +26,10 @@ import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
 import org.molgenis.omicsconnect.EMeasureFeatureWriter;
+import org.molgenis.omicsconnect.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
-
-import app.ui.DataSetViewerPlugin;
 
 import com.google.gson.Gson;
 
