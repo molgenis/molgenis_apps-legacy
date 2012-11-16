@@ -117,7 +117,7 @@ function setFeatureDetails(feature) {
 		$.each(feature.categories, function(i, category){
 			var row = $('<tr />');
 			$('<td />').text(category.code).appendTo(row);
-			$('<td />').text(category.label).appendTo(row);
+			$('<td />').text(category.name).appendTo(row);
 			$('<td />').text(category.description).appendTo(row);
 			row.appendTo(categoryTable);		
 		});

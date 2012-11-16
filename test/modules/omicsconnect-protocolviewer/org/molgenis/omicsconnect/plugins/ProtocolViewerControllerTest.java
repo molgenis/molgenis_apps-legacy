@@ -134,14 +134,14 @@ public class ProtocolViewerControllerTest
 		Category category1 = new Category();
 		category1.setId(2);
 		category1.setValueCode("code1");
-		category1.setValueLabel("label1");
-		category1.setValueDescription("description1");
+		category1.setName("label1");
+		category1.setDescription("description1");
 
 		Category category2 = new Category();
 		category2.setId(2);
 		category2.setValueCode("code2");
-		category2.setValueLabel("label2");
-		category2.setValueDescription("description2");
+		category2.setName("label2");
+		category2.setDescription("description2");
 
 		when(db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID, Operator.EQUALS, 1))).thenReturn(
 				Collections.singletonList(feature));

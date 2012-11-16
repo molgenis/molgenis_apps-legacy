@@ -9,10 +9,11 @@ package org.molgenis.omicsconnect.decorators;
 
 import java.util.List;
 
+import org.molgenis.core.Identifiable;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.MapperDecorator;
-import org.molgenis.observ.Identifiable;
+import org.molgenis.omicsconnect.decorators.NameConvention;
 
 public class IdentifiableDecorator<E extends Identifiable> extends MapperDecorator<E>
 {
