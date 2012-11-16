@@ -37,7 +37,6 @@ public class GenerateExampleData
 			Protocol p = new Protocol();
 			p.setIdentifier("p2test");
 			p.setName("dit is een test");
-			p.setTargetType("Individual");
 
 			db.add(p);
 

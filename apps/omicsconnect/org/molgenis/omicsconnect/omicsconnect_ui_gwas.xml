@@ -3,10 +3,7 @@
 <molgenis name="omicsconnect">
 	<plugin name="oc_header" type="org.molgenis.omicsconnect.plugins.header.Header" />
 
-
 	<menu name="main">
-
-
 		<plugin name="Pubmed"
 			type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
 		<plugin name="OntoCat"
@@ -27,7 +24,9 @@
 			</form>
 		</form>
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omicsconnect.plugins.ProtocolViewerController" />
-		<plugin label="DataSetViewer" name="DataSetViewer" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
+		<form name="DataSetViewer" entity="DataSet">
+			<plugin name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
+		</form>
 		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omicsconnect.plugins.ImportWizardController" />
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">
@@ -52,14 +51,6 @@
 				<form name="Study" label="Study" entity="Study" compact_view="name">
 					<form name="StudyDetail" label="Study Details" entity="StudyDetails" />
 					<form name="samplePanels" label="SamplePanel" entity="SamplePanel" />
-
-					<!-- had hotlinks removed for now form name="Links" label="Hotlinks" 
-						entity="Link" / -->
-					<!-- <form name="PanelIndividuals" entity="Individual" / -->
-					<!-- <form name="PanelSources" entity="PanelSource" / -->
-
-
-
 					<form name="Contributions" entity="Contribution" />
 					<form name="StudyAnalysisMethods" entity="Protocol" />
 					<form name="Experiments" entity="Experiment" compact_view="identifier,experimentType">
@@ -85,7 +76,4 @@
 			<form name="IntstitutePersons" entity="Person" />
 		</form>
 	</menu>
-
-
-
 </molgenis>

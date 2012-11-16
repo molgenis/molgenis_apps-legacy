@@ -411,16 +411,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	private static class JSCategory
 	{
 		private final int id;
+		private final String name;
 		private final String code;
-		private final String label;
 		private final String description;
 
 		public JSCategory(Category category)
 		{
 			this.id = category.getId();
+			this.name = category.getName();
 			this.code = category.getValueCode();
-			this.label = category.getValueLabel();
-			this.description = category.getValueDescription();
+			this.description = category.getDescription();
 		}
 	}
 }
