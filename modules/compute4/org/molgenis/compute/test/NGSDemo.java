@@ -1,5 +1,12 @@
 package org.molgenis.compute.test;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.velocity.util.StringUtils;
 import org.molgenis.compute.commandline.WorksheetHelper;
 import org.molgenis.compute.commandline.options.Options;
@@ -11,16 +18,10 @@ import org.molgenis.compute.test.reader.WorkflowReader;
 import org.molgenis.compute.test.reader.WorkflowReaderDBJPA;
 import org.molgenis.util.Tuple;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 public class NGSDemo
 {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		System.out.println(">> Start..");
 		// Loading workflow with JPA
@@ -28,7 +29,7 @@ public class NGSDemo
 
 		// read a workflow
 		Workflow workflow = reader.getWorkflow("in-house_workflow_realignmentAndSnpCalling.csv");
-        List<ComputeParameter> parameters = reader.getParameters();
+		List<ComputeParameter> parameters = reader.getParameters();
 
 		// Get command line parameters and add them to workflow
 		addCommandLineParameters(args, parameters);
@@ -90,9 +91,8 @@ public class NGSDemo
 		while (it.hasNext())
 		{
 			String name = it.next();
-			parameters.add(
-					createComputeParameter("Mc" + StringUtils.firstLetterCaps(name), opt.getSet().getOption(name)
-							.getResultValue(0)));
+			parameters.add(createComputeParameter("Mc" + StringUtils.firstLetterCaps(name), opt.getSet()
+					.getOption(name).getResultValue(0)));
 		}
 	}
 
