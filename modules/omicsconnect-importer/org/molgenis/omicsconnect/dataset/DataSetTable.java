@@ -38,6 +38,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		this.dataSet = set;
 		if (db == null) throw new TableException("db cannot be null");
 		this.setDb(db);
+		this.setFirstColumnFixed(true);
 	}
 
 	@Override
@@ -53,16 +54,19 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		{
 			// instead ask for protocol.features?
 
-			String sql = "SELECT DISTINCT Characteristic.identifier as name FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
+			String sql = "SELECT DISTINCT Characteristic.identifier as name, Characteristic.name as label FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
 					+ dataSet.getId()
 					+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
 
-			this.columns = new ArrayList<Field>();
-			columns.add(new Field("target"));
+			columns = new ArrayList<Field>();
+			Field targetField = new Field("target");
+			targetField.setLabel("target");
+			columns.add(targetField);
 
 			for (Tuple t : getDb().sql(sql))
 			{
 				Field f = new Field(t.getString("name"));
+				f.setLabel(t.getString("label"));
 				columns.add(f);
 			}
 		}
@@ -283,4 +287,15 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 	{
 		this.db = db;
 	}
+
+	public DataSet getDataSet()
+	{
+		return dataSet;
+	}
+
+	public void setDataSet(DataSet dataSet)
+	{
+		this.dataSet = dataSet;
+	}
+
 }
