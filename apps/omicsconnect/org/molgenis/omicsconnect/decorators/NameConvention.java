@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.molgenis.core.Identifiable;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.observ.Identifiable;
 
 /**
  * This class contains functions to enforce the XGAP naming policy for entities

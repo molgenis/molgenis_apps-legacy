@@ -14,18 +14,23 @@ public class BbmriUpdateDatabase
 		new Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
 
 		Database db = DatabaseFactory.create("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
-
-		// Only add "Margreet Brandsma" user if type of Login allows for this
-		if (!(db.getLogin() instanceof SimpleLogin))
+		try
 		{
-			MolgenisUser u = new MolgenisUser();
-			u.setName("bbmri");
-			u.setPassword("bbmri");
-			u.setSuperuser(true);
-			u.setFirstName("Margreet");
-			u.setLastName("Brandsma");
-			u.setEmail("");
-			db.add(u);
+			// Only add "Margreet Brandsma" user if type of Login allows for
+			// this
+			if (!(db.getLogin() instanceof SimpleLogin))
+			{
+				MolgenisUser u = new MolgenisUser();
+				u.setName("bbmri");
+				u.setPassword("bbmri");
+				u.setSuperuser(true);
+				u.setFirstName("Margreet");
+				u.setLastName("Brandsma");
+				db.add(u);
+			}
+		}
+		finally
+		{
 		}
 
 		// TODO : do batch import

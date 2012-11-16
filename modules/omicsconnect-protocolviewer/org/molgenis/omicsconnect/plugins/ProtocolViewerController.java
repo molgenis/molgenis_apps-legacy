@@ -26,11 +26,10 @@ import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
 import org.molgenis.omicsconnect.EMeasureFeatureWriter;
+import org.molgenis.omicsconnect.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
-
-import app.ui.DataSetViewerPlugin;
 
 import com.google.gson.Gson;
 
@@ -411,16 +410,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	private static class JSCategory
 	{
 		private final int id;
+		private final String name;
 		private final String code;
-		private final String label;
 		private final String description;
 
 		public JSCategory(Category category)
 		{
 			this.id = category.getId();
+			this.name = category.getName();
 			this.code = category.getValueCode();
-			this.label = category.getValueLabel();
-			this.description = category.getValueDescription();
+			this.description = category.getDescription();
 		}
 	}
 }
