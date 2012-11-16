@@ -3,8 +3,6 @@
 <molgenis name="omicsconnect">
 	<plugin name="oc_header" type="org.molgenis.omicsconnect.plugins.header.Header" />
 
-	<!-- plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" 
-		/ -->
 	<menu name="main">
 		<form name="Characteristics" entity="Characteristic" />
 		<form name="Panels" entity="Panel" />
@@ -18,9 +16,6 @@
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 		</form>
-		<!-- <plugin name="DataSetView" type="org.molgenis.omicsconnect.ui.DataSetView" 
-			/> <plugin name="UploadDataSet" type="org.molgenis.omicsconnect.ui.DataSetView" 
-			/> -->
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">
 				<form name="OntologyTerms" entity="OntologyTerm" />

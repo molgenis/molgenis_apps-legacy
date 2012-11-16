@@ -12,7 +12,6 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.gwascentral.Investigation;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
 import org.w3c.dom.Document;
@@ -27,7 +26,6 @@ public class XMLReader
 
 	Node node = null;
 	Database db = null;
-	Investigation inv = null;
 
 	public static void main(String args[])
 	{
@@ -70,16 +68,6 @@ public class XMLReader
 			// Begin transaction if anything goes wrong, can always roll back
 			// and the database won`t be screwed up
 			db.beginTx();
-
-			// Create a investigation for this test
-			this.inv = new Investigation();
-
-			inv.setName("HL7Test");
-
-			if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "HL7Test")).size() == 0)
-			{
-				db.add(inv);
-			}
 
 			// Load the XML file in the memory
 			String path = "/Users/pc_iverson/Desktop/Input/";

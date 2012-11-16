@@ -117,9 +117,9 @@ public class HL7OmicsConnectImporter
 			throws DatabaseException
 	{
 		Category c = new Category();
-		c.setValueLabel(categoryName);
+		c.setName(categoryName);
 		c.setValueCode(codeValue);
-		c.setValueDescription(categoryName);
+		c.setDescription(categoryName);
 		c.setObservableFeature(obsFeature);
 		db.add(c);
 
