@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class WorkflowReaderDBJDBC implements WorkflowReader
 {
-    public Workflow getWorkflow(String name)
+    public Workflow getWorkflow(String name) throws IOException
     {
         Database db = null;
         try
