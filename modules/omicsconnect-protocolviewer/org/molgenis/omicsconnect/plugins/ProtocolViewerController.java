@@ -26,6 +26,7 @@ import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
 import org.molgenis.omicsconnect.EMeasureFeatureWriter;
+import org.molgenis.omicsconnect.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
@@ -201,9 +202,39 @@ public class ProtocolViewerController extends PluginModel<Entity>
 		else if (request.getAction().equals("download_viewer"))
 		{
 			req.getRequest().getSession().setAttribute("selectedObservableFeatures", features);
-			response.sendRedirect(req.getAppLocation() + "/molgenis.do?__target=main&select=DataSetViewer");
+
+			String dataSetViewerName = this.getDataSetViewerName();
+			if (dataSetViewerName != null)
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.append(req.getAppLocation());
+				sb.append("/molgenis.do?__target=").append(dataSetViewerName);
+				sb.append("&select=").append(dataSetViewerName);
+				sb.append("&__action=selectDataSet");
+				sb.append("&dataSetId=").append(dataSetId);
+				response.sendRedirect(sb.toString());
+			}
 		}
 
+	}
+
+	/*
+	 * Find the name of the DataSetViewer for user in a url. For now if there
+	 * are multiple DataSetViewers it returns the first Returns null if not
+	 * found
+	 */
+	private String getDataSetViewerName()
+	{
+		ScreenController<?> menu = getParent();
+		for (ScreenController<?> controller : menu.getAllChildren())
+		{
+			if (controller instanceof DataSetViewerPlugin)
+			{
+				return controller.getName();
+			}
+		}
+
+		return null;
 	}
 
 	// TODO reload should throw DatabaseException
@@ -379,16 +410,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	private static class JSCategory
 	{
 		private final int id;
+		private final String name;
 		private final String code;
-		private final String label;
 		private final String description;
 
 		public JSCategory(Category category)
 		{
 			this.id = category.getId();
+			this.name = category.getName();
 			this.code = category.getValueCode();
-			this.label = category.getValueLabel();
-			this.description = category.getValueDescription();
+			this.description = category.getDescription();
 		}
 	}
 }
