@@ -23,9 +23,9 @@
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 		</form>
-		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omicsconnect.plugins.ProtocolViewerController" />
-		<plugin name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
-		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omicsconnect.plugins.ImportWizardController" />
+		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
+		<plugin name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
+		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
 		<menu name="Lookups">
 			<form name="Ontologies" entity="Ontology">
 				<form name="OntologyTerms" entity="OntologyTerm" />
