@@ -181,7 +181,7 @@ It should be used via 'import' plus passing of properties
 			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
 			<classpath location="${cb.instrument.dir}" />
 			<classpath refid="combined.class.path"/>
-		<!--  -<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" /> -->
+			<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" />
 			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
 			<jvmarg value="-noverify" />
 			<jvmarg value="-ea" />
