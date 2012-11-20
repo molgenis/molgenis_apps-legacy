@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +58,7 @@ public class Harmonization extends PluginModel<Entity>
 	private int loadingProcess = 0;
 	private BioportalOntologyService os = null;
 	private catalogueTreeComponent catalogue = null;
-	private List<Measurement> measurementsInStudy = null;
+	private HashMap<String, Measurement> measurementsInStudy = null;
 	private List<String> listOfPredictionModels = new ArrayList<String>();
 	private List<String> listOfCohortStudies = new ArrayList<String>();
 	private List<String> reservedInv = new ArrayList<String>();
@@ -405,8 +406,13 @@ public class Harmonization extends PluginModel<Entity>
 									mapping.getFeature_Name());
 						}
 
-						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
-								Operator.EQUALS, validationStudy));
+						measurementsInStudy = new HashMap<String, Measurement>();
+
+						for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+								Operator.EQUALS, validationStudy)))
+						{
+							measurementsInStudy.put(m.getName(), m);
+						}
 
 						if (measurementsInStudy.size() > 0)
 						{
@@ -421,7 +427,6 @@ public class Harmonization extends PluginModel<Entity>
 				}
 				else if ("download_json_loadMappingResult".equals(request.getAction()))
 				{
-
 					List<String> keys = new ArrayList<String>(predictors.keySet());
 
 					String eachKey = keys.get(loadingProcess);
@@ -433,9 +438,10 @@ public class Harmonization extends PluginModel<Entity>
 					// Set description to the mapped variables
 					if (predictor.getFinalMappings().size() > 0)
 					{
-						for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
-								predictor.getFinalMappings())))
+						for (String mappedVariable : predictor.getFinalMappings())
 						{
+							Measurement m = measurementsInStudy.get(mappedVariable);
+
 							predictor.setDescription(m.getName(), m.getDescription());
 						}
 					}
@@ -454,7 +460,29 @@ public class Harmonization extends PluginModel<Entity>
 
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
 
-					executeMapping(predictor, measurementsInStudy);
+					MappingList mappings = new MappingList();
+
+					List<Measurement> measurements = new ArrayList<Measurement>(measurementsInStudy.values());
+
+					List<Thread> lists = new ArrayList<Thread>();
+
+					for (String eachQuery : predictor.getExpandedQuery())
+					{
+						final SingleThread singleThread = new SingleThread(model, eachQuery, mappings, measurements);
+
+						Thread thread = new Thread(singleThread);
+						thread.start();
+						lists.add(thread);
+					}
+
+					for (Thread singleThread : lists)
+					{
+						singleThread.join();
+					}
+
+					System.out.println("All the threads are done!");
+
+					predictor.setMappings(mappings);
 
 					String mappingResult = makeMappingTable(predictor);
 
@@ -874,90 +902,45 @@ public class Harmonization extends PluginModel<Entity>
 		}
 	}
 
-	private void executeMapping(PredictorInfo predictor, List<Measurement> measurementsInStudy) throws Exception
+	private synchronized void executeMapping(LevenshteinDistanceModel model, String eachQuery, MappingList mappings,
+			List<Measurement> measurementsInStudy) throws Exception
 	{
-		MappingList mappings = new MappingList();
+		List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
 
-		for (String eachQuery : predictor.getExpandedQuery())
+		for (Measurement m : measurementsInStudy)
 		{
-			double maxSimilarity = 0;
+			List<String> fields = new ArrayList<String>();
 
-			String matchedDataItem = "";
-
-			String measurementName = "";
-
-			List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
-
-			for (Measurement m : measurementsInStudy)
+			if (m.getDescription() != null && !StringUtils.isEmpty(m.getDescription()))
 			{
-				List<String> fields = new ArrayList<String>();
+				fields.add(m.getDescription());
 
-				if (m.getDescription() != null && !m.getDescription().equals(""))
+				StringBuilder combinedString = new StringBuilder();
+
+				if (m.getCategories_Name().size() > 0)
 				{
-					fields.add(m.getDescription());
-
-					StringBuilder combinedString = new StringBuilder();
-
-					if (m.getCategories_Name().size() > 0)
+					for (String categoryName : m.getCategories_Name())
 					{
-						for (String categoryName : m.getCategories_Name())
-						{
-							combinedString.delete(0, combinedString.length());
+						combinedString.delete(0, combinedString.length());
 
-							combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(" ")
-									.append(m.getDescription());
+						combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(" ")
+								.append(m.getDescription());
 
-							fields.add(combinedString.toString().replaceAll("_", " "));
-						}
+						fields.add(combinedString.toString().replaceAll("_", " "));
 					}
-				}
-
-				for (String question : fields)
-				{
-					List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
-
-					double similarity = model.calculateScore(dataItemTokens, tokens);
-
-					if (m.getDescription() != null)
-					{
-						matchedDataItem = m.getDescription();
-					}
-					else
-					{
-						matchedDataItem = question;
-					}
-
-					mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()),
-							similarity, m.getName());
-					// if (similarity > maxSimilarity)
-					// {
-					// if (m.getDescription() != null)
-					// {
-					// matchedDataItem = m.getDescription();
-					// }
-					// else
-					// {
-					// matchedDataItem = question;
-					// }
-					// maxSimilarity = similarity;
-					//
-					// measurementName = m.getName();
-					// }
-					//
-					// if (question.toLowerCase().matches(".*" +
-					// eachQuery.toLowerCase() + ".*"))
-					// {
-					// mappings.add(eachQuery, (m.getDescription() == null ?
-					// m.getName() : m.getDescription()),
-					// model.calculateScore(dataItemTokens, tokens),
-					// m.getName());
-					// }
 				}
 			}
-			mappings.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);
-		}
 
-		predictor.setMappings(mappings);
+			for (String question : fields)
+			{
+				List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
+
+				double similarity = model.calculateScore(dataItemTokens, tokens);
+
+				mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()), similarity,
+						m.getName());
+			}
+		}
 	}
 
 	private List<String> expandByPotentialBuildingBlocks(String predictorLabel, BioportalOntologyService os)
@@ -1266,5 +1249,36 @@ public class Harmonization extends PluginModel<Entity>
 	public List<String> getListOfCohortStudies()
 	{
 		return listOfCohortStudies;
+	}
+
+	class SingleThread implements Runnable
+	{
+		private LevenshteinDistanceModel model;
+		private MappingList mappings;
+		private String eachQuery;
+		private List<Measurement> measurementsInStudy;
+
+		public SingleThread(LevenshteinDistanceModel model, String eachQuery, MappingList mappings,
+				List<Measurement> measurementsInStudy) throws InterruptedException
+		{
+			this.model = model;
+			this.eachQuery = eachQuery;
+			this.mappings = mappings;
+			this.measurementsInStudy = measurementsInStudy;
+		}
+
+		@Override
+		public void run()
+		{
+			try
+			{
+				executeMapping(model, eachQuery, mappings, measurementsInStudy);
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
