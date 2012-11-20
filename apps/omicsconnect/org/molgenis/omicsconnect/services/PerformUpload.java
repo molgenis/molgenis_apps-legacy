@@ -8,9 +8,10 @@ import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
-import org.molgenis.omicsconnect.decorators.MolgenisFileHandler;
-import org.molgenis.omicsconnect.decorators.NameConvention;
+import org.molgenis.omx.decorators.MolgenisFileHandler;
+import org.molgenis.omx.decorators.NameConvention;
 import org.molgenis.util.ValueLabel;
+
 
 public class PerformUpload
 {
