@@ -466,21 +466,35 @@ public class Harmonization extends PluginModel<Entity>
 
 					List<Thread> lists = new ArrayList<Thread>();
 
-					for (String eachQuery : predictor.getExpandedQuery())
+					List<String> expandedQueries = predictor.getExpandedQuery();
+
+					int size = expandedQueries.size();
+
+					for (int i = 0; i <= size / 500; i++)
 					{
-						final SingleThread singleThread = new SingleThread(model, eachQuery, mappings, measurements);
+						int lowerLimit = i * 500;
 
-						Thread thread = new Thread(singleThread);
-						thread.start();
-						lists.add(thread);
+						int upperLimit = (i == size / 500 ? size : (i + 1) * 500);
+
+						for (String eachQuery : expandedQueries.subList(lowerLimit, upperLimit))
+						{
+							final SingleThread singleThread = new SingleThread(model, eachQuery, mappings, measurements);
+
+							Thread thread = new Thread(singleThread);
+
+							thread.start();
+
+							lists.add(thread);
+						}
+
+						for (Thread singleThread : lists)
+						{
+							singleThread.join();
+						}
+
+						System.out.println("All the threads are done!");
+
 					}
-
-					for (Thread singleThread : lists)
-					{
-						singleThread.join();
-					}
-
-					System.out.println("All the threads are done!");
 
 					predictor.setMappings(mappings);
 
