@@ -230,6 +230,12 @@ public class Stress_XqtlTestNG_IGNORED
 						testCompletedSuccessfully.setVal(false);
 						assertFails.setVal(assertFails.getVal() + 1);
 					}
+					catch (IOException ie)
+					{
+						ie.printStackTrace();
+						testCompletedSuccessfully.setVal(false);
+						assertFails.setVal(assertFails.getVal() + 1);
+					}
 				}
 			};
 			Thread thread = new Thread(runnable);
@@ -319,7 +325,7 @@ class queryMarkers
 		this.ds = ds;
 	}
 
-	public void queryAndAssert() throws SQLException, DatabaseException, AssertionError
+	public void queryAndAssert() throws SQLException, DatabaseException, AssertionError, IOException
 	{
 		// get a fresh database connection for each batch of queries
 		Database db = getDatabase();
