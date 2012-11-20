@@ -156,8 +156,16 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 	public ScreenView getView()
 	{
 		MolgenisForm view = new MolgenisForm(this);
-		view.add(dataSetChooser);
-		view.add(tableView);
+
+		if (dataSetChooser != null)
+		{
+			view.add(dataSetChooser);
+		}
+
+		if (tableView != null)
+		{
+			view.add(tableView);
+		}
 
 		return view;
 	}

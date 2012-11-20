@@ -33,7 +33,7 @@ public class DataSetChooser extends HtmlWidget
 		StringBuilder sb = new StringBuilder();
 		sb.append("<div class='row-fluid grid'>");
 		sb.append("<div class='span2'><label>Choose a dataset:</label></div>");
-		sb.append("<div class='btn-group btn-datasets' data-toggle='buttons-radio'>");
+		sb.append("<div class='btn-group' data-toggle='buttons-radio'>");
 		for (DataSet ds : dataSets)
 		{
 			if ((selectedDataSetId != null) && ds.getId().equals(selectedDataSetId))
@@ -52,7 +52,6 @@ public class DataSetChooser extends HtmlWidget
 		sb.append("</div>");
 		sb.append("</div>");
 		sb.append("<script type='text/javascript'>");
-		sb.append("$(function() {$('.btn').button(); $('.btn [value=" + selectedDataSetId + "]').click();});");
 		sb.append("$('input[name=__action]').val('selectDataSet')");
 		sb.append("</script>");
 
