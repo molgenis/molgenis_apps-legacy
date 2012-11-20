@@ -7,15 +7,10 @@
 		<plugin name="Pubmed"
 			type="org.molgenis.omicsconnect.plugins.pubmed.PubMedLookup" />
 		<plugin name="OntoCat"
-			type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat" />
-		
-		
-		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omicsconnect.plugins.ProtocolViewerController" />
-		<plugin label="DataSet viewer" name="DataSetViewerPlugin" type="org.molgenis.omicsconnect.dataset.DataSetViewerPlugin"/>
-		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omicsconnect.plugins.ImportWizardController" />
-
-		
-		
+			type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat" />		
+		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
+		<plugin name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
+		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
 		<menu name="AdminPanels">
 			<menu name ="Characteristics">
 				<form name="Characteristic" entity="Characteristic" />
