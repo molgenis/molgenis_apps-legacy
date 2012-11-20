@@ -14,9 +14,7 @@
 				<menu name="InvestigationMenu">
 					<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
 					<form name="computeProtocol" entity="ComputeProtocol" label="Compute protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter" />
-					<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
-						<form name="ProtocolDocuments" entity="ProtocolDocument" />
-					</form>
+					<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter" />
 					<form name="observationTarget" entity="ObservationTarget" label="Targets" />
 					<form name="observedValue" entity="ObservedValue" label="Values"/>
 					<form name="studyDescription" entity="StudyDescription" label="Study description"/>
