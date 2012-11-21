@@ -11,9 +11,11 @@ public class BbmriUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
+
 		new Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
 
 		Database db = DatabaseFactory.create("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
+
 		try
 		{
 			// Only add "Margreet Brandsma" user if type of Login allows for
@@ -26,13 +28,16 @@ public class BbmriUpdateDatabase
 				u.setSuperuser(true);
 				u.setFirstName("Margreet");
 				u.setLastName("Brandsma");
+				u.setEmail("m.brandsma@bbmri.nl");
 				db.add(u);
 			}
 		}
 		finally
 		{
+			db.close();
 		}
 
-		// TODO : do batch import
+		BBmriFillPermission.fillPermission(db);
+
 	}
 }
