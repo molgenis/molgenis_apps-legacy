@@ -194,7 +194,7 @@ function clearSearch() {console.log("clear");
 		if(node.li) node.li.hidden = false;
 		if(node.ul) node.ul.hidden = false;
 	    node.expand(false);
-	});
+	}, true);
 	root.expand(true);
 	
 	// display selected nodes
@@ -227,21 +227,25 @@ function searchProtocol(protocol, regexp, hits) {
 }
 
 function matchProtocol(protocol, regexp) {
-	return protocol.name && protocol.name.search(regexp) != -1;
+	if(protocol.name && protocol.name.search(regexp) != -1)
+		return true;
+	else if(protocol.description && protocol.description.search(regexp) != -1)
+		return true;
+	return false;
 }
 
 function matchFeature(feature, regexp) {
 	if(feature.name && feature.name.search(regexp) != -1)
 		return true;
-	if(feature.description && feature.description.search(regexp) != -1)
+	else if(feature.description && feature.description.search(regexp) != -1)
 		return true;
-	
-	if(feature.categories) {
+	else if(feature.categories) {
 		$.each(feature.categories, function(i, category) {
 			if(matchCategory(category, regexp))
 				return true;
 		});
 	}
+	return false;
 }
 
 function matchCategory(category, regexp) {
@@ -249,6 +253,7 @@ function matchCategory(category, regexp) {
 		return true;
 	if(category.label && category.label.search(regexp) != -1)
 		return true;
+	return false;
 }
 
 function showNodes(node, keys) {
