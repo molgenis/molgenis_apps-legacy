@@ -45,11 +45,6 @@
 					<div class="span4">
 						<p class="box-title">Browse variables</p>
 						<div class="input-append">
-							<select class="span1" id="search-filter">
-								<option value="filter_all" selected>All</option>
-								<option value="filter_protocols">Protocols</option>
-								<option value="filter_variables">Variables</option>
-							</select>
 							<input id="search-text" type="text" title="Enter your search term">
 							<button class="btn" type="button" id="search-button">Search</button>
 							<button class="btn" type="button" id="search-clear-button">Clear</button>
