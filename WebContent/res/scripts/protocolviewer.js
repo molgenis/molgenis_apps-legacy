@@ -174,7 +174,7 @@ function getSelectedFeaturesURL(format) {
 	return 'molgenis.do?__target=ProtocolViewer&__action=download_' + format + '&datasetid=' + id + '&features=' + features.join();
 }
 
-function processSearch(query) {console.log("search");
+function processSearch(query) {
 	if(query) {
 		var dataSets = $(document).data('datasets');
 		var dataSet = dataSets[dataSets.selected];
@@ -239,11 +239,14 @@ function matchFeature(feature, regexp) {
 		return true;
 	else if(feature.description && feature.description.search(regexp) != -1)
 		return true;
+	else if(feature.dataType && feature.dataType.search(regexp) != -1)
+		return true;
 	else if(feature.categories) {
-		$.each(feature.categories, function(i, category) {
-			if(matchCategory(category, regexp))
+		for(var i = 0; i < feature.categories.length; ++i) {
+			if(matchCategory(feature.categories[i], regexp))
 				return true;
-		});
+		}
+		
 	}
 	return false;
 }
@@ -251,8 +254,10 @@ function matchFeature(feature, regexp) {
 function matchCategory(category, regexp) {
 	if(category.description && category.description.search(regexp) != -1)
 		return true;
-	if(category.label && category.label.search(regexp) != -1)
-		return true;
+	else if(category.name && category.name.search(regexp) != -1)
+		return true;	
+	else if(category.code && category.code.search(regexp) != -1)	
+		return true;	
 	return false;
 }
 
