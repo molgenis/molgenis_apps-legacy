@@ -194,7 +194,7 @@ function clearSearch() {console.log("clear");
 		if(node.li) node.li.hidden = false;
 		if(node.ul) node.ul.hidden = false;
 	    node.expand(false);
-	});
+	}, true);
 	root.expand(true);
 	
 	// display selected nodes
