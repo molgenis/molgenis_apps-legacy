@@ -165,7 +165,7 @@ function updateFeatureSelection(tree) {
 }
 
 function getSelectedFeaturesURL(format) {
- 	var tree = $('#dataset-browser').dynatree("getTree");;
+ 	var tree = $('#dataset-browser').dynatree('getTree');
 	var features = $.map(tree.getSelectedNodes(), function(node){
         return node.data.isFolder ? null : node.data.key;
     });
@@ -174,49 +174,78 @@ function getSelectedFeaturesURL(format) {
 	return 'molgenis.do?__target=ProtocolViewer&__action=download_' + format + '&datasetid=' + id + '&features=' + features.join();
 }
 
-function processSearch(query) {
+function processSearch(query) {console.log("search");
 	if(query) {
-		var dataSet = $(document).data('datasets').selected;
+		var dataSets = $(document).data('datasets');
+		var dataSet = dataSets[dataSets.selected];
 		if(dataSet && dataSet.protocol) {
-			searchProtocol(dataSet.protocol, new RegExp(query, 'i'));
+			var hits = [];
+			searchProtocol(dataSet.protocol, new RegExp(query, 'i'), hits);
+			showNodes($("#dataset-browser").dynatree("getRoot"), hits);
 		}
 	}
 }
 
-function searchProtocol(protocol, regexp) {
+function clearSearch() {console.log("clear");
+	var root = $("#dataset-browser").dynatree("getRoot");
+	
+	// reset to initial display
+	root.visit(function(node){
+		if(node.li) node.li.hidden = false;
+		if(node.ul) node.ul.hidden = false;
+	    node.expand(false);
+	}, true);
+	root.expand(true);
+	
+	// display selected nodes
+	var nodes = root.tree.getSelectedNodes();
+	for (var i = 0; i < nodes.length; i++) {
+		var node = nodes[i];
+		while(node.parent) {
+			node.parent.expand(true);
+			node = node.parent;
+		}
+	}
+}
+
+function searchProtocol(protocol, regexp, hits) {
 	if(matchProtocol(protocol, regexp))
-		console.log("found protocol: " + protocol.name);
+		hits.push(protocol.id);
 	
 	if(protocol.features) {
 		$.each(protocol.features, function(i, feature) {
 			if(matchFeature(feature, regexp))
-				console.log("found feature: " + feature.name);
+				hits.push(feature.id);
 		});
 	}
 	
 	if(protocol.subProtocols) {
 		$.each(protocol.subProtocols, function(i, subProtocol) {
-			searchProtocol(subProtocol, regexp);
+			searchProtocol(subProtocol, regexp, hits);
 		});
 	}
 }
 
 function matchProtocol(protocol, regexp) {
-	return protocol.name && protocol.name.search(regexp) != -1;
+	if(protocol.name && protocol.name.search(regexp) != -1)
+		return true;
+	else if(protocol.description && protocol.description.search(regexp) != -1)
+		return true;
+	return false;
 }
 
 function matchFeature(feature, regexp) {
 	if(feature.name && feature.name.search(regexp) != -1)
 		return true;
-	if(feature.description && feature.description.search(regexp) != -1)
+	else if(feature.description && feature.description.search(regexp) != -1)
 		return true;
-	
-	if(feature.categories) {
+	else if(feature.categories) {
 		$.each(feature.categories, function(i, category) {
 			if(matchCategory(category, regexp))
-				console.log("found category: " + category);
+				return true;
 		});
 	}
+	return false;
 }
 
 function matchCategory(category, regexp) {
@@ -224,4 +253,20 @@ function matchCategory(category, regexp) {
 		return true;
 	if(category.label && category.label.search(regexp) != -1)
 		return true;
+	return false;
+}
+
+function showNodes(node, keys) {
+	node.expand(true);
+	var match = $.inArray(parseInt(node.data.key), keys) != -1; 
+	if(node.childList) {
+		for (var i = 0; i < node.childList.length; i++) {
+			match = match | showNodes(node.childList[i], keys);
+		}
+	}
+	if(!match) {
+		if(node.li) node.li.hidden = true;
+		else if(node.ul) node.ul.hidden = true;
+	}
+	return match;
 }
