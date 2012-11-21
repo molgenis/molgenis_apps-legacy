@@ -45,8 +45,6 @@ import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
-//import plugins.autohidelogin.AutoHideLoginModel; 
-
 public class Harmonization extends EasyPluginController<HarmonizationModel>
 {
 	private static final long serialVersionUID = 4255876428416189905L;
@@ -926,15 +924,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			SimpleTrigger trigger = new SimpleTrigger(triggerName.append(predictor.getLabel()).append("_trigger")
 					.toString(), this.getModel().getScheduler().DEFAULT_GROUP, new Date(), null, 0, 0);
 
-			// StringMatchingJobListener listener = new
-			// StringMatchingJobListener(listenerName
-			// .append(predictor.getLabel()).append("_listener").toString(),
-			// predictor);
-
-			// this.getModel().getScheduler().addJobListener(listener);
-			//
-			// job.addJobListener(listener.getName());
-
 			this.getModel().getScheduler().scheduleJob(job, trigger);
 		}
 
@@ -948,17 +937,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 10L * 1000L);
 
 		this.getModel().getScheduler().scheduleJob(monitor, trigger);
-
-		// String mappingResult = makeMappingTable(predictor);
-
-		// String existingMapping = makeExistingMappingTable(predictor);
-
-		// status.put("label", predictor.getLabel());
-		// status.put("mappingResult", mappingResult);
-		// status.put("identifier", predictor.getName());
-		// status.put("existingMapping", existingMapping);
-		// status.put("loadingProcess", loadingProcess);
-		// status.put("total", predictors.size());
 	}
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
