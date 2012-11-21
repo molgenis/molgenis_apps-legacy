@@ -99,6 +99,10 @@ public class PilotService implements MolgenisService
 				request.getDatabase().update(task);
                 request.getDatabase().commitTx();
 			}
+            else
+            {
+                System.out.println("something is wrong");
+            }
 		}
 
         try
