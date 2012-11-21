@@ -197,6 +197,12 @@ It should be used via 'import' plus passing of properties
 		</junitreport-->
 
 	</target>
+	
+	<!-- add robots.txt to webcontent folder, blocking all non-malicious webcrawlers - you can add this optionally to your build script! -->
+	<target name="add_robotstxt">
+		<echo>Adding WebContent/robots.txt to block webcrawlers..</echo>
+		<echo file="WebContent/robots.txt" append="false">User-agent: *${line.separator}Disallow: /${line.separator}</echo>
+	</target>
 
 	<!-- findbugs -->
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="molgenis.classpath"/>
