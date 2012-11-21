@@ -9,32 +9,29 @@
 	<input type="hidden" name="__action" id="test" value="">
 
 	<div class="formscreen">
-		
 		<div class="form_header" id="${screen.name}">
 			${screen.label}
 		</div>
-		
-		<#--optional: mechanism to show messages-->
-		<#list screen.getMessages() as message>
-			<#if message.success>
+	<#-- optional: mechanism to show messages -->
+	<#list screen.getMessages() as message>
+		<#if message.success>
 		<p class="successmessage">${message.text}</p>
-			<#else>
+		<#else>
 		<p class="errormessage">${message.text}</p>
-			</#if>
-		</#list>
-		
+		</#if>
+	</#list>
 		<div class="screenbody" id="container-plugin">
 			<div class="screenpadding">
+			<#if (model.dataSets?size == 0)>
+				<span>No available catalogs</span>
+			<#else>
 				<div class="row-fluid grid">
-					<div class="span2">						
-						<#if (model.dataSets?size == 0)>
-						<span>No available catalogs</span>
-						<#else>
+					<div class="span2">
 						<label>Choose a catalog:</label>
 					</div>
 					<div class="btn-group btn-datasets" data-toggle="buttons-radio">
 					<#list model.dataSets as dataSet>
-					<button class="btn" id="dataset${dataSet.id}">${dataSet.name}</button>
+						<button class="btn" id="dataset${dataSet.id}">${dataSet.name}</button>
 					</#list>
 					</div>
 					<#-- store dataset ids with dataset input elements -->
@@ -43,7 +40,6 @@
 	 					for(i in ids)
 	 						$('#dataset' + ids[i]).data('id', ids[i]);
 					</script>
-					</#if>
 				</div>	
 				<div class="row-fluid grid">
 					<div class="span4">
@@ -62,22 +58,21 @@
 						</div>
 					</div>
 	  				<div class="span8">
-	  						<div class="row-fluid grid" id="feature-information">
-		  						<p class="box-title">Description</p>
-								<div id="feature-details">
-								</div>
+  						<div class="row-fluid grid" id="feature-information">
+	  						<p class="box-title">Description</p>
+							<div id="feature-details">
 							</div>
-							<div class="row-fluid grid" id="feature-shopping">
-			  					<p class="box-title">Your selection</p>
-								<div id="feature-selection">
-								</div>
-								<div id="download-controls">
-									<button class="btn" id="download-xls-button">Download as Excel</button>
-									<button class="btn" id="download-emeasure-button">Download as eMeasure</button>
-									<button class="btn" id="view-features-button">View</button>
-								</div>
-			  				</div>
-	  					
+						</div>
+						<div class="row-fluid grid" id="feature-shopping">
+		  					<p class="box-title">Your selection</p>
+							<div id="feature-selection">
+							</div>
+							<div id="download-controls">
+								<button class="btn" id="download-xls-button">Download as Excel</button>
+								<button class="btn" id="download-emeasure-button">Download as eMeasure</button>
+								<button class="btn" id="view-features-button">View</button>
+							</div>
+		  				</div>
 	  				</div>
 				</div>
  				<script type="text/javascript"> 					
@@ -90,7 +85,7 @@
  					$("#search-text").keyup(function(e){
  						e.preventDefault();
 					    if(e.keyCode == 13) // enter
-					        $("#search-button").click();
+					        {$("#search-button").click(); console.log(e);}
 					});
  					
  					$('#search-button').click(function(e) {
@@ -100,7 +95,7 @@
  					
  					$('#search-clear-button').click(function(e) {
  						e.preventDefault();
- 						console.log("todo: implement clear search");
+ 						clearSearch();
  					});
  					
  					$('#download-xls-button').click(function(e) {
@@ -120,11 +115,20 @@
  					
  					// on ready
 					$(function() {
+						// prevent user form submission by pressing enter
+					    $(window).keydown(function(e){
+					      if(e.keyCode == 13) {
+					        e.preventDefault();
+					        return false;
+					      }
+					    });
+					    
 						$('.btn').button();
 						// select first dataset
 						$('.btn-datasets button').first().click();
 					});
  				</script>
+ 			</#if>
 			</div>
 		</div>
 	</div>
