@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.framework.db.CsvToDatabase.ImportResult;
+
 /**
  * Import wizard model
  */
@@ -22,6 +24,7 @@ public class ImportWizard
 	private String successMessage;// Success message are shown in green (on the
 									// next page)
 	private File file;
+	private ImportResult importResult;
 
 	private Map<String, Boolean> entitiesImportable;
 	private Map<String, Boolean> dataImportable;
@@ -77,6 +80,16 @@ public class ImportWizard
 	public void setFile(File file)
 	{
 		this.file = file;
+	}
+
+	public ImportResult getImportResult()
+	{
+		return importResult;
+	}
+
+	public void setImportResult(ImportResult importResult)
+	{
+		this.importResult = importResult;
 	}
 
 	public void addPage(WizardPage page)
