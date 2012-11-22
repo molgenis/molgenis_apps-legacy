@@ -210,7 +210,10 @@ public class PlinkDownload extends EasyPluginController
 				this.setError("Something went wrong while writing the entries: " + e.getMessage());
 				return;
 			} finally {
-				ffw.close();
+				try {
+					ffw.close();
+				} catch(IOException e) {
+				}
 			}
 			
 

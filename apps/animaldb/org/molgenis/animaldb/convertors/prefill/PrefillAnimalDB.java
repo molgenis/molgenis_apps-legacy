@@ -245,7 +245,7 @@ public class PrefillAnimalDB
 		for (Tuple tuple : reader)
 		{
 			@SuppressWarnings("unchecked")
-			List<String> measurementNameList = (List<String>) tuple.getList("measurements", ",");
+			List<String> measurementNameList = (List<String>) tuple.getList("measurements", ',');
 			protocolsToAddList.add(ct.createProtocol(invName, tuple.getString("name"), tuple.getString("description"),
 					measurementNameList));
 		}
