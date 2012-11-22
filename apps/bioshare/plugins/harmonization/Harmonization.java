@@ -499,7 +499,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					Measurement m = this.getModel().getMeasurements().get(measurementName);
 
 					this.getModel().getPredictors().get(predictorName.toString().replaceAll(" ", "_"))
-							.getFinalMappings().remove(m);
+							.getFinalMappings().remove(m.getName());
 
 					MappingMeasurement mapping = queryForMapping.find().get(0);
 
@@ -523,6 +523,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 								new QueryRule(Measurement.NAME, Operator.EQUALS, identifier)).get(0);
 
 						validationStudyProtocol.getFeatures_Id().remove(derivedPredictor.getId());
+
+						validationStudyProtocol.getFeatures_Name().remove(derivedPredictor.getName());
 
 						if (validationStudyProtocol.getFeatures_Id().size() == 0)
 						{
@@ -643,22 +645,11 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			if ("loadMapping".equals(request.getAction()))
 			{
-				if (this.getModel().getScheduler() == null || !this.getModel().getScheduler().getMetaData().isStarted())
+				if (this.getModel().getScheduler() == null || this.getModel().getScheduler().isShutdown())
 				{
 					String validationStudy = request.getString("listOfCohortStudies");
 
 					System.out.println(validationStudy);
-
-					// clear the old variable content
-					this.getModel().setCatalogue(null);
-
-					this.getModel().setMeasurements(null);
-
-					this.getModel().getPredictionModels().clear();
-
-					this.getModel().getValidationStudies().clear();
-
-					this.getModel().getPredictors().clear();
 
 					stringMatching(request, db);
 
@@ -901,6 +892,12 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		String predictionModel = request.getString("selectPredictionModel");
 
 		String validationStudy = request.getString("listOfCohortStudies");
+
+		this.getModel().setCatalogue(null);
+
+		this.getModel().setMeasurements(null);
+
+		this.getModel().getPredictors().clear();
 
 		this.getModel().setSelectedPredictionModel(predictionModel);
 
