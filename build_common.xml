@@ -112,6 +112,11 @@ It should be used via 'import' plus passing of properties
 			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
+		
+		<!-- copy source.R from generated to build -->
+		<copy todir="${build.molgenis_apps.dir}" verbose="true">
+			<fileset dir="${output_src}" includes="**/*.R" />
+		</copy>
 
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
 		<antcall target="copy-persistence.xml" />

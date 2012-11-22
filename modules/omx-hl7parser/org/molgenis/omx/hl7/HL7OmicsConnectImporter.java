@@ -113,11 +113,12 @@ public class HL7OmicsConnectImporter
 
 	}
 
-	private void makeCategory(Database db, ObservableFeature obsFeature, String categoryName, String codeValue)
-			throws DatabaseException
+	private void makeCategory(Database db, ObservableFeature obsFeature, String categoryName, String codeValue,
+			int teller) throws DatabaseException
 	{
 		Category c = new Category();
 		c.setName(categoryName);
+		c.setIdentifier(obsFeature.getName() + "_" + categoryName + "_" + teller);
 		c.setValueCode(codeValue);
 		c.setDescription(categoryName);
 		c.setObservableFeature(obsFeature);
@@ -192,7 +193,7 @@ public class HL7OmicsConnectImporter
 			Protocol protocol = makeProtocol(db, dataset, "stageCatalogue");
 
 			HashMap<String, HL7ValueSetLRA> hashValueSetLRA = ll.getHashValueSetLRA();
-
+			int teller = 0;
 			List<Protocol> uniqueProtocol = new ArrayList<Protocol>();
 			List<String> uniqueListOfProtocolName = new ArrayList<String>();
 
@@ -232,10 +233,10 @@ public class HL7OmicsConnectImporter
 
 						for (HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers())
 						{
-
+							teller++;
 							String codeValue = eachAnswer.getCodeValue();
 							String categoryName = eachAnswer.getName().trim().toLowerCase();
-							makeCategory(db, feat, categoryName, codeValue);
+							makeCategory(db, feat, categoryName, codeValue, teller);
 						}
 					}
 				}
