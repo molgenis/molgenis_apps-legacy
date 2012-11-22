@@ -31,12 +31,12 @@
 					</div>
 					<div class="btn-group btn-datasets" data-toggle="buttons-radio">
 					<#list model.dataSets as dataSet>
-						<button class="btn" id="dataset${dataSet.id}">${dataSet.name}</button>
+						<button class="btn" id="dataset${dataSet.id?c}">${dataSet.name}</button>
 					</#list>
 					</div>
 					<#-- store dataset ids with dataset input elements -->
 					<script type="text/javascript">
-						var ids = [<#list model.dataSets as dataset>${dataset.id}<#if (dataset_has_next)>, </#if></#list>];
+						var ids = [<#list model.dataSets as dataset>${dataset.id?c}<#if (dataset_has_next)>, </#if></#list>];
 	 					for(i in ids)
 	 						$('#dataset' + ids[i]).data('id', ids[i]);
 					</script>
