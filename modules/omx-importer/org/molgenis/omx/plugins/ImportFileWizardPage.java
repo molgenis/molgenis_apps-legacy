@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.omx.dataset.DataSetImporter;
@@ -42,7 +43,9 @@ public class ImportFileWizardPage extends WizardPage
 			if (entityDbAction == null) throw new IOException("unknown database action: " + entityAction);
 
 			// import entities
-			ExcelImport.importAll(importWizard.getFile(), db, new SimpleTuple(), null, entityDbAction, "", true);
+			ImportResult importResult = ExcelImport.importAll(importWizard.getFile(), db, new SimpleTuple(), null,
+					entityDbAction, "", true);
+			getWizard().setImportResult(importResult);
 
 			// import dataset instances
 			if (importWizard.getDataImportable() != null)
