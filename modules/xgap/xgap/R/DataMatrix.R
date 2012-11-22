@@ -127,6 +127,11 @@ downloadmatrixascsv<-function(id=NULL)
 	return(data)
 }
 
+download.data <- function(id=NULL, timeout = 1800000)
+{
+	downloadmatrixascsvCURL(id, timeout)
+}
+
 downloadmatrixascsvCURL <- function(id=NULL, timeout = 1800000)
 {
 	myOpts = curlOptions(timeout.ms = timeout, verbose=TRUE)
