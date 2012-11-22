@@ -56,6 +56,23 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	}
 
 	@Override
+	public String getCustomHtmlHeaders()
+
+	{
+
+		StringBuilder s = new StringBuilder();
+
+		s.append("<link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.min.css\" type=\"text/css\" />");
+
+		s.append("<link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.css\" type=\"text/css\" />");
+
+		s.append("<script type=\"text/javascript\" src=\"bootstrap/js/bootstrap.min.js\"></script>");
+
+		return s.toString();
+
+	}
+
+	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (out == null)
@@ -582,6 +599,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 					status.put("treeView", this.getModel().getCatalogue().getTreeView());
 				}
+				else if ("download_json_existingMapping".equals(request.getAction()))
+				{
+					collectExistingMapping(db, request);
+				}
 				else
 				{
 					status = this.getModel().getCatalogue().requestHandle(request, db, out);
@@ -620,24 +641,27 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			if ("loadMapping".equals(request.getAction()))
 			{
-				String validationStudy = request.getString("listOfCohortStudies");
+				if (this.getModel().getScheduler() == null || !this.getModel().getScheduler().getMetaData().isStarted())
+				{
+					String validationStudy = request.getString("listOfCohortStudies");
 
-				System.out.println(validationStudy);
+					System.out.println(validationStudy);
 
-				// clear the old variable content
-				this.getModel().setCatalogue(null);
+					// clear the old variable content
+					this.getModel().setCatalogue(null);
 
-				this.getModel().setMeasurements(null);
+					this.getModel().setMeasurements(null);
 
-				this.getModel().getPredictionModels().clear();
+					this.getModel().getPredictionModels().clear();
 
-				this.getModel().getValidationStudies().clear();
+					this.getModel().getValidationStudies().clear();
 
-				this.getModel().getPredictors().clear();
+					this.getModel().getPredictors().clear();
 
-				stringMatching(request, db);
+					stringMatching(request, db);
 
-				this.getModel().setFreeMakerTemplate("HarmonizationStatus.ftl");
+					this.getModel().setFreeMakerTemplate("HarmonizationStatus.ftl");
+				}
 			}
 			else if ("startNewSession".equals(request.getAction()))
 			{
@@ -799,6 +823,84 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 	public void stringMatching(Tuple request, Database db) throws Exception
 	{
+		String validationStudy = request.getString("listOfCohortStudies");
+
+		collectExistingMapping(db, request);
+
+		this.getModel().setMeasurements(new HashMap<String, Measurement>());
+
+		for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS,
+				validationStudy)))
+		{
+			this.getModel().getMeasurements().put(m.getName(), m);
+		}
+
+		if (this.getModel().getMeasurements().size() > 0)
+		{
+			this.getModel().setOs(new BioportalOntologyService());
+
+			this.getModel().setMatchingModel(new LevenshteinDistanceModel());
+
+			this.getModel().setTotalJobs(this.getModel().getPredictors().size());
+
+			this.getModel().setTotalNumber(0);
+
+			this.getModel().setFinishedJobs(0);
+
+			this.getModel().setFinishedNumber(0);
+
+			this.getModel().setStartTime(System.currentTimeMillis());
+
+			this.getModel().setScheduler(new StdSchedulerFactory().getScheduler());
+
+			this.getModel().getScheduler().start();
+		}
+
+		for (String key : new ArrayList<String>(this.getModel().getPredictors().keySet()))
+		{
+			PredictorInfo predictor = this.getModel().getPredictors().get(key);
+
+			List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
+
+			StringBuilder jobName = new StringBuilder();
+
+			StringBuilder triggerName = new StringBuilder();
+
+			// StringBuilder listenerName = new StringBuilder();
+
+			@SuppressWarnings("static-access")
+			JobDetail job = new JobDetail(jobName.append(predictor.getLabel()).append("_job").toString(), this
+					.getModel().getScheduler().DEFAULT_GROUP, StringMatchingJob.class);
+
+			job.getJobDataMap().put("predictor", predictor);
+
+			job.getJobDataMap().put("model", this.getModel());
+
+			job.getJobDataMap().put("measurements", measurements);
+
+			job.getJobDataMap().put("matchingModel", this.getModel().getMatchingModel());
+
+			@SuppressWarnings("static-access")
+			SimpleTrigger trigger = new SimpleTrigger(triggerName.append(predictor.getLabel()).append("_trigger")
+					.toString(), this.getModel().getScheduler().DEFAULT_GROUP, new Date(), null, 0, 0);
+
+			this.getModel().getScheduler().scheduleJob(job, trigger);
+		}
+
+		@SuppressWarnings("static-access")
+		JobDetail monitor = new JobDetail("monitor", this.getModel().getScheduler().DEFAULT_GROUP, MonitorJob.class);
+
+		monitor.getJobDataMap().put("model", this.getModel());
+
+		@SuppressWarnings("static-access")
+		SimpleTrigger trigger = new SimpleTrigger("monitor_trigger", this.getModel().getScheduler().DEFAULT_GROUP,
+				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 10L * 1000L);
+
+		this.getModel().getScheduler().scheduleJob(monitor, trigger);
+	}
+
+	private void collectExistingMapping(Database db, Tuple request) throws DatabaseException
+	{
 		String predictionModel = request.getString("selectPredictionModel");
 
 		String validationStudy = request.getString("listOfCohortStudies");
@@ -866,77 +968,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						.addFinalMappings(listOfFeatures);
 			}
 
-			this.getModel().setMeasurements(new HashMap<String, Measurement>());
-
-			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
-					Operator.EQUALS, validationStudy)))
-			{
-				this.getModel().getMeasurements().put(m.getName(), m);
-			}
-
-			if (this.getModel().getMeasurements().size() > 0)
-			{
-				this.getModel().setOs(new BioportalOntologyService());
-
-				this.getModel().setMatchingModel(new LevenshteinDistanceModel());
-
-				this.getModel().setTotalJobs(this.getModel().getPredictors().size());
-
-				this.getModel().setTotalNumber(0);
-
-				this.getModel().setFinishedJobs(0);
-
-				this.getModel().setFinishedNumber(0);
-
-				this.getModel().setStartTime(System.currentTimeMillis());
-
-				this.getModel().setScheduler(new StdSchedulerFactory().getScheduler());
-
-				this.getModel().getScheduler().start();
-			}
 		}
-
-		for (String key : new ArrayList<String>(this.getModel().getPredictors().keySet()))
-		{
-			PredictorInfo predictor = this.getModel().getPredictors().get(key);
-
-			List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
-
-			StringBuilder jobName = new StringBuilder();
-
-			StringBuilder triggerName = new StringBuilder();
-
-			// StringBuilder listenerName = new StringBuilder();
-
-			@SuppressWarnings("static-access")
-			JobDetail job = new JobDetail(jobName.append(predictor.getLabel()).append("_job").toString(), this
-					.getModel().getScheduler().DEFAULT_GROUP, StringMatchingJob.class);
-
-			job.getJobDataMap().put("predictor", predictor);
-
-			job.getJobDataMap().put("model", this.getModel());
-
-			job.getJobDataMap().put("measurements", measurements);
-
-			job.getJobDataMap().put("matchingModel", this.getModel().getMatchingModel());
-
-			@SuppressWarnings("static-access")
-			SimpleTrigger trigger = new SimpleTrigger(triggerName.append(predictor.getLabel()).append("_trigger")
-					.toString(), this.getModel().getScheduler().DEFAULT_GROUP, new Date(), null, 0, 0);
-
-			this.getModel().getScheduler().scheduleJob(job, trigger);
-		}
-
-		@SuppressWarnings("static-access")
-		JobDetail monitor = new JobDetail("monitor", this.getModel().getScheduler().DEFAULT_GROUP, MonitorJob.class);
-
-		monitor.getJobDataMap().put("model", this.getModel());
-
-		@SuppressWarnings("static-access")
-		SimpleTrigger trigger = new SimpleTrigger("monitor_trigger", this.getModel().getScheduler().DEFAULT_GROUP,
-				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 10L * 1000L);
-
-		this.getModel().getScheduler().scheduleJob(monitor, trigger);
 	}
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException

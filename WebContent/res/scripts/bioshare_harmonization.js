@@ -123,18 +123,15 @@ function retrieveResult(url)
 			});	
 
 			$(this).hover(
-					function () {
-						$(this).css("font-weight", "bolder");
-						identifier = $(this).parent().attr('id');
-						identifier = identifier.replace("_row", "_details");
-						$('#' + identifier).show();
-					},
-					function () {
-						$(this).css("font-weight", "normal");
-//						identifier = $(this).parent().attr('id');
-//						identifier = identifier.replace("_row", "_details");
-//						$('#' + identifier).hide();
-					}
+				function () {
+					$(this).css("font-weight", "bolder");
+					identifier = $(this).parent().attr('id');
+					identifier = identifier.replace("_row", "_details");
+					$('#' + identifier).show();
+				},
+				function () {
+					$(this).css("font-weight", "normal");
+				}
 			);
 
 			$(this).children('span').click(function()
@@ -187,6 +184,34 @@ function retrieveResult(url)
 
 		$('#mappingResult table:first-child').show();
 	});
+}
+
+function showExistingMapping(url)
+{
+	if($('#listOfCohortStudies option').length == 0){
+
+		showMessage("There are no cohort studies to validate the prediction model", false);
+
+	}else if($('#selectPredictionModel option').length == 0){
+
+		showMessage("There are no prediction models", false);
+
+	}else{
+		
+		predictionModel = $('#selectPredictionModel').val();
+	
+		validationStudy = $('#listOfCohortStudies').val();
+		
+		$.ajax({
+			
+			url : url + "&__action=download_json_existingMapping&selectPredictionModel=" 
+				+ predictionModel + "&listOfCohortStudies=" + validationStudy,
+			async: false,
+			
+		}).done(function(status){
+			retrieveResult(url);
+		});
+	}
 }
 
 function validateStudy(name)
@@ -435,15 +460,15 @@ function populateRowInTable(data, url)
 	buildingBlocks = data["buildingBlocks"];
 	identifier = data["identifier"];
 
-	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"border-bottom:1px dotted #AAAAAA;\">";
-	newRow += "<td name=\"name\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
+	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
+	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + name + "</span>";
 	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
 	+ "</div></td>";
-	newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + description + "</td>";
-	newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + dataType + "</td>";
-	newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + unit + "</td>";
+	newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"width:20%;\">" + description + "</td>";
+	newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"width:8%;\">" + dataType + "</td>";
+	newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"width:10%;\">" + unit + "</td>";
 
 	addedCategory = "";
 
@@ -453,7 +478,7 @@ function populateRowInTable(data, url)
 		addedCategory = createMultipleSelect(blocks);
 	}
 
-	newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + addedCategory + "</td>";
+	newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"width:20%;\">" + addedCategory + "</td>";
 
 	selectBlocks = "";
 
@@ -468,10 +493,10 @@ function populateRowInTable(data, url)
 		}
 	}
 
-	newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
+	newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"width:40%\">" + selectBlocks + "</td>";
 	newRow += "</tr>";
 
-	$('#showPredictorPanel table tr:first-child').after(newRow);
+	$('#overviewTable').append(newRow);
 
 	$('td[name="buildingBlocks"] >select').chosen();
 
