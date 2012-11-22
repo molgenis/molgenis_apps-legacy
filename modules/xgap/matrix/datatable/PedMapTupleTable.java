@@ -1,6 +1,7 @@
 package matrix.datatable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +73,14 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	@Override
 	public int getCount() throws TableException
 	{
-		return (int) pedFile.getNrOfElements();
+		try
+		{
+			return (int) pedFile.getNrOfElements();
+		}
+		catch (IOException e)
+		{
+			throw new TableException(e);
+		}
 	}
 
 	@Override
@@ -132,7 +140,14 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 	public void setFilters(List<QueryRule> rules) throws TableException
 	{
 		this.filters = rules;
-		pedFile.setFilters(rules, snpNames);
+		try
+		{
+			pedFile.setFilters(rules, snpNames);
+		}
+		catch (IOException e)
+		{
+			throw new TableException(e);
+		}
 	}
 
 	@Override
