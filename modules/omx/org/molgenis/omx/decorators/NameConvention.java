@@ -174,30 +174,33 @@ public class NameConvention
 	 */
 	public static void validateEntityName(String name) throws DatabaseException
 	{
-		// pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
-		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+\\*])";
+		return;
 
-		if (name == null || name.length() == 0)
-		{
-			throw new DatabaseException("Name is empty.");
-		}
-
-		if (name.length() != name.trim().length())
-		{
-			throw new DatabaseException("Name '" + name + "' is untrimmed.");
-		}
-
-		// check for illegal characters
-		Pattern p2 = Pattern.compile(pattern);
-		for (char s : name.toCharArray())
-		{
-			Matcher m2 = p2.matcher(s + "");
-			if (!m2.matches())
-			{
-				throw new DatabaseException("Illegal character (" + s + ") in name '" + name
-						+ "'. Use only allowed characters from the set " + pattern);
-			}
-		}
+		// // pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
+		// String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+\\*])";
+		//
+		// if (name == null || name.length() == 0)
+		// {
+		// throw new DatabaseException("Name is empty.");
+		// }
+		//
+		// if (name.length() != name.trim().length())
+		// {
+		// throw new DatabaseException("Name '" + name + "' is untrimmed.");
+		// }
+		//
+		// // check for illegal characters
+		// Pattern p2 = Pattern.compile(pattern);
+		// for (char s : name.toCharArray())
+		// {
+		// Matcher m2 = p2.matcher(s + "");
+		// if (!m2.matches())
+		// {
+		// throw new DatabaseException("Illegal character (" + s + ") in name '"
+		// + name
+		// + "'. Use only allowed characters from the set " + pattern);
+		// }
+		// }
 	}
 
 	/**
