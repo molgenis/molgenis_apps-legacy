@@ -5,7 +5,7 @@ public class ImportResultsWizardPage extends WizardPage
 
 	public ImportResultsWizardPage()
 	{
-		super("Result", null);
+		super("Result", "ImportResultsWizardPage.ftl");
 	}
 
 }
