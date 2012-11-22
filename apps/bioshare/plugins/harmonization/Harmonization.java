@@ -602,6 +602,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				else if ("download_json_existingMapping".equals(request.getAction()))
 				{
 					collectExistingMapping(db, request);
+
+					this.getModel().setRetrieveResult(true);
 				}
 				else
 				{
@@ -751,36 +753,39 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	{
 		StringBuilder table = new StringBuilder();
 
-		table.append("<table id=\"mapping_").append(predictor.getName().replaceAll(" ", "_"))
-				.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
-				.append(" class=\"ui-widget-content ui-corner-all\">")
-				.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
-				.append("</th><th>Description</th><th>Select the mapping</th></tr>");
-
-		String predictorName = predictor.getName();
-
-		for (String measurementName : predictor.getMappedVariables())
+		if (predictor.getMappedVariables().size() > 0)
 		{
-			String description = predictor.getDescription(measurementName);
+			table.append("<table id=\"mapping_").append(predictor.getName().replaceAll(" ", "_"))
+					.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
+					.append(" class=\"ui-widget-content ui-corner-all\">")
+					.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
+					.append("</th><th>Description</th><th>Select the mapping</th></tr>");
 
-			StringBuilder identifier = new StringBuilder();
+			String predictorName = predictor.getName();
 
-			identifier.append(predictorName).append("_").append(measurementName);
+			for (String measurementName : predictor.getMappedVariables())
+			{
+				String description = predictor.getDescription(measurementName);
 
-			table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
-					.append("_row\"><td style=\"text-align:center;cursor:pointer;\"><span>")
-					.append(measurementName)
-					.append("</span><div id=\"")
-					.append(identifier.toString().replaceAll(" ", "_"))
-					.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
-					.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
-					.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
-					.append(description).append("</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"")
-					.append(identifier).append("_checkBox\" /></td></tr>");
+				StringBuilder identifier = new StringBuilder();
+
+				identifier.append(predictorName).append("_").append(measurementName);
+
+				table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
+						.append("_row\"><td style=\"text-align:center;cursor:pointer;\"><span>")
+						.append(measurementName)
+						.append("</span><div id=\"")
+						.append(identifier.toString().replaceAll(" ", "_"))
+						.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
+						.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
+						.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
+						.append(description)
+						.append("</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"")
+						.append(identifier).append("_checkBox\" /></td></tr>");
+			}
+
+			table.append("</table>");
 		}
-
-		table.append("</table>");
-
 		return table.toString();
 	}
 
@@ -788,52 +793,44 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	{
 		StringBuilder table = new StringBuilder();
 
-		table.append("<table id=\"matched_").append(predictor.getName().replaceAll(" ", "_"))
-				.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
-				.append(" class=\"ui-widget-content ui-corner-all\">")
-				.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
-				.append("</th><th>Description</th><th>Remove the mapping</th></tr>");
-
-		String predictorName = predictor.getName();
-
-		for (Measurement measurement : predictor.getFinalMappings().values())
+		if (predictor.getFinalMappings().size() > 0)
 		{
-			String measurementName = measurement.getName();
+			table.append("<table id=\"matched_").append(predictor.getName().replaceAll(" ", "_"))
+					.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
+					.append(" class=\"ui-widget-content ui-corner-all\">")
+					.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
+					.append("</th><th>Description</th><th>Remove the mapping</th></tr>");
 
-			String description = measurement.getDescription();
+			String predictorName = predictor.getName();
 
-			StringBuilder identifier = new StringBuilder();
+			for (Measurement measurement : predictor.getFinalMappings().values())
+			{
+				String measurementName = measurement.getName();
 
-			identifier.append(predictorName).append("_").append(measurementName);
+				String description = measurement.getDescription();
 
-			table.append("<tr id=\"").append(identifier.toString().replaceAll(" ", "_"))
-					.append("_matchedRow\"><td style=\"text-align:center;cursor:pointer;\"><span>")
-					.append(measurementName).append("</span></td><td style=\"text-align:center;\">")
-					.append(description).append("</td><td style=\"text-align:center;\"><div id=\"")
-					.append(identifier.toString().replaceAll(" ", "_"))
-					.append("_remove\" style=\"cursor:pointer;height:18px;width:18px;margin-left:30px;\" ")
-					.append("class=\"ui-state-default ui-corner-all\" title=\"remove\">")
-					.append("<span class=\"ui-icon ui-icon-trash\"></span></div></td></tr>");
+				StringBuilder identifier = new StringBuilder();
+
+				identifier.append(predictorName).append("_").append(measurementName);
+
+				table.append("<tr id=\"").append(identifier.toString().replaceAll(" ", "_"))
+						.append("_matchedRow\"><td style=\"text-align:center;cursor:pointer;\"><span>")
+						.append(measurementName).append("</span></td><td style=\"text-align:center;\">")
+						.append(description).append("</td><td style=\"text-align:center;\"><div id=\"")
+						.append(identifier.toString().replaceAll(" ", "_"))
+						.append("_remove\" style=\"cursor:pointer;height:18px;width:18px;margin-left:30px;\" ")
+						.append("class=\"ui-state-default ui-corner-all\" title=\"remove\">")
+						.append("<span class=\"ui-icon ui-icon-trash\"></span></div></td></tr>");
+			}
+
+			table.append("</table>");
 		}
-
-		table.append("</table>");
-
 		return table.toString();
 	}
 
 	public void stringMatching(Tuple request, Database db) throws Exception
 	{
-		String validationStudy = request.getString("listOfCohortStudies");
-
 		collectExistingMapping(db, request);
-
-		this.getModel().setMeasurements(new HashMap<String, Measurement>());
-
-		for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-				validationStudy)))
-		{
-			this.getModel().getMeasurements().put(m.getName(), m);
-		}
 
 		if (this.getModel().getMeasurements().size() > 0)
 		{
@@ -968,6 +965,13 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						.addFinalMappings(listOfFeatures);
 			}
 
+			this.getModel().setMeasurements(new HashMap<String, Measurement>());
+
+			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+					Operator.EQUALS, validationStudy)))
+			{
+				this.getModel().getMeasurements().put(m.getName(), m);
+			}
 		}
 	}
 

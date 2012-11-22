@@ -91,6 +91,21 @@ function retrieveResult(url)
 			}
 		});
 		
+		if($('#mappingResult table').size() == 0)
+		{
+			$('#candidateMapping').hide();
+			
+			$('#matchedMapping').fadeIn();
+			
+			$('#showCandidateMapping').hide();
+		}else{
+			$('#candidateMapping').fadeIn();
+			
+			$('#matchedMapping').hide();
+			
+			$('#showCandidateMapping').show();
+		}
+		
 		$('#validatePredictors option').each(function()
 		{
 			$(this).hover(
@@ -187,7 +202,7 @@ function retrieveResult(url)
 }
 
 function showExistingMapping(url)
-{
+{	
 	if($('#listOfCohortStudies option').length == 0){
 
 		showMessage("There are no cohort studies to validate the prediction model", false);
@@ -209,6 +224,7 @@ function showExistingMapping(url)
 			async: false,
 			
 		}).done(function(status){
+			
 			retrieveResult(url);
 		});
 	}
@@ -798,7 +814,7 @@ function createProgressBar(showMessage)
 	showModal();
 
 	$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
-	$('body').append("<div id=\"LoadPredictor\" class=\"middleBar\" style=\"padding-left:60px;padding-top:15px;font-style:italic;\">" 
+	$('body').append("<div id=\"LoadPredictor\" class=\"middleBar\" style=\"font-size:25px;padding-left:50px;padding-top:15px;font-style:italic;\">" 
 			+ showMessage + "</div>");
 
 	$("#progressbar").progressbar({value: 0});

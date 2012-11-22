@@ -123,8 +123,6 @@
 		});
 		
 		$('#viewMappingForPredictionModel').click(function(){
-			$('#candidateMapping').hide();
-			$('#matchedMapping').fadeIn();
 			showExistingMapping(URL);
 		});
 		
@@ -243,10 +241,10 @@
 				<div id="afterMapping" style="display:none;height:800px;width:100%;">
 					<div style="width:100%;height:140px;">
 						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:130px;margin:2px;float:left">
-							<div class="ui-widget-header ui-corner-all" style="height:30px;">
+							<div class="ui-widget-header ui-corner-all" style="height:30px;padding-top:5px;">
 								<div style="margin:3px;float:left;">Matching result</div>
 								<input type="button" id="startNewValidation" value="Validate a new model" 
-									style="font-size:10px;margin:3px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
+									style="font-size:9px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
 							<div style="margin:5px;">
 								Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;"></span>
@@ -389,16 +387,10 @@
 										</#list>
 									</#if>
 								</select>
-								<div class="row" style="margin-top:15%;margin-left:15%;">
-									<div class="span1" style="margin-right:15px;">
-										<input type="button" id="viewMappingForPredictionModel" value="view mapping" class="btn btn-primary btn-mini"/>
-									</div>
-									<div class="span1" style="margin-right:-15px;">
-										<input type="button" id="validatePredictionModel" value="validate" class="btn btn-primary btn-mini"/>
-									</div>
-									<div class="span1">
-										<input type="button" id="cancelSelectCohortStudy" value="cancel" class="btn btn-primary btn-mini"/>
-									</div>
+								<div style="margin-top:20%;margin-left:19%;">
+									<input type="button" id="viewMappingForPredictionModel" style="font-size:12px;" value="view mapping" class="btn btn-primary"/>
+									<input type="button" id="validatePredictionModel" style="font-size:12px;" value="validate" class="btn btn-primary"/>
+									<input type="button" id="cancelSelectCohortStudy" style="font-size:12px;" value="cancel" class="btn btn-primary"/>
 								</div>
 							</div>
 						</div>
@@ -523,7 +515,7 @@
 								<input type="button" id="addPredictorButton"  class="btn btn-info btn-small" value="add new predictor">
 								<input type="button" id="addShowSummary" class="btn btn-info btn-small" value="show summary">
 							</div>
-							<table class="ui-corner-all btn" style="width:97%;">
+							<table class="ui-corner-all ui-widget-header" style="width:100%;background:#F5F5F5;">
 								<tr style="width:100%;height:50px;font-size:14px;font-style:italic;">
 									<th style="width:12%;">name</th>
 									<th style="width:20%;">description</th>
