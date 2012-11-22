@@ -36,6 +36,10 @@
 	{	
 		if("${screen.isRetrieveResult()}" == "true")
 		{
+			$('#beforeMapping').hide();
+			
+			$('#afterMapping').show();
+			
 			retrieveResult(URL);
 		}
 		//Styling for the dropDown box
@@ -350,7 +354,7 @@
 										<div style="float:left;">
 											<select id="selectPredictionModel" name="selectPredictionModel" style="width:185px;" data-placeholder="Choose a prediction model">
 												<#list screen.getPredictionModels() as predictionModel>
-													<option>
+													<option <#if screen.getSelectedPredictionModel() == predictionModel>selected="selected"</#if>>
 														${predictionModel}
 													</option>	
 												</#list>
