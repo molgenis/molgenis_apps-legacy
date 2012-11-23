@@ -9,9 +9,9 @@
 		<plugin name="OntoCat"
 			type="org.molgenis.omicsconnect.plugins.ontocat.OntoCat" />		
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
-		<plugin name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
+		<plugin label="Dataset Viewer" name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
 		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
-		<menu name="AdminPanels">
+		<menu name="Admin">
 			<menu name ="Characteristics">
 				<form name="Characteristic" entity="Characteristic" />
 			</menu>
