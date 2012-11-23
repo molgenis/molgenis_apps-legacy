@@ -2,7 +2,7 @@
 	<module name="core">
 		<description>Generic entities you can use as the starting point of
 			your model.</description>
-		<entity name="Identifiable" abstract="true" system="true">
+		<entity name="Identifiable" abstract="true">
 			<description>This interface assigns an automatic 'id' field to every
 				object.</description>
 			<field name="id" type="autoid" description="automatically generated id" />
@@ -18,7 +18,7 @@
 				environments.</description>
 			<field name="name" length="127" type="varchar" description="human-readable name." />
 		</entity>
-		<entity name="Describable" abstract="true" system="true">
+		<entity name="Describable" abstract="true" >
 			<description>This interface adds a description field to all entities
 				the implement it.</description>
 			<field name="description" type="text" nillable="true"

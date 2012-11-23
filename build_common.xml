@@ -75,7 +75,7 @@ It should be used via 'import' plus passing of properties
 		</condition>
 
 		<!-- check if molgenis is compiled into ${build.dir}, otherwise compile now -->
-		<javac srcdir="${molgenis.dir}/src" destdir="${build.molgenis.dir}" nowarn="on" debug="true">
+		<javac srcdir="${molgenis.dir}/src" destdir="${build.molgenis.dir}" nowarn="on" debug="true" includeantruntime="false">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -111,6 +111,11 @@ It should be used via 'import' plus passing of properties
 		<copy todir="${build.molgenis_apps.dir}" verbose="true">
 			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
+		
+		<!-- copy source.R from generated to build -->
+		<copy todir="${build.molgenis_apps.dir}" verbose="true">
+			<fileset dir="${output_src}" includes="**/*.R" />
 		</copy>
 
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
@@ -158,7 +163,7 @@ It should be used via 'import' plus passing of properties
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
-		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true">
+		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true" includeantruntime="false">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -181,7 +186,7 @@ It should be used via 'import' plus passing of properties
 			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
 			<classpath location="${cb.instrument.dir}" />
 			<classpath refid="combined.class.path"/>
-		<!--  -<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" /> -->
+			<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" />
 			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
 			<jvmarg value="-noverify" />
 			<jvmarg value="-ea" />
@@ -196,6 +201,12 @@ It should be used via 'import' plus passing of properties
 			<report format="noframes" todir="${testng.report.dir}" />
 		</junitreport-->
 
+	</target>
+	
+	<!-- add robots.txt to webcontent folder, blocking all non-malicious webcrawlers - you can add this optionally to your build script! -->
+	<target name="add_robotstxt">
+		<echo>Adding WebContent/robots.txt to block webcrawlers..</echo>
+		<echo file="WebContent/robots.txt" append="false">User-agent: *${line.separator}Disallow: /${line.separator}</echo>
 	</target>
 
 	<!-- findbugs -->

@@ -21,7 +21,7 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.omicsconnect.decorators.MolgenisFileHandler;
+import org.molgenis.omx.decorators.MolgenisFileHandler;
 
 public class DownloadFile implements MolgenisService
 {
