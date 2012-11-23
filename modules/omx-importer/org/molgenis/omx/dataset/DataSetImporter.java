@@ -108,7 +108,7 @@ public class DataSetImporter
 				String observationTargetIdentifier = row.getString(0);
 				List<ObservationTarget> observationTargets = db.find(ObservationTarget.class, new QueryRule(
 						ObservationTarget.IDENTIFIER, Operator.EQUALS, observationTargetIdentifier));
-				if (observationTargets == null || observationTargets.isEmpty()) throw new IOException(
+				if (observationTargets == null || observationTargets.isEmpty()) throw new DatabaseException(
 						"ObservationTarget " + observationTargetIdentifier + " does not exist in db");
 				ObservationTarget observationTarget = observationTargets.get(0);
 
@@ -140,6 +140,11 @@ public class DataSetImporter
 				}
 			}
 			db.commitTx();
+		}
+		catch (DatabaseException e)
+		{
+			db.rollbackTx();
+			throw e;
 		}
 		catch (Exception e)
 		{

@@ -36,7 +36,7 @@
 		<div >
 	   		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
 				<#if screen.getFullUserName()??>
-					<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" height="20px" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."> feedback</a>
+					<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" style="height:20px;" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."> feedback</a>
 					<span style="color:black">&nbsp;|&nbsp;</span>
 					<a href='molgenis.do?__target=main&select=UserLogin'>Logged in as: ${screen.getFullUserName()}</a>
 					<span style="color:black">&nbsp;|&nbsp;</span>

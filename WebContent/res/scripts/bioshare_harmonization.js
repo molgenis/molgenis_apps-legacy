@@ -1,18 +1,52 @@
-function validateStudy(url)
+function monitorJobs(url)
 {
-	if($('#listOfCohortStudies option').length == 0){
+	$.ajax({
+		url : url + "&__action=download_json_monitorJobs",
+		async: false,
+	}).done(function(status){
 
-		showMessage("There are no cohort studies to validate the prediction model", false);
+		$('#processedTime').text("");
 
-	}else if($('#selectPredictionModel option').length == 0){
+		$('#estimatedTime').text("");
 
-		showMessage("There are no prediction models", false);
+		percentage = 0;
 
-	}else{
+		processedTime = (status["currentTime"] - status["startTime"])/1000;
 
-		predictionModel = $('#selectPredictionModel').val();
+		estimatedTimeString = "calculating...";
 
-		validationStudy = $('#listOfCohortStudies').val();
+		if(status["totalQuery"] != 0 && status["finishedQuery"] != 0)
+		{
+			percentage = status["finishedQuery"] / status["totalQuery"];
+
+			estimatedTime = processedTime / percentage * (1 - percentage);
+
+			estimatedTimeString = (estimatedTime/60).toFixed(0) + " mins " + (estimatedTime%60).toFixed(0) + " secs";
+		}
+
+		$('#processedTime').text((processedTime/60).toFixed(0) + " mins " + (processedTime%60).toFixed(0) + " secs");
+
+		$('#estimatedTime').text(estimatedTimeString);
+
+		$('#progressBarMessage').text(" " + (percentage * 100).toFixed(2) + "%");
+
+		$('#progressBar').progressbar({value: percentage * 100});
+
+		if(status["finishedJobs"] == status["totalJobs"])
+		{
+			clearInterval(timer);
+
+			$('#resultPanel').show();
+		}			
+	});
+}
+
+function retrieveResult(url)
+{
+	$.ajax({
+		url : url + "&__action=download_json_retrieveResult",
+		async: false,
+	}).done(function(status){
 
 		$('#beforeMapping').hide();
 
@@ -30,173 +64,204 @@ function validateStudy(url)
 
 		$('#afterMapping').show();
 
-		createScreenMessage("Loading ontology...", "50%");
+		$('#matchingPredictionModel').text($('#selectPredictionModel').val());
 
-		$.ajax({
-			url : url + "&__action=download_json_validateStudy&predictionModel=" + predictionModel 
-			+ "&validationStudy=" + validationStudy,
-			async: false,
+		$('#matchingValidationStudy').text($('#listOfCohortStudies').val());
 
-		}).done(function(status){
-
-			if(status["success"] == true)
+		$.each(status, function(key, Info)
+		{
+			if(key == "treeView")
 			{
-				destroyScreenMessage();
+				$('#browser').empty().append(status["treeView"]);
+				
+			}else{
+				
+				label = Info["label"];
 
-				$('#mappingResult').empty();
+				table = Info["mappingResult"];
 
-				$.each(status, function(key, Info)
-						{
-					if(key == "predictionModel")
-					{
-						$('#matchingPredictionModel').text(status["predictionModel"]);
-					}
-					else if(key == "validationStudy")
-					{
-						$('#matchingValidationStudy').text(status["validationStudy"]);
+				existingMapping = Info["existingMapping"];
 
-					}
-						});
+				$('#mappingResult').append(table);
 
-				createProgressBar("Loading predictor");
+				$('#existingMappings').append(existingMapping);
 
-				loadMappingResult(validationStudy, url);
-
-				destroyProgressBar();
-
-				initializeTree(url);
-
-				$('#validatePredictors option:first-child').attr('selected', true).click();
-
-				$('#mappingResult table:first-child').show();
+				$('#validatePredictors').append("<option id=\"" + Info["identifier"].replace(/\s/g,"_")
+						+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
 			}
+		});
+		
+		if($('#mappingResult table').size() == 0)
+		{
+			$('#candidateMapping').hide();
+			
+			$('#matchedMapping').fadeIn();
+			
+			$('#showCandidateMapping').hide();
+		}else{
+			$('#candidateMapping').fadeIn();
+			
+			$('#matchedMapping').hide();
+			
+			$('#showCandidateMapping').show();
+		}
+		
+		$('#validatePredictors option').each(function()
+		{
+			$(this).hover(
+					function(){
+						$(this).css({
+							"font-weight" : "bolder",
+							"color" : "grey"
+						});
+					},function(){
+						$(this).css({
+							"font-weight" : "normal",
+							"color" : "black"
+						});
+					}
+			);
+		});
+		
+		$('#mappingResult tr td:first-child').each(function(){
+
+			identifier = $(this).parent().attr('id');
+			
+			identifier = identifier.replace("_row", "_details");
+			
+			$('#' + identifier).show();
+			
+			$('#' + identifier).click(function()
+			{
+				predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
+				retrieveExpandedQueries(predictor, identifier.replace("_details", ""), url);
+			});	
+
+			$(this).hover(
+				function () {
+					$(this).css("font-weight", "bolder");
+					identifier = $(this).parent().attr('id');
+					identifier = identifier.replace("_row", "_details");
+					$('#' + identifier).show();
+				},
+				function () {
+					$(this).css("font-weight", "normal");
+				}
+			);
+
+			$(this).children('span').click(function()
+			{
+				measurementName = $(this).text();
+
+				trackInTree(measurementName, url);
+			});
+		});
+
+		$('#validatePredictors').click(function()
+		{
+			predictorName = $(this).find('option:selected').eq(0).text();
+
+			$('#matchingSelectedPredictor').text(predictorName);
+
+			$('#mappingResult table').hide();
+
+			$('#existingMappings table').hide();
+
+			id = $("#validatePredictors option:selected").attr('id');
+
+			identifierForNew = "mapping_" + id;
+
+			$('#' + identifierForNew).show();
+
+			identifierForExisting = "matched_" + id;
+
+			$('#' + identifierForExisting).show();
+		});
+
+		$('#existingMappings tr td:last-child >div').each(function()
+		{
+			$(this).click(function(){
+				removeSingleMapping($(this), url);
+			});
+
+			span = $(this).parents('tr').eq(0).find('td >span');
+
+			measurementName = $(span).text();
+
+			$(span).click(function(){
+				trackInTree($(this).text(), url);
+			});
+		});
+		
+		initializeTree(url);
+
+		$('#validatePredictors option:first-child').attr('selected', true).click();
+
+		$('#mappingResult table:first-child').show();
+	});
+}
+
+function showExistingMapping(url)
+{	
+	if($('#listOfCohortStudies option').length == 0){
+
+		showMessage("There are no cohort studies to validate the prediction model", false);
+
+	}else if($('#selectPredictionModel option').length == 0){
+
+		showMessage("There are no prediction models", false);
+
+	}else{
+		
+		predictionModel = $('#selectPredictionModel').val();
+	
+		validationStudy = $('#listOfCohortStudies').val();
+		
+		$.ajax({
+			
+			url : url + "&__action=download_json_existingMapping&selectPredictionModel=" 
+				+ predictionModel + "&listOfCohortStudies=" + validationStudy,
+			async: false,
+			
+		}).done(function(status){
+			
+			retrieveResult(url);
 		});
 	}
 }
 
-function loadMappingResult(validationStudy, url)
-{	
-	$.ajax({
-		url : url + "&__action=download_json_loadMappingResult&validationStudy=" + validationStudy,
-		async: false,
-	}).done(function(status){
+function validateStudy(name)
+{
+	if($('#listOfCohortStudies option').length == 0){
 
-		if(status["success"] == false)
-		{
-			showMessage(status["message"], false);
-			destroyProgressBar();
-		}else
-		{
-			label = status["label"];
+		showMessage("There are no cohort studies to validate the prediction model", false);
 
-			table = status["mappingResult"];
+	}else if($('#selectPredictionModel option').length == 0){
 
-			existingMapping = status["existingMapping"];
+		showMessage("There are no prediction models", false);
 
-			$('#validatePredictors').append("<option id=\"" + status["identifier"].replace(/\s/g,"_") 
-					+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+	}else{
 
-			$('#validatePredictors option').each(function(){
-				$(this).hover(
-						function(){
-							$(this).css({
-								"font-weight" : "bolder",
-								"color" : "grey"
-							});
-						},function(){
-							$(this).css({
-								"font-weight" : "normal",
-								"color" : "black"
-							});
-						}
-				);
-			});
+		predictionModel = $('#selectPredictionModel').val();
 
-			$('#mappingResult').append(table);
+		validationStudy = $('#listOfCohortStudies').val();
 
-			$('#existingMappings').append(existingMapping);
+		$('#details').empty();
 
-			if(status["loadingProcess"] == status["total"])
-			{
-				$('#browser').empty().append(status["treeView"]);
+		$('#browser').empty();
 
-				$('#mappingResult tr td:first-child').each(function(){
+		$('#existingMappings').empty();
 
-					identifier = $(this).parent().attr('id');
-					identifier = identifier.replace("_row", "_details");
-					$('#' + identifier).show();
-					$('#' + identifier).click(function(){
-						predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
-						retrieveExpandedQueries(predictor, identifier.replace("_details", ""), url);
-					});	
+		$('#mappingResult').empty();
 
-					$(this).hover(
-							function () {
-								$(this).css("font-weight", "bolder");
-								identifier = $(this).parent().attr('id');
-								identifier = identifier.replace("_row", "_details");
-								$('#' + identifier).show();
-							}, 
-							function () {
-								$(this).css("font-weight", "normal");
-								//identifier = $(this).parent().attr('id');
-								//identifier = identifier.replace("_row", "_details");
-								//$('#' + identifier).hide();
-							}
-					);
+		$('#validatePredictors').empty();
 
-					$(this).children('span').click(function(){
+		$('#matchingSelectedPredictor').text("");
 
-						measurementName = $(this).text();
+		$("input[name=\"__action\"]").val("loadMapping");
 
-						trackInTree(measurementName, url);
-					});
-				});
-
-				$('#validatePredictors').click(function(){
-
-					predictorName = $(this).find('option:selected').eq(0).text();
-
-					$('#matchingSelectedPredictor').text(predictorName);
-
-					$('#mappingResult table').hide();
-
-					$('#existingMappings table').hide();
-
-					id = $("#validatePredictors option:selected").attr('id');
-
-					identifierForNew = "mapping_" + id;
-
-					$('#' + identifierForNew).show();
-
-					identifierForExisting = "matched_" + id;
-
-					$('#' + identifierForExisting).show();
-				});
-
-				$('#existingMappings tr td:last-child >div').each(function()
-				{
-					$(this).click(function(){
-						removeSingleMapping($(this));
-					});
-
-					span = $(this).parents('tr').eq(0).find('td >span');
-
-					measurementName = $(span).text();
-
-					$(span).click(function(){
-						trackInTree($(this).text(), url);
-					});
-				});
-
-			}else{
-
-				updateProgressBar(status["loadingProcess"]/status["total"]);
-				loadMappingResult(validationStudy, url);
-			}
-
-		}
-	});
+		$("form[name=\"" + name + "\"]").submit();
+	}
 }
 
 function addMappingFromTree(url)
@@ -294,7 +359,7 @@ function saveMapping(mappings, url)
 		if(status["success"] == true)
 		{
 			$.each(status, function(key, table)
-					{
+			{
 				if(key != "success" & key != "message")
 				{
 					$('#matched_' + key).remove();
@@ -313,8 +378,10 @@ function saveMapping(mappings, url)
 
 					$('#' + key).trigger('click');
 				}
-					});
+			});
+			
 			$('#candidateMapping input:checkbox').attr('checked', false);
+			
 			showMessage(status["message"], true);
 
 		}else{
@@ -409,15 +476,15 @@ function populateRowInTable(data, url)
 	buildingBlocks = data["buildingBlocks"];
 	identifier = data["identifier"];
 
-	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"border-bottom:1px dotted #AAAAAA;\">";
-	newRow += "<td name=\"name\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\"><span style=\"margin:10px;margin-right:2px;float:left;\">" + name + "</span>";
+	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
+	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + name + "</span>";
 	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
 	+ "</div></td>";
-	newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + description + "</td>";
-	newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + dataType + "</td>";
-	newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + unit + "</td>";
+	newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"width:20%;\">" + description + "</td>";
+	newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"width:8%;\">" + dataType + "</td>";
+	newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"width:10%;\">" + unit + "</td>";
 
 	addedCategory = "";
 
@@ -427,7 +494,7 @@ function populateRowInTable(data, url)
 		addedCategory = createMultipleSelect(blocks);
 	}
 
-	newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + addedCategory + "</td>";
+	newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"width:20%;\">" + addedCategory + "</td>";
 
 	selectBlocks = "";
 
@@ -442,10 +509,10 @@ function populateRowInTable(data, url)
 		}
 	}
 
-	newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"border-right:1px dotted #AAAAAA;\">" + selectBlocks + "</td>";
+	newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"width:40%\">" + selectBlocks + "</td>";
 	newRow += "</tr>";
 
-	$('#showPredictorPanel table tr:first-child').after(newRow);
+	$('#overviewTable').append(newRow);
 
 	$('td[name="buildingBlocks"] >select').chosen();
 
@@ -747,7 +814,7 @@ function createProgressBar(showMessage)
 	showModal();
 
 	$('body').append("<div id=\"progressbar\" class=\"middleBar\"></div>");
-	$('body').append("<div id=\"LoadPredictor\" class=\"middleBar\" style=\"padding-left:60px;padding-top:15px;font-style:italic;\">" 
+	$('body').append("<div id=\"LoadPredictor\" class=\"middleBar\" style=\"font-size:25px;padding-left:50px;padding-top:15px;font-style:italic;\">" 
 			+ showMessage + "</div>");
 
 	$("#progressbar").progressbar({value: 0});
