@@ -19,7 +19,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Tuple;
 
 import plugins.system.database.Settings;
-import app.CsvImport;
 import app.ExcelImport;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
@@ -136,44 +135,32 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 
 			if (dmh.hasValidFileStorage(db))
 			{
-				String path = dmh.getFileStorage(true, db).getAbsolutePath();
-
-				// import WormQTL annotations from 'imports' location
-				String importDir = path + File.separator + "imports";
-
-				// excel with everything minus USA probes
-				File wormQtlAnnotations = new File(importDir + File.separator
-						+ "wormqtl_set1_annotations_minusUSAprobes.xls");
-				if (!wormQtlAnnotations.exists())
+				// check metadata.xls
+				String importDir = dmh.getFileStorage(true, db).getAbsolutePath();
+				File metadata = new File(importDir + File.separator + "metadata.xls");
+				if (!metadata.exists())
 				{
 					throw new Exception("Annotation Excel file is missing!");
 				}
 
-				// USA probes (original name: 'probes_usa.txt', but renamed for
-				// CsvImport)
-				File probes = new File(importDir + File.separator + "probe.txt");
-				if (!probes.exists())
-				{
-					throw new Exception("USA probe file is missing!");
-				}
-
-				ExcelImport.importAll(wormQtlAnnotations, db, null);
-				CsvImport.importAll(new File(importDir), db, null);
+				ExcelImport.importAll(metadata, db, null);
 
 				// relink datasets
+				// fails if filenames have uppercase characters!
+				// convert using :
+				// for i in *; do mv "$i" "$(echo $i|tr A-Z a-z)"; done
 				relinkDatasets(db, dmh);
 
 				// remove clusterdemo example investigation
 				Settings.deleteExampleInvestigation("ClusterDemo", db);
 
 				// all done
-				this.setMessages(new ScreenMessage("WormQTL specific annotation import and data relink succeeded", true));
+				this.setMessages(new ScreenMessage("Annotation import and data relink succeeded", true));
 			}
 			else
 			{
 				this.setMessages(new ScreenMessage(
-						"WormQTL permissions loaded, but could not import annotations because storagedir setup failed",
-						false));
+						"Permissions loaded, but could not import annotations because storagedir setup failed", false));
 			}
 
 		}
