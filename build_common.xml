@@ -112,6 +112,11 @@ It should be used via 'import' plus passing of properties
 			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
+		
+		<!-- copy source.R from generated to build -->
+		<copy todir="${build.molgenis_apps.dir}" verbose="true">
+			<fileset dir="${output_src}" includes="**/*.R" />
+		</copy>
 
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
 		<antcall target="copy-persistence.xml" />
@@ -196,6 +201,12 @@ It should be used via 'import' plus passing of properties
 			<report format="noframes" todir="${testng.report.dir}" />
 		</junitreport-->
 
+	</target>
+	
+	<!-- add robots.txt to webcontent folder, blocking all non-malicious webcrawlers - you can add this optionally to your build script! -->
+	<target name="add_robotstxt">
+		<echo>Adding WebContent/robots.txt to block webcrawlers..</echo>
+		<echo file="WebContent/robots.txt" append="false">User-agent: *${line.separator}Disallow: /${line.separator}</echo>
 	</target>
 
 	<!-- findbugs -->
