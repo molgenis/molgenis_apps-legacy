@@ -17,6 +17,10 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.observ.DataSet;
 import org.molgenis.util.Tuple;
 
 import app.ImportWizardExcelPrognosis;
@@ -70,7 +74,7 @@ public class UploadWizardPage extends WizardPage
 			}
 		}
 
-		Map<String, Boolean> dataSetsImportable = validateDataSetInstances(file);
+		Map<String, Boolean> dataSetsImportable = validateDataSetInstances(db, file);
 
 		// determine if validation succeeded
 		boolean ok = true;
@@ -115,48 +119,62 @@ public class UploadWizardPage extends WizardPage
 		getWizard().setFieldsUnknown(xlsValidator.getFieldsUnknown());
 	}
 
-	private Map<String, Boolean> validateDataSetInstances(File file) throws BiffException, IOException
+	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws BiffException, IOException,
+			DatabaseException
 	{
+
+		boolean dataSetExistsInDb = false;
+
 		// get dataset entity names
-		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
-		if (sheet == null) return null;
 
 		// get sheet names
 		String[] sheetNames = Workbook.getWorkbook(file).getSheetNames();
 		List<String> dataSetSheets = new ArrayList<String>();
+		Map<String, Boolean> dataSetValidationMap = new LinkedHashMap<String, Boolean>();
 		for (String sheetName : sheetNames)
 		{
 			if (sheetName.toLowerCase().startsWith("dataset_"))
 			{
+				if (db.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, sheetName)) != null)
+				{
+					dataSetExistsInDb = true;
+					String dataSetName = sheetName.substring("dataset_".length());
+					dataSetValidationMap.put(dataSetName, true);
+				}
 				String dataSetName = sheetName.substring("dataset_".length());
 				dataSetSheets.add(dataSetName);
+
 			}
 		}
 
-		int rows = sheet.getRows();
-		if (rows <= 1) return Collections.emptyMap();
+		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
+		if (sheet == null && dataSetExistsInDb == false) return null;
 
-		List<String> nameList = new ArrayList<String>();
-		Cell[] cells = sheet.getRow(0);
-		for (int col = 0; col < cells.length; ++col)
+		if (dataSetExistsInDb == false)
 		{
-			String colStr = cells[col].getContents();
-			if (colStr.toLowerCase().trim().equals("identifier"))
+			int rows = sheet.getRows();
+			if (rows <= 1) return Collections.emptyMap();
+
+			List<String> nameList = new ArrayList<String>();
+			Cell[] cells = sheet.getRow(0);
+			for (int col = 0; col < cells.length; ++col)
 			{
-				for (int row = 1; row < rows; ++row)
+				String colStr = cells[col].getContents();
+				if (colStr.toLowerCase().trim().equals("identifier"))
 				{
-					String datasetName = sheet.getCell(col, row).getContents();
-					nameList.add(datasetName.toLowerCase());
+					for (int row = 1; row < rows; ++row)
+					{
+						String datasetName = sheet.getCell(col, row).getContents();
+						nameList.add(datasetName.toLowerCase());
+					}
 				}
 			}
-		}
 
-		Map<String, Boolean> dataSetValidationMap = new LinkedHashMap<String, Boolean>();
-		for (String dataSetSheet : dataSetSheets)
-		{
-			dataSetValidationMap.put(dataSetSheet, nameList.contains(dataSetSheet));
+			for (String dataSetSheet : dataSetSheets)
+			{
+				dataSetValidationMap.put(dataSetSheet, nameList.contains(dataSetSheet));
+			}
 		}
-
 		return dataSetValidationMap;
 	}
 
