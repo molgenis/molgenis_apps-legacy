@@ -25,7 +25,7 @@
 			$("form[name=\"" + FORM_NAME + "\"]").submit();
 		});
 		
-		timer = setInterval(function(){monitorJobs(URL)}, 6000);
+		timer = setInterval(function(){monitorJobs(URL)}, 15000);
 	});
 	
 </script>
@@ -44,7 +44,7 @@
 				<div style="width:900px;height:300px">
 					<div id="summaryPanel" style="width:500px;height:300px;float:left;" class="ui-tabs-nav ui-corner-all ui-widget-content">
 						<div class="ui-widget-header ui-corner-all" style="height:30px;">
-							<div style="margin:3px;float:left;">Summary of the job</div>
+							<div style="margin:3px;float:left;">Summary of the job: <span id="jobTitle" style="float:right"></span></div>
 						</div>
 						<div id="summaryOfJobs" style="margin:10px;width:90%;">
 							<div>Processed time: <span id="processedTime" style="float:right;">
