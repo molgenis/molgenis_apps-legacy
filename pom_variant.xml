@@ -62,8 +62,10 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.20</version>         
+			<version>5.1.20</version>
+<!--
 			<scope>provided</scope>
+-->
 		</dependency>
 		<dependency>
 			<groupId>c3p0</groupId>
@@ -340,7 +342,6 @@
 					<excludes>
 						<exclude>**/test/**</exclude>
 						<exclude>**/res/**</exclude>
-						<exclude>**/resources/**</exclude>
 					</excludes>
 					<testIncludes>
 						<testInclude>**/test/**</testInclude>
@@ -359,12 +360,14 @@
 							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>
+<!--
 					<webResources>
 						<resource>
 							<directory>apps/${app.name}/resources</directory>
 							<targetPath>/</targetPath>
 						</resource>
 					</webResources>
+-->
                 </configuration>
             </plugin>
             <plugin>
@@ -439,10 +442,6 @@
 				<configuration>
 					<suiteXmlFiles>
 						<suiteXmlFile>modules/datamodel/testng.xml</suiteXmlFile>
-<!--
-						<suiteXmlFile>modules/datamodel/testngJpa1.xml</suiteXmlFile>
-						<suiteXmlFile>modules/datamodel/testngJpa2.xml</suiteXmlFile>
--->
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>

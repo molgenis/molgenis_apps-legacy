@@ -23,6 +23,7 @@ public class catalogueTreeComponent
 {
 
 	private JQueryTreeViewElement protocolsTree = null;
+	private HashMap<String, JSONObject> descriptions = new HashMap<String, JSONObject>();
 	private HashMap<String, Protocol> nameToProtocol = new HashMap<String, Protocol>();
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 	private HashMap<String, List<JQueryTreeViewElement>> findNodes = new HashMap<String, List<JQueryTreeViewElement>>();
@@ -191,21 +192,23 @@ public class catalogueTreeComponent
 		}
 		else if ("download_json_getChildren".equals(request.getAction()))
 		{
-
 			String nodeIdentifier = request.getString("nodeIdentifier");
 
 			JQueryTreeViewElement node = protocolsAndMeasurementsinTree.get(nodeIdentifier);
 
 			node.toggleNode();
 
-			String addedNodes = "";
+			StringBuilder addedNodes = new StringBuilder();
 
-			for (JQueryTreeViewElement child : node.getChildren())
+			if (!node.isCollapsed())
 			{
-				addedNodes += child.toHtml(null);
+				for (JQueryTreeViewElement child : node.getChildren())
+				{
+					addedNodes.append(child.toHtml());
+				}
 			}
 
-			json.put("result", addedNodes);
+			json.put("result", addedNodes.toString());
 
 		}
 		else if ("download_json_getPosition".equals(request.getAction()))
@@ -274,7 +277,8 @@ public class catalogueTreeComponent
 		return returnString;
 	}
 
-	private void createNodesForChild(JQueryTreeViewElement parentNode, Database db) throws DatabaseException
+	private void createNodesForChild(JQueryTreeViewElement parentNode, Database db) throws DatabaseException,
+			JSONException
 	{
 		if (nameToProtocol.containsKey(parentNode.getLabel()))
 		{
@@ -324,10 +328,20 @@ public class catalogueTreeComponent
 			// protocol
 			if (p.getFeatures_Name().size() > 0)
 			{
-
 				for (Measurement feature : db.find(Measurement.class,
 						new QueryRule(Measurement.NAME, Operator.IN, p.getFeatures_Name())))
 				{
+					if (!descriptions.containsKey(feature))
+					{
+						JSONObject data = new JSONObject();
+						data.put("name", feature.getName());
+						data.put("label", feature.getLabel());
+						data.put("description", feature.getDescription());
+						data.put("dataType", feature.getDataType());
+						data.put("category", feature.getCategories_Name());
+						descriptions.put(feature.getName(), data);
+					}
+
 					String labelName = (feature.getLabel() != null ? feature.getLabel() : feature.getName());
 
 					String featureName = feature.getName();
@@ -573,4 +587,8 @@ public class catalogueTreeComponent
 		return listOfProtocols;
 	}
 
+	public JSONObject getDescriptions(String measurementName)
+	{
+		return descriptions.get(measurementName);
+	}
 }

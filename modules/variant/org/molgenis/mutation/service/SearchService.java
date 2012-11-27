@@ -80,6 +80,10 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	/**
+	 * Get a list of all variant types
+	 * @return list of variant types
+	 */
 	public List<String> getAllVariantTypes()
 	{
 		try
@@ -122,7 +126,7 @@ public class SearchService extends MolgenisVariantService
 	/**
 	 * Get all mutations sorted by their position
 	 * 
-	 * @return list of MutationSummaryVOs
+	 * @return list of MutationSummaryDTOs
 	 */
 	public List<MutationSummaryDTO> findAllMutationSummaries()
 	{
@@ -138,6 +142,11 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	/**
+	 * Get all patients sorted by the mutation position
+	 * 
+	 * @return list of PatientSummaryDTOs
+	 */
 	public List<PatientSummaryDTO> findAllPatientSummaries()
 	{
 		try
@@ -431,6 +440,11 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	/**
+	 * Find variants according to given criteria
+	 * @param criteria
+	 * @return
+	 */
 	public List<MutationSummaryDTO> findMutations(final MutationSearchCriteriaDTO criteria)
 	{
 		try
@@ -440,7 +454,7 @@ public class SearchService extends MolgenisVariantService
 			if (StringUtils.isNotEmpty(criteria.getVariation())) mutations.addAll(this
 					.findMutationsByCdnaNotation(criteria.getVariation()));
 			if (StringUtils.isNotEmpty(criteria.getConsequence())) mutations.addAll(this.findMutationsByObservedValue(
-					"consequence", criteria.getConsequence()));
+					"Consequence", criteria.getConsequence()));
 			if (StringUtils.isNotEmpty(criteria.getMid()))
 			{
 				MutationSummaryDTO tmp = this.findMutationByIdentifier(criteria.getMid());
@@ -451,18 +465,37 @@ public class SearchService extends MolgenisVariantService
 			if (criteria.getCodonChangeNumber() != null) mutations.addAll(this
 					.findMutationsByCodonChangeNumber(criteria.getCodonChangeNumber()));
 			if (criteria.getExonId() != null) mutations.addAll(this.findMutationsByExonId(criteria.getExonId()));
-			if (StringUtils.isNotEmpty(criteria.getType())) mutations.addAll(this.findMutationsByObservedValue(
-					"Type of mutation", criteria.getType()));
+			if (StringUtils.isNotEmpty(criteria.getType())) mutations.addAll(this.findMutationsByType(criteria.getType()));
 			if (criteria.getProteinDomainId() != null) mutations.addAll(this.findMutationsByDomainId(criteria
 					.getProteinDomainId()));
 			if (StringUtils.isNotEmpty(criteria.getPhenotypeName())) mutations.addAll(this
 					.findMutationsByObservedValue("Phenotype", criteria.getPhenotypeName()));
 			if (StringUtils.isNotEmpty(criteria.getInheritance())) mutations.addAll(this.findMutationsByObservedValue(
-					"inheritance", criteria.getInheritance()));
+					"Inheritance", criteria.getInheritance()));
 			// if (criteria.getReportedAsSNP() != null)
 			// TODO: implement
 
 			return Arrays.asList(mutations.toArray(new MutationSummaryDTO[0]));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Find mutations by mutation type
+	 * @param type
+	 * @return list of mutations
+	 */
+	public List<MutationSummaryDTO> findMutationsByType(String type)
+	{
+		try
+		{
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.TYPE_, type).find();
+			
+			return this.variantListToMutationSummaryDTOList(variantList);
 		}
 		catch (Exception e)
 		{
@@ -524,6 +557,11 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	/**
+	 * Find mutations matching a free text term
+	 * @param term
+	 * @return Hash of mutations per category
+	 */
 	public HashMap<String, List<MutationSummaryDTO>> findMutationsByTerm(final String term)
 	{
 		HashMap<String, List<MutationSummaryDTO>> result = new HashMap<String, List<MutationSummaryDTO>>();

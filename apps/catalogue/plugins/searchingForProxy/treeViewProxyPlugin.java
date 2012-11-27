@@ -4,7 +4,6 @@ import gcc.catalogue.ShoppingCart;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import plugins.emeasure.EMeasure;
+import plugins.emeasure.EMeasureEntityWriter;
 
 //import org.molgenis.util.XlsWriter;
 
@@ -151,8 +150,6 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 			response.setHeader("Content-Disposition", "attachment; filename=" + "EMeasure_" + dateFormat.format(date)
 					+ ".xml");
 
-			PrintWriter pw = response.getWriter();
-
 			// Make E-Measure XML file
 
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
@@ -164,13 +161,8 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 				}
 
 			}
-
-			EMeasure em = new EMeasure(db, "EMeasure_" + dateFormat.format(date));
-
-			String result = em.convert(selectedMeasList);
-
-			pw.print(result);
-			pw.close();
+			EMeasureEntityWriter eMeasureWriter = new EMeasureEntityWriter(response.getWriter());
+			eMeasureWriter.writeMeasurements(selectedMeasList);
 		}
 		else if (request.getAction().equals("downloadButton"))
 		{
@@ -219,7 +211,6 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 			workbook.close();
 
 			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
 			// System.out.println(">>> " + this.getParent().getName()+
 			// "or >>>  "+ this.getSelected().getLabel());

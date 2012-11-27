@@ -1,6 +1,7 @@
 package org.molgenis.compute.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import org.molgenis.util.Tuple;
 public class NGSDemo
 {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		System.out.println(">> Start..");
 		// Loading workflow with JPA
@@ -28,13 +29,14 @@ public class NGSDemo
 
 		// read a workflow
 		Workflow workflow = reader.getWorkflow("in-house_workflow_realignmentAndSnpCalling.csv");
+		List<ComputeParameter> parameters = reader.getParameters();
 
 		// Get command line parameters and add them to workflow
-		addCommandLineParameters(args, workflow);
+		addCommandLineParameters(args, parameters);
 
 		// get worksheet from commmand line parameters
 		String worksheetFile = null;
-		for (ComputeParameter cp : workflow.getWorkflowComputeParameterCollection())
+		for (ComputeParameter cp : parameters)
 		{
 			if (cp.getName().equalsIgnoreCase("McWorksheet")) worksheetFile = cp.getDefaultValue();
 		}
@@ -58,7 +60,7 @@ public class NGSDemo
 		System.out.println("... generated");
 	}
 
-	private static void addCommandLineParameters(String[] args, Workflow workflow)
+	private static void addCommandLineParameters(String[] args, List<ComputeParameter> parameters)
 	{
 		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
 
@@ -89,9 +91,8 @@ public class NGSDemo
 		while (it.hasNext())
 		{
 			String name = it.next();
-			workflow.getWorkflowComputeParameterCollection().add(
-					createComputeParameter("Mc" + StringUtils.firstLetterCaps(name), opt.getSet().getOption(name)
-							.getResultValue(0)));
+			parameters.add(createComputeParameter("Mc" + StringUtils.firstLetterCaps(name), opt.getSet()
+					.getOption(name).getResultValue(0)));
 		}
 	}
 

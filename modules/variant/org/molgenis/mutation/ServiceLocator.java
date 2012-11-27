@@ -2,9 +2,11 @@ package org.molgenis.mutation;
 
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.core.service.PublicationService;
+import org.molgenis.mutation.service.CafeVariomeService;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.FastaService;
 import org.molgenis.mutation.service.GffService;
+import org.molgenis.mutation.service.LovdService;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.StatisticsService;
 import org.molgenis.mutation.service.UploadService;
@@ -36,13 +38,10 @@ public class ServiceLocator
 	{
 		if (context == null)
 		{
-			context = new org.springframework.context.support.ClassPathXmlApplicationContext();
-			// context = new
-			// org.springframework.context.annotation.AnnotationConfigApplicationContext();
-			// ((org.springframework.context.annotation.AnnotationConfigApplicationContext)
-			// context).scan("org.molgenis");
-			// ((org.springframework.context.annotation.AnnotationConfigApplicationContext)
-			// context).refresh();
+			context = new org.springframework.context.support.ClassPathXmlApplicationContext("applicationContext.xml");
+//			context = new org.springframework.context.annotation.AnnotationConfigApplicationContext();
+//			((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).scan("org.molgenis");
+//			((org.springframework.context.annotation.AnnotationConfigApplicationContext) context).refresh();
 		}
 		return instance;
 	}
@@ -59,8 +58,12 @@ public class ServiceLocator
 
 	public synchronized void shutdown()
 	{
-		// ((org.springframework.context.annotation.AnnotationConfigApplicationContext)
-		// this.getContext()).close();
+//		((org.springframework.context.annotation.AnnotationConfigApplicationContext) this.getContext()).close();
+	}
+
+	public final CafeVariomeService getCafeVariomeService()
+	{
+		return (CafeVariomeService) this.getContext().getBean("cafeVariomeService");
 	}
 
 	public final CmsService getCmsService()
@@ -76,6 +79,11 @@ public class ServiceLocator
 	public final GffService getGffService()
 	{
 		return (GffService) this.getContext().getBean("gffService");
+	}
+
+	public final LovdService getLovdService()
+	{
+		return (LovdService) this.getContext().getBean("lovdService");
 	}
 
 	public MolgenisUserService getMolgenisUserService()

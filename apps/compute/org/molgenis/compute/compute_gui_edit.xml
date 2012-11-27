@@ -5,15 +5,15 @@
 	<plugin name="MolgenisHeader" type="org.molgenis.compute.ui.ComputeHeader" />
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
 		<menu name="Compute">
-			<form name="ComputeParameters" entity="ComputeParameter"
-				viewtype="list" />
-			<form name="ComputeProtocols" entity="ComputeProtocol" viewtype="list" />
 			<form name="Workflow" entity="Workflow" viewtype="record">
 				<menu name="ComputeWorkflowsMenu">
 					<form name="WorkflowElement" entity="WorkflowElement"
 						viewtype="record" />
 				</menu>
 			</form>
+            <form name="ComputeProtocols" entity="ComputeProtocol" viewtype="list" />
+            <form name="ComputeParameters" entity="ComputeParameter" viewtype="list" />
+            <form name="ComputeParameterDefaults" entity="ComputeParameterDefaultValue" viewtype="list" />
 			<form name="ComputeTasks" entity="ComputeTask">
 				<form name="TaskHistory" entity="ComputeHistory" />
 			</form>
