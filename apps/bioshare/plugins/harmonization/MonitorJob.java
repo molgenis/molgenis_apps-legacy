@@ -12,28 +12,33 @@ public class MonitorJob implements Job
 	{
 		HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
 
-		int totalNumber = model.getTotalNumber();
+		String action = (String) context.getJobDetail().getJobDataMap().get("action");
 
-		int finishedNumber = model.getFinishedNumber();
-
-		System.out.println("Finished: " + finishedNumber + ". Total number is " + totalNumber);
-
-		if (model.getTotalJobs() == model.getFinishedJobs())
+		if ("stringMatching".equals(action))
 		{
-			try
+			int totalNumber = model.getTotalNumber();
+
+			int finishedNumber = model.getFinishedNumber();
+
+			System.out.println("Finished: " + finishedNumber + ". Total number is " + totalNumber);
+
+			if (model.getTotalJobs() == model.getFinishedJobs())
 			{
-				context.getScheduler().shutdown();
+				try
+				{
+					context.getScheduler().shutdown();
+				}
+				catch (SchedulerException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			catch (SchedulerException e)
+			else
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Finished jobs: " + model.getFinishedJobs() + ". Total number is "
+						+ model.getTotalJobs());
 			}
-		}
-		else
-		{
-			System.out.println("Finished jobs: " + model.getFinishedJobs() + ". Total number is "
-					+ model.getTotalJobs());
 		}
 	}
 }
