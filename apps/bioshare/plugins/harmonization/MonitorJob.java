@@ -12,9 +12,7 @@ public class MonitorJob implements Job
 	{
 		HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
 
-		String action = (String) context.getJobDetail().getJobDataMap().get("action");
-
-		if ("stringMatching".equals(action))
+		if (model.isStringMatching())
 		{
 			int totalNumber = model.getTotalNumber();
 
