@@ -865,6 +865,13 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		List<PredictorInfo> predictors = new ArrayList<PredictorInfo>(this.getModel().getPredictors().values());
 
+		@SuppressWarnings("static-access")
+		JobDetail monitor = new JobDetail("monitor", this.getModel().getScheduler().DEFAULT_GROUP, MonitorJob.class);
+
+		monitor.getJobDataMap().put("model", this.getModel());
+
+		listOfJobs.add(monitor);
+
 		int count = 0;
 
 		for (PredictorInfo predictor : this.getModel().getPredictors().values())
@@ -888,13 +895,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			count++;
 		}
 
-		@SuppressWarnings("static-access")
-		JobDetail monitor = new JobDetail("monitor", this.getModel().getScheduler().DEFAULT_GROUP, MonitorJob.class);
-
-		monitor.getJobDataMap().put("model", this.getModel());
-
-		listOfJobs.add(monitor);
-
 		JobDetail termExpansion = new JobDetail("term_expansion_job", Scheduler.DEFAULT_GROUP, TermExpansionJob.class);
 
 		termExpansion.getJobDataMap().put("predictors", predictors);
@@ -913,8 +913,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		termExpansion.addJobListener(listener.getName());
 
 		this.getModel().getScheduler().scheduleJob(termExpansion, triggerTermExpasion);
-
-		// this.getModel().getScheduler().scheduleJob(monitor, trigger);
 	}
 
 	private void collectExistingMapping(Database db, Tuple request) throws DatabaseException
@@ -1165,6 +1163,14 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 					SimpleTrigger trigger = new SimpleTrigger(triggerName.append(eachJob.getName()).append("_tigger")
 							.toString(), Scheduler.DEFAULT_GROUP, new Date(), null, 0, 0);
+
+					if (eachJob.getName().equals("monitor"))
+					{
+						trigger = new SimpleTrigger(triggerName.append(eachJob.getName()).append("_tigger").toString(),
+								Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY,
+								10L * 1000L);
+					}
+
 					model.getScheduler().scheduleJob(eachJob, trigger);
 				}
 			}
