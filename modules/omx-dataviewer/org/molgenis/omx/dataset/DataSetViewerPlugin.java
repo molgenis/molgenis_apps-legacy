@@ -1,6 +1,7 @@
 package org.molgenis.omx.dataset;
 
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -11,6 +12,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.view.JQGridView;
+import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -123,7 +126,14 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 					}
 				}
 
-				tableView = new JQGridView("dataset", this, table);
+				// construct the gridview
+				JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+				searchOptions.setMultipleGroup(false);
+				searchOptions.setMultipleSearch(false);
+				searchOptions.setShowQuery(false);
+				searchOptions.setSopt(Arrays.asList(JQGridRule.JQGridOp.eq));
+
+				tableView = new JQGridView("dataset", this, table, searchOptions);
 				dataSetChooser = new DataSetChooser(dataSets, selectedDataSetId);
 			}
 		}
