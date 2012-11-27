@@ -66,6 +66,8 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private String processedTime = "";
 
+	private boolean isStringMatching = false;
+
 	public HarmonizationModel(Harmonization controller)
 	{
 		super(controller);
@@ -287,5 +289,15 @@ public class HarmonizationModel extends EasyPluginModel
 		{
 			this.retrieveResult = Boolean.FALSE.toString();
 		}
+	}
+
+	public boolean isStringMatching()
+	{
+		return isStringMatching;
+	}
+
+	public void setIsStringMatching(boolean isStringMatching)
+	{
+		this.isStringMatching = isStringMatching;
 	}
 }
