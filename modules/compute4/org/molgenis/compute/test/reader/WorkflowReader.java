@@ -1,5 +1,9 @@
 package org.molgenis.compute.test.reader;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
 
 /**
@@ -8,5 +12,9 @@ import org.molgenis.compute.design.Workflow;
  */
 public interface WorkflowReader
 {
-	Workflow getWorkflow(String name);
+
+	Workflow getWorkflow(String name) throws IOException;
+
+	List<ComputeParameter> getParameters() throws IOException;
+
 }

@@ -8,6 +8,7 @@
 package org.molgenis.lifelinesresearchportal.plugins.plinkdownload;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,8 +204,18 @@ public class PlinkDownload extends EasyPluginController
 				}
 			}
 
-			ffw.writeAll(entries);
-			ffw.close();
+			try {
+				ffw.write(entries);
+			} catch(IOException e) {
+				this.setError("Something went wrong while writing the entries: " + e.getMessage());
+				return;
+			} finally {
+				try {
+					ffw.close();
+				} catch(IOException e) {
+				}
+			}
+			
 
 			downloadPanel = new DivPanel();
 			downloadPanel.setStyle("border: 1px solid red; margin: 10px 10px 10px 0px; padding: 10px; width: auto");

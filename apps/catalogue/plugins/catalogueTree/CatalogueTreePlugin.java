@@ -46,6 +46,8 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import plugins.emeasure.EMeasureEntityWriter;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
@@ -206,16 +208,10 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			response.setHeader("Content-Disposition", "attachment; filename=" + "EMeasure_" + dateFormat.format(date)
 					+ ".xml");
 
-			PrintWriter pw = response.getWriter();
-
 			// Make E-Measure XML file
 			List<Measurement> selectedMeasList = getSelectedMeasurements(db, request);
-			EMeasure em = new EMeasure(db, "EMeasure_" + dateFormat.format(date));
-
-			String result = em.convert(selectedMeasList);
-
-			pw.print(result);
-			pw.close();
+			EMeasureEntityWriter eMeasureWriter = new EMeasureEntityWriter(response.getWriter());
+			eMeasureWriter.writeMeasurements(selectedMeasList);
 		}
 		else if (request.getAction().equals("downloadButton"))
 		{
@@ -1188,3 +1184,4 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 }
+

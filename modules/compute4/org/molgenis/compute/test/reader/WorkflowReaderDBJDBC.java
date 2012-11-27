@@ -1,14 +1,18 @@
 package org.molgenis.compute.test.reader;
 
-import app.DatabaseFactory;
+import java.io.IOException;
+import java.util.List;
+
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
+import org.molgenis.compute.test.reader.WorkflowReader;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 
-import java.util.List;
+import app.DatabaseFactory;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 24/08/2012 Time: 11:17
@@ -16,7 +20,7 @@ import java.util.List;
  */
 public class WorkflowReaderDBJDBC implements WorkflowReader
 {
-	public Workflow getWorkflow(String name)
+	public Workflow getWorkflow(String name) throws IOException
 	{
 		Database db = null;
 		try
@@ -53,4 +57,12 @@ public class WorkflowReaderDBJDBC implements WorkflowReader
 		}
 		return null;
 	}
+
+	public List<ComputeParameter> getParameters()
+	{
+		// TODO: we do not use JDBC workflow reader - otherwise it should be
+		// implemented
+		return null;
+	}
+
 }

@@ -10,6 +10,7 @@ package org.molgenis.col7a1.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HiddenInput;
@@ -23,6 +24,7 @@ import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.ui.HtmlFormWrapper;
 import org.molgenis.mutation.ui.search.SearchPlugin;
 import org.molgenis.pheno.service.PhenoService;
+import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public class Search extends SearchPlugin
@@ -32,11 +34,26 @@ public class Search extends SearchPlugin
 	public Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.getModel().setPatientPager("generated-res/col7a1/patientPager.jsp");
-		this.getModel().setMutationPager("generated-res/col7a1/mutationPager.jsp");
+		this.getModel().setPatientPager("res/mutation/col7a1/patientPager.jsp");
+		this.getModel().setMutationPager("res/mutation/col7a1/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/col7a1/ui/patient.ftl");
 		this.getModel().setMutationViewer("/org/molgenis/col7a1/ui/mutation.ftl");
 		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
+	}
+
+	@Override
+	protected void handleShowPatient(Tuple request)
+	{
+		super.handleShowPatient(request);
+
+		/*
+		 * Add some phenotypic details that will be displayed in the patient view already:
+		 * "IF", "EM" and "Patient material" information
+		 */
+		if (StringUtils.isNotEmpty(request.getString("pid")))
+		{
+			this.getModel().setIndividualDTO(this.phenoService.findPhenotypeDetails(this.getModel().getPatientSummaryVO().getPatientId()));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
