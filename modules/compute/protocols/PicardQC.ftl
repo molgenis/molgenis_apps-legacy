@@ -50,17 +50,21 @@ CHART=${gcbiasmetricspdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-java -jar CollectInsertSizeMetrics.jar \
-I=${sortedbam} \
-O=${insertsizemetrics} \
-H=${insertsizemetricspdf} \
-VALIDATION_STRINGENCY=LENIENT \
-TMP_DIR=${tempdir}
-
-# Overwrite the PDFs that were just created by nicer onces:
-${recreateinsertsizepdfR} \
---insertSizeMetrics ${insertsizemetrics} \
---pdf ${insertsizemetricspdf}
+<#if seqType == "PE">
+	java -jar CollectInsertSizeMetrics.jar \
+	I=${sortedbam} \
+	O=${insertsizemetrics} \
+	H=${insertsizemetricspdf} \
+	VALIDATION_STRINGENCY=LENIENT \
+	TMP_DIR=${tempdir}
+	
+	# Overwrite the PDFs that were just created by nicer onces:
+	${recreateinsertsizepdfR} \
+	--insertSizeMetrics ${insertsizemetrics} \
+	--pdf ${insertsizemetricspdf}
+<#else>
+	# Don't do insert size analysis because seqType != "PE" 
+</#if>
 
 java -jar MeanQualityByCycle.jar \
 I=${sortedbam} \
