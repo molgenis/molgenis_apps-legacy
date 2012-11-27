@@ -38,6 +38,10 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Tuple;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.JobListener;
+import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -227,13 +231,13 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 				else if ("download_json_removePredictors".equals(request.getAction()))
 				{
-					String predictor = request.getString("name");
+					String predictorName = request.getString("name");
 
 					String predictionModel = request.getString("predictionModel");
 
-					this.removePredictor(predictor, predictionModel, db);
+					this.removePredictor(predictorName, predictionModel, db);
 
-					status.put("message", "You successfully deleted the predictor: " + predictor);
+					status.put("message", "You successfully deleted the predictor: " + predictorName);
 
 					status.put("success", true);
 				}
@@ -250,8 +254,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 								Operator.IN, cp.getFeatures_Name())))
 						{
 							JSONObject jsonForPredictor = new JSONObject();
-							jsonForPredictor.put("name", eachPredictor.getLabel());
-							jsonForPredictor.put("identifier", eachPredictor.getLabel().replaceAll(" ", "_"));
+							jsonForPredictor.put("label", eachPredictor.getLabel());
+							jsonForPredictor.put("identifier", eachPredictor.getName().replaceAll(" ", "_"));
 							jsonForPredictor.put("description", (eachPredictor.getDescription() == null ? ""
 									: eachPredictor.getDescription()));
 							jsonForPredictor.put("dataType", eachPredictor.getDataType());
@@ -554,9 +558,21 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 				else if ("download_json_monitorJobs".equals(request.getAction()))
 				{
-					status.put("finishedQuery", this.getModel().getFinishedNumber());
+					if (this.getModel().isStringMatching())
+					{
+						status.put("finishedQuery", this.getModel().getFinishedNumber());
 
-					status.put("totalQuery", this.getModel().getTotalNumber());
+						status.put("totalQuery", this.getModel().getTotalNumber());
+					}
+					else
+					{
+						status.put("finishedQuery", this.getModel().getFinishedJobs());
+
+						status.put("totalQuery", this.getModel().getTotalJobs());
+					}
+
+					status.put("jobTitle", (this.getModel().isStringMatching() ? "Matching variables"
+							: "Expanding terms"));
 
 					status.put("finishedJobs", this.getModel().getFinishedJobs());
 
@@ -829,6 +845,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			this.getModel().setMatchingModel(new LevenshteinDistanceModel());
 
+			this.getModel().setIsStringMatching(false);
+
 			this.getModel().setTotalJobs(this.getModel().getPredictors().size());
 
 			this.getModel().setTotalNumber(0);
@@ -844,21 +862,21 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			this.getModel().getScheduler().start();
 		}
 
-		for (String key : new ArrayList<String>(this.getModel().getPredictors().keySet()))
+		List<JobDetail> listOfJobs = new ArrayList<JobDetail>();
+
+		List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
+
+		List<PredictorInfo> predictors = new ArrayList<PredictorInfo>(this.getModel().getPredictors().values());
+
+		int count = 0;
+
+		for (PredictorInfo predictor : this.getModel().getPredictors().values())
 		{
-			PredictorInfo predictor = this.getModel().getPredictors().get(key);
-
-			List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
-
 			StringBuilder jobName = new StringBuilder();
 
-			StringBuilder triggerName = new StringBuilder();
-
-			// StringBuilder listenerName = new StringBuilder();
-
 			@SuppressWarnings("static-access")
-			JobDetail job = new JobDetail(jobName.append(predictor.getLabel()).append("_job").toString(), this
-					.getModel().getScheduler().DEFAULT_GROUP, StringMatchingJob.class);
+			JobDetail job = new JobDetail(jobName.append("job_").append(count).toString(), this.getModel()
+					.getScheduler().DEFAULT_GROUP, StringMatchingJob.class);
 
 			job.getJobDataMap().put("predictor", predictor);
 
@@ -868,11 +886,9 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			job.getJobDataMap().put("matchingModel", this.getModel().getMatchingModel());
 
-			@SuppressWarnings("static-access")
-			SimpleTrigger trigger = new SimpleTrigger(triggerName.append(predictor.getLabel()).append("_trigger")
-					.toString(), this.getModel().getScheduler().DEFAULT_GROUP, new Date(), null, 0, 0);
+			listOfJobs.add(job);
 
-			this.getModel().getScheduler().scheduleJob(job, trigger);
+			count++;
 		}
 
 		@SuppressWarnings("static-access")
@@ -880,11 +896,28 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		monitor.getJobDataMap().put("model", this.getModel());
 
-		@SuppressWarnings("static-access")
-		SimpleTrigger trigger = new SimpleTrigger("monitor_trigger", this.getModel().getScheduler().DEFAULT_GROUP,
-				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 10L * 1000L);
+		listOfJobs.add(monitor);
 
-		this.getModel().getScheduler().scheduleJob(monitor, trigger);
+		JobDetail termExpansion = new JobDetail("term_expansion_job", Scheduler.DEFAULT_GROUP, TermExpansionJob.class);
+
+		termExpansion.getJobDataMap().put("predictors", predictors);
+
+		termExpansion.getJobDataMap().put("jobs", listOfJobs);
+
+		termExpansion.getJobDataMap().put("model", this.getModel());
+
+		SimpleTrigger triggerTermExpasion = new SimpleTrigger("term_expansion_trigger", Scheduler.DEFAULT_GROUP,
+				new Date(), null, 0, 0);
+
+		TermExpansionListener listener = new TermExpansionListener("termExpansion");
+
+		this.getModel().getScheduler().addJobListener(listener);
+
+		termExpansion.addJobListener(listener.getName());
+
+		this.getModel().getScheduler().scheduleJob(termExpansion, triggerTermExpasion);
+
+		// this.getModel().getScheduler().scheduleJob(monitor, trigger);
 	}
 
 	private void collectExistingMapping(Database db, Tuple request) throws DatabaseException
@@ -917,10 +950,13 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 				HashMap<String, String> categories = new HashMap<String, String>();
 
-				for (Category c : db.find(Category.class,
-						new QueryRule(Category.NAME, Operator.EQUALS, m.getCategories_Name())))
+				if (m.getCategories_Name().size() > 0)
 				{
-					categories.put(c.getCode_String(), c.getDescription());
+					for (Category c : db.find(Category.class,
+							new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name())))
+					{
+						categories.put(c.getCode_String(), c.getDescription());
+					}
 				}
 
 				predictor.setCategory(categories);
@@ -1093,5 +1129,59 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	{
 		FreemarkerView freeMarkerView = new FreemarkerView(this.getModel().getFreeMakerTemplate(), this.getModel());
 		return freeMarkerView;
+	}
+
+	public class TermExpansionListener implements JobListener
+	{
+		private String name;
+
+		public TermExpansionListener(String name)
+		{
+			this.name = name;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public void jobToBeExecuted(JobExecutionContext arg0)
+		{
+		}
+
+		@SuppressWarnings("unchecked")
+		public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception)
+		{
+			try
+			{
+				List<JobDetail> listOfJobs = (List<JobDetail>) context.getJobDetail().getJobDataMap().get("jobs");
+
+				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
+
+				model.setIsStringMatching(true);
+
+				model.setFinishedJobs(0);
+
+				for (JobDetail eachJob : listOfJobs)
+				{
+					StringBuilder triggerName = new StringBuilder();
+
+					SimpleTrigger trigger = new SimpleTrigger(triggerName.append(eachJob.getName()).append("_tigger")
+							.toString(), Scheduler.DEFAULT_GROUP, new Date(), null, 0, 0);
+					model.getScheduler().scheduleJob(eachJob, trigger);
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void jobExecutionVetoed(JobExecutionContext arg0)
+		{
+			// TODO Auto-generated method stub
+
+		}
 	}
 }
