@@ -61,9 +61,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 	@Override
 	public String getCustomHtmlHeaders()
-
 	{
-
 		StringBuilder s = new StringBuilder();
 
 		s.append("<link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.min.css\" type=\"text/css\" />");
@@ -73,7 +71,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		s.append("<script type=\"text/javascript\" src=\"bootstrap/js/bootstrap.min.js\"></script>");
 
 		return s.toString();
-
 	}
 
 	@Override
