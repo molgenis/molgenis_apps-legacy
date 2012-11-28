@@ -859,7 +859,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			this.getModel().getScheduler().start();
 		}
 
-		List<JobDetail> listOfJobs = new ArrayList<JobDetail>();
+		HashMap<JobDetail, SimpleTrigger> listOfJobs = new HashMap<JobDetail, SimpleTrigger>();
 
 		List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
 
@@ -868,9 +868,12 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		@SuppressWarnings("static-access")
 		JobDetail monitor = new JobDetail("monitor", this.getModel().getScheduler().DEFAULT_GROUP, MonitorJob.class);
 
+		SimpleTrigger monitorTrigger = new SimpleTrigger("monitor_trigger", Scheduler.DEFAULT_GROUP, new Date(), null,
+				SimpleTrigger.REPEAT_INDEFINITELY, 10L * 1000L);
+
 		monitor.getJobDataMap().put("model", this.getModel());
 
-		listOfJobs.add(monitor);
+		listOfJobs.put(monitor, monitorTrigger);
 
 		int count = 0;
 
@@ -882,6 +885,9 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			JobDetail job = new JobDetail(jobName.append("job_").append(count).toString(), this.getModel()
 					.getScheduler().DEFAULT_GROUP, StringMatchingJob.class);
 
+			SimpleTrigger trigger = new SimpleTrigger(jobName.append("_trigger").toString(), Scheduler.DEFAULT_GROUP,
+					new Date(), null, 0, 0);
+
 			job.getJobDataMap().put("predictor", predictor);
 
 			job.getJobDataMap().put("model", this.getModel());
@@ -890,7 +896,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			job.getJobDataMap().put("matchingModel", this.getModel().getMatchingModel());
 
-			listOfJobs.add(job);
+			listOfJobs.put(job, trigger);
 
 			count++;
 		}
@@ -1149,7 +1155,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			try
 			{
-				List<JobDetail> listOfJobs = (List<JobDetail>) context.getJobDetail().getJobDataMap().get("jobs");
+				HashMap<JobDetail, SimpleTrigger> listOfJobs = (HashMap<JobDetail, SimpleTrigger>) context
+						.getJobDetail().getJobDataMap().get("jobs");
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
 
@@ -1157,21 +1164,9 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 				model.setFinishedJobs(0);
 
-				for (JobDetail eachJob : listOfJobs)
+				for (JobDetail eachJob : listOfJobs.keySet())
 				{
-					StringBuilder triggerName = new StringBuilder();
-
-					SimpleTrigger trigger = new SimpleTrigger(triggerName.append(eachJob.getName()).append("_tigger")
-							.toString(), Scheduler.DEFAULT_GROUP, new Date(), null, 0, 0);
-
-					if (eachJob.getName().equals("monitor"))
-					{
-						trigger = new SimpleTrigger(triggerName.append(eachJob.getName()).append("_tigger").toString(),
-								Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY,
-								10L * 1000L);
-					}
-
-					model.getScheduler().scheduleJob(eachJob, trigger);
+					model.getScheduler().scheduleJob(eachJob, listOfJobs.get(eachJob));
 				}
 			}
 			catch (Exception e)
