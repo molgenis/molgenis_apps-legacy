@@ -12,19 +12,15 @@
 		<!-- <menu name="BiobankOverview" label="Biobank Overview"> <plugin name="CohortPlugin" 
 			type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " /> </menu> -->
 
-		<menu name="BiobankOverview" label="Biobank Overview" groupRead="AllUsers>
-			<form name="Cohorts" entity="Biobank" label="Biobank Overview"
-				hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
+		<menu name="BiobankOverview" label="Biobank Overview" groupRead="AllUsers">
+			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	groupRead="AllUsers" hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
 		</menu>
 		<menu name="Admin">
 			<menu name="DataViews">
-				<form name="AdminCohorts" entity="Biobank" label="Admin Biobank"
-					hide_fields="id"  />
-				<form name="Coordinators" entity="Person" label="Person" view="list"
-					sortby="LastName"  />
+				<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id"  />
+				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName"  />
 				<form name="Institutes" entity="BiobankInstitute" view="list"  />
-				<form name="BiobankCoordinator" entity="BiobankCoordinator"
-					view="list"  />
+				<form name="BiobankCoordinator" entity="BiobankCoordinator"	view="list"  />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory"  />
 				<form name="Topics" entity="BiobankTopic" />
 				<form name="OntologyTerm" entity="OntologyTerm" />
