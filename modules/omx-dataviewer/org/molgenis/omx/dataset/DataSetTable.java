@@ -2,13 +2,15 @@ package org.molgenis.omx.dataset;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.DatabaseTupleTable;
 import org.molgenis.framework.tupletable.TableException;
@@ -24,12 +26,9 @@ import org.molgenis.util.Tuple;
 
 public class DataSetTable extends AbstractFilterableTupleTable implements DatabaseTupleTable
 {
+	private static Logger logger = Logger.getLogger(DataSetTable.class);
 	private DataSet dataSet;
-
 	private Database db;
-
-	private int rows = -1;
-
 	private List<Field> columns;
 
 	public DataSetTable(DataSet set, Database db) throws TableException
@@ -37,8 +36,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		if (set == null) throw new TableException("DataSet cannot be null");
 		this.dataSet = set;
 		if (db == null) throw new TableException("db cannot be null");
-		this.setDb(db);
-		this.setFirstColumnFixed(true);
+		setDb(db);
+		setFirstColumnFixed(true);
 	}
 
 	@Override
@@ -77,102 +76,91 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 	}
 
 	@Override
+	public Iterator<Tuple> iterator()
+	{
+		try
+		{
+			return getRows().iterator();
+		}
+		catch (TableException e)
+		{
+			logger.error("Exception getting iterator", e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Integer findCharacteristicId(String identifier) throws DatabaseException
+	{
+		List<Characteristic> characteristics = getDb().query(Characteristic.class)
+				.eq(Characteristic.IDENTIFIER, identifier).find();
+
+		return characteristics.isEmpty() ? null : characteristics.get(0).getId();
+	}
+
+	@Override
 	public List<Tuple> getRows() throws TableException
 	{
 		try
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
-			List<QueryRule> filters = getFilters();
-			rows = 0;
-			// load visible ObservationSet
-			if (filters.isEmpty())
+			Query<ObservationSet> queryObservertionSet = getDb().query(ObservationSet.class);
+
+			// Limit the nr of rows
+			if (getLimit() > 0)
 			{
-				rows = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, dataSet.getId()).count();
-				for (ObservationSet os : getDb().query(ObservationSet.class)
-						.eq(ObservationSet.PARTOFDATASET, dataSet.getId()).find())
-				{
-
-					Tuple t = new SimpleTuple();
-					t.set("target", os.getTarget_Identifier());
-
-					for (ObservedValue v : getDb().query(ObservedValue.class)
-							.eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
-					{
-						t.set(v.getFeature_Identifier(), v.getValue());
-					}
-					result.add(t);
-				}
+				queryObservertionSet.limit(getLimit());
 			}
-			else
+			if (getOffset() > 0)
+			{
+				queryObservertionSet.offset(getOffset());
+			}
+
+			for (ObservationSet os : queryObservertionSet.eq(ObservationSet.PARTOFDATASET, dataSet.getId()).find())
 			{
 
-				for (ObservationSet os : getDb().query(ObservationSet.class)
-						.eq(ObservationSet.PARTOFDATASET, dataSet.getId()).find())
+				Tuple t = new SimpleTuple();
+				t.set("target", os.getTarget_Identifier());
+
+				Query<ObservedValue> queryObservedValue = getDb().query(ObservedValue.class);
+
+				// Limit the nr of columns
+				if (getColLimit() > 0)
 				{
-
-					Tuple t = new SimpleTuple();
-					// TODO : remove the empty rows that do not much the filters
-					// from t
-
-					Integer rowId = 0;
-
-					// for (QueryRule queryRule : filters)
-					// {os.
-					// if (os.getTarget_Identifier().equals(os.) t.set("target",
-					// os.getTarget_Identifier());
-					// }
-
-					for (QueryRule queryRule : filters)
-					{
-						for (ObservedValue v : getDb().query(ObservedValue.class)
-								.eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
-						{
-							// set the filter to the Observable features here
-							if (queryRule.getField().equals(v.getFeature_Identifier())
-									&& queryRule.getValue().equals(v.getValue()))
-							{
-								// t.set(v.getFeature_Identifier(),v.getValue());
-								rowId = v.getObservationSet_Id();
-								break;
-							}
-						}
-						//
-					}
-					if (rowId != 0)
-					{
-						t.set("target", os.getTarget_Identifier());
-						for (ObservedValue v : getDb().query(ObservedValue.class)
-								.eq(ObservedValue.OBSERVATIONSET, rowId).find())
-						{
-							t.set(v.getFeature_Identifier(), v.getValue());
-						}
-						result.add(t);
-						this.rows++;
-					}
-
-					// boolean keep = false;
-					//
-					// for (ObservedValue v : getDb().query(ObservedValue.class)
-					// .eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
-					// {
-					// for (QueryRule queryRule : filters)
-					// {
-					// // set the filter to the Observable features here
-					// if
-					// (queryRule.getField().equals(v.getFeature_Identifier())
-					// && queryRule.getValue().equals(v.getValue()))
-					// t.set(v.getFeature_Identifier(),
-					// v.getValue());
-					// }
-					// result.add(t);
-					// }
+					queryObservedValue.limit(getColLimit());
 				}
+				if (getColOffset() > 0)
+				{
+					queryObservedValue.offset(getColOffset());
+				}
+
+				for (ObservedValue v : queryObservedValue.eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
+				{
+					t.set(v.getFeature_Identifier(), v.getValue());
+				}
+
+				result.add(t);
 			}
 
 			return result;
 		}
 		catch (Exception e)
 		{
+			logger.error("Exception getRows", e);
+			throw new TableException(e);
+		}
+
+	}
+
+	@Override
+	public int getCount() throws TableException
+	{
+		try
+		{
+			return getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, dataSet.getId()).count();
+		}
+		catch (DatabaseException e)
+		{
+			logger.error("DatabaseException getCount", e);
 			throw new TableException(e);
 		}
 
@@ -267,13 +255,6 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 			}
 			throw new TableException(e);
 		}
-	}
-
-	@Override
-	public int getCount() throws TableException
-	{
-		getRows();
-		return this.rows;
 	}
 
 	@Override
