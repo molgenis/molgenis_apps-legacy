@@ -74,7 +74,7 @@ function retrieveResult(url)
 		{
 			if(key == "treeView")
 			{
-				$('#browser').empty().append(status["treeView"]);
+//				$('#browser').empty().append(status["treeView"]);
 				
 			}else{
 				
@@ -195,7 +195,7 @@ function retrieveResult(url)
 			});
 		});
 		
-		initializeTree(url);
+//		initializeTree(url);
 
 		$('#validatePredictors option:first-child').attr('selected', true).click();
 
