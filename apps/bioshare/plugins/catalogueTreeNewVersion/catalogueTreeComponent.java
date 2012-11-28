@@ -56,6 +56,13 @@ public class catalogueTreeComponent
 			int upperLimit = topProtocols.size() < (loadingProcess + 1) * increment ? topProtocols.size()
 					: (loadingProcess + 1) * increment;
 
+			if (increment == 0)
+			{
+				increment = 1;
+
+				upperLimit = topProtocols.size();
+			}
+
 			for (int i = loadingProcess * increment; i < upperLimit; i++)
 			{
 
