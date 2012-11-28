@@ -178,7 +178,7 @@ public class AnimalImporter
 		populateProtocolApplication();
 		populateImportDefaults(path + "settings.csv");
 		populateAnimal(path + "animals.csv");
-		// parseParentRelations(path + "litters.csv");
+		parseParentRelations(path + "litters.csv");
 		// populateDec(path + "Experiments.csv");
 		// parseDecRelations(path + "IDsInExp.csv");
 
@@ -417,6 +417,8 @@ public class AnimalImporter
 
 	public void parseParentRelations(String filename) throws Exception
 	{
+		System.out.println("############## Start parsing parent relations");
+
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		for (Tuple tuple : reader)
@@ -581,6 +583,7 @@ public class AnimalImporter
 			// index for the map of litters and animals
 			if (litterMap.get(litter) != null)
 			{
+				System.out.println("--> litter: " + litter);
 				for (String animalName : litterMap.get(litter))
 				{
 					// Link animal to litter
@@ -594,9 +597,16 @@ public class AnimalImporter
 							animalName, null, fatherName));
 					// Set birth date, line also on animal
 					// Get Active value from map; every animal has one
+
+					// FIXME try to fix nullpointer error
 					ObservedValue activeValue = activeMap.get(animalName);
+					// System.out.println("<----" + animalName);
+					System.out.println("----> " + activeValue.getTarget_Name());
+					// activeValue.getValue() + " "
+					// + activeValue.getTime());
 					if (activeValue.getTime() == null)
 					{
+
 						activeValue.setTime(dobDate);
 					}
 					activeMap.remove(animalName);
