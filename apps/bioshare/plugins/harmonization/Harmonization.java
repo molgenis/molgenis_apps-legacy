@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -42,6 +43,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -555,19 +557,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 				else if ("download_json_monitorJobs".equals(request.getAction()))
 				{
-					if (this.getModel().isStringMatching())
-					{
-						status.put("finishedQuery", this.getModel().getFinishedNumber());
-
-						status.put("totalQuery", this.getModel().getTotalNumber());
-					}
-					else
-					{
-						status.put("finishedQuery", this.getModel().getFinishedJobs());
-
-						status.put("totalQuery", this.getModel().getTotalJobs());
-					}
-
 					status.put("jobTitle", (this.getModel().isStringMatching() ? "Matching variables"
 							: "Expanding terms"));
 
@@ -584,6 +573,39 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					status.put("startTime", this.getModel().getStartTime());
 
 					status.put("currentTime", System.currentTimeMillis());
+
+					if (this.getModel().isStringMatching())
+					{
+						status.put("finishedQuery", this.getModel().getFinishedNumber());
+
+						status.put("totalQuery", this.getModel().getTotalNumber());
+
+						if (this.getModel().getFinishedNumber() == this.getModel().getTotalNumber())
+						{
+							try
+							{
+								this.getModel().getScheduler().shutdown();
+							}
+							catch (SchedulerException e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							System.out.println("Finished: " + this.getModel().getFinishedNumber()
+									+ ". Total number is " + this.getModel().getTotalNumber());
+						}
+					}
+					else
+					{
+						status.put("finishedQuery", this.getModel().getFinishedJobs());
+
+						status.put("totalQuery", this.getModel().getTotalJobs());
+					}
+
+					System.out.println("Finished jobs: " + this.getModel().getFinishedJobs() + ". Total number is "
+							+ this.getModel().getTotalJobs());
 
 					status.put("success", true);
 				}
@@ -859,21 +881,11 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			this.getModel().getScheduler().start();
 		}
 
-		HashMap<JobDetail, SimpleTrigger> listOfJobs = new HashMap<JobDetail, SimpleTrigger>();
+		LinkedHashMap<JobDetail, SimpleTrigger> listOfJobs = new LinkedHashMap<JobDetail, SimpleTrigger>();
 
 		List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
 
 		List<PredictorInfo> predictors = new ArrayList<PredictorInfo>(this.getModel().getPredictors().values());
-
-		@SuppressWarnings("static-access")
-		JobDetail monitor = new JobDetail("monitor", this.getModel().getScheduler().DEFAULT_GROUP, MonitorJob.class);
-
-		SimpleTrigger monitorTrigger = new SimpleTrigger("monitor_trigger", Scheduler.DEFAULT_GROUP, new Date(), null,
-				SimpleTrigger.REPEAT_INDEFINITELY, 10L * 1000L);
-
-		monitor.getJobDataMap().put("model", this.getModel());
-
-		listOfJobs.put(monitor, monitorTrigger);
 
 		int count = 0;
 
@@ -1155,7 +1167,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			try
 			{
-				HashMap<JobDetail, SimpleTrigger> listOfJobs = (HashMap<JobDetail, SimpleTrigger>) context
+				LinkedHashMap<JobDetail, SimpleTrigger> listOfJobs = (LinkedHashMap<JobDetail, SimpleTrigger>) context
 						.getJobDetail().getJobDataMap().get("jobs");
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
@@ -1178,8 +1190,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		@Override
 		public void jobExecutionVetoed(JobExecutionContext arg0)
 		{
-			// TODO Auto-generated method stub
-
 		}
 	}
 }
