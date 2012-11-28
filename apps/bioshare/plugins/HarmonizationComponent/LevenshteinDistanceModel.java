@@ -271,4 +271,9 @@ public class LevenshteinDistanceModel
 	{
 		this.STOPWORDSLIST = STOPWORDS;
 	}
+
+	public List<String> getStopWords()
+	{
+		return STOPWORDSLIST;
+	}
 }
