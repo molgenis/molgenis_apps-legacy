@@ -915,6 +915,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		JobDetail termExpansion = new JobDetail("term_expansion_job", Scheduler.DEFAULT_GROUP, TermExpansionJob.class);
 
+		termExpansion.getJobDataMap().put("stopWords", this.getModel().getMatchingModel().getStopWords());
+
 		termExpansion.getJobDataMap().put("predictors", predictors);
 
 		termExpansion.getJobDataMap().put("jobs", listOfJobs);

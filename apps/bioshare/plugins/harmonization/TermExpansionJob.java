@@ -17,17 +17,19 @@ import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 public class TermExpansionJob implements Job
 {
 	@Override
+	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext context) throws JobExecutionException
 	{
 		try
 		{
 			if (context.getJobDetail().getJobDataMap().get("predictors") instanceof List<?>)
 			{
-				@SuppressWarnings("unchecked")
 				List<PredictorInfo> predictors = (List<PredictorInfo>) context.getJobDetail().getJobDataMap()
 						.get("predictors");
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
+
+				List<String> stopWords = (List<String>) context.getJobDetail().getJobDataMap().get("stopWords");
 
 				int count = 0;
 
@@ -42,13 +44,13 @@ public class TermExpansionJob implements Job
 						for (String eachBlock : predictor.getBuildingBlocks())
 						{
 							predictor.getExpandedQuery().addAll(
-									expandQueryByDefinedBlocks(eachBlock.split(","), model, os));
+									expandQueryByDefinedBlocks(eachBlock.split(","), stopWords, model, os));
 						}
 					}
 					else
 					{
 						predictor.getExpandedQuery().addAll(
-								expandByPotentialBuildingBlocks(predictor.getLabel(), model, os));
+								expandByPotentialBuildingBlocks(predictor.getLabel(), stopWords, model, os));
 					}
 
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
@@ -69,8 +71,8 @@ public class TermExpansionJob implements Job
 		}
 	}
 
-	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, HarmonizationModel model,
-			OntologyService os) throws OntologyServiceException
+	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, List<String> stopWords,
+			HarmonizationModel model, OntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -84,18 +86,20 @@ public class TermExpansionJob implements Job
 		{
 			for (String eachBlock : eachSetOfBlocks)
 			{
-				mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), model, os));
-
-				if (mapForBlocks.get(eachBlock).size() > 1)
+				if (!stopWords.contains(eachBlock.toLowerCase()))
 				{
-					possibleBlocks = true;
-				}
+					mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), model, os));
 
-				if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
-				{
-					mapForBlocks.get(eachBlock).add(eachBlock.toLowerCase().trim());
-				}
+					if (mapForBlocks.get(eachBlock).size() > 1)
+					{
+						possibleBlocks = true;
+					}
 
+					if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
+					{
+						mapForBlocks.get(eachBlock).add(eachBlock.toLowerCase().trim());
+					}
+				}
 			}
 
 			if (possibleBlocks == true)
@@ -106,7 +110,10 @@ public class TermExpansionJob implements Job
 				{
 					for (int i = 1; i < eachSetOfBlocks.size(); i++)
 					{
-						combinedList = combineLists(combinedList, mapForBlocks.get(eachSetOfBlocks.get(i)));
+						if (mapForBlocks.containsKey(eachSetOfBlocks.get(i)))
+						{
+							combinedList = combineLists(combinedList, mapForBlocks.get(eachSetOfBlocks.get(i)));
+						}
 					}
 				}
 				expandedQueries.addAll(combinedList);
@@ -120,8 +127,8 @@ public class TermExpansionJob implements Job
 		return expandedQueries;
 	}
 
-	public List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, HarmonizationModel model,
-			OntologyService os) throws OntologyServiceException
+	public List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, List<String> stopWords,
+			HarmonizationModel model, OntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -131,11 +138,14 @@ public class TermExpansionJob implements Job
 
 		for (String eachBlock : buildingBlocks)
 		{
-			mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), model, os));
-
-			if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
+			if (!stopWords.contains(eachBlock.toLowerCase()))
 			{
-				mapForBlocks.get(eachBlock).add(eachBlock.toLowerCase().trim());
+				mapForBlocks.put(eachBlock, collectInfoFromOntology(eachBlock.toLowerCase().trim(), model, os));
+
+				if (!mapForBlocks.get(eachBlock).contains(eachBlock.toLowerCase().trim()))
+				{
+					mapForBlocks.get(eachBlock).add(eachBlock.toLowerCase().trim());
+				}
 			}
 		}
 
@@ -149,7 +159,10 @@ public class TermExpansionJob implements Job
 			{
 				String nextBlock = buildingBlocksArray[j];
 
-				combinedList = combineLists(combinedList, mapForBlocks.get(nextBlock));
+				if (mapForBlocks.containsKey(nextBlock))
+				{
+					combinedList = combineLists(combinedList, mapForBlocks.get(nextBlock));
+				}
 			}
 		}
 
@@ -167,29 +180,29 @@ public class TermExpansionJob implements Job
 		{
 			if (model.getOntologyAccessions().contains(ot.getOntologyAccession()))
 			{
-				expandedQueries.add(ot.getLabel());
-
-				for (String synonym : os.getSynonyms(ot))
+				if (ot.getLabel() != null)
 				{
-					expandedQueries.add(synonym);
-				}
+					expandedQueries.add(ot.getLabel());
 
-				// try
-				// {
-				// if (os.getChildren(ot) != null && os.getChildren(ot).size() >
-				// 0)
-				// {
-				// for (uk.ac.ebi.ontocat.OntologyTerm childOt :
-				// os.getChildren(ot))
-				// {
-				// expandedQueries.add(childOt.getLabel());
-				// }
-				// }
-				// }
-				// catch (Exception e)
-				// {
-				// e.printStackTrace();
-				// }
+					for (String synonym : os.getSynonyms(ot))
+					{
+						expandedQueries.add(synonym);
+					}
+					try
+					{
+						if (os.getChildren(ot) != null && os.getChildren(ot).size() > 0)
+						{
+							for (uk.ac.ebi.ontocat.OntologyTerm childOt : os.getChildren(ot))
+							{
+								expandedQueries.add(childOt.getLabel());
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						System.out.println(ot.getLabel() + " does not have children!");
+					}
+				}
 			}
 		}
 
