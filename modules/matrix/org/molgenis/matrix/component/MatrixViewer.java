@@ -709,13 +709,13 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-		String divContents = "<br />"
-				+ new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
+		String divContents = "<hr>"
+				+ new Paragraph("filterRules", "<strong>Active filters</strong>:" + generateFilterRules()).render();
 
 		// add column filter
 
 		List<? extends Object> colHeaders = matrix.getColHeaders();
-		divContents += "<div style=\"clear:both\">Add filter:";
+		divContents += "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
 		divContents += buildFilterChoices(colHeaders).render();
 		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO:
 																			// chosen()
@@ -733,7 +733,7 @@ public class MatrixViewer extends HtmlWidget
 																			// alignment
 																			// under
 																			// FF+IE
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div>";
+		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div><hr>";
 
 		divContents += "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
 				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
@@ -748,7 +748,7 @@ public class MatrixViewer extends HtmlWidget
 		// disable display of button for adding new measurements from here
 		measurementChooser.setIncludeAddButton(false);
 		divContents += new Newline().render();
-		divContents += "<div style=\"clear: both; vertical-align:middle\">Add/remove columns:";
+		divContents += "<div style=\"clear: both; vertical-align:middle\"> <strong>Add/remove columns: </strong><br />";
 		divContents += measurementChooser.render();
 		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
 		if (this.APPLICATION_STRING != "ANIMALDB")
