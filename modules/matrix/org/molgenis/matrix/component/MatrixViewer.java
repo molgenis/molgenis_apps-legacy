@@ -795,8 +795,8 @@ public class MatrixViewer extends HtmlWidget
 		// At this moment, selectedMeasurement is always null. Temp. fix:
 		if (selectedMeasurement == null)
 		{
-			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			operatorInput.addOption(Operator.LIKE.name(), Operator.LIKE.name());
+			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			// operatorInput.addOption(Operator.ISNA, Operator.ISNA.name());
 			// TODO: implement! Find a way to filter on ObservedValues that are
 			// NOT present
