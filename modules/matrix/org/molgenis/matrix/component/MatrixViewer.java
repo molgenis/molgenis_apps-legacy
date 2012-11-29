@@ -709,12 +709,11 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-		String divContents = "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
-				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
-				+ "/>";
-		divContents += "<div id='advancedSettings' style='display:none'>";
-		divContents += new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
+		String divContents = "<br />"
+				+ new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
+
 		// add column filter
+
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		divContents += "<div style=\"clear:both\">Add filter:";
 		divContents += buildFilterChoices(colHeaders).render();
@@ -735,6 +734,11 @@ public class MatrixViewer extends HtmlWidget
 																			// under
 																			// FF+IE
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div>";
+
+		divContents += "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
+				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
+				+ "/>";
+		divContents += "<div id='advancedSettings' style='display:none'>";
 		// column header filter
 		@SuppressWarnings("rawtypes")
 		List selectedMeasurements = new ArrayList(colHeaders);
