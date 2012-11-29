@@ -123,8 +123,10 @@ public class ListPluginMatrix extends EasyPluginController
 				measurementsToShow.add("Species");
 				measurementsToShow.add("Line");
 				// measurementsToShow.add("OldUliDbId");
-				measurementsToShow.add("OldUliDbTiernummer");
-				measurementsToShow.add("OldRhutDbAnimalId");
+				// measurementsToShow.add("OldUliDbTiernummer");
+				// measurementsToShow.add("OldRhutDbAnimalId");
+				measurementsToShow.add("DateOfBirth");
+				measurementsToShow.add("Litter");
 				measurementsToShow.add("Location");
 				measurementsToShow.add("Background");
 				// measurementsToShow.add("Remark");
