@@ -308,7 +308,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="treePanel" style="float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
+					<div id="treePanel" style="display:none;float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
 						<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
 							<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
 							<div id="treeSearchPanel" style="float:left;margin:7px;">
@@ -354,7 +354,7 @@
 										<div style="float:left;">
 											<select id="selectPredictionModel" name="selectPredictionModel" style="width:185px;" data-placeholder="Choose a prediction model">
 												<#list screen.getPredictionModels() as predictionModel>
-													<option <#if screen.getSelectedPredictionModel() == predictionModel>selected="selected"</#if>>
+													<option <#if screen.getSelectedPredictionModel()?? && screen.getSelectedPredictionModel() == predictionModel>selected="selected"</#if>>
 														${predictionModel}
 													</option>	
 												</#list>

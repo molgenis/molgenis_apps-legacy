@@ -190,6 +190,7 @@ public class TableController
 		List<InvestigationElement> measurementList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
+		List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> panelList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
@@ -208,6 +209,7 @@ public class TableController
 
 		referenceFields.add(Protocol.NAME);
 		referenceFields.add(Protocol.FEATURES_NAME);
+		referenceFields.add(ComputeProtocol.SUBPROTOCOLS_NAME);
 		referenceFields.add(Protocol.SUBPROTOCOLS_NAME);
 		referenceFields.add(Measurement.CATEGORIES_NAME);
 		referenceFields.add(Measurement.UNIT_NAME);
@@ -822,9 +824,14 @@ public class TableController
 						{
 							categoryList.addAll(list);
 						}
-						if (columnIndexToTableField.get(colIndex).getClassType().equals("Protocol"))
+						if (columnIndexToTableField.get(colIndex).getClassType().equals("Protocol")
+								|| columnIndexToTableField.get(colIndex).getClassType().equals("ComputeProtocol"))
 						{
 							protocolList.addAll(list);
+						}
+						if (columnIndexToTableField.get(colIndex).getClassType().equals("ComputeProtocol"))
+						{
+							computeProtocolList.addAll(list);
 						}
 						if (columnIndexToTableField.get(colIndex).getClassType().equals("ObservationTarget"))
 						{
@@ -1013,7 +1020,6 @@ public class TableController
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME,
 					Measurement.INVESTIGATION_NAME);
 
-			// Try to update measurements
 			HashMap<String, InvestigationElement> hashMapProtocol = removeDuplicates(protocolList);
 
 			checkExistenceInDB(hashMapProtocol, Protocol.class.getSimpleName());
@@ -1157,18 +1163,8 @@ public class TableController
 
 			List<ObservedValue> subList = observedValueList.subList((iteration - 1) * 5000, observedValueList.size());
 
-			// for(ObservedValue ov : subList){
-			// System.out.println(ov);
-			// db.add(ov);
-			// }
-
 			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME,
 					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
-
-			// for(ObservedValue ov : observedValueList){
-			// System.out.println(ov);
-			// db.add(ov);
-			// }
 
 			db.commitTx();
 
