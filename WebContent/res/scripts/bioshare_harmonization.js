@@ -34,7 +34,7 @@ function monitorJobs(url)
 
 		$('#progressBar').progressbar({value: percentage * 100});
 
-		if(status["finishedJobs"] == status["totalJobs"])
+		if(status["totalQuery"] == status["finishedQuery"])
 		{
 			clearInterval(timer);
 
@@ -74,7 +74,7 @@ function retrieveResult(url)
 		{
 			if(key == "treeView")
 			{
-//				$('#browser').empty().append(status["treeView"]);
+				$('#browser').empty().append(status["treeView"]);
 				
 			}else{
 				
@@ -195,7 +195,7 @@ function retrieveResult(url)
 			});
 		});
 		
-//		initializeTree(url);
+		initializeTree(url);
 
 		$('#validatePredictors option:first-child').attr('selected', true).click();
 
