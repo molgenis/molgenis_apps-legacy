@@ -1,7 +1,6 @@
 package org.molgenis.omx.dataset;
 
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -12,7 +11,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.view.JQGridView;
-import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridRule;
 import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -48,6 +46,19 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 		if (tableView == null)
 		{
 			createViews(db, null, null);
+		}
+		else
+		{
+			// DataSet could be added
+			try
+			{
+				dataSetChooser.setDataSets(db.find(DataSet.class));
+			}
+			catch (DatabaseException e)
+			{
+				logger.error("TableException creating DataSetViewer", e);
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -131,20 +142,20 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 				searchOptions.setMultipleGroup(false);
 				searchOptions.setMultipleSearch(false);
 				searchOptions.setShowQuery(false);
-				searchOptions.setSopt(Arrays.asList(JQGridRule.JQGridOp.eq));
 
 				tableView = new JQGridView("dataset", this, table, searchOptions);
+
 				dataSetChooser = new DataSetChooser(dataSets, selectedDataSetId);
 			}
 		}
 		catch (TableException e)
 		{
-			logger.error("TableException creating views");
+			logger.error("TableException creating views", e);
 			throw new RuntimeException(e);
 		}
 		catch (DatabaseException e)
 		{
-			logger.error("TableException creating views");
+			logger.error("TableException creating views", e);
 			throw new RuntimeException(e);
 		}
 	}
