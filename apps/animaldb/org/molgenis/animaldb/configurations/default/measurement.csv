@@ -79,3 +79,5 @@ TransponderId;String;;;false;string;To set the ID of an animal's transponder.
 Color;String;;;false;string;To set an animal's color.
 Earmark;String;;;false;string;To set an animal's earmark.
 ResponsibleResearcher;String;;;false;string;To set the researcher responsible for this animal.
+OldAnimalId;String;;;false;string;To store the AnimalId from the previous administration system on import into AnimalDB.
+OldLitterId;String;;;false;string;To store the LitterId from the previous administration system on import into AnimalDB.

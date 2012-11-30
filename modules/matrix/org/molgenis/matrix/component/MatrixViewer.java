@@ -357,10 +357,10 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "<div style=\"float:left; vertical-align:middle\">" + reload.render() + "</div>";
 		// move vertical (row paging)
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
-		moveUpEnd.setIcon("generated-res/img/first.png");
+		moveUpEnd.setIcon("generated-res/img/first_32.png");
 		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + moveUpEnd.render();
 		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
-		moveUp.setIcon("generated-res/img/prev.png");
+		moveUp.setIcon("generated-res/img/prev_32.png");
 		divContents += moveUp.render();
 		int rowOffset = this.matrix.getRowOffset();
 		int rowLimit = this.matrix.getRowLimit();
@@ -377,10 +377,10 @@ public class MatrixViewer extends HtmlWidget
 			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
 		}
 		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
-		moveDown.setIcon("generated-res/img/next.png");
+		moveDown.setIcon("generated-res/img/next_32.png");
 		divContents += moveDown.render();
 		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
-		moveDownEnd.setIcon("generated-res/img/last.png");
+		moveDownEnd.setIcon("generated-res/img/last_32.png");
 		divContents += moveDownEnd.render() + "</div>";
 		// download options
 		if (showDownloadOptions)
