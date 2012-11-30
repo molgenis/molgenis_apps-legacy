@@ -12,25 +12,20 @@
 		<!-- <menu name="BiobankOverview" label="Biobank Overview"> <plugin name="CohortPlugin" 
 			type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " /> </menu> -->
 
-		<menu name="BiobankOverview" label="Biobank Overview">
-			<form name="Cohorts" entity="Biobank" label="Biobank Overview"
-				hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
+		<menu name="BiobankOverview" label="Biobank Overview" groupRead="AllUsers">
+			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	groupRead="AllUsers" hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
 		</menu>
 		<menu name="Admin">
 			<menu name="DataViews">
-				<form name="AdminCohorts" entity="Biobank" label="Admin Biobank"
-					hide_fields="id" />
-				<form name="Coordinators" entity="Person" label="Person" view="list"
-					sortby="LastName" />
-				<form name="Institutes" entity="BiobankInstitute" view="list" />
-				<form name="BiobankInstitute" entity="BiobankInstitute" view="list" />
-				<form name="BiobankCoordinator" entity="BiobankCoordinator"
-					view="list" />
-				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
+				<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id"  />
+				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName"  />
+				<form name="Institutes" entity="BiobankInstitute" view="list"  />
+				<form name="BiobankCoordinator" entity="BiobankCoordinator"	view="list"  />
+				<form name="Categories" sortby="name" view="list" entity="BiobankCategory"  />
 				<form name="Topics" entity="BiobankTopic" />
 				<form name="OntologyTerm" entity="OntologyTerm" />
 				<form name="BiobankDataType" entity="BiobankDataType" />
-				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole" />
+				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole"  />
 				<form name="ChangeLog" entity="ChangeLog" />
 				<form name="Protocol"  entity="Protocol" />
 				<form name="Individual"  entity="Individual" />
@@ -57,14 +52,14 @@
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 		</menu>
-		<menu name="submenu" position="left" label="Index powered Search">
+	<!-- 	<menu name="submenu" position="left" label="Index powered Search">
 			<plugin name="DBIndex" label="DB Index"
 				type="plugins.LuceneIndex.DBIndexPlugin" />
 			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index"
 				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
 			<plugin name="AdminIndex" label="Admin Indexes"
 				type="plugins.LuceneIndex.AdminIndexes" />
-		</menu>
+		</menu> -->
 		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin"
 			label="Help" />
 		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin"
