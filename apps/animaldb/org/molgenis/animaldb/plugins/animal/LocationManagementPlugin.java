@@ -36,7 +36,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class LocationPlugin extends PluginModel<Entity>
+public class LocationManagementPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
 	private List<ObservationTarget> locationList;
@@ -51,7 +51,7 @@ public class LocationPlugin extends PluginModel<Entity>
 	private String matrixLabel;
 	SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-	public LocationPlugin(String name, ScreenController<?> parent)
+	public LocationManagementPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
