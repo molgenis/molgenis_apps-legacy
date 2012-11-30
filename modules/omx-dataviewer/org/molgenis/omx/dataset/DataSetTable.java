@@ -1,16 +1,20 @@
 package org.molgenis.omx.dataset;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.DatabaseTupleTable;
 import org.molgenis.framework.tupletable.TableException;
@@ -24,6 +28,17 @@ import org.molgenis.observ.ObservedValue;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+
+/**
+ * DataSetTable
+ * 
+ * If this table is too slow consider creating database an index on the
+ * ObservedValue table : One on the fields Feature-Value and one on
+ * ObservationSet-Feature-Value
+ * 
+ */
 public class DataSetTable extends AbstractFilterableTupleTable implements DatabaseTupleTable
 {
 	private static Logger logger = Logger.getLogger(DataSetTable.class);
@@ -38,6 +53,28 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		if (db == null) throw new TableException("db cannot be null");
 		setDb(db);
 		setFirstColumnFixed(true);
+	}
+
+	@Override
+	public Database getDb()
+	{
+		return db;
+	}
+
+	@Override
+	public void setDb(Database db)
+	{
+		this.db = db;
+	}
+
+	public DataSet getDataSet()
+	{
+		return dataSet;
+	}
+
+	public void setDataSet(DataSet dataSet)
+	{
+		this.dataSet = dataSet;
 	}
 
 	@Override
@@ -89,33 +126,32 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		}
 	}
 
-	private Integer findCharacteristicId(String identifier) throws DatabaseException
-	{
-		List<Characteristic> characteristics = getDb().query(Characteristic.class)
-				.eq(Characteristic.IDENTIFIER, identifier).find();
-
-		return characteristics.isEmpty() ? null : characteristics.get(0).getId();
-	}
-
 	@Override
 	public List<Tuple> getRows() throws TableException
 	{
 		try
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
-			Query<ObservationSet> queryObservertionSet = getDb().query(ObservationSet.class);
+
+			Query<ObservationSet> query = createQuery();
+
+			if (query == null)
+			{
+				return new ArrayList<Tuple>();
+			}
 
 			// Limit the nr of rows
 			if (getLimit() > 0)
 			{
-				queryObservertionSet.limit(getLimit());
-			}
-			if (getOffset() > 0)
-			{
-				queryObservertionSet.offset(getOffset());
+				query.limit(getLimit());
 			}
 
-			for (ObservationSet os : queryObservertionSet.eq(ObservationSet.PARTOFDATASET, dataSet.getId()).find())
+			if (getOffset() > 0)
+			{
+				query.offset(getOffset());
+			}
+
+			for (ObservationSet os : query.find())
 			{
 
 				Tuple t = new SimpleTuple();
@@ -123,17 +159,24 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 
 				Query<ObservedValue> queryObservedValue = getDb().query(ObservedValue.class);
 
-				// Limit the nr of columns
-				if (getColLimit() > 0)
+				List<Field> columns = getColumns();
+				if (isFirstColumnFixed())
 				{
-					queryObservedValue.limit(getColLimit());
-				}
-				if (getColOffset() > 0)
-				{
-					queryObservedValue.offset(getColOffset());
+					columns.remove(0);
 				}
 
-				for (ObservedValue v : queryObservedValue.eq(ObservedValue.OBSERVATIONSET, os.getId()).find())
+				// Only retrieve the visible columns
+				Collection<String> fieldNames = Collections2.transform(columns, new Function<Field, String>()
+				{
+					@Override
+					public String apply(final Field field)
+					{
+						return field.getName();
+					}
+				});
+
+				for (ObservedValue v : queryObservedValue.eq(ObservedValue.OBSERVATIONSET, os.getId())
+						.in(ObservedValue.FEATURE_IDENTIFIER, new ArrayList<String>(fieldNames)).find())
 				{
 					t.set(v.getFeature_Identifier(), v.getValue());
 				}
@@ -142,6 +185,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 			}
 
 			return result;
+
 		}
 		catch (Exception e)
 		{
@@ -156,7 +200,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 	{
 		try
 		{
-			return getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, dataSet.getId()).count();
+			Query<ObservationSet> query = createQuery();
+			return query == null ? 0 : query.count();
 		}
 		catch (DatabaseException e)
 		{
@@ -257,26 +302,98 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		}
 	}
 
-	@Override
-	public Database getDb()
+	// Creates the query based on the provided filters
+	// Returns null if we already now there wil be no results
+	private Query<ObservationSet> createQuery() throws TableException, DatabaseException
 	{
-		return db;
-	}
 
-	@Override
-	public void setDb(Database db)
-	{
-		this.db = db;
-	}
+		Query<ObservationSet> query;
 
-	public DataSet getDataSet()
-	{
-		return dataSet;
-	}
+		if (getFilters().isEmpty())
+		{
+			query = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, dataSet.getId());
+		}
+		else
+		{
+			// For now only single simple queries are supported
+			List<QueryRule> queryRules = new ArrayList<QueryRule>();
 
-	public void setDataSet(DataSet dataSet)
-	{
-		this.dataSet = dataSet;
+			for (QueryRule filter : getFilters())
+			{
+				if ((filter.getOperator() != Operator.EQUALS) && (filter.getOperator() != Operator.LIKE))
+				{
+					// value is always a String so LESS etc. can't be
+					// supported, NOT queries are not supported yet
+					throw new NotImplementedException("Operator [" + filter.getOperator()
+							+ "] not yet implemented, only EQUALS and LIKE are supported.");
+
+				}
+
+				// Null values come to us as String 'null'
+				if ((filter.getValue() != null) && (filter.getValue() instanceof String)
+						&& ((String) filter.getValue()).equalsIgnoreCase("null"))
+				{
+					filter.setValue(null);
+				}
+
+				if (filter.getField().equals("target"))
+				{
+					QueryRule rule = new QueryRule(ObservationSet.TARGET_IDENTIFIER, filter.getOperator(),
+							filter.getValue());
+					List<ObservationSet> observationSets = getDb().find(ObservationSet.class, rule);
+
+					// No results
+					if (observationSets.isEmpty())
+					{
+						return null;
+					}
+
+					// Create a collection of ObservationSet ids
+					Collection<Integer> ids = Collections2.transform(observationSets,
+							new Function<ObservationSet, Integer>()
+							{
+								@Override
+								public Integer apply(final ObservationSet observationSet)
+								{
+									return observationSet.getId();
+								}
+							});
+
+					queryRules.add(new QueryRule(ObservedValue.OBSERVATIONSET_ID, Operator.IN, new ArrayList<Integer>(
+							ids)));
+				}
+				else
+				{
+					queryRules.add(new QueryRule(ObservedValue.FEATURE_IDENTIFIER, Operator.EQUALS, filter.getField()));
+					queryRules.add(new QueryRule(ObservedValue.VALUE, filter.getOperator(), filter.getValue()));
+				}
+
+			}
+
+			List<ObservedValue> observedValues = getDb().find(ObservedValue.class,
+					queryRules.toArray(new QueryRule[queryRules.size()]));
+
+			// No results
+			if (observedValues.isEmpty())
+			{
+				return null;
+			}
+
+			List<Integer> observationSetIds = new ArrayList<Integer>();
+			for (ObservedValue observedValue : observedValues)
+			{
+				if (!observationSetIds.contains(observedValue.getObservationSet_Id()))
+				{
+					observationSetIds.add(observedValue.getObservationSet_Id());
+				}
+			}
+
+			query = getDb().query(ObservationSet.class).eq(ObservationSet.PARTOFDATASET, dataSet.getId())
+					.in(ObservationSet.ID, observationSetIds);
+		}
+
+		return query;
+
 	}
 
 }
