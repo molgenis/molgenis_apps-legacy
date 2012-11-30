@@ -49,10 +49,22 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 		}
 		else
 		{
-			// DataSet could be added
+			// DataSet could be added or could be deleted
 			try
 			{
-				dataSetChooser.setDataSets(db.find(DataSet.class));
+				List<DataSet> dataSets = db.find(DataSet.class);
+				dataSetChooser.setDataSets(dataSets);
+
+				// Check if selected dataset still exists
+				if (dataSetChooser.getSelectedDataSetId() != null)
+				{
+					DataSet dataSet = db.findById(DataSet.class, dataSetChooser.getSelectedDataSetId());
+					if (dataSet == null)
+					{
+						createViews(db, null, null);
+					}
+				}
+
 			}
 			catch (DatabaseException e)
 			{
