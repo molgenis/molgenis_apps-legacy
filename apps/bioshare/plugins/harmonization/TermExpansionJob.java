@@ -3,8 +3,13 @@ package plugins.harmonization;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.molgenis.pheno.Measurement;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -29,7 +34,7 @@ public class TermExpansionJob implements Job
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
 
-				List<String> stopWords = (List<String>) context.getJobDetail().getJobDataMap().get("stopWords");
+				Set<String> stopWords = (HashSet<String>) context.getJobDetail().getJobDataMap().get("stopWords");
 
 				int count = 0;
 
@@ -59,10 +64,12 @@ public class TermExpansionJob implements Job
 
 					count++;
 
-					model.setFinishedJobs(model.getFinishedJobs() + 1);
+					model.incrementFinishedJob();
 
 					System.out.println("Finished: " + count + " out of " + predictors.size());
 				}
+
+				createNGramMeasurements(model);
 			}
 		}
 		catch (Exception e)
@@ -71,7 +78,51 @@ public class TermExpansionJob implements Job
 		}
 	}
 
-	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, List<String> stopWords,
+	private void createNGramMeasurements(HarmonizationModel model)
+	{
+		Map<Measurement, List<Set<String>>> nGramsMap = new HashMap<Measurement, List<Set<String>>>();
+
+		for (Measurement m : model.getMeasurements().values())
+		{
+			List<String> fields = new ArrayList<String>();
+
+			if (!StringUtils.isEmpty(m.getDescription()))
+			{
+				fields.add(m.getDescription());
+
+				StringBuilder combinedString = new StringBuilder();
+
+				if (!m.getCategories_Name().isEmpty())
+				{
+					for (String categoryName : m.getCategories_Name())
+					{
+						combinedString.delete(0, combinedString.length());
+
+						combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(' ')
+								.append(m.getDescription());
+
+						fields.add(combinedString.toString().replace('_', ' '));
+					}
+				}
+			}
+
+			List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
+
+			for (String eachEntry : fields)
+			{
+				Set<String> dataItemTokens = model.getMatchingModel()
+						.createNGrams(eachEntry.toLowerCase().trim(), true);
+
+				listOfNGrams.add(dataItemTokens);
+			}
+
+			nGramsMap.put(m, listOfNGrams);
+		}
+
+		model.setNGramsMapForMeasurements(nGramsMap);
+	}
+
+	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, Set<String> stopWords,
 			HarmonizationModel model, OntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
@@ -127,7 +178,7 @@ public class TermExpansionJob implements Job
 		return expandedQueries;
 	}
 
-	public List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, List<String> stopWords,
+	public List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, Set<String> stopWords,
 			HarmonizationModel model, OntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
@@ -226,7 +277,7 @@ public class TermExpansionJob implements Job
 
 	public List<String> combineLists(List<String> listOne, List<String> listTwo)
 	{
-		List<String> combinedList = new ArrayList<String>();
+		Set<String> combinedList = new HashSet<String>();
 
 		StringBuilder combinedString = new StringBuilder();
 
@@ -236,7 +287,7 @@ public class TermExpansionJob implements Job
 			{
 				combinedString.delete(0, combinedString.length());
 
-				combinedString.append(first).append(" ").append(second);
+				combinedString.append(first).append(' ').append(second);
 
 				if (!combinedList.contains(combinedString.toString()))
 				{
@@ -245,6 +296,6 @@ public class TermExpansionJob implements Job
 			}
 		}
 
-		return combinedList;
+		return new ArrayList<String>(combinedList);
 	}
 }

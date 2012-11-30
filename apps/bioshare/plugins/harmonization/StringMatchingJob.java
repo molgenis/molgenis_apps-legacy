@@ -1,20 +1,19 @@
 package plugins.harmonization;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.molgenis.pheno.Measurement;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.StatefulJob;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.MappingList;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 
-public class StringMatchingJob implements Job
+public class StringMatchingJob implements StatefulJob
 {
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException
 	{
@@ -22,24 +21,24 @@ public class StringMatchingJob implements Job
 		{
 			PredictorInfo predictor = (PredictorInfo) context.getJobDetail().getJobDataMap().get("predictor");
 
-			List<Measurement> measurements = (List<Measurement>) context.getJobDetail().getJobDataMap()
-					.get("measurements");
+			HarmonizationModel dataModel = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
 
-			HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
-
-			LevenshteinDistanceModel matchingModel = (LevenshteinDistanceModel) context.getJobDetail().getJobDataMap()
+			NGramMatchingModel matchingModel = (NGramMatchingModel) context.getJobDetail().getJobDataMap()
 					.get("matchingModel");
 
 			MappingList mappings = new MappingList();
 
 			for (String eachQuery : predictor.getExpandedQuery())
 			{
-				executeMapping(matchingModel, eachQuery, mappings, measurements);
+				executeMapping(matchingModel, eachQuery, mappings, dataModel);
 
-				model.setFinishedNumber(model.getFinishedNumber() + 1);
+				// dataModel.setFinishedNumber(dataModel.getFinishedNumber() +
+				// 1);
+
+				dataModel.incrementFinishedQueries();
 			}
 
-			model.setFinishedJobs(model.getFinishedJobs() + 1);
+			dataModel.incrementFinishedJob();
 
 			predictor.setMappings(mappings);
 
@@ -50,40 +49,20 @@ public class StringMatchingJob implements Job
 		}
 	}
 
-	private void executeMapping(LevenshteinDistanceModel model, String eachQuery, MappingList mappings,
-			List<Measurement> measurementsInStudy) throws Exception
+	private void executeMapping(NGramMatchingModel matchingModel, String eachQuery, MappingList mappings,
+			HarmonizationModel dataModel) throws Exception
 	{
-		List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
+		Set<String> tokens = matchingModel.createNGrams(eachQuery.toLowerCase().trim(), true);
 
-		for (Measurement m : measurementsInStudy)
+		for (Entry<Measurement, List<Set<String>>> entry : dataModel.getnGramsMapForMeasurements().entrySet())
 		{
-			List<String> fields = new ArrayList<String>();
+			Measurement m = entry.getKey();
 
-			if (m.getDescription() != null && !StringUtils.isEmpty(m.getDescription()))
+			List<Set<String>> dataItemTokens = entry.getValue();
+
+			for (Set<String> eachNGrams : dataItemTokens)
 			{
-				fields.add(m.getDescription());
-
-				StringBuilder combinedString = new StringBuilder();
-
-				if (m.getCategories_Name().size() > 0)
-				{
-					for (String categoryName : m.getCategories_Name())
-					{
-						combinedString.delete(0, combinedString.length());
-
-						combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(" ")
-								.append(m.getDescription());
-
-						fields.add(combinedString.toString().replaceAll("_", " "));
-					}
-				}
-			}
-
-			for (String question : fields)
-			{
-				List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
-
-				double similarity = model.calculateScore(dataItemTokens, tokens);
+				double similarity = matchingModel.calculateScore(eachNGrams, tokens);
 
 				mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()), similarity,
 						m.getName());
