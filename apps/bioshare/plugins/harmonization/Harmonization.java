@@ -47,7 +47,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
@@ -862,7 +862,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			this.getModel().setOs(new BioportalOntologyService());
 
-			this.getModel().setMatchingModel(new LevenshteinDistanceModel());
+			this.getModel().setMatchingModel(new NGramMatchingModel());
 
 			this.getModel().setIsStringMatching(false);
 
@@ -870,9 +870,9 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			this.getModel().setTotalNumber(0);
 
-			this.getModel().setFinishedJobs(0);
+			this.getModel().setInitialFinishedJob(0);
 
-			this.getModel().setFinishedNumber(0);
+			this.getModel().setInitialFinishedQueries(0);
 
 			this.getModel().setStartTime(System.currentTimeMillis());
 
@@ -882,8 +882,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 
 		LinkedHashMap<JobDetail, SimpleTrigger> listOfJobs = new LinkedHashMap<JobDetail, SimpleTrigger>();
-
-		List<Measurement> measurements = new ArrayList<Measurement>(this.getModel().getMeasurements().values());
 
 		List<PredictorInfo> predictors = new ArrayList<PredictorInfo>(this.getModel().getPredictors().values());
 
@@ -903,8 +901,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			job.getJobDataMap().put("predictor", predictor);
 
 			job.getJobDataMap().put("model", this.getModel());
-
-			job.getJobDataMap().put("measurements", measurements);
 
 			job.getJobDataMap().put("matchingModel", this.getModel().getMatchingModel());
 
@@ -1176,7 +1172,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 				model.setIsStringMatching(true);
 
-				model.setFinishedJobs(0);
+				model.setInitialFinishedJob(0);
 
 				for (JobDetail eachJob : listOfJobs.keySet())
 				{
