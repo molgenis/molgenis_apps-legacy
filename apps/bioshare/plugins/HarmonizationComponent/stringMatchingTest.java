@@ -34,7 +34,7 @@ public class stringMatchingTest
 			System.out.println();
 		}
 
-		LevenshteinDistanceModel model = new LevenshteinDistanceModel();
+		NGramMatchingModel model = new NGramMatchingModel();
 		double similarity = model.stringMatching(query, testString, false);
 		System.out.println(similarity);
 	}

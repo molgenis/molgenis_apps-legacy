@@ -1,19 +1,30 @@
 package org.molgenis.biobank;
 
-import org.molgenis.Molgenis;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.SimpleLogin;
 
+import plugins.emptydb.emptyDatabase;
 import app.DatabaseFactory;
+import app.FillMetadata;
 
 public class BbmriUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
+
+		// new
+		// Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
 
 		Database db = DatabaseFactory.create("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
+
+		// Login login = new DatabaseLogin(db, null, new TokenFactory());
+		// login.login(db, "admin", "admin");
+		// db.setLogin(login);
+
+		new emptyDatabase(db, false);
+		FillMetadata.fillMetadata(db, false, "SimpleUserLoginPlugin");
+
 		try
 		{
 			// Only add "Margreet Brandsma" user if type of Login allows for
@@ -35,6 +46,7 @@ public class BbmriUpdateDatabase
 			db.close();
 		}
 
-		// TODO : do batch import
+		// BBmriFillPermission.fillPermission(db);
+
 	}
 }
