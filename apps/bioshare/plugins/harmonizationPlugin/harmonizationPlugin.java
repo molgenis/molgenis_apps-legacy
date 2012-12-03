@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +31,9 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.LinkedInformation;
 import plugins.HarmonizationComponent.MappingList;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.HarmonizationComponent.OWLFunction;
 import plugins.developingAlgorithm.RScriptGenerator;
 import plugins.developingAlgorithm.testModel;
@@ -66,7 +67,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
-	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
+	private NGramMatchingModel model = new NGramMatchingModel();
 	private HashMap<String, JSONObject> parameterWithHtmlTable = new HashMap<String, JSONObject>();
 	private List<String> manualMappingResultTable = new ArrayList<String>();
 	// private HashMap<String, Measurement> questionsAndIdentifier = new
@@ -559,7 +560,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 						String description = m.getDescription();
 
-						List<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
+						Set<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
 
 						double maxSimilarity = 0;
 
@@ -575,7 +576,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 							for (String eachMatchingString : synonyms)
 							{
 
-								List<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString
+								Set<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString
 										.toLowerCase().trim(), false);
 
 								double similarity = model.calculateScore(tokensForBuildingBlock, tokensForDataItem);
@@ -792,7 +793,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 				String measurementName = "";
 
-				List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
+				Set<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
 
 				for (Measurement m : measurementsInStudy)
 				{
@@ -818,7 +819,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 					for (String question : fields)
 					{
 
-						List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
+						Set<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
 
 						double similarity = model.calculateScore(dataItemTokens, tokens);
 

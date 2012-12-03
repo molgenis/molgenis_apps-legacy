@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.system;
 
+import org.molgenis.animaldb.convertors.generic.AnimalImporter;
 import org.molgenis.animaldb.convertors.oldadb.LoadAnimalDB;
 import org.molgenis.animaldb.convertors.prefill.PrefillAnimalDB;
 import org.molgenis.animaldb.convertors.rhutdb.ConvertRhutDbToPheno;
@@ -77,6 +78,12 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 					ConvertRhutDbToPheno myLoadRhutDb = new ConvertRhutDbToPheno(db, this.getLogin());
 					myLoadRhutDb.convertFromZip(filename);
 					this.setSuccess("Legacy import from Roelof Hut DB successful");
+				}
+				else if (legacy.equals("generic"))
+				{
+					AnimalImporter myLoadAnimalsDb = new AnimalImporter(db, this.getLogin());
+					myLoadAnimalsDb.convertFromZip(filename);
+					this.setSuccess("import successful");
 				}
 			}
 
