@@ -74,13 +74,13 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_animal_LocationPlugin";
+		return "org_molgenis_animaldb_plugins_animal_LocationManagementPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/animal/LocationPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/animal/LocationManagementPlugin.ftl";
 	}
 
 	public String getAction()
