@@ -15,13 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
 import org.molgenis.animaldb.commonservice.CommonService;
@@ -2680,6 +2678,9 @@ public class Breedingnew extends PluginModel<Entity>
 			// Geno mother
 			elementLabelList.add("Father:\nMother:");
 			elementList.add(fatherName + "\n" + motherName);
+			// litter
+			elementLabelList.add("Litter:");
+			elementList.add(litter);
 			// Add DEC nr, if present, or empty if not
 			elementLabelList.add("Researcher: ");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
