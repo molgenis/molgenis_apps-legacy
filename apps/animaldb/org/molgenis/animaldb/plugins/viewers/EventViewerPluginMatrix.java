@@ -188,7 +188,8 @@ public class EventViewerPluginMatrix extends EasyPluginController
 						1, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
-				targetMatrixViewer.setLabel("Choose animal:");
+
+				div.add(new Paragraph("Select animals"));
 				div.add(targetMatrixViewer);
 
 				ActionInput selectButton = new ActionInput("Select", "", "Select");

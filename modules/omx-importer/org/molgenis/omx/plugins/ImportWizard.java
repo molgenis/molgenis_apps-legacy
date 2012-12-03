@@ -1,15 +1,30 @@
 package org.molgenis.omx.plugins;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 
 /**
  * Import wizard model
  */
-public class ImportWizard extends WizardModel
+public class ImportWizard
 {
+	private List<WizardPage> pages = new ArrayList<WizardPage>();
+	private int currentPageIndex = 0;
+	private String errorMessage;// Error messages are shown in red and if
+								// present the wizard will not go to the next
+								// page
+	private String validationMessage;// Validation message are shown in red but
+										// wizard will move to the next page
+	private String successMessage;// Success message are shown in green (on the
+									// next page)
 	private File file;
+	private ImportResult importResult;
 
 	private Map<String, Boolean> entitiesImportable;
 	private Map<String, Boolean> dataImportable;
@@ -18,16 +33,43 @@ public class ImportWizard extends WizardModel
 	private Map<String, Collection<String>> fieldsRequired;
 	private Map<String, Collection<String>> fieldsAvailable;
 
-	private boolean importError;
-	private boolean validationError;
-
-	private String entityImportOption;
-	private String dataFeatureImportOption;
-	private String dataTargetImportOption;
-
-	public ImportWizard(int nrPages)
+	public ImportWizard()
 	{
-		super(nrPages);
+		super();
+		addPage(new UploadWizardPage());
+		addPage(new ValidationResultWizardPage());
+		addPage(new ImportFileWizardPage());
+		addPage(new ImportResultsWizardPage());
+	}
+
+	public String getErrorMessage()
+	{
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage)
+	{
+		this.errorMessage = errorMessage;
+	}
+
+	public String getValidationMessage()
+	{
+		return validationMessage;
+	}
+
+	public void setValidationMessage(String validationMessage)
+	{
+		this.validationMessage = validationMessage;
+	}
+
+	public String getSuccessMessage()
+	{
+		return successMessage;
+	}
+
+	public void setSuccessMessage(String successMessage)
+	{
+		this.successMessage = successMessage;
 	}
 
 	public File getFile()
@@ -40,6 +82,64 @@ public class ImportWizard extends WizardModel
 		this.file = file;
 	}
 
+	public ImportResult getImportResult()
+	{
+		return importResult;
+	}
+
+	public void setImportResult(ImportResult importResult)
+	{
+		this.importResult = importResult;
+	}
+
+	public void addPage(WizardPage page)
+	{
+		page.setWizard(this);
+		pages.add(page);
+	}
+
+	public WizardPage getCurrentPage()
+	{
+		return pages.get(currentPageIndex);
+	}
+
+	public int getCurrentPageIndex()
+	{
+		return currentPageIndex;
+	}
+
+	public List<WizardPage> getPages()
+	{
+		return Collections.unmodifiableList(pages);
+	}
+
+	public boolean isLastPage()
+	{
+		return getCurrentPageIndex() == getPages().size() - 1;
+	}
+
+	public boolean isFirstPage()
+	{
+		return getCurrentPageIndex() == 0;
+	}
+
+	public void next()
+	{
+		if (currentPageIndex < pages.size() - 1)
+		{
+			currentPageIndex++;
+		}
+
+	}
+
+	public void previous()
+	{
+		if (currentPageIndex > 0)
+		{
+			currentPageIndex--;
+		}
+	}
+
 	public Map<String, Boolean> getEntitiesImportable()
 	{
 		return entitiesImportable;
@@ -48,46 +148,6 @@ public class ImportWizard extends WizardModel
 	public void setEntitiesImportable(Map<String, Boolean> entitiesImportable)
 	{
 		this.entitiesImportable = entitiesImportable;
-	}
-
-	public Map<String, Collection<String>> getFieldsDetected()
-	{
-		return fieldsDetected;
-	}
-
-	public Map<String, Collection<String>> getFieldsUnknown()
-	{
-		return fieldsUnknown;
-	}
-
-	public Map<String, Collection<String>> getFieldsRequired()
-	{
-		return fieldsRequired;
-	}
-
-	public Map<String, Collection<String>> getFieldsAvailable()
-	{
-		return fieldsAvailable;
-	}
-
-	public void setFieldsDetected(Map<String, Collection<String>> fieldsDetected)
-	{
-		this.fieldsDetected = fieldsDetected;
-	}
-
-	public void setFieldsUnknown(Map<String, Collection<String>> fieldsUnknown)
-	{
-		this.fieldsUnknown = fieldsUnknown;
-	}
-
-	public void setFieldsRequired(Map<String, Collection<String>> fieldsRequired)
-	{
-		this.fieldsRequired = fieldsRequired;
-	}
-
-	public void setFieldsAvailable(Map<String, Collection<String>> fieldsAvailable)
-	{
-		this.fieldsAvailable = fieldsAvailable;
 	}
 
 	public Map<String, Boolean> getDataImportable()
@@ -100,53 +160,54 @@ public class ImportWizard extends WizardModel
 		this.dataImportable = dataImportable;
 	}
 
-	public boolean isImportError()
+	public Map<String, Collection<String>> getFieldsDetected()
 	{
-		return importError;
+		return fieldsDetected;
 	}
 
-	public void setImportError(boolean importError)
+	public void setFieldsDetected(Map<String, Collection<String>> fieldsDetected)
 	{
-		this.importError = importError;
+		this.fieldsDetected = fieldsDetected;
 	}
 
-	public boolean isValidationError()
+	public Map<String, Collection<String>> getFieldsUnknown()
 	{
-		return validationError;
+		return fieldsUnknown;
 	}
 
-	public void setValidationError(boolean validationError)
+	public void setFieldsUnknown(Map<String, Collection<String>> fieldsUnknown)
 	{
-		this.validationError = validationError;
+		this.fieldsUnknown = fieldsUnknown;
 	}
 
-	public String getEntityImportOption()
+	public Map<String, Collection<String>> getFieldsRequired()
 	{
-		return entityImportOption;
+		return fieldsRequired;
 	}
 
-	public void setEntityImportOption(String entityImportOption)
+	public void setFieldsRequired(Map<String, Collection<String>> fieldsRequired)
 	{
-		this.entityImportOption = entityImportOption;
+		this.fieldsRequired = fieldsRequired;
 	}
 
-	public String getDataFeatureImportOption()
+	public Map<String, Collection<String>> getFieldsAvailable()
 	{
-		return dataFeatureImportOption;
+		return fieldsAvailable;
 	}
 
-	public void setDataFeatureImportOption(String dataFeatureImportOption)
+	public void setFieldsAvailable(Map<String, Collection<String>> fieldsAvailable)
 	{
-		this.dataFeatureImportOption = dataFeatureImportOption;
+		this.fieldsAvailable = fieldsAvailable;
 	}
 
-	public String getDataTargetImportOption()
+	public void setCurrentPageIndex(int currentPageIndex)
 	{
-		return dataTargetImportOption;
+		this.currentPageIndex = currentPageIndex;
 	}
 
-	public void setDataTargetImportOption(String dataTargetImportOption)
+	public void setPages(List<WizardPage> pages)
 	{
-		this.dataTargetImportOption = dataTargetImportOption;
+		this.pages = pages;
 	}
+
 }

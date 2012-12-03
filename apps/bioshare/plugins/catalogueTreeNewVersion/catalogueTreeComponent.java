@@ -56,6 +56,13 @@ public class catalogueTreeComponent
 			int upperLimit = topProtocols.size() < (loadingProcess + 1) * increment ? topProtocols.size()
 					: (loadingProcess + 1) * increment;
 
+			if (increment == 0)
+			{
+				increment = 1;
+
+				upperLimit = topProtocols.size();
+			}
+
 			for (int i = loadingProcess * increment; i < upperLimit; i++)
 			{
 
@@ -192,21 +199,23 @@ public class catalogueTreeComponent
 		}
 		else if ("download_json_getChildren".equals(request.getAction()))
 		{
-
 			String nodeIdentifier = request.getString("nodeIdentifier");
 
 			JQueryTreeViewElement node = protocolsAndMeasurementsinTree.get(nodeIdentifier);
 
 			node.toggleNode();
 
-			String addedNodes = "";
+			StringBuilder addedNodes = new StringBuilder();
 
-			for (JQueryTreeViewElement child : node.getChildren())
+			if (!node.isCollapsed())
 			{
-				addedNodes += child.toHtml(null);
+				for (JQueryTreeViewElement child : node.getChildren())
+				{
+					addedNodes.append(child.toHtml());
+				}
 			}
 
-			json.put("result", addedNodes);
+			json.put("result", addedNodes.toString());
 
 		}
 		else if ("download_json_getPosition".equals(request.getAction()))
