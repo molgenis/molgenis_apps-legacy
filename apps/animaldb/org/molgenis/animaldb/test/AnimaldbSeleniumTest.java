@@ -538,7 +538,7 @@ public class AnimaldbSeleniumTest
 		// Go to animals in locations plugin
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=LocationPlugin_tab_button");
+		selenium.click("id=LocationManagementPlugin_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Animals in locations"));
 		// Add five animals to Room 101
