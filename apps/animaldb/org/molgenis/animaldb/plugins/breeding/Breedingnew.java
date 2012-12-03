@@ -2632,6 +2632,8 @@ public class Breedingnew extends PluginModel<Entity>
 		List<String> elementLabelList;
 		List<String> elementList;
 
+		boolean first = true;
+		String lastSex = "";
 		for (Individual animal : this.getAnimalsInLitter(litter, db))
 		{
 			String animalName = animal.getName();
@@ -2648,6 +2650,10 @@ public class Breedingnew extends PluginModel<Entity>
 			String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
 			elementLabelList.add("Sex:");
 			elementList.add(sex);
+			if (first)
+			{
+				lastSex = sex;
+			}
 			// Earmark
 			elementLabelList.add("Earmark:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "Earmark"));
@@ -2657,6 +2663,9 @@ public class Breedingnew extends PluginModel<Entity>
 			// Background + GeneModification + GeneState
 			elementLabelList.add("Background:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "Background"));
+			System.out.println("----> " + ct.getMostRecentValueAsString(animalName, "Background"));
+			// FIXME for some reason background is not printed: find out why and
+			// fix.....
 
 			// FIXME (can only show one gene modification....
 			elementLabelList.add("Genotype:");
@@ -2677,7 +2686,7 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
 			// Geno mother
 			elementLabelList.add("Father:\nMother:");
-			elementList.add(fatherName + "\n" + motherName);
+			elementList.add(fatherName + " x " + motherName + "\n");
 			// litter
 			elementLabelList.add("Litter:");
 			elementList.add(litter);
@@ -2701,7 +2710,17 @@ public class Breedingnew extends PluginModel<Entity>
 			// elementList.add("Experimenter: " +
 			// ct.getMostRecentValueAsString(animalId,
 			// ct.getMeasurementId("OldUliDbExperimentator")));
+			if (!sex.equals(lastSex))
+			{
+				labelgenerator.finishPage();
+				labelgenerator.nextPage();
+			}
+			lastSex = sex;
 			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+			if (first)
+			{
+				first = false;
+			}
 		}
 
 		// In case of an odd number of animals, add extra label to make row full

@@ -56,13 +56,28 @@ public class LabelGenerator
 		table = new PdfPTable(nrOfColumns);
 	}
 
-	public void newPage() throws LabelGeneratorException
+	public void nextPage() throws LabelGeneratorException
 	{
 		try
 		{
 			document.newPage();
+			table = new PdfPTable(nrOfColumns);
 		}
 		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new LabelGeneratorException();
+		}
+	}
+
+	public void finishPage() throws LabelGeneratorException
+	{
+		try
+		{
+			document.add(table);
+
+		}
+		catch (DocumentException e)
 		{
 			e.printStackTrace();
 			throw new LabelGeneratorException();
