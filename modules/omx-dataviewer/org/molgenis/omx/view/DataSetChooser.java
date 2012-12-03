@@ -27,6 +27,16 @@ public class DataSetChooser extends HtmlWidget
 		this.selectedDataSetId = selectedDataSetId;
 	}
 
+	public List<DataSet> getDataSets()
+	{
+		return dataSets;
+	}
+
+	public void setDataSets(List<DataSet> dataSets)
+	{
+		this.dataSets = dataSets;
+	}
+
 	@Override
 	public String toHtml()
 	{
