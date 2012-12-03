@@ -84,10 +84,15 @@ public class DataSetImporter
 
 		DataSet dataSet = dataSets.get(0);
 
+		boolean startNewTrans = !db.inTx();
 		TupleTable csvTable = null;
 		try
 		{
-			db.beginTx();
+			if (startNewTrans)
+			{
+				db.beginTx();
+			}
+
 			csvTable = new CsvTable(file);
 			List<Field> headerFields = csvTable.getAllColumns();
 			for (Tuple row : csvTable.getRows())
@@ -127,16 +132,26 @@ public class DataSetImporter
 					db.add(observedValue);
 				}
 			}
-			db.commitTx();
+
+			if (startNewTrans)
+			{
+				db.commitTx();
+			}
 		}
 		catch (DatabaseException e)
 		{
-			db.rollbackTx();
+			if (startNewTrans)
+			{
+				db.rollbackTx();
+			}
 			throw e;
 		}
 		catch (Exception e)
 		{
-			db.rollbackTx();
+			if (startNewTrans)
+			{
+				db.rollbackTx();
+			}
 			throw new IOException(e);
 		}
 		finally
