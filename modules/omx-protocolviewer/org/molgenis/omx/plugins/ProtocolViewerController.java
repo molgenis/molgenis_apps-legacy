@@ -25,6 +25,7 @@ import org.molgenis.observ.Category;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
+import org.molgenis.observ.target.OntologyTerm;
 import org.molgenis.omx.EMeasureFeatureWriter;
 import org.molgenis.omx.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
@@ -293,6 +294,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 		return features;
 	}
 
+	private OntologyTerm findOntologyTerm(Database db, ObservableFeature feature) throws DatabaseException
+	{
+		Integer unitId = feature.getUnit_Id();
+		if (unitId == null) return null;
+
+		List<OntologyTerm> protocols = db.find(OntologyTerm.class,
+				new QueryRule(OntologyTerm.ID, Operator.IN, Arrays.asList(unitId)));
+		return protocols.iterator().next();
+	}
+
 	private JSDataSet toJSDataSet(Database db, DataSet dataSet) throws DatabaseException
 	{
 		Integer protocolId = dataSet.getProtocolUsed_Id();
@@ -338,7 +349,9 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			for (Category category : categories)
 				jsCategories.add(new JSCategory(category));
 		}
-		return new JSFeature(feature, jsCategories);
+
+		OntologyTerm ontologyTerm = findOntologyTerm(db, feature);
+		return new JSFeature(feature, jsCategories, ontologyTerm != null ? new JSOntologyTerm(ontologyTerm) : null);
 	}
 
 	public static class JSDataSet
@@ -394,15 +407,30 @@ public class ProtocolViewerController extends PluginModel<Entity>
 		private final String name;
 		private final String description;
 		private final String dataType;
+		private final JSOntologyTerm unit;
 		private final List<JSCategory> categories;
 
-		public JSFeature(ObservableFeature feature, List<JSCategory> categories)
+		public JSFeature(ObservableFeature feature, List<JSCategory> categories, JSOntologyTerm unit)
 		{
 			this.id = feature.getId();
 			this.name = feature.getName();
 			this.description = feature.getDescription();
 			this.dataType = feature.getDataType();
+			this.unit = unit;
 			this.categories = categories;
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static class JSOntologyTerm
+	{
+		private final int id;
+		private final String name;
+
+		public JSOntologyTerm(OntologyTerm ontologyTerm)
+		{
+			this.id = ontologyTerm.getId();
+			this.name = ontologyTerm.getName();
 		}
 	}
 

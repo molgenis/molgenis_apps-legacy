@@ -104,8 +104,9 @@ function setFeatureDetails(feature) {
 	
 	var table = $('<table />');
 	table.append('<tr><td>' + "Name:" + '</td><td>' + feature.name + '</td></tr>');
-	table.append('<tr><td>' + "Description:" + '</td><td>' + feature.description + '</td></tr>');
-	table.append('<tr><td>' + "Data type:" + '</td><td>' + feature.dataType + '</td></tr>');
+	table.append('<tr><td>' + "Description:" + '</td><td>' + (feature.description ? feature.description : '') + '</td></tr>');
+	table.append('<tr><td>' + "Data type:" + '</td><td>' + (feature.dataType ? feature.dataType : '') + '</td></tr>');
+	table.append('<tr><td>' + "Unit:" + '</td><td>' + (feature.unit ? feature.unit.name : '') + '</td></tr>');
 	
 	table.addClass('listtable feature-table');
 	table.find('td:first-child').addClass('feature-table-col1');
