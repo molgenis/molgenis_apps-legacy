@@ -1,9 +1,17 @@
 Name,defaultValue,description,dataType,hasOne_name
+McScripts,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult/generatedJobs,,,autostart
+McWorksheet,areWeCrazy,,,autostart
+McDir,areWeCrazy,,,autostart
+McParameters,areWeCrazy,,,autostart
+McProtocols,areWeCrazy,,,autostart
+McId,areWeCrazy,,,autostart
+McTemplates,areWeCrazy,,,autostart
+McWorkflow,areWeCrazy,,,autostart
 clusterQueue,default,,,
 mem,4,Memory in GB,,
 walltime,23:59:00,,,
 cores,1,,,
-scheduler,PBS,,,
+scheduler,GRID,,,
 stage,module load,,,
 defaultInterpreter,#!/bin/bash,,,
 jobname,jobname,,string,
