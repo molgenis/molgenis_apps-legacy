@@ -387,7 +387,7 @@
 								<select id="listOfCohortStudies" name = "listOfCohortStudies" style="width:185px;">
 									<#if screen.getValidationStudies()??>
 										<#list screen.getValidationStudies() as study>
-											<option>${study}</option>
+											<option <#if screen.getSelectedValidationStudy()?? && screen.getSelectedValidationStudy() == study>selected="selected"</#if>>${study}</option>
 										</#list>
 									</#if>
 								</select>

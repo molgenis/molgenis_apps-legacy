@@ -684,6 +684,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				{
 					String validationStudy = request.getString("listOfCohortStudies");
 
+					this.getModel().setSelectedValidationStudy(validationStudy);
+
 					System.out.println(validationStudy);
 
 					stringMatching(request, db);
