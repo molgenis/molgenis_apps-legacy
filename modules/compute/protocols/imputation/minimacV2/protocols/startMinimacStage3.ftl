@@ -12,8 +12,6 @@ alloutputsexist \
 	${projectImputationJobsDir}/check_for_submission.txt
 
 
-
-
 #Call compute to generate phasing jobs
 ${stage} jdk/${javaversion}
 
