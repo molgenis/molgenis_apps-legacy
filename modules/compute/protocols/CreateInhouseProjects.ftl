@@ -86,6 +86,5 @@ sh ${McDir}/molgenis_compute.sh \
 -parameters=${McParameters} \
 -workflow=${workflowFile} \
 -protocols=${McProtocols}/ \
--templates=${McTemplates}/ \
--scripts=${projectJobsDir}/ \
+-outputdir=${projectJobsDir}/ \
 -id=${McId}

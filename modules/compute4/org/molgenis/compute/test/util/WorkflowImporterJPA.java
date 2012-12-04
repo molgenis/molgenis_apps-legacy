@@ -205,6 +205,16 @@ public class WorkflowImporterJPA
                     if(workflowNumber > 1)
                         if(shared.contains(fName))
                             continue;
+                    else
+                        {
+                            ComputeProtocol protocol = db.find(ComputeProtocol.class,
+                                                            new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, fName)).get(0);
+                            if(protocol != null)
+                            {
+                                System.out.println("DOUBLE PROTOCOL: " + fName + "is skipped");
+                                continue;
+                            }
+                        }
 
 
 					// Don't remove extension while importing as two files, say
@@ -272,8 +282,11 @@ public class WorkflowImporterJPA
 				element.setName(workflowElementName);
 				element.setWorkflow(workflow);
 
-				ComputeProtocol p = findProtocol(protocols, protocolName);
-				element.setProtocol(p);
+				//ComputeProtocol p = findProtocol(protocols, protocolName);
+                ComputeProtocol p = db.find(ComputeProtocol.class,
+                                                new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, protocolName)).get(0);
+
+                element.setProtocol(p);
 
 				if (previousSteps != null)
 				{

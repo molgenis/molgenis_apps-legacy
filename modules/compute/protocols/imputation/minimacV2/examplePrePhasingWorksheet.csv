@@ -1,0 +1,2 @@
+project,studyInputDir,prePhasingResultDir,imputationPipeline,genomeBuild,chr,autostart
+1240Blood_b37,${root}/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood/MapPedB37/,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,minimac,b37,20,FALSE

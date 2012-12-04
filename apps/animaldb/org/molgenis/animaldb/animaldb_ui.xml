@@ -23,7 +23,7 @@
 			<!-- ListPluginMatrix; Goal: matrix for viewing animal values; Flavor: 
 				Java-only -->
 			<plugin name="DataViewer"
-				type="org.molgenis.animaldb.plugins.viewers.ListPluginMatrix" label="Data viewer" />
+				type="org.molgenis.animaldb.plugins.viewers.ListPluginMatrix" label="Animal viewer" />
 			<!--  <plugin name="JQGridPluginAnimal"
 				type="org.molgenis.datatable.plugin.JQGridPluginAnimal" label="Phenotype" />
 			-->
