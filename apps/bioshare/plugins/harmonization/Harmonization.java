@@ -139,9 +139,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					String categories = data.getString("category").trim();
 					String buildingBlockString = data.getString("buildingBlocks").trim();
 
-					m.setName(stringBuilder.append(data.getString("name").trim()).append("_")
-							.append(predictionModelName).toString());
-					m.setLabel(data.getString("name").trim());
+					m.setName(stringBuilder.append(data.getString("name").trim()).toString());
+					m.setLabel(data.getString("label").trim());
 					m.setDescription(data.getString("description"));
 					m.setDataType(data.getString("dataType").trim());
 					m.setUnit_Name(unitName);
@@ -253,6 +252,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 								Operator.IN, cp.getFeatures_Name())))
 						{
 							JSONObject jsonForPredictor = new JSONObject();
+							jsonForPredictor.put("name", eachPredictor.getName());
 							jsonForPredictor.put("label", eachPredictor.getLabel());
 							jsonForPredictor.put("identifier", eachPredictor.getName().replaceAll(" ", "_"));
 							jsonForPredictor.put("description", (eachPredictor.getDescription() == null ? ""
@@ -1023,12 +1023,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
 	{
-		StringBuilder predictorName = new StringBuilder();
-
-		Measurement m = db.find(
-				Measurement.class,
-				new QueryRule(Measurement.NAME, Operator.EQUALS, predictorName.append(predictor).append("_")
-						.append(predictionModel).toString())).get(0);
+		Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, predictor)).get(0);
 
 		ComputeProtocol cp = db.find(ComputeProtocol.class,
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);

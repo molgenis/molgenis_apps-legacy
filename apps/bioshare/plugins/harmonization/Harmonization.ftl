@@ -424,6 +424,14 @@
 								</tr>
 								<tr>
 									<td style="margin-right:10px;">
+										<span style="display:block;margin:5px;">Label: </span>
+									</td>
+									<td>
+										<input id="labelOfPredictor" class="predictorInput" type="text"/>
+									</td>
+								</tr>
+								<tr>
+									<td style="margin-right:10px;">
 										<span style="display:block;margin:5px;">Description: </span>
 									</td>
 									<td>
