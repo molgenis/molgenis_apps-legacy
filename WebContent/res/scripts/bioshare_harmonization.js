@@ -27,12 +27,14 @@ function monitorJobs(url)
 		$('#processedTime').text((processedTime/60).toFixed(0) + " mins " + (processedTime%60).toFixed(0) + " secs");
 
 		$('#estimatedTime').text(estimatedTimeString);
+		
+		$('#jobTitle').text(status["jobTitle"]);
 
 		$('#progressBarMessage').text(" " + (percentage * 100).toFixed(2) + "%");
 
 		$('#progressBar').progressbar({value: percentage * 100});
 
-		if(status["finishedJobs"] == status["totalJobs"])
+		if(status["totalQuery"] == status["finishedQuery"])
 		{
 			clearInterval(timer);
 
@@ -431,6 +433,7 @@ function insertNewRow(url)
 		data = {};
 		data["selected"] = $('#selectPredictionModel').val();
 		data["name"] = $('#nameOfPredictor').val();
+		data["label"] = $('#nameOfPredictor').val();
 		data["description"] = $('#descriptionOfPredictor').val();
 		data["dataType"] = $('#dataTypeOfPredictor').val();
 		data["unit"] = $('#unitOfPredictor').val();
@@ -468,7 +471,7 @@ function insertNewRow(url)
 
 function populateRowInTable(data, url)
 {
-	name = data["name"];
+	label = data["label"];
 	description = data["description"];
 	dataType = data["dataType"];
 	categories = data["category"];
@@ -477,7 +480,7 @@ function populateRowInTable(data, url)
 	identifier = data["identifier"];
 
 	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
-	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + name + "</span>";
+	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + label + "</span>";
 	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"

@@ -42,6 +42,8 @@
 	<br />
 	<input type="radio" name="source" id="source4" value="rhutdb" />Roelof Hut
 	<br />
+	<input type="radio" name="source" id="source5" value="generic" />RStandard non GMO breeding import
+	<br />
 </div>
 <div class="row">
 	<input id='load' type='submit' class='addbutton' value='Load' onclick="__action.value='load'" />

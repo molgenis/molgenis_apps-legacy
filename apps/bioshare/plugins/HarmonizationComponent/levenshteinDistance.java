@@ -40,7 +40,7 @@ public class levenshteinDistance
 
 		WritableSheet sheet = workbook.createSheet("result", 0);
 
-		LevenshteinDistanceModel matchingModel = new LevenshteinDistanceModel();
+		NGramMatchingModel matchingModel = new NGramMatchingModel();
 
 		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LeidseHPOLijste2.xls";
 

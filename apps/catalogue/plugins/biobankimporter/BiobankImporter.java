@@ -20,6 +20,7 @@ import jxl.write.WritableWorkbook;
 
 import org.molgenis.auth.Institute;
 import org.molgenis.auth.Person;
+import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -162,6 +163,13 @@ public class BiobankImporter extends PluginModel<Entity>
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.INVESTIGATION_NAME);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.CATEGORIES_NAME);
 		chooseClassType.add(Protocol.class.getSimpleName());
+		chooseClassType.add(ComputeProtocol.class.getSimpleName());
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.NAME);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.FEATURES_NAME);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.INVESTIGATION_NAME);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.SUBPROTOCOLS_NAME);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.DESCRIPTION);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.SCRIPTTEMPLATE);
 		chooseFieldName.add(Protocol.class.getSimpleName() + ":" + Protocol.NAME);
 		chooseFieldName.add(Protocol.class.getSimpleName() + ":" + Protocol.FEATURES_NAME);
 		chooseFieldName.add(Protocol.class.getSimpleName() + ":" + Protocol.INVESTIGATION_NAME);

@@ -629,7 +629,6 @@ public class ComputeCommandLine
 			{
 				// // create submit in submit.sh
 				String dependency = "";
-
 				// if (job.getPrevSteps_Name().size() > 0)
 				// {
 				// dependency = "-W depend=afterok";
@@ -656,7 +655,6 @@ public class ComputeCommandLine
 				// submitWriterLocal.println("");
 				//
 				// // produce .sh file in outputdir for each job
-
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
 				//
 				// // write the script
