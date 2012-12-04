@@ -2662,10 +2662,7 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(line);
 			// Background + GeneModification + GeneState
 			elementLabelList.add("Background:");
-			elementList.add(ct.getMostRecentValueAsString(animalName, "Background"));
-			System.out.println("----> " + ct.getMostRecentValueAsString(animalName, "Background"));
-			// FIXME for some reason background is not printed: find out why and
-			// fix.....
+			elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Background"));
 
 			// FIXME (can only show one gene modification....
 			elementLabelList.add("Genotype:");
