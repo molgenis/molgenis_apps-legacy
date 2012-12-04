@@ -9,6 +9,8 @@ import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -29,6 +31,15 @@ public class PilotService implements MolgenisService
 	{
 		System.out.println(">> In handleRequest!");
 		System.out.println(request);
+
+        Connection connection = request.getDatabase().getConnection();
+        while(connection == null)
+        {
+            connection = request.getDatabase().getConnection();
+        }
+
+        System.out.println("connection " + connection.toString());
+
 
 		if ("started".equals(request.getString("status")))
 		{
@@ -88,6 +99,19 @@ public class PilotService implements MolgenisService
 				request.getDatabase().update(task);
                 request.getDatabase().commitTx();
 			}
+            else
+            {
+                System.out.println("something is wrong");
+            }
 		}
-	}
+
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }
