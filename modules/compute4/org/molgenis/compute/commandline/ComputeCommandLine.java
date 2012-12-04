@@ -55,14 +55,9 @@ public class ComputeCommandLine
 		computeBundle = new ComputeBundleFromDirectory(this);
 
 		// Add our parsed command line parameters 'as is' to the bundle:
-		// Exception 1: "mcdir" conficts with "McDir".
-		// Exception 2: "parameters" here refers to the parameters.csv file.
-		// However, "parameters" in the *.ftl files refers to _all_ parameters,
-		// i.e. the content of parameters.csv + worksheet.csv + the command line
-		// options...
 		for (String p : argsMap.keySet())
 		{
-			if (!p.equals("mcdir") && !p.equals("parameters"))
+			if (!p.equals("mcdir")) // <- Conficts with "McDir"...
 			{
 				ComputeParameter cp = new ComputeParameter();
 				cp.setName(p);
@@ -144,15 +139,12 @@ public class ComputeCommandLine
 			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet,
 					this.computeBundle.getComputeParameters(), targets);
 
-			// The following code differentiates between different schedulers.
-			// MD: shouldn't we put all such code in a separate class? I mean,
-			// one can use compute without setting the 'scheduler' parameter,
-			// isn't it?
+			// each element of folded worksheet produces one
+			// protocolApplication (i.e. a script)
+
 			String schedulerName = folded.get(0).getString("scheduler");
 
-			// Also check "schedulerName != null", because this variable is not
-			// necessarily set!
-			if (schedulerName != null && schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
+			if (schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
 			{
 				currentScheduler = SCHEDULER_BSUB;
 				// change walltime format hh:mm:ss -> hh:mm
@@ -167,8 +159,6 @@ public class ComputeCommandLine
 				currentScheduler = SCHEDULER_PBS;
 			}
 
-			// each element of folded worksheet produces one
-			// protocolApplication (i.e. a script)
 			for (Tuple work : folded)
 			{
 				// fill template with work and put in script
@@ -219,9 +209,7 @@ public class ComputeCommandLine
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol
 						.getMem().toString());
 
-				// Set memory, dependent on schedular. Careful: scheduler may
-				// not be set; one may just use a runlocal...
-				if (schedulerName != null && schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
+				if (schedulerName.equalsIgnoreCase(SCHEDULER_BSUB))
 				{
 					// for BSBS, the memory is specified in KB
 					mem = Integer.parseInt(mem) * 1024 * 1024 + "";
@@ -603,9 +591,10 @@ public class ComputeCommandLine
 		params.put("workflowfilename", this.getworkflowfilename());
 		params.put("scheduler", currentScheduler);
 
+		String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
+
 		try
 		{
-			String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
 			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
 
 			// and produce submit.sh
