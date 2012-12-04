@@ -2,6 +2,7 @@
 <molgenis name="examples">
 	<menu name="ExamplesMain" position="left">
 		<menu name="Examples" position="left">
+			<plugin name="TiledBrowserPlugin" type="org.molgenis.examples.ui.TiledBrowserDemo" />
 			<plugin name="HelloWorldPlugin" type="org.molgenis.examples.ui.HelloWorldDemo" />
 			<plugin name="SimpleInputs" type="org.molgenis.examples.ui.SimpleInputsDemo" />
 			<plugin name="LookupInputs" type="org.molgenis.examples.ui.LookupInputsDemo" />
