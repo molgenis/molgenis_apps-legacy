@@ -24,6 +24,7 @@ import org.molgenis.observ.Characteristic;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
+import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -155,7 +156,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 			{
 
 				Tuple t = new SimpleTuple();
-				t.set("target", os.getTarget_Identifier());
+				Characteristic c = db.findById(Characteristic.class, os.getTarget_Id());
+				t.set("target", c.getName());
 
 				Query<ObservedValue> queryObservedValue = getDb().query(ObservedValue.class);
 
@@ -338,9 +340,23 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 
 				if (filter.getField().equals("target"))
 				{
-					QueryRule rule = new QueryRule(ObservationSet.TARGET_IDENTIFIER, filter.getOperator(),
-							filter.getValue());
-					List<ObservationSet> observationSets = getDb().find(ObservationSet.class, rule);
+
+					QueryRule rule = new QueryRule(ObservationTarget.NAME, filter.getOperator(), filter.getValue());
+					List<ObservationTarget> targets = getDb().find(ObservationTarget.class, rule);
+
+					// Create a collection of ObservationTarget ids
+					Collection<Integer> targetIds = Collections2.transform(targets,
+							new Function<ObservationTarget, Integer>()
+							{
+								@Override
+								public Integer apply(final ObservationTarget target)
+								{
+									return target.getId();
+								}
+							});
+
+					List<ObservationSet> observationSets = getDb().query(ObservationSet.class)
+							.in(ObservationSet.TARGET, new ArrayList<Integer>(targetIds)).find();
 
 					// No results
 					if (observationSets.isEmpty())
@@ -349,7 +365,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 					}
 
 					// Create a collection of ObservationSet ids
-					Collection<Integer> ids = Collections2.transform(observationSets,
+					Collection<Integer> observationSetIds = Collections2.transform(observationSets,
 							new Function<ObservationSet, Integer>()
 							{
 								@Override
@@ -360,7 +376,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 							});
 
 					queryRules.add(new QueryRule(ObservedValue.OBSERVATIONSET_ID, Operator.IN, new ArrayList<Integer>(
-							ids)));
+							observationSetIds)));
 				}
 				else
 				{
@@ -395,5 +411,4 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		return query;
 
 	}
-
 }
