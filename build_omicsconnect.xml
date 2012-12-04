@@ -27,7 +27,7 @@
 	<target name="generate" depends="common.generate,compile.xml" />
 
 	<target name="compile.xml">
-	    <exec executable="xjc.exe">
+	    <exec executable="xjc">
 	        <arg value="-d"/>
 	        <arg value="modules/omx-hl7parser"/>
 	        <arg value="-p"/>
