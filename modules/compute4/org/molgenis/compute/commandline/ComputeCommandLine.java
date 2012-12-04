@@ -588,7 +588,7 @@ public class ComputeCommandLine
 		// extra: custom
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("jobs", tasks);
-		params.put("workflowfilename", this.getworkflowfilename());
+		params.put("workflowfilename", (new File(this.getworkflowfilename())).getName());
 		params.put("scheduler", currentScheduler);
 
 		String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
@@ -602,17 +602,16 @@ public class ComputeCommandLine
 			// File.separator + "submit.sh"));
 
 			// also produce a runlocal.sh
-			// PrintWriter submitWriterLocal = new PrintWriter(new
-			// File(outputdir + File.separator + "runlocal.sh"));
+			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "runlocal.sh"));
 
 			// touch "workflow file name".started in same directory as
 			// submit.sh, when starting submit.sh
-			String cmd = "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"";
+			String cmd = "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"\n";
 			// submitWriter.println(cmd);
-			// submitWriterLocal.println(cmd);
+			submitWriterLocal.println(cmd);
 			cmd = "touch $DIR" + File.separator + getworkflowfilename() + ".started";
 			// submitWriter.println(cmd);
-			// submitWriterLocal.println(cmd);
+			submitWriterLocal.println(cmd);
 
 			//
 			// Temporary hack for executing scripts with runlocal hence directly
@@ -623,7 +622,7 @@ public class ComputeCommandLine
 			// resides.
 			//
 			cmd = "export PBS_O_WORKDIR=${DIR}";
-			// submitWriterLocal.println(cmd);
+			submitWriterLocal.println(cmd);
 
 			for (ComputeTask job : this.tasks)
 			{
@@ -647,12 +646,11 @@ public class ComputeCommandLine
 				// submitWriter.println("echo $" + job.getName());
 				// submitWriter.println("sleep 8");
 				//
-				// // do stuff for submitlocal.sh
-				// submitWriterLocal.println("echo Starting with " +
-				// job.getName() + "...");
-				// submitWriterLocal.println("sh " + job.getName() + ".sh");
-				// submitWriterLocal.println("#Dependencies: " + dependency);
-				// submitWriterLocal.println("");
+				// do stuff for submitlocal.sh
+				submitWriterLocal.println("echo Starting with " + job.getName() + "...");
+				submitWriterLocal.println("sh " + job.getName() + ".sh");
+				submitWriterLocal.println("#Dependencies: " + dependency);
+				submitWriterLocal.println("");
 				//
 				// // produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
@@ -664,7 +662,7 @@ public class ComputeCommandLine
 			}
 			//
 			// submitWriter.close();
-			// submitWriterLocal.close();
+			submitWriterLocal.close();
 
 		}
 		catch (FileNotFoundException e)
