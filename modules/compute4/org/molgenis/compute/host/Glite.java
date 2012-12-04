@@ -8,7 +8,7 @@ import org.molgenis.util.SshResult;
 
 /** Facade to use Glite over ssh */
 public class Glite extends AbstractComputeHost implements ComputeHost
-{	
+{
 	public Glite(String host, String user, String password) throws IOException
 	{
 		super(host, user, password, 22);
@@ -16,13 +16,13 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 
 	@Override
 	public void submit(Job job) throws IOException
-	{		
+	{
 		// if no name set, create one
 		if (job.getName() == null) job.setName(UUID.randomUUID().toString().replace("-", ""));
-		
+
 		// create prefix path
 		String path = getWorkingDir() + ("".equals(this.getWorkingDir()) ? "" : "/") + job.getName();
-		
+
 		// create standard jdl
 		String jdl = String.format("Type=\"Job\";" + "\nJobType=\"Normal\";" + "\n" + "\nExecutable = \"/bin/sh\";"
 				+ "\nArguments = \"%1$s.sh\";" + "\n" + "\nStdError = \"%1$s.err\";" + "StdOutput = \"%1$s.out\";"
@@ -30,7 +30,7 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 				job.getName(), path);
 
 		// copy .sh and .jdl
-		String filename =  job.getName() + ".sh";
+		String filename = job.getName() + ".sh";
 		logger.debug("uploading script as file: " + filename);
 		this.uploadStringToFile(job.getScript(), filename, this.getWorkingDir());
 
@@ -39,12 +39,11 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		this.uploadStringToFile(jdl, filename, this.getWorkingDir());
 
 		// start the scrip
-		String command = String.format(
-				"glite-wms-job-submit  -d $USER -o %1$s $HOME/%2$s.jdl", job.getName(), path);
-		
-		//cd to working directory (otherwise stuff is in wrong dir)
-		if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
-		
+		String command = String.format("glite-wms-job-submit  -d $USER -o %1$s $HOME/%2$s.jdl", job.getName(), path);
+
+		// cd to working directory (otherwise stuff is in wrong dir)
+		if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
+
 		SshResult result = this.executeCommand(command);
 
 		if (!"".equals(result.getStdErr()))
@@ -57,10 +56,10 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		{
 			if (line.startsWith("https")) job.setId(line);
 		}
-		
-		//set the paths, incl working dir
-		job.setError_path( path +".err");
-		job.setOutput_path( path + ".out");
+
+		// set the paths, incl working dir
+		job.setError_path(path + ".err");
+		job.setOutput_path(path + ".out");
 
 		logger.debug("job sumitted: " + job);
 
@@ -78,29 +77,30 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 	@Override
 	public void refresh(Job job) throws IOException
 	{
-		if(job.getState() == JobState.COMPLETED) return;
+		if (job.getState() == JobState.COMPLETED) return;
 		try
 		{
-			//cd to working directory 
+			// cd to working directory
 			String command = "glite-wms-job-status " + job.getId();
-			if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
-			
+			if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
+
 			// retrieve the state
 			SshResult gliteOutput = executeCommand(command);
 
 			this.parse(job, gliteOutput.getStdOut());
-			
-			//if complete, retrieve logs
-			if(job.getState() == JobState.COMPLETED)
+
+			// if complete, retrieve logs
+			if (job.getState() == JobState.COMPLETED)
 			{
-				command = "glite-wms-job-output --dir $HOME/"+getWorkingDir()+" --nosubdir --noint "+job.getId();
-				if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
+				command = "glite-wms-job-output --dir $HOME/" + getWorkingDir() + " --nosubdir --noint " + job.getId();
+				if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
 				SshResult result = executeCommand(command);
-				
+
 				logger.debug(result.getStdOut() + "\n" + result.getStdOut());
-				
-				//if(!"".equals(result.getStdErr())) throw new Exception(result.getStdErr());
-				
+
+				// if(!"".equals(result.getStdErr())) throw new
+				// Exception(result.getStdErr());
+
 				job.setError_log(this.downloadFile(job.getError_path()));
 				job.setOutput_log(this.downloadFile(job.getOutput_path()));
 			}

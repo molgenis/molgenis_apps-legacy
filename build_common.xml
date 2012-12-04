@@ -2,10 +2,10 @@
 It should be used via 'import' plus passing of properties
 'app_properties' (reference properties file) and
 'app_src' (listing of the src folders to be included) -->
-<project xmlns:ivy="antlib:org.apache.ivy.ant">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="build_common">
 
 	<mkdir dir="WebContent/WEB-INF/lib" />
-		
+
 	<!-- requires app_name, app_properties properties and app_src path -->
 	<fail unless="app_properties">app_properties is not set. Did you use the right build_xyz.xml?</fail>
 	<available file="${app_properties}" property="isFileAvail" />
@@ -75,7 +75,7 @@ It should be used via 'import' plus passing of properties
 		</condition>
 
 		<!-- check if molgenis is compiled into ${build.dir}, otherwise compile now -->
-		<javac srcdir="${molgenis.dir}/src" destdir="${build.molgenis.dir}" nowarn="on" debug="true">
+		<javac srcdir="${molgenis.dir}/src" destdir="${build.molgenis.dir}" nowarn="on" debug="true" includeantruntime="false">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -111,6 +111,11 @@ It should be used via 'import' plus passing of properties
 		<copy todir="${build.molgenis_apps.dir}" verbose="true">
 			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
+		
+		<!-- copy source.R from generated to build -->
+		<copy todir="${build.molgenis_apps.dir}" verbose="true">
+			<fileset dir="${output_src}" includes="**/*.R" />
 		</copy>
 
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
@@ -158,13 +163,16 @@ It should be used via 'import' plus passing of properties
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
-		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true">
+		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true" includeantruntime="false">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
 	</target>
 
-	<target name="test">
+	<target name="test" depends="cb,findbugs" />
+
+	<target name="testng">
+
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
 			<path refid="molgenis.classpath" />
@@ -174,10 +182,15 @@ It should be used via 'import' plus passing of properties
 
 
 		<!-- run the tests -->
-		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+		<testng  outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
+			<classpath location="${cb.instrument.dir}" />
+			<classpath refid="combined.class.path"/>
+			<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
+			<jvmarg value="-noverify" />
 			<jvmarg value="-ea" />
-			<jvmarg value="-Xmx1512m" />
+			<jvmarg value="-Xmx2048m" />
 		</testng>
 
 		<!--junitreport todir="${testng.report.dir}">
@@ -189,6 +202,110 @@ It should be used via 'import' plus passing of properties
 		</junitreport-->
 
 	</target>
+	
+	<!-- add robots.txt to webcontent folder, blocking all non-malicious webcrawlers - you can add this optionally to your build script! -->
+	<target name="add_robotstxt">
+		<echo>Adding WebContent/robots.txt to block webcrawlers..</echo>
+		<echo file="WebContent/robots.txt" append="false">User-agent: *${line.separator}Disallow: /${line.separator}</echo>
+	</target>
+
+	<!-- findbugs -->
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="molgenis.classpath"/>
+  	<property name="findbugs.home" value="${molgenis.dir}/lib/findbugs-2.0.1" />
+ 
+	<target name="findbugs">
+		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
+			<map from="${basedir}/" to="" />
+		</pathconvert>
+
+   		<findbugs home="${findbugs.home}" 
+       		output="html" outputFile="${basedir}/dist/findbugs.xml"
+       		jvmargs="-Xms1024M -Xmx1024M ">
+      		<!--
+      		<sourcePath path="${molgenis.dir}/src" />
+      		-->
+      		<sourcePath path="${app_src}" />
+       		<class location="${build.molgenis.dir}" />
+       		<class location="${build.molgenis_apps.dir}" />
+       		<auxclasspath>
+	   			<path refid="molgenis.classpath" />
+			</auxclasspath>
+   		</findbugs>
+	</target>
+
+	<!--  cobertura -->
+	<property name="cb.file" location="${basedir}/dist/cobertura.ser" />
+	<path id="cb.classpath">
+		<fileset dir="${molgenis.dir}/lib/cobertura">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="cb.init">
+   		<!-- output directory -->
+   		<property name="cb.report.dir" value="${basedir}/dist/cobertura" />
+   		<!-- instrumentation directory -->
+   		<property name="cb.instrument.dir" value="${cb.report.dir}/cobertura-instrumented-classes" />
+   		<property name="cb.src.dir" value="${molgenis.dir}/src" />
+   		<property name="cb.classes.dir" value="${build.molgenis.dir}" />
+   		<taskdef classpathref="cb.classpath" resource="tasks.properties" />
+	</target>
+ 
+	<target name="cb" depends="cb.gen, cb.xml, cb.html"> 
+   		<delete file="${cb.file}" />
+   		<delete dir="${cb.instrument.dir}" />
+	</target>
+ 
+	<target name="cb.instrument">
+   		<mkdir dir="${cb.report.dir}" />
+   		<cobertura-instrument todir="${cb.instrument.dir}/"
+        	                 datafile="${cb.file}">
+      		<fileset dir="${cb.classes.dir}">
+         		<include name="**/*.class" />
+         		<exclude name="**/*Test.class" />
+      		</fileset>
+   		</cobertura-instrument>
+	</target>
+ 
+	<target name="init.cb.path">
+   		<property name="test.cp" value="cb.test.cp" />
+   		<path id="cb.test.cp">
+      		<pathelement path="${cb.instrument.dir}" />
+      		<pathelement path="${cb.classes.dir}" />
+      		<path refid="molgenis.classpath" />
+			<path refid="app.class.path" />
+      		<path refid="cb.classpath" />
+   		</path>
+	</target>
+
+	<target name="cb.run" depends="init.cb.path, testng" />
+
+	<target name="cb.gen" depends="cb.init, cb.instrument, cb.run" />
+
+	<target name="cb.html">
+   		<cobertura-report format="html"
+                     destdir="${cb.report.dir}"
+                     datafile="${cb.file}">
+      		<fileset dir="${cb.src.dir}">
+       			<include name="**/*.java" />
+      		</fileset>
+   		</cobertura-report>
+	</target>
+ 
+	<target name="cb.xml">
+   		<cobertura-report format="xml"
+                     destdir="${cb.report.dir}"
+                     datafile="${cb.file}">
+      		<fileset dir="${cb.src.dir}">
+         		<include name="**/*.java" />
+     		 </fileset>
+   		</cobertura-report>
+	</target>
+
+
+
+
+
 	<!--
 	<target name="javadoc">
 		<javadoc access="public" destdir="${dir.javadoc}" author="true" version="true" noindex="false" use="true" classpathref="classpath">
@@ -221,7 +338,7 @@ It should be used via 'import' plus passing of properties
 	</target>
 	-->
 
-	<target name="update-eclipse" depends="download-jars">
+	<target name="update-eclipse">
 
 		<echo>Restoring .classpath from template file ${basedir}/.classpath.template.xml</echo>
 		<copy file="${basedir}/.classpath.template.xml" tofile="${basedir}/.classpath" overwrite="true" />
@@ -266,6 +383,8 @@ It should be used via 'import' plus passing of properties
 		<xmltask source=".settings/template.org.eclipse.wst.common.component" dest=".settings/org.eclipse.wst.common.component" outputter="simple">
 			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}" />
 		</xmltask>
+
+		<antcall target="download-jars"/>
 
 	</target>
 
@@ -358,16 +477,16 @@ It should be used via 'import' plus passing of properties
 	<target name="download-jars">
 		<echo message="installing ivy.." />
 		<mkdir dir="WebContent/WEB-INF/lib" />
-		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0-rc1/ivy-2.0.0-rc1.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
+		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0/ivy-2.0.0.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
 		<path id="ivy.lib.path">
 			<fileset dir="${lib.dir}" includes="ivy.jar"/>
 		</path>
 		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
-	
+
 		<echo message="resolving dependecies ..." />
-		
+
 		<ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar,bundle" sync="true" />
-		
+
 	</target>
-	
+
 </project>

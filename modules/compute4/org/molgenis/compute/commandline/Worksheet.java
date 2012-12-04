@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -202,17 +203,17 @@ public class Worksheet
 		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1),
 														// (Sample: a,b,c),
 														// (Flowcell: x,y,z)]
-		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String, ArrayList<Object>>>(); // Suppose
-																													// target
-																													// is
-																													// lane:
-																													// [1:
-																													// [(lane:
-																													// 1,1,1),
-																													// (sample:
-																													// a,b,c),
-																													// (flowcell:
-																													// x,y,z)]]
+		Map<String, Map<String, ArrayList<Object>>> wsset = new LinkedHashMap<String, Map<String, ArrayList<Object>>>(); // Suppose
+																															// target
+																															// is
+																															// lane:
+																															// [1:
+																															// [(lane:
+																															// 1,1,1),
+																															// (sample:
+																															// a,b,c),
+																															// (flowcell:
+																															// x,y,z)]]
 
 		for (Tuple t : worksheet)
 		{
@@ -235,7 +236,7 @@ public class Worksheet
 			else
 			{
 				// Initialize tupleset: each field gets empty List of objects
-				tupleset = new HashMap<String, ArrayList<Object>>();
+				tupleset = new LinkedHashMap<String, ArrayList<Object>>();
 				for (String field : t.getFields())
 				{
 					tupleset.put(field, new ArrayList<Object>());
@@ -262,7 +263,7 @@ public class Worksheet
 			tupleset = wsset.get(key);
 
 			// this is bizarre:
-			Map<String, Object> m = new HashMap<String, Object>();
+			Map<String, Object> m = new LinkedHashMap<String, Object>();
 			for (String field : tupleset.keySet())
 			{
 				m.put(field, tupleset.get(field));

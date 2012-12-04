@@ -14,8 +14,9 @@ import plugins.cluster.interfaces.JobManager;
 
 /**
  * Database implementation of JobManager
+ * 
  * @author joerivandervelde
- *
+ * 
  */
 public class DatabaseJobManager implements JobManager
 {
@@ -42,9 +43,5 @@ public class DatabaseJobManager implements JobManager
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-	
-	
 
 }

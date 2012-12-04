@@ -12,6 +12,7 @@
 		<dependency org="commons-collections" name="commons-collections"
 			rev="3.2.1" />
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.20" />
+		<dependency org="c3p0" name="c3p0" rev="0.9.1.2" />
 
 		<dependency org="org.apache.abdera" name="abdera-bundle"
 			rev="1.1.2" />
@@ -25,6 +26,7 @@
 		<dependency org="org.seleniumhq.selenium" name="selenium-server"
 			rev="2.19.0" />
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.0" />
+		
 		<dependency org="org.apache.poi" name="poi" rev="3.8" />
 		<dependency org="org.apache.poi" name="poi-ooxml" rev="3.8" />
 
@@ -65,6 +67,11 @@
 		
 		<dependency org="org.apache.lucene" name="lucene-core" rev="3.0.2" />
 		<dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.0.2" />
-		
+		<dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1.1"/>
+		<dependency org="displaytag" name="displaytag" rev="1.2">
+		  	<exclude name="jcl104-over-slf4j" /> 
+      	 	<exclude name="slf4j-log4j12" />
+		</dependency>
+	
 	</dependencies>
 </ivy-module>

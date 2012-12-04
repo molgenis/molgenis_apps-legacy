@@ -20,7 +20,7 @@ public class ManualPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
 	List<MolgenisNews> news;
-	
+
 	public ManualPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -43,5 +43,5 @@ public class ManualPlugin extends PluginModel<Entity>
 	{
 		//
 	}
-	
+
 }

@@ -26,49 +26,89 @@ import org.molgenis.protocol.Protocol;
 
 import app.DatabaseFactory;
 
-public class OpalIndividualDataExporter {
+public class OpalIndividualDataExporter
+{
 
 	public Database db = null;
 
 	public String investigationName = null;
 
-	public static void main(String args[]) throws Exception {
+	public static void main(String args[]) throws Exception
+	{
 
-		new OpalIndividualDataExporter();
+		new OpalIndividualDataExporter(args);
 	}
 
-	public OpalIndividualDataExporter() throws Exception {
+	public OpalIndividualDataExporter(String args[]) throws Exception
+	{
 
 		db = DatabaseFactory.create();
 
-		investigationName = "LifeLines";
+		if (args.length > 0)
+		{
 
-		List<ObservationTarget> listOfTargets = db.find(
-				ObservationTarget.class, new QueryRule(
-						ObservationTarget.INVESTIGATION_NAME, Operator.EQUALS,
-						investigationName));
+			investigationName = args[0];
+
+		}
+		else
+		{
+
+			investigationName = "LifeLines";
+
+		}
+		List<ObservationTarget> listOfTargets = db.find(ObservationTarget.class, new QueryRule(
+				ObservationTarget.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
 
 		List<String> listOfTargetNames = new ArrayList<String>();
 
-		for (ObservationTarget target : listOfTargets) {
+		for (ObservationTarget target : listOfTargets)
+		{
 			listOfTargetNames.add(target.getName());
 		}
 
-		for (Protocol p : db.find(Protocol.class,
-				new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
-						investigationName))) {
+		Query<Protocol> queryRules = db.query(Protocol.class);
 
-			if (p.getFeatures_Name().size() > 0) {
+		for (int i = 0; i < args.length; i++)
+		{
 
-				File mappingResult = new File(
-						"/Users/pc_iverson/Desktop/importData/" + p.getName()
-								+ ".csv");
+			if (i == 0)
+			{
+				queryRules.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
+			}
+			else if (i == 1)
+			{
+				queryRules.addRules(new QueryRule(Protocol.NAME, Operator.EQUALS, args[i]));
+			}
+			else
+			{
+				break;
+			}
+		}
 
-				File temp = new File(
-						"/Users/pc_iverson/Desktop/importData/temp.xls");
+		String filePath = "";
 
-				OutputStream os = (OutputStream) new FileOutputStream(
-						mappingResult);
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+		if (args.length > 2)
+		{
+			filePath = args[2];
+		}
+		else
+		{
+			filePath = tmpDir.getAbsolutePath();
+		}
+
+		for (Protocol p : queryRules.find())
+		{
+
+			if (p.getFeatures_Name().size() > 0)
+			{
+
+				File mappingResult = new File(filePath + "/" + p.getName() + ".csv");
+
+				File temp = new File(filePath + "/temp.xls");
+
+				OutputStream os = (OutputStream) new FileOutputStream(mappingResult);
 				String encoding = "UTF8";
 
 				OutputStreamWriter osw = new OutputStreamWriter(os, encoding);
@@ -85,64 +125,68 @@ public class OpalIndividualDataExporter {
 
 				dataSheet.addCell(new Label(0, 0, "Participant"));
 
-				for (String eachFeature : p.getFeatures_Name()) {
+				for (String eachFeature : p.getFeatures_Name())
+				{
 					int colIndex = p.getFeatures_Name().indexOf(eachFeature) + 1;
 					dataSheet.addCell(new Label(colIndex, 0, eachFeature));
 				}
 
 				List<ObservedValue> allValues = new ArrayList<ObservedValue>();
 
-				for (int i = 0; i < listOfTargetNames.size(); i = i + 1000) {
+				for (int i = 0; i < listOfTargetNames.size(); i = i + 1000)
+				{
 
-					for (int j = 0; j < p.getFeatures_Name().size(); j = j + 1000) {
+					for (int j = 0; j < p.getFeatures_Name().size(); j = j + 1000)
+					{
 
 						System.out.println("next round!");
 
 						Query<ObservedValue> q = db.query(ObservedValue.class);
 						int targetIndex = i + 1000;
-						if (i + 1000 > listOfTargetNames.size()) {
+						if (i + 1000 > listOfTargetNames.size())
+						{
 							targetIndex = listOfTargetNames.size();
 						}
 						int featureIndex = j + 1000;
-						if (j + 1000 > p.getFeatures_Name().size()) {
+						if (j + 1000 > p.getFeatures_Name().size())
+						{
 							featureIndex = p.getFeatures_Name().size();
 						}
-						q.addRules(new QueryRule(ObservedValue.TARGET_NAME,
-								Operator.IN, listOfTargetNames.subList(i,
-										targetIndex)));
-						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-								Operator.IN, p.getFeatures_Name().subList(j,
-										featureIndex)));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, listOfTargetNames.subList(i,
+								targetIndex)));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.IN, p.getFeatures_Name().subList(
+								j, featureIndex)));
 						allValues.addAll(q.find());
 					}
 				}
 
-				if (allValues.size() > 0) {
+				if (allValues.size() > 0)
+				{
 
-					for (ObservedValue ov : allValues) {
+					for (ObservedValue ov : allValues)
+					{
 
-						int rowIndex = listOfTargetNames.indexOf(ov
-								.getTarget_Name()) + 1;
-						int colIndex = p.getFeatures_Name().indexOf(
-								ov.getFeature_Name()) + 1;
+						int rowIndex = listOfTargetNames.indexOf(ov.getTarget_Name()) + 1;
+						int colIndex = p.getFeatures_Name().indexOf(ov.getFeature_Name()) + 1;
 
-						dataSheet.addCell(new Label(0, rowIndex, ov
-								.getTarget_Name()));
+						dataSheet.addCell(new Label(0, rowIndex, ov.getTarget_Name()));
 
-						dataSheet.addCell(new Label(colIndex, rowIndex, ov
-								.getValue()));
+						dataSheet.addCell(new Label(colIndex, rowIndex, ov.getValue()));
 
 					}
 
 					Cell[] row = null;
 
 					// Gets the cells from sheet
-					for (int i = 0; i < dataSheet.getRows(); i++) {
+					for (int i = 0; i < dataSheet.getRows(); i++)
+					{
 						row = dataSheet.getRow(i);
 
-						if (row.length > 0) {
+						if (row.length > 0)
+						{
 							bw.write(row[0].getContents());
-							for (int j = 1; j < row.length; j++) {
+							for (int j = 1; j < row.length; j++)
+							{
 								bw.write(',');
 								bw.write(row[j].getContents());
 							}

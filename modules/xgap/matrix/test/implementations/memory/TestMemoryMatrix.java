@@ -30,8 +30,7 @@ public class TestMemoryMatrix
 	 * @param sparse
 	 * @throws Exception
 	 */
-	public TestMemoryMatrix(Database db, Params params)
-			throws Exception
+	public TestMemoryMatrix(Database db, Params params) throws Exception
 	{
 		/**
 		 * Assumption: the list of the traits/subjects that are created of size
@@ -45,15 +44,15 @@ public class TestMemoryMatrix
 		Helper h = new Helper(db);
 		h.printSettings(storage, params);
 
-		//set storage of elements to 'Database' because there is no 'Memory'
-		//we never write the matrices to this storage though :)
+		// set storage of elements to 'Database' because there is no 'Memory'
+		// we never write the matrices to this storage though :)
 		h.prepareDatabaseAndFiles("Database", params);
 		List<MemoryDataMatrixInstance<Object>> mmList = new ArrayList<MemoryDataMatrixInstance<Object>>();
 
 		for (Data data : h.getDataList())
 		{
-			mmList.add(h.createAndWriteRandomMemoryMatrix(h.getInputFilesDir(), data, db, params.matrixDimension2, params.matrixDimension1,
-					params.maxTextLength, params.sparse, params.fixedTextLength));
+			mmList.add(h.createAndWriteRandomMemoryMatrix(h.getInputFilesDir(), data, db, params.matrixDimension2,
+					params.matrixDimension1, params.maxTextLength, params.sparse, params.fixedTextLength));
 		}
 
 		logger.info("Regression tests..");
@@ -72,8 +71,8 @@ public class TestMemoryMatrix
 		{
 			for (String method : methods)
 			{
-				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, mm, mm.getData(),
-						h.getInputFilesDir(), method, true, true));
+				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, mm, mm.getData(), h.getInputFilesDir(),
+						method, true, true));
 			}
 		}
 	}

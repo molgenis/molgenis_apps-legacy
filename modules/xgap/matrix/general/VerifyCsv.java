@@ -18,8 +18,7 @@ public class VerifyCsv
 {
 	private static int maxStringLength = 127;
 
-	public static int[] verify(File inputFile, String valueType)
-			throws Exception
+	public static int[] verify(File inputFile, String valueType) throws Exception
 	{
 		// try
 		// {
@@ -47,8 +46,7 @@ public class VerifyCsv
 		// }
 	}
 
-	private static int[] verifyAndGetRowColDimensions(File inputFile)
-			throws Exception
+	private static int[] verifyAndGetRowColDimensions(File inputFile) throws Exception
 	{
 		int[] rowAndColLength = new int[2];
 
@@ -69,11 +67,8 @@ public class VerifyCsv
 			{
 				if (nrOfCols.get() != line.size() - 1)
 				{
-					throw new ParseException(
-							"Number of columns unequal. Expected "
-									+ nrOfCols.get() + " but found "
-									+ (line.size() - 1) + " at line "
-									+ line_number, line_number);
+					throw new ParseException("Number of columns unequal. Expected " + nrOfCols.get() + " but found "
+							+ (line.size() - 1) + " at line " + line_number, line_number);
 				}
 				// else: continue
 			}
@@ -86,28 +81,26 @@ public class VerifyCsv
 
 		if (rowAndColLength[0] < 1)
 		{
-			throw new FileUploadException(
-					"Number of rows must be greater than 0. Found: "
-							+ rowAndColLength[0]);
+			throw new FileUploadException("Number of rows must be greater than 0. Found: " + rowAndColLength[0]);
 		}
 		if (rowAndColLength[1] < 1)
 		{
-			throw new FileUploadException(
-					"Number of columns must be greater than 0. Found: "
-							+ rowAndColLength[1]);
+			throw new FileUploadException("Number of columns must be greater than 0. Found: " + rowAndColLength[1]);
 		}
-		
+
 		CsvFileReader csvFile = new CsvFileReader(inputFile);
 		List<String> colNames = csvFile.colnames();
 		List<String> rowNames = csvFile.rownames();
-		
+
 		if (rowAndColLength[1] < colNames.size() && !(colNames.get(0).equals("")))
 		{
-			throw new Exception("Too many column headers (" + colNames.size() + ") in relation to the amount of columns (" + rowAndColLength[1] + ")");
+			throw new Exception("Too many column headers (" + colNames.size()
+					+ ") in relation to the amount of columns (" + rowAndColLength[1] + ")");
 		}
 		if (rowAndColLength[0] < rowNames.size())
 		{
-			throw new Exception("Too many row headers (" + rowNames.size() + ") in relation to the amount of rows (" + rowAndColLength[0] + ")");
+			throw new Exception("Too many row headers (" + rowNames.size() + ") in relation to the amount of rows ("
+					+ rowAndColLength[0] + ")");
 		}
 
 		return rowAndColLength;
@@ -125,19 +118,16 @@ public class VerifyCsv
 
 	}
 
-	private static void verifyTextElementLenghtsAllowed(File inputFile)
-			throws Exception
+	private static void verifyTextElementLenghtsAllowed(File inputFile) throws Exception
 	{
 		for (Tuple line : new CsvFileReader(inputFile))
 		{
 
 			for (int i = 1; i < line.size(); i++)
 			{
-				if (line.getString(i) != null
-						&& line.getString(i).length() > maxStringLength)
+				if (line.getString(i) != null && line.getString(i).length() > maxStringLength)
 				{
-					throw new FileUploadException("Text element bigger than "
-							+ maxStringLength + " characters: "
+					throw new FileUploadException("Text element bigger than " + maxStringLength + " characters: "
 							+ line.getString(i));
 				}
 
@@ -146,8 +136,7 @@ public class VerifyCsv
 
 	}
 
-	private static void verifyHeaderLenghtsAllowed(File inputFile)
-			throws Exception
+	private static void verifyHeaderLenghtsAllowed(File inputFile) throws Exception
 	{
 		CsvFileReader csvFile = new CsvFileReader(inputFile);
 		List<String> colNames = csvFile.colnames();
@@ -156,16 +145,15 @@ public class VerifyCsv
 		{
 			if (colName.length() > maxStringLength)
 			{
-				throw new FileUploadException("Column header bigger than "
-						+ maxStringLength + " characters: " + colName);
+				throw new FileUploadException("Column header bigger than " + maxStringLength + " characters: "
+						+ colName);
 			}
 		}
 		for (String rowName : rowNames)
 		{
 			if (rowName.length() > maxStringLength)
 			{
-				throw new FileUploadException("Row header bigger than "
-						+ maxStringLength + " characters: " + rowName);
+				throw new FileUploadException("Row header bigger than " + maxStringLength + " characters: " + rowName);
 			}
 		}
 	}
@@ -194,8 +182,7 @@ public class VerifyCsv
 			}
 			else
 			{
-				throw new FileUploadException("Duplicate column header: "
-						+ colName);
+				throw new FileUploadException("Duplicate column header: " + colName);
 			}
 		}
 		for (String rowName : rowNames)
@@ -206,15 +193,13 @@ public class VerifyCsv
 			}
 			else
 			{
-				throw new FileUploadException("Duplicate row header: "
-						+ rowName);
+				throw new FileUploadException("Duplicate row header: " + rowName);
 			}
 		}
 
 	}
 
-	private static void verifyHeaderNamesAllowed(File inputFile)
-			throws Exception
+	private static void verifyHeaderNamesAllowed(File inputFile) throws Exception
 	{
 		CsvFileReader csvFile = new CsvFileReader(inputFile);
 		List<String> colNames = csvFile.colnames();
@@ -222,14 +207,14 @@ public class VerifyCsv
 
 		for (String colName : colNames.subList(1, colNames.size()))
 		{
-			if(new UsedMolgenisOptions().decorator_overriders.equals("org.molgenis.xgap.decoratoroverriders"))
+			if (new UsedMolgenisOptions().decorator_overriders.equals("org.molgenis.xgap.decoratoroverriders"))
 			{
 				NameConvention.validateEntityNameStrict(colName);
 			}
 		}
 		for (String rowName : rowNames)
 		{
-			if(new UsedMolgenisOptions().decorator_overriders.equals("org.molgenis.xgap.decoratoroverriders"))
+			if (new UsedMolgenisOptions().decorator_overriders.equals("org.molgenis.xgap.decoratoroverriders"))
 			{
 				NameConvention.validateEntityNameStrict(rowName);
 			}

@@ -2,8 +2,10 @@ package org.molgenis.compute.test.util;
 
 import app.DatabaseFactory;
 import org.molgenis.compute.design.*;
+import org.molgenis.compute.runtime.ComputeParameterDefaultValue;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
@@ -22,8 +24,13 @@ public class WorkflowImporterJPA
 {
 	private File parametersFile, workflowFile, protocolsDir;
 
+    //workaround
+    private String[] sharedProtocols = {"CustomSubmit.sh.ftl", "Footer.ftl", "Header.ftl", "Macros.ftl", "Helpers.ftl"};
+    private Vector<String> shared = new Vector<String>();
+
 	public static void main(String[] args)
 	{
+
 		if (args.length == 3)
 		{
 			System.out.println("*** START WORKFLOW IMPORT");
@@ -47,6 +54,12 @@ public class WorkflowImporterJPA
 	private void process(String parametersFileName, String workflowFileName, String protocolsDirName)
 			throws DatabaseException
 	{
+        //ignore shared protocols
+        for(int i = 0; i < sharedProtocols.length; i++)
+            shared.add(sharedProtocols[i]);
+
+        Vector<ComputeParameter> oldParameters = new Vector<ComputeParameter>();
+
 		// self-explanatory code
 		parametersFile = new File(parametersFileName);
 		workflowFile = new File(workflowFileName);
@@ -71,7 +84,7 @@ public class WorkflowImporterJPA
 			// create one requirement which we use for all protocols (for
 			// testing)
 			ComputeRequirement requirement = new ComputeRequirement();
-			requirement.setName("InHouseRequirement");
+			requirement.setName("InHouseRequirement"+ System.nanoTime());
 			requirement.setCores(1);
 			requirement.setNodes(1);
 			requirement.setMem("test");
@@ -91,14 +104,27 @@ public class WorkflowImporterJPA
 
 				ComputeParameter parameter = new ComputeParameter();
 				parameter.setName(name);
-				if (row.getString("defaultValue") != null) parameter.setDefaultValue(row.getString("defaultValue"));
+
+                boolean addDefault = false;
+                ComputeParameterDefaultValue value = null;
+
+                //adding default value
+                if (row.getString("defaultValue") != null)
+                {
+                    parameter.setDefaultValue("has default");
+
+                    String defaultValue = row.getString("defaultValue");
+
+                    value = new ComputeParameterDefaultValue();
+                    value.setWorkflow(workflow);
+                    value.setDefaultValue(defaultValue);
+                    addDefault = true;
+                }
 
 				String dataType = row.getString("dataType");
 				if (dataType == null) parameter.setDataType("string");
 				else
 					parameter.setDataType(dataType);
-
-				parameter.setWorkflow(workflow);
 
 				String hasOne_name = row.getString("hasOne_name");
 				if (hasOne_name != null)
@@ -106,19 +132,34 @@ public class WorkflowImporterJPA
 					Vector<String> hasOnes = splitCommas(hasOne_name);
 					collectionParameterHasOnes.put(parameter, hasOnes);
 				}
+                parameters.add(parameter);
 
-				parameters.add(parameter);
-				// System.out.println(">> " + parameter.toString());
-				db.add(parameter);
+                if(parameterNotExist( db, parameter))
+                {
+    				db.add(parameter);
+                    if(addDefault)
+                        value.setComputeParameter(parameter);
+                }
+                else
+                {
+                    oldParameters.add(parameter);
+                    if(addDefault)
+                    {
+                        ComputeParameter dbParameter = db.find(ComputeParameter.class,
+                                new QueryRule(ComputeParameter.NAME, QueryRule.Operator.EQUALS, parameter.getName())).get(0);
+                        value.setComputeParameter(dbParameter);
+                    }
+                }
+
+                if(addDefault)
+                    db.add(value);
 			}
-
-			// db.add(parameters);
 
 			// find parameters has ones
 			Enumeration<ComputeParameter> ekeys = collectionParameterHasOnes.keys();
 			while (ekeys.hasMoreElements())
 			{
-				ComputeParameter parameter = (ComputeParameter) ekeys.nextElement();
+				ComputeParameter parameter = ekeys.nextElement();
 				Vector<String> parNames = collectionParameterHasOnes.get(parameter);
 
 				Vector<ComputeParameter> vecParameters = new Vector<ComputeParameter>();
@@ -126,14 +167,28 @@ public class WorkflowImporterJPA
 				{
 					ComputeParameter hasParameter = findParameter(parameters, name.trim());
 
-					if (hasParameter == null) System.err.println("Cannot find hasOne '" + name + "' for parameter '"
-							+ parameter.getName() + "'");
+					if (hasParameter == null) System.err.println("Cannot find hasOne '" + name + "' for parameter '" + parameter.getName() + "'");
 					vecParameters.add(hasParameter);
 				}
-				parameter.setHasOne(vecParameters);
+
+                if(!oldParameters.contains(parameter))
+                {
+    				parameter.setHasOne(vecParameters);
+                    db.update(parameter);
+                }
+                else
+                {
+                    boolean correct = checkHasOneNotCorrectness(db, parameter, vecParameters);
+                    if(!correct)
+                    {
+                        System.out.println("SPECIFICATION OF HAS ONE FOR PARAMETER " + parameter.getName() + " IS NOT CORRECT.");
+                        System.out.println("Please check the database and parameters list or change the parameter name");
+                        System.exit(1);
+                    }
+                }
 			}
 
-			db.update(parameters);
+			//db.update(parameters);
 
 			// add protocols
 			Vector<ComputeProtocol> protocols = new Vector<ComputeProtocol>();
@@ -145,6 +200,22 @@ public class WorkflowImporterJPA
 					String fName = files[i];
 
 					String protocolName = fName;
+
+                    int workflowNumber = db.query(Workflow.class).find().size();
+                    if(workflowNumber > 1)
+                        if(shared.contains(fName))
+                            continue;
+                    else
+                        {
+                            ComputeProtocol protocol = db.find(ComputeProtocol.class,
+                                                            new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, fName)).get(0);
+                            if(protocol != null)
+                            {
+                                System.out.println("DOUBLE PROTOCOL: " + fName + "is skipped");
+                                continue;
+                            }
+                        }
+
 
 					// Don't remove extension while importing as two files, say
 					// a.x and a.y, may have the same name 'a' but a different
@@ -211,8 +282,11 @@ public class WorkflowImporterJPA
 				element.setName(workflowElementName);
 				element.setWorkflow(workflow);
 
-				ComputeProtocol p = findProtocol(protocols, protocolName);
-				element.setProtocol(p);
+				//ComputeProtocol p = findProtocol(protocols, protocolName);
+                ComputeProtocol p = db.find(ComputeProtocol.class,
+                                                new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, protocolName)).get(0);
+
+                element.setProtocol(p);
 
 				if (previousSteps != null)
 				{
@@ -241,7 +315,51 @@ public class WorkflowImporterJPA
 
 	}
 
-	private List<String> findTargetList(String listing)
+
+    private boolean checkHasOneNotCorrectness(Database db, ComputeParameter parameter, Vector<ComputeParameter> vecParameters) throws DatabaseException
+    {
+        ComputeParameter dbParameter = db.find(ComputeParameter.class, new QueryRule(ComputeParameter.NAME, QueryRule.Operator.EQUALS, parameter.getName())).get(0);
+        List<ComputeParameter> hasOnes = dbParameter.getHasOne();
+
+        //compare names at 2 sides
+        for(ComputeParameter p : hasOnes)
+        {
+            String name = p.getName();
+            if(parameterIsMissing(name, vecParameters))
+                return false;
+        }
+
+        for(ComputeParameter p : vecParameters)
+        {
+            String name = p.getName();
+            if(parameterIsMissing(name, vecParameters))
+                return false;
+        }
+
+        return true;
+    }
+
+    private boolean parameterIsMissing(String name, Vector<ComputeParameter> vecParameters)
+    {
+        for(ComputeParameter p : vecParameters)
+        {
+            if(p.getName().equals(name))
+                return false;
+        }
+        return true;
+    }
+
+    //checking if parameter with this name already exists
+    private boolean parameterNotExist(Database db, ComputeParameter parameter) throws DatabaseException
+    {
+        String name = parameter.getName();
+        List<ComputeParameter> p = db.find(ComputeParameter.class, new QueryRule(ComputeParameter.NAME, QueryRule.Operator.EQUALS, name));
+        if(p.size() > 0)
+            return false;
+        return true;
+    }
+
+    private List<String> findTargetList(String listing)
 	{
 		int start = listing.indexOf("#FOREACH");
 		if (start == -1)

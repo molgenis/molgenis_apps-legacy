@@ -13,13 +13,15 @@ import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.col7a1.ui.Background;
 
 /**
- * BackgroundModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
+ * BackgroundModel takes care of all state and it can have helper methods to
+ * query the database. It should not contain layout or application logic which
+ * are solved in View and Controller.
+ * 
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
 public class BackgroundModel extends EasyPluginModel
 {
-	//a system veriable that is needed by tomcat
+	// a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
 
 	private int numMutations;
@@ -29,46 +31,66 @@ public class BackgroundModel extends EasyPluginModel
 
 	private HashMap<String, Integer> phenotypeCountHash;
 
-	public int getNumMutations() {
+	public int getNumMutations()
+	{
 		return numMutations;
 	}
-	public void setNumMutations(int numMutations) {
+
+	public void setNumMutations(int numMutations)
+	{
 		this.numMutations = numMutations;
 	}
-	public int getNumMutationsUnpub() {
+
+	public int getNumMutationsUnpub()
+	{
 		return numMutationsUnpub;
 	}
-	public void setNumMutationsUnpub(int numMutationsUnpub) {
+
+	public void setNumMutationsUnpub(int numMutationsUnpub)
+	{
 		this.numMutationsUnpub = numMutationsUnpub;
 	}
-	public int getNumPatients() {
+
+	public int getNumPatients()
+	{
 		return numPatients;
 	}
-	public void setNumPatients(int numPatients) {
+
+	public void setNumPatients(int numPatients)
+	{
 		this.numPatients = numPatients;
 	}
-	public int getNumPatientsUnpub() {
+
+	public int getNumPatientsUnpub()
+	{
 		return numPatientsUnpub;
 	}
-	public HashMap<String, Integer> getPhenotypeCountHash() {
+
+	public HashMap<String, Integer> getPhenotypeCountHash()
+	{
 		return phenotypeCountHash;
 	}
-	public void setNumPatientsUnpub(int numPatientsUnpub) {
+
+	public void setNumPatientsUnpub(int numPatientsUnpub)
+	{
 		this.numPatientsUnpub = numPatientsUnpub;
 	}
-	public Integer getPhenotypeCount(String phenotypeName) {
-		if (this.phenotypeCountHash.containsKey(phenotypeName))
-			return this.phenotypeCountHash.get(phenotypeName);
+
+	public Integer getPhenotypeCount(String phenotypeName)
+	{
+		if (this.phenotypeCountHash.containsKey(phenotypeName)) return this.phenotypeCountHash.get(phenotypeName);
 		else
 			return 0;
 	}
-	public void setPhenotypeCountHash(HashMap<String, Integer> phenotypeCountHash) {
+
+	public void setPhenotypeCountHash(HashMap<String, Integer> phenotypeCountHash)
+	{
 		this.phenotypeCountHash = phenotypeCountHash;
 	}
 
 	public BackgroundModel(Background controller)
 	{
-		//each Model can access the controller to notify it when needed.
+		// each Model can access the controller to notify it when needed.
 		super(controller);
 	}
 }

@@ -517,7 +517,7 @@ public class ConvertPilot
 		// assume gene bodies complete; only push headers a bit
 		CsvWriter out = new CsvFileWriter(new File(target + "data/" + name + ".txt"));
 		List<String> headers = new ArrayList<String>();
-		for(String n: in.colnames())
+		for (String n : in.colnames())
 			headers.add(n.replace(".", "_"));
 
 		out.setHeaders(headers);

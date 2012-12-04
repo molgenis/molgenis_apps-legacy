@@ -1,0 +1,55 @@
+How to install WormQTL:
+
+* Download these files:
+	https://github.com/downloads/joerivandervelde/files/wormqtl_set1_annotations_minusUSAprobes.xls
+	https://github.com/downloads/joerivandervelde/files/wormqtl_datasets.zip
+	https://github.com/downloads/joerivandervelde/files/wormqtl_age_par_geneexrp_suppl1.zip
+
+* Extract them into your data folder. This folder has to end with 'xqtl_panacea'.
+	For example: /Users/jvelde/data/xqtl_panacea
+	
+	1. Move the 3 folders of wormqtl_datasets.zip to the root:
+	/Users/jvelde/data/xqtl_panacea/binarydatamatrix
+	/Users/jvelde/data/xqtl_panacea/imports
+	/Users/jvelde/data/xqtl_panacea/investigationfile
+	
+	2. Move the to XLS file to the imports:
+	/Users/jvelde/data/xqtl_panacea/imports/wormqtl_set1_annotations_minusUSAprobes.xls
+	
+	3. Move the 3 files of wormqtl_age_par_geneexrp_suppl1 to the binarymatrix folder:
+	/Users/jvelde/data/xqtl_panacea/binarydatamatrix/age1_par_log2
+	/Users/jvelde/data/xqtl_panacea/binarydatamatrix/age2_par_log2
+	/Users/jvelde/data/xqtl_panacea/binarydatamatrix/age3_par_log2
+
+* Run the Ant script to build the application:
+	ant -f build_wormqtl.xml clean-generate-compile
+
+* Start the application
+	ant -f build_wormqtl.xml run
+
+* Go to http://localhost:8080/xqtl_panacea/
+	Check if you get the 'database setup success' message
+
+* Go to http://localhost:8080/xqtl_panacea/autohideloginswitch
+	Login with 'admin', pw 'admin'
+	
+* In the setup screen, enter the path of the data directory,
+	Minus 'xqtl_panacea', so e.g. "/Users/jvelde/data"
+	Click 'Load' and wait
+	
+* You should get the message WormQTL 'specific annotation import and data relink succeeded'
+	At this point you are technicallu done, but:
+	- Go to 'Browse data' and change the investigation name 'Panacea' to 'Public',
+	the origin name is not correct. (there is more data then Panacea in the database!)
+	- Change the admin password, use the autohideloginswitch URL to get to the
+	login/logout screen. Do the same for the 'bio-user' and 'bioinfo-user'. Their
+	default passwords are 'bio' and 'bioinfo'.
+	- Logout and check as anonymous if everything works
+	
+* Make sure a recent R version is installed so your plots are working
+
+* Make sure the server is running with a proper external IP so the Genome Browser works
+
+
+	
+

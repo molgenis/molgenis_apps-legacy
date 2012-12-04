@@ -12,7 +12,7 @@ public class QTLDataSetWizardModel
 	private List<Investigation> investigations;
 	private List<OntologyTerm> crosses;
 	private List<String> xqtlObservableFeatureTypes;
-	
+
 	public List<String> getXqtlObservableFeatureTypes()
 	{
 		return xqtlObservableFeatureTypes;
@@ -52,6 +52,5 @@ public class QTLDataSetWizardModel
 	{
 		this.crosses = crosses;
 	}
-
 
 }

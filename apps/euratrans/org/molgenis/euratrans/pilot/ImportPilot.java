@@ -17,24 +17,21 @@ public class ImportPilot
 	public static void main(String[] args) throws Exception
 	{
 		Database db = DatabaseFactory.create();
-		
-		//clean db
+
+		// clean db
 		new Molgenis("apps/euratrans/org/molgenis/euratrans/euratrans.properties").updateDb(true);
-		
-		//default the study
+
+		// default the study
 		Investigation s = new Investigation();
 		s.setName("EURATRANS");
 		db.add(s);
-		
-		
-		//run csv importer
+
+		// run csv importer
 		CsvImport importer = new CsvImport();
 		Tuple defaults = new SimpleTuple();
 		defaults.set(ObservationTarget.INVESTIGATION_NAME, "EURATRANS");
 		importer.importAll(new File(ConvertPilot.target), db, defaults);
-		
-		
+
 	}
 
-	
 }

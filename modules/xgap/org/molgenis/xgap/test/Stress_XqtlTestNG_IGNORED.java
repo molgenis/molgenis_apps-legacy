@@ -48,23 +48,23 @@ import filehandling.storage.StorageHandler;
  */
 public class Stress_XqtlTestNG_IGNORED
 {
-	//the two key parameters: number of simultaneous threads,
-	//and number of iterations per thread
+	// the two key parameters: number of simultaneous threads,
+	// and number of iterations per thread
 	private int test_number_of_threads = 100;
 	private int test_iterations_per_thread = 100;
-	
-	//other constants
+
+	// other constants
 	private Database db;
 	private int webserverport;
 
 	@BeforeClass
 	public void setup() throws Exception
 	{
-		//cleanup before we start
+		// cleanup before we start
 		XqtlSeleniumTest.deleteDatabase();
 		db = DatabaseFactory.create();
-		
-		//setup database tables
+
+		// setup database tables
 		String report = ResetXgapDb.reset(db, true);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 		StorageHandler sh = new StorageHandler(db);
@@ -74,12 +74,12 @@ public class Stress_XqtlTestNG_IGNORED
 		sh.setFileStorage(storagePath(), db);
 		sh.validateFileStorage(db);
 		Assert.assertTrue(sh.hasValidFileStorage(db));
-		
-		//start webserver
+
+		// start webserver
 		webserverport = Helper.getAvailablePort(11040, 10);
 		new RunStandalone(webserverport);
 	}
-	
+
 	@AfterClass(alwaysRun = true)
 	public void cleanupAfterClass() throws InterruptedException, Exception
 	{
@@ -90,13 +90,13 @@ public class Stress_XqtlTestNG_IGNORED
 	@Test
 	public void importExampleData() throws Exception
 	{
-		//load example data
+		// load example data
 		ArrayList<String> result = DataLoader.load(db, false);
 		Assert.assertTrue(result.get(result.size() - 2).equals("Complete success"));
 		checkIfExampleDataIsOK();
-		
-		//give permissions for anonymous to query markers
-		//this saves us the trouble of working with sessions
+
+		// give permissions for anonymous to query markers
+		// this saves us the trouble of working with sessions
 		MolgenisPermission mp = new MolgenisPermission();
 		mp.setEntity_ClassName("org.molgenis.xgap.Marker");
 		mp.setRole_Name("anonymous");
@@ -111,23 +111,24 @@ public class Stress_XqtlTestNG_IGNORED
 	public void stressTest() throws Exception
 	{
 
-		//create X amount of threats with N iterations in each thread
+		// create X amount of threats with N iterations in each thread
 		List<downloadMarkers> tests = new ArrayList<downloadMarkers>();
 		for (int i = 0; i < test_number_of_threads; i++)
 		{
 			tests.add(new downloadMarkers(test_iterations_per_thread, webserverport));
 		}
-		
-		//keep track if one of the threads threw an error (failed assert or IO error)
+
+		// keep track if one of the threads threw an error (failed assert or IO
+		// error)
 		final Bool testCompletedSuccessfully = new Bool(true);
-		
-		//total assert fails
+
+		// total assert fails
 		final Int assertFails = new Int(0);
-		
-		//total IO errors
+
+		// total IO errors
 		final Int ioErrors = new Int(0);
-		
-		//start all threads
+
+		// start all threads
 		List<Thread> threads = new ArrayList<Thread>();
 		for (final downloadMarkers t : tests)
 		{
@@ -143,13 +144,13 @@ public class Stress_XqtlTestNG_IGNORED
 					{
 						ioe.printStackTrace();
 						testCompletedSuccessfully.setVal(false);
-						ioErrors.setVal(ioErrors.getVal()+1);
+						ioErrors.setVal(ioErrors.getVal() + 1);
 					}
 					catch (AssertionError ae)
 					{
 						ae.printStackTrace();
 						testCompletedSuccessfully.setVal(false);
-						assertFails.setVal(assertFails.getVal()+1);
+						assertFails.setVal(assertFails.getVal() + 1);
 					}
 				}
 			};
@@ -163,14 +164,14 @@ public class Stress_XqtlTestNG_IGNORED
 		{
 			thread.join();
 		}
-		
+
 		System.out.println("** TOTAL ASSERT FAILS: " + assertFails.getVal() + " **");
 		System.out.println("** TOTAL IO ERRORS: " + ioErrors.getVal() + " **");
-		
-		//check if one (or more) threads failed
+
+		// check if one (or more) threads failed
 		Assert.assertTrue(testCompletedSuccessfully.getVal());
 	}
-	
+
 	/**
 	 * Database-only stress test
 	 */
@@ -179,27 +180,27 @@ public class Stress_XqtlTestNG_IGNORED
 	{
 		DataSource ds = createDataSource();
 
-		//create X amount of threats with N iterations in each thread
+		// create X amount of threats with N iterations in each thread
 		List<queryMarkers> tests = new ArrayList<queryMarkers>();
 		for (int i = 0; i < test_number_of_threads; i++)
 		{
 			tests.add(new queryMarkers(test_iterations_per_thread, ds));
 		}
-		
-		//keep track if one of the threads threw an error (failed assert or IO error)
+
+		// keep track if one of the threads threw an error (failed assert or IO
+		// error)
 		final Bool testCompletedSuccessfully = new Bool(true);
-		
-		//total assert fails
+
+		// total assert fails
 		final Int assertFails = new Int(0);
-		
-		//total db errors
+
+		// total db errors
 		final Int dbErrors = new Int(0);
-		
-		//total sql errors
+
+		// total sql errors
 		final Int sqlErrors = new Int(0);
-		
-		
-		//start all threads
+
+		// start all threads
 		List<Thread> threads = new ArrayList<Thread>();
 		for (final queryMarkers t : tests)
 		{
@@ -215,19 +216,25 @@ public class Stress_XqtlTestNG_IGNORED
 					{
 						dbe.printStackTrace();
 						testCompletedSuccessfully.setVal(false);
-						dbErrors.setVal(dbErrors.getVal()+1);
+						dbErrors.setVal(dbErrors.getVal() + 1);
 					}
 					catch (SQLException se)
 					{
 						se.printStackTrace();
 						testCompletedSuccessfully.setVal(false);
-						sqlErrors.setVal(sqlErrors.getVal()+1);
+						sqlErrors.setVal(sqlErrors.getVal() + 1);
 					}
 					catch (AssertionError ae)
 					{
 						ae.printStackTrace();
 						testCompletedSuccessfully.setVal(false);
-						assertFails.setVal(assertFails.getVal()+1);
+						assertFails.setVal(assertFails.getVal() + 1);
+					}
+					catch (IOException ie)
+					{
+						ie.printStackTrace();
+						testCompletedSuccessfully.setVal(false);
+						assertFails.setVal(assertFails.getVal() + 1);
 					}
 				}
 			};
@@ -241,16 +248,16 @@ public class Stress_XqtlTestNG_IGNORED
 		{
 			thread.join();
 		}
-		
+
 		System.out.println("** TOTAL ASSERT FAILS: " + assertFails.getVal() + " **");
 		System.out.println("** TOTAL DB ERRORS: " + dbErrors.getVal() + " **");
 		System.out.println("** TOTAL SQL ERRORS: " + sqlErrors.getVal() + " **");
-		
-		//check if one (or more) threads failed
+
+		// check if one (or more) threads failed
 		Assert.assertTrue(testCompletedSuccessfully.getVal());
-		
+
 	}
-	
+
 	/**
 	 * Helper function, use to see if the example data is all there.
 	 */
@@ -282,21 +289,27 @@ public class Stress_XqtlTestNG_IGNORED
 			return storagePath;
 		}
 	}
-	
-	//manually create a connection pool for the database-only stress test
-	//NOTE: we also start a RunStandalone server with FrontController,
+
+	// manually create a connection pool for the database-only stress test
+	// NOTE: we also start a RunStandalone server with FrontController,
 	// which also creates 1 datasource.. problem?
-	private DataSource createDataSource() {
-		//NOTE: these are custom settings for high performance
+	private DataSource createDataSource()
+	{
+		// NOTE: these are custom settings for high performance
 		BasicDataSource data_src = new BasicDataSource();
 		data_src.setDriverClassName("org.hsqldb.jdbcDriver");
 		data_src.setUsername("sa");
 		data_src.setPassword("");
-		data_src.setUrl("jdbc:hsqldb:file:hsqldb/molgenisdb;shutdown=true"); // a path within the src folder?
+		data_src.setUrl("jdbc:hsqldb:file:hsqldb/molgenisdb;shutdown=true"); // a
+																				// path
+																				// within
+																				// the
+																				// src
+																				// folder?
 		data_src.setMaxIdle(10);
 		data_src.setMaxWait(1000);
 		data_src.setMaxActive(-1);
-		return (DataSource) data_src;	
+		return (DataSource) data_src;
 	}
 
 }
@@ -305,43 +318,48 @@ class queryMarkers
 {
 	int iterations;
 	DataSource ds;
-	
+
 	public queryMarkers(int iterations, DataSource ds)
 	{
 		this.iterations = iterations;
 		this.ds = ds;
 	}
-	
-	public void queryAndAssert() throws SQLException, DatabaseException, AssertionError
+
+	public void queryAndAssert() throws SQLException, DatabaseException, AssertionError, IOException
 	{
-		//get a fresh database connection for each batch of queries
+		// get a fresh database connection for each batch of queries
 		Database db = getDatabase();
-		for(int i = 0; i < iterations; i ++)
-		{	
+		for (int i = 0; i < iterations; i++)
+		{
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			TupleWriter writer = new CsvWriter(out);
-			db.find(Marker.class, writer, new QueryRule[]{});
+			db.find(Marker.class, writer, new QueryRule[]
+			{});
 			int lines = countLines(new ByteArrayInputStream(out.toByteArray()));
-			Assert.assertEquals(lines, 118); //117 markers + 1 for col.header
+			Assert.assertEquals(lines, 118); // 117 markers + 1 for col.header
 		}
-		db.close(); //not needed
+		db.close(); // not needed
 	}
-	
+
 	private int countLines(InputStream is)
 	{
 		String content = convertStreamToString(is);
 		String[] lines = content.split("\r\n|\r|\n");
 		return lines.length;
 	}
-	
-	public String convertStreamToString(java.io.InputStream is) {
-	    try {
-	        return new java.util.Scanner(is).useDelimiter("\\A").next();
-	    } catch (java.util.NoSuchElementException e) {
-	        return "";
-	    }
+
+	public String convertStreamToString(java.io.InputStream is)
+	{
+		try
+		{
+			return new java.util.Scanner(is).useDelimiter("\\A").next();
+		}
+		catch (java.util.NoSuchElementException e)
+		{
+			return "";
+		}
 	}
-	
+
 	private Database getDatabase() throws SQLException, DatabaseException
 	{
 		Connection conn = ds.getConnection();
@@ -354,17 +372,17 @@ class downloadMarkers
 {
 	int webserverport;
 	int iterations;
-	
+
 	public downloadMarkers(int iterations, int webserverport)
 	{
 		this.webserverport = webserverport;
 		this.iterations = iterations;
 	}
-	
+
 	private ArrayList<String> getUrl(String path) throws IOException
 	{
 		ArrayList<String> res = new ArrayList<String>();
-		URL xqtl = new URL("http://localhost:"+webserverport+path);
+		URL xqtl = new URL("http://localhost:" + webserverport + path);
 		URLConnection xc = xqtl.openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(xc.getInputStream()));
 		String inputLine;
@@ -375,14 +393,15 @@ class downloadMarkers
 		in.close();
 		return res;
 	}
-	
+
 	public void downloadAndAssert() throws AssertionError, IOException
 	{
-		for(int i = 0; i < iterations; i ++)
+		for (int i = 0; i < iterations; i++)
 		{
 			String req = "/xqtl/api/find/Marker";
 			ArrayList<String> res = getUrl(req);
-			Assert.assertEquals(res.size(), 118); //117 markers + 1 for col.header
+			Assert.assertEquals(res.size(), 118); // 117 markers + 1 for
+													// col.header
 		}
 	}
 }
@@ -390,15 +409,39 @@ class downloadMarkers
 class Bool
 {
 	private boolean val;
-	public Bool(boolean val){ this.val = val; }
-	public boolean getVal(){ return val; }
-	public void setVal(boolean val){ this.val = val; }
+
+	public Bool(boolean val)
+	{
+		this.val = val;
+	}
+
+	public boolean getVal()
+	{
+		return val;
+	}
+
+	public void setVal(boolean val)
+	{
+		this.val = val;
+	}
 }
 
 class Int
 {
 	private int val;
-	public Int(int val){ this.val = val; }
-	public int getVal(){ return val; }
-	public void setVal(int val){ this.val = val; }
+
+	public Int(int val)
+	{
+		this.val = val;
+	}
+
+	public int getVal()
+	{
+		return val;
+	}
+
+	public void setVal(int val)
+	{
+		this.val = val;
+	}
 }

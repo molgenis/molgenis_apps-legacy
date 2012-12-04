@@ -56,13 +56,13 @@ public class DependencyManager extends PluginModel<Entity>
 
 			LocalComputationResource lcr = null;
 			setUsrHomeLibs(null);
-			
-			if(action.startsWith("install")){
+
+			if (action.startsWith("install"))
+			{
 				lcr = new LocalComputationResource();
-				setUsrHomeLibs(new File(System.getProperty("user.home")
-						+ File.separator + "libs"));
+				setUsrHomeLibs(new File(System.getProperty("user.home") + File.separator + "libs"));
 			}
-			
+
 			if (action.equals("installQtl"))
 			{
 				lcr.installQtl();
@@ -77,16 +77,16 @@ public class DependencyManager extends PluginModel<Entity>
 			{
 				lcr.installBitops();
 			}
-			
+
 			else if (action.equals("installQtlbim"))
 			{
 				lcr.installQtlbim();
 			}
 
-//			else if (action.equals("installClusterJobs"))
-//			{
-//				lcr.installClusterJobs();
-//			}
+			// else if (action.equals("installClusterJobs"))
+			// {
+			// lcr.installClusterJobs();
+			// }
 
 		}
 		catch (Exception e)
@@ -102,49 +102,50 @@ public class DependencyManager extends PluginModel<Entity>
 		this.model.setRcurl(false);
 		this.model.setRqtl(false);
 		this.model.setQtlbim(false);
-//		this.model.setClusterjobs(false);
-		
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
-		
-		File bitopsDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "bitops");
-		File qtlDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "qtl");
-		File rcurlDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "RCurl");
-		File qtlbimDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "qtlbim");
-//		File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
-//				+ File.separator + "ClusterJobs");
-		
-		if(bitopsDir.exists()){
+		// this.model.setClusterjobs(false);
+
+		File usrHomeLibs = new File(System.getProperty("user.home") + File.separator + "libs");
+
+		File bitopsDir = new File(usrHomeLibs.getAbsolutePath() + File.separator + "bitops");
+		File qtlDir = new File(usrHomeLibs.getAbsolutePath() + File.separator + "qtl");
+		File rcurlDir = new File(usrHomeLibs.getAbsolutePath() + File.separator + "RCurl");
+		File qtlbimDir = new File(usrHomeLibs.getAbsolutePath() + File.separator + "qtlbim");
+		// File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
+		// + File.separator + "ClusterJobs");
+
+		if (bitopsDir.exists())
+		{
 			this.model.setBitops(true);
 		}
-		
-		if(qtlDir.exists()){
+
+		if (qtlDir.exists())
+		{
 			this.model.setRqtl(true);
 		}
-		
-		if(rcurlDir.exists()){
+
+		if (rcurlDir.exists())
+		{
 			this.model.setRcurl(true);
 		}
-		
-		if(qtlbimDir.exists()){
+
+		if (qtlbimDir.exists())
+		{
 			this.model.setQtlbim(true);
 		}
-		
-//		if(clusterJobsDir.exists()){
-//			this.model.setClusterjobs(true);
-//		}
+
+		// if(clusterJobsDir.exists()){
+		// this.model.setClusterjobs(true);
+		// }
 
 	}
 
-	public void setUsrHomeLibs(File usrHomeLibs) {
+	public void setUsrHomeLibs(File usrHomeLibs)
+	{
 		this.usrHomeLibs = usrHomeLibs;
 	}
 
-	public File getUsrHomeLibs() {
+	public File getUsrHomeLibs()
+	{
 		return usrHomeLibs;
 	}
 }

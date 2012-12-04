@@ -18,12 +18,14 @@ public class CsvWriterNoExportDataElement extends CsvExport
 	 * a matrix in subfolder data. This has to be repeated for each 'data'
 	 * entry.
 	 */
-	public void exportDecimalDataElement(Database db, File f, List<String> filesToExport, QueryRule ... rules) throws DatabaseException, IOException, ParseException
+	public void exportDecimalDataElement(Database db, File f, List<String> filesToExport, QueryRule... rules)
+			throws DatabaseException, IOException, ParseException
 	{
 		// do nothing: we instead will produce matrix files
 	}
 
-	public void exportTextDataElement(Database db, File f, List<String> filesToExport, QueryRule ... rules) throws DatabaseException, IOException, ParseException
+	public void exportTextDataElement(Database db, File f, List<String> filesToExport, QueryRule... rules)
+			throws DatabaseException, IOException, ParseException
 	{
 		// do nothing: we instead will produce matrix files
 	}

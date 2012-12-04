@@ -35,7 +35,6 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
 public class ShowDecSubprojects extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6863037294184185044L;
@@ -61,7 +60,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private List<Integer> animalIdList = new ArrayList<Integer>();
 	private ObservationTarget animalToAddOrRemove;
 	private List<DecSubproject> experimentList = new ArrayList<DecSubproject>();
-	//private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
+	// private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
 	MatrixViewer addAnimalsMatrixViewer = null;
 	static String ADDANIMALSMATRIX = "addanimalsmatrix";
 	MatrixViewer remAnimalsMatrixViewer = null;
@@ -71,9 +70,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private int userId = -1;
 	private String projectStartDateString = null;
 	private String projectEndDateString = null;
-	
-	//hack to pass database to toHtml() via toHtml(db)
+
+	// hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
+
 	public void setToHtmlDb(Database toHtmlDb)
 	{
 		this.toHtmlDb = toHtmlDb;
@@ -83,15 +83,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-	
-		public String getCustomHtmlHeaders() {
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
-				"<script src=\"res/scripts/custom/animalterm.js\" language=\"javascript\"></script>\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+
+	public String getCustomHtmlHeaders()
+	{
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+				+ "<script src=\"res/scripts/custom/animalterm.js\" language=\"javascript\"></script>\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
+				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
-	
-	
+
 	@Override
 	public String getViewName()
 	{
@@ -103,22 +103,23 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	{
 		return "org/molgenis/animaldb/plugins/administration/ShowDecSubprojects.ftl";
 	}
-	
-	public String getCurrentDate() {
+
+	public String getCurrentDate()
+	{
 		Date now = new Date();
 		return newDateOnlyFormat.format(now);
 	}
-	
+
 	public int getListId()
 	{
 		return listId;
 	}
-	
+
 	public void setListId(int subprojectId)
 	{
 		this.listId = subprojectId;
 	}
-	
+
 	public void setActualDiscomfortCodeList(List<Category> actualDiscomfortCodeList)
 	{
 		this.actualDiscomfortCodeList = actualDiscomfortCodeList;
@@ -158,23 +159,27 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	{
 		return expectedEndstatusCodeList;
 	}
-	
-	public List<Category> getExperimentNrCodeList() {
+
+	public List<Category> getExperimentNrCodeList()
+	{
 		return experimentNrCodeList;
 	}
 
-	public void setExperimentNrCodeList(List<Category> experimentNrCodeList) {
+	public void setExperimentNrCodeList(List<Category> experimentNrCodeList)
+	{
 		this.experimentNrCodeList = experimentNrCodeList;
 	}
-	
-	public void setExperimentList(List<DecSubproject> experimentList) {
+
+	public void setExperimentList(List<DecSubproject> experimentList)
+	{
 		this.experimentList = experimentList;
 	}
 
-	public List<DecSubproject> getExperimentList() {
+	public List<DecSubproject> getExperimentList()
+	{
 		return experimentList;
 	}
-	
+
 	public void setConcernCodeList(List<Category> concernCodeList)
 	{
 		this.concernCodeList = concernCodeList;
@@ -275,14 +280,16 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return animalEndStatusCodeList;
 	}
 
-	public void setDecApplicationList(List<ObservationTarget> decApplicationList) {
+	public void setDecApplicationList(List<ObservationTarget> decApplicationList)
+	{
 		this.decApplicationList = decApplicationList;
 	}
 
-	public List<ObservationTarget> getDecApplicationList() {
+	public List<ObservationTarget> getDecApplicationList()
+	{
 		return decApplicationList;
 	}
-	
+
 	public List<Integer> getAnimalIdList()
 	{
 		return animalIdList;
@@ -302,11 +309,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	{
 		return allAnimalNameList;
 	}
-	
-	public String getAnimalName(Integer id) {
-		try {
+
+	public String getAnimalName(Integer id)
+	{
+		try
+		{
 			return ct.getObservationTargetLabel(id);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			return id.toString();
 		}
 	}
@@ -321,31 +332,35 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return animalToAddOrRemove;
 	}
 
-	public void setAnimalRemoveIdList(List<Integer> animalRemoveIdList) {
+	public void setAnimalRemoveIdList(List<Integer> animalRemoveIdList)
+	{
 		this.animalRemoveIdList = animalRemoveIdList;
 	}
 
-	public List<Integer> getAnimalRemoveIdList() {
+	public List<Integer> getAnimalRemoveIdList()
+	{
 		return animalRemoveIdList;
 	}
-	
-	/*public void setBatchList(List<MolgenisBatch> batchList) {
-		this.batchList = batchList;
-	}
 
-	public List<MolgenisBatch> getBatchList() {
-		return batchList;
-	}*/
+	/*
+	 * public void setBatchList(List<MolgenisBatch> batchList) { this.batchList
+	 * = batchList; }
+	 * 
+	 * public List<MolgenisBatch> getBatchList() { return batchList; }
+	 */
 
-	public void setAction(String action) {
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
 
-	public String getAction() {
+	public String getAction()
+	{
 		return action;
 	}
-	
-	public DecSubproject getSelectedDecSubproject() {
+
+	public DecSubproject getSelectedDecSubproject()
+	{
 		if (listId == -1) return null;
 		return experimentList.get(listId);
 	}
@@ -355,103 +370,128 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
-		if (addAnimalsMatrixViewer != null) {
+		if (addAnimalsMatrixViewer != null)
+		{
 			addAnimalsMatrixViewer.setDatabase(db);
 		}
-		if (remAnimalsMatrixViewer != null) {
+		if (remAnimalsMatrixViewer != null)
+		{
 			remAnimalsMatrixViewer.setDatabase(db);
 		}
-		
-		try {
+
+		try
+		{
 			this.setAction(request.getAction());
-			
-			if (addAnimalsMatrixViewer != null && action.startsWith(addAnimalsMatrixViewer.getName())) {
+
+			if (addAnimalsMatrixViewer != null && action.startsWith(addAnimalsMatrixViewer.getName()))
+			{
 				addAnimalsMatrixViewer.handleRequest(db, request);
 				action = "AddAnimalToSubproject";
 				return; // avoid matrix reinitialization
 			}
-			if (remAnimalsMatrixViewer != null && action.startsWith(remAnimalsMatrixViewer.getName())) {
+			if (remAnimalsMatrixViewer != null && action.startsWith(remAnimalsMatrixViewer.getName()))
+			{
 				remAnimalsMatrixViewer.handleRequest(db, request);
 				action = "EditAnimals";
 				return; // avoid matrix reinitialization
 			}
-		
+
 			if (action.equals("AddEdit") || action.equals("EditAnimals"))
 			{
 				listId = request.getInt("id");
 			}
-			
+
 			if (action.equals("Show"))
 			{
 				// No action here
 			}
-			
-			if (action.equals("addEditDecSubproject")) {
+
+			if (action.equals("addEditDecSubproject"))
+			{
 				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-				
+
 				// Get values from form
-				
-				//TODO auto fill name by combination of "DEC"+ DECNr + subproject code
+
+				// TODO auto fill name by combination of "DEC"+ DECNr +
+				// subproject code
 				// Name
 				String name = "DEC ";
-				if (request.getString("name") != null && !request.getString("name").equals("")) {
+				if (request.getString("name") != null && !request.getString("name").equals(""))
+				{
 					name = request.getString("name");
-					
+
 				}
-				
+
 				// Title
 				String title = "";
-				if (request.getString("experimenttitle") != null && !request.getString("experimenttitle").equals("")) {
+				if (request.getString("experimenttitle") != null && !request.getString("experimenttitle").equals(""))
+				{
 					title = request.getString("experimenttitle");
-				} else {
-					throw(new Exception("No title given - Subproject not added"));
 				}
-				
+				else
+				{
+					throw (new Exception("No title given - Subproject not added"));
+				}
+
 				// DEC project (Application)
 				String decappName;
-				if (request.getString("decapp") != null) {
+				if (request.getString("decapp") != null)
+				{
 					Integer decappid = request.getInt("decapp");
 					decappName = ct.getObservationTargetLabel(decappid);
 					name = decappName;
-					
-				} else {
-					throw(new Exception("No DEC application given - Subproject not added"));
+
 				}
-				
-								
+				else
+				{
+					throw (new Exception("No DEC application given - Subproject not added"));
+				}
+
 				// DEC subproject code
 				String expnumber = "";
-				if (request.getString("expnumber") != null && !request.getString("expnumber").equals("")) {
+				if (request.getString("expnumber") != null && !request.getString("expnumber").equals(""))
+				{
 					expnumber = request.getString("expnumber");
-				} else {
-					throw(new Exception("No DEC subproject code given - Subproject not added"));
 				}
-				// Check if combination of Project number + Subproject code unique
+				else
+				{
+					throw (new Exception("No DEC subproject code given - Subproject not added"));
+				}
+				// Check if combination of Project number + Subproject code
+				// unique
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, name));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "DecApplication"));
-				if (listId != -1) {
-					// If editing existing subproject, don't take existing code(s) for that into account
+				if (listId != -1)
+				{
+					// If editing existing subproject, don't take existing
+					// code(s) for that into account
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.NOT, getSelectedDecSubproject().getId()));
 				}
 				List<ObservedValue> valueList = q.find();
-				// Iterate through list of values where other subprojects are linked to our master project
-				for (ObservedValue value : valueList) {
+				// Iterate through list of values where other subprojects are
+				// linked to our master project
+				for (ObservedValue value : valueList)
+				{
 					String subprojectName = value.getTarget_Name();
 					String otherCode = ct.getMostRecentValueAsString(subprojectName, "ExperimentNr");
-					if (!otherCode.equals("")) {
-						if (otherCode.equals(expnumber)) {
-							throw(new Exception("DEC subproject code not unique within DEC project - Subproject not added"));
+					if (!otherCode.equals(""))
+					{
+						if (otherCode.equals(expnumber))
+						{
+							throw (new Exception(
+									"DEC subproject code not unique within DEC project - Subproject not added"));
 						}
 					}
 				}
-				
+
 				// DEC subproject application pdf
 				String decapppdf = null;
-				if (request.getString("decapppdf") != null && !request.getString("decapppdf").equals("")) {
+				if (request.getString("decapppdf") != null && !request.getString("decapppdf").equals(""))
+				{
 					decapppdf = request.getString("decapppdf");
 				}
-				
+
 				// Variables from lookup boxes
 				String concern = request.getString("concern");
 				String goal = request.getString("goal");
@@ -461,210 +501,246 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				String anaesthesia = request.getString("anaesthesia");
 				String painmanagement = request.getString("painmanagement");
 				String endstatus = request.getString("endstatus");
-				
+
 				// Remarks
 				String remarks = null;
-				if (request.getString("remarks") != null && !request.getString("remarks").equals("")) {
+				if (request.getString("remarks") != null && !request.getString("remarks").equals(""))
+				{
 					remarks = request.getString("remarks");
 				}
-				
+
 				// Get most recent Project start and end dates
-				//String projectStartDateString = ct.getMostRecentValueAsString(name, "StartDate");
+				// String projectStartDateString =
+				// ct.getMostRecentValueAsString(name, "StartDate");
 				setProjectStartDateString(ct.getMostRecentValueAsString(name, "StartDate"));
 				Date projectStartDate = newDateOnlyFormat.parse(this.projectStartDateString);
 				Date projectEndDate = null;
-				//String projectEndDateString = ct.getMostRecentValueAsString(name, "EndDate");
+				// String projectEndDateString =
+				// ct.getMostRecentValueAsString(name, "EndDate");
 				setProjectEndDateString(ct.getMostRecentValueAsString(name, "EndDate"));
-				if (!projectEndDateString.equals("")) {
+				if (!projectEndDateString.equals(""))
+				{
 					projectEndDate = newDateOnlyFormat.parse(this.projectEndDateString);
 				}
-				
+
 				// Start date
 				Date startdate = null;
-				if (request.getString("startdate") != null) {
+				if (request.getString("startdate") != null)
+				{
 					String startdateString = request.getString("startdate");
-					if (!startdateString.equals("")) {
+					if (!startdateString.equals(""))
+					{
 						startdate = newDateOnlyFormat.parse(startdateString);
 						// Check against Project time boundaries
-						if (startdate.before(projectStartDate)) {
-							throw(new Exception("Start date outside DEC project time span - Subproject not added"));
+						if (startdate.before(projectStartDate))
+						{
+							throw (new Exception("Start date outside DEC project time span - Subproject not added"));
 						}
-						if (projectEndDate != null && startdate.after(projectEndDate)) {
-							throw(new Exception("Start date outside DEC project time span - Subproject not added"));
+						if (projectEndDate != null && startdate.after(projectEndDate))
+						{
+							throw (new Exception("Start date outside DEC project time span - Subproject not added"));
 						}
-					} else {
-						throw(new Exception("No start date given - Subproject not added"));
 					}
-				} else {
-					throw(new Exception("No start date given - Subproject not added"));
+					else
+					{
+						throw (new Exception("No start date given - Subproject not added"));
+					}
 				}
-				
+				else
+				{
+					throw (new Exception("No start date given - Subproject not added"));
+				}
+
 				// End date
 				Date enddate = null;
-				if (request.getString("enddate") != null) {
+				if (request.getString("enddate") != null)
+				{
 					String enddateString = request.getString("enddate");
-					if (!enddateString.equals("")) {
+					if (!enddateString.equals(""))
+					{
 						enddate = newDateOnlyFormat.parse(enddateString);
 						// Check against Project time boundaries
-						if (enddate.before(projectStartDate) ||
-								enddate.after(projectEndDate)) {
-							throw(new Exception("End date outside DEC project time span - Subproject not added"));
+						if (enddate.before(projectStartDate) || enddate.after(projectEndDate))
+						{
+							throw (new Exception("End date outside DEC project time span - Subproject not added"));
 						}
 					}
 				}
-				
+
 				// Dec Subproject budget
 				String decsubprojectbudget = "";
-				if (request.getString("decsubprojectbudget") != null && !request.getString("decsubprojectbudget").equals("")) {
+				if (request.getString("decsubprojectbudget") != null
+						&& !request.getString("decsubprojectbudget").equals(""))
+				{
 					Integer decsubprojectbudgetint = request.getInt("decsubprojectbudget");
 					decsubprojectbudget = Integer.toString(decsubprojectbudgetint);
-				} else {
-					throw(new Exception("No budget given - Subproject not added"));
 				}
-				
+				else
+				{
+					throw (new Exception("No budget given - Subproject not added"));
+				}
+
 				// Some variables we need later on
 				String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
 				Calendar myCal = Calendar.getInstance();
 				Date now = myCal.getTime();
-				
+
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-				
+
 				// Check if edit or add
-				if (listId == -1) {
-					// autogenerate subprojectname to be "DEC " + decnr + subprojectnr
+				if (listId == -1)
+				{
+					// autogenerate subprojectname to be "DEC " + decnr +
+					// subprojectnr
 					name = name + expnumber;
 					// Make new DEC subproject (experiment)
 					ct.makePanel(investigationName, name, this.getLogin().getUserName());
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName, 
-							now, null, "SetTypeOfGroup", "TypeOfGroup", name, "Experiment", null));
-				} else {
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null,
+							"SetTypeOfGroup", "TypeOfGroup", name, "Experiment", null));
+				}
+				else
+				{
 					String selName = getSelectedDecSubproject().getName();
-					// check if the subprojectr changed and modify name of the observationtarget accordingly:
+					// check if the subprojectr changed and modify name of the
+					// observationtarget accordingly:
 					String previousexpnumber = ct.getMostRecentValueAsString(selName, "ExperimentNr");
-					if (expnumber != previousexpnumber) {
-						name = decappName + expnumber; 
-						
+					if (expnumber != previousexpnumber)
+					{
+						name = decappName + expnumber;
+
 						ObservationTarget subproject = ct.getObservationTargetByName(selName);
 						subproject.setName(name);
 						db.update(subproject);
 					}
 				}
-				
+
 				// Set values
-				// Nice feature of pheno model: we don't have to overwrite the old values
+				// Nice feature of pheno model: we don't have to overwrite the
+				// old values
 				// We just make new ones and the most recent ones count!
 				// TODO: this is not entirely true anymore, now that value dates
 				// are date-only, without time info, so values from the same day
 				// cannot be distinguished anymore!
-				// So what we want to do is edit the existing values instead of making new ones!
+				// So what we want to do is edit the existing values instead of
+				// making new ones!
 				ProtocolApplication app = ct.createProtocolApplication(investigationName, "SetDecSubprojectSpecs");
 				db.add(app);
 				String protocolApplicationName = app.getName();
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "DecApplication", name, null, decappName));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "ExperimentNr", name, expnumber, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "ExperimentTitle", name, title, null));
-				if (decapppdf != null) {
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				if (decapppdf != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 							enddate, "DecSubprojectApplicationPdf", name, decapppdf, null));
 				}
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "Concern", name, concern, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "Goal", name, goal, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "SpecialTechn", name, specialtechn, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "LawDef", name, lawdef, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "ToxRes", name, toxres, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "Anaesthesia", name, anaesthesia, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "PainManagement", name, painmanagement, null));
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "AnimalEndStatus", name, endstatus, null));
-				if (remarks != null) {
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				if (remarks != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 							enddate, "Remark", name, remarks, null));
 				}
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "StartDate", name, newDateOnlyFormat.format(startdate), null));
-				if (enddate != null) {
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				if (enddate != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 							enddate, "EndDate", name, newDateOnlyFormat.format(enddate), null));
 				}
-				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "DecSubprojectBudget", name, decsubprojectbudget, null));
-				
+
 				// Add everything to DB
 				db.add(valuesToAddList);
-				
+
 				this.getMessages().add(new ScreenMessage("DEC subproject successfully added", true));
 				refresh = true;
 			}
-			
+
 			if (action.equals("EditAnimals"))
 			{
 				listId = request.getInt("id");
-				
+
 				animalIdList.clear();
-				
+
 				// Find all the animals currently in this DEC subproject
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, getSelectedDecSubproject().getName()));
+				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, getSelectedDecSubproject()
+						.getName()));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
-				for (ObservedValue v : valueList) {
+				for (ObservedValue v : valueList)
+				{
 					animalIdList.add(v.getTarget_Id());
 				}
-				
+
 				// (Re)initialize remove animals matrix viewer
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Experiment");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-						ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Experiment"),
-						ObservedValue.RELATION, Operator.EQUALS, getSelectedDecSubproject().getId()));
-				// TODO: find a way to filter out only the animals that are CURRENTLY in this DEC subproject
-				remAnimalsMatrixViewer = new MatrixViewer(this, REMANIMALSMATRIX, 
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, 2, false, false, filterRules, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Experiment"), ObservedValue.RELATION, Operator.EQUALS,
+						getSelectedDecSubproject().getId()));
+				// TODO: find a way to filter out only the animals that are
+				// CURRENTLY in this DEC subproject
+				remAnimalsMatrixViewer = new MatrixViewer(this, REMANIMALSMATRIX,
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
+						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
+								Measurement.NAME, Operator.IN, measurementsToShow));
 				remAnimalsMatrixViewer.setDatabase(db);
 			}
-			
+
 			if (action.equals("RemoveAnimalsFromSubproject"))
 			{
-				/*animalRemoveIdList.clear();
-				for (int animalCounter = 0; animalCounter < animalIdList.size(); animalCounter++) {
-					if (request.getBool("rem" + animalCounter) != null) {
-						animalRemoveIdList.add(animalIdList.get(animalCounter));
-					}
-				}*/
-				
+				/*
+				 * animalRemoveIdList.clear(); for (int animalCounter = 0;
+				 * animalCounter < animalIdList.size(); animalCounter++) { if
+				 * (request.getBool("rem" + animalCounter) != null) {
+				 * animalRemoveIdList.add(animalIdList.get(animalCounter)); } }
+				 */
+
 				animalRemoveIdList.clear();
 				List<ObservationElement> rows = (List<ObservationElement>) remAnimalsMatrixViewer.getSelection(db);
 				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(REMANIMALSMATRIX + "_selected_" + rowCnt) != null) {
+				for (ObservationElement row : rows)
+				{
+					if (request.getBool(REMANIMALSMATRIX + "_selected_" + rowCnt) != null)
+					{
 						int animalId = row.getId();
-						if (!animalRemoveIdList.contains(animalId)) {
+						if (!animalRemoveIdList.contains(animalId))
+						{
 							animalRemoveIdList.add(animalId);
 						}
 					}
 					rowCnt++;
 				}
 			}
-			
+
 			if (action.equals("AddAnimalToSubproject"))
 			{
 				// (Re)initialize add animals matrix viewer
@@ -674,195 +750,228 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Experiment");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-						ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Experiment"),
-				//		ObservedValue.RELATION, Operator.NOT, getSelectedDecSubproject().getId()));
-				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Experiment"),
-				//		ObservedValue.RELATION, Operator.EQUALS, null));
-				// TODO: find a way to filter out only the animals that are CURRENTLY NOT in THIS DEC subproject
-				addAnimalsMatrixViewer = new MatrixViewer(this, ADDANIMALSMATRIX, 
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, 2, false, false, filterRules, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+				// ct.getMeasurementId("Experiment"),
+				// ObservedValue.RELATION, Operator.NOT,
+				// getSelectedDecSubproject().getId()));
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+				// ct.getMeasurementId("Experiment"),
+				// ObservedValue.RELATION, Operator.EQUALS, null));
+				// TODO: find a way to filter out only the animals that are
+				// CURRENTLY NOT in THIS DEC subproject
+				addAnimalsMatrixViewer = new MatrixViewer(this, ADDANIMALSMATRIX,
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
+						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
+								Measurement.NAME, Operator.IN, measurementsToShow));
 				addAnimalsMatrixViewer.setDatabase(db);
 			}
-			
+
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))
-			{	
+			{
 				// Get values from form
-				
+
 				// Discomfort
 				String discomfort = request.getString("discomfort");
-				
+
 				// End status
 				String endstatus = request.getString("endstatus");
-				
+
 				// Date-time of removal
 				Date subProjectRemovalDate = null;
-				if (request.getString("subprojectremovaldate") != null) {
+				if (request.getString("subprojectremovaldate") != null)
+				{
 					String subProjectRemovalDateString = request.getString("subprojectremovaldate");
 					subProjectRemovalDate = newDateOnlyFormat.parse(subProjectRemovalDateString);
-				} else {
-					throw(new Exception("No removal date given - animal(s) not removed"));
 				}
-				
+				else
+				{
+					throw (new Exception("No removal date given - animal(s) not removed"));
+				}
+
 				// Date-time of death (if applicable)
 				Date deathDate = null;
-				if (request.getString("deathdate") != null) {
+				if (request.getString("deathdate") != null)
+				{
 					String deathDateString = request.getString("deathdate");
-					if (!deathDateString.equals("")) {
+					if (!deathDateString.equals(""))
+					{
 						deathDate = newDateOnlyFormat.parse(deathDateString);
 					}
 				}
-				
+
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-				
-				for (int animalId : animalRemoveIdList) {
+
+				for (int animalId : animalRemoveIdList)
+				{
 					String animalName = ct.getObservationTargetLabel(animalId);
 					// Get DEC subproject
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
-					q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, getSelectedDecSubproject().getName()));
+					q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, getSelectedDecSubproject()
+							.getName()));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 					List<ObservedValue> valueList = q.find();
-					if (valueList.size() == 1) // if not, no or multiple experiments found, so something terribly wrong
+					if (valueList.size() == 1) // if not, no or multiple
+												// experiments found, so
+												// something terribly wrong
 					{
 						ObservedValue value = valueList.get(0);
 						// Set end date-time
 						value.setEndtime(subProjectRemovalDate);
 						db.update(value);
-						
+
 						String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
-						
+
 						// If applicable, end status Active and set Death date
-						if (endstatus.equals("A. Dood in het kader van de proef") || endstatus.equals("B. Gedood na beeindiging van de proef")) {
+						if (endstatus.equals("A. Dood in het kader van de proef")
+								|| endstatus.equals("B. Gedood na beeindiging van de proef"))
+						{
 							Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
 							activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 							activeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 							List<ObservedValue> activeValueList = activeQuery.find();
-							if (activeValueList.size() > 0) {
+							if (activeValueList.size() > 0)
+							{
 								// Take most recent one and update
 								ObservedValue activeValue = activeValueList.get(activeValueList.size() - 1);
 								activeValue.setEndtime(deathDate);
 								activeValue.setValue("Dead");
 								db.update(activeValue);
 							}
-							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName, 
-									deathDate, null, "SetDeathDate", "DeathDate", animalName, 
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName,
+									deathDate, null, "SetDeathDate", "DeathDate", animalName,
 									newDateOnlyFormat.format(deathDate), null));
 						}
-						
+
 						// Set subproject end values
 						Date endstatusDate = null;
-						if (subProjectRemovalDate != null) {
+						if (subProjectRemovalDate != null)
+						{
 							endstatusDate = subProjectRemovalDate;
 						}
-						ProtocolApplication app = ct.createProtocolApplication(investigationName, "AnimalFromSubproject");
+						ProtocolApplication app = ct.createProtocolApplication(investigationName,
+								"AnimalFromSubproject");
 						db.add(app);
 						String protocolApplicationName = app.getName();
-						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
-								endstatusDate, null, "FromExperiment", animalName, null, getSelectedDecSubproject().getName()));
-						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
+						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
+								endstatusDate, null, "FromExperiment", animalName, null, getSelectedDecSubproject()
+										.getName()));
+						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 								endstatusDate, null, "ActualDiscomfort", animalName, discomfort, null));
-						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
+						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 								endstatusDate, null, "ActualAnimalEndStatus", animalName, endstatus, null));
-					} else {
-						throw(new Exception("No or multiple open DEC subprojects found - animal(s) not removed"));
+					}
+					else
+					{
+						throw (new Exception("No or multiple open DEC subprojects found - animal(s) not removed"));
 					}
 				} // end of loop through animal remove list
-				
+
 				// Add everything to DB
 				db.add(valuesToAddList);
-				
+
 				this.getMessages().add(new ScreenMessage("Animal(s) successfully removed", true));
 				refresh = true;
 			}
-			
+
 			if (action.equals("ApplyAddAnimalToSubproject"))
-			{	
+			{
 				String subprojectName = getSelectedDecSubproject().getName();
-				
+
 				// Get Subproject start and end dates
 				String subprojectStartDateString = ct.getMostRecentValueAsString(subprojectName, "StartDate");
 				Date subprojectStartDate = newDateOnlyFormat.parse(subprojectStartDateString);
 				Date subprojectEndDate = null;
 				String subprojectEndDateString = ct.getMostRecentValueAsString(subprojectName, "EndDate");
-				if (!subprojectEndDateString.equals("")) {
+				if (!subprojectEndDateString.equals(""))
+				{
 					subprojectEndDate = newDateOnlyFormat.parse(subprojectEndDateString);
 				}
-				
+
 				// Get values from form for one or more animals
-				// Firstly, common values for all animals (TODO: maybe change so you can have separate values for each animal)
-				
+				// Firstly, common values for all animals (TODO: maybe change so
+				// you can have separate values for each animal)
+
 				// Date of entry
 				Date subProjectAdditionDate = null;
-				if (request.getString("subprojectadditiondate") != null) {
+				if (request.getString("subprojectadditiondate") != null)
+				{
 					String subProjectRemovalDateString = request.getString("subprojectadditiondate");
 					subProjectAdditionDate = newDateOnlyFormat.parse(subProjectRemovalDateString);
 					// Check against Subproject time boundaries
-					if (subProjectAdditionDate.before(subprojectStartDate) ||
-						(subprojectEndDate != null && subProjectAdditionDate.after(subprojectEndDate))) {
-						throw(new Exception("Entry date outside DEC Subproject time span - animal(s) not added"));
+					if (subProjectAdditionDate.before(subprojectStartDate)
+							|| (subprojectEndDate != null && subProjectAdditionDate.after(subprojectEndDate)))
+					{
+						throw (new Exception("Entry date outside DEC Subproject time span - animal(s) not added"));
 					}
-				} else {
-					throw(new Exception("No entry date given - animal(s) not added"));
 				}
-				
+				else
+				{
+					throw (new Exception("No entry date given - animal(s) not added"));
+				}
+
 				String painManagement = request.getString("painmanagement");
 				String anaesthesia = request.getString("anaesthesia");
 				String actualDiscomfort = request.getString("discomfort");
 				String actualEndstatus = request.getString("endstatus");
-				
+
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-				
-				// Make list of all the animal id's (, both individuals ones and those from groups)
+
+				// Make list of all the animal id's (, both individuals ones and
+				// those from groups)
 				List<Integer> animalIdList = new ArrayList<Integer>();
 				List<ObservationElement> rows = (List<ObservationElement>) addAnimalsMatrixViewer.getSelection(db);
 				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(ADDANIMALSMATRIX + "_selected_" + rowCnt) != null) {
+				for (ObservationElement row : rows)
+				{
+					if (request.getBool(ADDANIMALSMATRIX + "_selected_" + rowCnt) != null)
+					{
 						int animalId = row.getId();
-						if (!animalIdList.contains(animalId)) {
+						if (!animalIdList.contains(animalId))
+						{
 							animalIdList.add(animalId);
 						}
 					}
 					rowCnt++;
 				}
-				
-				/*if (request.getList("animal") != null) {
-					List<?> animalIdsAsObjectsList = request.getList("animal");
-					for (Object animalIdAsObject : animalIdsAsObjectsList) {
-						String animalIdString = (String)animalIdAsObject;
-						animalIdList.add(Integer.parseInt(animalIdString));
-					}
-				}
-				if (request.getList("groupname") != null) {
-					List<?> batchIdsAsObjectsList = request.getList("groupname");
-					for (Object batchIdAsObject : batchIdsAsObjectsList) {
-						String batchIdString = (String)batchIdAsObject;
-						int batchId = Integer.parseInt(batchIdString);
-						Query<MolgenisBatchEntity> batchQuery = db.query(MolgenisBatchEntity.class);
-						batchQuery.addRules(new QueryRule(MolgenisBatchEntity.BATCH, Operator.EQUALS, batchId));
-						List<MolgenisBatchEntity> entities = batchQuery.find();
-						for (MolgenisBatchEntity e : entities) {
-							animalIdList.add(e.getObjectId());
-						}
-					}
-				}*/
-				
-				// Remove animals from id list that are already in an experiment currently
+
+				/*
+				 * if (request.getList("animal") != null) { List<?>
+				 * animalIdsAsObjectsList = request.getList("animal"); for
+				 * (Object animalIdAsObject : animalIdsAsObjectsList) { String
+				 * animalIdString = (String)animalIdAsObject;
+				 * animalIdList.add(Integer.parseInt(animalIdString)); } } if
+				 * (request.getList("groupname") != null) { List<?>
+				 * batchIdsAsObjectsList = request.getList("groupname"); for
+				 * (Object batchIdAsObject : batchIdsAsObjectsList) { String
+				 * batchIdString = (String)batchIdAsObject; int batchId =
+				 * Integer.parseInt(batchIdString); Query<MolgenisBatchEntity>
+				 * batchQuery = db.query(MolgenisBatchEntity.class);
+				 * batchQuery.addRules(new QueryRule(MolgenisBatchEntity.BATCH,
+				 * Operator.EQUALS, batchId)); List<MolgenisBatchEntity>
+				 * entities = batchQuery.find(); for (MolgenisBatchEntity e :
+				 * entities) { animalIdList.add(e.getObjectId()); } } }
+				 */
+
+				// Remove animals from id list that are already in an experiment
+				// currently
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, animalIdList));
 				List<ObservedValue> valueList = q.find();
-				if (valueList.size() > 0) {
+				if (valueList.size() > 0)
+				{
 					String message = "The following animal id's: ";
-					for (ObservedValue value : valueList) {
+					for (ObservedValue value : valueList)
+					{
 						int animalInExperimentId = value.getTarget_Id();
 						message += animalInExperimentId;
 						message += " ";
@@ -871,11 +980,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					message += "were removed because they are already in a DEC subproject";
 					this.getMessages().add(new ScreenMessage(message, false));
 				}
-				
+
 				// Secondly, set animal-specific values
-				for (int animalId : animalIdList) {
+				for (int animalId : animalIdList)
+				{
 					String animalName = ct.getObservationTargetLabel(animalId);
-					// Calculate sourceTypeSubproject based on animal's SourceType and DEC Subproject history
+					// Calculate sourceTypeSubproject based on animal's
+					// SourceType and DEC Subproject history
 					String sourceTypeSubproject = null;
 					q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
@@ -891,14 +1002,18 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						if (valueList.size() > 0)
 						{
 							String sourceType = valueList.get(0).getValue();
-							// In most of the cases, SourceTypeSubproject = SourceType
+							// In most of the cases, SourceTypeSubproject =
+							// SourceType
 							sourceTypeSubproject = sourceType;
-							// SourceTypes 1-1, 1-2 and 1-3 aggregate into SourceTypeSubproject 1
-							if (sourceType.equals("Eigen fok binnen uw organisatorische werkeenheid") ||
-								sourceType.equals("Andere organisatorische werkeenheid vd instelling")) {
+							// SourceTypes 1-1, 1-2 and 1-3 aggregate into
+							// SourceTypeSubproject 1
+							if (sourceType.equals("Eigen fok binnen uw organisatorische werkeenheid")
+									|| sourceType.equals("Andere organisatorische werkeenheid vd instelling"))
+							{
 								sourceTypeSubproject = "Geregistreerde fok/aflevering in Nederland";
 							}
-							// SourceTypeSubproject 6 is for first reuse, 7 for second etc.
+							// SourceTypeSubproject 6 is for first reuse, 7 for
+							// second etc.
 							String startOfYearString = Calendar.getInstance().get(Calendar.YEAR) + "-01-01 00:00:00";
 							q = db.query(ObservedValue.class);
 							q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
@@ -909,39 +1024,47 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 							if (nrOfSubprojects > 1) sourceTypeSubproject = "Hergebruik tweede, derde enz. maal in het registratiejaar";
 						}
 					}
-					
-					// Make 'AnimalInSubproject' protocol application and add values
+
+					// Make 'AnimalInSubproject' protocol application and add
+					// values
 					String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
 					ProtocolApplication app = ct.createProtocolApplication(investigationName, "AnimalInSubproject");
 					db.add(app);
 					String protocolApplicationName = app.getName();
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 							subProjectAdditionDate, null, "Experiment", animalName, null, subprojectName));
-					if (sourceTypeSubproject != null) {
-						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
-								subProjectAdditionDate, null, "SourceTypeSubproject", animalName, sourceTypeSubproject, null));
+					if (sourceTypeSubproject != null)
+					{
+						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
+								subProjectAdditionDate, null, "SourceTypeSubproject", animalName, sourceTypeSubproject,
+								null));
 					}
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 							subProjectAdditionDate, null, "PainManagement", animalName, painManagement, null));
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 							subProjectAdditionDate, null, "Anaesthesia", animalName, anaesthesia, null));
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 							subProjectAdditionDate, null, "ExpectedDiscomfort", animalName, actualDiscomfort, null));
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, 
-							subProjectAdditionDate, null, "ExpectedAnimalEndStatus", animalName, actualEndstatus, null));
+					valuesToAddList
+							.add(ct.createObservedValue(investigationName, protocolApplicationName,
+									subProjectAdditionDate, null, "ExpectedAnimalEndStatus", animalName,
+									actualEndstatus, null));
 				} // end of for-loop through animals
-				
+
 				// Add everything to DB
 				db.add(valuesToAddList);
-				
+
 				this.getMessages().add(new ScreenMessage("Animal(s) successfully added", true));
 				refresh = true;
 			}
-			
-		} catch (Exception e) {
+
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			this.getMessages().clear();
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			}
 		}
@@ -952,19 +1075,21 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	{
 		ct.setDatabase(db);
 		this.toHtmlDb = db;
-		
-		if (refresh == true || this.getLogin().getUserId().intValue() != userId) {
+
+		if (refresh == true || this.getLogin().getUserId().intValue() != userId)
+		{
 			userId = this.getLogin().getUserId().intValue();
 			refresh = false;
-			try {
+			try
+			{
 				List<String> investigationNames = ct.getWritableUserInvestigationNames(this.getLogin().getUserName());
-				
+
 				// Populate batch list
-				//setBatchList(ct.getAllBatches());
-				
+				// setBatchList(ct.getAllBatches());
+
 				// Populate list of all animals
-				allAnimalNameList = ct.getAllObservationTargetNames("Individual", true, investigationNames);			
-				
+				allAnimalNameList = ct.getAllObservationTargetNames("Individual", true, investigationNames);
+
 				// Populate expected discomfort code list
 				this.setExpectedDiscomfortCodeList(ct.getAllCodesForFeature("ExpectedDiscomfort"));
 				// Populate expected endstatus code list
@@ -993,16 +1118,18 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				this.setAnimalEndStatusCodeList(ct.getAllCodesForFeature("AnimalEndStatus"));
 				// decApplicationList
 				this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationNames));
-				
+
 				// Populate subprojects list
 				experimentList.clear();
 				List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationNames);
 				int pos = 0;
-				for (ObservationTarget currentExp : expList) {
-					String expName = currentExp.getName();			
+				for (ObservationTarget currentExp : expList)
+				{
+					String expName = currentExp.getName();
 					String experimentNr = ct.getMostRecentValueAsString(expName, "ExperimentNr");
 					String experimentTitle = ct.getMostRecentValueAsString(expName, "ExperimentTitle");
-					String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expName, "DecSubprojectApplicationPdf");
+					String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expName,
+							"DecSubprojectApplicationPdf");
 					String concern = ct.getMostRecentValueAsString(expName, "Concern");
 					String goal = ct.getMostRecentValueAsString(expName, "Goal");
 					String specialTechn = ct.getMostRecentValueAsString(expName, "SpecialTechn");
@@ -1021,7 +1148,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					decSubprojectBudget = ct.getMostRecentValueAsString(expName, "DecSubprojectBudget");
 					java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 					int nrOfAnimals = 0;
-					if (allAnimalNameList.size() > 0) {
+					if (allAnimalNameList.size() > 0)
+					{
 						Query<ObservedValue> q = db.query(ObservedValue.class);
 						q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, expName));
 						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, allAnimalNameList));
@@ -1030,9 +1158,9 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 						nrOfAnimals = q.count();
 					}
-					
+
 					DecSubproject tmpExp = new DecSubproject();
-					//tmpExp.setD
+					// tmpExp.setD
 					tmpExp.setId(currentExp.getId());
 					tmpExp.setDecExpListId(pos);
 					tmpExp.setName(expName);
@@ -1054,14 +1182,17 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					if (endDate != null) tmpExp.setEndDate(endDate);
 					tmpExp.setDecSubprojectBudget(decSubprojectBudget);
 					experimentList.add(tmpExp);
-					
+
 					pos++;
 				}
-				
-			} catch (Exception e) {
+
+			}
+			catch (Exception e)
+			{
 				this.getMessages().clear();
 				String message = "Something went wrong while loading lists";
-				if (e.getMessage() != null) {
+				if (e.getMessage() != null)
+				{
 					message += (": " + e.getMessage());
 				}
 				this.getMessages().add(new ScreenMessage(message, false));
@@ -1069,23 +1200,31 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			}
 		}
 	}
-	
-	public String renderAddAnimalsMatrixViewer() {
-		if (addAnimalsMatrixViewer != null) {
+
+	public String renderAddAnimalsMatrixViewer()
+	{
+		if (addAnimalsMatrixViewer != null)
+		{
 			addAnimalsMatrixViewer.setDatabase(toHtmlDb);
 			return addAnimalsMatrixViewer.render();
-		} else {
+		}
+		else
+		{
 			return "No viewer available, matrix for adding animals cannot be rendered";
 		}
 	}
-	
-	public String renderRemAnimalsMatrixViewer() {
-		if (remAnimalsMatrixViewer != null) {
+
+	public String renderRemAnimalsMatrixViewer()
+	{
+		if (remAnimalsMatrixViewer != null)
+		{
 			remAnimalsMatrixViewer.setDatabase(toHtmlDb);
 			return remAnimalsMatrixViewer.render();
-		} else {
+		}
+		else
+		{
 			return "No viewer available, matrix for removing animals cannot be rendered";
 		}
 	}
-	
+
 }

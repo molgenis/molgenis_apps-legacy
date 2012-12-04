@@ -29,7 +29,6 @@ public class GenomeBrowser extends PluginModel<Entity>
 	private static final long serialVersionUID = 1L;
 
 	private GenomeBrowserModel model = new GenomeBrowserModel();
-	private String appLoc;
 
 	public GenomeBrowserModel getMyModel()
 	{
@@ -55,7 +54,12 @@ public class GenomeBrowser extends PluginModel<Entity>
 
 	public void handleRequest(Database db, Tuple request)
 	{
-		appLoc = ((MolgenisRequest) request).getAppLocation();
+		// on any request, set the location of the app based on how the user
+		// 'contacted' the app
+		// the action "__continue_to_genomebrowser" is not handled but only
+		// serves to lead here
+		this.model.setAppUrl(((MolgenisRequest) request).getAppLocation());
+
 		if (request.getString("__action") != null)
 		{
 			String action = request.getString("__action");
@@ -83,21 +87,8 @@ public class GenomeBrowser extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-
 		try
 		{
-
-			if (this.model.getAppUrl() == null)
-			{
-				boolean appUrlSet = false;
-				while (!appUrlSet)
-				{
-					this.model.setAppUrl(appLoc);
-					System.out.println("GenomeBrowser application URL set!");
-					appUrlSet = true;
-				}
-			}
-
 			if (this.model.getFilesAreVisible() == null)
 			{
 				// find out if molgenisfiles are readable by anonymous
@@ -124,14 +115,11 @@ public class GenomeBrowser extends PluginModel<Entity>
 				List<InvestigationFile> mf = q.find();
 				this.model.setGffFiles(mf);
 			}
-
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
-
 	}
-
 }

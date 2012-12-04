@@ -9,7 +9,7 @@ public class TestOutput
 {
 	@XmlAttribute
 	String name;
-	
+
 	@XmlAttribute
 	String file;
 
@@ -32,9 +32,9 @@ public class TestOutput
 	{
 		this.file = file;
 	}
-	
+
 	public String toString()
 	{
-		return String.format("Output(name='%s',file='%s'", name,file);
+		return String.format("Output(name='%s',file='%s'", name, file);
 	}
 }

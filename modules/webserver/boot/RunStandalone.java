@@ -20,6 +20,7 @@ public class RunStandalone
 		{
 			private static final long serialVersionUID = -4687683036134257812L;
 
+			@Override
 			public void setMappingTable(PathTreeDictionary mappingtable)
 			{
 				super.setMappingTable(mappingtable);
@@ -51,6 +52,7 @@ public class RunStandalone
 		// add shutdown hooks
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				srv.notifyStop();
@@ -61,12 +63,13 @@ public class RunStandalone
 		// run server in new thread
 		(new Thread()
 		{
+			@Override
 			public void run()
 			{
 				srv.serve();
 			}
 		}).start();
-		
+
 		// display app location
 		System.out.println("*********************************************************");
 		System.out.println("APPLICATION IS RUNNING AT: http://localhost:" + port + "/" + variant + "/");

@@ -11,48 +11,47 @@ import org.molgenis.compute.host.AbstractComputeHost.JobState;
 public class Job
 {
 	private JobState state = JobState.SUBMITTED;
-	
+
 	/** Technical id, given by the host */
 	private String id;
-	
-	/** User readible id, given by our system*/
+
+	/** User readible id, given by our system */
 	private String name;
 
-	/** the script to be executed. This is always .sh*/
+	/** the script to be executed. This is always .sh */
 	private String script;
-	
+
 	/** Queue used, if applicable */
 	private String queue;
-	
-	/** physical machine this job is running on*/
+
+	/** physical machine this job is running on */
 	private String exec_host;
 	private String qtime;
-	
+
 	/** log of the std.out, given when job is completed */
 	private String output_log;
-	
+
 	/** log of std.error, retrieved when job is completed */
 	private String error_log;
-	
+
 	/** host where this job is executed */
 	private String host;
-	
-	//optional parameters
+
+	// optional parameters
 	private String walltime;
 	private String mem;
 	private String nodes;
-	
-	//technical parameter, where the logs are stored
+
+	// technical parameter, where the logs are stored
 	private String output_path;
 	private String error_path;
 
 	public String toString()
 	{
 		return String
-				.format(
-						"Job(\n\tid=%s, \n\tname=%s, \n\tstate=%s, \n\tqueue=%s,\n\texec_host=%s, \n\tqtime=%s, \n\twalltime=%s, \n\tmem=%s, \n\tnodes=%s, \n\terror_path=%s, \n\toutput_path=%s, \n\terror_log=%s \n\toutput_log=%s\n)",
-						id, name, state, queue, exec_host, qtime, walltime,
-						mem, nodes, error_path, output_path, error_log, output_log);
+				.format("Job(\n\tid=%s, \n\tname=%s, \n\tstate=%s, \n\tqueue=%s,\n\texec_host=%s, \n\tqtime=%s, \n\twalltime=%s, \n\tmem=%s, \n\tnodes=%s, \n\terror_path=%s, \n\toutput_path=%s, \n\terror_log=%s \n\toutput_log=%s\n)",
+						id, name, state, queue, exec_host, qtime, walltime, mem, nodes, error_path, output_path,
+						error_log, output_log);
 	}
 
 	/**

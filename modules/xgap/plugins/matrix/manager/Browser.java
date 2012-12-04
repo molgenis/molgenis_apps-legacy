@@ -21,7 +21,7 @@ public class Browser
 	 * viewer.
 	 */
 	private BrowserModel model = new BrowserModel();
-	
+
 	private ApplicationController ac;
 
 	public BrowserModel getModel()
@@ -32,12 +32,11 @@ public class Browser
 	public Browser(Data selectedData, DataMatrixInstance instance, ApplicationController ac) throws Exception
 	{
 		this.ac = ac;
-		
+
 		// create instance of complete matrix and run checks
 		model.setInstance(instance);
 		model.setColMax(instance.getNumberOfCols());
 		model.setRowMax(instance.getNumberOfRows());
-
 
 		runChecks(selectedData);
 
@@ -48,7 +47,7 @@ public class Browser
 		model.setColStart(0);
 		model.setRowStart(0);
 		model.setColStop(model.getColMax() < model.getWidth() ? model.getColMax() : model.getWidth());
-	
+
 		model.setRowStop(model.getRowMax() < model.getHeight() ? model.getRowMax() : model.getHeight());
 
 		// set first submatrix using the defaults
@@ -66,34 +65,36 @@ public class Browser
 			throw new DatabaseException("Datamatrix '" + selectedData.getName() + "' has no rows.");
 		}
 	}
-	
+
 	public void updateSubmatrixKeepRows() throws Exception
 	{
 		setStartAndStops();
-		
+
 		List<String> rowNames = this.getModel().getSubMatrix().getRowNames();
-		List<String> colNames = this.getModel().getInstance().getColNames().subList(model.getColStart(), model.getColStop());
-		
+		List<String> colNames = this.getModel().getInstance().getColNames()
+				.subList(model.getColStart(), model.getColStop());
+
 		// create and set submatrix
 		DataMatrixInstance subMatrix = model.getInstance().getSubMatrix(rowNames, colNames);
 		model.setSubMatrix(subMatrix);
-		
-		//store pointer for csv download 'visible'
+
+		// store pointer for csv download 'visible'
 		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, subMatrix);
 	}
-	
+
 	public void updateSubmatrixKeepCols() throws Exception
 	{
 		setStartAndStops();
-		
-		List<String> rowNames = this.getModel().getInstance().getRowNames().subList(model.getRowStart(), model.getRowStop());
+
+		List<String> rowNames = this.getModel().getInstance().getRowNames()
+				.subList(model.getRowStart(), model.getRowStop());
 		List<String> colNames = this.getModel().getSubMatrix().getColNames();
-		
+
 		// create and set submatrix
 		DataMatrixInstance subMatrix = model.getInstance().getSubMatrix(rowNames, colNames);
 		model.setSubMatrix(subMatrix);
-		
-		//store pointer for csv download 'visible'
+
+		// store pointer for csv download 'visible'
 		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, subMatrix);
 	}
 
@@ -104,15 +105,15 @@ public class Browser
 		int nCols = model.getColStop() - model.getColStart();
 
 		// create and set submatrix
-		DataMatrixInstance subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(),
-				nRows, model.getColStart(), nCols);
+		DataMatrixInstance subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(), nRows,
+				model.getColStart(), nCols);
 		model.setSubMatrix(subMatrix);
-		
-		//store pointer for csv download 'visible'
+
+		// store pointer for csv download 'visible'
 		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, subMatrix);
 
 	}
-	
+
 	private void setStartAndStops()
 	{
 		verifyColStart();
@@ -150,8 +151,8 @@ public class Browser
 	}
 
 	/**
-	 * On horizontal move actions at the bottom edge of the matrix combined with a
-	 * height setting increase past the edge, the vertical window would move
+	 * On horizontal move actions at the bottom edge of the matrix combined with
+	 * a height setting increase past the edge, the vertical window would move
 	 * out of range. The rowStop is verified, but this is based on rowStart
 	 * which can be wrong at that point. Same goes for vertical move actions
 	 * under inverse conditions. This function compensates.
@@ -192,10 +193,10 @@ public class Browser
 
 	/**
 	 * Determine value for row stop. If height is smaller than maximum row
-	 * value, the stop position is the current row position plus the height.
-	 * If the maximum row value is equal ('perfect fit') or smaller ('window
-	 * cut-off') than the height, the stop position is the maximum possible value
-	 * for row instead.
+	 * value, the stop position is the current row position plus the height. If
+	 * the maximum row value is equal ('perfect fit') or smaller ('window
+	 * cut-off') than the height, the stop position is the maximum possible
+	 * value for row instead.
 	 */
 	private void determineRowStop()
 	{
@@ -222,8 +223,7 @@ public class Browser
 		if (model.getWidth() < model.getColMax())
 		{
 			model.setColStart(model.getColStart() + model.getStepSize() > model.getColMax() - model.getWidth() ? model
-					.getColMax()
-					- model.getWidth() : model.getColStart() + model.getStepSize());
+					.getColMax() - model.getWidth() : model.getColStart() + model.getStepSize());
 		}
 		else
 		{
@@ -239,9 +239,7 @@ public class Browser
 	 */
 	public void moveLeft() throws Exception
 	{
-		model
-				.setColStart(model.getColStart() - model.getStepSize() < 0 ? 0 : model.getColStart()
-						- model.getStepSize());
+		model.setColStart(model.getColStart() - model.getStepSize() < 0 ? 0 : model.getColStart() - model.getStepSize());
 		moveActionFollowup();
 	}
 
@@ -250,8 +248,7 @@ public class Browser
 		if (model.getHeight() < model.getRowMax())
 		{
 			model.setRowStart(model.getRowStart() + model.getStepSize() > model.getRowMax() - model.getHeight() ? model
-					.getRowMax()
-					- model.getHeight() : model.getRowStart() + model.getStepSize());
+					.getRowMax() - model.getHeight() : model.getRowStart() + model.getStepSize());
 		}
 		else
 		{
@@ -262,14 +259,12 @@ public class Browser
 
 	/**
 	 * Moves viewed sub matrix upwards. The step size is subtracted from the
-	 * current row position. If this new row position is less than 0, it
-	 * is set to 0 instead.
+	 * current row position. If this new row position is less than 0, it is set
+	 * to 0 instead.
 	 */
 	public void moveUp() throws Exception
 	{
-		model
-				.setRowStart(model.getRowStart() - model.getStepSize() < 0 ? 0 : model.getRowStart()
-						- model.getStepSize());
+		model.setRowStart(model.getRowStart() - model.getStepSize() < 0 ? 0 : model.getRowStart() - model.getStepSize());
 		moveActionFollowup();
 	}
 
@@ -312,8 +307,8 @@ public class Browser
 	}
 
 	/**
-	 * Apply filters to values in the matrix to either
-	 * the whole matrix or current visible matrix.
+	 * Apply filters to values in the matrix to either the whole matrix or
+	 * current visible matrix.
 	 * 
 	 * @param request
 	 * @throws Exception
@@ -321,25 +316,29 @@ public class Browser
 	public String applyFilters(Tuple request, Database db, MatrixManagerModel screenModel) throws Exception
 	{
 		String filter = null;
-		
+
 		DataMatrixInstance filterMatrix = null;
 		String action = request.getString("__action");
-		if(action.startsWith("filter_visible_")){
+		if (action.startsWith("filter_visible_"))
+		{
 			// get the current submatrix (view)
 			filterMatrix = this.getModel().getSubMatrix();
 		}
-		else if(action.startsWith("filter_all_")){
+		else if (action.startsWith("filter_all_"))
+		{
 			// get the original complete matrix
 			filterMatrix = this.getModel().getInstance();
-		}else{
+		}
+		else
+		{
 			throw new Exception("filter not prepended with filter_all_ or filter_visible_");
 		}
-		
+
 		String field = null;
 		String operator = null;
 		Object value = null;
-		
-		if(action.endsWith("by_index"))
+
+		if (action.endsWith("by_index"))
 		{
 			screenModel.setSelectedFilterDiv("filter1");
 			field = request.getString("add_filter_by_indexFILTER_FIELD");
@@ -348,7 +347,7 @@ public class Browser
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByIndex(q);
 		}
-		else if(action.endsWith("by_col_value"))
+		else if (action.endsWith("by_col_value"))
 		{
 			screenModel.setSelectedFilterDiv("filter2");
 			field = request.getString("add_filter_by_col_valueFILTER_FIELD");
@@ -357,7 +356,7 @@ public class Browser
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
 		}
-		else if(action.endsWith("by_row_value"))
+		else if (action.endsWith("by_row_value"))
 		{
 			screenModel.setSelectedFilterDiv("filter3");
 			field = request.getString("add_filter_by_row_valueFILTER_FIELD");
@@ -366,7 +365,7 @@ public class Browser
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
 		}
-		else if(action.endsWith("by_col_attrb"))
+		else if (action.endsWith("by_col_attrb"))
 		{
 			screenModel.setSelectedFilterDiv("filter4");
 			field = request.getString("add_filter_by_col_attrbFILTER_FIELD");
@@ -375,7 +374,7 @@ public class Browser
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByColEntityValues(db, q);
 		}
-		else if(action.endsWith("by_row_attrb"))
+		else if (action.endsWith("by_row_attrb"))
 		{
 			screenModel.setSelectedFilterDiv("filter5");
 			field = request.getString("add_filter_by_row_attrbFILTER_FIELD");
@@ -384,19 +383,19 @@ public class Browser
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByRowEntityValues(db, q);
 		}
-		
+
 		this.model.setSubMatrix(filterMatrix);
-		
+
 		filter = action.replace("_", " ") + ", " + field + " " + operator.toLowerCase() + " " + value;
-		
-		//store pointer for csv download 'visible'
+
+		// store pointer for csv download 'visible'
 		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
-		
+
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
-		
+
 		setStartAndStops();
-		
+
 		return filter;
 	}
 
@@ -404,25 +403,29 @@ public class Browser
 	public String apply2DFilter(Tuple request, Database db) throws Exception
 	{
 		String filter = null;
-		
+
 		DataMatrixInstance filterMatrix = null;
 		String action = request.getString("__action");
-		if(action.startsWith("2d_filter_visible_")){
+		if (action.startsWith("2d_filter_visible_"))
+		{
 			// get the current submatrix (view)
 			filterMatrix = this.getModel().getSubMatrix();
 		}
-		else if(action.startsWith("2d_filter_all_")){
+		else if (action.startsWith("2d_filter_all_"))
+		{
 			// get the original complete matrix
 			filterMatrix = this.getModel().getInstance();
-		}else{
+		}
+		else
+		{
 			throw new Exception("filter not prepended with 2d_filter_all_ or 2d_filter_visible_");
 		}
-		
+
 		String amount = null;
 		String operator = null;
 		Object value = null;
-		
-		if(action.endsWith("row"))
+
+		if (action.endsWith("row"))
 		{
 			amount = request.getString("2d_filter_by_row_AMOUNT");
 			operator = request.getString("2d_filter_by_row_FILTER_OPERATOR");
@@ -430,7 +433,7 @@ public class Browser
 			QueryRule q = new QueryRule(amount, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrix2DFilterByRow(q);
 		}
-		else if(action.endsWith("col"))
+		else if (action.endsWith("col"))
 		{
 			amount = request.getString("2d_filter_by_col_AMOUNT");
 			operator = request.getString("2d_filter_by_col_FILTER_OPERATOR");
@@ -438,44 +441,45 @@ public class Browser
 			QueryRule q = new QueryRule(amount, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrix2DFilterByCol(q);
 		}
-		
+
 		this.model.setSubMatrix(filterMatrix);
-		
+
 		filter = action.replace("_", " ") + ", " + amount + " " + operator.toLowerCase() + " " + value;
-		
-		//store pointer for csv download 'visible'
+
+		// store pointer for csv download 'visible'
 		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
-		
+
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
-		
+
 		setStartAndStops();
-		
+
 		return filter;
 	}
 
 	public String applySelect(Tuple request, Database db, MatrixManagerModel screenModel) throws Exception
 	{
 		String action = request.getString("__action");
-		
-		if(action.endsWith("cols"))
+
+		if (action.endsWith("cols"))
 		{
 			screenModel.setSelectedFilterDiv("filter8");
-			
+
 			List<String> colNames = new ArrayList<String>();
-			for(String colName : this.getModel().getInstance().getColNames())
+			for (String colName : this.getModel().getInstance().getColNames())
 			{
-				if(request.getString("colselect_"+colName) != null){
+				if (request.getString("colselect_" + colName) != null)
+				{
 					colNames.add(colName);
 				}
 			}
-			if(colNames.size() == 0)
+			if (colNames.size() == 0)
 			{
 				throw new Exception("No column names were selected!");
 			}
-			
+
 			List<String> rowNames = null;
-			if(action.contains("preserverows"))
+			if (action.contains("preserverows"))
 			{
 				rowNames = this.getModel().getSubMatrix().getRowNames();
 			}
@@ -483,38 +487,39 @@ public class Browser
 			{
 				rowNames = this.getModel().getInstance().getRowNames();
 			}
-						
+
 			this.model.setSubMatrix(this.model.getInstance().getSubMatrix(rowNames, colNames));
-			
-			//store pointer for csv download 'visible'
+
+			// store pointer for csv download 'visible'
 			ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
-			
+
 			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
-			
+
 			setStartAndStops();
-			
+
 			return "custom column selection";
-			
+
 		}
-		else if(action.endsWith("rows"))
+		else if (action.endsWith("rows"))
 		{
 			screenModel.setSelectedFilterDiv("filter9");
-			
+
 			List<String> rowNames = new ArrayList<String>();
-			for(String rowName : this.getModel().getInstance().getRowNames())
+			for (String rowName : this.getModel().getInstance().getRowNames())
 			{
-				if(request.getString("rowselect_"+rowName) != null){
+				if (request.getString("rowselect_" + rowName) != null)
+				{
 					rowNames.add(rowName);
 				}
 			}
-			if(rowNames.size() == 0)
+			if (rowNames.size() == 0)
 			{
 				throw new Exception("No row names were selected!");
 			}
-			
+
 			List<String> colNames = null;
-			if(action.contains("preservecols"))
+			if (action.contains("preservecols"))
 			{
 				colNames = this.getModel().getSubMatrix().getColNames();
 			}
@@ -522,23 +527,20 @@ public class Browser
 			{
 				colNames = this.getModel().getInstance().getColNames();
 			}
-						
+
 			this.model.setSubMatrix(this.model.getInstance().getSubMatrix(rowNames, colNames));
-			
-			//store pointer for csv download 'visible'
+
+			// store pointer for csv download 'visible'
 			ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
-			
+
 			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
-			
+
 			setStartAndStops();
-			
+
 			return "custom row selection";
 		}
 
-		
-		
-		
 		return null;
 	}
 

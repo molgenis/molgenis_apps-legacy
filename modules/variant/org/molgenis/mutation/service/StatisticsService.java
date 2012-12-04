@@ -26,29 +26,32 @@ public class StatisticsService extends MolgenisVariantService
 	{
 		return this.db.count(Variant.class);
 	}
-	
+
 	/**
 	 * Get number of mutations by pathogenicity
+	 * 
 	 * @param pathogenicity
 	 * @return number of mutations
 	 * @throws DatabaseException
 	 */
 	public Map<String, Integer> getNumMutationsByPathogenicity() throws DatabaseException
 	{
-//		if (this.db instanceof JpaDatabase)
-//		{
-//			String sql            = "SELECT pathogenicity, COUNT(id) FROM Mutation GROUP BY pathogenicity";
-//			List<Object[]> counts = this.db.getEntityManager().createNativeQuery(sql).getResultList();
-//			
-//			HashMap<String, Integer> result = new HashMap<String, Integer>();
-//
-//			for (Object[] entry : counts)
-//				result.put((String) entry[0], Integer.parseInt(entry[1].toString()));
-//
-//			return result;
-//		}
-//		else
-//			throw new DatabaseException("Unsupported database mapper");
+		// if (this.db instanceof JpaDatabase)
+		// {
+		// String sql =
+		// "SELECT pathogenicity, COUNT(id) FROM Mutation GROUP BY pathogenicity";
+		// List<Object[]> counts =
+		// this.db.getEntityManager().createNativeQuery(sql).getResultList();
+		//
+		// HashMap<String, Integer> result = new HashMap<String, Integer>();
+		//
+		// for (Object[] entry : counts)
+		// result.put((String) entry[0], Integer.parseInt(entry[1].toString()));
+		//
+		// return result;
+		// }
+		// else
+		// throw new DatabaseException("Unsupported database mapper");
 		return new HashMap<String, Integer>();
 	}
 
@@ -65,44 +68,53 @@ public class StatisticsService extends MolgenisVariantService
 
 	/**
 	 * Get number of patients by type of mutation pathogenicity
+	 * 
 	 * @param pathogenicity
 	 * @return number of patients
 	 * @throws DatabaseException
 	 */
 	public Map<String, Integer> getNumPatientsByPathogenicity()
 	{
-//		if (this.db instanceof JDBCDatabase)
-//			throw new DatabaseException("Unsupported database mapper");
-////			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '" + pathogenicity + "'").size();
-//		else if (this.db instanceof JpaDatabase)
-//		{
-//			String sql            = "SELECT m.pathogenicity, COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) GROUP BY m.pathogenicity";
-//			List<Object[]> counts = this.db.getEntityManager().createNativeQuery(sql).getResultList();
-//			
-//			HashMap<String, Integer> result = new HashMap<String, Integer>();
-//
-//			for (Object[] entry : counts)
-//				result.put((String) entry[0], Integer.parseInt(entry[1].toString()));
-//
-//			return result;
-//		}
-//		else
-//			throw new DatabaseException("Unsupported database mapper");
+		// if (this.db instanceof JDBCDatabase)
+		// throw new DatabaseException("Unsupported database mapper");
+		// // return ((JDBCDatabase)
+		// this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '"
+		// + pathogenicity + "'").size();
+		// else if (this.db instanceof JpaDatabase)
+		// {
+		// String sql =
+		// "SELECT m.pathogenicity, COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) GROUP BY m.pathogenicity";
+		// List<Object[]> counts =
+		// this.db.getEntityManager().createNativeQuery(sql).getResultList();
+		//
+		// HashMap<String, Integer> result = new HashMap<String, Integer>();
+		//
+		// for (Object[] entry : counts)
+		// result.put((String) entry[0], Integer.parseInt(entry[1].toString()));
+		//
+		// return result;
+		// }
+		// else
+		// throw new DatabaseException("Unsupported database mapper");
 		return new HashMap<String, Integer>();
 	}
-	
+
 	/*
 	 * Get number of phenotypes
-	 * @return hash with name of phenotypes as keys and counts of p henotypes as values
+	 * 
+	 * @return hash with name of phenotypes as keys and counts of p henotypes as
+	 * values
+	 * 
 	 * @throws DatabaseException
 	 */
 	public HashMap<String, Integer> getPhenotypeCounts() throws DatabaseException
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
-			List<Tuple> counts = ((JDBCDatabase) this.db).sql("SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value");
+			List<Tuple> counts = ((JDBCDatabase) this.db)
+					.sql("SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value");
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
-		
+
 			for (Tuple entry : counts)
 				result.put(entry.getString(0), entry.getInt(1));
 
@@ -110,8 +122,9 @@ public class StatisticsService extends MolgenisVariantService
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			String sql                      = "SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value";
-			List<Object[]> counts           = this.db.getEntityManager().createNativeQuery(sql).getResultList();
+			String sql = "SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value";
+			@SuppressWarnings("unchecked")
+			List<Object[]> counts = this.db.getEntityManager().createNativeQuery(sql).getResultList();
 
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
 
@@ -133,11 +146,15 @@ public class StatisticsService extends MolgenisVariantService
 	 */
 	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
 	{
-		if (this.db instanceof JDBCDatabase)
-			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_patientreferences WHERE Patient.id = Patient_patientreferences.Patient)").size();
+		if (this.db instanceof JDBCDatabase) return ((JDBCDatabase) this.db)
+				.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_patientreferences WHERE Patient.id = Patient_patientreferences.Patient)")
+				.size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_patientreferences pp ON (p.id = pp.Patient) WHERE pp.patientreferences IS NULL");
+			javax.persistence.Query q = this.db
+					.getEntityManager()
+					.createNativeQuery(
+							"SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_patientreferences pp ON (p.id = pp.Patient) WHERE pp.patientreferences IS NULL");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else

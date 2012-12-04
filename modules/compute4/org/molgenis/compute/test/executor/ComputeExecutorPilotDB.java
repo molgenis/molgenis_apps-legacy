@@ -1,21 +1,16 @@
 package org.molgenis.compute.test.executor;
 
 import app.DatabaseFactory;
-import org.molgenis.compute.runtime.ComputeHost;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.compute.test.sysexecutor.SysCommandExecutor;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: georgebyelas
- * Date: 22/08/2012
- * Time: 14:26
+ * Created with IntelliJ IDEA. User: georgebyelas Date: 22/08/2012 Time: 14:26
  * To change this template use File | Settings | File Templates.
  */
 public class ComputeExecutorPilotDB implements ComputeExecutor
@@ -28,26 +23,49 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
     private ExecutionHost host = null;
     SysCommandExecutor localExecutor = new SysCommandExecutor();
 
-    //actual start pilots here
-    public void executeTasks(String backend)
+    private Database db = null;
+
+    public ComputeExecutorPilotDB()
     {
-        //evaluate if we have tasks ready to run
-        //Database db = null;
-        //List<ComputeTask> generatedTasks = null;
+        startDB();
+    }
+
+    private void startDB()
+    {
+        try
+        {
+            db = DatabaseFactory.create();
+        }
+        catch (DatabaseException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    //actual start pilots here
+    public void executeTasks(String backend, String backendType)
+    {
+        //evaluate if we have tasks ready to run on a specific back-end
         int readyToSubmitSize = 0;
 
         try
         {
-            Database db = DatabaseFactory.create();
             db.beginTx();
 
-            List<ComputeTask> generatedTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "generated"));
-            readyToSubmitSize = evaluateTasks(db, generatedTasks);
-            db.commitTx();
+//            List<ComputeTask> generatedTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "generated"));
 
-            List<ComputeTask> readyTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "ready"));
+            List<ComputeTask> generatedTasks = db.query(ComputeTask.class)
+                    .equals(ComputeTask.STATUSCODE, "generated")
+                    .equals(ComputeTask.BACKENDNAME, backend).find();
+
+            readyToSubmitSize = evaluateTasks(generatedTasks);
+
+//            List<ComputeTask> readyTasks = db.find(ComputeTask.class, new QueryRule(ComputeTask.STATUSCODE, QueryRule.Operator.EQUALS, "ready"));
+            List<ComputeTask> readyTasks = db.query(ComputeTask.class)
+                    .equals(ComputeTask.STATUSCODE, "ready")
+                    .equals(ComputeTask.BACKENDNAME, backend).find();
+
             readyToSubmitSize = readyTasks.size();
-
 
         }
         catch (DatabaseException e)
@@ -65,11 +83,11 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
         {
             try
             {
-                if (backend.equalsIgnoreCase(BACK_END_GRID))
+                if (backendType.equalsIgnoreCase(BACK_END_GRID))
                     host.submitPilotGrid();
-                else if (backend.equalsIgnoreCase(BACK_END_CLUSTER))
+                else if (backendType.equalsIgnoreCase(BACK_END_CLUSTER))
                     host.submitPilotCluster();
-                else if (backend.equalsIgnoreCase(BACK_END_LOCALHOST))
+                else if (backendType.equalsIgnoreCase(BACK_END_LOCALHOST))
                     submitPilotLocalhost();
             }
             catch (IOException e)
@@ -112,7 +130,7 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
       	System.out.println(cmdOutput);
     }
 
-    private int evaluateTasks(Database db, List<ComputeTask> generatedTasks)
+    private int evaluateTasks(List<ComputeTask> generatedTasks) throws DatabaseException
     {
         int count = 0;
         for (ComputeTask task : generatedTasks)
@@ -130,6 +148,7 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                 System.out.println(">>> TASK " + task.getName() + " is ready for execution");
                 //count++;
                 task.setStatusCode("ready");
+                db.commitTx();
             }
         }
         return count;
@@ -137,30 +156,6 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 
     public void startHost(String name)
     {
-        //get host name from database
-        Database db = null;
-        ComputeHost dbHost = null;
-        try
-        {
-            db = DatabaseFactory.create();
-            db.beginTx();
-
-            dbHost = db.find(ComputeHost.class, new QueryRule(ComputeHost.NAME, QueryRule.Operator.EQUALS, name)).get(0);
-            db.close();
-        }
-        catch (DatabaseException e)
-        {
-            e.printStackTrace();
-        }
-
-        try
-        {
-            host = new ExecutionHost(dbHost.getHostName(), dbHost.getHostUsername(), dbHost.getHostPassword(), 22);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
 
     }
 

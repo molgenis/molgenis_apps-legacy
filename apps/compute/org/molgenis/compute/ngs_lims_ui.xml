@@ -14,7 +14,7 @@
 		</form>
 		<plugin name="LimsApplyProocol" label="Apply protocol"
 			type="org.molgenis.compute.ui.ApplyProtocol" />
-		<!-- plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
-			label="Sample report" /-->
+		<!-- plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests" 
+			label="Sample report" / -->
 	</menu>
 </molgenis>

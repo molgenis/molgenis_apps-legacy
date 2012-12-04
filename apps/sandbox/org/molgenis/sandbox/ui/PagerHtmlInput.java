@@ -22,8 +22,8 @@ public class PagerHtmlInput extends HtmlInput
 		ActionInput next = new ActionInput(this.getName() + "_next");
 		ActionInput last = new ActionInput(this.getName() + "_last");
 
-		String state = (getObject().getOffset()+1) + "-"
-				+ Math.min(getObject().getLimit(), getObject().getCount()) + " of " + getObject().getCount();
+		String state = (getObject().getOffset() + 1) + "-" + Math.min(getObject().getLimit(), getObject().getCount())
+				+ " of " + getObject().getCount();
 
 		if (isHorizontal())
 		{
@@ -31,8 +31,8 @@ public class PagerHtmlInput extends HtmlInput
 			prev.setIcon("res/img/prev.png");
 			next.setIcon("res/img/next.png");
 			last.setIcon("res/img/last.png");
-			return "<div style=\"vertical-align: middle\" class="+this.getClazz()+">"+first.toHtml() + prev.toHtml() + "<label>"+state+"</label>"
-					+ next.toHtml() + last.toHtml()+"</di>";
+			return "<div style=\"vertical-align: middle\" class=" + this.getClazz() + ">" + first.toHtml()
+					+ prev.toHtml() + "<label>" + state + "</label>" + next.toHtml() + last.toHtml() + "</di>";
 		}
 		else
 		{
@@ -40,8 +40,8 @@ public class PagerHtmlInput extends HtmlInput
 			prev.setIcon("res/img/up.png");
 			next.setIcon("res/img/down.png");
 			last.setIcon("res/img/rowStop.png");
-			return first.toHtml() + "<br/>" + prev.toHtml() + "<br/>"+"<label>"+state+"</label>"
-					+ next.toHtml() + "<br/>" + last.toHtml();
+			return first.toHtml() + "<br/>" + prev.toHtml() + "<br/>" + "<label>" + state + "</label>" + next.toHtml()
+					+ "<br/>" + last.toHtml();
 		}
 	}
 

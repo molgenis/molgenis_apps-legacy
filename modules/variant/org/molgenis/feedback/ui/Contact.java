@@ -18,6 +18,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
@@ -29,14 +30,14 @@ public class Contact extends EasyPluginController<ContactModel>
 	public Contact(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new ContactModel(this)); //the default model
+		this.setModel(new ContactModel(this)); // the default model
 	}
 
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Contact.ftl", getModel());
 	}
-	
+
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
@@ -48,28 +49,26 @@ public class Contact extends EasyPluginController<ContactModel>
 
 			if ("send".equals(this.getModel().getAction()))
 			{
-				if (StringUtils.isEmpty(request.getString("name")))
-					throw new IllegalArgumentException("Please enter a name.");
-				if (StringUtils.isEmpty(request.getString("email")))
-					throw new IllegalArgumentException("Please enter an email address.");
-				if (StringUtils.isEmpty(request.getString("comments")))
-					throw new IllegalArgumentException("Please enter your comments.");
+				if (StringUtils.isEmpty(request.getString("name"))) throw new IllegalArgumentException(
+						"Please enter a name.");
+				if (StringUtils.isEmpty(request.getString("email"))) throw new IllegalArgumentException(
+						"Please enter an email address.");
+				if (StringUtils.isEmpty(request.getString("comments"))) throw new IllegalArgumentException(
+						"Please enter your comments.");
 
 				// get the http request that is encapsulated inside the tuple
-				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-				HttpServletRequest httpRequest   = rt.getRequest();
+				HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+				HttpServletRequest httpRequest = rt.getRequest();
 
-				Captcha captcha                  = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
+				Captcha captcha = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
 
-				if (!captcha.isCorrect(request.getString("code")))
-					throw new IllegalArgumentException("Code was wrong.");
-					
-				String emailContents = "New comment via the contact form:\n" +
-					"Name: " + request.getString("name") + "\n"+
-					"Email: " + request.getString("email") + "\n" +
-					"Comments: " + request.getString("comments") + "\n";
+				if (!captcha.isCorrect(request.getString("code"))) throw new IllegalArgumentException("Code was wrong.");
 
-				//assuming: 'encoded' p.w. (setting deObf = true)
+				String emailContents = "New comment via the contact form:\n" + "Name: " + request.getString("name")
+						+ "\n" + "Email: " + request.getString("email") + "\n" + "Comments: "
+						+ request.getString("comments") + "\n";
+
+				// assuming: 'encoded' p.w. (setting deObf = true)
 				this.getEmailService().email("New comment", emailContents, this.getModel().getEmailTo(), true);
 				this.getModel().getMessages().add(new ScreenMessage("Your comment has been successfully sent.", true));
 			}
@@ -94,7 +93,7 @@ public class Contact extends EasyPluginController<ContactModel>
 	private void populateContactForm()
 	{
 		this.getModel().setContactForm(new ContactForm());
-		this.getModel().getContactForm().get("select").setValue(this.getName());
-		this.getModel().getContactForm().get("__target").setValue(this.getName());
+		((HiddenInput) this.getModel().getContactForm().get("select")).setValue(this.getName());
+		((HiddenInput) this.getModel().getContactForm().get("__target")).setValue(this.getName());
 	}
 }

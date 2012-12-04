@@ -26,170 +26,172 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
+public class BatchPlugin extends EasyPluginController
+{
 
-public class BatchPlugin extends EasyPluginController {
+	private static final long serialVersionUID = 6468497779526846505L;
+	private Container container;
+	private BatchService service;
+	private String action = "init";
+	private int batchId;
 
-    private static final long serialVersionUID = 6468497779526846505L;
-    private Container container;
-    private BatchService service;
-    private String action = "init";
-    private int batchId;
+	public BatchPlugin(String name, ScreenController<?> parent)
+	{
+		super(name, parent);
+		this.service = new BatchService();
+	}
 
-    public BatchPlugin(String name, ScreenController<?> parent)
-    {
-    	super(name, parent);
-    	this.service   = new BatchService();
-    }
+	@Override
+	public void reload(Database db)
+	{
+		if ("init".equals(this.action))
+		{
+			try
+			{
+				this.populateBatchSelectForm(db);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
 
-    @Override
-    public void reload(Database db)
-    {
-    	if ("init".equals(this.action))
-    	{
-    		try
-    		{
-    			this.populateBatchSelectForm(db);
-    		}
-    		catch (Exception e)
-    		{
-    			e.printStackTrace();
-    		}
-    	}
-    }
+	@Override
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	{
+		try
+		{
+			this.action = request.getString("__action");
 
-    @Override
-    public Show handleRequest(Database db, Tuple request, OutputStream out)
-    {
-    	try
-    	{
-    		this.action = request.getString("__action");
+			if (action.equals("Select"))
+			{
+				this.handleSelectRequest(db, request);
+			}
+			else if (action.equals("Add"))
+			{
+				this.handleAddRequest(db, request);
+			}
+			else if (action.equals("Remove"))
+			{
+				this.handleRemoveRequest(db, request);
+			}
+			else if (action.equals("Clear"))
+			{
+				this.action = "init";
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
-    		if ( action.equals("Select") )
-    		{
-    			this.handleSelectRequest(db, request);
-    		}
-    		else if (action.equals("Add"))
-    		{
-    			this.handleAddRequest(db, request);
-    		}
-    		else if (action.equals("Remove"))
-    		{
-    			this.handleRemoveRequest(db, request);
-    		}
-    		else if (action.equals("Clear"))
-    		{
-    			this.action = "init";
-    		}
-    	}
-    	catch (Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    	
-    	return Show.SHOW_MAIN;
-    }
+		return Show.SHOW_MAIN;
+	}
 
 	/**
-     * Add an ObservationTarget to the Batch
-     * @param request
-	 * @throws IOException 
-	 * @throws ParseException 
-	 * @throws DatabaseException 
-     */
-    private void handleAddRequest(Database db, Tuple request) throws DatabaseException, ParseException, IOException
-    {
-    	List<Integer> ids = new ArrayList<Integer>();
-    	
-    	for (Object o : request.getList("addId"))
-    		ids.add(Integer.parseInt(o.toString()));
-		
-		this.service.addToBatch(db, this.batchId, ids);
-		
-		this.populateBatchEntitySelectTable(db);
-    }
-
-    /**
-     * Remove an ObservationElement from the Batch
-     * @param request
-     * @throws IOException 
-     * @throws DatabaseException 
-     * @throws ParseException 
-     */
-	private void handleRemoveRequest(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	 * Add an ObservationTarget to the Batch
+	 * 
+	 * @param request
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws DatabaseException
+	 */
+	private void handleAddRequest(Database db, Tuple request) throws DatabaseException, ParseException, IOException
 	{
 		List<Integer> ids = new ArrayList<Integer>();
-    	
-    	for (Object o : request.getList("removeId"))
-    		ids.add(Integer.parseInt(o.toString()));
-		
-		this.service.removeFromBatch(db, this.batchId, ids);
-		
+
+		for (Object o : request.getList("addId"))
+			ids.add(Integer.parseInt(o.toString()));
+
+		this.service.addToBatch(db, this.batchId, ids);
+
 		this.populateBatchEntitySelectTable(db);
 	}
 
 	/**
-     * Render the html
-     */
-    public ScreenView getView()
-    {
-    	return this.container;
-    }
+	 * Remove an ObservationElement from the Batch
+	 * 
+	 * @param request
+	 * @throws IOException
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	private void handleRemoveRequest(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	{
+		List<Integer> ids = new ArrayList<Integer>();
 
-    private void handleSelectRequest(Database db, Tuple request) throws DatabaseException, ParseException
-    {
-    	this.batchId = request.getInt("batches");
-    	
-    	this.populateBatchEntitySelectTable(db);
-    }
+		for (Object o : request.getList("removeId"))
+			ids.add(Integer.parseInt(o.toString()));
 
-    private void populateBatchSelectForm(Database db) throws DatabaseException, ParseException
-    {
-    	BatchSelectForm batchSelectForm = new BatchSelectForm();
-    	
-    	List<MolgenisBatch> batches = service.getBatches(db, db.getLogin().getUserId());
-    	((SelectInput) ((DivPanel) batchSelectForm.get("batchPanel")).get("batches")).setOptions(batches, "id", "name"); 
-    	
-    	this.container = batchSelectForm;
-    }
+		this.service.removeFromBatch(db, this.batchId, ids);
 
-    private void populateBatchEntitySelectTable(Database db) throws DatabaseException, ParseException
-    {
-    	BatchEntitySelectForm batchEntitySelectForm = new BatchEntitySelectForm();
+		this.populateBatchEntitySelectTable(db);
+	}
 
-    	List<ObservationTarget> targets             = this.service.getObservationTargetsNotInCurrentBatch(db, this.batchId);
-    	List<MolgenisBatchEntity> entities          = this.service.getBatchEntities(db, this.batchId);
+	/**
+	 * Render the html
+	 */
+	public ScreenView getView()
+	{
+		return this.container;
+	}
 
-    	for (int i = 0; i < targets.size(); i++)
-    	{
-    		ObservationTarget target   = targets.get(i);
+	private void handleSelectRequest(Database db, Tuple request) throws DatabaseException, ParseException
+	{
+		this.batchId = request.getInt("batches");
 
-    		Table table                = (Table) ((DivPanel) batchEntitySelectForm.get("panel")).get("entitiesDbTable");
-    		table.addRow("");
+		this.populateBatchEntitySelectTable(db);
+	}
 
-    		Vector<ValueLabel> options = new Vector<ValueLabel>();
-    		options.add(new ValueLabel(target.getId(), ""));
-    		CheckboxInput checkbox     = new CheckboxInput("addId", "", "", options, new Vector<String>());
-   
-    		table.setCell(0, i, checkbox);
-    		table.setCell(1, i, target.getName());
-    	}
+	private void populateBatchSelectForm(Database db) throws DatabaseException, ParseException
+	{
+		BatchSelectForm batchSelectForm = new BatchSelectForm();
 
-    	for (int i = 0; i < entities.size(); i++)
-    	{
-    		MolgenisBatchEntity entity = entities.get(i);
+		List<MolgenisBatch> batches = service.getBatches(db, db.getLogin().getUserId());
+		((SelectInput) ((DivPanel) batchSelectForm.get("batchPanel")).get("batches")).setOptions(batches, "id", "name");
 
-    		Table table                = (Table) ((DivPanel) batchEntitySelectForm.get("panel")).get("entitiesBatchTable");
-    		table.addRow("");
+		this.container = batchSelectForm;
+	}
 
-    		Vector<ValueLabel> options = new Vector<ValueLabel>();
-    		options.add(new ValueLabel(entity.getId(), ""));
-    		CheckboxInput checkbox     = new CheckboxInput("removeId", "", "", options, new Vector<String>());
-   
-    		table.setCell(0, i, checkbox);
-    		table.setCell(1, i, entity.getName());
-    	}
+	private void populateBatchEntitySelectTable(Database db) throws DatabaseException, ParseException
+	{
+		BatchEntitySelectForm batchEntitySelectForm = new BatchEntitySelectForm();
 
-    	this.container = batchEntitySelectForm;
-    }
-    
+		List<ObservationTarget> targets = this.service.getObservationTargetsNotInCurrentBatch(db, this.batchId);
+		List<MolgenisBatchEntity> entities = this.service.getBatchEntities(db, this.batchId);
+
+		for (int i = 0; i < targets.size(); i++)
+		{
+			ObservationTarget target = targets.get(i);
+
+			Table table = (Table) ((DivPanel) batchEntitySelectForm.get("panel")).get("entitiesDbTable");
+			table.addRow("");
+
+			Vector<ValueLabel> options = new Vector<ValueLabel>();
+			options.add(new ValueLabel(target.getId(), ""));
+			CheckboxInput checkbox = new CheckboxInput("addId", "", "", options, new Vector<String>());
+
+			table.setCell(0, i, checkbox);
+			table.setCell(1, i, target.getName());
+		}
+
+		for (int i = 0; i < entities.size(); i++)
+		{
+			MolgenisBatchEntity entity = entities.get(i);
+
+			Table table = (Table) ((DivPanel) batchEntitySelectForm.get("panel")).get("entitiesBatchTable");
+			table.addRow("");
+
+			Vector<ValueLabel> options = new Vector<ValueLabel>();
+			options.add(new ValueLabel(entity.getId(), ""));
+			CheckboxInput checkbox = new CheckboxInput("removeId", "", "", options, new Vector<String>());
+
+			table.setCell(0, i, checkbox);
+			table.setCell(1, i, entity.getName());
+		}
+
+		this.container = batchEntitySelectForm;
+	}
+
 }

@@ -71,11 +71,10 @@ public class LoginScreen extends PluginModel<Entity>
 			case Login:
 				doLogin(db, request);
 				break;
-				
+
 			case Activate:
-				doActivate(db,request);
+				doActivate(db, request);
 				this.state = State.Logout;
-				
 
 			case Logout:
 				doLogout(db, request);
@@ -113,86 +112,74 @@ public class LoginScreen extends PluginModel<Entity>
 
 	private void doActivate(Database db, Tuple request)
 	{
-		this.setMessages(new ScreenMessage("TODO",false));
-		
+		this.setMessages(new ScreenMessage("TODO", false));
+
 	}
 
 	private void doSaveProfile(Database db, Tuple request)
 	{
-		//TODO: Where is MolgenisUser?
+		// TODO: Where is MolgenisUser?
 		/*
-		// check password
-		// change emailadress only after verification
-		MolgenisUser user = ((DatabaseLogin) getLogin()).getMolgenisUser();
-		user.setEmailaddress(request.getString("emailaddress"));
-		user.setPassword(request.getString("password"));
-		try
-		{
-			db.update(user);
-			this.setMessages(new ScreenMessage("Profile updated", true));
-		}
-		catch (Exception e)
-		{
-			this.setMessages(new ScreenMessage("Update of profile failed failed: " + e.getMessage(), false));
-			e.printStackTrace();
-		}
-		*/
+		 * // check password // change emailadress only after verification
+		 * MolgenisUser user = ((DatabaseLogin) getLogin()).getMolgenisUser();
+		 * user.setEmailaddress(request.getString("emailaddress"));
+		 * user.setPassword(request.getString("password")); try {
+		 * db.update(user); this.setMessages(new
+		 * ScreenMessage("Profile updated", true)); } catch (Exception e) {
+		 * this.setMessages(new
+		 * ScreenMessage("Update of profile failed failed: " + e.getMessage(),
+		 * false)); e.printStackTrace(); }
+		 */
 	}
 
 	private void doRegister(Database db, Tuple request)
 	{
-		//TODO: Where is MolgenisUser?
+		// TODO: Where is MolgenisUser?
 		/*
-		// TODO: check password
-		try
-		{
-			String user = request.getString("name");
-			String email = request.getString("emailaddress");
-			String password = request.getString("password");
-
-			// check if username or email exists
-			boolean userExists = db.query(MolgenisUser.class).equals("name", user).find().size() > 0;
-			boolean emailExists = db.query(MolgenisUser.class).equals("emailaddress", email).find().size() > 0;
-
-			if (userExists || emailExists)
-			{
-				String errorMessage = "User with";
-				if (userExists) errorMessage += " name " + user;
-				if (userExists && emailExists) errorMessage += " and ";
-				if (emailExists) errorMessage += " emailadress " + email;
-				throw new DatabaseException(errorMessage + " already exists.");
-			}
-
-			// todo: fire up the emailing protocol or queue or something...
-			//fixme: automate
-			String baseUrl = "http://localhost:8080/molgenis_online/molgenis.do?__target="+this.getName()+"&select="+this.getName();
-			String activationCode = UUID.randomUUID().toString();
-			String url = baseUrl+ "&__action=Activate&__activationCode=" + activationCode;
-			String emailBody = "Dear "+user+",\n We welcome you as new user to "+this.getRootScreen().getLabel()+". Please click on <a href=\""
-					+ url
-					+ "\">"
-					+ url
-					+ "</a> to activate your account. Notice that this hyperlink may be spread over multiple lines.\n\nRegards,\nthe system administrators.";
-			this.getEmailService().email("Account activation MOLGENIS", emailBody, email, true);
-
-			// finally add user including activiation code
-			MolgenisUser newUser = new MolgenisUser();
-			newUser.setName(user);
-			newUser.setEmailaddress(email);
-			newUser.setPassword(password);
-			newUser.setActivationCode(activationCode);
-
-			db.add(newUser);
-
-			this.setMessages(new ScreenMessage("Registration succesfull, an email confirmation has been sent to "
-					+ request.getString("emailaddress") + " for activation", true));
-			this.state = State.Login;
-		}
-		catch (Exception e)
-		{
-			this.setMessages(new ScreenMessage("Registration failed: " + e.getMessage(), false));
-		}
-		*/
+		 * // TODO: check password try { String user =
+		 * request.getString("name"); String email =
+		 * request.getString("emailaddress"); String password =
+		 * request.getString("password");
+		 * 
+		 * // check if username or email exists boolean userExists =
+		 * db.query(MolgenisUser.class).equals("name", user).find().size() > 0;
+		 * boolean emailExists =
+		 * db.query(MolgenisUser.class).equals("emailaddress",
+		 * email).find().size() > 0;
+		 * 
+		 * if (userExists || emailExists) { String errorMessage = "User with";
+		 * if (userExists) errorMessage += " name " + user; if (userExists &&
+		 * emailExists) errorMessage += " and "; if (emailExists) errorMessage
+		 * += " emailadress " + email; throw new DatabaseException(errorMessage
+		 * + " already exists."); }
+		 * 
+		 * // todo: fire up the emailing protocol or queue or something...
+		 * //fixme: automate String baseUrl =
+		 * "http://localhost:8080/molgenis_online/molgenis.do?__target="
+		 * +this.getName()+"&select="+this.getName(); String activationCode =
+		 * UUID.randomUUID().toString(); String url = baseUrl+
+		 * "&__action=Activate&__activationCode=" + activationCode; String
+		 * emailBody =
+		 * "Dear "+user+",\n We welcome you as new user to "+this.getRootScreen
+		 * ().getLabel()+". Please click on <a href=\"" + url + "\">" + url +
+		 * "</a> to activate your account. Notice that this hyperlink may be spread over multiple lines.\n\nRegards,\nthe system administrators."
+		 * ; this.getEmailService().email("Account activation MOLGENIS",
+		 * emailBody, email, true);
+		 * 
+		 * // finally add user including activiation code MolgenisUser newUser =
+		 * new MolgenisUser(); newUser.setName(user);
+		 * newUser.setEmailaddress(email); newUser.setPassword(password);
+		 * newUser.setActivationCode(activationCode);
+		 * 
+		 * db.add(newUser);
+		 * 
+		 * this.setMessages(new ScreenMessage(
+		 * "Registration succesfull, an email confirmation has been sent to " +
+		 * request.getString("emailaddress") + " for activation", true));
+		 * this.state = State.Login; } catch (Exception e) {
+		 * this.setMessages(new ScreenMessage("Registration failed: " +
+		 * e.getMessage(), false)); }
+		 */
 	}
 
 	private void doEmailPassword(Database db, Tuple request)
@@ -245,7 +232,7 @@ public class LoginScreen extends PluginModel<Entity>
 				f.add(new PasswordInput("Retype new password"));
 				f.add(new ActionInput(action));
 				f.add(new ActionInput(State.Cancel.toString()));
-				break;				
+				break;
 			case Login:
 				f.add(new StringInput("name"));
 				f.add(new PasswordInput("password"));
@@ -268,19 +255,21 @@ public class LoginScreen extends PluginModel<Entity>
 				// identical to next so no break
 				// difference is any errors
 			case Save_profile:
-				//TODO: Where is MolgenisUser?
+				// TODO: Where is MolgenisUser?
 				/*
-				MolgenisUser user = ((DatabaseLogin) getLogin()).getMolgenisUser();
-				f.add(new StringInput("name", user.getName()));
-				f.add(new PasswordInput("password", user.getPassword()));
-				f.add(new PasswordInput("Retype password"));
-				f.add(new StringInput("emailaddress", user.getEmailaddress()));
-				f.add(new ActionInput(State.Save_profile.toString().replace("_", " ")));
-				f.add(new ActionInput(State.Cancel.toString()));
-				*/
+				 * MolgenisUser user = ((DatabaseLogin)
+				 * getLogin()).getMolgenisUser(); f.add(new StringInput("name",
+				 * user.getName())); f.add(new PasswordInput("password",
+				 * user.getPassword())); f.add(new
+				 * PasswordInput("Retype password")); f.add(new
+				 * StringInput("emailaddress", user.getEmailaddress()));
+				 * f.add(new
+				 * ActionInput(State.Save_profile.toString().replace("_",
+				 * " "))); f.add(new ActionInput(State.Cancel.toString()));
+				 */
 		}
 
-		//logger.debug("STATE: " + this.state);
+		// logger.debug("STATE: " + this.state);
 
 		return f.getInputs();
 	}

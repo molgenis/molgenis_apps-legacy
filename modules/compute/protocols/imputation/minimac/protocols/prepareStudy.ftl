@@ -2,9 +2,9 @@
 
 #FOREACH project,chr
 
-getFile "${imputationToolJar}"
-getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibrariesJar}"
+getFile ${imputationToolJar}
+getFile ${imputationToolJsciCoreJar}
+getFile ${imputationToolGeneticaLibrariesJar}
 
 getFile ${studyTriTyperChrDir}/GenotypeMatrix.dat
 getFile ${studyTriTyperChrDir}/Individuals.txt
@@ -17,11 +17,11 @@ getFile ${referenceTriTyperDir}/PhenotypeInformation.txt
 getFile ${referenceTriTyperDir}/SNPMappings.txt
 getFile ${referenceTriTyperDir}/SNPs.txt
 
-inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
-inputs "${studyTriTyperChrDir}/Individuals.txt"
-inputs "${studyTriTyperChrDir}/PhenotypeInformation.txt"
-inputs "${studyTriTyperChrDir}/SNPMappings.txt"
-inputs "${studyTriTyperChrDir}/SNPs.txt"
+#inputs "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+#inputs "${studyTriTyperChrDir}/Individuals.txt"
+#inputs "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+#inputs "${studyTriTyperChrDir}/SNPMappings.txt"
+#inputs "${studyTriTyperChrDir}/SNPs.txt"
 inputs "${referenceTriTyperDir}/GenotypeMatrix.dat"
 inputs "${referenceTriTyperDir}/Individuals.txt"
 inputs "${referenceTriTyperDir}/PhenotypeInformation.txt"
@@ -40,7 +40,7 @@ then
 fi
 
 
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 mkdir -p ${preparedStudyTempDir}
 

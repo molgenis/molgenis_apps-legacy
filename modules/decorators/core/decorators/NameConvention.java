@@ -166,17 +166,17 @@ public class NameConvention
 	}
 
 	/**
-	 * Validates an entity name, checking that only characters
-	 * from the set [<>/a-zA-Z0-9_\\s\\-:.(),;\\+] are used.
+	 * Validates an entity name, checking that only characters from the set
+	 * [<>/a-zA-Z0-9_\\s\\-:.(),;\\+] are used.
 	 * 
 	 * @param name
 	 * @throws DatabaseException
 	 */
 	public static void validateEntityName(String name) throws DatabaseException
 	{
-		//pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
-		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+\\*])";
-		
+		// pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
+		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+\\*|])";
+
 		if (name == null || name.length() == 0)
 		{
 			throw new DatabaseException("Name is empty.");
@@ -261,7 +261,7 @@ public class NameConvention
 			NameConvention.validateEntityName(name);
 		}
 	}
-	
+
 	/**
 	 * Validate names of Entities by wrapping
 	 * NameConvention.validateEntityNameStrict(name)

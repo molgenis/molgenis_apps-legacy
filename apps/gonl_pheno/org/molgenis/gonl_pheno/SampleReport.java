@@ -42,12 +42,12 @@ public class SampleReport extends EasyPluginController<SampleReport>
 
 	public void download_txt_samples(Database db, Tuple tuple, OutputStream out)
 	{
-		CsvWriter writer = new CsvWriter(new PrintWriter(out));
+		CsvWriter writer = new CsvWriter(out);
 		if (rows.size() > 0)
 		{
 			writer.setHeaders(rows.get(0).getFields());
 			writer.writeHeader();
-			
+
 			for (Tuple r : rows)
 			{
 				writer.writeRow(r);

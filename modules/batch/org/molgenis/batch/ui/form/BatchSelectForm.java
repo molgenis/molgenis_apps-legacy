@@ -11,19 +11,19 @@ public class BatchSelectForm extends Container
 
 	public BatchSelectForm()
 	{
-		SelectInput batches      = new SelectInput("batches");
+		SelectInput batches = new SelectInput("batches");
 		batches.setLabel("Your batches");
 		batches.setNillable(false);
-		
+
 		ActionInput selectButton = new ActionInput("Select", "", "Select batch");
-		
+
 		ActionInput clearButton = new ActionInput("Clear", "", "Clear");
 
-		DivPanel batchesPanel    = new DivPanel("batchPanel", "");
+		DivPanel batchesPanel = new DivPanel("batchPanel", "");
 		batchesPanel.add(batches);
 		batchesPanel.add(selectButton);
 		batchesPanel.add(clearButton);
-		
+
 		this.add(batchesPanel);
 	}
 }

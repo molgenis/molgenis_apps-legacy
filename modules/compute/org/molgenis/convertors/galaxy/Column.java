@@ -6,12 +6,12 @@ public class Column
 {
 	@XmlAttribute
 	String name;
-	
+
 	@XmlAttribute
 	String index;
-	
+
 	public String toString()
 	{
-		return String.format("Column(name='%s' index='%s')",name,index);
+		return String.format("Column(name='%s' index='%s')", name, index);
 	}
 }

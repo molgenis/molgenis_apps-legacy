@@ -33,7 +33,7 @@ public class PatientForm extends Container
 		this.add(new SelectInput("phenotype", ""));
 		this.add(new StringInput("pubmed", ""));
 		this.add(new StringInput("comment", ""));
-		
+
 		// Phenotype details
 		this.add(new SelectInput("blistering", "unknown"));
 		this.add(new SelectInput("location", "unknown"));

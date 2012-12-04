@@ -1,84 +1,79 @@
 package org.molgenis.compute.pipelinemodel;
 
-
 import org.molgenis.compute.monitor.LoggingReader;
 
 import java.util.Vector;
 
-
 public class Pipeline
 {
 
-    private String id = null;
+	private String id = null;
 
-    private Vector<Step> steps = new Vector();
-    private LoggingReader monitor = null;
+	private Vector<Step> steps = new Vector();
+	private LoggingReader monitor = null;
 
-    private String pipelinelogpath;
+	private String pipelinelogpath;
 
-    private boolean isFinished = false;
+	private boolean isFinished = false;
 
-    public int getNumberOfSteps()
-    {
-        return steps.size();
-    }
+	public int getNumberOfSteps()
+	{
+		return steps.size();
+	}
 
-    public Step getStep(int i)
-    {
-        return steps.elementAt(i);
-    }
+	public Step getStep(int i)
+	{
+		return steps.elementAt(i);
+	}
 
-    public void addStep(Step newStep)
-    {
-        steps.add(newStep);
-    }
+	public void addStep(Step newStep)
+	{
+		steps.add(newStep);
+	}
 
-    public String getId()
-    {
-        return id;
-    }
+	public String getId()
+	{
+		return id;
+	}
 
-    public void setId(String id)
-    {
-        this.id = id;
-    }
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 
-    public void setMonitor(LoggingReader monitor)
-    {
-        this.monitor = monitor;
-    }
+	public void setMonitor(LoggingReader monitor)
+	{
+		this.monitor = monitor;
+	}
 
-    public LoggingReader getMonitor()
-    {
-        return monitor;
-    }
+	public LoggingReader getMonitor()
+	{
+		return monitor;
+	}
 
-    public String getPipelinelogpath()
-    {
-        return pipelinelogpath;
-    }
+	public String getPipelinelogpath()
+	{
+		return pipelinelogpath;
+	}
 
-    public void setPipelinelogpath(String pipelinelogpath)
-    {
-        this.pipelinelogpath = pipelinelogpath;
-    }
+	public void setPipelinelogpath(String pipelinelogpath)
+	{
+		this.pipelinelogpath = pipelinelogpath;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "Pipeline{" +
-                "id='" + id + '\'' +
-                ", steps=" + steps +
-                '}';
-    }
+	@Override
+	public String toString()
+	{
+		return "Pipeline{" + "id='" + id + '\'' + ", steps=" + steps + '}';
+	}
 
-    public boolean isFinished()
-    {
-        return isFinished;
-    }
+	public boolean isFinished()
+	{
+		return isFinished;
+	}
 
-    public void setFinished(boolean finished)
-    {
-        isFinished = finished;
-    }
+	public void setFinished(boolean finished)
+	{
+		isFinished = finished;
+	}
 }

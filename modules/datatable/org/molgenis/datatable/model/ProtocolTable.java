@@ -1,5 +1,6 @@
 package org.molgenis.datatable.model;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,13 +11,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.molgenis.datatable.view.MolgenisUpdateDatabase;
+import org.molgenis.datatable.util.MolgenisUpdateDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
+import org.molgenis.framework.tupletable.DatabaseTupleTable;
+import org.molgenis.framework.tupletable.EditableTupleTable;
+import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -37,14 +43,14 @@ import org.molgenis.util.Tuple;
  * added as first column. Optionally, the ProtocolApplication metadata can be
  * viewed (future todo).
  */
-public class ProtocolTable extends AbstractFilterableTupleTable implements EditableTupleTable
+public class ProtocolTable extends AbstractFilterableTupleTable implements EditableTupleTable, DatabaseTupleTable
 {
 	// protocol to query
 	private Protocol protocol;
-
+	private String investigationName = "";
 	// mapping to Field (changes on paging)
 	private List<Field> columns = new ArrayList<Field>();
-	private String targetString = "Pa_Id";
+	private String targetString = "target";
 	private HashMap<String, String> hashMeasurementsWithCategories;
 
 	public String getTargetString()
@@ -60,13 +66,16 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	// measurements
 	Map<Measurement, Protocol> measurements = new LinkedHashMap<Measurement, Protocol>();
 
-	public ProtocolTable(Database db, Protocol protocol) throws TableException
+	public ProtocolTable(Protocol protocol) throws TableException
 	{
-		this.setDb(db);
-
 		if (protocol == null) throw new TableException("protocol cannot be null");
 
 		this.protocol = protocol;
+	}
+
+	public ProtocolTable(String investigationName) throws TableException
+	{
+		this.investigationName = investigationName;
 	}
 
 	/*
@@ -74,14 +83,35 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	 * protocol.getFeatures_Id().size() + 1; }
 	 */
 
+	/**
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
+	 */
+	@Override
 	public List<Field> getAllColumns() throws TableException
 	{
+		try
+		{
+			if (getDb().getConnection().isClosed())
+			{
+				throw new TableException("getRows(): Connection is closed!");
+			}
+		}
+		catch (SQLException e1)
+		{
+			throw new TableException(e1);
+		}
+		catch (DatabaseException e1)
+		{
+			throw new TableException(e1);
+		}
+
 		if (columns.size() == 0)
 		{
 			try
 			{
 				// get all features of protocol AND subprotocols
-				measurements = getMeasurementsRecursive(protocol);
+				measurements = getMeasurementsRecursive(getDb());
 
 				Field target = new Field(targetString);
 
@@ -90,7 +120,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 				// convert into field
 				for (Measurement m : measurements.keySet())
 				{
-					Field col = new Field(m.getName());
+					Field col = new Field(m.getLabel());
+					// Field col = new Field(m.getName());
 
 					col.setDescription(m.getDescription());
 					// todo: setType()
@@ -106,7 +137,32 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		return columns;
 	}
 
-	private Map<Measurement, Protocol> getMeasurementsRecursive(Protocol protocol) throws DatabaseException
+	private Map<Measurement, Protocol> getMeasurementsRecursive(Database db) throws DatabaseException
+	{
+		Map<Measurement, Protocol> result = new LinkedHashMap<Measurement, Protocol>();
+
+		for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+				investigationName)))
+		{
+
+			if (p.getFeatures_Name().size() > 0)
+			{
+
+				for (Measurement m : db.find(Measurement.class,
+						new QueryRule(Measurement.NAME, Operator.IN, p.getFeatures_Name())))
+				{
+					result.put(m, p);
+				}
+
+			}
+
+		}
+		return result;
+
+	}
+
+	private Map<Measurement, Protocol> getMeasurementsRecursive(Database db, Protocol protocol)
+			throws DatabaseException
 	{
 		List<Integer> featureIds = protocol.getFeatures_Id();
 
@@ -114,7 +170,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		if (featureIds.size() > 0)
 		{
-			List<Measurement> mList = getDb().query(Measurement.class).in(Measurement.ID, featureIds).find();
+			List<Measurement> mList = db.query(Measurement.class).in(Measurement.ID, featureIds).find();
 			for (Measurement m : mList)
 			{
 				result.put(m, protocol);
@@ -124,11 +180,11 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		// go recursive on all subprotocols
 		if (protocol.getSubprotocols_Id().size() > 0)
 		{
-			List<Protocol> subProtocols = getDb().query(Protocol.class).in(Protocol.ID, protocol.getSubprotocols_Id())
+			List<Protocol> subProtocols = db.query(Protocol.class).in(Protocol.ID, protocol.getSubprotocols_Id())
 					.find();
 			for (Protocol subProtocol : subProtocols)
 			{
-				result.putAll(getMeasurementsRecursive(subProtocol));
+				result.putAll(getMeasurementsRecursive(db, subProtocol));
 			}
 		}
 
@@ -137,20 +193,42 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 	}
 
+	/**
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
+	 */
+	@Override
 	public List<Tuple> getRows() throws TableException
 	{
 		try
 		{
+			if (getDb().getConnection().isClosed())
+			{
+				throw new TableException("getRows(): Connection is closed!");
+			}
+		}
+		catch (SQLException e1)
+		{
+			throw new TableException(e1);
+		}
+		catch (DatabaseException e1)
+		{
+			throw new TableException(e1);
+		}
+
+		try
+		{
 			List<Tuple> result = new ArrayList<Tuple>();
-			for (Integer rowId : getRowIds(false))
+			for (Integer rowId : getRowIds(false, getDb()))
 			{
 				boolean target = false;
 				Tuple row = new SimpleTuple();
 
-				Database db = getDb();
+				List<QueryRule> ovFromInv = new ArrayList<QueryRule>();
+				ovFromInv.add(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, rowId));
+				ovFromInv.add(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
 
-				for (ObservedValue v : db.query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, rowId)
-						.find())
+				for (ObservedValue v : getDb().find(ObservedValue.class, new QueryRule(ovFromInv)))
 				{
 					if (!target)
 					{
@@ -171,24 +249,34 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 							break;
 						}
 					}
-
-					if ("categorical".equals(currentMeasurement.getDataType()))
+					if (currentMeasurement != null)
 					{
 
-						for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
-								currentMeasurement.getCategories_Name())))
+						if ("categorical".equals(currentMeasurement.getDataType()))
 						{
-							if (v.getValue().equals(c.getCode_String()) && isInViewPort(v.getFeature_Name()))
+
+							for (Category c : getDb().find(Category.class,
+									new QueryRule(Category.NAME, Operator.IN, currentMeasurement.getCategories_Name())))
 							{
-								row.set(v.getFeature_Name(), v.getValue() + "." + c.getDescription());
-								break;
+								if (v.getValue().equals(c.getCode_String())
+										&& isInViewPort(currentMeasurement.getLabel()))
+								{
+									row.set(currentMeasurement.getLabel(), v.getValue() + "." + c.getDescription());
+									break;
+								}
 							}
 						}
-					}
-					else
-					{
-						if (!v.getValue().isEmpty() && isInViewPort(v.getFeature_Name())) row.set(v.getFeature_Name(),
-								v.getValue());
+						else
+						{
+
+							if (v.getValue() != null && !v.getValue().isEmpty()
+									&& isInViewPort(currentMeasurement.getLabel()))
+							{
+								row.set(currentMeasurement.getLabel(), v.getValue());
+
+							}
+
+						}
 					}
 				}
 				result.add(row);
@@ -230,12 +318,16 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 	{
 	}
 
+	/**
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
+	 */
 	@Override
 	public int getCount() throws TableException
 	{
 		try
 		{
-			return this.getRowIds(true).get(0);
+			return this.getRowIds(true, getDb()).get(0);
 		}
 		catch (DatabaseException e)
 		{
@@ -245,14 +337,21 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 	// FILTERING
 	// we only need to know what rows to show :-)
-	private List<Integer> getRowIds(boolean count) throws TableException, DatabaseException
+	private List<Integer> getRowIds(boolean count, Database db) throws TableException, DatabaseException
 	{
 		// get columns that are used in filtering or sorting
 		Set<String> columnsUsed = new HashSet<String>();
 
 		for (QueryRule r : getFilters())
 		{
+			if (r.getValue() != null)
+			{
 
+				if (!r.getValue().toString().contains(investigationName))
+				{
+					r.setValue(r.getValue() + "_" + investigationName);
+				}
+			}
 			// IF SEARCH BUTTON IS CLICKED
 			if (getFilters().get(0).getField() != null)
 			{
@@ -270,9 +369,30 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		if (columnsUsed.size() > 0)
 		{
-			measurementsUsed = getDb().query(Measurement.class)
-					.in(Measurement.NAME, new ArrayList<String>(columnsUsed)).find();
 
+			List<QueryRule> query = new ArrayList<QueryRule>();
+			List<String> filteredColumns = new ArrayList<String>(columnsUsed);
+			query.add(new QueryRule(Measurement.NAME, Operator.IN, filteredColumns));
+			query.add(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
+
+			// measurementsUsed = getDb().query(Measurement.class)
+			// .in(Measurement.NAME, new ArrayList<String>(columnsUsed)).find();
+
+			measurementsUsed = db.find(Measurement.class, new QueryRule(query));
+
+			for (Measurement m : measurementsUsed)
+			{
+
+				for (QueryRule r : getFilters())
+				{
+
+					if (r.getValue().equals(m.getLabel()))
+					{
+						r.setValue(m.getName());
+						break;
+					}
+				}
+			}
 		}
 
 		// one column is defined by ObservedValue.Investigation,
@@ -281,6 +401,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 		String sql = "SELECT id from ProtocolApplication ";
 		if (count) sql = "SELECT count(*) as id from ProtocolApplication";
+
+		Integer invID = db
+				.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName))
+				.get(0).getId();
 
 		for (Measurement m : measurementsUsed)
 		{
@@ -291,12 +415,17 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 					+ ") as "
 					+ m.getName();
 		}
+
 		// filtering [todo: data model change!]
 		if (columnsUsed.contains(targetString))
 		{
 			sql += " NATURAL JOIN (SELECT id as targetId, name as " + this.targetString
 					+ " from ObservationElement) as " + this.targetString;
 		}
+
+		sql += " WHERE ProtocolApplication.Investigation=" + invID;
+
+		// System.out.println(sql);
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
@@ -315,7 +444,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		// filters = Scl90som3 = '1'
 		// filters.size() = 1
 
-		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
+		for (Tuple t : db.sql(sql, filters.toArray(new QueryRule[filters.size()])))
 		{
 			result.add(t.getInt("id"));
 		}
@@ -323,6 +452,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		return result;
 	}
 
+	/**
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
+	 */
 	@Override
 	public void add(Tuple request) throws TableException
 	{
@@ -405,7 +538,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 							ObservedValue ov = new ObservedValue();
 							ov.setTarget_Name(patientID);
 							ov.setFeature_Name(feature);
-							if (getHashMeasurementsWithCategories().containsKey(feature))
+							if (getHashMeasurementsWithCategories(getDb()).containsKey(feature))
 							{
 								String[] splitValue = value.split("\\.");
 								ov.setValue(splitValue[0]);
@@ -441,6 +574,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 	}
 
+	/**
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
+	 */
 	@Override
 	public void update(Tuple request) throws TableException
 	{
@@ -482,6 +619,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		}
 	}
 
+	/**
+	 * Beware: this function expects a prepared database object with security
+	 * and an active connection to be set before it is called!!
+	 */
 	@Override
 	public void remove(Tuple request) throws TableException
 	{
@@ -534,13 +675,13 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 	}
 
-	private HashMap<String, String> getHashMeasurementsWithCategories() throws DatabaseException
+	private HashMap<String, String> getHashMeasurementsWithCategories(Database db) throws DatabaseException
 	{
 		if (hashMeasurementsWithCategories == null)
 		{
 			hashMeasurementsWithCategories = new HashMap<String, String>();
 
-			List<Measurement> listOM = getDb().find(Measurement.class);
+			List<Measurement> listOM = db.find(Measurement.class);
 			for (Measurement m : listOM)
 			{
 				if (m.getCategories_Name().size() > 0)
@@ -555,4 +696,21 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 		return hashMeasurementsWithCategories;
 	}
 
+	public void setInvestigation(String investigationName)
+	{
+		this.investigationName = investigationName;
+
+	}
+
+	private Database _db;
+
+	public void setDb(Database db)
+	{
+		this._db = db;
+	}
+
+	public Database getDb()
+	{
+		return this._db;
+	}
 }

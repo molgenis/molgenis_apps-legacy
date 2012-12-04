@@ -5,7 +5,7 @@
 <input type="hidden" name="expertSearch" value="0">
 <table>
 <tr>
-<td><a href="javascript:document.forms.Home.submit();"><img src="${model.logo}" border="0"/></a></td>
+<td><#if model.logo??><a href="javascript:document.forms.Home.submit();"><img src="${model.logo}" border="0"/></a></#if></td>
 <td><h2>${model.title}</h2></td>
 </tr>
 </table>

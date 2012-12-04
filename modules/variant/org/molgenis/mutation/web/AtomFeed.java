@@ -22,31 +22,35 @@ import org.molgenis.mutation.dto.GeneDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.service.SearchService;
 
-public class AtomFeed implements MolgenisService 
+public class AtomFeed implements MolgenisService
 {
 	private static Abdera abdera = null;
-	
-	public AtomFeed(MolgenisContext mc)
+
+	public AtomFeed(@SuppressWarnings("unused")
+	MolgenisContext mc)
 	{
-		if (abdera == null)
-			abdera = new Abdera();
+		if (abdera == null) abdera = new Abdera();
 	}
 
 	@Override
-	public void handleRequest(MolgenisRequest req, MolgenisResponse resp)
-			throws ParseException, DatabaseException, IOException
+	public void handleRequest(MolgenisRequest req, MolgenisResponse resp) throws ParseException, DatabaseException,
+			IOException
 	{
-		HttpServletRequest request   = req.getRequest();
+		HttpServletRequest request = req.getRequest();
 		HttpServletResponse response = resp.getResponse();
 
 		response.setContentType("application/atom+xml");
 
 		try
 		{
-			if (StringUtils.startsWith(request.getPathInfo(), "/genes"))
-				this.handleGeneFeed(request, response);
+			if (StringUtils.startsWith(request.getPathInfo(), "/gene"))
+			{
+				this.handleGeneFeed(req, resp);
+			}
 			else if (StringUtils.startsWith(request.getPathInfo(), "/variants"))
-				this.handleVariantsFeed(request, response);
+			{
+				this.handleVariantsFeed(req, resp);
+			}
 		}
 		catch (Exception e)
 		{
@@ -62,22 +66,27 @@ public class AtomFeed implements MolgenisService
 
 	}
 
-	private void handleGeneFeed(HttpServletRequest request, HttpServletResponse response) throws IOException
+	private void handleGeneFeed(MolgenisRequest req, MolgenisResponse resp) throws IOException
 	{
+		HttpServletRequest request = req.getRequest();
+		HttpServletResponse response = resp.getResponse();
+
 		SearchService searchService = ServiceLocator.instance().getSearchService();
-	
-		String geneURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
-		GeneDTO geneSummaryVO = searchService.findGene();
-			
-		StringBuffer content        = new StringBuffer();
-		content.append("id:" + geneSummaryVO.getSymbol() + "\n");
+		searchService.setDatabase(req.getDatabase());
+
+		String geneURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+				+ "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
+		GeneDTO geneSummaryDTO = searchService.findGene();
+
+		StringBuffer content = new StringBuffer();
+		content.append("id:" + geneSummaryDTO.getSymbol() + "\n");
 		content.append("entrez_id:NA\n");
-		content.append("symbol:" + geneSummaryVO.getSymbol() + "\n");
-		content.append("name:" + geneSummaryVO.getName() + "\n");
-		content.append("chromosome_location:" + geneSummaryVO.getChromosome() + "\n");
-		content.append("position_start:" + geneSummaryVO.getChromosome() + ":" + geneSummaryVO.getBpStart() + "\n");
-		content.append("position_end:" + geneSummaryVO.getChromosome() + ":" + geneSummaryVO.getBpEnd() + "\n");
-		content.append("refseq_genomic:" + geneSummaryVO.getGenbankId() + "." + geneSummaryVO.getGenomeBuild() + "\n");
+		content.append("symbol:" + geneSummaryDTO.getSymbol() + "\n");
+		content.append("name:" + geneSummaryDTO.getName() + "\n");
+		content.append("chromosome_location:" + geneSummaryDTO.getChromosome() + "\n");
+		content.append("position_start:" + geneSummaryDTO.getChromosome() + ":" + geneSummaryDTO.getBpStart() + "\n");
+		content.append("position_end:" + geneSummaryDTO.getChromosome() + ":" + geneSummaryDTO.getBpEnd() + "\n");
+		content.append("refseq_genomic:" + geneSummaryDTO.getGenbankId() + "." + geneSummaryDTO.getGenomeBuild() + "\n");
 		content.append("refseq_mrna:NA");
 		content.append("refseq_build:NA");
 
@@ -88,8 +97,8 @@ public class AtomFeed implements MolgenisService
 		feed.setRights("Copyright (c), the curators of this database");
 
 		Entry entry = feed.addEntry();
-		entry.setId(geneSummaryVO.getSymbol());
-		entry.setTitle(geneSummaryVO.getSymbol());
+		entry.setId(geneSummaryDTO.getSymbol());
+		entry.setTitle(geneSummaryDTO.getSymbol());
 		entry.setRights("Copyright (c), the curators of this database");
 		entry.addAuthor("Peter van den Akker");
 		entry.addContributor("Peter van den Akker");
@@ -100,18 +109,23 @@ public class AtomFeed implements MolgenisService
 
 		feed.writeTo(response.getOutputStream());
 	}
-	
-	private void handleVariantsFeed(HttpServletRequest request, HttpServletResponse response) throws IOException
+
+	private void handleVariantsFeed(MolgenisRequest req, MolgenisResponse resp) throws IOException
 	{
+		HttpServletRequest request = req.getRequest();
+		HttpServletResponse response = resp.getResponse();
+
 		SearchService searchService = (SearchService) ServiceLocator.instance().getService("searchService");
-	
-		String geneURL              = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
+		searchService.setDatabase(req.getDatabase());
 
-		GeneDTO geneSummaryVO = searchService.findGene();
+		String geneURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+				+ "/molgenis.do?__target=SearchPlugin&__action=listAllMutations";
 
-		Feed feed                   = abdera.newFeed();
+		GeneDTO geneSummaryDTO = searchService.findGene();
 
-		feed.setTitle("Listing of all public variants in the " + geneSummaryVO.getSymbol() + " database");
+		Feed feed = abdera.newFeed();
+
+		feed.setTitle("Listing of all public variants in the " + geneSummaryDTO.getSymbol() + " database");
 		feed.addLink(geneURL, "alternate");
 		feed.addLink(request.getRequestURL().toString(), "self");
 		feed.setUpdated(new Date());
@@ -124,8 +138,10 @@ public class AtomFeed implements MolgenisService
 		{
 			Entry entry = feed.addEntry();
 			entry.setId(mutationSummaryVO.getIdentifier());
-			entry.setTitle(geneSummaryVO.getSymbol() + ":" + mutationSummaryVO.getCdnaNotation());
-			String mutationURL = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=showMutation&mid=" + mutationSummaryVO.getIdentifier() + "#results";
+			entry.setTitle(geneSummaryDTO.getSymbol() + ":" + mutationSummaryVO.getCdnaNotation());
+			String mutationURL = "http://" + request.getServerName() + ":" + request.getServerPort()
+					+ request.getContextPath() + "/molgenis.do?__target=SearchPlugin&__action=showMutation&mid="
+					+ mutationSummaryVO.getIdentifier() + "#results";
 			entry.addLink(mutationURL, "alternate");
 			entry.addLink(request.getRequestURL().toString(), "self");
 			entry.addAuthor("Peter van den Akker");
@@ -134,16 +150,18 @@ public class AtomFeed implements MolgenisService
 			entry.setUpdated(new Date());
 
 			StringBuffer content = new StringBuffer();
-			content.append("symbol:" + geneSummaryVO.getSymbol() + "\n");
+			content.append("symbol:" + geneSummaryDTO.getSymbol() + "\n");
 			content.append("id:" + mutationSummaryVO.getIdentifier() + "\n");
-			content.append("position_mRNA:" + geneSummaryVO.getGenbankId() + "." + geneSummaryVO.getGenomeBuild() + ":c." + mutationSummaryVO.getCdnaStart() + "\n");
-			content.append("position_genomic:" + geneSummaryVO.getChromosome() + ":" + mutationSummaryVO.getGdnaStart() + "\n");
+			content.append("position_mRNA:" + geneSummaryDTO.getGenbankId() + "." + geneSummaryDTO.getGenomeBuild()
+					+ ":c." + mutationSummaryVO.getCdnaStart() + "\n");
+			content.append("position_genomic:" + geneSummaryDTO.getChromosome() + ":"
+					+ mutationSummaryVO.getGdnaStart() + "\n");
 			content.append("Variant/DNA:" + mutationSummaryVO.getCdnaNotation() + "\n");
 			content.append("Variant/DBID:" + mutationSummaryVO.getIdentifier() + "\n");
 			content.append("Times_reported:" + mutationSummaryVO.getPatientSummaryDTOList().size() + "\n");
 			entry.setContent(content.toString());
 		}
-		
+
 		feed.writeTo(response.getOutputStream());
 	}
 }

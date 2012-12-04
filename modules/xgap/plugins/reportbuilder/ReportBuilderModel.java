@@ -5,13 +5,13 @@ import java.util.Map;
 
 import org.molgenis.util.Entity;
 
-
-public class ReportBuilderModel{
+public class ReportBuilderModel
+{
 
 	private Map<String, Integer> annotationTypeAndNr;
 	private List<? extends Entity> disambiguate;
 	private Report report;
-	
+
 	private String selectedAnnotationTypeAndNr;
 	private String selectedName;
 
@@ -64,8 +64,5 @@ public class ReportBuilderModel{
 	{
 		this.report = report;
 	}
-	
-	
-	
 
 }

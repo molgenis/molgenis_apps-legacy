@@ -1,4 +1,5 @@
 package org.molgenis.scrum;
+
 import org.molgenis.Molgenis;
 
 /**

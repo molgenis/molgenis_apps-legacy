@@ -2,6 +2,7 @@ package external;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.XrefField;
@@ -47,7 +48,7 @@ public class ModelToExcel
 
 	public static void write(Model m, CsvWriter w) throws MolgenisModelException, IOException
 	{
-		w.setHeaders("module", "entity", "field", "type", "nillable", "xref", "description");
+		w.setHeaders(Arrays.asList("module", "entity", "field", "type", "nillable", "xref", "description"));
 		w.writeHeader();
 
 		for (Entity e : m.getEntities())
@@ -71,8 +72,8 @@ public class ModelToExcel
 					t.set("nillable", f.isNillable());
 					t.set("description", f.getDescription());
 					t.set("xref", null);
-					
-					if(f.getType() instanceof XrefField || f.getType() instanceof MrefField)
+
+					if (f.getType() instanceof XrefField || f.getType() instanceof MrefField)
 					{
 						t.set("xref", f.getXrefEntityName());
 					}

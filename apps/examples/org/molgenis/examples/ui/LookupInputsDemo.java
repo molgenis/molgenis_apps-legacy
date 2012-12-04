@@ -54,9 +54,7 @@ public class LookupInputsDemo extends EasyPluginController
 		String themeSwitch = "<div id=\"switcher\"></div><script>$('#switcher').themeswitcher();</script>";
 		view.add(new CustomHtml(themeSwitch).setLabel("changeJqueryTheme"));
 
-		if (Investigation != null) view.add(new XrefInput("XrefInputDefault", this.Investigation));
-		else
-			view.add(new XrefInput("XrefInput", Investigation.class));
+		view.add(new XrefInput("XrefInput", Investigation.class));
 
 		view.add(new MrefInput("MrefInput", Investigation.class));
 
@@ -81,7 +79,7 @@ public class LookupInputsDemo extends EasyPluginController
 		mselect.addOption("AN", "Antartica");
 
 		view.add(mselect);
-		
+
 		view.add(new ActionInput("submit"));
 		view.add(new Paragraph(requestString));
 
@@ -89,12 +87,12 @@ public class LookupInputsDemo extends EasyPluginController
 
 		return view;
 	}
-	
+
 	public void submit(Database db, Tuple request)
 	{
 		this.requestString = request.toString();
 	}
-	
+
 	private String requestString = "";
 
 	private String codeString = "" + "\n//initialise 'ajax' entity lookup from entity object or class"

@@ -2,22 +2,22 @@
 
 #FOREACH project,chr
 
-getFile "${imputationToolJar}"
-getFile "${imputationToolJsciCoreJar}"
-getFile "${imputationToolGeneticaLibrariesJar}"
+getFile ${imputationToolJar}
+getFile ${imputationToolJsciCoreJar}
+getFile ${imputationToolGeneticaLibrariesJar}
 
-getFile "${studyPedMapChr}.map"
-getFile "${studyPedMapChr}.ped"
+getFile ${studyPedMapChr}.map
+getFile ${studyPedMapChr}.ped
 
 
 
 inputs "${studyPedMapChr}.map"
 inputs "${studyPedMapChr}.ped"
 alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat" \
-"${studyTriTyperChrDir}/Individuals.txt" \
-"${studyTriTyperChrDir}/PhenotypeInformation.txt" \
-"${studyTriTyperChrDir}/SNPMappings.txt" \
-"${studyTriTyperChrDir}/SNPs.txt"
+	"${studyTriTyperChrDir}/Individuals.txt" \
+	"${studyTriTyperChrDir}/PhenotypeInformation.txt" \
+	"${studyTriTyperChrDir}/SNPMappings.txt" \
+	"${studyTriTyperChrDir}/SNPs.txt"
 
 
 if [ -d ${studyTriTyperChrDir} ]
@@ -26,14 +26,14 @@ then
 fi
 
 
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 mkdir -p ${studyTriTyperChrTempDir}
 
 java -jar ${imputationToolJar} \
---mode pmtt \
---in ${studyPedMapChrDir} \
---out ${studyTriTyperChrTempDir}
+	--mode pmtt \
+	--in ${studyPedMapChrDir} \
+	--out ${studyTriTyperChrTempDir}
 
 
 #Get return code from last program call

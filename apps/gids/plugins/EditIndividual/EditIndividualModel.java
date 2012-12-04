@@ -17,13 +17,15 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 
 /**
- * EditIndividualModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
+ * EditIndividualModel takes care of all state and it can have helper methods to
+ * query the database. It should not contain layout or application logic which
+ * are solved in View and Controller.
+ * 
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
 public class EditIndividualModel extends EasyPluginModel
 {
-	//a system veriable that is needed by tomcat
+	// a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
 	private List<Investigation> listInvest = new ArrayList<Investigation>();
 	private List<Individual> listIndiv = new ArrayList<Individual>();
@@ -32,108 +34,105 @@ public class EditIndividualModel extends EasyPluginModel
 	String chosenInv = "";
 	String chosenInd = "";
 	String protName = "";
-	HashMap <String,List<String>> hashProtocols = new HashMap<String, List<String>>();
+	HashMap<String, List<String>> hashProtocols = new HashMap<String, List<String>>();
 	List<String> knownFeatList = new ArrayList<String>();
 	List<String> featList = new ArrayList<String>();
-	
-	
+
 	public EditIndividualModel(EditIndividual controller)
 	{
-		//each Model can access the controller to notify it when needed.
+		// each Model can access the controller to notify it when needed.
 		super(controller);
 	}
 
-
-	public List<Investigation> getListInvest() {
+	public List<Investigation> getListInvest()
+	{
 		return listInvest;
 	}
 
-
-	public void setListInvest(List<Investigation> listInvest) {
+	public void setListInvest(List<Investigation> listInvest)
+	{
 		this.listInvest = listInvest;
 	}
 
-
-	public List<Individual> getListIndiv() {
+	public List<Individual> getListIndiv()
+	{
 		return listIndiv;
 	}
 
-
-	public void setListIndiv(List<Individual> listIndiv) {
+	public void setListIndiv(List<Individual> listIndiv)
+	{
 		this.listIndiv = listIndiv;
 	}
 
-
-	public String getState() {
+	public String getState()
+	{
 		return state;
 	}
 
-
-	public void setState(String state) {
+	public void setState(String state)
+	{
 		this.state = state;
 	}
 
-
-	public String getChosenInv() {
+	public String getChosenInv()
+	{
 		return chosenInv;
 	}
 
-
-	public void setChosenInv(String chosenInv) {
+	public void setChosenInv(String chosenInv)
+	{
 		this.chosenInv = chosenInv;
 	}
 
-
-	public String getChosenInd() {
+	public String getChosenInd()
+	{
 		return chosenInd;
 	}
 
-
-	public void setChosenInd(String chosenInd) {
+	public void setChosenInd(String chosenInd)
+	{
 		this.chosenInd = chosenInd;
 	}
 
-
-	public String getStateStart() {
+	public String getStateStart()
+	{
 		return stateStart;
 	}
 
-
-	public void setStateStart(String stateStart) {
+	public void setStateStart(String stateStart)
+	{
 		this.stateStart = stateStart;
 	}
 
-
-	public HashMap<String, List<String>> getHashProtocols() {
+	public HashMap<String, List<String>> getHashProtocols()
+	{
 		return hashProtocols;
 	}
 
-
-	public List<String> getKnownFeatList() {
+	public List<String> getKnownFeatList()
+	{
 		return knownFeatList;
 	}
 
-
-	public void setKnownFeatList(List<String> knownFeatList) {
+	public void setKnownFeatList(List<String> knownFeatList)
+	{
 		this.knownFeatList = knownFeatList;
 	}
 
-
-	public List<String> getFeatList() {
+	public List<String> getFeatList()
+	{
 		return featList;
 	}
 
-
-	public void setFeatList(List<String> featList) {
+	public void setFeatList(List<String> featList)
+	{
 		this.featList = featList;
 	}
 
-
-//	public void setHashProtocols(String protName, List<String> hashProtocols) {
-//		this.protName = protName;
-//		this.hashProtocols = hashProtocols;
-//	}
-	
-	
+	// public void setHashProtocols(String protName, List<String> hashProtocols)
+	// {
+	// this.protName = protName;
+	// this.hashProtocols = hashProtocols;
+	// }
 
 }

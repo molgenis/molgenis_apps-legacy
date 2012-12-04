@@ -9,7 +9,10 @@ import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 20/07/2012 Time: 16:53
@@ -26,34 +29,54 @@ public class PilotService implements MolgenisService
 	public synchronized void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
-		System.out.println(request);
 		System.out.println(">> In handleRequest!");
 		System.out.println(request);
 
+        Connection connection = request.getDatabase().getConnection();
+        while(connection == null)
+        {
+            connection = request.getDatabase().getConnection();
+        }
+
+        System.out.println("connection " + connection.toString());
+
+
 		if ("started".equals(request.getString("status")))
 		{
-			System.out.println(">>> looking for the task");
+            String backend = request.getString("backend");
+			System.out.println(">>> looking for a task to execute at " + backend);
 
-			ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.STATUSCODE, "ready")
-					.limit(1).find().get(0);
+//            ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.STATUSCODE, "ready")
+//         					.limit(1).find().get(0);
 
-			if (task != null)
-			{
-				String taskName = task.getName();
-				String taskScript = task.getComputeScript();
-				taskScript = taskScript.replaceAll("\r", "");
+            List<ComputeTask> tasks = request.getDatabase().query(ComputeTask.class)
+                                            .equals(ComputeTask.STATUSCODE, "ready")
+                                            .equals(ComputeTask.BACKENDNAME, backend).find();
 
-				// we add task id to the run listing to identify task when it is
-				// done
-				taskScript = "echo TASKID:" + taskName + "\n" + taskScript;
-				// change status to running
-				System.out.println("script " + taskScript);
-				task.setStatusCode("running");
-				request.getDatabase().update(task);
+            if(tasks.size() > 0)
+            {
+                ComputeTask task = tasks.get(0);
 
-				// send response
-				response.getResponse().getWriter().write(taskScript);
-			}
+                if (task != null)
+                {
+                    String taskName = task.getName();
+                    String taskScript = task.getComputeScript();
+                    taskScript = taskScript.replaceAll("\r", "");
+
+                    // we add task id to the run listing to identify task when it is
+                    // done
+                    taskScript = "echo TASKID:" + taskName + "\n" + taskScript;
+                    // change status to running
+                    System.out.println("script " + taskScript);
+                    request.getDatabase().beginTx();
+                    task.setStatusCode("running");
+                    request.getDatabase().update(task);
+                    request.getDatabase().commitTx();
+
+                    // send response
+                    response.getResponse().getWriter().write(taskScript);
+                }
+            }
 		}
 		else if ("done".equals(request.getString("status")))
 		{
@@ -70,10 +93,25 @@ public class PilotService implements MolgenisService
 
 			if (task != null && task.getStatusCode().equalsIgnoreCase("running"))
 			{
+                request.getDatabase().beginTx();
 				task.setStatusCode("done");
 				task.setRunLog(results);
 				request.getDatabase().update(task);
+                request.getDatabase().commitTx();
 			}
+            else
+            {
+                System.out.println("something is wrong");
+            }
 		}
-	}
+
+        try
+        {
+            connection.close();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

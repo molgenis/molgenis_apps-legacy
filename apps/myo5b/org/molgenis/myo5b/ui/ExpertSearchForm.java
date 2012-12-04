@@ -47,7 +47,7 @@ public class ExpertSearchForm extends Container
 	public String toHtml()
 	{
 		StringBuffer buf = new StringBuffer();
-		
+
 		buf.append("<tr>");
 
 		for (int i = 0; i < this.getInputs().size(); ++i)
@@ -62,19 +62,19 @@ public class ExpertSearchForm extends Container
 			buf.append("</td><td>");
 			buf.append(input.toHtml());
 			buf.append("</td>");
-			
+
 			if (i % 2 == 1)
 			{
 				buf.append("</tr>\n");
 				buf.append("<tr>");
 			}
 		}
-		
+
 		if (this.getInputs().size() % 2 == 1)
 		{
 			buf.append("</tr>\n");
 		}
-		
+
 		return buf.toString();
 	}
 }

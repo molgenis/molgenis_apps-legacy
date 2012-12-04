@@ -1,0 +1,36 @@
+.table {
+	margin-bottom: 10px;	
+}
+
+#container-plugin {
+	border-spacing: 0px;
+}
+
+.grid {
+	margin-bottom: 10px;	
+}
+
+.box-title {
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 2px;
+	margin: 0px;
+	background-color: #BDCDDA;
+}
+
+#feature-details {
+	min-height: 270px;
+}
+
+#feature-shopping {
+	min-height: 270px;	
+}
+	
+.feature-table-col1 {
+	background: #DCE3F7;
+	font-weight: bold;
+	padding: 5px;
+	margin: 1px;
+	width: 10px !important;
+	border: solid thin white;
+}
