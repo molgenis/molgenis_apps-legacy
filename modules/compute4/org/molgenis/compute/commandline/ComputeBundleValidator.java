@@ -125,12 +125,17 @@ public class ComputeBundleValidator
 			printError("You should have a protocol 'Submit.sh.ftl' in which you define how to submit the generated scripts.\n"
 					+ "You may use the following code that is compatible with a PBS-scheduler.\n\n"
 					+ "DIR=\"$( cd \"$( dirname \"<#noparse>${BASH_SOURCE[0]}</#noparse>\" )\" && pwd )\""
+					+ "\n"
 					+ "touch $DIR/${workflowfilename}.started\n"
 					+ "\n"
 					+ "<#foreach j in jobs>\n"
 					+ "#${j.name}\n"
 					+ "${j.name}=$(qsub -N ${j.name}<#if j.prevSteps_Name?size &gt; 0> -W depend=afterok<#foreach d in j.prevSteps_Name>:$${d}</#foreach></#if> ${j.name}.sh)\n"
-					+ "echo $${j.name}\n" + "sleep 0\n" + "</#foreach>");
+					+ "echo $${j.name}\n"
+					+ "sleep 0\n"
+					+ "</#foreach>\n"
+					+ "\n"
+					+ "touch $DIR/${workflowfilename}.finished");
 		}
 
 		// VALIDATE PARAMETERS
