@@ -1,9 +1,0 @@
-0,internalSampleID,externalSampleID,project,contact,validationLog,labStatusPhase,labStatusComments,lastUpDate,sequencingStartDate,sequencer,run,flowcell,lane,barcodeMenu,seqType,prepKit,capturingKit,arrayFile,arrayID,GAF_QC_Name,GAF_QC_Date,GAF_QC_Status,GCC_Analysis,GCC_QC_Name,GCC_QC_Date,GCC_QC_Status,TargetDateShipment,DataShippedDate,DataShippedTo,DataShippedBy,Comments,barcode,barcodeType
-,1085,1_D01_1683_RF4,SCA_B_lane6_testcompute4,"Dineke Verbeek <d.s.verbeek@umcg.nl>",,"Finished Successfully","Processing both per lane and merged!",,121010,SN163,0477,AD1C6EACXX,6,"GAF 01 
-AGAGAT",PE,NEB,SureSelect_All_Exon_50MB_v4,GenomeStudio_SCA_Okt2012,1,Pieter,20121021,Passed,Yes,,,,,,,,,AGAGAT,GAF
-,1086,2_D01_1640_RF4,SCA_B_lane6_testcompute4,"Dineke Verbeek <d.s.verbeek@umcg.nl>",,"Finished Successfully","Processing both per lane and merged!",,121010,SN163,0477,AD1C6EACXX,6,"GAF 03 
-TCAGTT",PE,NEB,SureSelect_All_Exon_50MB_v4,GenomeStudio_SCA_Okt2012,3,Pieter,20121021,Passed,Yes,,,,,,,,,TCAGTT,GAF
-,1087,3_D96_0268_RF14,SCA_B_lane6_testcompute4,"Dineke Verbeek <d.s.verbeek@umcg.nl>",,"Finished Successfully","Processing both per lane and merged!",,121010,SN163,0477,AD1C6EACXX,6,"GAF 06 
-CAACCT",PE,NEB,SureSelect_All_Exon_50MB_v4,,,Pieter,20121021,Passed,Yes,,,,,,,,,CAACCT,GAF
-,1088,4_D96_0264_RF14,SCA_B_lane6_testcompute4,"Dineke Verbeek <d.s.verbeek@umcg.nl>",,"Finished Successfully","Processing both per lane and merged!",,121010,SN163,0477,AD1C6EACXX,6,"GAF 12 
-GGAACT",PE,NEB,SureSelect_All_Exon_50MB_v4,,,Pieter,20121021,Passed,Yes,,,,,,,,,GGAACT,GAF
