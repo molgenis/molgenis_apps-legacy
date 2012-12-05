@@ -29,8 +29,8 @@
 <#--begin your plugin-->
 
 <div style="float:left">
-	<label for="line">Breeding line:</label>
-	<select name="line" id="line" class="selectbox">
+	<label for="breedingLine">Breeding line:</label>
+	<select name="breedingLine" id="breedingLine" class="selectbox">
 		<#if screen.lineList??>
 			<#list screen.lineList as line>
 				<option value="${line.name}" <#if line.name == screen.line>selected="selected"</#if>>${line.name}</option>
@@ -285,6 +285,19 @@
 		</div>
 	</#if>
 	
+	<#elseif screen.action == "EditLitter">
+	${screen.getEditTable()}
+		<input type='submit' id='saveEdit' value='Save' onclick="__action.value='applyEdit'" />
+		
+		<input type='submit' id='editIndividual' value='editIndividual' onclick="__action.value='editIndividual'" />
+	<br />
+	<br />
+	<hr>
+	<#elseif screen.action == "editIndividual">
+	${screen.getGenotypeTable()}
+	<input type='submit' id='save' value='SaveIndividuals' onclick="__action.value='applyLitterIndividuals'" />
+	
+	
 <#elseif screen.action == "makeLabels">
 
 	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
@@ -321,6 +334,10 @@
 			<input type='submit' id='genotypelitter' value='Genotype selected litter' onclick="__action.value='GenotypeLitter'" />
 			<br />
 			
+			<input type='submit' id='editlitter' value='Edit selected litter' onclick="__action.value='EditLitter'" />
+			<br />	
+			
+			
 			<input type='submit' id='label' value='Make cage labels for selected litter' onclick="__action.value='makeLabels'" />
 			<br />
 			<input type='submit' id='deactivate' value='(De)activate selected litter' onclick="__action.value='deActivateLitter'" />
@@ -349,17 +366,19 @@
 	jQuery('#deactivate').button();
 	jQuery('#weanlitter').button();
 	jQuery('#genotypelitter').button();
+	jQuery('#editlitter').button();
 	jQuery('#label').button();
 	jQuery('#addlitter').button();
 	jQuery('#wean').button();
 	jQuery('#addgenocol').button();
 	jQuery('#remgenocol').button();
 	jQuery('#save').button();
+	jQuery('#saveEdit').button();
+	jQuery('#editIndividual').button();
 	jQuery('#cancelcreatelitter').button();
 	jQuery('#cancelweanlitter').button();
 	jQuery('#cancelgenotypelitter').button();
-	
-	jQuery('#line').chosen();
+	jQuery('#breedingLine').chosen();
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
 	
@@ -377,6 +396,7 @@
             dateFormat: "yy-mm-dd"
         });
     });
+
 
 
 	var oTable = jQuery('#pgstable').dataTable(

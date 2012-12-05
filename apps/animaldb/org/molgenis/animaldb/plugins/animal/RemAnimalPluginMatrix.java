@@ -232,6 +232,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
+				measurementsToShow.add("Location");
 				measurementsToShow.add("DateOfBirth");
 				measurementsToShow.add("Experiment");
 				measurementsToShow.add("GeneModification");
@@ -241,6 +242,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
+				measurementsToShow.add("Line");
 
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
