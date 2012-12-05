@@ -28,7 +28,7 @@ import com.thoughtworks.selenium.Selenium;
 public class AnimaldbSeleniumTest
 {
 	private final Integer TIME_OUT = 1000;
-	private final String PAGE_LOAD_TIME_OUT = "60000";
+	private final String PAGE_LOAD_TIME_OUT = "10000";
 
 	private Selenium selenium;
 
@@ -78,6 +78,7 @@ public class AnimaldbSeleniumTest
 		{
 			// To be sure, empty db and don't add MolgenisUsers etc.
 			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+
 		}
 		if (!this.tomcat) new RunStandalone(webserverPort);
 	}
@@ -113,7 +114,8 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
 		// Since Ate hates waiting, first see if we are on his laptop ;)
-		selenium.type("id=zip", "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_2012-05-16.zip");
+		selenium.type("id=zip",
+				"/Users/Roan/github/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip");
 		selenium.click("id=source1");
 		selenium.click("id=load");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -121,7 +123,8 @@ public class AnimaldbSeleniumTest
 		if (!selenium.isTextPresent("Pre-filling AnimalDB successful"))
 		{
 			// If not, let's assume we're on the Hudson server
-			selenium.type("id=zip", "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB_2012-05-16.zip");
+			selenium.type("id=zip",
+					"/Users/Roan/github/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip");
 			selenium.click("id=source1");
 			selenium.click("id=load");
 			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -538,7 +541,7 @@ public class AnimaldbSeleniumTest
 		// Go to animals in locations plugin
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=LocationPlugin_tab_button");
+		selenium.click("id=LocationManagementPlugin_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Animals in locations"));
 		// Add five animals to Room 101
@@ -755,6 +758,8 @@ public class AnimaldbSeleniumTest
 		}
 		else
 		{
+			// new
+			// Molgenis("apps/animaldb/org/molgenis/animaldb/animaldb.properties").updateDb(true);
 			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
 		}
 		// Helper.deleteStorage();

@@ -11,6 +11,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.view.JQGridView;
+import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridSearchOptions;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -45,6 +46,31 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 		if (tableView == null)
 		{
 			createViews(db, null, null);
+		}
+		else
+		{
+			// DataSet could be added or could be deleted
+			try
+			{
+				List<DataSet> dataSets = db.find(DataSet.class);
+				dataSetChooser.setDataSets(dataSets);
+
+				// Check if selected dataset still exists
+				if (dataSetChooser.getSelectedDataSetId() != null)
+				{
+					DataSet dataSet = db.findById(DataSet.class, dataSetChooser.getSelectedDataSetId());
+					if (dataSet == null)
+					{
+						createViews(db, null, null);
+					}
+				}
+
+			}
+			catch (DatabaseException e)
+			{
+				logger.error("TableException creating DataSetViewer", e);
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -123,18 +149,25 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 					}
 				}
 
-				tableView = new JQGridView("dataset", this, table);
+				// construct the gridview
+				JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+				searchOptions.setMultipleGroup(false);
+				searchOptions.setMultipleSearch(false);
+				searchOptions.setShowQuery(false);
+
+				tableView = new JQGridView("dataset", this, table, searchOptions);
+
 				dataSetChooser = new DataSetChooser(dataSets, selectedDataSetId);
 			}
 		}
 		catch (TableException e)
 		{
-			logger.error("TableException creating views");
+			logger.error("TableException creating views", e);
 			throw new RuntimeException(e);
 		}
 		catch (DatabaseException e)
 		{
-			logger.error("TableException creating views");
+			logger.error("TableException creating views", e);
 			throw new RuntimeException(e);
 		}
 	}

@@ -175,11 +175,15 @@ public class EventViewerPluginMatrix extends EasyPluginController
 				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
-				measurementsToShow.add("Location");
+				measurementsToShow.add("DateOfBirth");
 				measurementsToShow.add("Experiment");
+				measurementsToShow.add("GeneModification");
+				measurementsToShow.add("GeneState");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("Litter");
+				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
-				measurementsToShow.add("Line");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
@@ -188,7 +192,8 @@ public class EventViewerPluginMatrix extends EasyPluginController
 						1, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
-				targetMatrixViewer.setLabel("Choose animal:");
+
+				div.add(new Paragraph("Select animals"));
 				div.add(targetMatrixViewer);
 
 				ActionInput selectButton = new ActionInput("Select", "", "Select");

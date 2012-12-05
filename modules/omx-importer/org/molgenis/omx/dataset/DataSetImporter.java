@@ -2,18 +2,13 @@ package org.molgenis.omx.dataset;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -27,8 +22,7 @@ import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
 import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
-import org.molgenis.util.CsvWriter;
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.ExcelUtils;
 import org.molgenis.util.Tuple;
 
 public class DataSetImporter
@@ -45,37 +39,31 @@ public class DataSetImporter
 
 	public void importXLS(File file, List<String> dataSetSheetNames) throws IOException, DatabaseException
 	{
-		// fixes the problem where, even though decimals have a "." they are
-		// still read as "," because of the locale!
-		// TODO: dangerous: entire application locale changes! but workbook
-		// locale settings don't seem to have an effect...
-		Locale defaultLocale = Locale.getDefault();
-		Locale.setDefault(Locale.US);
-
 		Workbook workbook = null;
+
+		String sheetPrefix = ENTITY_DATASET_PREFIX.toLowerCase() + '_';
 		try
 		{
-			String sheetPrefix = ENTITY_DATASET_PREFIX.toLowerCase() + '_';
-			workbook = Workbook.getWorkbook(file);
-			for (Sheet sheet : workbook.getSheets())
+			workbook = WorkbookFactory.create(file);
+		}
+		catch (InvalidFormatException e)
+		{
+			String msg = "InvalidFormatException creating Workbook for file [" + file.getName() + "]";
+			LOG.error(msg, e);
+			throw new IOException(msg, e);
+		}
+
+		for (int i = 0; i < workbook.getNumberOfSheets(); i++)
+		{
+			String sheetName = workbook.getSheetName(i);
+			if (dataSetSheetNames.contains(sheetName))
 			{
-				if (dataSetSheetNames.contains(sheet.getName()))
-				{
-					String identifier = sheet.getName().substring(sheetPrefix.length());
-					File csvFile = convertToCSVFile(sheet, identifier);
-					importCSV(csvFile, identifier);
-				}
+				String identifier = sheetName.substring(sheetPrefix.length());
+				File csvFile = convertToCSVFile(workbook.getSheetAt(i), identifier);
+				importCSV(csvFile, identifier);
 			}
 		}
-		catch (BiffException e)
-		{
-			throw new IOException(e);
-		}
-		finally
-		{
-			Locale.setDefault(defaultLocale); // restore locale
-			if (workbook != null) workbook.close();
-		}
+
 	}
 
 	private void importCSV(File file, String identifier) throws IOException, DatabaseException
@@ -96,10 +84,15 @@ public class DataSetImporter
 
 		DataSet dataSet = dataSets.get(0);
 
+		boolean startNewTrans = !db.inTx();
 		TupleTable csvTable = null;
 		try
 		{
-			db.beginTx();
+			if (startNewTrans)
+			{
+				db.beginTx();
+			}
+
 			csvTable = new CsvTable(file);
 			List<Field> headerFields = csvTable.getAllColumns();
 			for (Tuple row : csvTable.getRows())
@@ -139,16 +132,26 @@ public class DataSetImporter
 					db.add(observedValue);
 				}
 			}
-			db.commitTx();
+
+			if (startNewTrans)
+			{
+				db.commitTx();
+			}
 		}
 		catch (DatabaseException e)
 		{
-			db.rollbackTx();
+			if (startNewTrans)
+			{
+				db.rollbackTx();
+			}
 			throw e;
 		}
 		catch (Exception e)
 		{
-			db.rollbackTx();
+			if (startNewTrans)
+			{
+				db.rollbackTx();
+			}
 			throw new IOException(e);
 		}
 		finally
@@ -183,7 +186,7 @@ public class DataSetImporter
 		{
 			throw new IOException("Creation of tmp file '" + tmpFileName + "' failed, cannot proceed.");
 		}
-		boolean fileHasHeaders = writeSheetToFile(sheet, tmpDataSet);
+		boolean fileHasHeaders = ExcelUtils.writeSheetToFile(sheet, tmpDataSet, false);
 		if (fileHasHeaders)
 		{
 			return tmpDataSet;
@@ -195,53 +198,4 @@ public class DataSetImporter
 		}
 	}
 
-	private boolean writeSheetToFile(Sheet sheet, File file) throws IOException
-	{
-		// get headers
-		Cell[] headerCells = sheet.getRow(0);
-		final int nrHeaders = headerCells.length;
-		if (nrHeaders == 0) return false;
-
-		List<String> headers = new ArrayList<String>(nrHeaders);
-		for (Cell headerCell : headerCells)
-			headers.add(headerCell.getContents());
-
-		// create writer
-		CsvWriter cw;
-		try
-		{
-			cw = new CsvWriter(new PrintWriter(file, "UTF-8"), headers);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			throw new RuntimeException(e);
-		}
-		cw.setMissingValue("");
-
-		// write csv to file
-		try
-		{
-			cw.writeHeader();
-			final int nrRows = sheet.getRows();
-			for (int rowIndex = 1; rowIndex < nrRows; rowIndex++)
-			{
-				Tuple t = new SimpleTuple();
-				int colIndex = 0;
-				for (Cell c : sheet.getRow(rowIndex))
-				{
-					if (colIndex < headers.size() && c.getContents() != null)
-					{
-						t.set(headers.get(colIndex), c.getContents());
-					}
-					colIndex++;
-				}
-				cw.writeRow(t);
-			}
-		}
-		finally
-		{
-			cw.close();
-		}
-		return true;
-	}
 }

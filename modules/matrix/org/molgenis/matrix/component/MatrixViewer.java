@@ -357,10 +357,10 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "<div style=\"float:left; vertical-align:middle\">" + reload.render() + "</div>";
 		// move vertical (row paging)
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
-		moveUpEnd.setIcon("generated-res/img/first.png");
+		moveUpEnd.setIcon("generated-res/img/first_32.png");
 		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + moveUpEnd.render();
 		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
-		moveUp.setIcon("generated-res/img/prev.png");
+		moveUp.setIcon("generated-res/img/prev_32.png");
 		divContents += moveUp.render();
 		int rowOffset = this.matrix.getRowOffset();
 		int rowLimit = this.matrix.getRowLimit();
@@ -377,10 +377,10 @@ public class MatrixViewer extends HtmlWidget
 			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
 		}
 		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
-		moveDown.setIcon("generated-res/img/next.png");
+		moveDown.setIcon("generated-res/img/next_32.png");
 		divContents += moveDown.render();
 		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
-		moveDownEnd.setIcon("generated-res/img/last.png");
+		moveDownEnd.setIcon("generated-res/img/last_32.png");
 		divContents += moveDownEnd.render() + "</div>";
 		// download options
 		if (showDownloadOptions)
@@ -709,14 +709,13 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-		String divContents = "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
-				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
-				+ "/>";
-		divContents += "<div id='advancedSettings' style='display:none'>";
-		divContents += new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
+		String divContents = "<hr>"
+				+ new Paragraph("filterRules", "<strong>Active filters</strong>:" + generateFilterRules()).render();
+
 		// add column filter
+
 		List<? extends Object> colHeaders = matrix.getColHeaders();
-		divContents += "<div style=\"clear:both\">Add filter:";
+		divContents += "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
 		divContents += buildFilterChoices(colHeaders).render();
 		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO:
 																			// chosen()
@@ -734,7 +733,12 @@ public class MatrixViewer extends HtmlWidget
 																			// alignment
 																			// under
 																			// FF+IE
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div>";
+		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div><hr>";
+
+		divContents += "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
+				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
+				+ "/>";
+		divContents += "<div id='advancedSettings' style='display:none'>";
 		// column header filter
 		@SuppressWarnings("rawtypes")
 		List selectedMeasurements = new ArrayList(colHeaders);
@@ -744,7 +748,7 @@ public class MatrixViewer extends HtmlWidget
 		// disable display of button for adding new measurements from here
 		measurementChooser.setIncludeAddButton(false);
 		divContents += new Newline().render();
-		divContents += "<div style=\"clear: both; vertical-align:middle\">Add/remove columns:";
+		divContents += "<div style=\"clear: both; vertical-align:middle\"> <strong>Add/remove columns: </strong><br />";
 		divContents += measurementChooser.render();
 		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
 		if (this.APPLICATION_STRING != "ANIMALDB")
@@ -795,8 +799,8 @@ public class MatrixViewer extends HtmlWidget
 		// At this moment, selectedMeasurement is always null. Temp. fix:
 		if (selectedMeasurement == null)
 		{
-			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			operatorInput.addOption(Operator.LIKE.name(), Operator.LIKE.name());
+			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			// operatorInput.addOption(Operator.ISNA, Operator.ISNA.name());
 			// TODO: implement! Find a way to filter on ObservedValues that are
 			// NOT present

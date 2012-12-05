@@ -119,14 +119,18 @@ public class ListPluginMatrix extends EasyPluginController
 				// Some measurements that we think AnimalDB users like to see
 				// most:
 				measurementsToShow.add("Active");
+				measurementsToShow.add("DateOfBirth");
+				measurementsToShow.add("Experiment");
+				measurementsToShow.add("GeneModification");
+				measurementsToShow.add("GeneState");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("Litter");
+				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
-				measurementsToShow.add("Line");
 				// measurementsToShow.add("OldUliDbId");
-				measurementsToShow.add("OldUliDbTiernummer");
-				measurementsToShow.add("OldRhutDbAnimalId");
-				measurementsToShow.add("Location");
-				measurementsToShow.add("Background");
+				// measurementsToShow.add("OldUliDbTiernummer");
+				// measurementsToShow.add("OldRhutDbAnimalId");
 				// measurementsToShow.add("Remark");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,

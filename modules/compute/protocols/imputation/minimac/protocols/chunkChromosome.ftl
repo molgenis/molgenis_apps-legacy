@@ -54,7 +54,7 @@ done
 
 
 #Merge worksheets
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 #Run Jar to create full worksheet
 
