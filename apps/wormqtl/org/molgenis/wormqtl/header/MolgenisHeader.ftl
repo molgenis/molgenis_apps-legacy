@@ -16,7 +16,7 @@
 			<font style="font-size:14px;">
 				<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
 				<#--a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a> | ${screen.userLogin}-->
-				<a href="molgenis.do?select=Home">Home</a> | <a href="wormqtl_contact.html">Contact</a> | <a href="wormqtl_about.html">About</a>
+				<a href="molgenis.do?select=Home">Home</a> | <a href="wormqtl_contact.html">Contact</a> | <a href="wormqtl_about.html">About</a> | <a target="_blank" href="http://nar.oxfordjournals.org/content/early/2012/11/23/nar.gks1124.abstract?sid=cc84651f-50d6-4473-a244-2840b04529b8"><b>Article in NAR</b></a>
 			</font>
 		</td>
 	</tr>
