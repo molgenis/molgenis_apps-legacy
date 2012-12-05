@@ -258,7 +258,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 					if (permaLinkIds.length() == "WBGene00000000".length() && permaLinkIds.startsWith("WBGene"))
 					{
 						hits = query(db.getClassForName("ObservationElement"), db, permaLinkIds, 100);
-						hits = transcriptsToGenes(db, 100, hits);
+						// does not match transcripts, but if it ever does:
+						// hits = transcriptsToGenes(db, 100, hits);
 						hits = genesToProbes(db, 100, hits);
 					}
 					else
@@ -296,14 +297,41 @@ public class QtlFinder2 extends PluginModel<Entity>
 		Map<String, Entity> result = new HashMap<String, Entity>();
 		int nrOfResults = 0;
 
+		// optimization: single query from Transcript to Gene instead of 1 per
+		// Transcript
+		List<String> geneRefsFromTranscriptToQuery = new ArrayList<String>();
+		for (String name : hits.keySet())
+		{
+			Entity e = hits.get(name);
+			if (e.get(Field.TYPE_FIELD).equals("Transcript"))
+			{
+				geneRefsFromTranscriptToQuery.add(e.get(Transcript.GENE_NAME).toString());
+			}
+		}
+
+		List<Gene> genes = new ArrayList<Gene>();
+		if (geneRefsFromTranscriptToQuery.size() > 0)
+		{
+			QueryRule n = new QueryRule(Gene.NAME, Operator.IN, geneRefsFromTranscriptToQuery);
+			genes = db.find(Gene.class, n);
+		}
+
 		outer: for (String name : hits.keySet())
 		{
 			Entity e = hits.get(name);
 			if (e.get(Field.TYPE_FIELD).equals("Transcript"))
 			{
-				QueryRule n = new QueryRule(Gene.NAME, Operator.EQUALS, ((Transcript) e).getGene_Name());
-				List<Gene> genes = db.find(Gene.class, n);
+
+				List<Gene> genesForThisTranscript = new ArrayList<Gene>();
 				for (Gene g : genes)
+				{
+					if (g.getName().equals(((Transcript) e).getGene_Name()))
+					{
+						genesForThisTranscript.add(g);
+					}
+				}
+
+				for (Gene g : genesForThisTranscript)
 				{
 					result.put(g.getName(), g);
 					nrOfResults++;
@@ -356,6 +384,28 @@ public class QtlFinder2 extends PluginModel<Entity>
 		Map<String, Entity> result = new HashMap<String, Entity>();
 		int nrOfResults = 0;
 
+		// optimization: single query from Genes to Probes instead of 1 per gene
+		List<Entity> genesToQuery = new ArrayList<Entity>();
+		List<String> probeRefsFromGeneToQuery = new ArrayList<String>();
+		for (String name : hits.keySet())
+		{
+			Entity e = hits.get(name);
+			if (e.get(Field.TYPE_FIELD).equals("Gene"))
+			{
+				genesToQuery.add(e);
+				probeRefsFromGeneToQuery.add(e.get(Gene.NAME).toString());
+			}
+		}
+
+		List<Probe> probes = new ArrayList<Probe>();
+		if (probeRefsFromGeneToQuery.size() > 0)
+		{
+			QueryRule r = new QueryRule(Probe.REPORTSFOR_NAME, Operator.IN, probeRefsFromGeneToQuery);
+			QueryRule o = new QueryRule(Operator.OR);
+			QueryRule s = new QueryRule(Probe.SYMBOL, Operator.IN, probeRefsFromGeneToQuery);
+			probes = db.find(Probe.class, r, o, s);
+		}
+
 		outer: for (String name : hits.keySet())
 		{
 			Entity e = hits.get(name);
@@ -366,17 +416,18 @@ public class QtlFinder2 extends PluginModel<Entity>
 
 			if (e.get(Field.TYPE_FIELD).equals("Gene"))
 			{
-				QueryRule r = new QueryRule(Probe.REPORTSFOR_NAME, Operator.EQUALS, name);
-				QueryRule o = new QueryRule(Operator.OR);
-				QueryRule s = new QueryRule(Probe.SYMBOL, Operator.EQUALS, name);
-				List<Probe> probes = db.find(Probe.class, r, o, s);
-
-				// System.out.println("RESULT WITH JUST REPORTSFOR: "
-				// +db.find(Probe.class, r).size());
-				// System.out.println("RESULT WITH JUST SYMBOL: "
-				// +db.find(Probe.class, s).size());
-
+				// new get probes for this gene name...
+				List<Probe> probesForThisGene = new ArrayList<Probe>();
 				for (Probe p : probes)
+				{
+					if ((p.getReportsFor_Name() != null && p.getSymbol() != null)
+							&& p.getReportsFor_Name().equals(name) || p.getSymbol().equals(name))
+					{
+						probesForThisGene.add(p);
+					}
+				}
+
+				for (Probe p : probesForThisGene)
 				{
 					result.put(p.getName(), p);
 					// System.out.println("GENE2PROBE SEARCH HIT: "
