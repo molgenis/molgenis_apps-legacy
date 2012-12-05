@@ -38,6 +38,7 @@ import org.molgenis.xgap.Gene;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
+import org.molgenis.xgap.Transcript;
 
 import plugins.qtlfinder.QTLInfo;
 import plugins.qtlfinder.QTLMultiPlotResult;
@@ -213,12 +214,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					Class<? extends Entity> entityClass;
 					if (dataType.equals(__ALL__DATATYPES__SEARCH__KEY))
 					{
-						entityClass = db.getClassForName("ObservationElement"); // more
-																				// broad
-																				// than
-																				// "ObservableFeature",
-																				// but
-																				// OK
+						entityClass = db.getClassForName("ObservationElement");
 					}
 					else
 					{
@@ -226,12 +222,16 @@ public class QtlFinder2 extends PluginModel<Entity>
 					}
 
 					Map<String, Entity> hits = query(entityClass, db, query, 100);
-
 					System.out.println("initial number of hits: " + hits.size());
+					// printResults(hits);
+
+					hits = transcriptsToGenes(db, 100, hits);
+					System.out.println("after converting transcript to genes, number of hits: " + hits.size());
+					// printResults(hits);
 
 					hits = genesToProbes(db, 100, hits);
-
 					System.out.println("after converting genes to probes, number of hits: " + hits.size());
+					// printResults(hits);
 
 					this.model.setHits(hits);
 
@@ -258,6 +258,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					if (permaLinkIds.length() == "WBGene00000000".length() && permaLinkIds.startsWith("WBGene"))
 					{
 						hits = query(db.getClassForName("ObservationElement"), db, permaLinkIds, 100);
+						hits = transcriptsToGenes(db, 100, hits);
 						hits = genesToProbes(db, 100, hits);
 					}
 					else
@@ -285,6 +286,44 @@ public class QtlFinder2 extends PluginModel<Entity>
 				}
 			}
 		}
+	}
+
+	// convert any transcript hit to the corresponding gene
+	// in a next iteration, the genes are converted to probes
+	private Map<String, Entity> transcriptsToGenes(Database db, int limit, Map<String, Entity> hits)
+			throws DatabaseException
+	{
+		Map<String, Entity> result = new HashMap<String, Entity>();
+		int nrOfResults = 0;
+
+		outer: for (String name : hits.keySet())
+		{
+			Entity e = hits.get(name);
+			if (e.get(Field.TYPE_FIELD).equals("Transcript"))
+			{
+				QueryRule n = new QueryRule(Gene.NAME, Operator.EQUALS, ((Transcript) e).getGene_Name());
+				List<Gene> genes = db.find(Gene.class, n);
+				for (Gene g : genes)
+				{
+					result.put(g.getName(), g);
+					nrOfResults++;
+					if (nrOfResults == limit)
+					{
+						break outer;
+					}
+				}
+			}
+			else
+			{
+				result.put(e.get(ObservationElement.NAME).toString(), e);
+				nrOfResults++;
+				if (nrOfResults == limit)
+				{
+					break outer;
+				}
+			}
+		}
+		return result;
 	}
 
 	private Map<String, Entity> genesToProbes(Database db, int limit, Map<String, Entity> hits)
@@ -371,6 +410,14 @@ public class QtlFinder2 extends PluginModel<Entity>
 		this.model.setProbeToGene(probeToGene);
 
 		return result;
+	}
+
+	private void printResults(Map<String, Entity> hits)
+	{
+		for (String key : hits.keySet())
+		{
+			System.out.println(hits.get(key).toString());
+		}
 	}
 
 	private Map<String, Entity> query(Class entityClass, Database db, String query, int limit) throws DatabaseException
@@ -763,8 +810,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/qtlfinder.css\">" + "\n"
-				+ "<script type=\"text/javascript\" src=\"etc/js/clear-default-text.js\"></script>";
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/qtlfinder.css\">" + "\n";
 	}
 
 }
