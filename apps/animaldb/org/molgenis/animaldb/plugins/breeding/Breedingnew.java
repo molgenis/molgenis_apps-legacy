@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,7 @@ import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
+import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -105,6 +107,7 @@ public class Breedingnew extends PluginModel<Entity>
 	private List<Location> locationList;
 	private int nrOfGenotypes = 1;
 	private Table genotypeTable = null;
+	private Table editTable = null;
 	private boolean wean = false;
 	private String parentInfo = "";
 	private String labelDownloadLink;
@@ -385,6 +388,22 @@ public class Breedingnew extends PluginModel<Entity>
 		return litterMatrixViewerString;
 	}
 
+	private ArrayList<String> litterProtocol()
+	{
+		ArrayList<String> listOfMeasurements = new ArrayList<String>();
+		listOfMeasurements.add("Active");
+		listOfMeasurements.add("DateOfBirth");
+		listOfMeasurements.add("GenotypeDate");
+		listOfMeasurements.add("Line");
+		listOfMeasurements.add("Parentgroup");
+		listOfMeasurements.add("Remark");
+		listOfMeasurements.add("Size");
+		listOfMeasurements.add("WeanDate");
+		listOfMeasurements.add("WeanSize");
+
+		return listOfMeasurements;
+	}
+
 	public void loadLitterMatrixViewer(Database db)
 	{
 		try
@@ -392,15 +411,10 @@ public class Breedingnew extends PluginModel<Entity>
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 
 			List<String> measurementsToShow = new ArrayList<String>();
-			measurementsToShow.add("Active");
-			measurementsToShow.add("Parentgroup");
-			measurementsToShow.add("Line");
-			measurementsToShow.add("DateOfBirth");
-			measurementsToShow.add("WeanDate");
-			measurementsToShow.add("Size");
-			measurementsToShow.add("WeanSize");
-			measurementsToShow.add("GenotypeDate");
-			measurementsToShow.add("Remark");
+			for (String e : litterProtocol())
+			{
+				measurementsToShow.add(e);
+			}
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, Operator.IN,
 					investigationNames));
@@ -728,7 +742,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 			if (action.equals("changeLine"))
 			{
-				this.line = request.getString("line");
+				this.line = request.getString("breedingLine");
 				this.setSuccess("Breeding line changed to " + this.line);
 				// Reset matrices and return to main screen
 				loadPgMatrixViewer(db);
@@ -891,6 +905,35 @@ public class Breedingnew extends PluginModel<Entity>
 
 			}
 
+			if (action.equals("EditLitter"))
+			{
+				List<?> rows = litterMatrixViewer.getSelection(db);
+				try
+				{
+					if (request.getInt(LITTERMATRIX + "_selected") != null)
+					{
+						int row = request.getInt(LITTERMATRIX + "_selected");
+
+						this.litter = ((ObservationElement) rows.get(row)).getName();
+					}
+
+				}
+				catch (Exception e)
+				{
+					this.action = "init";
+					this.entity = "Litters";
+					throw new Exception("No litter selected");
+				}
+
+				editLitter(db);
+
+			}
+
+			if (action.equals("editIndividual"))
+			{
+				editIndividuals(db, this.litter);
+			}
+
 			if (action.equals("GenotypeLitter"))
 			{
 				// Prepare parent info
@@ -968,6 +1011,10 @@ public class Breedingnew extends PluginModel<Entity>
 				this.setSuccess("All " + weanSize + " animals successfully weaned; adding filter to matrix: name = "
 						+ this.litter);
 			}
+			if (action.equals("applyEdit"))
+			{
+				editLitterToDb(db, request);
+			}
 
 			if (action.equals("applyGenotype"))
 			{
@@ -988,6 +1035,24 @@ public class Breedingnew extends PluginModel<Entity>
 				this.entity = "Litters";
 				this.setSuccess("All " + animalCount
 						+ " animals successfully genotyped; adding filter to matrix: name = " + this.litter);
+			}
+
+			if (action.equals("applyLitterIndividuals"))
+			{
+				String invName = ct.getObservationTargetByName(this.litter).getInvestigation_Name();
+
+				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+
+				updateLitterIndividuals(db, request, investigationNames, invName);
+
+				editIndividuals(db, this.litter);
+
+				this.action = "editIndividual";
+
+				// Reload litter matrix and set filter on name of newly weaned
+				// litter
+
+				this.setSuccess("Animals were successfully updated; for litter: " + this.litter);
 			}
 
 			if (action.equals("makeLabels"))
@@ -1217,6 +1282,7 @@ public class Breedingnew extends PluginModel<Entity>
 		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "WeanDate"));
 		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
 		List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
+
 		if (listId.isEmpty())
 		{
 			return false;
@@ -1225,7 +1291,6 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 			return true;
 		}
-
 	}
 
 	private Boolean isGenotyped(Database db) throws Exception
@@ -1234,7 +1299,7 @@ public class Breedingnew extends PluginModel<Entity>
 		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GenotypeDate"));
 		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
 		List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
-		System.out.println("KIPJES " + listId.size());
+
 		if (listId.isEmpty())
 		{
 			return false;
@@ -1243,6 +1308,397 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 			return true;
 		}
+	}
+
+	private void editIndividuals(Database db, String litter) throws DatabaseException, ParseException
+	{
+		nrOfGenotypes = 1;
+		// Prepare table
+		genotypeTable = new Table("GenoTable", "");
+		genotypeTable.addColumn("Birth date");
+		genotypeTable.addColumn("Sex");
+		genotypeTable.addColumn("Color");
+		genotypeTable.addColumn("Earmark");
+		genotypeTable.addColumn("Background");
+		genotypeTable.addColumn("Gene modification");
+		genotypeTable.addColumn("Gene state");
+		int row = 0;
+		for (Individual animal : getAnimalsInLitter(db))
+		{
+			String animalName = animal.getName();
+			genotypeTable.addRow(animalName);
+			// Birth date
+			DateInput dateInput = new DateInput("0_" + row);
+			dateInput.setDateFormat("yyyy-MM-dd");
+			// get the weandate, in order to limit the input for the birthdate
+			// field
+			String maxDate = "";
+			try
+			{
+				maxDate = ct.getMostRecentValueAsString(animalName, "dateOfBirth");
+			}
+			catch (Exception e)
+			{
+				// do nothing.
+			}
+			dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxDate
+					+ "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+			dateInput.setValue(getAnimalBirthDate(animalName));
+
+			genotypeTable.setCell(0, row, dateInput);
+			// Sex
+			SelectInput sexInput = new SelectInput("1_" + row);
+			for (ObservationTarget sex : this.sexList)
+			{
+				sexInput.addOption(sex.getName(), sex.getName());
+			}
+			sexInput.setValue(getAnimalSex(animalName));
+			sexInput.setWidth(-1);
+			genotypeTable.setCell(1, row, sexInput);
+			// Color
+			SelectInput colorInput = new SelectInput("2_" + row);
+			for (String color : this.colorList)
+			{
+				colorInput.addOption(color, color);
+			}
+			colorInput.setValue(getAnimalColor(animalName));
+			colorInput.setWidth(-1);
+			genotypeTable.setCell(2, row, colorInput);
+			// Earmark
+			SelectInput earmarkInput = new SelectInput("3_" + row);
+			for (Category earmark : this.earmarkList)
+			{
+				earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
+			}
+			earmarkInput.setValue(getAnimalEarmark(animalName));
+			earmarkInput.setWidth(-1);
+			genotypeTable.setCell(3, row, earmarkInput);
+			// Background
+			SelectInput backgroundInput = new SelectInput("4_" + row);
+			for (ObservationTarget background : this.backgroundList)
+			{
+				backgroundInput.addOption(background.getName(), background.getName());
+			}
+			backgroundInput.setValue(getAnimalBackground(animalName));
+			backgroundInput.setWidth(-1);
+			genotypeTable.setCell(4, row, backgroundInput);
+
+			// TODO: show columns and selectboxes for ALL set geno mods
+
+			// Gene mod name (1)
+			SelectInput geneNameInput = new SelectInput("5_" + row);
+			for (String geneName : this.geneNameList)
+			{
+				geneNameInput.addOption(geneName, geneName);
+			}
+			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
+			geneNameInput.setWidth(-1);
+			genotypeTable.setCell(5, row, geneNameInput);
+			// Gene state (1)
+			SelectInput geneStateInput = new SelectInput("6_" + row);
+			for (String geneState : this.geneStateList)
+			{
+				geneStateInput.addOption(geneState, geneState);
+			}
+			geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, 0, db));
+			geneStateInput.setWidth(-1);
+			genotypeTable.setCell(6, row, geneStateInput);
+			row++;
+		}
+	}
+
+	private void editLitter(Database db) throws DatabaseException, ParseException
+	{
+
+		// Prepare table
+		// genotypeTable = new Table("GenoTable", "");
+		editTable = new Table("EditTable", "");
+		for (String e : litterProtocol())
+		{
+			editTable.addColumn(e);
+		}
+
+		int row = 0;
+
+		List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET_NAME,
+				Operator.EQUALS, this.litter));
+		editTable.addRow(this.litter);
+
+		Map<String, String> observableFeat = new HashMap<String, String>();
+
+		for (ObservedValue val : listObservedValues)
+		{
+
+			if (val.getFeature_Name().equals("Parentgroup"))
+			{
+				observableFeat.put(val.getFeature_Name(), val.getRelation_Name());
+			}
+			else
+			{
+				observableFeat.put(val.getFeature_Name(), val.getValue());
+			}
+		}
+
+		// Active
+		TextLineInput<String> inputActive = new TextLineInput<String>("Active");
+		if (observableFeat.containsKey("Active"))
+		{
+
+			inputActive.setValue(observableFeat.get("Active"));
+		}
+		else
+		{
+			inputActive.setValue("");
+
+		}
+		editTable.setCell(row, 0, inputActive);
+		row++;
+		// DateOfBirth
+		DateInput dateInputBirthDate = new DateInput("DateOfBirth");
+		dateInputBirthDate.setDateFormat("yyyy-MM-dd");
+		if (observableFeat.containsKey("DateOfBirth"))
+		{
+
+			if (observableFeat.get("DateOfBirth").isEmpty())
+			{
+				dateInputBirthDate.setValue(null);
+			}
+			else
+			{
+				dateInputBirthDate.setValue(newDateOnlyFormat.parse(observableFeat.get("DateOfBirth")));
+			}
+		}
+		else
+		{
+			dateInputBirthDate.setValue(null);
+
+		}
+		editTable.setCell(row, 0, dateInputBirthDate);
+		row++;
+		// GenotypeDate
+		DateInput dateInputGenotypeDate = new DateInput("GenotypeDate");
+		dateInputGenotypeDate.setDateFormat("yyyy-MM-dd");
+		if (observableFeat.containsKey("GenotypeDate"))
+		{
+
+			if (observableFeat.get("GenotypeDate").isEmpty())
+			{
+				dateInputGenotypeDate.setValue(null);
+			}
+			else
+			{
+				dateInputGenotypeDate.setValue(newDateOnlyFormat.parse(observableFeat.get("GenotypeDate")));
+			}
+
+		}
+		else
+		{
+			dateInputGenotypeDate.setValue(null);
+
+		}
+
+		editTable.setCell(row, 0, dateInputGenotypeDate);
+		row++;
+		// Line
+
+		TextLineInput<String> inputLine = new TextLineInput<String>("Line");
+
+		inputLine.setDisabled(true);
+
+		// for (ObservationTarget background : this.lineList)
+		// {
+		// inputLine.addOption(background.getName(), background.getName());
+		// }
+		// inputLine.setName("Line");
+		// inputLine.setOptions("disabled", "disabled");
+		if (observableFeat.containsKey("Line"))
+		{
+			inputLine.setValue(this.line);
+		}
+		else
+		{
+			inputLine.setValue("");
+
+		}
+		editTable.setCell(row, 0, inputLine);
+		row++;
+		// Parentgroup
+
+		Query<ObservedValue> query = db.query(ObservedValue.class);
+
+		query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
+
+		query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Parentgroup"));
+
+		query.find().get(0);
+
+		TextLineInput<String> inputParentGroup = new TextLineInput<String>("Parentgroup");
+		inputParentGroup.setDisabled(true);
+		if (observableFeat.containsKey("Parentgroup"))
+		{
+			inputParentGroup.setValue(observableFeat.get("Parentgroup"));
+		}
+		else
+		{
+			inputParentGroup.setValue("");
+
+		}
+		editTable.setCell(row, 0, inputParentGroup);
+		row++;
+		// Remark
+		TextLineInput<String> inputRemark = new TextLineInput<String>("Remark");
+		if (observableFeat.containsKey("Remark"))
+		{
+
+			inputRemark.setValue(observableFeat.get("Remark"));
+		}
+		else
+		{
+			inputRemark.setValue("");
+
+		}
+		editTable.setCell(row, 0, inputRemark);
+
+		row++;
+		// Size
+		TextLineInput<String> inputSize = new TextLineInput<String>("Size");
+		if (observableFeat.containsKey("Size"))
+		{
+
+			inputSize.setValue(observableFeat.get("Size"));
+		}
+		else
+		{
+			inputSize.setValue("");
+
+		}
+		editTable.setCell(row, 0, inputSize);
+		row++;
+		// WeanDate
+		DateInput dateInputWeanDate = new DateInput("WeanDate");
+		dateInputWeanDate.setDateFormat("yyyy-MM-dd");
+		if (observableFeat.containsKey("WeanDate"))
+		{
+			if (observableFeat.get("WeanDate").isEmpty())
+			{
+				dateInputWeanDate.setValue(null);
+			}
+			else
+			{
+				dateInputWeanDate.setValue(newDateOnlyFormat.parse(observableFeat.get("WeanDate")));
+			}
+		}
+		else
+		{
+			dateInputWeanDate.setValue(null);
+
+		}
+		editTable.setCell(row, 0, dateInputWeanDate);
+		row++;
+		// WeanSize
+		TextLineInput<String> inputWeanSize = new TextLineInput<String>("WeanSize");
+		if (observableFeat.containsKey("WeanSize"))
+		{
+
+			inputWeanSize.setValue(observableFeat.get("WeanSize"));
+		}
+		else
+		{
+			inputWeanSize.setValue("");
+
+		}
+		editTable.setCell(row, 0, inputWeanSize);
+
+	}
+
+	private void editLitterToDb(Database db, Tuple request) throws Exception
+	{
+
+		Query<ObservedValue> query = db.query(ObservedValue.class);
+
+		query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
+
+		query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.IN, litterProtocol()));
+
+		List<String> existingColumns = new ArrayList<String>();
+
+		String applicationProtocolName = null;
+
+		List<ObservedValue> deleteObservedValues = new ArrayList<ObservedValue>();
+
+		for (ObservedValue ov : query.find())
+		{
+			if (applicationProtocolName == null)
+			{
+				applicationProtocolName = ov.getProtocolApplication_Name();
+			}
+			String e = ov.getFeature_Name();
+
+			existingColumns.add(e);
+
+			if (request.getString(e) == null && e.equalsIgnoreCase("WeanDate") || e.equalsIgnoreCase("WeanSize"))
+			{
+				deleteObservedValues.add(ov);
+			}
+
+			if (!e.equalsIgnoreCase("Parentgroup") || !e.equalsIgnoreCase("Line"))
+			{
+				String newValue = request.getString(e);
+
+				System.out.println(ov);
+
+				ov.setValue(newValue);
+
+				db.update(ov);
+			}
+		}
+
+		db.remove(deleteObservedValues);
+
+		for (String e : litterProtocol())
+		{
+			if (request.getString(e) != null)
+			{
+				if (!existingColumns.contains(e))
+				{
+					ObservedValue ov = new ObservedValue();
+					ov.setTarget_Name(this.litter);
+					ov.setFeature_Name(e);
+					ov.setValue(request.getString(e));
+
+					if (applicationProtocolName != null)
+					{
+						ov.setProtocolApplication_Name(applicationProtocolName);
+					}
+
+					db.add(ov);
+				}
+			}
+		}
+
+		// for (String e : headers)
+		// {
+		//
+		// System.out.println(e + "\t" + request.getString(e));
+		//
+		// }
+
+		// for (ObservedValue val : listObservedValues)
+		// {
+		//
+		// if (headers.contains(val.getFeature_Name()))
+		// {
+		// int colIndex = headers.indexOf(val.getFeature_Name());
+		//
+		// String value = editTable.getCellString(colIndex, 0).toString();
+		// request.getString()
+		// System.out.println(value);
+		//
+		// val.setValue(value);
+		//
+		// db.update(val);
+		// }
+		// }
 
 	}
 
@@ -1611,6 +2067,7 @@ public class Breedingnew extends PluginModel<Entity>
 		parentQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, parentgroupName));
 		parentQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Parentgroup" + parentSex));
 		List<ObservedValue> parentValueList = parentQuery.find();
+
 		if (parentValueList.size() > 0)
 		{
 			return parentValueList.get(0).getRelation_Name();
@@ -1658,7 +2115,7 @@ public class Breedingnew extends PluginModel<Entity>
 		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
 
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(userName);
-		// HUGE FIXME, how to make sure that GeneModification and state belong
+		// HUGE
 		// to each other?, via prot app??
 		List<ObservedValue> motherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(motherName,
 				"GeneModification", investigationIds); // this does not work,
@@ -2030,56 +2487,6 @@ public class Breedingnew extends PluginModel<Entity>
 		return geneNameList;
 	}
 
-	public void setGeneNameList(List<String> geneNameList)
-	{
-		this.geneNameList = geneNameList;
-	}
-
-	public List<String> getGeneStateList()
-	{
-		return geneStateList;
-	}
-
-	public void setGeneStateList(List<String> geneStateList)
-	{
-		this.geneStateList = geneStateList;
-	}
-
-	public List<ObservationTarget> getSexList()
-	{
-		return sexList;
-	}
-
-	public void setSexList(List<ObservationTarget> sexList)
-	{
-		this.sexList = sexList;
-	}
-
-	public List<String> getColorList()
-	{
-		return colorList;
-	}
-
-	public void setColorList(List<String> colorList)
-	{
-		this.colorList = colorList;
-	}
-
-	public List<Category> getEarmarkList()
-	{
-		return earmarkList;
-	}
-
-	public void setEarmarkList(List<Category> earmarkList)
-	{
-		this.earmarkList = earmarkList;
-	}
-
-	public List<Location> getLocationList()
-	{
-		return locationList;
-	}
-
 	public void setLocationList(List<Location> locationList)
 	{
 		this.locationList = locationList;
@@ -2257,7 +2664,9 @@ public class Breedingnew extends PluginModel<Entity>
 	private int Genotype(Database db, Tuple request) throws Exception
 	{
 		Date now = new Date();
+
 		String invName = ct.getObservationTargetByName(this.litter).getInvestigation_Name();
+
 		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 
 		// Set genotype date on litter -> this is how we mark a litter as
@@ -2266,7 +2675,9 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 			throw new Exception("Genotype date not filled in - litter not genotyped");
 		}
+
 		Date genoDate = newDateOnlyFormat.parse(request.getString("genodate"));
+
 		String genodate = dbFormat.format(genoDate);
 
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetGenotypeDate", "GenotypeDate",
@@ -2278,7 +2689,17 @@ public class Breedingnew extends PluginModel<Entity>
 					this.litter, request.getString("remarks"), null));
 		}
 
+		int animalCount = updateLitterIndividuals(db, request, investigationNames, invName);
+
+		return animalCount;
+	}
+
+	private int updateLitterIndividuals(Database db, Tuple request, List<String> investigationNames, String invName)
+			throws DatabaseException, ParseException, IOException
+	{
+
 		int animalCount = 0;
+
 		for (Individual animal : this.getAnimalsInLitter(db))
 		{
 
@@ -2606,6 +3027,11 @@ public class Breedingnew extends PluginModel<Entity>
 		return returnString;
 	}
 
+	public String getEditTable()
+	{
+		return editTable.render();
+	}
+
 	public String getGenotypeTable()
 	{
 		return genotypeTable.render();
@@ -2615,6 +3041,9 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 
 		// PDF file stuff
+		boolean first = true;
+		String lastSex = "";
+		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
 		String filename = pdfFile.getName();
@@ -2632,8 +3061,6 @@ public class Breedingnew extends PluginModel<Entity>
 		List<String> elementLabelList;
 		List<String> elementList;
 
-		boolean first = true;
-		String lastSex = "";
 		for (Individual animal : this.getAnimalsInLitter(litter, db))
 		{
 			String animalName = animal.getName();
@@ -2652,7 +3079,7 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(sex);
 			if (first)
 			{
-				lastSex = sex;
+			lastSex = sex;
 			}
 			// Earmark
 			elementLabelList.add("Earmark:");
@@ -2683,7 +3110,7 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
 			// Geno mother
 			elementLabelList.add("Father:\nMother:");
-			elementList.add(fatherName + " x " + motherName + "\n");
+			elementList.add(fatherName + "\n" + motherName + "\n");
 			// litter
 			elementLabelList.add("Litter:");
 			elementList.add(litter);
@@ -2707,19 +3134,18 @@ public class Breedingnew extends PluginModel<Entity>
 			// elementList.add("Experimenter: " +
 			// ct.getMostRecentValueAsString(animalId,
 			// ct.getMeasurementId("OldUliDbExperimentator")));
-			if (!sex.equals(lastSex))
-			{
-				labelgenerator.finishPage();
-				labelgenerator.nextPage();
-			}
-			lastSex = sex;
+			if (!sex.equals(lastSex))	 	
+      		{ 	 	
+        		labelgenerator.finishPage();
+ 	    		labelgenerator.nextPage();
+      		}
+      		lastSex = sex;
 			labelgenerator.addLabelToDocument(elementLabelList, elementList);
-			if (first)
+			if(first)
 			{
 				first = false;
 			}
-		}
-
+			
 		// In case of an odd number of animals, add extra label to make row full
 		if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
 		{
@@ -2815,6 +3241,56 @@ public class Breedingnew extends PluginModel<Entity>
 	 * this.setLabelDownloadLink("<a href=\"tmpfile/" + filename +
 	 * "\" target=\"blank\">Download temporary wean labels as pdf</a>"); }
 	 */
+
+	public void setGeneNameList(List<String> geneNameList)
+	{
+		this.geneNameList = geneNameList;
+	}
+
+	public List<String> getGeneStateList()
+	{
+		return geneStateList;
+	}
+
+	public void setGeneStateList(List<String> geneStateList)
+	{
+		this.geneStateList = geneStateList;
+	}
+
+	public List<ObservationTarget> getSexList()
+	{
+		return sexList;
+	}
+
+	public void setSexList(List<ObservationTarget> sexList)
+	{
+		this.sexList = sexList;
+	}
+
+	public List<String> getColorList()
+	{
+		return colorList;
+	}
+
+	public void setColorList(List<String> colorList)
+	{
+		this.colorList = colorList;
+	}
+
+	public List<Category> getEarmarkList()
+	{
+		return earmarkList;
+	}
+
+	public void setEarmarkList(List<Category> earmarkList)
+	{
+		this.earmarkList = earmarkList;
+	}
+
+	public List<Location> getLocationList()
+	{
+		return locationList;
+	}
 
 	public String getLabelDownloadLink()
 	{
