@@ -3043,7 +3043,7 @@ public class Breedingnew extends PluginModel<Entity>
 		// PDF file stuff
 		boolean first = true;
 		String lastSex = "";
-		
+
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
 		String filename = pdfFile.getName();
@@ -3079,7 +3079,7 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(sex);
 			if (first)
 			{
-			lastSex = sex;
+				lastSex = sex;
 			}
 			// Earmark
 			elementLabelList.add("Earmark:");
@@ -3134,29 +3134,31 @@ public class Breedingnew extends PluginModel<Entity>
 			// elementList.add("Experimenter: " +
 			// ct.getMostRecentValueAsString(animalId,
 			// ct.getMeasurementId("OldUliDbExperimentator")));
-			if (!sex.equals(lastSex))	 	
-      		{ 	 	
-        		labelgenerator.finishPage();
- 	    		labelgenerator.nextPage();
-      		}
-      		lastSex = sex;
+			if (!sex.equals(lastSex))
+			{
+				labelgenerator.finishPage();
+				labelgenerator.nextPage();
+			}
+			lastSex = sex;
 			labelgenerator.addLabelToDocument(elementLabelList, elementList);
-			if(first)
+			if (first)
 			{
 				first = false;
 			}
-			
-		// In case of an odd number of animals, add extra label to make row full
-		if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
-		{
-			elementLabelList = new ArrayList<String>();
-			elementList = new ArrayList<String>();
-			labelgenerator.addLabelToDocument(elementLabelList, elementList);
-		}
 
-		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
-				+ "\" target=\"blank\">Download cage labels as pdf</a>");
+			// In case of an odd number of animals, add extra label to make row
+			// full
+			if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
+			{
+				elementLabelList = new ArrayList<String>();
+				elementList = new ArrayList<String>();
+				labelgenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+
+			labelgenerator.finishDocument();
+			this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
+					+ "\" target=\"blank\">Download cage labels as pdf</a>");
+		}
 	}
 
 	/*
