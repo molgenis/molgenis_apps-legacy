@@ -109,12 +109,14 @@ public class ViewFamily extends PluginModel<Entity>
 				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
-				measurementsToShow.add("Mother");
-				measurementsToShow.add("Father");
-				measurementsToShow.add("Parentgroup");
-				measurementsToShow.add("Litter");
+				measurementsToShow.add("DateOfBirth");
+				measurementsToShow.add("GeneModification");
+				measurementsToShow.add("GeneState");
 				measurementsToShow.add("Line");
+				measurementsToShow.add("Litter");
+				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));

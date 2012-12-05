@@ -2,7 +2,7 @@
 It should be used via 'import' plus passing of properties
 'app_properties' (reference properties file) and
 'app_src' (listing of the src folders to be included) -->
-<project xmlns:ivy="antlib:org.apache.ivy.ant">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="build_common">
 
 	<mkdir dir="WebContent/WEB-INF/lib" />
 

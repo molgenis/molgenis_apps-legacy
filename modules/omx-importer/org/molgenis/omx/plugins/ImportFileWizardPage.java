@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.omx.dataset.DataSetImporter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -38,13 +39,15 @@ public class ImportFileWizardPage extends WizardPage
 
 		try
 		{
+			db.beginTx();
+
 			// convert input to database action
 			DatabaseAction entityDbAction = toDatabaseAction(entityAction);
 			if (entityDbAction == null) throw new IOException("unknown database action: " + entityAction);
 
 			// import entities
 			ImportResult importResult = ExcelImport.importAll(importWizard.getFile(), db, new SimpleTuple(), null,
-					entityDbAction, "", true);
+					entityDbAction, "", false);
 			getWizard().setImportResult(importResult);
 
 			// import dataset instances
@@ -58,9 +61,20 @@ public class ImportFileWizardPage extends WizardPage
 			}
 
 			importWizard.setSuccessMessage("File successfully imported.");
+
+			db.commitTx();
 		}
 		catch (Exception e)
 		{
+			try
+			{
+				db.rollbackTx();
+			}
+			catch (DatabaseException e1)
+			{
+				logger.error("Exception rolling back transaction", e1);
+			}
+
 			logger.warn("Import of file [" + importWizard.getFile().getName() + "] failed for action [" + entityAction
 					+ "]", e);
 			importWizard.setValidationMessage("<b>Your import failed:</b><br />" + e.getMessage());

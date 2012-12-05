@@ -16,7 +16,7 @@ alloutputsexist \
 	"${projectPhasingJobsDirTarGz}"
 
 
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 java -jar ${concatWorksheetsJar} \
 	${tmpConcattedChunkWorksheet} \
@@ -48,13 +48,13 @@ mkdir -p ${projectPhasingJobsDir}
 
 # Execute MOLGENIS/compute to create job scripts.
 sh ${McDir}/molgenis_compute.sh \
--worksheet="${concattedChunkWorksheet}" \
--parameters="${McParameters}" \
--workflow="${McProtocols}/../workflowMinimacStage2.csv" \
--protocols="${McProtocols}/" \
--templates="${McTemplates}/" \
--scripts="${projectPhasingJobsDir}/" \
--id="${McId}"
+	-inputdir=. \
+	-worksheet="${concattedChunkWorksheet}" \
+	-parameters="${McParameters}" \
+	-workflow="${McProtocols}/../workflowMinimacStage2.csv" \
+	-protocols="${McProtocols}/" \
+	-outputdir="${projectPhasingJobsDir}/" \
+	-id="${McId}"
 
 
 #Get return code from last program call

@@ -54,9 +54,7 @@ public class LookupInputsDemo extends EasyPluginController
 		String themeSwitch = "<div id=\"switcher\"></div><script>$('#switcher').themeswitcher();</script>";
 		view.add(new CustomHtml(themeSwitch).setLabel("changeJqueryTheme"));
 
-		if (Investigation != null) view.add(new XrefInput("XrefInputDefault", this.Investigation));
-		else
-			view.add(new XrefInput("XrefInput", Investigation.class));
+		view.add(new XrefInput("XrefInput", Investigation.class));
 
 		view.add(new MrefInput("MrefInput", Investigation.class));
 
