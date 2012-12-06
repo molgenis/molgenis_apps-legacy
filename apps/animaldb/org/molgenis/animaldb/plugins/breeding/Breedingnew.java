@@ -3145,20 +3145,18 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				first = false;
 			}
-
-			// In case of an odd number of animals, add extra label to make row
-			// full
-			if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
-			{
-				elementLabelList = new ArrayList<String>();
-				elementList = new ArrayList<String>();
-				labelgenerator.addLabelToDocument(elementLabelList, elementList);
-			}
-
-			labelgenerator.finishDocument();
-			this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
-					+ "\" target=\"blank\">Download cage labels as pdf</a>");
 		}
+		// In case of an odd number of animals, add extra label to make row
+		// full
+		if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
+		{
+			elementLabelList = new ArrayList<String>();
+			elementList = new ArrayList<String>();
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+		}
+		labelgenerator.finishDocument();
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
+				+ "\" target=\"blank\">Download cage labels as pdf</a>");
 	}
 
 	/*
