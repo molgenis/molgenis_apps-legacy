@@ -154,7 +154,7 @@ public class MakeRPlot
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".png");
 
 		RScript script = new RScript();
-		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		script.setR_COMMAND("R CMD BATCH --vanilla --slave");
 
 		script.append("drawChrRect<-function()");
 		script.append("{");
@@ -287,7 +287,7 @@ public class MakeRPlot
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".png");
 
 		RScript script = new RScript();
-		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		script.setR_COMMAND("R CMD BATCH --vanilla --slave");
 
 		// lines input example:
 		// plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557",
@@ -369,7 +369,7 @@ public class MakeRPlot
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_regular_" + time + ".png");
 
 		RScript script = new RScript();
-		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		script.setR_COMMAND("R CMD BATCH --vanilla --slave");
 
 		appendDrawChromosomes(script, chromosomes);
 
@@ -474,7 +474,7 @@ public class MakeRPlot
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_cistrans_" + time + ".png");
 
 		RScript script = new RScript();
-		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		script.setR_COMMAND("R CMD BATCH --vanilla --slave");
 
 		script.append("plotMe <- read.table(\"" + dataPoints.getAbsolutePath().replace("\\", "/") + "\")");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
@@ -520,7 +520,7 @@ public class MakeRPlot
 				+ System.nanoTime() + ".png");
 
 		RScript script = new RScript();
-		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		script.setR_COMMAND("R CMD BATCH --vanilla --slave");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 
 		script.append("dataVector <- rep(0," + lodscores.length + ");");
