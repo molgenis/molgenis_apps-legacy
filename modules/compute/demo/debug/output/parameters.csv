@@ -2,4 +2,4 @@ Name, defaultValue, description, dataType, hasOne_name
 guest, , , ,
 party, wedding, , ,
 organizer, , , ,
-group, , , ,
+group, , , , organizer

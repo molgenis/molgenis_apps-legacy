@@ -9,7 +9,6 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=4
-#TARGETS
 
 module load picard-tools/${picardVersion}
 
