@@ -11,8 +11,9 @@
 #MOLGENIS walltime=40:00:00
 #FOREACH externalSampleID
 
-inputs "${indelsbed}"
-alloutputsexist "${indelsfilteredbed}"
+getFile ${indelsbed}
+
+getFile ${filterSingleSampleCallsperl}
 
 perl ${filterSingleSampleCallsperl} \
 --calls ${indelsbed} \
@@ -20,3 +21,5 @@ perl ${filterSingleSampleCallsperl} \
 --max_cons_nqs_av_mm 0.5 \
 --mode ANNOTATE \
 > ${indelsfilteredbed}
+
+putFile ${indelsfilteredbed}

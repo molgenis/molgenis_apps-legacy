@@ -11,12 +11,22 @@
 #MOLGENIS walltime=09:59:00 mem=4
 #FOREACH externalSampleID
 
-inputs "${mergedbam}"
+getFile ${mergedbam}
+getFile ${mergedbamindex}
+getFile ${finalreport}
+getFile ${resdir}/b36/hs_ref_b36.fasta
+getFile ${resdir}/b36/chainfiles/b36ToHg19.broad.over.chain
+getFile ${indexfile}
+
+getFile ${tooldir}/scripts/align-vcf-to-ref.pl
+
+
 alloutputsexist \
 "${finalreport}" \
 "${familylist}" \
 "${sample}.concordance.fam" \
 "${sample}.concordance.lgen" \
+"${sample}.concordance.ped" \
 "${arraytmpmap}" \
 "${arraymapfile}" \
 "${sample}.ped" \
@@ -45,7 +55,7 @@ else
 	> ${sample}_FinalReport.txt.tmp
 
 	##Set R library path
-	export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
+	module load ${rBin}/${rVersion}}
 	export R_LIBS=${R_LIBS}
 	
 	##Push sample belonging to family "1" into list.txt
@@ -174,14 +184,16 @@ else
 	
 	#?# MD vraagt: wat doen --lfile en --out, en horen die gelijk te zijn?
 	##Create .bed and other files (keep sample from sample_list.txt).
-	${tooldir}/plink-1.07-x86_64/plink-1.07-x86_64/plink \
+	module load ${plink}/${plinkVersion}
+	plink \
 	--lfile ${sample}.concordance \
 	--recode \
 	--out ${sample}.concordance \
 	--keep ${familylist}
 	
 	##Create genotype VCF for sample
-	${tooldir}/plink-1.08/plink108 \
+	module load ${plinkSeqBin}/${plinkSeqVersion}
+	plink \
 	--recode-vcf \
 	--ped ${sample}.concordance.ped \
 	--map ${arraymapfile} \
@@ -201,6 +213,10 @@ else
 	sed -e 's/chr//' ${sample}.genotypeArray.vcf | awk '{OFS="\t"; if (!/^#/){print $1,$2-1,$2}}' \
 	> ${sample}.genotypeArray.bed
 	
+	#####
+	#####
+	#####
+	#####Add module load BEDTools statement!
 	${tooldir}/BEDTools-Version-2.11.2/bin/fastaFromBed \
 	-fi ${resdir}/b36/hs_ref_b36.fasta \
 	-bed ${sample}.genotypeArray.bed \
@@ -219,6 +235,7 @@ else
 		> ${sample}.genotypeArray.aligned_to_ref.vcf.out
 	
 		##Lift over sample.genotype_array.aligned_to_ref.vcf from build 36 to build 37
+		module load ${gatk}/${gatkVersion}}
 		perl ${tooldir}/GATK-1.0.5069/Sting/perl/liftOverVCF.pl \
 		-vcf ${sample}.genotypeArray.aligned_to_ref.vcf \
 		-gatk ${tooldir}/GATK-1.0.5069/Sting \

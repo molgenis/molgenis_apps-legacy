@@ -9,7 +9,7 @@
 #
 
 #MOLGENIS walltime=23:59:00
-#TARGETS
+#FOREACH
 
 module load bwa/${bwaVersion}
 
@@ -18,7 +18,6 @@ getFile ${leftbwaout}
 getFile ${rightbwaout}
 getFile ${leftbarcodefqgz}
 getFile ${rightbarcodefqgz}
-alloutputsexist "${samfile}"
 
 <#if seqType == "PE">bwa sampe -P \<#else>bwa samse \</#if>
 -p illumina \

@@ -14,26 +14,13 @@
 module load picard-tools/${picardVersion}
 
 getFile ${sortedbam}
+getFile ${sortedbamindex}
 getFile ${indexfile}
 <#if capturingKit != "None">
 getFile ${baitintervals}
 getFile ${targetintervals}
 <#else>
 </#if>
-
-alloutputsexist \
- "${alignmentmetrics}" \
- "${gcbiasmetrics}" \
- "${gcbiasmetricspdf}" \
- "${insertsizemetrics}" \
- "${insertsizemetricspdf}" \
- "${meanqualitybycycle}" \
- "${meanqualitybycyclepdf}" \
- "${qualityscoredistribution}" \
- "${qualityscoredistributionpdf}" \
- "${hsmetrics}" \
- "${bamindexstats}"
-
 
 java -jar -Xmx4g CollectAlignmentSummaryMetrics.jar \
 I=${sortedbam} \
