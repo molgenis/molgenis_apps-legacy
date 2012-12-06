@@ -60,3 +60,4 @@ logger.out*
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java
 runmij*
 modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/output/
+modules/compute/demo/
