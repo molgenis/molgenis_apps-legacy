@@ -4,6 +4,7 @@
 
 getFile ${createRandomSubsetsJar}
 getFile ${expandWorksheetJar}
+getFile ${studyInputPedMapChr}.ped
 
 #Create study PEDMAP Chr dir
 mkdir -p ${studyPedMapChrDir}
