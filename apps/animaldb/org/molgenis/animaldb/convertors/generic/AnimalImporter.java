@@ -421,6 +421,8 @@ public class AnimalImporter
 
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
+		// Active / Inactive --> default to inactive litter
+		String active = "Inactive";
 		for (Tuple tuple : reader)
 		{
 			Date now = new Date();
@@ -452,10 +454,15 @@ public class AnimalImporter
 			}
 			// Wean date -> convert to yyyy-mm-dd format
 			String weanDate = tuple.getString("WeanDate");
+			// Date
 			if (weanDate != null && !weanDate.equals(""))
 			{
 				Date tmpWeanDate = inputFormat.parse(weanDate);
 				weanDate = newDateOnlyFormat.format(tmpWeanDate);
+			}
+			else
+			{
+				active = "Active"; // set litter active if not weaned
 			}
 			// females weaned
 			int femWeaned = 0;
@@ -486,17 +493,11 @@ public class AnimalImporter
 			}
 			// remarks
 			String remark = tuple.getString("Remarks");
-			// To be Genotyped -> SKIP
-
-			// Find out line based on parents' genes
-			// if both (mother+father) WT offspring is WT
-			// if both C57 offspring is C57
-			// else offspring is line of parent who is not WT or C57
-			// Note: WTPer and WTCry are also WT
 
 			String lineName = this.defaultBreedingLine;
 
 			// Create a parentgroup
+			String pgActive = "Inactive";
 			int parentgroupNr = 1;
 			if (parentgroupNrMap.containsKey(lineName))
 			{
@@ -546,6 +547,8 @@ public class AnimalImporter
 			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
+					litterName, active, null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null, "DateOfBirth",
 					litterName, dob, null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
@@ -598,21 +601,25 @@ public class AnimalImporter
 					// Set birth date, line also on animal
 					// Get Active value from map; every animal has one
 
-					// FIXME try to fix nullpointer error
 					ObservedValue activeValue = activeMap.get(animalName);
-					// System.out.println("<----" + animalName);
 					System.out.println("----> " + activeValue.getTarget_Name());
-					// activeValue.getValue() + " "
-					// + activeValue.getTime());
 					if (activeValue.getTime() == null)
 					{
+						// FIXME this should be wean date
 
 						activeValue.setTime(dobDate);
 					}
 					activeMap.remove(animalName);
 					valuesToAddList.add(activeValue);
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
-							"DateOfBirth", animalName, dob, null));
+
+					// dob is set from animals, not from litters
+					// valuesToAddList.add(ct.createObservedValue(invName,
+					// appMap.get("SetDateOfBirth"), now, null,
+					// "DateOfBirth", animalName, dob, null));
+
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeandDate"), now, null,
+							"WeanDate", animalName, weanDate, null));
+
 					if (!lineName.equals("unknown"))
 					{
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
