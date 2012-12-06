@@ -9,14 +9,11 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=4
-#TARGETS
+#FOREACH
 
 module load picard-tools/${picardVersion}
 
 getFile ${bamfile}
-alloutputsexist \
- "${sortedbam}" \
- "${sortedbamindex}"
 
 java -jar -Xmx3g SortSam.jar \
 INPUT=${bamfile} \

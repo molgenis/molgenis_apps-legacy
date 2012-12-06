@@ -9,11 +9,9 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=6
+#FOREACH
 
-inputs "${realignedbam}"
-alloutputsexist \
- "${matefixedbam}" \
- "${matefixedbamindex}"
+getFile ${realignedbam}
 
 java -jar -Xmx6g \
 ${fixmateinformationjar} \
@@ -29,3 +27,6 @@ OUTPUT=${matefixedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
+
+putFile ${matefixedbam}
+putFile ${matefixedbamindex}

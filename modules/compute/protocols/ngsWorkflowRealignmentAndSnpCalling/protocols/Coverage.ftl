@@ -11,13 +11,17 @@
 #MOLGENIS walltime=65:59:00 mem=12 cores=1
 #FOREACH externalSampleID
 
-inputs "${mergedbam}"
-alloutputsexist "${sample}.coverage.csv" \
-"${samplecoverageplotpdf}" \
-"${sample}.coverage.Rdata"
+##EXPORT R_LIBS AGAIN? #SAME QUESTION AS IN ANALYZE_COVARIATES.FTL
 
-export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_LIBS=${R_LIBS} 
+getFile ${mergedbam}
+getFile ${mergedbamindex}
+getFile ${targetintervals}
+
+getFile ${coveragescript}
+
+module load ${rBin}/${rVersion}
+
+export R_LIBS=${R_LIBS}
 
 Rscript ${coveragescript} \
 --bam ${mergedbam} \
@@ -26,3 +30,7 @@ Rscript ${coveragescript} \
 --csv ${sample}.coverage.csv \
 --pdf ${samplecoverageplotpdf} \
 --Rcovlist ${sample}.coverage.Rdata
+
+putFile ${sample}.coverage.csv
+putFile ${samplecoverageplotpdf}
+putFile ${sample}.coverage.Rdata

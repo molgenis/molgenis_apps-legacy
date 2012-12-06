@@ -9,12 +9,11 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=3
-#TARGETS
+#FOREACH
 
 module load picard-tools/${picardVersion}
 
 getFile ${samfile}
-alloutputsexist "${bamfile}"
 
 java -jar -Xmx3g SamFormatConverter.jar \
 INPUT=${samfile} \
