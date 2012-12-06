@@ -131,7 +131,6 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 
 		// search box
 		style += "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/qtlfinder.css\">\n";
-		style += "<script type=\"text/javascript\" src=\"etc/js/clear-default-text.js\"></script>\n";
 
 		// plain style
 		style += "<link rel=\"stylesheet\" style=\"text/css\" href=\"jquery/superfish/colors.css\">\n";
