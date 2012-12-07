@@ -22,7 +22,10 @@ Generate your own in three steps:
      <editor> molgenis_ui.xml
 
 3) Run the MOLGENIS generator, after that you're able to use your web 
-application.
+application. This depends per app, but in general:
+
+     ant -f build_[APP].xml clean-generate-compile-test
+     ant -f build_[APP].xml run
 
 MOLGENIS applications
 ---------------------
