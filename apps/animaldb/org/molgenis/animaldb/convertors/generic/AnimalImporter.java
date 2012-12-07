@@ -393,21 +393,16 @@ public class AnimalImporter
 			// FIXME: add not null checks!!!
 			if (dobDateString != null)
 			{
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), remDate, null,
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
 						"DateOfBirth", animalName, dobDateString, null));
 			}
-
-			// Ear Code -> Earmark (R -> 1 r, L -> 1 l, RL -> 1 r 1 l)
-			// String earmark = tuple.getString("Ear Code");
-			// if (earmark != null)
-			// {
-			// if (earmark.equals("R")) earmark = "1 r";
-			// if (earmark.equals("L")) earmark = "1 l";
-			// if (earmark.equals("RL")) earmark = "1 r 1 l";
-			// valuesToAddList.add(ct.createObservedValue(invName,
-			// appMap.get("SetEarmark"), now, null, "Earmark",
-			// animalName, earmark, null));
-			// }
+			String weanDateString = tuple.getString("WeanDate");
+			// FIXME: add not null checks!!!
+			if (weanDateString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
+						animalName, weanDateString, null));
+			}
 
 			// ResponsibleResearcher
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), now, null,
