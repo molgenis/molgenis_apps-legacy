@@ -14,6 +14,15 @@
 getFile ${mergedbam}
 getFile ${mergedbamindex}
 getFile ${indexfile}
+getFile ${indexfile}.amb
+getFile ${indexfile}.ann
+getFile ${indexfile}.bwt
+getFile ${indexfile}.fai
+getFile ${indexfile}.pac
+getFile ${indexfile}.rbwt
+getFile ${indexfile}.rpac
+getFile ${indexfile}.rsa
+getFile ${indexfile}.sa
 
 java -Xmx8g -jar ${genomeAnalysisTKjar} \
 -l INFO \
