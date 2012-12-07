@@ -11,7 +11,7 @@
 #MOLGENIS walltime=35:59:00 mem=4
 #FOREACH
 
-module load picard-tools/${picardVersion}
+module load ${picardBin}/${picardVersion}
 
 getFile ${sortedbam}
 getFile ${sortedbamindex}
