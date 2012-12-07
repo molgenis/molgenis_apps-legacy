@@ -11,9 +11,10 @@
 #MOLGENIS walltime=23:59:00 mem=6 cores=2
 #FOREACH externalSampleID
 
-inputs <#list sortedrecalbam as srb> "${srb}" </#list>
-alloutputsexist "${mergedbam}" \
-"${mergedbamindex}"
+getFile <#list sortedrecalbam as srb>${srb}</#list>
+getFile <#list sortedrecalbamindex as srbidx>${srbidx}</#list>
+
+module load ${picardBin}/${picardVersion}
 
 <#if sortedrecalbam?size == 1>
 	#cp ${sortedrecalbam[0]} ${mergedbam}
@@ -37,3 +38,6 @@ alloutputsexist "${mergedbam}" \
 	MAX_RECORDS_IN_RAM=1000000 \
 	TMP_DIR=${tempdir}
 </#if>
+
+putFile ${mergedbam}
+putFile ${mergedbamindex}
