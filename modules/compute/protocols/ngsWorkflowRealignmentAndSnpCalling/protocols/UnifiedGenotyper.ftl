@@ -11,22 +11,24 @@
 #MOLGENIS walltime=46:00:00 mem=8 cores=5
 #FOREACH externalSampleID
 
-inputs "${mergedbam}" 
-inputs "${indexfile}"
-inputs "${dbsnprod}"
-alloutputsexist \
- "${snpsvcf}" \
- "${snpsvcf}.metrics"
+getFile ${mergedbam}
+getFile ${mergedbamindex}
+getFile ${indexfile}
+getFile ${dbsnprod}
+getFile ${dbsnprod}.idx
 
 java -Xmx8g -Djava.io.tmpdir=${tempdir} -XX:+UseParallelGC -XX:ParallelGCThreads=1 -jar \
 ${genomeAnalysisTKjar} \
 -l INFO \
 -T UnifiedGenotyper \
 -I ${mergedbam} \
---out ${sample}.snps.vcf \
+--out ${snpsvcf} \
 -R ${indexfile} \
 -D ${dbsnprod} \
 -stand_call_conf 30.0 \
 -stand_emit_conf 10.0 \
 -nt 4 \
---metrics_file ${sample}.snps.vcf.metrics
+--metrics_file ${snpsvcf}.metrics
+
+putFile ${snpsvcf}
+putFile ${snpsvcf}.metrics

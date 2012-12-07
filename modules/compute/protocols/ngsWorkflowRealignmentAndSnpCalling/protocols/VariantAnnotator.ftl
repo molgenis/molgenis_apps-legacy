@@ -11,14 +11,15 @@
 #MOLGENIS walltime=45:00:00 mem=10
 #FOREACH externalSampleID
 
-inputs "${snpeffjar}"
-inputs "${snpeffconfig}" 
-inputs "${snpsgenomicannotatedvcf}"
-inputs "${mergedbam}"
-inputs "${dbsnpvcf}"
-inputs "${indexfile}"
-<#if capturingKit != "None">inputs "${baitsbed}"</#if>
-alloutputsexist "${snpeffsummaryhtml}" "${snpeffintermediate}" "${snpsfinalvcf}"
+getFile ${snpeffjar}
+getFile ${snpeffconfig} 
+getFile ${snpsgenomicannotatedvcf}
+getFile ${mergedbam}
+getFile ${mergedbamindex}
+getFile ${dbsnpvcf}
+getFile ${dbsnpvcf}.idx
+getFile ${indexfile}
+<#if capturingKit != "None">getFile ${baitsbed}</#if>
 
 ####Create snpEFF annotations on original input file####
 java -Xmx4g -jar ${snpeffjar} \
@@ -46,3 +47,7 @@ java -jar -Xmx4g ${genomeAnalysisTKjar1411} \
 --variant ${snpsgenomicannotatedvcf} \<#if capturingKit != "None">
 -L ${baitsbed} \</#if>
 -o ${snpsfinalvcf}
+
+putFile ${snpeffsummaryhtml}
+putFile ${snpeffintermediate}
+putFile ${snpsfinalvcf}

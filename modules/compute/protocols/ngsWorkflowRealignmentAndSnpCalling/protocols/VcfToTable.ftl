@@ -11,8 +11,12 @@
 #MOLGENIS walltime=00:40:00
 #FOREACH externalSampleID
 
-inputs "${snpsfinalvcf}"
-alloutputsexist "${snpsfinalvcftable}" "${snpsfinalvcftabletype}" "${snpsfinalvcftableclass}" "${snpsfinalvcftableimpact}"
+getFile ${snpsfinalvcf}
+
+getFile ${vcf2tablepy}
+getFile ${snpannotationstatspl}
+
+module load ${pythonBin}/${pythonVersion}
 
 ####Transform VCF file into tabular file####
 python ${vcf2tablepy} \
@@ -41,3 +45,8 @@ perl ${snpannotationstatspl} \
 -snptypes DOWNSTREAM,INTERGENIC,INTRAGENIC,INTRON,NON_SYNONYMOUS_CODING,NON_SYNONYMOUS_START,SPLICE_SITE_ACCEPTOR,SPLICE_SITE_DONOR,START_GAINED,START_LOST,STOP_GAINED,STOP_LOST,SYNONYMOUS_CODING,SYNONYMOUS_STOP,UPSTREAM,UTR_3_PRIME,UTR_5_PRIME \
 -snpclasses MISSENSE,NONSENSE,NONE,SILENT \
 -snpimpacts HIGH,LOW,MODERATE,MODIFIER
+
+putFile ${snpsfinalvcftable}
+putFile ${snpsfinalvcftabletype}
+putFile ${snpsfinalvcftableclass}
+putFile ${snpsfinalvcftableimpact}
