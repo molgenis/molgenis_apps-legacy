@@ -4,18 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -119,63 +119,79 @@ public class UploadWizardPage extends WizardPage
 		getWizard().setFieldsUnknown(xlsValidator.getFieldsUnknown());
 	}
 
-	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws BiffException, IOException,
-			DatabaseException
+	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws IOException,
+			DatabaseException, InvalidFormatException
 	{
-
-		boolean dataSetExistsInDb = false;
-
-		// get dataset entity names
-
-		// get sheet names
-		String[] sheetNames = Workbook.getWorkbook(file).getSheetNames();
-		List<String> dataSetSheets = new ArrayList<String>();
 		Map<String, Boolean> dataSetValidationMap = new LinkedHashMap<String, Boolean>();
-		for (String sheetName : sheetNames)
+
+		Workbook workbook = WorkbookFactory.create(file);
+
+		// Get the dataset identifiers from the 'Dataset' sheet
+		Sheet datasetSheet = workbook.getSheet("dataset");
+		int datasetSheetRows = datasetSheet == null ? 0 : datasetSheet.getPhysicalNumberOfRows();
+
+		List<String> datasetIdentifiers = new ArrayList<String>();
+		if (datasetSheetRows > 1)
 		{
-			if (sheetName.toLowerCase().startsWith("dataset_"))
+			Row row = datasetSheet.getRow(0);
+			if (row != null)
 			{
-				if (db.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, sheetName)) != null)
+				for (int col = 0; col < row.getPhysicalNumberOfCells(); col++)
 				{
-					dataSetExistsInDb = true;
-					String dataSetName = sheetName.substring("dataset_".length());
-					dataSetValidationMap.put(dataSetName, true);
-				}
-				String dataSetName = sheetName.substring("dataset_".length());
-				dataSetSheets.add(dataSetName);
-
-			}
-		}
-
-		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
-		if (sheet == null && dataSetExistsInDb == false) return null;
-
-		if (dataSetExistsInDb == false)
-		{
-			int rows = sheet.getRows();
-			if (rows <= 1) return Collections.emptyMap();
-
-			List<String> nameList = new ArrayList<String>();
-			Cell[] cells = sheet.getRow(0);
-			for (int col = 0; col < cells.length; ++col)
-			{
-				String colStr = cells[col].getContents();
-				if (colStr.toLowerCase().trim().equals("identifier"))
-				{
-					for (int row = 1; row < rows; ++row)
+					Cell cell = row.getCell(col);
+					if (cell != null)
 					{
-						String datasetName = sheet.getCell(col, row).getContents();
-						nameList.add(datasetName.toLowerCase());
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+
+						if ((cell.getStringCellValue() != null)
+								&& cell.getStringCellValue().trim().equalsIgnoreCase("identifier"))
+						{
+							for (int rowNum = 1; rowNum < datasetSheetRows; rowNum++)
+							{
+								Row r = datasetSheet.getRow(rowNum);
+								if (r != null)
+								{
+									cell = r.getCell(col);
+									if (cell != null)
+									{
+										cell.setCellType(Cell.CELL_TYPE_STRING);
+										if (cell.getStringCellValue() != null)
+										{
+											datasetIdentifiers.add(cell.getStringCellValue().toLowerCase());
+										}
+									}
+								}
+
+							}
+						}
 					}
 				}
 			}
+		}
 
-			for (String dataSetSheet : dataSetSheets)
+		// Check the matrix sheets
+		for (int i = 0; i < workbook.getNumberOfSheets(); i++)
+		{
+			String sheetName = workbook.getSheetName(i);
+
+			if (sheetName.toLowerCase().startsWith("dataset_"))
 			{
-				dataSetValidationMap.put(dataSetSheet, nameList.contains(dataSetSheet));
+				String identifier = sheetName.substring("dataset_".length());
+
+				if (!db.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, identifier)).isEmpty())
+				{
+					// Dataset exists in database, so can be imported
+					dataSetValidationMap.put(identifier, true);
+				}
+				else
+				{
+					// Dataset does not exist in db, check if the identifier is
+					// in the 'Dataset' sheet
+					dataSetValidationMap.put(identifier, datasetIdentifiers.contains(identifier));
+				}
 			}
 		}
+
 		return dataSetValidationMap;
 	}
-
 }
