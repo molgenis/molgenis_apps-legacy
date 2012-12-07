@@ -9,26 +9,15 @@
 #
 
 #MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
-#TARGETS
+#FOREACH
 
 module load fastqc/${fastqcVersion}
 
 <#if seqType == "SR">
      getFile ${srbarcodefqgz}
-	 alloutputsexist \
-	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
 <#else>
     getFile "${leftbarcodefqgz}"
     getFile "${rightbarcodefqgz}"
-	alloutputsexist \
-	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
-	 "${rightfastqczip}" \
-	 "${rightfastqcsummarytxt}" \
-	 "${rightfastqcsummarylog}"
 </#if>
 
 # first make logdir...

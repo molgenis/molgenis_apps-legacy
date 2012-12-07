@@ -7,6 +7,7 @@
 ###### Renaming because we call another protocol:
 #inputs:
 <#assign sortedbam=mergedbam />
+<#assign sortedbamindex=mergedbamindex />
 
 #outputs:
 <#assign alignmentmetrics=samplealignmentmetrics />

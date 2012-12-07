@@ -11,19 +11,25 @@
 #MOLGENIS walltime=66:00:00 nodes=1 cores=1 mem=12
 #FOREACH externalSampleID
 
-inputs "${mergedbam}" "${mergedbamindex}" "${indexfile}"
-<#if capturingKit != "None">inputs "${targetintervals}"</#if>
-alloutputsexist "${coveragegatk}" \
-"${coveragegatk}.sample_cumulative_coverage_counts" \
-"${coveragegatk}.sample_cumulative_coverage_proportions" \
-"${coveragegatk}.sample_interval_statistics" \
-"${coveragegatk}.sample_interval_summary" \
-"${coveragegatk}.sample_statistics" \
-"${coveragegatk}.sample_summary" \
-"${coveragegatk}.cumulative_coverage.pdf"
+getFile ${mergedbam}
+getFile ${mergedbamindex}
+getFile ${indexfile}
+getFile ${indexfile}.amb
+getFile ${indexfile}.ann
+getFile ${indexfile}.bwt
+getFile ${indexfile}.fai
+getFile ${indexfile}.pac
+getFile ${indexfile}.rbwt
+getFile ${indexfile}.rpac
+getFile ${indexfile}.rsa
+getFile ${indexfile}.sa
 
-export PATH=${JAVA_HOME}/bin:<#noparse>${PATH}</#noparse>
-export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
+getFile ${cumcoveragescriptgatk}
+
+<#if capturingKit != "None">getFile ${targetintervals}</#if>
+
+module load ${rBin}/${rVersion}
+
 export R_LIBS=${R_LIBS}
 
 java -Djava.io.tmpdir=${tempdir} -Xmx12g -jar \
@@ -41,3 +47,12 @@ ${rscript} ${cumcoveragescriptgatk} \
 --out ${coveragegatk}.cumulative_coverage.pdf \
 --max-depth 100 \
 --title "Cumulative coverage ${externalSampleID}"
+
+putFile ${coveragegatk}
+putFile ${coveragegatk}.sample_cumulative_coverage_counts
+putFile ${coveragegatk}.sample_cumulative_coverage_proportions
+putFile ${coveragegatk}.sample_interval_statistics
+putFile ${coveragegatk}.sample_interval_summary
+putFile ${coveragegatk}.sample_statistics
+putFile ${coveragegatk}.sample_summary
+putFile ${coveragegatk}.cumulative_coverage.pdf

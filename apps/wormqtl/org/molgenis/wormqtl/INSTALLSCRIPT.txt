@@ -1,0 +1,47 @@
+# Installing WormQTL, the (mostly) automated way, for Linux:
+
+# git checkouts in new dir
+mkdir wormqtl
+cd wormqtl
+git clone git://github.com/joerivandervelde/molgenis.git
+git clone git://github.com/joerivandervelde/molgenis_apps.git
+
+# download data
+wget https://github.com/downloads/joerivandervelde/files/wormqtl_age_par_geneexrp_suppl1.zip
+wget https://github.com/downloads/joerivandervelde/files/wormqtl_datasets.zip
+wget https://github.com/downloads/joerivandervelde/files/wormqtl_set1_annotations_minusUSAprobes.xls
+
+# extract and move data to storage location
+mkdir data
+mkdir data/xqtl_panacea
+unzip wormqtl_datasets.zip
+unzip wormqtl_age_par_geneexrp_suppl1.zip
+mv binarydatamatrix/ data/xqtl_panacea/
+mv investigationfile/ data/xqtl_panacea/
+mv imports/ data/xqtl_panacea/
+mv wormqtl_set1_annotations_minusUSAprobes.xls data/xqtl_panacea/imports
+mv *.bin data/xqtl_panacea/binarydatamatrix/
+rm -rf __MACOSX/
+rm wormqtl_*.zip
+
+# your storage path (important)
+cd data/
+pwd
+
+# build and start app
+cd molgenis_apps
+ant -f build_wormqtl.xml clean-generate-compile
+ant -f build_wormqtl.xml runOn -Dport=8080
+
+# from this point on it's point & click..
+# 1. go to the web address you see in your terminal, it should say 'Database setup success!'
+# 2. go to the address myserver:myport/xqtl_panacea/autohideloginswitch and login with admin/admin
+# 3. fill in your storage path and click 'Load', the message 'WormQTL specific annotation import and data relink succeeded' should appear
+# 4. you're now basically done, but: change the investigation name from 'Panacea' into 'Public', and change the user passwords
+
+# recommended: start/stop scripts
+# -> start.sh
+cd molgenis_apps
+nohup ant -f build_wormqtl.xml runOn -Dport=8080 &
+# -> stop.sh
+kill -9 `lsof -i :8080 -t`

@@ -141,7 +141,7 @@ recalbam,${fileWithIndexID}.recal.bam,(samsortrecal),,
 sortedrecalbam,${fileWithIndexID}.recal.sorted.bam,(samsortrecal),,
 sortedrecalbamindex,${sortedrecalbam}.bai,(samsortrecal),,
 mergesamfilesjar,${picard}/MergeSamFiles.jar,(MergeBam),,
-externalSampleID,,(MergeBam),,"project,capturingKit,arrayFile,arrayID"
+externalSampleID,,(MergeBam),,"project,capturingKit,arrayFile,arrayID,seqType"
 mergedbam,${intermediatedir}/${externalSampleID}.${indexfileID}.merged.bam,(MergeBam),,externalSampleID
 mergedbamindex,${mergedbam}.bai,(MergeBam),,mergedbam
 sortedrecalcovariatecsv,${fileWithIndexID}.recal.covariate.table.csv,,,

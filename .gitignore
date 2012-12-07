@@ -59,3 +59,5 @@ logger.out*
 /.settings/org.eclipse.core.resources.prefs
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java
 runmij*
+modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/output/
+modules/compute/demo/
