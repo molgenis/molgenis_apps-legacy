@@ -14,6 +14,8 @@
 getFile <#list sortedrecalbam as srb>${srb}</#list>
 getFile <#list sortedrecalbamindex as srbidx>${srbidx}</#list>
 
+module load ${picardBin}/${picardVersion}
+
 <#if sortedrecalbam?size == 1>
 	#cp ${sortedrecalbam[0]} ${mergedbam}
 	#cp ${sortedrecalbam[0]}.bai ${mergedbamindex}
