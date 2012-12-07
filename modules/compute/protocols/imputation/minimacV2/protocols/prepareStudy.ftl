@@ -21,6 +21,15 @@ ${stage} plink/${plinkversion}
 #Create fam file from PED file
 awk '{print $1,$2,"0","0","1","2"}' ${studyInputPedMapChr}.ped > ${studyPedMapChr}.fam
 
+echo -e '\n Testing java version\n'
+java -version
+
+echo -e '\n Available memory:\n'
+free -m
+
+echo -e '\n java -Xmx10G -version \n' 
+java -Xmx10G -version
+
 #Chunk study map file
 java -jar ${createRandomSubsetsJar} \
 -c ${sampleChunkSize} \
