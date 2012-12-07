@@ -6,6 +6,7 @@ getFile ${createRandomSubsetsJar}
 getFile ${expandWorksheetJar}
 getFile ${studyInputPedMapChr}.ped
 getFile ${studyInputPedMapChr}.map
+getFile ${chunkChromosomeBin}
 
 #Create study PEDMAP Chr dir
 mkdir -p ${studyPedMapChrDir}
