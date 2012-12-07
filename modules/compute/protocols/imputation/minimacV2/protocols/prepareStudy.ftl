@@ -113,7 +113,7 @@ do
 
 	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.map
 	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.dat
-	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.ped
+#	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.ped
 	
 	
 	###START ITERATION FOR CHROMOSOME CHUNKING###
