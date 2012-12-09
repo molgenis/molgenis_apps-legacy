@@ -1,0 +1,201 @@
+<molgenis name="org.molgenis">
+	<module name="observ">
+		<description>Absolute minimal v3 model without decorators, labels,
+			hidden, or other (model-technically unneeded) modifiers for now.
+		</description>
+
+		<entity name="Autoid" abstract="true">
+			<field name="id" type="autoid" />
+		</entity>
+
+		<entity name="Identifiable" implements="Autoid" abstract="true">
+			<field name="identifier" type="string" />
+			<field name="name" type="string" />
+			<unique fields="identifier" />
+			<unique fields="name,identifier" />
+		</entity>
+
+		<entity name="Concept" implements="Identifiable">
+			<description>
+				Concepts as abstract objects, where objects are the
+				constituents of
+				propositions that mediate between thought, language,
+				and referents.
+				In Observ-OMX, concepts can be defined on any
+				abstraction level and
+				are typically specified via the Target and
+				Feature classes, or more
+				specific subclasses thereof, for example
+				'Individual' as a subclass
+				of Target and 'Marker' as a subclass of
+				Feature.
+
+				Because Concept is a superclass of Feature and Target, the
+				latter can be
+				used interchangeably via references on the level of
+				Concept. This
+				enables e.g. applying a Feature to a Feature to add
+				'runtime
+				attributes' or create Target versus Target data in the case
+				of
+				correlation matrices.
+
+				General examples of Concepts: "Patient",
+				"Height", "Marker pkP1050",
+				"Panel", "Heart rate", "Sample". Examples
+				of concepts on different
+				abstraction levels: "Gene", "Gene
+				expression", "Gene HOXD9", or
+				"Blood pressure", "Systolic blood
+				pressure".
+			</description>
+			<field name="description" type="text" nillable="true"
+				description="Rudimentary meta data about this concept. Use of ontology 
+					terms references to establish unambigious descriptions is recommended." />
+		</entity>
+
+		<entity name="Target" extends="Concept">
+			<description>A physical object or collection thereof. They are
+				typically subjects for observation of particular features.
+			</description>
+		</entity>
+
+		<entity name="Feature" extends="Concept">
+			<description>A characteristic or quality belonging to a feature or
+				target.
+			</description>
+		</entity>
+
+
+		<entity name="Method" implements="Identifiable">
+			<description>The characterization of the role or the particular
+				procedure of involvement for a Concept in an ObservationSet. The
+				role 'target' replaces the old target XREF in value/ObservationSet
+				and can consist of multiple targets that together form one (possibly
+				unique) target.
+			</description>
+
+			<field name="role" type="enum" enum_options="[target, context]" />
+
+		</entity>
+
+		<entity name="PermittedValue" implements="Autoid">
+			<description>Specification of what type of value are acceptable when
+				adding an ObservedValue for the Method this PermittedValue refers
+				to. This includes more precise constraints such as the allowed range
+				of numerical data, choosable options for categorical data, or
+				regular expression validation for textual data. For categorical
+				data, multiple PermittedValue records each containing a single
+				string value refers to a Method. For XREF data, the entity type
+				which is the most specific root should be specified. For example:
+				specifying org.molgenis.omx.Individual allows for XREFs to all
+				Individuals, plus all subclasses of this type.
+			</description>
+
+			<field name="dataType" type="enum" enum_options="[string, decimal, integer, xref]" />
+
+
+
+		</entity>
+
+		<entity name="Protocol" extends="Target">
+			<description>The Protocol class defines parameterizable descriptions
+				of (analysis)methods. Examples of protocols are: Questionaires,
+				SOPs, assay platforms, statistical analyses, etc. Each protocol has
+				a unique identifier. Protocol has an association to OntologyTerm to
+				represent the type of protocol.
+			</description>
+			<field name="methods" type="mref" nillable="true" xref_entity="Method"
+				description="Methods of observing a feature or describing the role of a target in this protocol." />
+			<field name="protocolType" nillable="true" type="xref"
+				xref_entity="OntologyTerm" description="Classification of protocol." />
+		</entity>
+
+		<entity name="DataSet" extends="Target">
+			<description>A data set is a collection of data, usually presented in
+				tabular form. Each column represents a particular variable. Each row
+				corresponds to a given member of the data set in question. It lists
+				values for each of the variables, such as height and weight of an
+				object. The variables included correspond to the ones in the
+				protocol that this data set belongs to. Any data set and can
+				therefore be thought of as an instance of the protocol it belongs
+				to, like rows in a database are instances of their table definition.
+			</description>
+			<field name="protocol" type="xref" xref_entity="Protocol" />
+		</entity>
+
+		<entity name="ObservationSet" implements="Autoid">
+			<description>A single row of values in a DataSet. The Methods of the
+				ObservedValues referring to this ObservationSet should correspond to
+				the Methods defined in the Protocol of the DataSet this
+				ObservationSet belongs to.
+			</description>
+			<field name="partOfDataSet" type="xref" xref_entity="DataSet"
+				description="The DataSet this ObservationSet is part of." />
+			<field name="time" type="datetime"
+				description="The date and time this ObservationSet was measured"
+				nillable="true" />
+			<unique fields="partOfDataSet,time" />
+		</entity>
+
+		<entity name="ObservedValue" implements="Autoid" abstract="true">
+			<description>The outcome of an observation on a particular concept.
+				Belongs to an ObservationSet, which is in essence a row in a
+				DataSet.
+			</description>
+			<field name="observationSet" type="xref" xref_entity="ObservationSet" />
+			<field name="method" type="xref" xref_entity="Method" />
+			<unique fields="observationSet,method" />
+		</entity>
+
+		<entity name="StringObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is a string of text.
+			</description>
+			<field name="value" type="string" />
+		</entity>
+
+		<entity name="ListObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is a list of strings.
+			</description>
+			<!--field name="value" type="list[string]" / -->
+		</entity>
+
+		<entity name="DecimalObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is a decimal number.
+			</description>
+			<field name="value" type="decimal" />
+		</entity>
+
+		<entity name="IntegerObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is an integer number.
+			</description>
+			<field name="value" type="int" />
+		</entity>
+
+		<entity name="XrefObservedValue" implements="ObservedValue">
+			<description>An observation for which the value refers to a Concept
+				in the database.
+			</description>
+			<field name="value" type="xref" xref_entity="Concept" />
+		</entity>
+
+
+		<entity name="OntologyTerm" implements="Identifiable">
+			<description>
+
+			</description>
+			<field name="accession" type="string" nillable="true"
+				description="A accession that uniquely identifies the ontology (typically an acronym). E.g. GO, MeSH, HPO." />
+			<field name="term" type="string" nillable="true"
+				description="The accession number assigned to the ontology term in its source ontology. If empty it is assumed to be a locally defined term. " />
+			<field name="definition" type="string" nillable="true"
+				description="The definition of the term." />
+			<field name="URI" type="hyperlink" nillable="true"
+				description="A URI that references the location of the ontology." />
+			<unique fields="accession,term"
+				description="The term is unique within an accession." />
+		</entity>
+
+
+	</module>
+</molgenis>
