@@ -1,7 +1,7 @@
 Imputation using Molgenis Compute
 ============================
   
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui.
+
 
 Content
 =======
@@ -13,7 +13,8 @@ Content
 5.	Imputation using Impute2
 6.	Imputation using Beagle
 7.	Imputation using Mach
-8.	Appendix  
+8.	Imputation using minimacV2
+9.	Appendix  
 
   
   
@@ -281,7 +282,7 @@ To run this pipeline the following tools, scripts and datasets are required:
 * ConcatWorksheets (v. V1.0)
 * expandWorksheet (v. V1.1)  
 **Note1: Version numbers are tested**  
-**Note2: Download links can be found in the appendix**
+**Note2: Download links can be found in chapter 9 "Appendix""**
   
 We recommend to install all tools in one directory in a structure of *tools/<toolname>/*, this way only the `"$tooldir"` variable in the parameters.csv needs to be changed.
   
@@ -388,7 +389,25 @@ The output is now ready for further analysis.
   
   
 ####8.4 Output  
-The pipeline produces several files which can be used for downstream analysis. The following files are produced: 
+The pipeline produces several files which can be used for downstream analysis. The following files are produced:  
+  
+  
+  
+####9 Appendix  
+  
+| Tool | Downloadlink |  
+| :----: | :----: |  
+| ChunkChromosome | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ChunkChromosome-2012-08-28/ |  
+| minimac | http://www.bbmriwiki.nl/svn/ebiogrid/modules/minimac/beta-2012.10.3/minimac.beta-2012.10.3.tgz |  
+| mach | http://www.bbmriwiki.nl/svn/ebiogrid/modules/mach/1.0.18/mach.1.0.18.Linux.tgz |  
+| plink | http://www.bbmriwiki.nl/svn/ebiogrid/modules/plink/1.07-x86_64/plink-1.07-x86_64.tgz |  
+| plink1.08 | http://www.bbmriwiki.nl/svn/ebiogrid/modules/plink/1.08/plink-1.08.tgz |  
+| ImputationTool | Link Here |  
+| ConcatWorksheets | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConcatWorksheetsV1.0/ |  
+| ExpandWorksheet | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ExpandWorksheetWithMergeWorksheetV1.1/ |  
+  
+Text
+
 
 
 
