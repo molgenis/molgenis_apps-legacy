@@ -31,8 +31,8 @@ This chapter shortly describes the contents of the Molgenis Compute distro. EXTE
 ####2.1 Installation of Molgenis Compute
 The first thing to do is unpacking the Molgenis Compute distro. To unpack the distro execute the following command:  
   
->unzip molgenis_compute-<version>.zip  
->cd molgenis_compute-<version>  
+>unzip molgenis_compute-\<version\>.zip  
+>cd molgenis_compute-\<version\>  
   
   
 ####2.2 Imputation overview  
