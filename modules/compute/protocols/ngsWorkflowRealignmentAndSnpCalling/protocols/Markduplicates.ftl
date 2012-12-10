@@ -33,5 +33,5 @@ MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
 
 putFile ${dedupbam}
-putfile ${dedupbamindex}
+putFile ${dedupbamindex}
 putFile ${dedupmetrics}
