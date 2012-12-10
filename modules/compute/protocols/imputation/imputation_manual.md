@@ -302,13 +302,14 @@ The columns explained:
 * chr: the chromosome to run the analysis on  
 * autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. **Note: This only works if in your cluster setup submission from nodes is allowed.**  
   
+  
 ####8.3 Running an analysis  
 The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
   
-#####8.3.1 Step 1: preparing the study data  
+#####Step 1: preparing the study data  
 After preparing the study PED/MAP files as described in chapter 3 and preparing the reference data as described in chapter 4 one needs to change the following parameter values in the `parametersMinimac.csv`:  
   
-| Name | defaultValue |  
+| name | defaultValue |  
 | :----: | :----: |  
 | scheduler | PBS/SGE/BSUB/GRID, depending on the backend |  
 | stage | The command to load a module eg "module load" |  
@@ -331,7 +332,38 @@ All folders and jobs can be found in the output directory specified by the user.
   
 `cd /your/output/directory/here/`  
 `sh submit.sh`  
-**Note: Alternatively the generated s00_\*.sh scripts can be executed by hand**
+**Note: Alternatively the generated s00_\*.sh scripts can be executed by hand.**  
+  
+During this preparation the study data chunks and chromosome chunks are automatically added to the existing worksheet leading to a new worksheet named `concattedChunkWorksheet.csv`. This worksheet has to be used during step 2 of the pipeline.  
+  
+#####Step 2: phasing the study data  
+During this step the phasing takes place. If in the `worksheet.csv` the value `TRUE` was set in the `autostart` column the jobs to start this analysis are automatically submitted. If the value is set to `FALSE` one can generate and submit the jobs by executing the following commands:  
+  
+>sh molgenis_compute.sh \\  
+>-inputdir=. \\  
+>-worksheet=/your/output/directory/here/../concattedChunkWorksheet.csv" \\  
+>-parameters=protocols/imputation/minimacV2/parametersMinimac.csv \\  
+>-workflow=protocols/imputation/minimacV2/protocols//../workflowMinimacStage2.csv \\  
+>-protocols=protocols/imputation/minimacV2/protocols/ \\  
+>-outputdir=/your/output/directory/here/../phasing/ \\  
+>-id=runXX  
+  
+`cd /your/output/directory/here/../phasing`  
+`sh submit.sh`  
+  
+**Note: Alternatively one can copy/paste the generated molgenis_compute execution command from the generated script named `s01_prepare_s01_FALSE.sh`.**  
+  
+Text
+
+
+
+
+
+
+
+
+
+
 
 
   
