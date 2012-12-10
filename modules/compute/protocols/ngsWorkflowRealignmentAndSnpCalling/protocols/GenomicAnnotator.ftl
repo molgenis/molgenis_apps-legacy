@@ -11,11 +11,21 @@
 #MOLGENIS walltime=24:00:00 mem=10
 #FOREACH externalSampleID
 
-inputs "${indexfile}"
-inputs "${baitsbed}"
-inputs "${dbsnpSNPstxt}"
-inputs "${snpsvcf}"
-alloutputsexist "${snpsgenomicannotatedvcf}"
+getFile ${indexfile}
+getFile ${indexfile}.amb
+getFile ${indexfile}.ann
+getFile ${indexfile}.bwt
+getFile ${indexfile}.fai
+getFile ${indexfile}.pac
+getFile ${indexfile}.rbwt
+getFile ${indexfile}.rpac
+getFile ${indexfile}.rsa
+getFile ${indexfile}.sa
+getFile ${baitsbed}
+getFile ${dbsnpSNPstxt}
+getFile ${dbsnpSNPstxt}.idx
+getFile ${snpsvcf}
+getFile ${snpsvcf}.idx
 
 #####Annotate with dbSNP135 SNPs only#####
 java -Xmx10g -jar ${genomeAnalysisTKjar} \
@@ -32,3 +42,5 @@ dbSNP135.RV,dbSNP135.S3D,dbSNP135.SAO,dbSNP135.SCS,dbSNP135.SLO,dbSNP135.SSR,dbS
 dbSNP135.VLD,dbSNP135.VP,dbSNP135.WGT,dbSNP135.WTD,dbSNP135.dbSNPBuildID \
 -o ${snpsgenomicannotatedvcf} \
 -L ${baitsbed}
+
+putFile ${snpsgenomicannotatedvcf}

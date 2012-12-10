@@ -8,7 +8,7 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=00:05:00
+#MOLGENIS walltime=12:34:56 mem=111111 cores=222222
 #FOREACH project
 #DOCUMENTATION Documentation of QCReport.ftl, ${getStatisticsScript}
 

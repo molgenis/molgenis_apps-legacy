@@ -9,13 +9,24 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=10
+#FOREACH
 
-inputs "${dedupbam}" 
-inputs "${indexfile}" 
-inputs "${dbsnprod}"
-inputs "${pilot1KgVcf}"
-alloutputsexist \
- "${realignTargets}"
+getFile ${dedupbam}
+getFile ${dedupbamindex}
+getFile ${indexfile}
+getFile ${indexfile}.amb
+getFile ${indexfile}.ann
+getFile ${indexfile}.bwt
+getFile ${indexfile}.fai
+getFile ${indexfile}.pac
+getFile ${indexfile}.rbwt
+getFile ${indexfile}.rpac
+getFile ${indexfile}.rsa
+getFile ${indexfile}.sa
+getFile ${dbsnprod}
+getFile ${dbsnprod}.idx
+getFile ${pilot1KgVcf}
+getFile ${pilot1KgVcf}.idx
 
 java -Xmx10g -jar -Djava.io.tmpdir=${tempdir} \
 ${genomeAnalysisTKjar} \
@@ -27,3 +38,5 @@ ${genomeAnalysisTKjar} \
 -D ${dbsnprod} \
 -B:indels,VCF ${pilot1KgVcf} \
 -o ${realignTargets}
+
+putFile ${realignTargets}

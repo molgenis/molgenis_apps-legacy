@@ -26,6 +26,5 @@ MakeIndelMask,MakeIndelMask,FilterIndels
 GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
 VariantAnnotator,VariantAnnotator,GenomicAnnotator
 VcfToTable,VcfToTable,VariantAnnotator
-ConcordanceCheck,ConcordanceCheck,"MergeBam, UnifiedGenotyper"
-QCReport,QCReport,"PicardQCrecal, Markduplicates, ConcordanceCheck, Coverage, VcfToTable"
-CopyToResultsDir,CopyToResultsDir,"Fastqc, MergeBam, PicardQCrecal, VariantAnnotator, VcfToTable, ConcordanceCheck, QCReport"
+QCReport,QCReport,"PicardQCrecal, Markduplicates, Coverage, VcfToTable"
+CopyToResultsDir,CopyToResultsDir,"Fastqc, MergeBam, PicardQCrecal, VariantAnnotator, VcfToTable, QCReport"

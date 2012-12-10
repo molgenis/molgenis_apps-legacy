@@ -8,10 +8,22 @@
 # =====================================================
 #
 
-inputs "${matefixedbam}"
-inputs "${indexfile}" 
-inputs "${dbsnprod}"
-alloutputsexist "${matefixedcovariatecsv}"
+#FOREACH
+
+getFile ${matefixedbam}
+getFile ${matefixedbamindex}
+getFile ${indexfile}
+getFile ${indexfile}.amb
+getFile ${indexfile}.ann
+getFile ${indexfile}.bwt
+getFile ${indexfile}.fai
+getFile ${indexfile}.pac
+getFile ${indexfile}.rbwt
+getFile ${indexfile}.rpac
+getFile ${indexfile}.rsa
+getFile ${indexfile}.sa
+getFile ${dbsnprod}
+getFile ${dbsnprod}.idx
 
 java -jar -Xmx4g \
 ${genomeAnalysisTKjar} -l INFO \
@@ -25,3 +37,5 @@ ${genomeAnalysisTKjar} -l INFO \
 -cov CycleCovariate \
 -cov DinucCovariate \
 -recalFile ${matefixedcovariatecsv}
+
+putFile ${matefixedcovariatecsv}

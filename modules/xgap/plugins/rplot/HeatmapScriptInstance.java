@@ -19,7 +19,7 @@ public class HeatmapScriptInstance
 		plotThis.toPrintStream(p);
 
 		RScript script = new RScript();
-		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		script.setR_COMMAND("R CMD BATCH --vanilla --slave");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 		// script.append(plotThis.getAsRobject(true));
 		script.append("png(imagefile, width = " + params.getWidth() + ", height = " + params.getHeight() + ")");
