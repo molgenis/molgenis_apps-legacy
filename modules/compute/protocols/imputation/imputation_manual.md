@@ -384,7 +384,11 @@ When finished one can generate and execute the imputation jobs by executing the 
 `cd /your/output/directory/here/../phasing`  
 `sh submit.sh`  
   
-Text
+The output is now ready for further analysis.  
+  
+  
+####8.4 Output  
+The pipeline produces several files which can be used for downstream analysis. The following files are produced: 
 
 
 
