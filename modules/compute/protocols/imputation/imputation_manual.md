@@ -291,7 +291,7 @@ To start an analysis one needs to create a so called "worksheet". This worksheet
   
 | project | studyInputDir | prePhasingResultDir | imputationPipeline | genomeBuild | chr | autostart |  
 | :----: | :----: | :----: | :----: | :----: | :----: | :----: |   
-| projectname | directory | directory | beagle/mach/impute2 | b36/b37 | chromosomenumber | TRUE/FALSE |  
+| projectname | directory | directory | beagle/mach/impute2 | b36/b37 | chromosome number | TRUE/FALSE |  
   
 The columns explained:  
 * project: the project name of your analysis  
@@ -341,9 +341,9 @@ During this step the phasing takes place. If in the `worksheet.csv` the value `T
   
 >sh molgenis_compute.sh \\  
 >-inputdir=. \\  
->-worksheet=/your/output/directory/here/../concattedChunkWorksheet.csv" \\  
+>-worksheet=/your/output/directory/here/../concattedChunkWorksheet.csv \\  
 >-parameters=protocols/imputation/minimacV2/parametersMinimac.csv \\  
->-workflow=protocols/imputation/minimacV2/protocols//../workflowMinimacStage2.csv \\  
+>-workflow=protocols/imputation/minimacV2/protocols/../workflowMinimacStage2.csv \\  
 >-protocols=protocols/imputation/minimacV2/protocols/ \\  
 >-outputdir=/your/output/directory/here/../phasing/ \\  
 >-id=runXX  
@@ -351,9 +351,41 @@ During this step the phasing takes place. If in the `worksheet.csv` the value `T
 `cd /your/output/directory/here/../phasing`  
 `sh submit.sh`  
   
-**Note: Alternatively one can copy/paste the generated molgenis_compute execution command from the generated script named `s01_prepare_s01_FALSE.sh`.**  
+**Note: Alternatively one can copy/paste the generated molgenis_compute execution command from the generated script named s01_prepare_s01_FALSE.sh.**  
+  
+#####Step 3: imputing the phased data  
+Since the imputation part is independent from the phasing this step needs to additional parameters/values, `imputationResultDir` and `referencePanel`, in the worksheet. To add these two parameters to the worksheet one can run the included `add_variable.sh` shell script using the following command:  
+  
+>sh protocols/imputation/minimacV2/add_variable.sh \\  
+>-w /your/output/directory/here/../concattedChunkWorksheet.csv \\  
+>-v imputationResultDir \\  
+>-p /your/imputation/result/directory/here/ \\  
+>-o /your/output/directory/here/../tmpImputationWorksheet.csv  
+  
+>sh protocols/imputation/minimacV2/add_variable.sh \\  
+>-w /your/output/directory/here/../tmpImputationWorksheet.csv \\  
+>-v referencePanel \\  
+>-p nameOfImputationReference \\  
+>-o /your/output/directory/here/../ImputationWorksheet.csv  
+  
+**Note: nameOfImputationReference should be changed to the name of your reference panel, for example `giant1000gv3.20101123`.**  
+  
+When finished one can generate and execute the imputation jobs by executing the following commands:  
+  
+>sh molgenis_compute.sh \\  
+>-inputdir=. \\  
+>-worksheet=/your/output/directory/here/../ImputationWorksheet.csv \\  
+>-parameters=protocols/imputation/minimacV2/parametersMinimac.csv \\  
+>-workflow=protocols/imputation/minimacV2/protocols/../workflowMinimacStage3.csv \\  
+>-protocols=protocols/imputation/minimacV2/protocols/ \\  
+>-outputdir=/your/output/directory/here/../imputation/ \\  
+>-id=runXX  
+  
+`cd /your/output/directory/here/../phasing`  
+`sh submit.sh`  
   
 Text
+
 
 
 
