@@ -27,7 +27,15 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
   
 This chapter shortly describes the contents of the Molgenis Compute distro. EXTEND THIS!!  
   
-####2.1 Imputation overview  
+  
+####2.1 Installation of Molgenis Compute
+The first thing to do is unpacking the Molgenis Compute distro. To unpack the distro execute the following command:  
+  
+>unzip molgenis_compute-<version>.zip  
+>cd molgenis_compute-<version>  
+  
+  
+####2.2 Imputation overview  
 All imputation protocols are stored in the *protocols/imputation/* directory. This
 directory contains multiple sub-directories:
   
@@ -45,7 +53,7 @@ Compute:
 * protocols (*.ftl files)
   
   
-####2.2 General compute settings for imputation  
+####2.3 General compute settings for imputation  
 To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is obliged to execute any of the imputation pipelines. After changing these parameters the parameters file is ready to use. Changing the following environment parameters is obliged:  
   
 * scheduler: this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs without headers for Grid usage the value GRID should be specified.  
@@ -119,7 +127,7 @@ Executing the above mentioned commands will result in a directory with the follo
 
 	Note:
 	1 The vcf directory contains the input VCF files split per chromosome. The *.vcf.vcfidx file is generated in this workflow.
-	2 When using Impute 2 genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
+	2 When using Impute2 genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
 	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.
 
   
@@ -305,20 +313,20 @@ The columns explained:
   
   
 ####8.3 Running an analysis  
-The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
+The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome and performs quality control using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
   
-#####Step 1: preparing the study data  
+#####Step 1: preparing & QCing the study data  
 After preparing the study PED/MAP files as described in chapter 3 and preparing the reference data as described in chapter 4 one needs to change the following parameter values in the `parametersMinimac.csv`:  
   
 | name | defaultValue |  
 | :----: | :----: |  
 | scheduler | PBS/SGE/BSUB/GRID, depending on the backend |  
 | stage | The command to load a module eg "module load" |  
-| root | The root path were all tools, resources etc are |  
+| root | The root path were all tools, resources etc. are |  
   
 Optionally one can change parameters such as `$pythonversion` and `$javaversion` to accomodate own wishes.  
   
-To start the study data preparation one can run the following command:  
+To start the study data preparation & QCing one can run the following command:  
   
 >sh molgenis_compute.sh \\  
 >-inputdir=protocols/imputation/minimacV2/protocols/ \\  
