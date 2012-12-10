@@ -12,8 +12,8 @@ Content
 4.	Preparing the reference dataset
 5.	Imputation using Impute2
 6.	Imputation using Beagle
-7.	Imputation using Mach
-8.	Imputation using minimacV2
+7.	Imputation using Minimac
+8.	Imputation using minimacV2 pipeline
 9.	Appendix  
 
   
@@ -84,13 +84,13 @@ This workflow requires a VCF file containing phased genotypes as input. The work
 An example test reference set can be created using the following command:  
   
 >sh molgenis_compute.sh \\  
->*-*worksheet=protocols/imputation/prepareReference/prepareReferenceWorksheetSample.csv \\  
->*-*parameters=protocols/imputation/prepareReference/parameters.csv \\  
->*-*workflow=protocols/imputation/prepareReference/prepareReferenceWorkflow.csv \\  
->*-*protocols=protocols/imputation/prepareReference/ \\  
->*-*templates=protocols/imputation/prepareReference/ \\  
->*-*scripts=/your/output/directory/here/ \\  
->*-*id=runXX 
+>-worksheet=protocols/imputation/prepareReference/prepareReferenceWorksheetSample.csv \\  
+>-parameters=protocols/imputation/prepareReference/parameters.csv \\  
+>-workflow=protocols/imputation/prepareReference/prepareReferenceWorkflow.csv \\  
+>-protocols=protocols/imputation/prepareReference/ \\  
+>-templates=protocols/imputation/prepareReference/ \\  
+>-scripts=/your/output/directory/here/ \\  
+>-id=runXX 
   
   
 ####4.2 Output example  
@@ -171,13 +171,13 @@ The complete Impute2 pipeline consists of two steps. The first one (specified in
   
   
 >sh molgenis_compute.sh \\  
->*-*worksheet=protocols/imputation/impute2/sampleWorksheet.csv \\  
->*-*parameters=protocols/imputation/impute2/parameters.csv \\  
->*-*workflow=protocols/imputation/impute2/createWorkflowImpute.csv \\  
->*-*protocols=protocols/imputation/impute2/ \\  
->*-*templates=protocols/imputation/impute2/ \\  
->*-*scripts=/your/output/directory/here/ \\  
->*-*id=runXX
+>-worksheet=protocols/imputation/impute2/sampleWorksheet.csv \\  
+>-parameters=protocols/imputation/impute2/parameters.csv \\  
+>-workflow=protocols/imputation/impute2/createWorkflowImpute.csv \\  
+>-protocols=protocols/imputation/impute2/ \\  
+>-templates=protocols/imputation/impute2/ \\  
+>-scripts=/your/output/directory/here/ \\  
+>-id=runXX
   
   
 All folders and jobs can be found in the scripts directory specified by the user. The second step of the analysis pipeline consists of executing the generated shell scripts. This can be done by typing the following command:
@@ -246,13 +246,13 @@ The complete minimac pipeline consists of three steps. The first one (specified 
   
   
 >sh molgenis_compute.sh \\  
->*-*worksheet=protocols/imputation/minimac/exampleWorksheet.csv \\  
->*-*parameters=protocols/imputation/minimac/parametersMinimac.csv \\  
->*-*workflow=protocols/imputation/minimac/workflowMinimacStage1.csv \\  
->*-*protocols=protocols/imputation/minimac/protocols/ \\  
->*-*templates=protocols/imputation/minimac/protocols/ \\  
->*-*scripts=/your/output/directory/here/ \\  
->*-*id=runXX
+>-worksheet=protocols/imputation/minimac/exampleWorksheet.csv \\  
+>-parameters=protocols/imputation/minimac/parametersMinimac.csv \\  
+>-workflow=protocols/imputation/minimac/workflowMinimacStage1.csv \\  
+>-protocols=protocols/imputation/minimac/protocols/ \\  
+>-templates=protocols/imputation/minimac/protocols/ \\  
+>-scripts=/your/output/directory/here/ \\  
+>-id=runXX
   
   
 All Compute jobs can now be found in the directory */compute/jobs/prepare/* in the *imputationResultDir* specified in the sampleWorksheet.csv. One now only has to submit the generated scripts. This can be done by typing the following command:
@@ -389,7 +389,8 @@ The output is now ready for further analysis.
   
   
 ####8.4 Output  
-The pipeline produces several files which can be used for downstream analysis. The following files are produced:  
+The pipeline produces several files which can be used for downstream analysis. The following files are produced: 
+EXTEND THIS WHEN QUICKTEST IS IMPLEMENTED?  
   
   
   
