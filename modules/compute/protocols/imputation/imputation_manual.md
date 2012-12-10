@@ -221,7 +221,7 @@ To start an analysis one needs to create a so called "worksheet". This worksheet
   
 | project | studyInputDir | referencePanel | imputationResultsDir | imputationPipeline | genomeBuild | chr | autostart |  
 | :----: | :----: | :----: | :----: | :----: | :----: | | :----: | | :----: |  
-| projectname | directory | reference data | directory | beagle/mach/impute2 | b36/b37 | integer | TRUE/FALSE |  
+| projectname | directory | reference data | directory | beagle/mach/impute2 | b36/b37 | integer | TRUE/FALSE |
   
     
 The columns explained:  
@@ -259,7 +259,40 @@ All Compute jobs can now be found in the directory */compute/jobs/prepare/* in t
 **Note: Alternatively the generated s00_\*.sh scripts can be executed by hand**
   
   
-
+###8. Imputation using minimacV2 pipeline
+All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The version 2 pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 8.1.
+  
+  
+####8.1 Tools
+To run this pipeline the following tools, scripts and datasets are required:
+  
+* study data
+* reference dataset in Ped/Map format (prepared using the workflow described in chapter 5.2)
+* java
+* python
+* ChunkChromosome (v. 2012-08-28)
+* minimac (v. beta-2012.10.3) [^3]
+* mach (v. 1.0.18) [^6]
+* plink (v. 1.07)
+* plink1.08 (v. 1.08)
+* imputationTool (v. 20120912)
+* ConcatWorksheets (v. V1.0)
+* expandWorksheet (v. V1.1)  
+**Note1: Version numbers are tested**  
+**Note2: Download links can be found in the appendix**
+  
+We recommend to install all tools in one directory in a structure of *tools/<toolname>/*, this way only the `"$tooldir"` variable in the parameters.csv needs to be changed.
+  
+  
+####8.2 The sample worksheet  
+To start an analysis one needs to create a so called "worksheet". This worksheet should contain six columns and follow the format specified below:
+  
+| project | studyInputDir | prePhasingResultDir | imputationPipeline | genomeBuild | chr | autostart |  
+| :----: | :----: | :----: | :----: | :----: | :----: | :----: |  
+| projectname | directory | directory | beagle/mach/impute2 | b36/b37 | chromosomenumber | TRUE/FALSE |  
+  
+  
+Text
 
   
   
@@ -268,3 +301,4 @@ All Compute jobs can now be found in the directory */compute/jobs/prepare/* in t
 [^3]: http://genome.sph.umich.edu/wiki/Minimac
 [^4]: http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped
 [^5]: http://pngu.mgh.harvard.edu/~purcell/plink/
+[^6]: http://www.sph.umich.edu/csg/abecasis/MACH/tour/imputation.html
