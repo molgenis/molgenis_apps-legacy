@@ -13,6 +13,8 @@ Content
 5.	Imputation using Impute2
 6.	Imputation using Beagle
 7.	Imputation using Mach
+8.	Appendix  
+
   
   
 ###1. Introduction
@@ -116,7 +118,7 @@ Executing the above mentioned commands will result in a directory with the follo
 
 	Note:
 	1 The vcf directory contains the input VCF files split per chromosome. The *.vcf.vcfidx file is generated in this workflow.
-	2 Genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
+	2 When using Impute 2 genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
 	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.
 
   
@@ -284,15 +286,53 @@ To run this pipeline the following tools, scripts and datasets are required:
 We recommend to install all tools in one directory in a structure of *tools/<toolname>/*, this way only the `"$tooldir"` variable in the parameters.csv needs to be changed.
   
   
-####8.2 The sample worksheet  
+####8.2 The sample worksheet for pre-phasing  
 To start an analysis one needs to create a so called "worksheet". This worksheet should contain six columns and follow the format specified below:
   
 | project | studyInputDir | prePhasingResultDir | imputationPipeline | genomeBuild | chr | autostart |  
-| :----: | :----: | :----: | :----: | :----: | :----: | :----: |  
+| :----: | :----: | :----: | :----: | :----: | :----: | :----: |   
 | projectname | directory | directory | beagle/mach/impute2 | b36/b37 | chromosomenumber | TRUE/FALSE |  
   
+The columns explained:  
+* project: the project name of your analysis  
+* studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3  
+* prePhasingResultDir: the output directory for the pre-phasing result  
+* imputationPipeline: the pipeline to use, this can be one of the three described in this document  
+* genomeBuild: the genome build to use. **Please make sure your study and referencedata are on the same genome build**  
+* chr: the chromosome to run the analysis on  
+* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. **Note: This only works if in your cluster setup submission from nodes is allowed.**  
   
-Text
+####8.3 Running an analysis  
+The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
+  
+#####8.3.1 Step 1: preparing the study data  
+After preparing the study PED/MAP files as described in chapter 3 and preparing the reference data as described in chapter 4 one needs to change the following parameter values in the `parametersMinimac.csv`:  
+  
+| Name | defaultValue |  
+| :----: | :----: |  
+| scheduler | PBS/SGE/BSUB/GRID, depending on the backend |  
+| stage | The command to load a module eg "module load" |  
+| root | The root path were all tools, resources etc are |  
+  
+Optionally one can change parameters such as `$pythonversion` and `$javaversion` to accomodate own wishes.  
+  
+To start the study data preparation one can run the following command:  
+  
+>sh molgenis_compute.sh \\  
+>-inputdir=protocols/imputation/minimacV2/protocols/ \\  
+>-worksheet=protocols/imputation/minimacV2/examplePrePhasingWorksheet.csv \\  
+>-parameters=protocols/imputation/minimacV2/parametersMinimac.csv \\  
+>-workflow=protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+>-protocols=protocols/imputation/minimacV2/protocols/ \\  
+>-outputdir=/your/output/directory/here/ \\  
+>-id=runXX  
+  
+All folders and jobs can be found in the output directory specified by the user. The second step of the preparation consists of executing the generated shell scripts. This can be done by typing the following command:
+  
+`cd /your/output/directory/here/`  
+`sh submit.sh`  
+**Note: Alternatively the generated s00_\*.sh scripts can be executed by hand**
+
 
   
   
@@ -302,3 +342,5 @@ Text
 [^4]: http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped
 [^5]: http://pngu.mgh.harvard.edu/~purcell/plink/
 [^6]: http://www.sph.umich.edu/csg/abecasis/MACH/tour/imputation.html
+[^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
+
