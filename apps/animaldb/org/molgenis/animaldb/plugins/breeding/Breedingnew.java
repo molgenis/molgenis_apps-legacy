@@ -1318,7 +1318,7 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 		nrOfGenotypes = 1;
 		// Prepare table
-		genotypeTable = new Table("GenoTable", "");
+		genotypeTable = new JQueryDataTable("GenoTable", "");
 		genotypeTable.addColumn("Birth date");
 		genotypeTable.addColumn("Sex");
 		genotypeTable.addColumn("Color");
