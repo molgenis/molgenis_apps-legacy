@@ -1744,7 +1744,12 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 			}
 		}
-
+		litterMatrixViewer.setDatabase(db);
+		// litterMatrixViewer.handleRequest(db, request);
+		litterMatrixViewerString = litterMatrixViewer.render();
+		this.action = "init"; // return to start screen
+		this.entity = "Litters";
+		return;
 	}
 
 	// private void updateWeanSize(int numberofAnimals)
