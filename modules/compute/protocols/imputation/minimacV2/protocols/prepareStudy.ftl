@@ -7,7 +7,7 @@ getFile ${expandWorksheetJar}
 getFile ${studyInputPedMapChr}.ped
 getFile ${studyInputPedMapChr}.map
 getFile ${chunkChromosomeBin}
-getFile ${McWorksheet}
+getFile ${remoteWorksheet}
 
 #Create study PEDMAP Chr dir
 mkdir -p ${studyPedMapChrDir}
@@ -156,7 +156,7 @@ done
 
 #Run Jar to create full worksheet
 
-java -jar ${expandWorksheetJar} ${McWorksheet} ${tmpFinalChunkChrWorksheet} ${chunkChrWorkSheet} project ${project} chr ${chr}
+java -jar ${expandWorksheetJar} ${remoteWorksheet} ${tmpFinalChunkChrWorksheet} ${chunkChrWorkSheet} project ${project} chr ${chr}
 
 #Get return code from last program call
 returnCode=$?
