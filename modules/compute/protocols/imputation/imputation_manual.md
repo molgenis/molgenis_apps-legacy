@@ -25,7 +25,7 @@ To be written
 ###2. Imputation
   
   
-This chapter shortly describes the contents of the Molgenis Compute distro. EXTEND THIS!!  
+This chapter shortly describes the contents of the Molgenis Compute distro. Add prerequisists like Molgenis Compute manual etc. EXTEND THIS!!  
   
   
 ####2.1 Installation of Molgenis Compute
@@ -235,20 +235,23 @@ We recommend to install all tools in one directory, this way only the `"$tooldir
 ####7.2 The sample worksheet
 To start an analysis one needs to create a so called "worksheet". This worksheet should contain six columns and follow the format specified below:
   
-| project | studyInputDir | referencePanel | imputationResultsDir | imputationPipeline | genomeBuild | chr | autostart |  
-| :----: | :----: | :----: | :----: | :----: | :----: | | :----: | | :----: |  
-| projectname | directory | reference data | directory | beagle/mach/impute2 | b36/b37 | integer | TRUE/FALSE |
+| project | studyInputDir | referencePanel | imputationResultDir | imputationPipeline | genomeBuild | chr | autostart |  
+| :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |  
+| projectname | directory | reference data | directory | beagle/minimac/impute2 | b36/b37 | integer | TRUE/FALSE |  
   
+  
+test
+
     
 The columns explained:  
-* project: the project name of your analysis  
-* studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3  
-* referencePanel: the directory containing the reference data generated as explained in chapter 4  
-* imputationResultsDir: the output directory for all results  
-* imputationPipeline: the pipeline to use, this can be one of the three described in this document  
-* genomeBuild: the genome build to use. **Please make sure your study and referencedata are on the same genome build**  
-* chr: the chromosome to run the analysis on  
-* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically.  
+* project: the project name of your analysis. Type: string  
+* studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3. Type: string  
+* referencePanel: the directory containing the reference data generated as explained in chapter 4. Type: string  
+* imputationResultsDir: the output directory for all results. Type string:  
+* imputationPipeline: the pipeline to use, this can be one of the three described in this document. Type: beagle/minimac/impute2  
+* genomeBuild: the genome build to use. Type: boolean, b36/b37 **Please make sure your study and referencedata are on the same genome build**  
+* chr: the chromosome to run the analysis on. Type: integer  
+* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. Type: boolean, TRUE/FALSE  
   
 An example worksheet using minimac and b37 is distributed in the Compute binary and can be found here:  
 *protocols/imputation/minimac/exampleWorksheet.csv*
@@ -314,7 +317,7 @@ The columns explained:
 * imputationPipeline: the pipeline to use, this can be one of the three described in this document. Type: beagle/minimac/impute2  
 * genomeBuild: the genome build to use. Type: boolean, b36/b37 **Please make sure your study and referencedata are on the same genome build**  
 * chr: the chromosome to run the analysis on. Type: integer  
-* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. Type: TRUE/FALSE **Note: This only works if in your cluster setup submission from nodes is allowed.**  
+* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. Type: boolean, TRUE/FALSE **Note: This only works if in your cluster setup submission from nodes is allowed.**  
   
   
 ####8.3 Running an analysis  
