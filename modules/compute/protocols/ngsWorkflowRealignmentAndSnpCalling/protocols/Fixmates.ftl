@@ -13,6 +13,8 @@
 
 getFile ${realignedbam}
 
+module load ${picardBin}/${picardVersion}
+
 java -jar -Xmx6g \
 ${fixmateinformationjar} \
 INPUT=${realignedbam} \

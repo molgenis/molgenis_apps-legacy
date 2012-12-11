@@ -11,7 +11,7 @@
 #MOLGENIS walltime=35:59:00 mem=4
 #FOREACH
 
-module load picard-tools/${picardVersion}
+module load ${picardBin}/${picardVersion}
 
 getFile ${sortedbam}
 getFile ${sortedbamindex}
@@ -33,5 +33,5 @@ MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
 
 putFile ${dedupbam}
-putfile ${dedupbamindex}
+putFile ${dedupbamindex}
 putFile ${dedupmetrics}
