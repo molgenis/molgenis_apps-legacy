@@ -1,1 +1,1 @@
-curl -F status=done -F log_file=@log.log http://localhost:8080/compute/api/pilot
+curl -F status=done -F log_file=@log.log http://localhost:8081/compute/api/pilot

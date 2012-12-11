@@ -81,32 +81,32 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
         //readyToSubmitSize = readyToSubmitSize * 3;
 
         //start as many pilots as we have tasks ready to run
-        for (int i = 0; i < readyToSubmitSize; i++)
-        {
-            try
-            {
-                if (backendType.equalsIgnoreCase(BACK_END_GRID))
-                    host.submitPilotGrid();
-                else if (backendType.equalsIgnoreCase(BACK_END_CLUSTER))
-                    host.submitPilotCluster();
-                else if (backendType.equalsIgnoreCase(BACK_END_LOCALHOST))
-                    submitPilotLocalhost();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-
-            //sleep, because we have a strange behavior in pilot service
-            try
-            {
-                Thread.sleep(10000);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
+//        for (int i = 0; i < readyToSubmitSize; i++)
+//        {
+//            try
+//            {
+//                if (backendType.equalsIgnoreCase(BACK_END_GRID))
+//                    host.submitPilotGrid();
+//                else if (backendType.equalsIgnoreCase(BACK_END_CLUSTER))
+//                    host.submitPilotCluster();
+//                else if (backendType.equalsIgnoreCase(BACK_END_LOCALHOST))
+//                    submitPilotLocalhost();
+//            }
+//            catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            //sleep, because we have a strange behavior in pilot service
+//            try
+//            {
+//                Thread.sleep(10000);
+//            }
+//            catch (InterruptedException e)
+//            {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     private void submitPilotLocalhost() throws IOException

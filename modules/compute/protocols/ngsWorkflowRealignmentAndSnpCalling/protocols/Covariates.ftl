@@ -10,6 +10,8 @@
 
 #FOREACH
 
+module load GATK/${gatkVersion}
+
 getFile ${matefixedbam}
 getFile ${matefixedbamindex}
 getFile ${indexfile}
