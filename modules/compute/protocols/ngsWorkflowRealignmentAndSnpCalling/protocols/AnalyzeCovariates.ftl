@@ -11,8 +11,9 @@
 #MOLGENIS walltime=00:45:00
 #FOREACH
 
-#WHERE DOES RSCRIPT LIVE ON THE GRID?
+module load GATK/${gatkVersion}
 
+#WHERE DOES RSCRIPT LIVE ON THE GRID?
 
 getFile ${matefixedcovariatecsv}
 getFile ${sortedrecalcovariatecsv}
