@@ -11,6 +11,8 @@
 #MOLGENIS walltime=35:59:00 mem=10 cores=1
 #FOREACH
 
+module load GATK/${gatkVersion}
+
 getFile ${dedupbam}
 getFile ${dedupbamindex}
 getFile ${indexfile}
