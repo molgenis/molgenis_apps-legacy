@@ -380,15 +380,16 @@ Since the imputation part is independent from the phasing this step needs to add
 >-w /your/output/directory/here/../tmpImputationWorksheet.csv \\  
 >-v referencePanel \\  
 >-p nameOfImputationReference \\  
->-o /your/output/directory/here/../ImputationWorksheet.csv  
+>-o /your/output/directory/here/../mputationWorksheet.csv  
   
-**Note: nameOfImputationReference should be changed to the name of your reference panel, for example `giant1000gv3.20101123`.**  
+**Note1: nameOfImputationReference should be changed to the name of your reference panel, for example `giant1000gv3.20101123`**  
+**Note2: an example `imputationWorksheet.csv` can be found here: `protocols/imputation/minimacV2/imputationWorksheet.csv`.**  
   
 When finished one can generate and execute the imputation jobs by executing the following commands:  
   
 >sh molgenis_compute.sh \\  
 >-inputdir=. \\  
->-worksheet=/your/output/directory/here/../ImputationWorksheet.csv \\  
+>-worksheet=/your/output/directory/here/../mputationWorksheet.csv \\  
 >-parameters=protocols/imputation/minimacV2/parametersMinimac.csv \\  
 >-workflow=protocols/imputation/minimacV2/protocols/../workflowMinimacStage3.csv \\  
 >-protocols=protocols/imputation/minimacV2/protocols/ \\  
