@@ -132,7 +132,7 @@ public class ArgumentParser
 	 * not specified properly, then an error message this function produces an
 	 * error message and exits with status code 1.
 	 */
-	public static LinkedHashMap<String, String> parseParameters(String[] args)
+	public static LinkedHashMap<String, String> parseParameters(String[] args, Exiter exiter)
 	{
 		defineSets(args);
 
@@ -144,7 +144,7 @@ public class ArgumentParser
 			System.err.println("##");
 			System.err.println("#\n");
 
-			System.err.println(o.getCheckErrors());
+			// System.err.println(o.getCheckErrors());
 
 			System.err.println("Valid command line arguments are:\n");
 
@@ -175,7 +175,8 @@ public class ArgumentParser
 
 			System.err.println("\nProgram exits with status code 1.");
 
-			System.exit(1);
+			exiter.exit();
+			// systemExit();
 		}
 		else
 		{
@@ -186,5 +187,10 @@ public class ArgumentParser
 		}
 
 		return (paramMap);
+	}
+
+	private static void systemExit()
+	{
+		System.exit(1);
 	}
 }
