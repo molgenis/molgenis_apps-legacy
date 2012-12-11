@@ -1,0 +1,67 @@
+<project name="wormqtl">
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="plantqtl" />
+
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/wormqtl/org/molgenis/plantqtl/plantqtl.properties"/>
+	
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/wormqtl" />
+		<pathelement location="apps/xqtl" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/webserver" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/search" />
+		<pathelement location="modules/matrix" />
+		<pathelement location="modules/feedback" />
+		<pathelement location="modules/xgap" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/data" />
+		<pathelement location="publicdata" />
+	</path>
+
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml" />
+
+	<!-- Delete HSQL database -->
+	<target name="deletedb" description="Delete generated and build content">
+		<mkdir dir="hsqldb" />
+		<delete includeemptydirs="true">
+			<fileset dir="hsqldb" includes="**/*" />
+		</delete>
+	</target>
+	
+	<!-- Custom run with more memory -->
+	<target name="run" description="Start the application">
+		<java maxmemory="4g" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
+			</classpath>
+		</java>
+	</target>
+	
+	<!--
+	Custom runOn with more memory
+	Usage: ant -f build_wormqtl.xml runOn -Dport=9000
+	-->
+	<target name="runOn" description="Start the application">
+		<java maxmemory="4g" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<arg value="${port}"/>
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
+			</classpath>
+		</java>
+	</target>
+	
+</project>

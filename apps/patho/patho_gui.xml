@@ -27,6 +27,7 @@
 			</form>
 			<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
 		</menu>
+		<plugin label="Import data" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
 		<menu name="CMS" label="Content Management">
 			<form name="Header" entity="Header" label="Header"/>
 			<form name="Paragraph" entity="Paragraph" label="Start page"/>

@@ -33,8 +33,8 @@ public class Search extends SearchPlugin
 	public Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.getModel().setPatientPager("generated-res/arvc/patientPager.jsp");
-		this.getModel().setMutationPager("generated-res/arvc/mutationPager.jsp");
+		this.getModel().setPatientPager("res/arvc/patientPager.jsp");
+		this.getModel().setMutationPager("res/arvc/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 		this.getModel().getMbrowse().setIsVisible(true);
 		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));

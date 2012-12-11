@@ -11,12 +11,14 @@ import gcc.catalogue.MappingMeasurement;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
@@ -26,62 +28,56 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.JobListener;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.impl.StdSchedulerFactory;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
-import plugins.HarmonizationComponent.MappingList;
-import plugins.HarmonizationComponent.OWLFunction;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
+import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
-//import plugins.autohidelogin.AutoHideLoginModel; 
-
-public class Harmonization extends PluginModel<Entity>
+public class Harmonization extends EasyPluginController<HarmonizationModel>
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4255876428416189905L;
-
-	private int loadingProcess = 0;
-	private OWLFunction owlFunction = null;
-	private catalogueTreeComponent catalogue = null;
-	private List<Measurement> measurementsInStudy = null;
-	private List<String> listOfPredictionModels = new ArrayList<String>();
-	private List<String> listOfCohortStudies = new ArrayList<String>();
-	private List<String> reservedInv = new ArrayList<String>();
-	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
-	private HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
 
 	public Harmonization(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+		this.setModel(new HarmonizationModel(this)); // the default model
 	}
 
 	@Override
-	public String getViewName()
+	public String getCustomHtmlHeaders()
 	{
-		return "plugins_harmonization_Harmonization";
+		StringBuilder s = new StringBuilder();
+
+		s.append("<link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.min.css\" type=\"text/css\" />");
+
+		s.append("<link rel=\"stylesheet\" href=\"bootstrap/css/bootstrap.css\" type=\"text/css\" />");
+
+		s.append("<script type=\"text/javascript\" src=\"bootstrap/js/bootstrap.min.js\"></script>");
+
+		return s.toString();
 	}
 
 	@Override
-	public String getViewTemplate()
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
-		return "plugins/harmonization/Harmonization.ftl";
-	}
-
-	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
-	{
-
 		if (out == null)
 		{
 			this.handleRequest(db, request);
@@ -234,13 +230,13 @@ public class Harmonization extends PluginModel<Entity>
 				}
 				else if ("download_json_removePredictors".equals(request.getAction()))
 				{
-					String predictor = request.getString("name");
+					String predictorName = request.getString("name");
 
 					String predictionModel = request.getString("predictionModel");
 
-					this.removePredictor(predictor, predictionModel, db);
+					this.removePredictor(predictorName, predictionModel, db);
 
-					status.put("message", "You successfully deleted the predictor: " + predictor);
+					status.put("message", "You successfully deleted the predictor: " + predictorName);
 
 					status.put("success", true);
 				}
@@ -257,8 +253,8 @@ public class Harmonization extends PluginModel<Entity>
 								Operator.IN, cp.getFeatures_Name())))
 						{
 							JSONObject jsonForPredictor = new JSONObject();
-							jsonForPredictor.put("name", eachPredictor.getLabel());
-							jsonForPredictor.put("identifier", eachPredictor.getLabel().replaceAll(" ", "_"));
+							jsonForPredictor.put("label", eachPredictor.getLabel());
+							jsonForPredictor.put("identifier", eachPredictor.getName().replaceAll(" ", "_"));
 							jsonForPredictor.put("description", (eachPredictor.getDescription() == null ? ""
 									: eachPredictor.getDescription()));
 							jsonForPredictor.put("dataType", eachPredictor.getDataType());
@@ -329,133 +325,14 @@ public class Harmonization extends PluginModel<Entity>
 						status.put("success", true);
 					}
 				}
-				else if ("download_json_validateStudy".equals(request.getAction()))
-				{
-					String predictionModel = request.getString("predictionModel");
-
-					String validationStudy = request.getString("validationStudy");
-
-					this.loadingProcess = 0;
-					this.predictors.clear();
-
-					status.put("validationStudy", validationStudy);
-					status.put("predictionModel", predictionModel);
-
-					ComputeProtocol cp = db.find(ComputeProtocol.class,
-							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
-
-					if (cp.getFeatures_Name().size() > 0)
-					{
-						for (Measurement m : db.find(Measurement.class,
-								new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
-						{
-							PredictorInfo predictor = new PredictorInfo(m.getName());
-
-							predictor.setLabel(m.getLabel());
-
-							HashMap<String, String> categories = new HashMap<String, String>();
-
-							for (Category c : db.find(Category.class,
-									new QueryRule(Category.NAME, Operator.EQUALS, m.getCategories_Name())))
-							{
-								categories.put(c.getCode_String(), c.getDescription());
-							}
-
-							predictor.setCategory(categories);
-
-							predictor.setIdentifier(m.getName().replaceAll(" ", "_"));
-
-							predictors.put(m.getName().replaceAll(" ", "_"), predictor);
-						}
-
-						Query<ObservedValue> query = db.query(ObservedValue.class);
-
-						query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, cp.getFeatures_Name()));
-
-						query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
-
-						for (ObservedValue ov : query.find())
-						{
-							String targetName = ov.getTarget_Name();
-
-							String value = ov.getValue();
-
-							predictors.get(targetName.replaceAll(" ", "_")).setBuildingBlocks(value.split(";"));
-						}
-
-						Query<MappingMeasurement> queryForMappings = db.query(MappingMeasurement.class);
-
-						queryForMappings.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN, cp
-								.getFeatures_Name()));
-						queryForMappings.addRules(new QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.EQUALS,
-								validationStudy));
-
-						for (MappingMeasurement mapping : queryForMappings.find())
-						{
-							predictors.get(mapping.getMapping_Name().replaceAll(" ", "_")).setFinalMappings(
-									mapping.getFeature_Name());
-						}
-
-						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
-								Operator.EQUALS, validationStudy));
-
-						if (measurementsInStudy.size() > 0)
-						{
-							// TODO ontocat dynamically searching ontology terms
-							String ontologyFileName = "/Users/pc_iverson/Desktop/Input/PredictionModel.owl";
-
-							owlFunction = new OWLFunction(ontologyFileName);
-
-							status.put("success", true);
-						}
-					}
-
-				}
-				else if ("download_json_loadMappingResult".equals(request.getAction()))
-				{
-
-					List<String> keys = new ArrayList<String>(predictors.keySet());
-
-					String eachKey = keys.get(loadingProcess);
-
-					loadingProcess++;
-
-					PredictorInfo predictor = predictors.get(eachKey);
-
-					for (String eachDefintion : predictor.getBuildingBlocks())
-					{
-						predictor.getExpandedQuery().addAll(createExpandQuery(eachDefintion.split(","), owlFunction));
-					}
-
-					executeMapping(predictor, measurementsInStudy);
-
-					String mappingResult = makeMappingTable(predictor);
-
-					String existingMapping = makeExistingMappingTable(predictor);
-
-					status.put("label", predictor.getLabel());
-					status.put("mappingResult", mappingResult);
-					status.put("identifier", predictor.getName());
-					status.put("existingMapping", existingMapping);
-					status.put("loadingProcess", loadingProcess);
-					status.put("total", predictors.size());
-
-					if (loadingProcess == predictors.size())
-					{
-						String validationStudy = request.getString("validationStudy");
-
-						catalogue = new catalogueTreeComponent(validationStudy);
-
-						status.put("treeView", catalogue.getTreeView());
-					}
-				}
 				else if ("download_json_retrieveExpandedQuery".equals(request.getAction()))
 				{
 					String predictor = request.getString("predictor");
 
 					String matchedVariable = request.getString("matchedVariable");
 
-					String table = retrieveExpandedQuery(predictors.get(predictor), matchedVariable);
+					String table = retrieveExpandedQuery(this.getModel().getPredictors().get(predictor),
+							matchedVariable);
 
 					status.put("table", table);
 				}
@@ -494,19 +371,19 @@ public class Harmonization extends PluginModel<Entity>
 					{
 						String predictorIdentifier = iterator.next();
 
-						String predictorName = predictors.get(predictorIdentifier).getName();
+						String predictorName = this.getModel().getPredictors().get(predictorIdentifier).getName();
 
 						StringBuilder identifier = new StringBuilder();
 
-						identifier.append(predictors.get(predictorIdentifier).getName()).append("_")
-								.append(validationStudyName);
+						identifier.append(this.getModel().getPredictors().get(predictorIdentifier).getName())
+								.append("_").append(validationStudyName);
 
 						if (db.find(Measurement.class,
 								new QueryRule(Measurement.NAME, Operator.EQUALS, identifier.toString())).size() == 0)
 						{
 							Measurement m = new Measurement();
 							m.setName(identifier.toString());
-							m.setLabel(predictors.get(predictorIdentifier).getLabel());
+							m.setLabel(this.getModel().getPredictors().get(predictorIdentifier).getLabel());
 							m.setInvestigation_Name(validationStudyName);
 							db.add(m);
 
@@ -515,17 +392,17 @@ public class Harmonization extends PluginModel<Entity>
 
 						JSONArray features = mappingResult.getJSONArray(predictorIdentifier);
 
-						List<String> listOfFeatures = new ArrayList<String>();
+						List<String> listOfFeatureNames = new ArrayList<String>();
 
 						List<Integer> listOfFeatureIds = new ArrayList<Integer>();
 
 						for (int i = 0; i < features.length(); i++)
 						{
-							listOfFeatures.add(features.getString(i));
+							listOfFeatureNames.add(features.getString(i));
 						}
 
 						for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
-								listOfFeatures)))
+								listOfFeatureNames)))
 						{
 							listOfFeatureIds.add(m.getId());
 						}
@@ -554,7 +431,7 @@ public class Harmonization extends PluginModel<Entity>
 
 							mapping.setFeature_Id(listOfFeatureIds);
 
-							mapping.setFeature_Name(listOfFeatures);
+							mapping.setFeature_Name(listOfFeatureNames);
 
 							db.add(mapping);
 						}
@@ -570,7 +447,7 @@ public class Harmonization extends PluginModel<Entity>
 								}
 							}
 
-							for (String eachFeature : listOfFeatures)
+							for (String eachFeature : listOfFeatureNames)
 							{
 								if (!mapping.getFeature_Name().contains(eachFeature))
 								{
@@ -583,9 +460,13 @@ public class Harmonization extends PluginModel<Entity>
 
 						db.update(validationStudyProtocol);
 
-						predictors.get(predictorIdentifier).setFinalMappings(mapping.getFeature_Name());
+						List<Measurement> listOfFeatures = db.find(Measurement.class, new QueryRule(Measurement.NAME,
+								Operator.IN, mapping.getFeature_Name()));
 
-						status.put(predictorIdentifier, makeExistingMappingTable(predictors.get(predictorIdentifier)));
+						this.getModel().getPredictors().get(predictorIdentifier).addFinalMappings(listOfFeatures);
+
+						status.put(predictorIdentifier,
+								makeExistingMappingTable(this.getModel().getPredictors().get(predictorIdentifier)));
 
 						status.put("success", true);
 
@@ -605,7 +486,7 @@ public class Harmonization extends PluginModel<Entity>
 
 					StringBuilder predictorName = new StringBuilder();
 
-					identifier.append(predictors.get(protocolIdentifier).getName()).append("_")
+					identifier.append(this.getModel().getPredictors().get(protocolIdentifier).getName()).append("_")
 							.append(request.getString("validationStudy"));
 
 					predictorName.append(predictor).append("_").append(request.getString("predictionModel"));
@@ -618,8 +499,10 @@ public class Harmonization extends PluginModel<Entity>
 					queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.EQUALS,
 							predictorName.toString()));
 
-					Measurement m = db.find(Measurement.class,
-							new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
+					Measurement m = this.getModel().getMeasurements().get(measurementName);
+
+					this.getModel().getPredictors().get(predictorName.toString().replaceAll(" ", "_"))
+							.getFinalMappings().remove(m.getName());
 
 					MappingMeasurement mapping = queryForMapping.find().get(0);
 
@@ -643,6 +526,8 @@ public class Harmonization extends PluginModel<Entity>
 								new QueryRule(Measurement.NAME, Operator.EQUALS, identifier)).get(0);
 
 						validationStudyProtocol.getFeatures_Id().remove(derivedPredictor.getId());
+
+						validationStudyProtocol.getFeatures_Name().remove(derivedPredictor.getName());
 
 						if (validationStudyProtocol.getFeatures_Id().size() == 0)
 						{
@@ -670,19 +555,113 @@ public class Harmonization extends PluginModel<Entity>
 					status.put("success", true);
 
 				}
+				else if ("download_json_monitorJobs".equals(request.getAction()))
+				{
+					status.put("jobTitle", (this.getModel().isStringMatching() ? "Matching variables"
+							: "Expanding terms"));
+
+					status.put("finishedJobs", this.getModel().getFinishedJobs());
+
+					status.put("totalJobs", this.getModel().getTotalJobs());
+
+					status.put("startTime", this.getModel().getStartTime());
+
+					status.put("validationStudy", this.getModel().getSelectedValidationStudy());
+
+					status.put("predictionModel", this.getModel().getSelectedPredictionModel());
+
+					status.put("startTime", this.getModel().getStartTime());
+
+					status.put("currentTime", System.currentTimeMillis());
+
+					if (this.getModel().isStringMatching())
+					{
+						status.put("finishedQuery", this.getModel().getFinishedNumber());
+
+						status.put("totalQuery", this.getModel().getTotalNumber());
+
+						if (this.getModel().getFinishedNumber() == this.getModel().getTotalNumber())
+						{
+							try
+							{
+								this.getModel().getScheduler().shutdown();
+							}
+							catch (SchedulerException e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							System.out.println("Finished: " + this.getModel().getFinishedNumber()
+									+ ". Total number is " + this.getModel().getTotalNumber());
+						}
+					}
+					else
+					{
+						status.put("finishedQuery", this.getModel().getFinishedJobs());
+
+						status.put("totalQuery", this.getModel().getTotalJobs());
+					}
+
+					System.out.println("Finished jobs: " + this.getModel().getFinishedJobs() + ". Total number is "
+							+ this.getModel().getTotalJobs());
+
+					status.put("success", true);
+				}
+				else if ("download_json_retrieveResult".equals(request.getAction()))
+				{
+					for (PredictorInfo predictor : new ArrayList<PredictorInfo>(this.getModel().getPredictors()
+							.values()))
+					{
+						JSONObject eachPredictor = new JSONObject();
+
+						String mappingResult = makeMappingTable(predictor);
+
+						String existingMapping = makeExistingMappingTable(predictor);
+
+						eachPredictor.put("label", predictor.getLabel());
+
+						eachPredictor.put("mappingResult", mappingResult);
+
+						eachPredictor.put("identifier", predictor.getName());
+
+						eachPredictor.put("existingMapping", existingMapping);
+
+						status.put(predictor.getName(), eachPredictor);
+					}
+
+					this.getModel().setCatalogue(
+							new catalogueTreeComponent(this.getModel().getSelectedValidationStudy()));
+
+					status.put("treeView", this.getModel().getCatalogue().getTreeView());
+				}
+				else if ("download_json_existingMapping".equals(request.getAction()))
+				{
+					collectExistingMapping(db, request);
+
+					this.getModel().setRetrieveResult(true);
+				}
 				else
 				{
-					status = catalogue.requestHandle(request, db, out);
+					status = this.getModel().getCatalogue().requestHandle(request, db, out);
 				}
 
 				db.commitTx();
 			}
 			catch (Exception e)
 			{
-				status.put("message", e.getMessage());
-				status.put("success", false);
-				db.rollbackTx();
-				e.printStackTrace();
+				try
+				{
+					status.put("message", e.getMessage());
+					status.put("success", false);
+					db.rollbackTx();
+					e.printStackTrace();
+				}
+				catch (Exception exception)
+				{
+					exception.printStackTrace();
+				}
 			}
 
 			PrintWriter writer = new PrintWriter(out);
@@ -692,6 +671,79 @@ public class Harmonization extends PluginModel<Entity>
 		}
 
 		return Show.SHOW_MAIN;
+	}
+
+	@Override
+	public void handleRequest(Database db, Tuple request)
+	{
+		try
+		{
+			if ("loadMapping".equals(request.getAction()))
+			{
+				if (this.getModel().getScheduler() == null || this.getModel().getScheduler().isShutdown())
+				{
+					String validationStudy = request.getString("listOfCohortStudies");
+
+					System.out.println(validationStudy);
+
+					stringMatching(request, db);
+
+					this.getModel().setFreeMakerTemplate("HarmonizationStatus.ftl");
+				}
+			}
+			else if ("startNewSession".equals(request.getAction()))
+			{
+				this.getModel().setFreeMakerTemplate("Harmonization.ftl");
+
+				this.getModel().setRetrieveResult(false);
+			}
+			else if ("retrieveResult".equals(request.getAction()))
+			{
+				this.getModel().setFreeMakerTemplate("Harmonization.ftl");
+
+				this.getModel().setRetrieveResult(true);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void reload(Database db)
+	{
+		try
+		{
+			// clear the old variable content
+			this.getModel().getPredictionModels().clear();
+			this.getModel().getValidationStudies().clear();
+
+			if (this.getModel().getReservedInv().size() == 0)
+			{
+				this.getModel().getReservedInv().add("catalogueCohortStudy");
+				this.getModel().getReservedInv().add("cataloguePredictionModel");
+				this.getModel().getReservedInv().add("Prediction Model");
+			}
+
+			for (ComputeProtocol cp : db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.INVESTIGATION_NAME,
+					Operator.EQUALS, "Prediction Model")))
+			{
+				this.getModel().getPredictionModels().add(cp.getName());
+			}
+
+			for (Investigation inv : db.find(Investigation.class))
+			{
+				if (!this.getModel().getReservedInv().contains(inv.getName()))
+				{
+					this.getModel().getValidationStudies().add(inv.getName());
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private String retrieveExpandedQuery(PredictorInfo predictorInfo, String matchedVariable)
@@ -706,11 +758,17 @@ public class Harmonization extends PluginModel<Entity>
 
 		matchedVariable = matchedVariable.replaceAll(predictorInfo.getIdentifier() + "_", "");
 
+		StringBuilder expandedQueryIdentifier = new StringBuilder();
+
 		for (String query : predictorInfo.getExpandedQueryForOneMapping(matchedVariable))
 		{
+			expandedQueryIdentifier.delete(0, expandedQueryIdentifier.length());
+
+			expandedQueryIdentifier.append(query).append("_").append(matchedVariable);
+
 			table.append("<tr style=\"font-size:12px;text-align:center;\"><td>").append(query).append("</td><td>")
-					.append(matchedVariable).append("</td><td>").append(predictorInfo.getSimilarity(query))
-					.append("</td></tr>");
+					.append(matchedVariable).append("</td><td>")
+					.append(predictorInfo.getSimilarity(expandedQueryIdentifier.toString())).append("</td></tr>");
 		}
 		table.append("</table></div>");
 
@@ -721,251 +779,244 @@ public class Harmonization extends PluginModel<Entity>
 	{
 		StringBuilder table = new StringBuilder();
 
-		table.append("<table id=\"mapping_").append(predictor.getName().replaceAll(" ", "_"))
-				.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
-				.append(" class=\"ui-widget-content ui-corner-all\">")
-				.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
-				.append("</th><th>Description</th><th>Select the mapping</th></tr>");
-
-		String predictorName = predictor.getName();
-
-		for (String measurementName : predictor.getMappedVariables())
+		if (predictor.getMappedVariables().size() > 0)
 		{
-			String description = predictor.getDescription(measurementName);
+			table.append("<table id=\"mapping_").append(predictor.getName().replaceAll(" ", "_"))
+					.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
+					.append(" class=\"ui-widget-content ui-corner-all\">")
+					.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
+					.append("</th><th>Description</th><th>Select the mapping</th></tr>");
 
-			StringBuilder identifier = new StringBuilder();
+			String predictorName = predictor.getName();
 
-			identifier.append(predictorName).append("_").append(measurementName);
+			for (String measurementName : predictor.getMappedVariables())
+			{
+				String description = predictor.getDescription(measurementName);
 
-			table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
-					.append("_row\"><td style=\"text-align:center;cursor:pointer;\"><span>")
-					.append(measurementName)
-					.append("</span><div id=\"")
-					.append(identifier.toString().replaceAll(" ", "_"))
-					.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
-					.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
-					.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
-					.append(description).append("</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"")
-					.append(identifier).append("_checkBox\" /></td></tr>");
+				StringBuilder identifier = new StringBuilder();
+
+				identifier.append(predictorName).append("_").append(measurementName);
+
+				table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
+						.append("_row\"><td style=\"text-align:center;cursor:pointer;\"><span>")
+						.append(measurementName)
+						.append("</span><div id=\"")
+						.append(identifier.toString().replaceAll(" ", "_"))
+						.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
+						.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
+						.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
+						.append(description)
+						.append("</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"")
+						.append(identifier).append("_checkBox\" /></td></tr>");
+			}
+
+			table.append("</table>");
 		}
-
-		table.append("</table>");
-
 		return table.toString();
 	}
 
-	private String makeExistingMappingTable(PredictorInfo predictor)
+	private String makeExistingMappingTable(PredictorInfo predictor) throws JSONException
 	{
 		StringBuilder table = new StringBuilder();
 
-		table.append("<table id=\"matched_").append(predictor.getName().replaceAll(" ", "_"))
-				.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
-				.append(" class=\"ui-widget-content ui-corner-all\">")
-				.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
-				.append("</th><th>Description</th><th>Remove the mapping</th></tr>");
-
-		String predictorName = predictor.getName();
-
-		for (String measurementName : predictor.getFinalMappings())
+		if (predictor.getFinalMappings().size() > 0)
 		{
-			String description = predictor.getDescription(measurementName);
+			table.append("<table id=\"matched_").append(predictor.getName().replaceAll(" ", "_"))
+					.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
+					.append(" class=\"ui-widget-content ui-corner-all\">")
+					.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
+					.append("</th><th>Description</th><th>Remove the mapping</th></tr>");
 
-			StringBuilder identifier = new StringBuilder();
+			String predictorName = predictor.getName();
 
-			identifier.append(predictorName).append("_").append(measurementName);
+			for (Measurement measurement : predictor.getFinalMappings().values())
+			{
+				String measurementName = measurement.getName();
 
-			table.append("<tr id=\"").append(identifier.toString().replaceAll(" ", "_"))
-					.append("_matchedRow\"><td style=\"text-align:center;cursor:pointer;\"><span>")
-					.append(measurementName).append("</span></td><td style=\"text-align:center;\">")
-					.append(description).append("</td><td style=\"text-align:center;\"><div id=\"")
-					.append(identifier.toString().replaceAll(" ", "_"))
-					.append("_remove\" style=\"cursor:pointer;height:18px;width:18px;margin-left:30px;\" ")
-					.append("class=\"ui-state-default ui-corner-all\" title=\"remove\">")
-					.append("<span class=\"ui-icon ui-icon-trash\"></span></div></td></tr>");
+				String description = measurement.getDescription();
+
+				StringBuilder identifier = new StringBuilder();
+
+				identifier.append(predictorName).append("_").append(measurementName);
+
+				table.append("<tr id=\"").append(identifier.toString().replaceAll(" ", "_"))
+						.append("_matchedRow\"><td style=\"text-align:center;cursor:pointer;\"><span>")
+						.append(measurementName).append("</span></td><td style=\"text-align:center;\">")
+						.append(description).append("</td><td style=\"text-align:center;\"><div id=\"")
+						.append(identifier.toString().replaceAll(" ", "_"))
+						.append("_remove\" style=\"cursor:pointer;height:18px;width:18px;margin-left:30px;\" ")
+						.append("class=\"ui-state-default ui-corner-all\" title=\"remove\">")
+						.append("<span class=\"ui-icon ui-icon-trash\"></span></div></td></tr>");
+			}
+
+			table.append("</table>");
 		}
-
-		table.append("</table>");
-
 		return table.toString();
 	}
 
-	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void stringMatching(Tuple request, Database db) throws Exception
 	{
+		collectExistingMapping(db, request);
 
+		if (this.getModel().getMeasurements().size() > 0)
+		{
+			this.getModel().setOs(new BioportalOntologyService());
+
+			this.getModel().setMatchingModel(new NGramMatchingModel());
+
+			this.getModel().setIsStringMatching(false);
+
+			this.getModel().setTotalJobs(this.getModel().getPredictors().size());
+
+			this.getModel().setTotalNumber(0);
+
+			this.getModel().setInitialFinishedJob(0);
+
+			this.getModel().setInitialFinishedQueries(0);
+
+			this.getModel().setStartTime(System.currentTimeMillis());
+
+			this.getModel().setScheduler(new StdSchedulerFactory().getScheduler());
+
+			this.getModel().getScheduler().start();
+		}
+
+		LinkedHashMap<JobDetail, SimpleTrigger> listOfJobs = new LinkedHashMap<JobDetail, SimpleTrigger>();
+
+		List<PredictorInfo> predictors = new ArrayList<PredictorInfo>(this.getModel().getPredictors().values());
+
+		int count = 0;
+
+		for (PredictorInfo predictor : this.getModel().getPredictors().values())
+		{
+			StringBuilder jobName = new StringBuilder();
+
+			@SuppressWarnings("static-access")
+			JobDetail job = new JobDetail(jobName.append("job_").append(count).toString(), this.getModel()
+					.getScheduler().DEFAULT_GROUP, StringMatchingJob.class);
+
+			SimpleTrigger trigger = new SimpleTrigger(jobName.append("_trigger").toString(), Scheduler.DEFAULT_GROUP,
+					new Date(), null, 0, 0);
+
+			job.getJobDataMap().put("predictor", predictor);
+
+			job.getJobDataMap().put("model", this.getModel());
+
+			job.getJobDataMap().put("matchingModel", this.getModel().getMatchingModel());
+
+			listOfJobs.put(job, trigger);
+
+			count++;
+		}
+
+		JobDetail termExpansion = new JobDetail("term_expansion_job", Scheduler.DEFAULT_GROUP, TermExpansionJob.class);
+
+		termExpansion.getJobDataMap().put("stopWords", this.getModel().getMatchingModel().getStopWords());
+
+		termExpansion.getJobDataMap().put("predictors", predictors);
+
+		termExpansion.getJobDataMap().put("jobs", listOfJobs);
+
+		termExpansion.getJobDataMap().put("model", this.getModel());
+
+		SimpleTrigger triggerTermExpasion = new SimpleTrigger("term_expansion_trigger", Scheduler.DEFAULT_GROUP,
+				new Date(), null, 0, 0);
+
+		TermExpansionListener listener = new TermExpansionListener("termExpansion");
+
+		this.getModel().getScheduler().addJobListener(listener);
+
+		termExpansion.addJobListener(listener.getName());
+
+		this.getModel().getScheduler().scheduleJob(termExpansion, triggerTermExpasion);
 	}
 
-	@Override
-	public void reload(Database db)
+	private void collectExistingMapping(Database db, Tuple request) throws DatabaseException
 	{
-		try
+		String predictionModel = request.getString("selectPredictionModel");
+
+		String validationStudy = request.getString("listOfCohortStudies");
+
+		this.getModel().setCatalogue(null);
+
+		this.getModel().setMeasurements(null);
+
+		this.getModel().getPredictors().clear();
+
+		this.getModel().setSelectedPredictionModel(predictionModel);
+
+		this.getModel().setSelectedValidationStudy(validationStudy);
+
+		ComputeProtocol cp = db.find(ComputeProtocol.class,
+				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
+
+		if (cp.getFeatures_Name().size() > 0)
 		{
-			// clear the old variable content
-			listOfPredictionModels.clear();
-			listOfCohortStudies.clear();
-			predictors.clear();
-
-			if (reservedInv.size() == 0)
+			for (Measurement m : db.find(Measurement.class,
+					new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
 			{
-				reservedInv.add("catalogueCohortStudy");
-				reservedInv.add("cataloguePredictionModel");
-				reservedInv.add("Prediction Model");
-			}
+				PredictorInfo predictor = new PredictorInfo(m.getName());
 
-			for (ComputeProtocol cp : db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.INVESTIGATION_NAME,
-					Operator.EQUALS, "Prediction Model")))
-			{
-				listOfPredictionModels.add(cp.getName());
-			}
+				predictor.setLabel(m.getLabel());
 
-			for (Investigation inv : db.find(Investigation.class))
-			{
-				if (!reservedInv.contains(inv.getName()))
+				HashMap<String, String> categories = new HashMap<String, String>();
+
+				if (m.getCategories_Name().size() > 0)
 				{
-					listOfCohortStudies.add(inv.getName());
-				}
-			}
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	private void executeMapping(PredictorInfo predictor, List<Measurement> measurementsInStudy) throws Exception
-	{
-		MappingList mappings = new MappingList();
-
-		for (String eachQuery : predictor.getExpandedQuery())
-		{
-			double maxSimilarity = 0;
-
-			String matchedDataItem = "";
-
-			String measurementName = "";
-
-			List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
-
-			for (Measurement m : measurementsInStudy)
-			{
-				List<String> fields = new ArrayList<String>();
-
-				if (m.getDescription() != null && !m.getDescription().equals(""))
-				{
-					fields.add(m.getDescription());
-
-					if (m.getCategories_Name().size() > 0)
+					for (Category c : db.find(Category.class,
+							new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name())))
 					{
-						for (String categoryName : m.getCategories_Name())
-						{
-							fields.add(categoryName + " " + m.getDescription());
-						}
+						categories.put(c.getCode_String(), c.getDescription());
 					}
 				}
 
-				for (String question : fields)
-				{
-					List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
+				predictor.setCategory(categories);
 
-					double similarity = model.calculateScore(dataItemTokens, tokens);
+				predictor.setIdentifier(m.getName().replaceAll(" ", "_"));
 
-					if (similarity > maxSimilarity)
-					{
-						if (m.getDescription() != null)
-						{
-							matchedDataItem = m.getDescription();
-						}
-						else
-						{
-							matchedDataItem = question;
-						}
-						maxSimilarity = similarity;
-						measurementName = m.getName();
-					}
-				}
+				this.getModel().getPredictors().put(m.getName().replaceAll(" ", "_"), predictor);
 			}
-			mappings.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);
-		}
 
-		predictor.setMappings(mappings);
-	}
+			Query<ObservedValue> query = db.query(ObservedValue.class);
 
-	private List<String> createExpandQuery(String[] buildingBlocksArray, OWLFunction owlFunction)
-	{
-		List<String> buildingBlocks = new ArrayList<String>(Arrays.asList(buildingBlocksArray));
+			query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, cp.getFeatures_Name()));
 
-		List<String> expandedQueries = new ArrayList<String>();
+			query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
 
-		if (buildingBlocks.size() == 1)
-		{
-			expandedQueries.addAll(collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction));
-		}
-		else if (buildingBlocks.size() >= 2)
-		{
-			List<String> expansionForFirst = collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction);
-
-			List<String> expansionForSeconed = collectInfoFromOntology(buildingBlocks.get(1).trim(), owlFunction);
-
-			List<String> concatenatedString = new ArrayList<String>();
-
-			for (String tokenFromFirst : expansionForFirst)
+			for (ObservedValue ov : query.find())
 			{
-				expandedQueries.add(tokenFromFirst);
+				String targetName = ov.getTarget_Name();
 
-				for (String tokenFromSecond : expansionForSeconed)
-				{
-					expandedQueries.add(tokenFromSecond);
-					concatenatedString.add(tokenFromFirst + " " + tokenFromSecond);
-				}
+				String value = ov.getValue();
+
+				this.getModel().getPredictors().get(targetName.replaceAll(" ", "_"))
+						.setBuildingBlocks(value.split(";"));
 			}
 
-			String first = buildingBlocks.get(0);
+			Query<MappingMeasurement> queryForMappings = db.query(MappingMeasurement.class);
 
-			String second = buildingBlocks.get(1);
+			queryForMappings
+					.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN, cp.getFeatures_Name()));
+			queryForMappings.addRules(new QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.EQUALS,
+					validationStudy));
 
-			buildingBlocks.remove(first);
-
-			buildingBlocks.remove(second);
-
-			while (buildingBlocks.size() > 0)
+			for (MappingMeasurement mapping : queryForMappings.find())
 			{
-				List<String> expansionForNext = collectInfoFromOntology(buildingBlocks.get(0).trim(), owlFunction);
+				List<Measurement> listOfFeatures = db.find(Measurement.class, new QueryRule(Measurement.NAME,
+						Operator.IN, mapping.getFeature_Name()));
 
-				List<String> fragments = new ArrayList<String>();
-
-				for (String fragmentString : concatenatedString)
-				{
-					for (String tokenForNext : expansionForNext)
-					{
-						fragments.add(fragmentString + " " + tokenForNext);
-
-						expandedQueries.add(tokenForNext);
-					}
-				}
-
-				String next = buildingBlocks.get(0);
-
-				buildingBlocks.remove(next);
-
-				concatenatedString = fragments;
+				this.getModel().getPredictors().get(mapping.getMapping_Name().replaceAll(" ", "_"))
+						.addFinalMappings(listOfFeatures);
 			}
 
-			expandedQueries.addAll(concatenatedString);
+			this.getModel().setMeasurements(new HashMap<String, Measurement>());
+
+			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+					Operator.EQUALS, validationStudy)))
+			{
+				this.getModel().getMeasurements().put(m.getName(), m);
+			}
 		}
-
-		return expandedQueries;
-	}
-
-	public List<String> collectInfoFromOntology(String queryToExpand, OWLFunction owlFunction)
-	{
-
-		List<String> expandedQueries = new ArrayList<String>();
-		expandedQueries.add(queryToExpand);
-		expandedQueries.addAll(owlFunction.getSynonyms(queryToExpand));
-		expandedQueries.addAll(owlFunction.getAllChildren(queryToExpand, new ArrayList<String>(), 1));
-
-		return expandedQueries;
 	}
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
@@ -981,6 +1032,7 @@ public class Harmonization extends PluginModel<Entity>
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
 
 		cp.getFeatures_Id().remove(m.getId());
+
 		cp.getFeatures_Name().remove(m.getName());
 
 		db.update(cp);
@@ -1083,29 +1135,59 @@ public class Harmonization extends PluginModel<Entity>
 		return uniqueList;
 	}
 
-	public List<String> getDataTypes()
+	@Override
+	public ScreenView getView()
 	{
-		List<String> dataTypeOptions = new ArrayList<String>();
-		dataTypeOptions.add("string");
-		dataTypeOptions.add("int");
-		dataTypeOptions.add("datetime");
-		dataTypeOptions.add("categorical");
-		dataTypeOptions.add("decimal");
-		return dataTypeOptions;
+		FreemarkerView freeMarkerView = new FreemarkerView(this.getModel().getFreeMakerTemplate(), this.getModel());
+		return freeMarkerView;
 	}
 
-	public List<String> getListOfPredictionModels()
+	public class TermExpansionListener implements JobListener
 	{
-		return listOfPredictionModels;
-	}
+		private String name;
 
-	public String getUrl()
-	{
-		return "molgenis.do?__target=" + this.getName();
-	}
+		public TermExpansionListener(String name)
+		{
+			this.name = name;
+		}
 
-	public List<String> getListOfCohortStudies()
-	{
-		return listOfCohortStudies;
+		public String getName()
+		{
+			return name;
+		}
+
+		public void jobToBeExecuted(JobExecutionContext arg0)
+		{
+		}
+
+		@SuppressWarnings("unchecked")
+		public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception)
+		{
+			try
+			{
+				LinkedHashMap<JobDetail, SimpleTrigger> listOfJobs = (LinkedHashMap<JobDetail, SimpleTrigger>) context
+						.getJobDetail().getJobDataMap().get("jobs");
+
+				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
+
+				model.setIsStringMatching(true);
+
+				model.setInitialFinishedJob(0);
+
+				for (JobDetail eachJob : listOfJobs.keySet())
+				{
+					model.getScheduler().scheduleJob(eachJob, listOfJobs.get(eachJob));
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void jobExecutionVetoed(JobExecutionContext arg0)
+		{
+		}
 	}
 }

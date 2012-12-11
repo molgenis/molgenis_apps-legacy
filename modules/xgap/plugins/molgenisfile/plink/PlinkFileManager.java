@@ -27,10 +27,9 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.plink.drivers.MapFileDriver;
-import org.molgenis.util.plink.drivers.PedFileDriver;
 import org.molgenis.xgap.InvestigationFile;
 
+import plugins.molgenisfile.plink.PlinkFileManagerModel;
 import decorators.NameConvention;
 import filehandling.generic.PerformUpload;
 
@@ -182,8 +181,6 @@ public class PlinkFileManager extends PluginModel<Entity>
 					{
 						throw new Exception("One or more files were empty. Please provide them all.");
 					}
-					new MapFileDriver(mapFile).validate();
-					new PedFileDriver(pedFile).validate();
 
 					boolean molgenisFilesAdded = false;
 					InvestigationFile mapInvFile = null;

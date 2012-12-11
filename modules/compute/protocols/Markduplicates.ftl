@@ -10,6 +10,8 @@
 
 #MOLGENIS walltime=35:59:00 mem=4
 
+module load picard-tools/${picardVersion}
+
 inputs "${sortedbam}"
 inputs "${sortedbamindex}"
 alloutputsexist \

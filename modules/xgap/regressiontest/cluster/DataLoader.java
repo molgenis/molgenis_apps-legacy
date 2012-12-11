@@ -103,6 +103,7 @@ public class DataLoader
 			catch (Exception e)
 			{
 				result.add("Error, but continuing: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 

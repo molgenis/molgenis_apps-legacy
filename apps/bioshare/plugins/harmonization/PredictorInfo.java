@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.molgenis.pheno.Measurement;
+
 import plugins.HarmonizationComponent.LinkedInformation;
 import plugins.HarmonizationComponent.MappingList;
 
@@ -15,7 +17,7 @@ public class PredictorInfo
 	private String identifier = null;
 	private List<String> buildingBlocks = new ArrayList<String>();
 	private List<String> expandedQuery = new ArrayList<String>();
-	private List<String> finalMappings = new ArrayList<String>();
+	private HashMap<String, Measurement> finalMappings = new HashMap<String, Measurement>();
 	private HashMap<String, String> category = new HashMap<String, String>();
 	private HashMap<String, String> description = new HashMap<String, String>();
 	private HashMap<String, Double> similarity = new HashMap<String, Double>();
@@ -76,9 +78,28 @@ public class PredictorInfo
 		this.category = category;
 	}
 
-	public void setFinalMappings(List<String> finalMappings)
+	public void setFinalMappings(HashMap<String, Measurement> finalMaapings)
 	{
-		this.finalMappings = finalMappings;
+		this.finalMappings = finalMaapings;
+	}
+
+	public void addFinalMappings(List<Measurement> finalMappings)
+	{
+		for (Measurement m : finalMappings)
+		{
+			if (!this.finalMappings.containsKey(m.getName()))
+			{
+				this.finalMappings.put(m.getName(), m);
+			}
+		}
+	}
+
+	public void setDescription(String name, String measurementDescription)
+	{
+		if (!description.containsKey(name))
+		{
+			description.put(name, measurementDescription);
+		}
 	}
 
 	public void setMappings(MappingList mappings)
@@ -94,10 +115,12 @@ public class PredictorInfo
 			String matchedItem = eachRow.matchedItem;
 			Double similarity = eachRow.similarity;
 			String measurementName = eachRow.measurementName;
+			StringBuilder expandedQueryIdentifier = new StringBuilder();
+			expandedQueryIdentifier.append(expandedQuery).append("_").append(measurementName);
 
-			if (!this.similarity.containsKey(expandedQuery))
+			if (!this.similarity.containsKey(expandedQueryIdentifier.toString()))
 			{
-				this.similarity.put(expandedQuery, similarity);
+				this.similarity.put(expandedQueryIdentifier.toString(), similarity);
 			}
 
 			if (!this.description.containsKey(measurementName))
@@ -141,7 +164,7 @@ public class PredictorInfo
 		return expandedQuery;
 	}
 
-	public List<String> getFinalMappings()
+	public HashMap<String, Measurement> getFinalMappings()
 	{
 		return finalMappings;
 	}

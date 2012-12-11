@@ -34,8 +34,8 @@ public class Search extends SearchPlugin
 	public Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.getModel().setPatientPager("generated-res/col7a1/patientPager.jsp");
-		this.getModel().setMutationPager("generated-res/col7a1/mutationPager.jsp");
+		this.getModel().setPatientPager("res/mutation/col7a1/patientPager.jsp");
+		this.getModel().setMutationPager("res/mutation/col7a1/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/col7a1/ui/patient.ftl");
 		this.getModel().setMutationViewer("/org/molgenis/col7a1/ui/mutation.ftl");
 		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
@@ -46,6 +46,10 @@ public class Search extends SearchPlugin
 	{
 		super.handleShowPatient(request);
 
+		/*
+		 * Add some phenotypic details that will be displayed in the patient view already:
+		 * "IF", "EM" and "Patient material" information
+		 */
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
 			this.getModel().setIndividualDTO(this.phenoService.findPhenotypeDetails(this.getModel().getPatientSummaryVO().getPatientId()));

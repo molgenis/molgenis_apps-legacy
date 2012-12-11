@@ -174,11 +174,7 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 	public static boolean isExcelFormatXGAPArchive(File extractDir)
 	{
 		String[] filesArr = extractDir.list();
-
 		boolean hasExcelFile = false;
-		boolean hasData = false;
-		boolean hasLengthTwo = false;
-		boolean hasLengthOne = false;
 
 		for (String s : filesArr)
 		{
@@ -186,33 +182,8 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 			{
 				hasExcelFile = true;
 			}
-			if (s.equals("data"))
-			{
-				hasData = true;
-			}
 		}
-
-		if (filesArr.length == 1)
-		{
-			hasLengthOne = true;
-		}
-		else if (filesArr.length == 2)
-		{
-			hasLengthTwo = true;
-		}
-
-		if (hasExcelFile && hasLengthTwo && hasData)
-		{
-			return true;
-		}
-		else if (hasExcelFile && hasLengthOne)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return hasExcelFile;
 	}
 
 	@Override
