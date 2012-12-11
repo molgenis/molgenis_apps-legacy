@@ -19,7 +19,7 @@ Content
   
   
 ###1. Introduction
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui.
+To be written
   
   
 ###2. Imputation
@@ -77,6 +77,11 @@ To speed up parallel processing it is required to have your study data split per
 >done   
   
 Afterwards the created PED and MAP can be used as input for your analysis. The directory containing the PED/MAP files should be specified as `studyInputDir` in the sampleWorksheet.csv which is explained later in this manual.  
+  
+####3.1 Test data
+In case you don't have study data, a test dataset containing 60 samples from HapMap revision22 on build37 (chr20 & 21) of the human genome is available for download. This set can be used in combination with the included `workflow.csv`.  
+  
+Download here: https://github.com/downloads/freerkvandijk/files/hapmapCEUr22b37.zip    
   
   
 ###4. Preparing the reference dataset
@@ -277,8 +282,8 @@ All protocols and files to run an imputation using Minimac[^3] can be found in t
 ####8.1 Tools
 To run this pipeline the following tools, scripts and datasets are required:
   
-* study data
-* reference dataset in Ped/Map format (prepared using the workflow described in chapter 5.2)
+* study data in PED/MAP format (prepared as described in chapter 3)
+* reference dataset in VCF,  format (prepared as described in chapter 4)
 * java
 * python
 * ChunkChromosome (v. 2012-08-28)
@@ -313,7 +318,7 @@ The columns explained:
   
   
 ####8.3 Running an analysis  
-The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome and performs quality control using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
+The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome and performs quality control using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. This extensive chunking is needed to parallelize the analysis, leading to a total analysis time of approximately 10 hours per chunk of 2000 SNPs and 500 samples. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
   
 #####Step 1: preparing & QCing the study data  
 After preparing the study PED/MAP files as described in chapter 3 and preparing the reference data as described in chapter 4 one needs to change the following parameter values in the `parametersMinimac.csv`:  
@@ -411,26 +416,10 @@ EXTEND THIS WHEN QUICKTEST IS IMPLEMENTED?
 | mach | http://www.bbmriwiki.nl/svn/ebiogrid/modules/mach/1.0.18/mach.1.0.18.Linux.tgz |  
 | plink | http://www.bbmriwiki.nl/svn/ebiogrid/modules/plink/1.07-x86_64/plink-1.07-x86_64.tgz |  
 | plink1.08 | http://www.bbmriwiki.nl/svn/ebiogrid/modules/plink/1.08/plink-1.08.tgz |  
-| ImputationTool | Link Here |  
+| ImputationTool | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ImputationTool-20120912/ |  
 | ConcatWorksheets | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConcatWorksheetsV1.0/ |  
 | ExpandWorksheet | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ExpandWorksheetWithMergeWorksheetV1.1/ |  
-  
-Text
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+    
   
 [^1]: See http://freemarker.org/ for a manual.
 [^2]: http://mathgen.stats.ox.ac.uk/impute/impute_v2.html
