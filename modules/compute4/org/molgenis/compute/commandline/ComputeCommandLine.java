@@ -455,7 +455,17 @@ public class ComputeCommandLine
 	public static void main(String[] args)
 	{
 		// Parse command line arguments
-		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args);
+		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args, new Exiter()
+		{
+
+			@Override
+			public void exit()
+			{
+				System.exit(1);
+
+			}
+
+		});
 
 		ComputeCommandLine ccl = new ComputeCommandLine();
 
