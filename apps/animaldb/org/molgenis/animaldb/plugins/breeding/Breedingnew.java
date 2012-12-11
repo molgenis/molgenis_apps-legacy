@@ -96,6 +96,8 @@ public class Breedingnew extends PluginModel<Entity>
 	private String nameBase = null;
 	private int startNumber = -1;
 	private String litter;
+	private int weansize = 0;
+	private String weanparentgroup = null;
 	private String prefix = "";
 	private List<String> bases;
 	private List<ObservationTarget> backgroundList;
@@ -1539,6 +1541,7 @@ public class Breedingnew extends PluginModel<Entity>
 		if (observableFeat.containsKey("Parentgroup"))
 		{
 			inputParentGroup.setValue(observableFeat.get("Parentgroup"));
+			weanparentgroup = observableFeat.get("Parentgroup");
 		}
 		else
 		{
@@ -1603,6 +1606,7 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 
 			inputWeanSize.setValue(observableFeat.get("WeanSize"));
+			weansize = Integer.parseInt(observableFeat.get("WeanSize"));
 		}
 		else
 		{
@@ -1638,12 +1642,73 @@ public class Breedingnew extends PluginModel<Entity>
 
 			existingColumns.add(e);
 
-			if (request.getString(e) == null && e.equalsIgnoreCase("WeanDate") || e.equalsIgnoreCase("WeanSize"))
+			// This has to go this way, when a field is disabled it will return
+			// a null when you do a request.getString(e)
+			if (e.equalsIgnoreCase("Parentgroup") || e.equalsIgnoreCase("Line"))
+			{
+				// do nothing
+			}
+
+			else if (request.getString(e) == null)
 			{
 				deleteObservedValues.add(ov);
 			}
+			else if (e.equalsIgnoreCase("DateOfBirth"))
+			{
 
-			if (!e.equalsIgnoreCase("Parentgroup") || !e.equalsIgnoreCase("Line"))
+				String newValue = request.getString(e);
+				Query<ObservedValue> litterTypeQuery = db.query(ObservedValue.class);
+				litterTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
+				litterTypeQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.litter));
+				List<ObservedValue> individualValueList = litterTypeQuery.find();
+				List<ObservationTarget> listObsTargets = null;
+				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
+
+				for (ObservedValue v : individualValueList)
+				{
+					listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
+							Operator.EQUALS, v.getTarget_Name()));
+					String targetName = listObsTargets.get(0).getName();
+
+					// Birthdate
+					ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
+							invName, invName.get(0)).get(0);
+					birthDate.setValue(newValue);
+					db.update(birthDate);
+					ov.setValue(newValue);
+
+					db.update(ov);
+
+				}
+
+			}
+
+			else if (e.equalsIgnoreCase("WeanSize"))
+			{
+				int newSize = request.getInt(e);
+				if (newSize > weansize)
+				{
+					int diff = newSize - weansize;
+					// updateWeanSize(diff);
+					System.out.println("I am bigger");
+				}
+				else if (newSize < weansize)
+				{
+					System.out.println("I am smaller");
+				}
+				else
+				{
+					System.out.println("I stay the same size");
+				}
+				String newValue = request.getString(e);
+
+				System.out.println(ov);
+
+				ov.setValue(newValue);
+
+				db.update(ov);
+			}
+			else
 			{
 				String newValue = request.getString(e);
 
@@ -1653,10 +1718,12 @@ public class Breedingnew extends PluginModel<Entity>
 
 				db.update(ov);
 			}
-		}
 
+		}
 		db.remove(deleteObservedValues);
 
+		// This part is when there was no value in the database for that
+		// measurement
 		for (String e : litterProtocol())
 		{
 			if (request.getString(e) != null)
@@ -1678,31 +1745,22 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 		}
 
-		// for (String e : headers)
-		// {
-		//
-		// System.out.println(e + "\t" + request.getString(e));
-		//
-		// }
-
-		// for (ObservedValue val : listObservedValues)
-		// {
-		//
-		// if (headers.contains(val.getFeature_Name()))
-		// {
-		// int colIndex = headers.indexOf(val.getFeature_Name());
-		//
-		// String value = editTable.getCellString(colIndex, 0).toString();
-		// request.getString()
-		// System.out.println(value);
-		//
-		// val.setValue(value);
-		//
-		// db.update(val);
-		// }
-		// }
-
 	}
+
+	// private void updateWeanSize(int numberofAnimals)
+	// {
+	// String invName =
+	// ct.getObservationTargetByName(this.litter).getInvestigation_Name();
+	// for (int animalNumber = 0; animalNumber < numberofAnimals;
+	// animalNumber++)
+	// {
+	// String nrPart = "" + (startNumber + animalNumber);
+	// nrPart = ct.prependZeros(nrPart, 6);
+	// ObservationTarget animalToAdd = ct.createIndividual(invName, nameBase +
+	// nrPart, userName);
+	// animalsToAddList.add(animalToAdd);
+	// }
+	// }
 
 	private String AddParentgroup2(Database db, Tuple request, List<String> papa, List<String> mama, String startdate,
 			String remarks) throws Exception
