@@ -1,4 +1,4 @@
-CP="../../../../.."
+CP="../../../../../.."
 java -cp $CP/molgenis_apps/build/classes:$CP/molgenis/bin:\
 $CP/molgenis/lib/ant-1.8.1.jar:\
 $CP/molgenis/lib/ant-apache-log4j.jar:\
