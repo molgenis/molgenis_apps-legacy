@@ -1,4 +1,4 @@
-package org.molgenis.compute.test.generator;
+package org.molgenis.compute.db.generator;
 
 import org.testng.annotations.Test;
 
