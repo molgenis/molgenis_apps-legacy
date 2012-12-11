@@ -36,6 +36,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.TextLineInput;
@@ -1415,7 +1416,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 		// Prepare table
 		// genotypeTable = new Table("GenoTable", "");
-		editTable = new Table("EditTable", "");
+		editTable = new JQueryDataTable("EditTable", "");
 
 		for (String e : litterProtocol())
 		{
@@ -1602,6 +1603,7 @@ public class Breedingnew extends PluginModel<Entity>
 		row++;
 		// WeanSize
 		TextLineInput<String> inputWeanSize = new TextLineInput<String>("WeanSize");
+		inputWeanSize.setDisabled(true);
 		if (observableFeat.containsKey("WeanSize"))
 		{
 
