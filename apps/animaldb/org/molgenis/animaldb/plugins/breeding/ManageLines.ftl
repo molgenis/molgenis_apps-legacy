@@ -126,7 +126,7 @@
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false,
+	  "bAutoWidth": true,
 	  "bJQueryUI" : true,
 	  "aoColumnDefs": [ 
       	{ "sWidth": "30px", "aTargets": [ 0,6 ] }
