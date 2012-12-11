@@ -29,7 +29,7 @@ This chapter shortly describes the contents of the Molgenis Compute distro. EXTE
   
   
 ####2.1 Installation of Molgenis Compute
-The first thing to do is unpacking the Molgenis Compute distro. To unpack the distro execute the following command:  
+The first thing to do is to unpack the Molgenis Compute distro. To unpack the distro execute the following command:  
   
 >unzip molgenis_compute-\<version\>.zip  
 >cd molgenis_compute-\<version\>  
@@ -54,16 +54,16 @@ Compute:
   
   
 ####2.3 General compute settings for imputation  
-To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is obliged to execute any of the imputation pipelines. After changing these parameters the parameters file is ready to use. Changing the following environment parameters is obliged:  
+To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute any of the imputation pipelines. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
   
-* scheduler: this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs without headers for Grid usage the value GRID should be specified.  
+* scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs without headers for Grid usage the value GRID should be specified.  
 * root: this is the "root" parameter shared by all other parameters. To ease the setup we recommend to install all tools in a *tools* directory and all resources in a *resources* directory in the "root".    
   
   
 ###3.	Preparing the study data  
   
   
-To speed up parallel processing it is required to have your study data split per chromosome in the pLINK PED/MAP format[^4]. To split up your study per chromosome (1 up to 22) the following pLINK[^5] command can be used:  
+To speed up parallel processing it is required to have your study data split per chromosome in the plink PED/MAP format[^4]. To split up your study per chromosome (1 up to 22) the following plink[^5] command can be used:  
   
 >for $chrNumber in {1..22}  
 >do  
@@ -76,7 +76,7 @@ To speed up parallel processing it is required to have your study data split per
 >--out chr$chrNumber  
 >done   
   
-Afterwards the created PED and MAP can be used as input for your analysis. The directory containing the PED/MAP files should be specified as `studyInputDir` in the sampleWorksheet.csv which is explained later in this manual.  
+Afterwards the created PED and MAP files can be used as input for your analysis. The directory containing the PED/MAP files should be specified as `studyInputDir` in the sampleWorksheet.csv which is explained later in this manual.  
   
 ####3.1 Test data
 In case you don't have study data, a test dataset containing 60 samples from HapMap revision22 on build37 (chr20 & 21) of the human genome is available for download. This set can be used in combination with the included `workflow.csv`.  
@@ -107,7 +107,7 @@ An example test reference set can be created using the following command:
   
   
 ####4.2 Output example  
-Executing the above mentioned commands will result in a directory with the following structure:
+Executing the above mentioned commands will result in a directory with the following structure in the selected execution environment and after the completion of the jobs:
   
 
 
@@ -193,7 +193,7 @@ The complete Impute2 pipeline consists of two steps. The first one (specified in
 >-id=runXX
   
   
-All folders and jobs can be found in the scripts directory specified by the user. The second step of the analysis pipeline consists of executing the generated shell scripts. This can be done by typing the following command:
+All folders and jobs can be found in the scripts directory specified by the user. The second step of the analysis is the execution of the generated shell scripts. This can be done by typing the following command:
   
 `cd /your/output/directory/here/`  
 `sh submit.sh`  
@@ -255,7 +255,7 @@ An example worksheet using minimac and b37 is distributed in the Compute binary 
   
   
 ####7.3 Running an analysis using Molgenis Compute
-The complete minimac pipeline consists of three steps. The first one (specified in workflowMinimacStage1.csv) creates the complete filestructure and all Compute jobs for the prephasing. The first three steps of this workflow consist of filtering the study data using ImputationTool, one might choose to remove these steps from the workflow if the study data is already filtered and qced. The second step takes care of the phasing of the data, this process is executed per chunk/region of a user specified number of markers/SNPs (default is 2000). The steps described in workflowMinimacStage3.csv perform the actual imputation and merge the chunk-based results back per chromosome. The pipeline can be executed using the following command:
+The complete minimac pipeline consists of three steps. The first one (specified in workflowMinimacStage1.csv) creates the complete file structure and all Compute jobs for the prephasing. The first three steps of this workflow consist of filtering the study data using ImputationTool, one might choose to remove these steps from the workflow if the study data is already filtered and qced. The second step takes care of the phasing of the data, this process is executed per chunk/region of a user specified number of markers/SNPs (default is 2000). The steps described in workflowMinimacStage3.csv perform the actual imputation and merge the chunk-based results back per chromosome. The pipeline can be executed using the following command:
   
   
 >sh molgenis_compute.sh \\  
@@ -272,7 +272,7 @@ All Compute jobs can now be found in the directory */compute/jobs/prepare/* in t
   
 `cd /your/output/directory/here/`  
 `sh submit.sh`  
-**Note: Alternatively the generated s00_\*.sh scripts can be executed by hand**
+**Note: Alternatively the generated s00_\*.sh scripts can be executed locally**
   
   
 ###8. Imputation using minimacV2 pipeline
@@ -308,17 +308,17 @@ To start an analysis one needs to create a so called "worksheet". This worksheet
 | projectname | directory | directory | beagle/mach/impute2 | b36/b37 | chromosome number | TRUE/FALSE |  
   
 The columns explained:  
-* project: the project name of your analysis  
-* studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3  
-* prePhasingResultDir: the output directory for the pre-phasing result  
-* imputationPipeline: the pipeline to use, this can be one of the three described in this document  
-* genomeBuild: the genome build to use. **Please make sure your study and referencedata are on the same genome build**  
-* chr: the chromosome to run the analysis on  
-* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. **Note: This only works if in your cluster setup submission from nodes is allowed.**  
+* project: the project name of your analysis. Type: string  
+* studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3. Type: string  
+* prePhasingResultDir: the output directory for the pre-phasing result. Type: string  
+* imputationPipeline: the pipeline to use, this can be one of the three described in this document. Type: beagle/minimac/impute2  
+* genomeBuild: the genome build to use. Type: boolean, b36/b37 **Please make sure your study and referencedata are on the same genome build**  
+* chr: the chromosome to run the analysis on. Type: integer  
+* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. Type: TRUE/FALSE **Note: This only works if in your cluster setup submission from nodes is allowed.**  
   
   
 ####8.3 Running an analysis  
-The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome and performs quality control using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. This extensive chunking is needed to parallelize the analysis, leading to a total analysis time of approximately 10 hours per chunk of 2000 SNPs and 500 samples. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenate the results into output files per chromosome. Since the phasing is independant of the referencepanel one only has to run the third step again when imputing with a different referencepanel.  
+The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome and performs quality control using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. This extensive chunking is needed to parallelize the analysis, leading to a total analysis time of approximately 10 hours per chunk of 2000 SNPs and 500 samples. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenates the results per chromosome. Since the phasing is independant of the reference panel one only has to run the third step again when imputing with a different reference panel.  
   
 #####Step 1: preparing & QCing the study data  
 After preparing the study PED/MAP files as described in chapter 3 and preparing the reference data as described in chapter 4 one needs to change the following parameter values in the `parametersMinimac.csv`:  
@@ -346,7 +346,7 @@ All folders and jobs can be found in the output directory specified by the user.
   
 `cd /your/output/directory/here/`  
 `sh submit.sh`  
-**Note: Alternatively the generated s00_\*.sh scripts can be executed by hand.**  
+**Note: Alternatively the generated s00_\*.sh scripts can be executed locally.**  
   
 During this preparation the study data chunks and chromosome chunks are automatically added to the existing worksheet leading to a new worksheet named `concattedChunkWorksheet.csv`. This worksheet has to be used during step 2 of the pipeline.  
   
