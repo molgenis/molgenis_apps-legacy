@@ -141,7 +141,6 @@ Executing the above mentioned commands will result in a directory with the follo
 When all these files are present the reference dataset is ready to be used.
   
   
-  
 ###5. Imputation using Impute2  
   
   
@@ -205,10 +204,12 @@ All Compute jobs can now be found in the directory */compute/jobs/chrNumber/* in
   
 ###6. Imputation using Beagle
   
+  
 Still to come!
   
   
 ###7. Imputation using Minimac
+  
   
 All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimac/* directory. Before running an analysis all required tools need to be installed. 
   
@@ -239,10 +240,6 @@ To start an analysis one needs to create a so called "worksheet". This worksheet
 | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |  
 | projectname | directory | reference data | directory | beagle/minimac/impute2 | b36/b37 | integer | TRUE/FALSE |  
   
-  
-test
-
-    
 The columns explained:  
 * project: the project name of your analysis. Type: string  
 * studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3. Type: string  
@@ -278,7 +275,9 @@ All Compute jobs can now be found in the directory */compute/jobs/prepare/* in t
 **Note: Alternatively the generated s00_\*.sh scripts can be executed locally**
   
   
-###8. Imputation using minimacV2 pipeline
+###8. Imputation using minimacV2 pipeline  
+  
+  
 All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The version 2 pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 8.1.
   
   
@@ -410,8 +409,10 @@ The pipeline produces several files which can be used for downstream analysis. T
 EXTEND THIS WHEN QUICKTEST IS IMPLEMENTED?  
   
   
+###9 Appendix  
   
-####9 Appendix  
+  
+Overview of the tools needed for the minimacV2 pipeline.  
   
 | Tool | Downloadlink |  
 | :----: | :----: |  
