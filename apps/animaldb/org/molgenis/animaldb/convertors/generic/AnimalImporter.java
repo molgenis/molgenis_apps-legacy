@@ -82,7 +82,7 @@ public class AnimalImporter
 		ct.makeObservationTargetNameMap(userName, false);
 		logger = Logger.getLogger("LoadUliDb");
 
-		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
+		// highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
 
 		// If needed, make investigation
 		invName = "System";
@@ -285,50 +285,28 @@ public class AnimalImporter
 			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 			animalsToAddList.add(newAnimal);
 
-			// ID -> OldRhutDbAnimalId
+			// Set some defaults: --> Animal Type,
+			String animalType = "A. Gewoon dier";
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, null, "AnimalType",
+					animalName, animalType, null));
+
+			// convert ID -> OldAnimalId
 			String oldAnimalId = tuple.getString("AnimalID");
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldAnimalId"), now, null, "OldAnimalId",
 					animalName, oldAnimalId, null));
 			animalMap.put(oldAnimalId, animalName);
 
-			// set species
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species",
-					animalName, null, this.defaultSpecies));
-
-			// litter nr -> OldRhutDbLitterId + AnimalType (if -1 then
-			// animaltype=GMO, if 0 then animaltype=WT (Gewoon dier))
-			String litterId = tuple.getString("LitterId");
-			List<String> animalNameList;
-			if (litterMap.get(litterId) != null)
-			{
-				animalNameList = litterMap.get(litterId);
-			}
-			else
-			{
-				animalNameList = new ArrayList<String>();
-			}
-			animalNameList.add(animalName);
-			litterMap.put(litterId, animalNameList);
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldLitterId"), now, null, "OldLitterId",
-					animalName, litterId, null));
-
-			String animalType = "A. Gewoon dier";
-
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, null, "AnimalType",
-					animalName, animalType, null));
-
-			// Sex -> Sex (0 = female, 1 = male)
+			// convert Sex -> Sex
 			String sex = tuple.getString("Sex");
-
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSex"), now, null, "Sex", animalName,
 					null, sex));
 
-			// Genotype -> Background (default C57BL/6j and otherwise CBA/CaJ)
-			// or Genotype (GeneModification + GeneState)
-			String background = tuple.getString("GeneticBackground"); // FIXME
-																		// change
-			// Genotype into
-			// background
+			// convert Species -> Species
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species",
+					animalName, null, this.defaultSpecies));
+
+			// convert GeneticBackground -> Background (default "no background")
+			String background = tuple.getString("GeneticBackground");
 			String backgroundName;
 			if (background != null)
 			{
@@ -342,11 +320,66 @@ public class AnimalImporter
 				backgroundName = "No Background";
 			}
 
+			// convert BreedingLine -> Breedingline
+			// FIXME add not null checks and conversion to default breeding line
+			// from settigs if null?
+			String breedingline = tuple.getString("BreedingLine");
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSBreedingLine"), now, null,
+					"BreedingLine", animalName, null, breedingline));
+
+			// convert litterId -> OldLitterId & create a per litter map of
+			// animals, to match litter later
+			String litterId = tuple.getString("LitterId");
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldLitterId"), now, null, "OldLitterId",
+					animalName, litterId, null));
+
+			List<String> animalNameList;
+			if (litterMap.get(litterId) != null)
+			{
+				animalNameList = litterMap.get(litterId);
+			}
+			else
+			{
+				animalNameList = new ArrayList<String>();
+			}
+			animalNameList.add(animalName);
+			litterMap.put(litterId, animalNameList);
+
+			// convert DateOfBirth -> DateOfBirth
+			String dobDateString = tuple.getString("DateOfBirth");
+			// FIXME: add not null checks!!!
+			if (dobDateString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
+						"DateOfBirth", animalName, dobDateString, null));
+			}
+
+			// convert WeanDate -> WeanDate
+			String weanDateString = tuple.getString("WeanDate");
+			// FIXME: add not null checks!!!
+			if (weanDateString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
+						animalName, weanDateString, null));
+
+			}
+			else
+			{
+				// FIXME fail badly
+				// Throw weandate is mandatory error
+
+			}
+
+			// convert Weandate -> Weandata and use as facilitystartdate for
+			// yearly report.
+			String state = "Alive"; // default for all animals to Alive, modify
+									// later if appropriate
+			String startDateString = tuple.getString("Weandate");
+
 			// arrival date and rem date -> Active start and end time
 			// Don't set DeathDate (to rem date) because we do not know if the
-			// animal was terminated or removed
-			String state = "Alive";
-			String startDateString = tuple.getString("FacilityEntrydate");
+			// animal was terminated or removede
+
 			Date startDate = null;
 			Date remDate = null;
 			Date deathDate = null;
@@ -362,26 +395,53 @@ public class AnimalImporter
 				removalDateMap.put(animalName, remDate);
 				// check if death
 				String removal = tuple.getString("RemovalCause");
-				if (removal.equals("death"))
+				if (removal.toLowerCase().equals("dead"))
 				{
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), remDate, null,
 							"DeathDate", animalName, dobFormat.format(remDate), null));
 				}
+				else
+				{
+					// HUGE FIXME RemovalDate does not exist yet as default
+					// measurement, --> add to system prefill
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemovalDate"), remDate, null,
+							"RemovalDate", animalName, dobFormat.format(remDate), null));
+				}
 			}
-			activeMap.put(animalName, ct.createObservedValue(invName, appMap.get("SetActive"), startDate, remDate,
-					"Active", animalName, state, null));
 
 			// rem cause -> Removal
-			String removal = tuple.getString("RemovalCause");
+			String removal = tuple.getString("RemovalCause").toLowerCase();
 			if (removal != null && remDate != null)
 			{
-				// TODO check if setRemoval is the offical removal feature in
-				// adb.
+				// FIXME convert english in put to dutch official vwa codes.
+				if (removal.equals("dead"))
+				{
+					removal = "dood";
+				}
+				else if (removal.equals("alive: other rug"))
+				{
+					removal = "levend afgevoerd andere organisatorische eenheid RuG";
+				}
+				else if (removal.equals("alive: other registered nl"))
+				{
+					removal = "levend afgevoerd gereg. onderzoeksinstelling NL";
+				}
+				else if (removal.equals("alive: other registered eu"))
+				{
+					removal = "levend afgevoerd gereg. onderzoeksinstelling EU";
+				}
+				else if (removal.equals("alive: other"))
+				{
+					removal = "levend afgevoerd andere bestemming";
+				}
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemoval"), remDate, null, "Removal",
 						animalName, removal, null));
 			}
+			// add animal with state to active map and create the active value
+			activeMap.put(animalName, ct.createObservedValue(invName, appMap.get("SetActive"), startDate, remDate,
+					"Active", animalName, state, null));
 
-			// remarks -> Source + sometimes DoB
+			// convert Source -> Source
 			String sourceName = tuple.getString("Source");
 			if (sourceName != null)
 			{
@@ -389,24 +449,11 @@ public class AnimalImporter
 						animalName, null, sourceName));
 				sourceMap.put(animalName, sourceName);
 			}
-			String dobDateString = tuple.getString("DateOfBirth");
-			// FIXME: add not null checks!!!
-			if (dobDateString != null)
-			{
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
-						"DateOfBirth", animalName, dobDateString, null));
-			}
-			String weanDateString = tuple.getString("WeanDate");
-			// FIXME: add not null checks!!!
-			if (weanDateString != null)
-			{
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
-						animalName, weanDateString, null));
-			}
 
-			// ResponsibleResearcher
+			// convert ResponsibleResearcher -> ResponsibleResearcher
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), now, null,
 					"ResponsibleResearcher", animalName, this.defaultResponsibleResearcher, null));
+
 		}
 	}
 

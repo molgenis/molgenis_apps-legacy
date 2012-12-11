@@ -128,12 +128,13 @@ public class Breedingnew extends PluginModel<Entity>
 
 	public String getCustomHtmlHeaders()
 	{
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
-				+ "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
+		return "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
 				+ "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
 				+ "<script src=\"res/scripts/custom/litters.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">";
+		// "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+		// /+
+		// "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 	}
 
 	public String getAnimalName(Integer id)
@@ -1413,6 +1414,7 @@ public class Breedingnew extends PluginModel<Entity>
 		// Prepare table
 		// genotypeTable = new Table("GenoTable", "");
 		editTable = new Table("EditTable", "");
+
 		for (String e : litterProtocol())
 		{
 			editTable.addColumn(e);
