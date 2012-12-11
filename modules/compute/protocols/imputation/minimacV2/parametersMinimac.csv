@@ -7,7 +7,7 @@ McProtocols,areWeCrazy,,,autostart
 McId,areWeCrazy,,,autostart
 McTemplates,areWeCrazy,,,autostart
 McWorkflow,areWeCrazy,,,autostart
-remoteWorksheet,,,,
+remoteWorksheet,TBS,,,
 clusterQueue,default,,,
 mem,4,Memory in GB,,
 walltime,23:59:00,,,
