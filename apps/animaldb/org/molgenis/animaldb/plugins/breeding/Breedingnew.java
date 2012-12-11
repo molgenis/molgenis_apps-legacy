@@ -1684,31 +1684,34 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 
 			}
-
-			else if (e.equalsIgnoreCase("WeanSize"))
+			else if (e.equalsIgnoreCase("WeanDate"))
 			{
-				int newSize = request.getInt(e);
-				if (newSize > weansize)
-				{
-					int diff = newSize - weansize;
-					// updateWeanSize(diff);
-					System.out.println("I am bigger");
-				}
-				else if (newSize < weansize)
-				{
-					System.out.println("I am smaller");
-				}
-				else
-				{
-					System.out.println("I stay the same size");
-				}
+
 				String newValue = request.getString(e);
+				Query<ObservedValue> litterTypeQuery = db.query(ObservedValue.class);
+				litterTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
+				litterTypeQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.litter));
+				List<ObservedValue> individualValueList = litterTypeQuery.find();
+				List<ObservationTarget> listObsTargets = null;
+				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
 
-				System.out.println(ov);
+				for (ObservedValue v : individualValueList)
+				{
+					listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
+							Operator.EQUALS, v.getTarget_Name()));
+					String targetName = listObsTargets.get(0).getName();
 
-				ov.setValue(newValue);
+					// Weandate
+					ObservedValue weanDate = ct.getObservedValuesByTargetAndFeature(targetName, "WeanDate", invName,
+							invName.get(0)).get(0);
+					weanDate.setValue(newValue);
+					db.update(weanDate);
+					ov.setValue(newValue);
 
-				db.update(ov);
+					db.update(ov);
+
+				}
+
 			}
 			else
 			{
