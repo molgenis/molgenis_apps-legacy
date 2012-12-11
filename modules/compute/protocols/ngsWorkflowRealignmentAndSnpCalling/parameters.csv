@@ -282,7 +282,7 @@ demultiplexedDiscardedFastqChecksumFilenamePE1,${demultiplexedDiscardedFastqFile
 demultiplexedDiscardedFastqChecksumFilenamePE2,${demultiplexedDiscardedFastqFilenamePE2}${md5sumExtension},use these for demultiplexed reads assigned to a sample,,
 #,,,,
 log,log.log,,,
-#
+#,,,,
 fastqcVersion,v0.7.0,,,
 bwaVersion,0.5.8c_patched,,,
 picardBin,picard-tools,,,
