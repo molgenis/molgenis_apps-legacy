@@ -271,18 +271,12 @@ public class AnimalImporter
 			// convert GeneticBackground -> Background (default "no background")
 			String background = tuple.getString("GeneticBackground");
 			String backgroundName;
-			if (background != null)
+			if (background != null && background != "" && !background.equalsIgnoreCase("no background"))
 			{
 				backgroundName = background;
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), now, null,
+						"Background", animalName, null, backgroundName));
 			}
-			else
-			{
-				backgroundName = "";
-			}
-			// TODO add check on background present in db?
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), now, null, "Background",
-					animalName, null, backgroundName));
-
 			// convert BreedingLine -> Breedingline
 			// FIXME add not null checks and conversion to default breeding line
 			// from settigs if null?
