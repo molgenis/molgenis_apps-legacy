@@ -420,39 +420,39 @@ To run Molgenis Compute on the grid one needs to prepare a webserver with the fo
 * mysql 5.1.54 or higher  
   
 The whole installation and running process can be done in five steps.  
-* 1. Create database  
->Login as root to mysql.  
->CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
->CREATE DATABASE compute;  
->GRANT ALL PRIVILEGES ON compute.* TO ’molgenis’@’%’ WITH GRANT OPTION;  
->FLUSH PRIVILEGES;  
->Logout.  
+1. Create database  
+  >Login as root to mysql.  
+  >CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
+  >CREATE DATABASE compute;  
+  >GRANT ALL PRIVILEGES ON compute.* TO ’molgenis’@’%’ WITH GRANT OPTION;  
+  >FLUSH PRIVILEGES;  
+  >Logout.  
   
-* 2. Checkout from git repository and build compute  
->git clone https://github.com/georgebyelas/molgenis.git  
->git clone https://github.com/georgebyelas/molgenis_apps.git  
->cd molgenis_apps  
->ant -f build_compute.xml clean-generate-compile  
+2. Checkout from git repository and build compute  
+  >git clone https://github.com/georgebyelas/molgenis.git  
+  >git clone https://github.com/georgebyelas/molgenis_apps.git  
+  >cd molgenis_apps  
+  >ant -f build_compute.xml clean-generate-compile  
   
-* 3. Start webserver  
+3. Start webserver  
 Still to come!  
   
-* 4. Import imputation workflow into database by running the shellscript[^8]. Files to be imported can be found here:  
+4. Import imputation workflow into database by running the shellscript[^8]. Files to be imported can be found here:  
 >sh importWorkflow.sh \\  
 >\<workflow parameters file> \\  
 >\<workflow elements file> \\  
 >\<protocols directory>  
   
-* 5. Generate imputation jobs in the database with the following shell script and example worksheet
+5. Generate imputation jobs in the database with the following shell script and example worksheet
 >sh importWorksheet.sh \\  
 >\<workflow name> \\  
 >\<worksheet file> \\  
 >\<run id>  
   
-* 6. Execute jobs on the grid  
+6. Execute jobs on the grid  
 Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node.  
   
-* 7. Execute imputation with pilot job system  
+7. Execute imputation with pilot job system  
 >sh runPilots.sh \\  
 >ui.grid.sara.nl \\  
 >\<username> \\  
