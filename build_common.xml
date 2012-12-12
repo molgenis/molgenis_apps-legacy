@@ -384,7 +384,7 @@ It should be used via 'import' plus passing of properties
 			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}" />
 		</xmltask>
 
-		<!--antcall target="download-jars"/-->
+		<antcall target="download-jars"/>
 
 	</target>
 
