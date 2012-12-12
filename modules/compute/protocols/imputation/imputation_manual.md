@@ -460,14 +460,14 @@ The whole installation and running process can be done in seven steps.
   
 4. Setup environment on the grid  
   Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` from [pilot directory] to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
-  scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl 
+  >scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
   
   Edit `maverick.sh`, specify your ip and port of your webserver, which is started on step 3:  
-  export WORKDIR=$TMPDIR  
-  source dataTransferSRM.sh  
-  curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
-  sh script.sh 2>&1 | tee -a log.log  
-  curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
+  >export WORKDIR=$TMPDIR  
+  >source dataTransferSRM.sh  
+  >curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
+  >sh script.sh 2>&1 | tee -a log.log  
+  >curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
   
 5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
   >sh importWorkflow.sh \\  
@@ -488,7 +488,10 @@ The whole installation and running process can be done in seven steps.
   >\<password> \\  
   >grid  
   
-
+After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:  
+>scp \<username>@ui.grid.sara.nl:~srm:something? .  
+  
+More text
 
 
 
