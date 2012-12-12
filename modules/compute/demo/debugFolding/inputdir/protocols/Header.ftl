@@ -1,3 +1,7 @@
+<#include "PBSHeader.ftl"/>
+
+
+
 # Configures the GCC bash environment
 . ${root}/gcc.bashrc
 

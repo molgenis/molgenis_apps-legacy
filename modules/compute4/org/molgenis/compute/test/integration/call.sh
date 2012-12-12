@@ -1,0 +1,1 @@
+curl -F status=done -F log_file=@log.log http://localhost:8081/compute/api/pilot

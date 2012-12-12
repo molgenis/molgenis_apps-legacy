@@ -9,14 +9,16 @@
 #
 
 #MOLGENIS walltime=00:45:00
+#FOREACH
 
-inputs "${matefixedcovariatecsv}"
-inputs "${sortedrecalcovariatecsv}"
-alloutputsexist \
-"${cyclecovariatebefore}" \
-"${cyclecovariateafter}"
+module load GATK/${gatkVersion}
 
-export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
+#WHERE DOES RSCRIPT LIVE ON THE GRID?
+
+getFile ${matefixedcovariatecsv}
+getFile ${sortedrecalcovariatecsv}
+
+#export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
 export R_LIBS=${R_LIBS} 
 
 java -jar -Xmx4g ${analyzecovariatesjar} -l INFO \
@@ -32,3 +34,6 @@ java -jar -Xmx4g ${analyzecovariatesjar} -l INFO \
 -outputDir ${recalstatsafterdir} \
 -Rscript ${rscript} \
 -ignoreQ 5
+
+putFile ${cyclecovariatebefore}
+putFile ${cyclecovariateafter}
