@@ -27,7 +27,7 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 
     public ComputeExecutorPilotDB()
     {
-        startDB();
+        //startDB();
     }
 
     private void startDB()
@@ -47,6 +47,8 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
     {
         //evaluate if we have tasks ready to run on a specific back-end
         int readyToSubmitSize = 0;
+
+        startDB();
 
         try
         {
@@ -113,6 +115,20 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                 e.printStackTrace();
             }
         }
+
+        close();
+    }
+
+    private void close()
+    {
+        try
+        {
+            db.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void submitPilotLocalhost() throws IOException
@@ -143,10 +159,12 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
         int count = 0;
         for (ComputeTask task : generatedTasks)
         {
+            //System.out.println("---------- Task " + task.getName());
             boolean isReady = true;
             List<ComputeTask> prevSteps = task.getPrevSteps();
             for (ComputeTask prev : prevSteps)
             {
+                //System.out.println("prevtask " + prev.getName() + " -> " + prev.getStatusCode());
                 if (!prev.getStatusCode().equalsIgnoreCase("done"))
                     isReady = false;
             }
@@ -159,6 +177,8 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                 task.setStatusCode("ready");
                 db.commitTx();
             }
+            //System.out.println("---------- end");
+
         }
         return count;
     }
