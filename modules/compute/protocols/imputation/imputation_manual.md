@@ -469,27 +469,40 @@ The whole installation and running process can be done in seven steps.
   sh script.sh 2>&1 | tee -a log.log  
   curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
   
-  5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
+5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
   >sh importWorkflow.sh \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/parametersMinimac.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
   
-5. Generate imputation jobs in the database with the following shell script and example worksheet
+6. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
-  >\<workflow name> \\  
-  >\<worksheet file> \\  
-  >\<run id>  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv \\  
+  >step01  
   
- 
-  
-7. Execute imputation with pilot job system  
+7. Execute imputation with user credentials using pilot job system: 
   >sh runPilots.sh \\  
   >ui.grid.sara.nl \\  
   >\<username> \\  
   >\<password> \\  
   >grid  
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 For further information read the [Molgenis Compute manual].  
   
   
