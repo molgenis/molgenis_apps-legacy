@@ -403,9 +403,9 @@ It should be used via 'import' plus passing of properties
 		<xmltask source=".settings/template.org.eclipse.wst.common.component" dest=".settings/org.eclipse.wst.common.component" outputter="simple">
 			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}" />
 		</xmltask>
-<!--
+		
 		<antcall target="download-jars"/>
--->
+		
 	</target>
 
 	<target name="generate-compile" depends="generate,compile" />
