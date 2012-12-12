@@ -491,5 +491,4 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
 [^9]: COMPUTE_MANUAL_LINK
-
 [mc]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)
