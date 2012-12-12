@@ -73,6 +73,7 @@ DutchSpecies;String;;;false;string;To give a species its Dutch name.
 StartDate;Datetime;;;true;datetime;To set a (sub)project's start date.
 EndDate;Datetime;;;true;datetime;To set a (sub)project's end date.
 Removal;String;;;false;string;To register an animal's removal.
+RemovalDate;String;;;false;string;To register the date of an animal's removal from the facility if it did not die.
 Article;Number;;;false;int;To set an actor's Article status according to the Law, e.g. Article 9.
 MolgenisUserId;Number;;;false;int;To set an actor's corresponding MolgenisUser ID.
 TransponderId;String;;;false;string;To set the ID of an animal's transponder.
