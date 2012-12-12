@@ -41,7 +41,7 @@
 		</entity>
 		<entity name="Chromosome" extends="SequenceCharacteristic">
 			<field name="orderNr" type="int" />
-			<field name="isAutosomal" type="bool" description="Is 'yes' when number of chromosomes is equal in male and female individuals, i.e., if not a sex chromosome."/>
+			<field name="isAutosomal" type="enum" enum_options="[yes,no,unknown]" description="Is 'yes' when number of chromosomes is equal in male and female individuals, i.e., if not a sex chromosome."/>
 			<field name="bpLength" type="int" nillable="true" description="Lenght of the chromsome in base pairs."/>
 			<field name="genomeBuild" type="xref" nillable="false" xref_field="GenomeBuild.id" description="Reference to the genomic build that was used."/>
 		</entity>

@@ -22,12 +22,15 @@
 			<form name="PathoChromosomes" label="Chromosomes" entity="Chromosome" />
 			<form name="PathoPanels" label="Panels" entity="Panel" />
 			<form name="PathoProtocols" label="Protocols" entity="Protocol" />
+			<form name="PathoObservableFeature" label="ObservableFeature" entity="ObservableFeature" />
+			<form name="Protein" label="Protein" entity="Protein" />
 			<form name="PathoIndividuals" label="Individuals" entity="Patient">
 				<plugin name="IndividualViewer" type="org.molgenis.pheno.ui.ObservationElementViewer" label="ObservedValues"/>
 			</form>
 			<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
 		</menu>
-		<plugin label="Import data" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
+		<plugin label="Import data from file" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
+		<plugin name="PathoLoadFromDir" label="Import data from directory" type="org.molgenis.load.ui.LoadFromDirectory" />
 		<menu name="CMS" label="Content Management">
 			<form name="Header" entity="Header" label="Header"/>
 			<form name="Paragraph" entity="Paragraph" label="Start page"/>
