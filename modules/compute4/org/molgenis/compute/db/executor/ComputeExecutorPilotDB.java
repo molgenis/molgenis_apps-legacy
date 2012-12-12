@@ -67,6 +67,12 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
                     .equals(ComputeTask.STATUSCODE, "ready")
                     .equals(ComputeTask.BACKENDNAME, backend).find();
 
+            for(ComputeTask ttt : readyTasks)
+            {
+                System.out.println("task " + ttt.getName());
+            }
+
+
             readyToSubmitSize = readyTasks.size();
 
         }
