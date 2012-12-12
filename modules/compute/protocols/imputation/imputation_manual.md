@@ -420,6 +420,7 @@ To run Molgenis Compute on the grid one needs to prepare a webserver with the fo
 * mysql 5.1.54 or higher  
   
 The whole installation and running process can be done in five steps.  
+  
 1. Create database  
   >Login as root to mysql.  
   >CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
