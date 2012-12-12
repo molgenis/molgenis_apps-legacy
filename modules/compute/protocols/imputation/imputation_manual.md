@@ -26,7 +26,7 @@ To be written
 ###2. General
   
   
-This chapter describes the content of the Molgenis Compute[mc] binary and how it should be installed.
+This chapter describes the content of the Molgenis Compute[Molgenis Compute] binary and how it should be installed.
 
 shortly describes the contents of the Molgenis Compute distro. Add prerequisists like Molgenis Compute manual etc. EXTEND THIS!!  
   
@@ -491,4 +491,4 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
 [^9]: COMPUTE_MANUAL_LINK
-[mc]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)
+[Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)
