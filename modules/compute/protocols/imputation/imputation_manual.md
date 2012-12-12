@@ -7,7 +7,7 @@ Content
 =======
 
 1.	Introduction
-2.	Imputation
+2.	General
 3.	Preparing the study data
 4.	Preparing the reference dataset
 5.	Imputation using Impute2
@@ -23,10 +23,12 @@ Content
 To be written
   
   
-###2. Imputation
+###2. General
   
   
-This chapter shortly describes the contents of the Molgenis Compute distro. Add prerequisists like Molgenis Compute manual etc. EXTEND THIS!!  
+This chapter describes the content of the Molgenis Compute[mc] binary and how it should be installed.
+
+shortly describes the contents of the Molgenis Compute distro. Add prerequisists like Molgenis Compute manual etc. EXTEND THIS!!  
   
   
 ####2.1 Installation of Molgenis Compute
@@ -436,29 +438,29 @@ The whole installation and running process can be done in five steps.
   >ant -f build_compute.xml clean-generate-compile  
   
 3. Start webserver  
-Still to come!  
+  Still to come!  
   
 4. Import imputation workflow into database by running the shellscript[^8]. Files to be imported can be found here:  
->sh importWorkflow.sh \\  
->\<workflow parameters file> \\  
->\<workflow elements file> \\  
->\<protocols directory>  
+  >sh importWorkflow.sh \\  
+  >\<workflow parameters file> \\  
+  >\<workflow elements file> \\  
+  >\<protocols directory>  
   
 5. Generate imputation jobs in the database with the following shell script and example worksheet
->sh importWorksheet.sh \\  
->\<workflow name> \\  
->\<worksheet file> \\  
->\<run id>  
+  >sh importWorksheet.sh \\  
+  >\<workflow name> \\  
+  >\<worksheet file> \\  
+  >\<run id>  
   
 6. Execute jobs on the grid  
-Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node.  
+  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node.  
   
 7. Execute imputation with pilot job system  
->sh runPilots.sh \\  
->ui.grid.sara.nl \\  
->\<username> \\  
->\<password> \\  
->grid  
+  >sh runPilots.sh \\  
+  >ui.grid.sara.nl \\  
+  >\<username> \\  
+  >\<password> \\  
+  >grid  
   
 For further information read the compute user manual[^9].  
   
@@ -489,3 +491,5 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
 [^9]: COMPUTE_MANUAL_LINK
+
+[mc]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)
