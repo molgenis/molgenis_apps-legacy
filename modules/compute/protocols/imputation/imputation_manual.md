@@ -26,9 +26,7 @@ To be written
 ###2. General
   
   
-This chapter describes the content of the Molgenis Compute[Molgenis Compute] binary and how it should be installed.
-
-shortly describes the contents of the Molgenis Compute distro. Add prerequisists like Molgenis Compute manual etc. EXTEND THIS!!  
+This chapter describes the content of the [Molgenis Compute] binary and how it should be installed. Before starting we recommend to read the [Molgenis Compute manual].  
   
   
 ####2.1 Installation of Molgenis Compute
@@ -91,11 +89,28 @@ Download here: https://github.com/downloads/freerkvandijk/files/hapmapCEUr22b37.
   
   
 To start imputation on a cohort one first has to prepare the reference data. The
-*protocols/imputation/prepareReference/* directory contains several protocols to prepare this data. 
+*protocols/imputation/prepareReference/* directory contains several protocols to prepare this data. For this version 3 tools need to be installed:  
+* VCFTools  
+* convert_snpIDs  
+* ConvertVcfToTriTyper  
+  
+We recommend to install `VCFTools` and `ConvertVcfToTrityper` in a directory named *tools/*. convert_snpIDs should be installed in a directory named *tools/scripts/*. The download links for these tools can be found in the appendix.  
   
 ####4.1 Generating a reference data set
-This workflow requires a VCF file containing phased genotypes as input. The workflow requires the VCF files to be split per chromosome in a folder named *vcf*. When executing this workflow two folders containing the data in Impute2 and TriTyper format per chromosome are generated. When imputing using the minimac pipeline it is sufficient to have the reference data only in VCF format.
+This workflow requires a VCF file containing phased genotypes as input. The workflow requires the VCF files to be split per chromosome in a folder named *vcf*, see 4.2 for an overview of the datastructure. When executing this workflow two folders containing the data in Impute2 and TriTyper format per chromosome are generated.  
   
+The `workflow.csv` contains the following five columns:  
+  
+| referenceName | chrVcfInputFile | chr | samplesToIncludeFile | vcfFilterOptions |  
+| :----: | :----: | :----: | :----: | :----: |  
+| reference name | VCF file | chromosome | file containing list of samples | filter options |  
+  
+The columns explained:  
+* referenceName: the name of the reference, later used to specify your reference panel to impute with. Type: string  
+* chrVcfInputFile: the VCF file to convert. Type: string  
+* chr: chromosome number to convert. Type: integer  
+* samplesToIncludeFile: a file containing a list of sampleIDs to keep. Type: string  
+* vcfFilterOptions: a space delimited list of parameters to filter on, as used in [VCFTools]. Type: string  
   
 An example test reference set can be created using the following command:  
   
@@ -117,12 +132,12 @@ Executing the above mentioned commands will result in a directory with the follo
       -referenceName
 			|
 			+Impute2
-			|	chrNumber.impute.hap
-			|	chrNumber.impute.hap.indv
-			|	chrNumber.impute.legend
+			|	<Number>.impute.hap
+			|	<Number>.impute.hap.indv
+			|	<Number>.impute.legend
 			+TriTyper
 			|	|
-			|	+ChrchrNumber
+			|	+Chr<Number>
 			|		GenotypeMatrix.dat
 			|		Individuals.txt
 			|		PhenotypeInformation.txt
@@ -130,18 +145,16 @@ Executing the above mentioned commands will result in a directory with the follo
 			|		SNPs.txt
 			|
 			+vcf
-				chrNumber.vcf
-				chrNumber.vcf.vcfidx  
+				chr<Number>.vcf
+				chr<Number>.vcf.vcfidx  
 
 	Note:
 	1 The vcf directory contains the input VCF files split per chromosome. The *.vcf.vcfidx file is generated in this workflow.
 	2 When using Impute2 genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
-	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.
-
+	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.  
   
-**HOW CAN NOTE 2 BE EXPLAINED BETTER?**
   
-When all these files are present the reference dataset is ready to be used.
+When all the above files are present the reference dataset is ready to be used.  
   
   
 ###5. Imputation using Impute2  
@@ -421,7 +434,7 @@ To run Molgenis Compute on the grid one needs to prepare a webserver with the fo
 * ant 1.7.1 or higher  
 * mysql 5.1.54 or higher  
   
-The whole installation and running process can be done in five steps.  
+The whole installation and running process can be done in seven steps.  
   
 1. Create database  
   >Login as root to mysql.  
@@ -436,6 +449,9 @@ The whole installation and running process can be done in five steps.
   >git clone https://github.com/georgebyelas/molgenis_apps.git  
   >cd molgenis_apps  
   >ant -f build_compute.xml clean-generate-compile  
+
+  Alternatively one can download the [clone_build.sh] shell script and execute it:  
+  > sh clonebuild.sh  
   
 3. Start webserver  
   Still to come!  
@@ -453,7 +469,8 @@ The whole installation and running process can be done in five steps.
   >\<run id>  
   
 6. Execute jobs on the grid  
-  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node.  
+  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
+  scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
   
 7. Execute imputation with pilot job system  
   >sh runPilots.sh \\  
@@ -462,7 +479,7 @@ The whole installation and running process can be done in five steps.
   >\<password> \\  
   >grid  
   
-For further information read the compute user manual[^9].  
+For further information read the [Molgenis Compute manual].  
   
   
 ###10 Appendix  
@@ -480,6 +497,9 @@ Overview of the tools needed for the minimacV2 pipeline.
 | ImputationTool | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ImputationTool-20120912/ |  
 | ConcatWorksheets | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConcatWorksheetsV1.0/ |  
 | ExpandWorksheet | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ExpandWorksheetWithMergeWorksheetV1.1/ |  
+| VCFTools | http://sourceforge.net/projects/vcftools/files/ |  
+| ConvertVcfToTrityper | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConvertVcfToTriTyperV1/ |  
+| convert_snpIDs | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/convert_snpIDsV2.pl |  
     
   
 [^1]: See http://freemarker.org/ for a manual.
@@ -490,5 +510,7 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^6]: http://www.sph.umich.edu/csg/abecasis/MACH/tour/imputation.html
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
-[^9]: COMPUTE_MANUAL_LINK
-[Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)
+[Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
+[Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
+[VCFTools]: http://vcftools.sourceforge.net/
+[clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh
