@@ -14,7 +14,8 @@ Content
 6.	Imputation using Beagle
 7.	Imputation using Minimac
 8.	Imputation using minimacV2 pipeline
-9.	Appendix  
+9.	Imputation on the grid
+10.	Appendix  
 
   
   
@@ -409,7 +410,59 @@ The pipeline produces several files which can be used for downstream analysis. T
 EXTEND THIS WHEN QUICKTEST IS IMPLEMENTED?  
   
   
-###9 Appendix  
+###9 Imputation on the grid  
+  
+  
+To run Molgenis Compute on the grid one needs to prepare a webserver with the following requierements:  
+* java 1.6.0 or higher  
+* git 1.7.1 or higher  
+* ant 1.7.1 or higher  
+* mysql 5.1.54 or higher  
+  
+The whole installation and running process can be done in five steps.  
+* 1. Create database  
+>Login as root to mysql.  
+>CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
+>CREATE DATABASE compute;  
+>GRANT ALL PRIVILEGES ON compute.* TO ’molgenis’@’%’ WITH GRANT OPTION;  
+>FLUSH PRIVILEGES;  
+>Logout.  
+  
+* 2. Checkout from git repository and build compute  
+>git clone https://github.com/georgebyelas/molgenis.git  
+>git clone https://github.com/georgebyelas/molgenis_apps.git  
+>cd molgenis_apps  
+>ant -f build_compute.xml clean-generate-compile  
+  
+* 3. Start webserver  
+Still to come!  
+  
+* 4. Import imputation workflow into database by running the shellscript[^8]. Files to be imported can be found here:  
+>sh importWorkflow.sh \\  
+>\<workflow parameters file> \\  
+>\<workflow elements file> \\  
+>\<protocols directory>  
+  
+* 5. Generate imputation jobs in the database with the following shell script and example worksheet
+>sh importWorksheet.sh \\  
+>\<workflow name> \\  
+>\<worksheet file> \\  
+>\<run id>  
+  
+* 6. Execute jobs on the grid  
+Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node.  
+  
+* 7. Execute imputation with pilot job system  
+>sh runPilots.sh \\  
+>ui.grid.sara.nl \\  
+>\<username> \\  
+>\<password> \\  
+>grid  
+  
+For further information read the compute user manual[^9].  
+  
+  
+###10 Appendix  
   
   
 Overview of the tools needed for the minimacV2 pipeline.  
@@ -433,4 +486,5 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^5]: http://pngu.mgh.harvard.edu/~purcell/plink/
 [^6]: http://www.sph.umich.edu/csg/abecasis/MACH/tour/imputation.html
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
-
+[^8]: Link_to_shell_script  
+[^9]: COMPUTE_MANUAL_LINK
