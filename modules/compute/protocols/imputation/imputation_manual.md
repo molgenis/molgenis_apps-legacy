@@ -451,16 +451,29 @@ The whole installation and running process can be done in seven steps.
   >ant -f build_compute.xml clean-generate-compile  
 
   Alternatively one can download the [clone_build.sh] shell script and execute it:  
-  > sh clonebuild.sh  
+  >sh clone_build.sh  
   
 3. Start webserver  
-  Still to come!  
+  >kill -9 \`lsof -i :<your port> -t`  
+  >cd molgenis_apps;  
+  >nohup ant -f build_compute.xml runOn -Dport=<your port> &  
   
-4. Import imputation workflow into database by running the shellscript[^8]. Files to be imported can be found here:  
+4. Setup environment on the grid  
+  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` from [pilot directory] to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
+  scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl 
+  
+  Edit `maverick.sh`, specify your ip and port of your webserver, which is started on step 3:  
+  export WORKDIR=$TMPDIR  
+  source dataTransferSRM.sh  
+  curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
+  sh script.sh 2>&1 | tee -a log.log  
+  curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
+  
+  5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
   >sh importWorkflow.sh \\  
-  >\<workflow parameters file> \\  
-  >\<workflow elements file> \\  
-  >\<protocols directory>  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/parametersMinimac.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
   
 5. Generate imputation jobs in the database with the following shell script and example worksheet
   >sh importWorksheet.sh \\  
@@ -468,9 +481,7 @@ The whole installation and running process can be done in seven steps.
   >\<worksheet file> \\  
   >\<run id>  
   
-6. Execute jobs on the grid  
-  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
-  scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
+ 
   
 7. Execute imputation with pilot job system  
   >sh runPilots.sh \\  
@@ -513,4 +524,6 @@ Overview of the tools needed for the minimacV2 pipeline.
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
 [Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
 [VCFTools]: http://vcftools.sourceforge.net/
-[clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh
+[clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
+[deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  
+[pilot directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute/pilots/grid
