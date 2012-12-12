@@ -1912,7 +1912,21 @@ public class Breedingnew extends PluginModel<Entity>
 			try
 			{
 				// Populate backgrounds list
-				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
+				// this.setBackgroundList(ct.getAllMarkedPanels("Background",
+				// investigationNames));
+				// FIXME, filter by species
+				String species = ct.getMostRecentValueAsXrefName(line, "Species");
+				List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
+				for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationNames))
+				{
+					// Only show if background belongs to chosen species
+					if (ct.getMostRecentValueAsXrefName(b.getName(), "Species").equals(species))
+					{
+						bckgrlist.add(b);
+					}
+				}
+				this.setBackgroundList(bckgrlist);
+
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
 				// Populate gene name list
