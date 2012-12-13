@@ -12,7 +12,9 @@ alloutputsexist ${ssvQuoted(chrTriTyperSNPs)}
 mkdir -p ${triTyperFolderTemp}
 
 
-java -jar ~/Programs/ConvertVcfToTriTyper.jar ${vcfReferenceFolder} ${triTyperFolderTemp}
+java -jar ${ConvertVcfToTriTyperJar} \
+${vcfReferenceFolder} \
+${triTyperFolderTemp}
 
 #Get return code from last program call
 returnCode=$?
