@@ -123,7 +123,7 @@ public class ComputeExecutorPilotDB implements ComputeExecutor
 		{
 			db.close();
 		}
-		catch (DatabaseException e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
