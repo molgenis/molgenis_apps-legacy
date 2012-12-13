@@ -15,7 +15,7 @@ module load ${picardBin}/${picardVersion}
 
 getFile ${bamfile}
 
-java -jar -Xmx3g ${sortsamjar} \
+java -jar -Xmx3g $PICARD_HOME/${sortsamjar} \
 INPUT=${bamfile} \
 OUTPUT=${sortedbam} \
 SORT_ORDER=coordinate \

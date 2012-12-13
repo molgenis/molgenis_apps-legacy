@@ -18,7 +18,7 @@ alloutputsexist \
  "${sortedbam}" \
  "${sortedbamindex}"
 
-java -jar -Xmx3g SortSam.jar \
+java -jar -Xmx3g $PICARD_HOME/SortSam.jar \
 INPUT=${bamfile} \
 OUTPUT=${sortedbam} \
 SORT_ORDER=coordinate \
@@ -26,7 +26,7 @@ VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
 
-java -jar -Xmx3g BuildBamIndex.jar \
+java -jar -Xmx3g $PICARD_HOME/BuildBamIndex.jar \
 INPUT=${sortedbam} \
 OUTPUT=${sortedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
