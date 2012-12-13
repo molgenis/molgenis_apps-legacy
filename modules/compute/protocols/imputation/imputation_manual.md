@@ -16,8 +16,14 @@ Content
 
   
   
-###1. Introduction
-To be written
+###1. Introduction  
+This manual explains how one can do imputation using the minimac[^3] analysis pipeline in the [Molgenis Compute] framework. The second chapter describes how one should install and setup [Molgenis Compute] to be used with the minimac imputation pipeline. The sequential three chapters explain how to create the study and reference data for imputation followed by the actual execution of the imputation pipeline using one of the following five backends; PBS, SGE, BSUB, grid or your local computer. To run the analysis efficient it's needed to devide the analysis in three steps:  
+  
+* *Preparing and QCing the study data:* here bad SNPs are removed from the study data, afterwards the data is split per number of samples and chromosome chunk  
+* *Phasing:* here the data chunks are phased  
+* *Imputation:* this last step performs the imputation. This step is separate from the first two steps allowing the use of a new reference panel without having to recalculate the first two steps.  
+  
+Using the above explained method imputation is parallelized and ready to use on your cluster. For additional compute resources one can use the national Computing infrastructure for life Sciences, [eBioGrid]. How to setup [Molgenis Compute] for this grid infrastructure is explained in chapter six.  
   
   
 ###2. General
@@ -37,13 +43,11 @@ The first thing to do is to unpack the Molgenis Compute distro. To unpack the di
 All imputation protocols are stored in the *protocols/imputation/* directory. This
 directory contains multiple sub-directories:
   
-* beagle
-* impute2
-* minimac
-* prepareReference
+* minimac  
+* prepareReference  
   
 Each of these directories contain the following files to be used as input for Molgenis
-Compute:
+Compute:  
   
 * parameters.csv
 * workflow.csv
@@ -54,7 +58,7 @@ Compute:
 ####2.3 General compute settings for imputation  
 To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute any of the imputation pipelines. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
   
-* scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs without headers for Grid usage the value GRID should be specified.  
+* scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs for Grid usage the value GRID should be specified.  
 * root: this is the "root" parameter shared by all other parameters. To ease the setup we recommend to install all tools in a *tools* directory and all resources in a *resources* directory in the "root".    
   
   
@@ -399,3 +403,4 @@ Overview of the tools needed for the minimacV2 pipeline.
 [clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
 [deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  
 [pilot directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute/pilots/grid
+[eBioGrid]: http://www.ebiogrid.nl/
