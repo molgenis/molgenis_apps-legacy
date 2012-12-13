@@ -588,7 +588,6 @@ public class AnimalImporter
 			// FIXME we always need a birthdate, calculate one if it is missing
 			if (dobDate == null || dobDate.equals(""))
 			{
-				System.out.println("################### DO I ever Get HERE1!!!? #########################");
 				if (weanDate != null && weanDate.equals(""))
 				{
 					long dobDateT = inputFormat.parse(weanDate).getTime() - (MILLSECS_PER_DAY * 28);
@@ -614,7 +613,6 @@ public class AnimalImporter
 			}
 			if (weanDate != null && !weanDate.equals(""))
 			{
-				System.out.println("################### DO I ever Get HERE2!!!? #########################");
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
 						litterName, weanDate, null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
