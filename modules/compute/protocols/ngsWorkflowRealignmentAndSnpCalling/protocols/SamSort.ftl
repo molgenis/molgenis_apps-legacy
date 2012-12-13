@@ -23,7 +23,7 @@ VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
 
-java -jar -Xmx3g $PICARD_HOME/BuildBamIndex.jar \
+java -jar -Xmx3g ${buildbamindexjar} \
 INPUT=${sortedbam} \
 OUTPUT=${sortedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
