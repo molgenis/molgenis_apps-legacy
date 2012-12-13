@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -474,7 +475,6 @@ public class AnimalImporter
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldLitterId"));
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
 			List<ObservedValue> individualValueList = OldLitterQuery.find();
-			System.out.println("#########" + individualValueList);
 			int FemaleCtr = 0;
 			int MaleCtr = 0;
 			int UnkSexCtr = 0;
@@ -536,7 +536,7 @@ public class AnimalImporter
 				parentgroupNr = parentgroupNrMap.get(lineName) + 1;
 			}
 			parentgroupNrMap.put(lineName, parentgroupNr);
-			System.out.println(">>>>    hpgnr" + this.highestPGNr);
+			// System.out.println(">>>>    hpgnr" + this.highestPGNr);
 			String parentgroupNrPart = ct.prependZeros("" + (this.highestPGNr + parentgroupNr), 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
 			// System.out.println("#########pgName: " + parentgroupName);
@@ -591,22 +591,57 @@ public class AnimalImporter
 			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
-					litterName, active, null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null, "DateOfBirth",
-					litterName, dobDate, null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
-					litterName, weanDate, null));
+
+			// FIXME we always need a birthdate, calculate one if it is missing
+			if (dobDate == null || dobDate.equals(""))
+			{
+				if (weanDate != null && weanDate.equals(""))
+				{
+					long dobDateT = inputFormat.parse(weanDate).getTime() - (MILLSECS_PER_DAY * 28);
+					Calendar tmpCal = Calendar.getInstance();
+					tmpCal.setTimeInMillis(dobDateT);
+					dobDate = inputFormat.format(tmpCal.getTime());
+					remark = remark + "; birtdate unknown on import, calculated from weandate (weandate 4wks)";
+				}
+				else
+				{
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
+							"DateOfBirth", litterName, "", null));
+					remark = remark + "; Birth date unknown";
+				}
+			}
+			else
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
+						"DateOfBirth", litterName, dobDate, null));
+				// only set weandate if it is measured if it is not there it
+				// means
+				// that litter is not weaned yet.
+			}
+			if (weanDate != null && weanDate.equals(""))
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
+						litterName, weanDate, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
+						litterName, Integer.toString(FemaleCtr + MaleCtr + UnkSexCtr), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeMale"), now, null,
+						"WeanSizeMale", litterName, Integer.toString(MaleCtr), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), now, null,
+						"WeanSizeFemale", litterName, Integer.toString(FemaleCtr), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeUnknown"), now, null,
+						"WeanSizeUnknown", litterName, Integer.toString(UnkSexCtr), null));
+				// set litter inactive
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Inactive",
+						litterName, active, null));
+			}
+			else
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
+						litterName, active, null));
+			}
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSize"), now, null, "Size", litterName,
 					Integer.toString(nrBorn), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
-					litterName, Integer.toString(FemaleCtr + MaleCtr + UnkSexCtr), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeMale"), now, null,
-					"WeanSizeMale", litterName, Integer.toString(MaleCtr), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), now, null,
-					"WeanSizeFemale", litterName, Integer.toString(FemaleCtr), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeUnknown"), now, null,
-					"WeanSizeUnknown", litterName, Integer.toString(UnkSexCtr), null));
+
 			// Set Remark
 			if (remark != null && !remark.equals(""))
 			{
