@@ -11,7 +11,6 @@
 #MOLGENIS walltime=65:59:00 mem=12 cores=1
 #FOREACH externalSampleID
 
-##EXPORT R_LIBS AGAIN? #SAME QUESTION AS IN ANALYZE_COVARIATES.FTL
 
 getFile ${mergedbam}
 getFile ${mergedbamindex}
