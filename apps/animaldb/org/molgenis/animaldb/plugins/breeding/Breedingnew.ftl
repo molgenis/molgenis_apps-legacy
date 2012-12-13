@@ -287,17 +287,29 @@
 	
 	<#elseif screen.action == "EditLitter">
 	${screen.getEditTable()}
+		<div style="float:left">
 		<input type='submit' id='saveEdit' value='Save' onclick="__action.value='applyEdit'" />
+		</div>
+		<div style="float:middle">
+		<input type='submit' id='editIndividual' value='Edit individuals' onclick="__action.value='editIndividual'" />
+		<div>
+		<div style="float:right">
+		<input type='submit' id='go_back' value='Go back' onclick="__action.value='editLitter'" />
+		</div>
 		
-		<input type='submit' id='editIndividual' value='editIndividual' onclick="__action.value='editIndividual'" />
 	<br />
 	<br />
 	<hr>
 	<#elseif screen.action == "editIndividual">
 	${screen.getGenotypeTable()}
+	<a href="molgenis.do?__target=${screen.name}&__action=editIndividual&addNew=true"><img id="addIndividualToWeanGroup" title="addIndividualToWeanGroup" alt="addIndividualToWeanGroup" src="generated-res/img/new.png"></a>
+	<!--<input type="image" title="saveIndi" src"generated-res/img/new.png" id='saveIMG' onclick="__action.value='applyLitterIndividuals'" />-->
 	<input type='submit' id='save' value='SaveIndividuals' onclick="__action.value='applyLitterIndividuals'" />
 	
 	
+	<div style="float:right">
+	<input type='submit' id='go_back' value='Go back' onclick="__action.value='EditLitter'" />
+	</div>
 <#elseif screen.action == "makeLabels">
 
 	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
@@ -381,6 +393,8 @@
 	jQuery('#breedingLine').chosen();
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
+	jQuery('#go_back').button();
+	
 	
 	$(function() {
 		$("#birthdate").datepicker({
