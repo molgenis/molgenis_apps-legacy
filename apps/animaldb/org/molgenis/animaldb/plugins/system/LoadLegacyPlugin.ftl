@@ -34,12 +34,12 @@
 </div>
 <div class="row" style="height:5em">
 <ul>
-	<li><label for="source" style="height:5em">Type of import:</label>
-	<li><input type="radio" name="source" id="source1" value="prefill" />AnimalDB pre-fill
-	<li><input type="radio" name="source" id="source2" value="ulidb" />Molecular Neurobiology (Uli Eisel group)
-	<li><input type="radio" name="source" id="source3" value="oldadb" />Old AnimalDB (Ate Boerema)
-	<li><input type="radio" name="source" id="source4" value="rhutdb" />Roelof Hut
-	<li><input type="radio" name="source" id="source5" value="generic" />Standard non GMO breeding import
+	<label for="source" style="height:5em">Type of import:</label>
+	<li><input type="radio" name="source" id="source1" value="prefill" />AnimalDB pre-fill</li>
+	<li><input type="radio" name="source" id="source2" value="ulidb" />Molecular Neurobiology (Uli Eisel group)</li>
+	<li><input type="radio" name="source" id="source3" value="oldadb" />Old AnimalDB (Ate Boerema)</li>
+	<li><input type="radio" name="source" id="source4" value="rhutdb" />Roelof Hut</li>
+	<li><input type="radio" name="source" id="source5" value="generic" />Standard non GMO breeding import</li>
 </ul>
 </div>
 <div class="row">
