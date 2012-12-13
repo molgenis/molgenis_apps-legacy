@@ -12,14 +12,13 @@
 #FOREACH
 
 module load GATK/${gatkVersion}
-
-#WHERE DOES RSCRIPT LIVE ON THE GRID?
+module load ${rBin}/${rVersion}
 
 getFile ${matefixedcovariatecsv}
 getFile ${sortedrecalcovariatecsv}
 
 #export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_LIBS=${R_LIBS} 
+#export R_LIBS=${R_LIBS} 
 
 java -jar -Xmx4g ${analyzecovariatesjar} -l INFO \
 -resources ${indexfile} \
