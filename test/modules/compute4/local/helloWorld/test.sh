@@ -43,3 +43,4 @@ diff testResults/current_results.log helloWorld/expected_results.log > testResul
 isEmpty testResults/diff_generated_vs_expected_results.log
 
 echo "\nTest terminated successfully!\n"
+exit 0
