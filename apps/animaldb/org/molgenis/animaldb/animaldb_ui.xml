@@ -110,6 +110,11 @@
 			<plugin name="Backgrounds"
 				type="org.molgenis.animaldb.plugins.settings.BackgroundPlugin"
 				label="Backgrounds" />
+				
+			<!-- plugin name="AnimalSources"
+				type="org.molgenis.animaldb.plugins.settings.SourceTypePlugin" label="Animal sources" /-->
+			<!-- GenePlugin; Goal: create and browse gene modifications; Flavor: Freemarker -->
+			
 			<menu name="errorcorrectmenu" position="left" label="Correct errors">
 				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: 
 					Freemarker -->

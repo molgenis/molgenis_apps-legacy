@@ -26,6 +26,8 @@ getFile ${indexfile}.sa
 getFile ${dbsnprod}
 getFile ${dbsnprod}.idx
 
+module load GATK/${gatkVersion}
+
 java -Xmx8g -Djava.io.tmpdir=${tempdir} -XX:+UseParallelGC -XX:ParallelGCThreads=1 -jar \
 ${genomeAnalysisTKjar} \
 -l INFO \

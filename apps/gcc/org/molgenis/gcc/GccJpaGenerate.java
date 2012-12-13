@@ -1,8 +1,6 @@
 package org.molgenis.gcc;
 
 import org.molgenis.Molgenis;
-import org.molgenis.generators.db.PersistenceGen;
-import org.molgenis.generators.tests.TestCsvGen;
 
 public class GccJpaGenerate
 {

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.core.OntologyTerm;
@@ -52,8 +51,8 @@ public class ConvertVcfToPatho
 		else
 		{
 			vcfFile = new File(
-					"vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
-			outputDir = new File("/tmp/");
+					"pathoData/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
+			outputDir = new File("pathoData/tmp/");
 		}
 
 		ConvertVcfToPatho convert = new ConvertVcfToPatho();
@@ -211,7 +210,24 @@ public class ConvertVcfToPatho
 			c.setName(chr);
 			c.setGenomeBuild_Name("hg19");
 			c.setOrderNr(++order);
-			c.setIsAutosomal(StringUtils.isNumeric(chr));
+
+			if (chr.matches("^(\\d+.*|-\\d+.*)"))
+			{
+				c.setIsAutosomal("yes");
+			}
+			else if (chr.matches("[a-zA-Z]+"))
+			{
+				c.setIsAutosomal("no");
+			}
+			// else if (chr.matches("^CH?R?"))
+			// {
+			// c.setIsAutosomal("no");
+			// }
+			else if (chr.startsWith("UN"))
+			{
+				c.setIsAutosomal("unknown");
+			}
+
 			chrList.add(c);
 		}
 
