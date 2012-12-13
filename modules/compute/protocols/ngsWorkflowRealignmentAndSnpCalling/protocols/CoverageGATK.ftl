@@ -28,9 +28,9 @@ getFile ${cumcoveragescriptgatk}
 
 <#if capturingKit != "None">getFile ${targetintervals}</#if>
 
-module load ${rBin}/${rVersion}
+module load GATK/${gatkVersion}
 
-export R_LIBS=${R_LIBS}
+#export R_LIBS=${R_LIBS}
 
 java -Djava.io.tmpdir=${tempdir} -Xmx12g -jar \
 ${genomeAnalysisTKjar} \

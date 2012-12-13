@@ -90,6 +90,7 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showDownloadOptions = false;
 	private boolean showNameFilter = true;
 	private boolean isEditable;
+	private boolean showTargetTooltip = false;
 	private String APPLICATION_STRING = "GENERIC";
 
 	private String downloadLink = null;
@@ -572,57 +573,61 @@ public class MatrixViewer extends HtmlWidget
 								if (val instanceof ObservedValue && valueToShow == null)
 								{
 									String relName = ((ObservedValue) val).getRelation_Name();
+
 									// Make a nice info box about the target in
 									// the cell:
-									String infoBoxContents = "<strong>" + relName + "</strong><hr>";
-									infoBoxContents += "<p>Values set on this target:</p>";
-									infoBoxContents += "<ul>";
-									try
+									if (this.showTargetTooltip)
 									{
-										List<ObservedValue> valList = db.query(ObservedValue.class)
-												.eq(ObservedValue.TARGET_NAME, relName)
-												.sortASC(ObservedValue.FEATURE_NAME).find();
-										for (ObservedValue infoVal : valList)
+										String infoBoxContents = "<strong>" + relName + "</strong><hr>";
+										infoBoxContents += "<p>Values set on this target:</p>";
+										infoBoxContents += "<ul>";
+										try
 										{
-											String infoValue = infoVal.getValue();
-											if (infoValue == null)
+											List<ObservedValue> valList = db.query(ObservedValue.class)
+													.eq(ObservedValue.TARGET_NAME, relName)
+													.sortASC(ObservedValue.FEATURE_NAME).find();
+											for (ObservedValue infoVal : valList)
 											{
-												infoValue = infoVal.getRelation_Name();
+												String infoValue = infoVal.getValue();
+												if (infoValue == null)
+												{
+													infoValue = infoVal.getRelation_Name();
+												}
+												infoBoxContents += "<li>"
+														+ (infoVal.getFeature_Name() + ": " + infoValue + "</li>");
 											}
-											infoBoxContents += "<li>"
-													+ (infoVal.getFeature_Name() + ": " + infoValue + "</li>");
+											infoBoxContents += "</ul>";
+											// If you want info about values in
+											// which the target is referred to:
+											// infoBoxContents +=
+											// "<p>Values in which this target is referred to:</p>";
+											// infoBoxContents += "<ul>";
+											// valList =
+											// db.query(ObservedValue.class).
+											// eq(ObservedValue.RELATION_NAME,
+											// relName).
+											// sortASC(ObservedValue.FEATURE_NAME).
+											// find();
+											// for (ObservedValue infoVal :
+											// valList)
+											// {
+											// infoBoxContents +="<li>" +
+											// (infoVal.getFeature_Name() + ": "
+											// +
+											// infoVal.getTarget_Name() +
+											// "</li>");
+											// }
+											// infoBoxContents +="</ul>";
 										}
-										infoBoxContents += "</ul>";
-										// If you want info about values in
-										// which the target is referred to:
-										// infoBoxContents +=
-										// "<p>Values in which this target is referred to:</p>";
-										// infoBoxContents += "<ul>";
-										// valList =
-										// db.query(ObservedValue.class).
-										// eq(ObservedValue.RELATION_NAME,
-										// relName).
-										// sortASC(ObservedValue.FEATURE_NAME).
-										// find();
-										// for (ObservedValue infoVal : valList)
-										// {
-										// infoBoxContents +="<li>" +
-										// (infoVal.getFeature_Name() + ": " +
-										// infoVal.getTarget_Name() + "</li>");
-										// }
-										// infoBoxContents +="</ul>";
+										catch (DatabaseException e)
+										{
+											// List will remain empty
+										}
 									}
-									catch (DatabaseException e)
+									else
 									{
-										// List will remain empty
+										valueToShow = relName;
 									}
-									// valueToShow =
-									// "<a href=\"\" onclick=\"alert('" +
-									// infoBoxContents + "');\">" +
-									// relName + "</a>" +
-									valueToShow = relName + "<a href=\"#\" onMouseOver=\"toolTip('" + infoBoxContents
-											+ "')\" onMouseOut=\"toolTip()\">...</a>";
-
 								}
 
 								// If timing should be shown:

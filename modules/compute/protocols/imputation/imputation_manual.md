@@ -7,14 +7,12 @@ Content
 =======
 
 1.	Introduction
-2.	Imputation
+2.	General
 3.	Preparing the study data
-4.	Preparing the reference dataset
-5.	Imputation using Impute2
-6.	Imputation using Beagle
-7.	Imputation using Minimac
-8.	Imputation using minimacV2 pipeline
-9.	Appendix  
+4.	Preparing the reference dataset  
+5.	Imputation using minimacV2 pipeline  
+6.	Imputation on the grid  
+7.	Appendix  
 
   
   
@@ -22,10 +20,10 @@ Content
 To be written
   
   
-###2. Imputation
+###2. General
   
   
-This chapter shortly describes the contents of the Molgenis Compute distro. Add prerequisists like Molgenis Compute manual etc. EXTEND THIS!!  
+This chapter describes the content of the [Molgenis Compute] binary and how it should be installed. Before starting we recommend to read the [Molgenis Compute manual].  
   
   
 ####2.1 Installation of Molgenis Compute
@@ -88,11 +86,28 @@ Download here: https://github.com/downloads/freerkvandijk/files/hapmapCEUr22b37.
   
   
 To start imputation on a cohort one first has to prepare the reference data. The
-*protocols/imputation/prepareReference/* directory contains several protocols to prepare this data. 
+*protocols/imputation/prepareReference/* directory contains several protocols to prepare this data. For this version 3 tools need to be installed:  
+* VCFTools  
+* convert_snpIDs  
+* ConvertVcfToTriTyper  
+  
+We recommend to install `VCFTools` and `ConvertVcfToTrityper` in a directory named *tools/*. convert_snpIDs should be installed in a directory named *tools/scripts/*. The download links for these tools can be found in the appendix.  
   
 ####4.1 Generating a reference data set
-This workflow requires a VCF file containing phased genotypes as input. The workflow requires the VCF files to be split per chromosome in a folder named *vcf*. When executing this workflow two folders containing the data in Impute2 and TriTyper format per chromosome are generated. When imputing using the minimac pipeline it is sufficient to have the reference data only in VCF format.
+This workflow requires a VCF file containing phased genotypes as input. The workflow requires the VCF files to be split per chromosome in a folder named *vcf*, see 4.2 for an overview of the datastructure. When executing this workflow two folders containing the data in Impute2 and TriTyper format per chromosome are generated.  
   
+The `workflow.csv` contains the following five columns:  
+  
+| referenceName | chrVcfInputFile | chr | samplesToIncludeFile | vcfFilterOptions |  
+| :----: | :----: | :----: | :----: | :----: |  
+| reference name | VCF file | chromosome | file containing list of samples | filter options |  
+  
+The columns explained:  
+* referenceName: the name of the reference, later used to specify your reference panel to impute with. Type: string  
+* chrVcfInputFile: the VCF file to convert. Type: string  
+* chr: chromosome number to convert. Type: integer  
+* samplesToIncludeFile: a file containing a list of sampleIDs to keep. Type: string  
+* vcfFilterOptions: a space delimited list of parameters to filter on, as used in [VCFTools]. Type: string  
   
 An example test reference set can be created using the following command:  
   
@@ -114,12 +129,12 @@ Executing the above mentioned commands will result in a directory with the follo
       -referenceName
 			|
 			+Impute2
-			|	chrNumber.impute.hap
-			|	chrNumber.impute.hap.indv
-			|	chrNumber.impute.legend
+			|	<Number>.impute.hap
+			|	<Number>.impute.hap.indv
+			|	<Number>.impute.legend
 			+TriTyper
 			|	|
-			|	+ChrchrNumber
+			|	+Chr<Number>
 			|		GenotypeMatrix.dat
 			|		Individuals.txt
 			|		PhenotypeInformation.txt
@@ -127,161 +142,25 @@ Executing the above mentioned commands will result in a directory with the follo
 			|		SNPs.txt
 			|
 			+vcf
-				chrNumber.vcf
-				chrNumber.vcf.vcfidx  
+				chr<Number>.vcf
+				chr<Number>.vcf.vcfidx  
 
 	Note:
 	1 The vcf directory contains the input VCF files split per chromosome. The *.vcf.vcfidx file is generated in this workflow.
 	2 When using Impute2 genetic recombination maps for each chromosome should be added to the Impute2 directory manually.  
-	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.
-
-  
-**HOW CAN NOTE 2 BE EXPLAINED BETTER?**
-  
-When all these files are present the reference dataset is ready to be used.
+	Afterwards the filename convention should be specified in the parameters.csv file of the impute2 workflow.  
   
   
-###5. Imputation using Impute2  
+When all the above files are present the reference dataset is ready to be used.  
   
   
-All protocols and files to run an imputation using Impute2[^2] can be found in the *protocols/imputation/impute2/* directory. Before running an analysis all required tools need to be installed. 
+###5. Imputation using minimacV2 pipeline  
+  
+  
+All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The version 2 pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 5.1.
   
   
 ####5.1 Tools
-To run this pipeline the following tools, scripts and datasets are required:
-  
-* reference dataset (prepared using the workflow described earlier)
-* java
-* python
-* gtool (v. 0.7.5)
-* plink (v. 1.07)
-* plink (v. 1.08)
-* imputationTool (v. 20120912)
-* impute2 (v. 2.2.2)[^2]
-* calculateBeagleR2ForImpute2Results.py
-* ExpandWorksheetWithMergeWorksheetV1.0
-* liftOverUcsc  
-**Note: Version numbers are tested**  
-  
-We recommend to install all tools in one directory, this way only the `"$tooldir"` variable needs to be changed. Furthermore it is required to have your study data divided by chromosome in the PED/MAP format as specified by pLINK.
-  
-  
-####5.2 The sample worksheet
-To start an analysis one needs to create a so called "worksheet". This worksheet should contain six columns and follow the format specified below:
-  
-| project | studyInputDir | referencePanel | imputationResulsDir | imputationPipeline | genomeBuild |  
-| :----: | :----: | :----: | :----: | :----: | :----: |  
-| projectname | directory | reference data | directory | beagle/mach/impute2 | b36/b37 |
-  
-  
-An example worksheet using Impute2 and b37 is distributed in the Compute binary and can be found here:  
-*protocols/imputation/impute2/sampleWorkflow.csv*
-  
-  
-####5.3 Running an analysis using Molgenis Compute
-The complete Impute2 pipeline consists of two steps. The first one (specified in createWorkflowImpute.csv) creates the complete filestructure and all Compute jobs in the project folder specified in the sampleWorksheet.csv. The pipeline can be executed using the following command:
-  
-  
->sh molgenis_compute.sh \\  
->-worksheet=protocols/imputation/impute2/sampleWorksheet.csv \\  
->-parameters=protocols/imputation/impute2/parameters.csv \\  
->-workflow=protocols/imputation/impute2/createWorkflowImpute.csv \\  
->-protocols=protocols/imputation/impute2/ \\  
->-templates=protocols/imputation/impute2/ \\  
->-scripts=/your/output/directory/here/ \\  
->-id=runXX
-  
-  
-All folders and jobs can be found in the scripts directory specified by the user. The second step of the analysis is the execution of the generated shell scripts. This can be done by typing the following command:
-  
-`cd /your/output/directory/here/`  
-`sh submit.sh`  
-**Note: Alternatively the generated s00_\*.sh scripts can be executed by hand**
-  
-  
-All Compute jobs can now be found in the directory */compute/jobs/chrNumber/* in the *imputationResultDir* specified in the sampleWorksheet.csv.
-  
-  
-###6. Imputation using Beagle
-  
-  
-Still to come!
-  
-  
-###7. Imputation using Minimac
-  
-  
-All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimac/* directory. Before running an analysis all required tools need to be installed. 
-  
-  
-####7.1 Tools
-To run this pipeline the following tools, scripts and datasets are required:
-  
-* reference dataset in Ped/Map format (prepared using the workflow described in chapter 5.2)
-* java
-* python
-* ChunkChromosome (v. 2012-08-28)
-* minimac (v. beta-2012.10.3) [^3]
-* mach (v. 1.0.18)
-* plink (v. 1.07)
-* plink1.08 (v. 1.08)
-* imputationTool (v. 20120912)
-* ConcatWorksheets (v. V1.0)
-* expandWorksheet (v. V1.1)  
-**Note: Version numbers are tested**  
-  
-We recommend to install all tools in one directory, this way only the `"$tooldir"` variable needs to be changed.
-  
-  
-####7.2 The sample worksheet
-To start an analysis one needs to create a so called "worksheet". This worksheet should contain six columns and follow the format specified below:
-  
-| project | studyInputDir | referencePanel | imputationResultDir | imputationPipeline | genomeBuild | chr | autostart |  
-| :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |  
-| projectname | directory | reference data | directory | beagle/minimac/impute2 | b36/b37 | integer | TRUE/FALSE |  
-  
-The columns explained:  
-* project: the project name of your analysis. Type: string  
-* studyInputDir: the directory containing the study data split per chrosome in the PED/MAP format as explained in chapter 3. Type: string  
-* referencePanel: the directory containing the reference data generated as explained in chapter 4. Type: string  
-* imputationResultsDir: the output directory for all results. Type string:  
-* imputationPipeline: the pipeline to use, this can be one of the three described in this document. Type: beagle/minimac/impute2  
-* genomeBuild: the genome build to use. Type: boolean, b36/b37 **Please make sure your study and referencedata are on the same genome build**  
-* chr: the chromosome to run the analysis on. Type: integer  
-* autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. Type: boolean, TRUE/FALSE  
-  
-An example worksheet using minimac and b37 is distributed in the Compute binary and can be found here:  
-*protocols/imputation/minimac/exampleWorksheet.csv*
-  
-  
-####7.3 Running an analysis using Molgenis Compute
-The complete minimac pipeline consists of three steps. The first one (specified in workflowMinimacStage1.csv) creates the complete file structure and all Compute jobs for the prephasing. The first three steps of this workflow consist of filtering the study data using ImputationTool, one might choose to remove these steps from the workflow if the study data is already filtered and qced. The second step takes care of the phasing of the data, this process is executed per chunk/region of a user specified number of markers/SNPs (default is 2000). The steps described in workflowMinimacStage3.csv perform the actual imputation and merge the chunk-based results back per chromosome. The pipeline can be executed using the following command:
-  
-  
->sh molgenis_compute.sh \\  
->-worksheet=protocols/imputation/minimac/exampleWorksheet.csv \\  
->-parameters=protocols/imputation/minimac/parametersMinimac.csv \\  
->-workflow=protocols/imputation/minimac/workflowMinimacStage1.csv \\  
->-protocols=protocols/imputation/minimac/protocols/ \\  
->-templates=protocols/imputation/minimac/protocols/ \\  
->-scripts=/your/output/directory/here/ \\  
->-id=runXX
-  
-  
-All Compute jobs can now be found in the directory */compute/jobs/prepare/* in the *imputationResultDir* specified in the sampleWorksheet.csv. One now only has to submit the generated scripts. This can be done by typing the following command:
-  
-`cd /your/output/directory/here/`  
-`sh submit.sh`  
-**Note: Alternatively the generated s00_\*.sh scripts can be executed locally**
-  
-  
-###8. Imputation using minimacV2 pipeline  
-  
-  
-All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The version 2 pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 8.1.
-  
-  
-####8.1 Tools
 To run this pipeline the following tools, scripts and datasets are required:
   
 * study data in PED/MAP format (prepared as described in chapter 3)
@@ -302,7 +181,7 @@ To run this pipeline the following tools, scripts and datasets are required:
 We recommend to install all tools in one directory in a structure of *tools/<toolname>/*, this way only the `"$tooldir"` variable in the parameters.csv needs to be changed.
   
   
-####8.2 The sample worksheet for pre-phasing  
+####5.2 The sample worksheet for pre-phasing  
 To start an analysis one needs to create a so called "worksheet". This worksheet should contain six columns and follow the format specified below:
   
 | project | studyInputDir | prePhasingResultDir | imputationPipeline | genomeBuild | chr | autostart |  
@@ -319,7 +198,7 @@ The columns explained:
 * autostart: the value in this column specifies if the subsequent analysis steps in the minimac pipeline should be started/submitted automatically. Type: boolean, TRUE/FALSE **Note: This only works if in your cluster setup submission from nodes is allowed.**  
   
   
-####8.3 Running an analysis  
+####5.3 Running an analysis  
 The minimacV2 pipeline consists of three parts. The first one aligns all alleles to the reference genome and performs quality control using ImputationTool [^7], chunks the study data in a user specified number of samples and splits the chromosome in chunks by splitting on a specified number of SNPs. This extensive chunking is needed to parallelize the analysis, leading to a total analysis time of approximately 10 hours per chunk of 2000 SNPs and 500 samples. The second step phases the data using MaCH [^6]. The phasing only has to be done once for a specific study. The last step consist of imputing the phased data and concatenates the results per chromosome. Since the phasing is independant of the reference panel one only has to run the third step again when imputing with a different reference panel.  
   
 #####Step 1: preparing & QCing the study data  
@@ -404,26 +283,106 @@ When finished one can generate and execute the imputation jobs by executing the 
 The output is now ready for further analysis.  
   
   
-####8.4 Output  
+####5.4 Output  
 The pipeline produces several files which can be used for downstream analysis. The following files are produced: 
 EXTEND THIS WHEN QUICKTEST IS IMPLEMENTED?  
   
   
-###9 Appendix  
+###6 Imputation on the grid  
+  
+  
+To run Molgenis Compute on the grid one needs to prepare a webserver with the following requierements:  
+* java 1.6.0 or higher  
+* git 1.7.1 or higher  
+* ant 1.7.1 or higher  
+* mysql 5.1.54 or higher  
+  
+The whole installation and running process can be done in seven steps.  
+  
+1. Create database  
+  >Login as root to mysql.  
+  >CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
+  >CREATE DATABASE compute;  
+  >GRANT ALL PRIVILEGES ON compute.* TO ’molgenis’@’%’ WITH GRANT OPTION;  
+  >FLUSH PRIVILEGES;  
+  >Logout.  
+  
+2. Checkout from git repository and build compute  
+  >git clone https://github.com/georgebyelas/molgenis.git  
+  >git clone https://github.com/georgebyelas/molgenis_apps.git  
+  >cd molgenis_apps  
+  >ant -f build_compute.xml clean-generate-compile  
+
+  Alternatively one can download the [clone_build.sh] shell script and execute it:  
+  >sh clone_build.sh  
+  
+3. Start webserver  
+  >kill -9 \`lsof -i :<your port> -t`  
+  >cd molgenis_apps;  
+  >nohup ant -f build_compute.xml runOn -Dport=<your port> &  
+  
+4. Setup environment on the grid  
+  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` from [pilot directory] to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
+  >scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
+  
+  Edit `maverick.sh`, specify your ip and port of your webserver, which is started on step 3:  
+  >export WORKDIR=$TMPDIR  
+  >source dataTransferSRM.sh  
+  >curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
+  >sh script.sh 2>&1 | tee -a log.log  
+  >curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
+  
+5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
+  >sh importWorkflow.sh \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/parametersMinimac.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
+  
+6. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
+  >sh importWorksheet.sh \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv \\  
+  >step01  
+  
+7. Execute imputation with user credentials using pilot job system: 
+  >sh runPilots.sh \\  
+  >ui.grid.sara.nl \\  
+  >\<username> \\  
+  >\<password> \\  
+  >grid  
+  
+After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:  
+>scp \<username>@ui.grid.sara.nl:~srm:something? .  
+  
+More text
+
+
+
+
+
+
+
+For further information read the [Molgenis Compute manual].  
+  
+  
+###7 Appendix  
   
   
 Overview of the tools needed for the minimacV2 pipeline.  
   
 | Tool | Downloadlink |  
 | :----: | :----: |  
-| ChunkChromosome | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ChunkChromosome-2012-08-28/ |  
+| ChunkChromosome | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ChunkChromosome-2012-08-28.zip |  
 | minimac | http://www.bbmriwiki.nl/svn/ebiogrid/modules/minimac/beta-2012.10.3/minimac.beta-2012.10.3.tgz |  
 | mach | http://www.bbmriwiki.nl/svn/ebiogrid/modules/mach/1.0.18/mach.1.0.18.Linux.tgz |  
 | plink | http://www.bbmriwiki.nl/svn/ebiogrid/modules/plink/1.07-x86_64/plink-1.07-x86_64.tgz |  
 | plink1.08 | http://www.bbmriwiki.nl/svn/ebiogrid/modules/plink/1.08/plink-1.08.tgz |  
-| ImputationTool | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ImputationTool-20120912/ |  
-| ConcatWorksheets | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConcatWorksheetsV1.0/ |  
-| ExpandWorksheet | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ExpandWorksheetWithMergeWorksheetV1.1/ |  
+| ImputationTool | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ImputationTool-20120912.zip |  
+| ConcatWorksheets | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConcatWorksheetsV1.0.zip |  
+| ExpandWorksheet | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ExpandWorksheetWithMergeWorksheetV1.1.zip |  
+| VCFTools | http://sourceforge.net/projects/vcftools/files/ |  
+| ConvertVcfToTrityper | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/ConvertVcfToTriTyperV1.zip |  
+| convert_snpIDs | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/convert_snpIDsV2.pl |  
     
   
 [^1]: See http://freemarker.org/ for a manual.
@@ -433,4 +392,10 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^5]: http://pngu.mgh.harvard.edu/~purcell/plink/
 [^6]: http://www.sph.umich.edu/csg/abecasis/MACH/tour/imputation.html
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
-
+[^8]: Link_to_shell_script  
+[Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
+[Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
+[VCFTools]: http://vcftools.sourceforge.net/
+[clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
+[deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  
+[pilot directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute/pilots/grid
