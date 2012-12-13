@@ -24,6 +24,8 @@ getFile ${indexfile}.rpac
 getFile ${indexfile}.rsa
 getFile ${indexfile}.sa
 
+module load GATK/${gatkVersion}
+
 java -Xmx8g -jar ${genomeAnalysisTKjar} \
 -l INFO \
 -T IndelGenotyperV2 \

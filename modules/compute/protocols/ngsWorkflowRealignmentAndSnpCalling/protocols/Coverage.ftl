@@ -20,7 +20,7 @@ getFile ${coveragescript}
 
 module load ${rBin}/${rVersion}
 
-export R_LIBS=${R_LIBS}
+#export R_LIBS=${R_LIBS}
 
 Rscript ${coveragescript} \
 --bam ${mergedbam} \
