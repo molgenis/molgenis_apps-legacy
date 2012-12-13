@@ -446,8 +446,6 @@ public class AnimalImporter
 
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		// Active / Inactive --> default to inactive litter
-		String active = "Inactive";
 		for (Tuple tuple : reader)
 		{
 			Date now = new Date();
@@ -492,6 +490,7 @@ public class AnimalImporter
 					weanDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "WeanDate");
 					// Get birthDate from first sibling
 					dobDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "DateOfBirth");
+					System.out.println(">>>>>>>>>>>> " + v.getTarget_Name() + " " + dobDate + " " + weanDate);
 				}
 				String sex = ct.getMostRecentValueAsXrefName(v.getTarget_Name(), "Sex");
 				if (sex.equalsIgnoreCase("Male"))
@@ -520,12 +519,6 @@ public class AnimalImporter
 			}
 			// remarks
 			String remark = tuple.getString("Remarks");
-
-			// Wean date -> convert to yyyy-mm-dd format
-			if (weanDate == null || weanDate.equals(""))
-			{
-				active = "Active"; // set litter active if not weaned
-			}
 
 			// Create a parentgroup
 
@@ -595,6 +588,7 @@ public class AnimalImporter
 			// FIXME we always need a birthdate, calculate one if it is missing
 			if (dobDate == null || dobDate.equals(""))
 			{
+				System.out.println("################### DO I ever Get HERE1!!!? #########################");
 				if (weanDate != null && weanDate.equals(""))
 				{
 					long dobDateT = inputFormat.parse(weanDate).getTime() - (MILLSECS_PER_DAY * 28);
@@ -618,8 +612,9 @@ public class AnimalImporter
 				// means
 				// that litter is not weaned yet.
 			}
-			if (weanDate != null && weanDate.equals(""))
+			if (weanDate != null && !weanDate.equals(""))
 			{
+				System.out.println("################### DO I ever Get HERE2!!!? #########################");
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
 						litterName, weanDate, null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
@@ -631,13 +626,13 @@ public class AnimalImporter
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeUnknown"), now, null,
 						"WeanSizeUnknown", litterName, Integer.toString(UnkSexCtr), null));
 				// set litter inactive
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Inactive",
-						litterName, active, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
+						litterName, "Inactive", null));
 			}
 			else
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
-						litterName, active, null));
+						litterName, "Active", null));
 			}
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSize"), now, null, "Size", litterName,
 					Integer.toString(nrBorn), null));
