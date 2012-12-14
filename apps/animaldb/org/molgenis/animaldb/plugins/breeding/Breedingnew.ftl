@@ -217,15 +217,7 @@
 		</div>
 		<div id="divnamebase" style="clear:both; display:block">
 			<label style="width:16em;float:left;" for="namebase">Name prefix (may be empty):</label>
-			<input type="text" class="text ui-widget-content ui-corner-all" readonly="true" name="startnumber" id="startnumber" value="${screen.speciesBase}" />
-			<!--
-			<select id="namebase" name="namebase" onchange="updateStartNumberAndNewNameBase(this.value)">
-				<option value=""></option>
-				<option value="New">New (specify below)</option>
-				<#list screen.bases as base>
-					<option value="${base}" <#if screen.speciesBase == base>selected="selected"</#if> >${base}</option>
-				</#list>
-			</select>-->
+			<input type="text" class="text ui-widget-content ui-corner-all" readonly="true" name="namebase" id="namebase" value="${screen.speciesBase}" />
 		</div>
 		<input id="startnumberhelper" type="hidden" value="${screen.getStartNumberHelperContent()}" />
 		<div id="divnewnamebasePanel" style="display:none; clear:both">
@@ -303,8 +295,7 @@
 		
 		<#else>
 			<input type='submit' id='editIndividual' value='Edit individuals in litter' onclick="__action.value='editIndividual'" />
-		
-		
+
 		</#if>
 		</div>
 	<br />
