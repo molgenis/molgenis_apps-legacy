@@ -131,7 +131,7 @@ Analysis with Compute commandline is now started. A detailed description for exe
   >grid  
   
 6. Download your result, when analysis is finished with the same "srmcp" command to UI node  
-  >srmcp -server_mode=passive srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/RP2/tmp/demo/test1/120308_SN163_0457_BD0E5CACXX_L4_CAACCT.human_g1k_v37.recal.sorted.bam \\  
+  >srmcp -server_mode=passive srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/RP2/demo/120308_SN163_0457_BD0E5CACXX_L4_CAACCT.human_g1k_v37.recal.sorted.bam \\  
   >file:///$HOME/120308_SN163_0457_BD0E5CACXX_L4_CAACCT.human_g1k_v37.recal.sorted.bam  
 
 
