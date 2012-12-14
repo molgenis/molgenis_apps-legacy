@@ -102,7 +102,7 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
-[Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
+[Molgenis Compute manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
 [VCFTools]: http://vcftools.sourceforge.net/
 [clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
 [deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  

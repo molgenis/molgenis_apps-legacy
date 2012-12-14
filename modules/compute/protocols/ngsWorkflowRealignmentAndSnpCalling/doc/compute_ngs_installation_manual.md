@@ -107,7 +107,7 @@ After installing all tools and resources one should have the following directory
 Your pipeline is now setup for usage.  
   
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
-[Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf  
+[Molgenis Compute manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf  
 [eBioGrid]: http://www.ebiogrid.nl/  
 [clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
 [deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  

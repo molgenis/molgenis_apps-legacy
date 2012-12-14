@@ -344,14 +344,9 @@ The whole installation and running process can be done in seven steps.
 After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:  
 >scp \<username>@ui.grid.sara.nl:~srm:something? .  
   
-More text
-
-
-
-
-
-
-
+The new worksheet can now be imported in the database again, using above mentioned commands.  
+  
+  
 For further information read the [Molgenis Compute manual].  
   
   
@@ -384,10 +379,11 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
-[Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
+[Molgenis Compute manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
 [VCFTools]: http://vcftools.sourceforge.net/
 [clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
 [deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  
 [pilot directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute/pilots/grid
 [eBioGrid]: http://www.ebiogrid.nl/  
-[Molgenis Compute imputation installation manual]: 
+[Molgenis Compute imputation installation manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/protocols/imputation/minimacV2/doc/compute_imputation_installation_manual.md  
+
