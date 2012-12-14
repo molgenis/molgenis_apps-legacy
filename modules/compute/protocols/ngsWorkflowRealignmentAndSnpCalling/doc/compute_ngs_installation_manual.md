@@ -114,7 +114,7 @@ To run Molgenis Compute on the grid one needs to prepare a webserver with the fo
 * ant 1.7.1 or higher  
 * mysql 5.1.54 or higher  
   
-The whole installation and running process can be done in seven steps.  
+The whole installation can be done in three steps.  
   
 1. Create database  
   >Login as root to mysql.  
@@ -144,8 +144,7 @@ The whole installation and running process can be done in seven steps.
   >sh script.sh 2>&1 | tee -a log.log  
   >curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
   
-  
-Your pipeline is now setup for usage.  
+Your environment is ready for usage.  
   
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
 [Molgenis Compute manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf  
