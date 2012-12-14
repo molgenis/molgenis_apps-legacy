@@ -354,6 +354,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=weansizemale", "3");
 		selenium.click("id=wean");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
