@@ -28,11 +28,13 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	{
 		// validate headers
 		ComputeBundleValidator cbv = new ComputeBundleValidator(this);
+		cbv.validateReferedFilesAndPathsExists(options);
 		cbv.validateFileHeaders(options);
 
 		// load files
 		this.setWorkflowElements(options.workflowfile);
-		this.setComputeProtocols(options.protocoldir);
+		if (options.systemdir.exists()) this.addComputeProtocols(options.systemdir);
+		this.addComputeProtocols(options.protocoldir);
 		this.setComputeParameters(options.parametersfile);
 		this.setWorksheet(options.worksheetfile);
 
@@ -71,10 +73,10 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		this.setComputeParameters(parametersfile);
 		this.setWorkflowElements(workflowfile);
 		this.setWorksheet(worksheetfile);
-		this.setComputeProtocols(protocoldir);
+		this.addComputeProtocols(protocoldir);
 	}
 
-	public void setComputeProtocols(File templateFolder) throws IOException
+	public void addComputeProtocols(File templateFolder) throws IOException
 	{
 		// assume each file.ftl in the 'protocols' folder to be a protocol
 		List<ComputeProtocol> protocols = new ArrayList<ComputeProtocol>();
@@ -217,7 +219,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				protocols.add(p);
 			}
 		}
-		this.setComputeProtocols(protocols);
+
+		this.appendComputeProtocols(protocols);
 	}
 
 	public void setComputeParameters(File file) throws Exception
