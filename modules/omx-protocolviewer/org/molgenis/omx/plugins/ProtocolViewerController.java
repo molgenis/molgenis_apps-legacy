@@ -21,6 +21,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.io.excel.ExcelSheetWriter;
+import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.observ.Category;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
@@ -30,7 +32,8 @@ import org.molgenis.omx.EMeasureFeatureWriter;
 import org.molgenis.omx.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.XlsWriter;
+import org.molgenis.util.tuple.HeaderTuple;
+import org.molgenis.util.tuple.ValueTuple;
 
 import com.google.gson.Gson;
 
@@ -177,27 +180,25 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
+			// TODO output not consistent with eMeasure output
 			// write excel file
-			List<String> headers = Arrays.asList("Selected variables", "Descriptions", "Sector/Protocol");
-			XlsWriter xlsWriter = new XlsWriter(response.getOutputStream(), headers);
+			String protocolId = dataSet.getProtocolUsed_Identifier();
+			List<String> header = Arrays.asList("Selected variables", "Descriptions", "Sector/Protocol");
+			ExcelWriter excelWriter = new ExcelWriter(response.getOutputStream());
 			try
 			{
-				xlsWriter.writeHeader();
-
-				int row = 1;
+				ExcelSheetWriter sheetWriter = excelWriter.createSheet("variables");
+				sheetWriter.writeColNames(new HeaderTuple(header));
 
 				for (ObservableFeature feature : features)
 				{
-					xlsWriter.writeCell(0, row, feature.getName());
-					xlsWriter.writeCell(1, row, feature.getDescription());
-					// TODO not consistent with eMeasure output
-					xlsWriter.writeCell(2, row, dataSet.getProtocolUsed_Identifier());
-					row++;
+					List<String> values = Arrays.asList(feature.getName(), feature.getDescription(), protocolId);
+					sheetWriter.write(new ValueTuple(values));
 				}
 			}
 			finally
 			{
-				xlsWriter.close();
+				excelWriter.close();
 			}
 		}
 		else if (request.getAction().equals("download_viewer"))

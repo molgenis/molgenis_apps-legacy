@@ -51,8 +51,6 @@ import plugins.emeasure.EMeasureEntityWriter;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
-//import org.molgenis.util.XlsWriter;
-
 public class CatalogueTreePlugin extends PluginModel<Entity>
 {
 
