@@ -1,9 +1,11 @@
 package org.molgenis.compute.commandline;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
@@ -66,6 +68,23 @@ public class ComputeBundle
 	public void appendComputeProtocols(List<ComputeProtocol> computeProtocols)
 	{
 		this.computeProtocols.addAll(computeProtocols);
+	}
+
+	public void keepFirstProtocol()
+	{
+		List<ComputeProtocol> lst = new ArrayList<ComputeProtocol>();
+		Set<String> names = new HashSet<String>();
+
+		for (ComputeProtocol cp : this.computeProtocols)
+		{
+			if (!names.contains(cp.getName()))
+			{
+				lst.add(cp);
+				names.add(cp.getName());
+			}
+		}
+
+		this.computeProtocols = lst;
 	}
 
 	public List<WorkflowElement> getWorkflowElements()
