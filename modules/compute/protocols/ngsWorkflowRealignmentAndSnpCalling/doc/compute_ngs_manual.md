@@ -176,6 +176,7 @@ The whole installation and running process can be done in seven steps.
 [Picard]: http://picard.sourceforge.net/  
 [^1]: http://genome.cshlp.org/content/21/6/830.abstract  
 [GATK]: http://www.broadinstitute.org/gatk/  
-[Molgenis Compute NGS installation manual]:  
+[Molgenis Compute NGS installation manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/doc/compute_ngs_installation_manual.md  
+
 
 

@@ -17,7 +17,7 @@ Content
   
   
 ###1. Introduction  
-This manual explains how one can do imputation using the minimac[^3] analysis pipeline in the [Molgenis Compute] framework. The second chapter describes how one should install and setup [Molgenis Compute] to be used with the minimac imputation pipeline. The sequential three chapters explain how to create the study and reference data for imputation followed by the actual execution of the imputation pipeline using one of the following five backends; PBS, SGE, BSUB, grid or your local computer. To run the analysis efficient it's needed to devide the analysis in three steps:  
+This manual explains how one can do imputation using the minimac[^3] analysis pipeline in the [Molgenis Compute] framework. The second chapter describes the content of the [Molgenis Compute] binary to be used with the minimac imputation pipeline. The sequential three chapters explain how to create the study and reference data for imputation followed by the actual execution of the imputation pipeline using one of the following five backends; PBS, SGE, BSUB, grid or your local computer. To run the analysis efficient it's needed to devide the analysis in three steps:  
   
 * *Preparing and QCing the study data:* here bad SNPs are removed from the study data, afterwards the data is split per number of samples and chromosome chunk  
 * *Phasing:* here the data chunks are phased  
@@ -29,17 +29,10 @@ Using the above explained method imputation is parallelized and ready to use on 
 ###2. General
   
   
-This chapter describes the content of the [Molgenis Compute] binary and how it should be installed. Before starting we recommend to read the [Molgenis Compute manual].  
+This chapter describes the content of the [Molgenis Compute] binary. Before starting we recommend to read the [Molgenis Compute manual] and the [Molgenis Compute imputation installation manual].  
   
   
-####2.1 Installation of Molgenis Compute
-The first thing to do is to unpack the Molgenis Compute distro. To unpack the distro execute the following command:  
-  
->unzip molgenis_compute-\<version\>.zip  
->cd molgenis_compute-\<version\>  
-  
-  
-####2.2 Imputation overview  
+####2.1 Imputation overview  
 All imputation protocols are stored in the *protocols/imputation/* directory. This
 directory contains multiple sub-directories:
   
@@ -53,13 +46,6 @@ Compute:
 * workflow.csv
 * worksheet.csv
 * protocols (*.ftl files)
-  
-  
-####2.3 General compute settings for imputation  
-To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute the imputation pipeline. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
-  
-* scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs for Grid usage the value GRID should be specified.  
-* root: this is the "root" parameter shared by all other parameters. To ease the setup we recommend to install all tools in a *tools* directory and all resources in a *resources* directory in the "root".    
   
   
 ###3.	Preparing the study data  
@@ -403,4 +389,5 @@ Overview of the tools needed for the minimacV2 pipeline.
 [clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
 [deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  
 [pilot directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute/pilots/grid
-[eBioGrid]: http://www.ebiogrid.nl/
+[eBioGrid]: http://www.ebiogrid.nl/  
+[Molgenis Compute imputation installation manual]: 
