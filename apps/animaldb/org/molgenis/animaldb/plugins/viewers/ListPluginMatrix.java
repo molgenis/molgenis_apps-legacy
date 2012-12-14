@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.animaldb.plugins.animal.AnimalRemover;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -29,9 +28,10 @@ import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
+//FIXME temporarily commented out (ate 2012-12-14) until functionality is ready and does not break the build
+//import org.molgenis.animaldb.plugins.animal.AnimalRemover;
 
 public class ListPluginMatrix extends EasyPluginController
 {
@@ -87,34 +87,31 @@ public class ListPluginMatrix extends EasyPluginController
 				reload = true;
 			}
 
-			if (action.equals("SelectA"))
-			{
-				targetList = new ArrayList<Integer>();
-				// Get targets from matrix
-				@SuppressWarnings("unchecked")
-				List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
-				int rowCnt = 0;
-				for (ObservationElement row : rows)
-				{
-					if (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null)
-					{
-						targetList.add(row.getId());
-					}
-					rowCnt++;
-				}
-
-				container = new Container();
-
-				for (Integer animalId : targetList)
-				{
-
-					String animalName = cs.getObservationTargetLabel(animalId);
-					AnimalRemover removeAnimal = new AnimalRemover(db);
-					removeAnimal.removeAnimal(animalId);
-
-				}
-
-			}
+			// FIXME temporarily commented out (ate 2012-12-14) until
+			// functionality is ready and does not break the build
+			/*
+			 * if (action.equals("SelectA")) { targetList = new
+			 * ArrayList<Integer>(); // Get targets from matrix
+			 * 
+			 * @SuppressWarnings("unchecked") List<ObservationElement> rows =
+			 * (List<ObservationElement>) targetMatrixViewer.getSelection(db);
+			 * int rowCnt = 0; for (ObservationElement row : rows) { if
+			 * (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null) {
+			 * targetList.add(row.getId()); } rowCnt++; }
+			 * 
+			 * container = new Container();
+			 * 
+			 * for (Integer animalId : targetList) {
+			 * 
+			 * String animalName = cs.getObservationTargetLabel(animalId);
+			 * 
+			 * AnimalRemover removeAnimal = new AnimalRemover(db);
+			 * removeAnimal.removeAnimal(animalId);
+			 * 
+			 * }
+			 * 
+			 * }
+			 */
 
 		}
 		catch (Exception e)
@@ -230,8 +227,11 @@ public class ListPluginMatrix extends EasyPluginController
 
 				}
 				targetMatrixViewer.setDatabase(db);
-				ActionInput selectButton = new ActionInput("SelectA", "", "Delete selected animal(s)");
-				div.add(selectButton);
+				// FIXME temporarily commented out (ate 2012-12-14) until
+				// functionality is ready and does not break the build
+				// ActionInput selectButton = new ActionInput("SelectA",
+				// "","Delete selected animal(s)");
+				// div.add(selectButton);
 				div.add(targetMatrixViewer);
 
 				container.add(div);

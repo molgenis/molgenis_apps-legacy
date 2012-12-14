@@ -38,8 +38,8 @@ import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -1643,7 +1643,10 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 
 		// Active
-		TextLineInput<String> inputActive = new TextLineInput<String>("Active");
+		// TextLineInput<String> inputActive = new
+		// TextLineInput<String>("Active");
+		StringInput inputActive = new StringInput("Active");
+		inputActive.setId("Active");
 		if (observableFeat.containsKey("Active"))
 		{
 
@@ -1705,8 +1708,8 @@ public class Breedingnew extends PluginModel<Entity>
 		row++;
 		// Line
 
-		TextLineInput<String> inputLine = new TextLineInput<String>("Line");
-
+		StringInput inputLine = new StringInput("Line");
+		inputLine.setId("Line");
 		inputLine.setReadonly(true);
 
 		// for (ObservationTarget background : this.lineList)
@@ -1736,7 +1739,8 @@ public class Breedingnew extends PluginModel<Entity>
 
 		query.find().get(0);
 
-		TextLineInput<String> inputParentGroup = new TextLineInput<String>("Parentgroup");
+		StringInput inputParentGroup = new StringInput("Parentgroup");
+		inputParentGroup.setId("Parentgroup");
 		inputParentGroup.setReadonly(true);
 		if (observableFeat.containsKey("Parentgroup"))
 		{
@@ -1751,7 +1755,7 @@ public class Breedingnew extends PluginModel<Entity>
 		editTable.setCell(0, row, inputParentGroup);
 		row++;
 		// Remark
-		TextLineInput<String> inputRemark = new TextLineInput<String>("Remark");
+		StringInput inputRemark = new StringInput("Remark");
 		if (observableFeat.containsKey("Remark"))
 		{
 
@@ -1766,7 +1770,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 		row++;
 		// Size
-		TextLineInput<String> inputSize = new TextLineInput<String>("Size");
+		StringInput inputSize = new StringInput("Size");
 		if (observableFeat.containsKey("Size"))
 		{
 
@@ -1801,7 +1805,7 @@ public class Breedingnew extends PluginModel<Entity>
 		editTable.setCell(0, row, dateInputWeanDate);
 		row++;
 		// WeanSize
-		TextLineInput<String> inputWeanSize = new TextLineInput<String>("WeanSize");
+		StringInput inputWeanSize = new StringInput("WeanSize");
 		inputWeanSize.setReadonly(true);
 		if (observableFeat.containsKey("WeanSize"))
 		{
@@ -2097,7 +2101,21 @@ public class Breedingnew extends PluginModel<Entity>
 			try
 			{
 				// Populate backgrounds list
-				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
+				// this.setBackgroundList(ct.getAllMarkedPanels("Background",
+				// investigationNames));
+				// FIXME, filter by species
+				String species = ct.getMostRecentValueAsXrefName(line, "Species");
+				List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
+				for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationNames))
+				{
+					// Only show if background belongs to chosen species
+					if (ct.getMostRecentValueAsXrefName(b.getName(), "Species").equals(species))
+					{
+						bckgrlist.add(b);
+					}
+				}
+				this.setBackgroundList(bckgrlist);
+
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
 				// Populate gene name list
