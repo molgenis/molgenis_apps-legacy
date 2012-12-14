@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # Initialize constant testResults and load function isEmpty
-source initialize.sh
+workdir=$( cd -P "$( dirname "$0" )" && pwd )
+source $workdir/initialize.sh
 
 echo "\nStarting HelloWorld test.\n"
 echo "1. Remove previous results..."
-sh removeResults.sh
+sh $workdir/removeResults.sh
 
 echo "2. Create directory 'testResults' for the results of this test..."
 mkdir -p $testResults
 
 echo "2. Generate new result..."
-sh generate_HelloWorld_test.sh > $testResults/generate.log
+sh $workdir/generate_HelloWorld_test.sh > $testResults/generate.log
 
 echo "3. Compare generated and expected pipeline..."
 diff -rq $generatedScriptsDir $workdir/helloWorld/expected_scripts > $testResults/diff_generated_vs_expected_pipeline.log
