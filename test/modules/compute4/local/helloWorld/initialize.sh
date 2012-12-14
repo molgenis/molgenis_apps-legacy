@@ -1,5 +1,6 @@
 # Define constants  
 workdir=$( cd -P "$( dirname "$0" )" && pwd )
+echo "WORKDIR = $workdir"
 testResults="$workdir/../../../../../test-output/compute4/local/helloWorld"
 generatedScriptsDir=$testResults/generatedScripts
 
