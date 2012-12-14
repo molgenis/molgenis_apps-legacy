@@ -1,4 +1,7 @@
+source initialize.sh
+
 CP="../../../../../.."
+
 java -cp $CP/molgenis_apps/build/classes:$CP/molgenis/bin:\
 $CP/molgenis/lib/ant-1.8.1.jar:\
 $CP/molgenis/lib/ant-apache-log4j.jar:\
@@ -120,4 +123,5 @@ $CP/molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-api-1.5.6.jar:\
 $CP/molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-log4j12-1.5.6.jar:\
 $CP/molgenis/lib/hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar \
 org.molgenis.compute.commandline.ComputeCommandLine \
--inputdir=helloWorld
+-inputdir=helloWorld \
+-outputdir=$generatedScriptsDir
