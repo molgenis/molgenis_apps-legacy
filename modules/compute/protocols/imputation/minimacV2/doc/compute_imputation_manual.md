@@ -332,7 +332,8 @@ The whole installation and running process can be done in seven steps.
 
 7. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
-  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >workflowMinimacStage1.csv \\  
+  >ui.grid.sara.nl \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv \\  
   >step01  
   
