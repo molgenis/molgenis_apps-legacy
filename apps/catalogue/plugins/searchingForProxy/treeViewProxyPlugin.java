@@ -46,8 +46,6 @@ import org.molgenis.util.Tuple;
 
 import plugins.emeasure.EMeasureEntityWriter;
 
-//import org.molgenis.util.XlsWriter;
-
 public class treeViewProxyPlugin extends PluginModel<Entity>
 {
 
