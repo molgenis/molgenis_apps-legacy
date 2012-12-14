@@ -7,7 +7,7 @@ workdir=$( cd -P "$( dirname "$0" )" && pwd )
 . $workdir/initialize.sh
 
 echo "1. Remove previous results..."
-sh $workdir/removeResults.sh
+rm -rf $testResults
 
 echo "2. Create directory 'testResults' for the results of this test..."
 mkdir -p $testResults
