@@ -72,7 +72,44 @@ To run this pipeline the following tools, scripts and datasets are required:
 **Note2: Download links can be found in chapter 9 "Appendix""**
   
 We recommend to install all tools in one directory in a structure of *tools/<toolname>/*, this way only the `"$tooldir"` variable in the parameters.csv needs to be changed.
+
+To run Molgenis Compute on the grid one needs to prepare a webserver with the following requierements:  
+* java 1.6.0 or higher  
+* git 1.7.1 or higher  
+* ant 1.7.1 or higher  
+* mysql 5.1.54 or higher 
+
+The whole installation can be done in three steps.  
   
+1. Create database  
+  >Login as root to mysql.  
+  >CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
+  >CREATE DATABASE compute;  
+  >GRANT ALL PRIVILEGES ON compute.* TO ’molgenis’@’%’ WITH GRANT OPTION;  
+  >FLUSH PRIVILEGES;  
+  >Logout.  
+  
+2. Checkout from git repository and build compute  
+  >git clone https://github.com/molgenis/molgenis.git  
+  >git clone https://github.com/molgenis/molgenis_apps.git  
+  >cd molgenis_apps  
+  >ant -f build_compute.xml clean-generate-compile  
+
+  Alternatively one can download the [clone_build.sh] shell script and execute it:  
+  >sh clone_build.sh  
+  
+3. Setup environment on the grid  
+  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` from [pilot directory] to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
+  >scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
+  
+  Edit `maverick.sh`, specify your ip and port of your webserver, which is started on step 3:  
+  >export WORKDIR=$TMPDIR  
+  >source dataTransferSRM.sh  
+  >curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
+  >sh script.sh 2>&1 | tee -a log.log  
+  >curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
+  
+Your environment is ready for usage.  
   
 ###Appendix  
   
