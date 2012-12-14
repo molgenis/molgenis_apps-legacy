@@ -1,0 +1,14 @@
+<molgenis name="Observ-OMX">
+	<module name="org.molgenis.omx.system" label="system">
+		<description>
+			System settings and other 'non-data'
+			DEPENDS ON: core
+		</description>
+
+		<entity name="RuntimeProperty" implements="Identifiable">
+			<field name="Value" length="127" type="varchar" nillable="false" />
+			<unique fields="Identifier" description="Identifier is unique" />
+		</entity>
+
+	</module>
+</molgenis>

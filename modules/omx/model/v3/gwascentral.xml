@@ -1,5 +1,5 @@
-<molgenis name="org.molgenis">
-	<module name="observ_omx.gwascentral">
+<molgenis name="Observ-OMX">
+	<module name="org.molgenis.omx.gwascentral" label="gwascentral">
 		
 		<entity name="PanelSource" implements="Autoid">
 			<!-- todo: this should probably be a subclass of protocolApplication? -->
@@ -98,7 +98,7 @@
 		<!--  This will probably change -->
 		
 			<field name="CentralIdentifier" label="" type="xref"
-				xref_entity="OntologyTerm" nillable="true"
+				xref_entity="AlternativeIdentifier" nillable="true"
 				description="The central GWAS identifier for this panel" />
 				<field name="Name" length="100" nillable="true"/>
 				<field name="Label" hidden="true" length="10" nillable="true"/>

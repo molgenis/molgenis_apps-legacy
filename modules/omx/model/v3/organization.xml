@@ -1,5 +1,5 @@
-<molgenis name="org.molgenis">
-	<module name="observ_omx.organization">
+<molgenis name="Observ-OMX">
+	<module name="org.molgenis.omx.organization" label="organization">
 		<description>
 			Adds organizational info to core
 		</description>
@@ -59,7 +59,7 @@
 				nillable="true" />
 			<field name="Department" type="string" nillable="true"
 				description="Added from the old definition of MolgenisUser. Department of this contact." />
-			<field name="Roles" type="xref" xref_entity="OntologyTerm"
+			<field name="Roles" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true" description="Indicate role of the contact, e.g. lab worker or PI." />
 			<unique fields="FirstName,MidInitials,LastName" />
 		</entity>
@@ -160,14 +160,14 @@
 				nillable="true" />
 			<field name="DOI" label="Publication DOI" unique="true"
 				nillable="true" />
-			<field name="ontologyTerms" type="mref" xref_entity="OntologyTerm"
+			<field name="ontologyTerms" type="mref" xref_entity="AlternativeIdentifier"
 				nillable="true" description="ontology terms such as MeSH" />
 			<field name="authorList" type="text"
 				description="The names of the authors of the publication" nillable="true" />
 			<field name="Title" label="Publication Title" description="The title of the Publication" />
 			<field name="Description" type="text" />
 			<field name="Status" label="Publication Status" description="The status of the Publication"
-				type="xref" xref_entity="OntologyTerm" nillable="true" />
+				type="xref" xref_entity="AlternativeIdentifier" nillable="true" />
 
 			<!-- what should be xref_label??? -->
 

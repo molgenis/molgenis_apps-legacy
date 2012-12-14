@@ -1,5 +1,5 @@
-<molgenis name="org.molgenis">
-	<module name="observ_omx.core">
+<molgenis name="Observ-OMX">
+	<module name="org.molgenis.omx.core" label="core">
 		<description>
 			Absolute minimal v3 model without decorators, labels,
 			hidden, or other (model-technically unneeded) modifiers for now.
@@ -55,6 +55,8 @@
 			<field name="Description" type="text" nillable="true"
 				description="Rudimentary meta data about this concept. Use of ontology 
 					terms references to establish unambigious descriptions is recommended." />
+			<field name="AlternativeIdentifiers" type="mref"
+				xref_entity="AlternativeIdentifier" />
 		</entity>
 
 		<entity name="Target" extends="Concept">
@@ -78,7 +80,15 @@
 				unique) target.
 			</description>
 
-			<field name="Role" type="enum" enum_options="[target, context]" />
+			<field name="Role" type="enum" default="value"
+				enum_options="[target, context, value, input, output]" />
+
+			<field name="Unit" type="xref" xref_entity="AlternativeIdentifier"
+				nillable="true"
+				description="(Optional) Reference to the well-defined measurement unit used to observe this feature 
+					(if feature is that concrete). E.g. mmHg" />
+
+
 
 		</entity>
 
@@ -93,19 +103,15 @@
 				which is the most specific root should be specified. For example:
 				specifying org.molgenis.omx.Individual allows for XREFs to all
 				Individuals, plus all subclasses of this type.
-				
+
 				TODO!!
-				
+
 			</description>
 
 
-			<field name="DataType" type="enum" enum_options="[string, decimal, integer, xref]" />
+			<field name="DataType" type="enum" enum_options="[decimal, integer, xref]" />
 			<!-- enum_options="[xref,string,categorical,nominal,ordinal,date,datetime,int,code,image,decimal,bool,file,log,data,exe]" -->
 
-			<field name="Unit" type="xref" xref_entity="OntologyTerm"
-				nillable="true"
-				description="(Optional) Reference to the well-defined measurement unit used to observe this feature 
-					(if feature is that concrete). E.g. mmHg" />
 
 			<field name="Method" type="xref" xref_entity="Method"
 				description="The method these permitted values are part of." />
@@ -113,13 +119,10 @@
 				description="The value used to store this category in ObservedValue. For example '1', '2'." />
 			<field name="IsMissing" type="bool" default="false"
 				description="whether this value should be treated as missing value." />
-
 			<field name="Temporal" type="boolean" default="false"
 				description="Whether this feature is time dependent and can have different values when measured 
 					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
 					temporal=false) " />
-
-
 
 		</entity>
 
@@ -133,7 +136,7 @@
 			<field name="Methods" type="mref" nillable="true" xref_entity="Method"
 				description="Methods of observing a feature or describing the role of a target in this protocol." />
 			<field name="ProtocolType" nillable="true" type="xref"
-				xref_entity="OntologyTerm" description="Classification of protocol. TODO: Examples?" />
+				xref_entity="AlternativeIdentifier" description="Classification of protocol. TODO: Examples?" />
 			<field name="Subprotocols" type="mref" xref_entity="Protocol"
 				nillable="true" description="Subprotocols of this protocol" />
 
@@ -186,21 +189,27 @@
 			<field name="Value" type="string" />
 		</entity>
 
-		
 
-		<entity name="OntologyTerm" implements="Identifiable">
+
+
+
+		<entity name="AlternativeIdentifier" extends="Concept">
 			<description>
-
+				Ontology, link to other kind of database, or just a
+				string denoting an alternative, often external identifier.
 			</description>
-			<field name="Accession" type="string" nillable="true"
-				description="A accession that uniquely identifies the ontology (typically an acronym). E.g. GO, MeSH, HPO." />
-			<field name="Term" type="string" nillable="true"
-				description="The accession number assigned to the ontology term in its source ontology. If empty it is assumed to be a locally defined term. " />
-			<field name="Definition" type="string" nillable="true"
-				description="The definition of the term." />
-			<field name="URI" type="hyperlink" nillable="true"
-				description="A URI that references the location of the ontology." />
-			<unique fields="Accession,Term" description="The term is unique within an accession." />
+			<field name="ExternalSource" type="xref" xref_entity="ExternalSource" />
+		</entity>
+
+		<entity name="ExternalSource" extends="Concept">
+			<description>The location where this AlternativeIdentifier links to
+				or is originating from. The URL possibly needs a little mechanism to
+				insert the alternative identifier into, e.g. URL
+				"http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?g={id};r=13:32889611-32973347"
+				where {id} is replaced with an instance of
+				AlternativeIdentifier.Identifier "OTTHUMG00000017411" to form a
+				valid URL.</description>
+			<field name="BaseURL" type="string" />
 		</entity>
 
 		<entity name="Individual" extends="Target">
@@ -233,19 +242,14 @@
 				classes. In METABASE this is
 				assumed there is one panel per study.
 			</description>
-			<field name="PanelType" type="xref" xref_entity="OntologyTerm"
+			<field name="PanelType" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true"
 				description="Indicate the type of Panel (example: Sample panel, AssayedPanel, Natural=wild type, Parental=parents of a cross, F1=First generation of cross, RCC=Recombinant congenic, CSS=chromosome substitution)" />
 			<field name="NumberOfIndividuals" type="int" nillable="true" />
-			<field name="Species" type="xref" nillable="true" xref_entity="OntologyTerm"
+			<field name="Species" type="xref" nillable="true" xref_entity="AlternativeIdentifier"
 				description="The species this panel is an instance of, part of or extracted from." />
 			<field name="Individuals" type="mref" xref_entity="Individual"
 				nillable="true" description="The list of individuals in this panel" />
-		</entity>
-
-		<entity name="RuntimeProperty" implements="Identifiable">
-			<field name="Value" length="127" type="varchar" nillable="false" />
-			<unique fields="Identifier" description="Identifier is unique" />
 		</entity>
 
 	</module>

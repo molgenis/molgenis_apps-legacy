@@ -1,5 +1,5 @@
-<molgenis name="org.molgenis">
-	<module name="observ_omx.auth">
+<molgenis name="Observ-OMX">
+	<module name="org.molgenis.omx.auth" label="auth">
 	<description>
 	DEPENDS ON: core, organization
 	</description>
