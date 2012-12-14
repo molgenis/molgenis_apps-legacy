@@ -4,7 +4,7 @@
 workdir=$( cd -P "$( dirname "$0" )" && pwd )
 . $workdir/initialize.sh
 
-echo "\nStarting HelloWorld test.\n"
+printf "\nStarting HelloWorld test.\n\n"
 echo "1. Remove previous results..."
 sh $workdir/removeResults.sh
 
@@ -26,5 +26,5 @@ echo "5. Compare produced and expected results..."
 diff $testResults/current_results.log $workdir/helloWorld/expected_results.log > $testResults/diff_generated_vs_expected_results.log
 isEmpty $testResults/diff_generated_vs_expected_results.log
 
-echo "\nTest terminated successfully!\n"
+printf "\nTest terminated successfully!\n\n"
 exit 0
