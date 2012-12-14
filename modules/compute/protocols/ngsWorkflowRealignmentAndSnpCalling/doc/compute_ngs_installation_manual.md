@@ -4,6 +4,8 @@ Installation of the Next-generation sequencing data analysis pipeline
 Content  
 =======
   
+1. Installation and setup for commandline usage  
+2. Installation of tools  
   
   
 ###1. Installation and setup for commandline usage  
