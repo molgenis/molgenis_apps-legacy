@@ -641,6 +641,13 @@ public class AnimaldbSeleniumTest
 
 	}
 
+	// TODO add test for edit litter functionality
+	// @Test(dependsOnMethods =
+	// { "breedingWorkflow" })
+	// public void editLitters() throws Exception
+	// {
+	// }
+
 	/*
 	 * @Test(dependsOnMethods={"removeAnimals"}) public void applyProtocol()
 	 * throws Exception { // First log in as admin to be able to do this
