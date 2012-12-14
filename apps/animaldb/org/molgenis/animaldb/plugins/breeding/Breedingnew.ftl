@@ -286,29 +286,30 @@
 	</#if>
 	
 	<#elseif screen.action == "EditLitter">
+	<div class="form_header">Edit litter ${screen.getLitter()}</div>
 	${screen.getEditTable()}
 		<div style="float:left">
-		<input type='submit' id='saveEdit' value='Save' onclick="__action.value='applyEdit'" />
+			<input type='submit' id='saveEdit' value='Save' onclick="__action.value='applyEdit'" />
 		</div>
-		<div style="float:middle">
-		<input type='submit' id='editIndividual' value='Edit individuals' onclick="__action.value='editIndividual'" />
-		<div>
+		<div style="float:left">
+			<input type='submit' id='go_back' value='Cancel' onclick="__action.value='editLitter'" />
+		</div>
 		<div style="float:right">
-		<input type='submit' id='go_back' value='Go back' onclick="__action.value='editLitter'" />
+			<input type='submit' id='editIndividual' value='Edit individuals in litter' onclick="__action.value='editIndividual'" />
 		</div>
-		
 	<br />
 	<br />
 	<hr>
 	<#elseif screen.action == "editIndividual">
-	${screen.getGenotypeTable()}
-	<a href="molgenis.do?__target=${screen.name}&__action=editIndividual&addNew=true"><img id="addIndividualToWeanGroup" title="addIndividualToWeanGroup" alt="addIndividualToWeanGroup" src="generated-res/img/new.png"></a>
+	<div class="form_header">Edit individuals in litter ${screen.getLitter()}</div>
+		${screen.getGenotypeTable()}
+	<div style="float:left">
+		<a href="molgenis.do?__target=${screen.name}&__action=editIndividual&addNew=true"><img id="addIndividualToWeanGroup" title="addIndividualToWeanGroup" alt="addIndividualToWeanGroup" src="generated-res/img/new.png"></a>
+	</div>
 	<!--<input type="image" title="saveIndi" src"generated-res/img/new.png" id='saveIMG' onclick="__action.value='applyLitterIndividuals'" />-->
-	<input type='submit' id='save' value='SaveIndividuals' onclick="__action.value='applyLitterIndividuals'" />
-	
-	
-	<div style="float:right">
-	<input type='submit' id='go_back' value='Go back' onclick="__action.value='EditLitter'" />
+		<input type='submit' id='go_back' value='Cancel' onclick="__action.value='EditLitter'" />
+	<div style="float:left">
+		<input type='submit' id='save' value='Save' onclick="__action.value='applyLitterIndividuals'" />
 	</div>
 <#elseif screen.action == "makeLabels">
 
