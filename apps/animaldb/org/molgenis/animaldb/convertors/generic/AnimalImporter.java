@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -74,7 +75,10 @@ public class AnimalImporter
 	private Map<String, String> animalMap;
 	private Map<String, Date> removalDateMap;
 	private int highestNr;
+	private int highestPGNr;
+	private int highestLTNr;
 	private String defaultSourceName;
+	private String defaultBreedingLine;
 
 	// private List<String> lineNamesList;
 
@@ -87,28 +91,8 @@ public class AnimalImporter
 		ct.makeObservationTargetNameMap(userName, false);
 		logger = Logger.getLogger("LoadUliDb");
 
-		// highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
-
 		// If needed, make investigation
 		invName = "System";
-		// Investigation system should be available!
-		/*
-		 * if (ct.getInvestigationId(invName) == -1) { Investigation newInv =
-		 * new Investigation(); newInv.setName(invName);
-		 * newInv.setOwns_Name(userName); newInv.setCanRead_Name("admin");
-		 * db.add(newInv); }
-		 */
-
-		// Add some measurements that we'll need
-		// FIXME add if else, for already present.
-		// measurementsToAddList = new ArrayList<Measurement>();
-		// measurementsToAddList.add(ct.createMeasurement(invName,
-		// "OldAnimalId", "String", null, null, false, "string",
-		// "To set the previous AnimalID if present", userName));
-		// measurementsToAddList.add(ct.createMeasurement(invName,
-		// "OldLitterId", "String", null, null, false, "string",
-		// "To link an animal to a litter with the previous litterID if present.",
-		// userName));
 
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
@@ -123,47 +107,11 @@ public class AnimalImporter
 		parentgroupNrMap = new HashMap<String, Integer>();
 		litterNrMap = new HashMap<String, Integer>();
 		litterMap = new HashMap<String, List<String>>();
-		// decMap = new HashMap<String, String>();
-		// alternativeDecMap = new HashMap<String, String>();
-		// researcherMap = new HashMap<String, Integer>();
 		activeMap = new HashMap<String, ObservedValue>();
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
-		// projectStartDateMap = new HashMap<String, ObservedValue>();
-		// projectEndDateMap = new HashMap<String, ObservedValue>();
-		//
-		// // Create lines
-		// createLine("WT");
-		// createLine("Per dKO");
-		// createLine("Cry dKO");
-		// createLine("PerCry");
-		// createLine("CBA/CaJ WT_breeding");
-		// createLine("C57BL/6j WT_breeding");
-		// createLine("C3H/He");
-		// createLine("DBA");
-		// createLine("ICR(CD-1)");
-		// createLine("Swing");
-		// createLine("CK1e");
-		// createLine("unknown");
 
-		// FIXME also add a line for these animals.
 	}
-
-	/*
-	 * private void createLine(String lineName) throws DatabaseException,
-	 * IOException, ParseException { panelsToAddList.add(ct.createPanel(invName,
-	 * lineName, userName)); // Label it as line using the (Set)TypeOfGroup
-	 * protocol and feature Date now = new Date();
-	 * valuesToAddList.add(ct.createObservedValue(invName,
-	 * appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup", lineName, "Line",
-	 * null)); // Set the source of the line (always 'Kweek chronobiologie')
-	 * valuesToAddList.add(ct.createObservedValue(invName,
-	 * appMap.get("SetSource"), now, null, "Source", lineName, null,
-	 * "Kweek chronobiologie")); // Set the species of the line (always 'House
-	 * mouse') valuesToAddList.add(ct.createObservedValue(invName,
-	 * appMap.get("SetSpecies"), now, null, "Species", lineName, null,
-	 * "House mouse")); lineNamesList.add(lineName); }
-	 */
 
 	public void convertFromZip(String filename) throws Exception
 	{
@@ -200,48 +148,54 @@ public class AnimalImporter
 		db.add(protocolAppsToAddList);
 		logger.debug("Protocol applications successfully added");
 
-		db.add(animalsToAddList);
-		logger.debug("Animals successfully added");
-
-		// Make entry in name prefix table with highest animal nr.
-		// FIXME : find solution for prefixes!! maybe add an extra settins file?
-		List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal")
-				.eq(NamePrefix.PREFIX, this.defaultSpeciesNamePrefix).find();
-		if (prefixList.size() == 1)
-		{
-			NamePrefix namePrefix = prefixList.get(0);
-			namePrefix.setHighestNumber(highestNr);
-			db.update(namePrefix);
-		}
-		else
-		{
-			// fail badly //FIXME:
-		}
-
 		db.add(panelsToAddList);
 		logger.debug("Panels successfully added");
 
 		// Make entries in name prefix table with highest parentgroup nrs.
+		List<NamePrefix> prefixList;
 		prefixList = new ArrayList<NamePrefix>();
+
 		for (String lineName : parentgroupNrMap.keySet())
 		{
-			NamePrefix namePrefix = new NamePrefix();
-			namePrefix.setTargetType("parentgroup");
-			namePrefix.setPrefix("PG_" + lineName + "_");
-			namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
-			System.out.println("################## pg.get(linename)" + parentgroupNrMap.get(lineName));
-			prefixList.add(namePrefix);
+			// check if nameprefix already exists:
+			prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "parentgroup")
+					.eq(NamePrefix.PREFIX, "PG_" + this.defaultBreedingLine + "_").find();
+			if (prefixList.isEmpty())
+			{
+				NamePrefix namePrefix = new NamePrefix();
+				namePrefix.setTargetType("parentgroup");
+				namePrefix.setPrefix("PG_" + lineName + "_");
+				namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
+				db.add(namePrefix);
+			}
+			else
+			{
+				prefixList.get(0).setHighestNumber(this.highestPGNr + parentgroupNrMap.get(lineName));
+				db.update(prefixList.get(0));
+			}
 		}
 		// Make entries in name prefix table with highest litter nrs.
 		for (String lineName : litterNrMap.keySet())
 		{
-			NamePrefix namePrefix = new NamePrefix();
-			namePrefix.setTargetType("litter");
-			namePrefix.setPrefix("LT_" + lineName + "_");
-			namePrefix.setHighestNumber(litterNrMap.get(lineName));
-			prefixList.add(namePrefix);
+			// check if nameprefix already exists:
+			prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "litter")
+					.eq(NamePrefix.PREFIX, "LT_" + this.defaultBreedingLine + "_").find();
+			if (prefixList.isEmpty())
+			{
+				NamePrefix namePrefix = new NamePrefix();
+				namePrefix.setTargetType("litter");
+				namePrefix.setPrefix("LT_" + lineName + "_");
+				namePrefix.setHighestNumber(litterNrMap.get(lineName));
+				prefixList.add(namePrefix);
+				db.add(namePrefix);
+			}
+			else
+			{
+				prefixList.get(0).setHighestNumber(this.highestLTNr + litterNrMap.get(lineName));
+				db.update(prefixList.get(0));
+			}
 		}
-		db.add(prefixList);
+		// db.add(prefixList);
 		logger.debug("Prefixes successfully added");
 
 		// Add remaining Active, Project StartDate and Project EndDate values to
@@ -272,8 +226,11 @@ public class AnimalImporter
 
 			this.defaultSpecies = tuple.getString("Species");
 			this.defaultSpeciesNamePrefix = tuple.getString("SpeciesNamePrefix");
-			// this.defaultBreedingLine = tuple.getString("Breedingline");
+			this.defaultBreedingLine = tuple.getString("BreedingLine");
 			this.defaultResponsibleResearcher = tuple.getString("Responsible Researcher");
+			this.highestNr = ct.getHighestNumberForPrefix(this.defaultSpeciesNamePrefix) + 1;
+			this.highestPGNr = ct.getHighestNumberForPrefix("PG_" + this.defaultBreedingLine + "_");
+			this.highestLTNr = ct.getHighestNumberForPrefix("LT_" + this.defaultBreedingLine + "_");
 		}
 		reader.close();
 	}
@@ -287,7 +244,7 @@ public class AnimalImporter
 		for (Tuple tuple : reader)
 		{
 			// FIXME prefix string
-			String animalName = this.defaultSpeciesNamePrefix + ct.prependZeros(Integer.toString(highestNr++), 6);
+			String animalName = this.defaultSpeciesNamePrefix + ct.prependZeros(Integer.toString(this.highestNr++), 6);
 			animalNames.add(animalName);
 			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 			animalsToAddList.add(newAnimal);
@@ -315,24 +272,18 @@ public class AnimalImporter
 			// convert GeneticBackground -> Background (default "no background")
 			String background = tuple.getString("GeneticBackground");
 			String backgroundName;
-			if (background != null)
+			if (background != null && background != "" && !background.equalsIgnoreCase("no background"))
 			{
 				backgroundName = background;
-				// TODO add check on background present in db?
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), now, null,
 						"Background", animalName, null, backgroundName));
 			}
-			else
-			{
-				backgroundName = "No Background";
-			}
-
 			// convert BreedingLine -> Breedingline
 			// FIXME add not null checks and conversion to default breeding line
 			// from settigs if null?
-			String breedingline = tuple.getString("BreedingLine");
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSBreedingLine"), now, null,
-					"BreedingLine", animalName, null, breedingline));
+			// String breedingline = tuple.getString("BreedingLine");
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line", animalName,
+					null, this.defaultBreedingLine));
 
 			// convert litterId -> OldLitterId & create a per litter map of
 			// animals, to match litter later
@@ -404,37 +355,37 @@ public class AnimalImporter
 				if (removal.toLowerCase().equals("dead"))
 				{
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), remDate, null,
-							"DeathDate", animalName, dobFormat.format(remDate), null));
+							"DeathDate", animalName, remDateString, null));
 				}
 				else
 				{
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemovalDate"), remDate, null,
-							"RemovalDate", animalName, dobFormat.format(remDate), null));
+							"RemovalDate", animalName, remDateString, null));
 				}
 			}
 
 			// rem cause -> Removal
-			String removal = tuple.getString("RemovalCause").toLowerCase();
+			String removal = tuple.getString("RemovalCause");
 			if (removal != null && remDate != null)
 			{
 				// onvert english input to dutch official vwa codes.
-				if (removal.equals("dead"))
+				if (removal.equalsIgnoreCase("dead"))
 				{
 					removal = "dood";
 				}
-				else if (removal.equals("alive: other rug"))
+				else if (removal.equalsIgnoreCase("alive: other rug"))
 				{
 					removal = "levend afgevoerd andere organisatorische eenheid RuG";
 				}
-				else if (removal.equals("alive: other registered nl"))
+				else if (removal.equalsIgnoreCase("alive: other registered nl"))
 				{
 					removal = "levend afgevoerd gereg. onderzoeksinstelling NL";
 				}
-				else if (removal.equals("alive: other registered eu"))
+				else if (removal.equalsIgnoreCase("alive: other registered eu"))
 				{
 					removal = "levend afgevoerd gereg. onderzoeksinstelling EU";
 				}
-				else if (removal.equals("alive: other"))
+				else if (removal.equalsIgnoreCase("alive: other"))
 				{
 					removal = "levend afgevoerd andere bestemming";
 				}
@@ -465,16 +416,36 @@ public class AnimalImporter
 
 		}
 		reader.close();
+
+		try
+		{
+			db.add(animalsToAddList);
+			logger.debug("Animals successfully added");
+			// update the prefix table with new highest nr.
+			List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal")
+					.eq(NamePrefix.PREFIX, this.defaultSpeciesNamePrefix).find();
+
+			if (prefixList.size() == 1)
+			{
+				NamePrefix namePrefix = prefixList.get(0);
+				namePrefix.setHighestNumber(this.highestNr);
+				db.update(namePrefix);
+			}
+			logger.debug("Namprefix for animals successfully updated");
+
+		}
+		catch (Exception e)
+		{
+			logger.debug(e);
+		}
 	}
 
 	public void parseParentRelations(String filename) throws Exception
 	{
-		// System.out.println("############## Start parsing parent relations");
+		System.out.println("############## Start parsing parent relations");
 
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		// Active / Inactive --> default to inactive litter
-		String active = "Inactive";
 		for (Tuple tuple : reader)
 		{
 			Date now = new Date();
@@ -499,8 +470,8 @@ public class AnimalImporter
 
 			// get the all the animals with this litterid
 			Query<ObservedValue> OldLitterQuery = db.query(ObservedValue.class);
-			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
-			OldLitterQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, litter));
+			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldLitterId"));
+			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
 			List<ObservedValue> individualValueList = OldLitterQuery.find();
 			int FemaleCtr = 0;
 			int MaleCtr = 0;
@@ -508,16 +479,18 @@ public class AnimalImporter
 			String weanDate = null;
 			String dobDate = null;
 			String lineName = null;
+			// Get breedingline from mother (FIXME this assumes that the mother
+			// has been imported alrady, is this really always true?)
+			lineName = this.defaultBreedingLine;
 			for (ObservedValue v : individualValueList)
 			{
-				if (MaleCtr + FemaleCtr + UnkSexCtr == 0)
+				if ((MaleCtr + FemaleCtr + UnkSexCtr) == 0)
 				{
 					// Get weanDate from first sibling
 					weanDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "WeanDate");
 					// Get birthDate from first sibling
 					dobDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "DateOfBirth");
-					// Getbreedigline from first sibling
-					lineName = ct.getMostRecentValueAsXrefName(v.getTarget_Name(), "BreedingLine");
+					System.out.println(">>>>>>>>>>>> " + v.getTarget_Name() + " " + dobDate + " " + weanDate);
 				}
 				String sex = ct.getMostRecentValueAsXrefName(v.getTarget_Name(), "Sex");
 				if (sex.equalsIgnoreCase("Male"))
@@ -532,12 +505,13 @@ public class AnimalImporter
 				{
 					UnkSexCtr++;
 				}
-			}
+				// set litter on individual siblings
 
+			}
 			int nrBorn = 0;
-			if (tuple.getInt("NrBorn") != null)
+			if (tuple.getInt("NumberBorn") != null)
 			{
-				nrBorn = tuple.getInt("NrBorn");
+				nrBorn = tuple.getInt("NumberBorn");
 			}
 			else
 			{
@@ -545,12 +519,6 @@ public class AnimalImporter
 			}
 			// remarks
 			String remark = tuple.getString("Remarks");
-
-			// Wean date -> convert to yyyy-mm-dd format
-			if (weanDate == null || weanDate.equals(""))
-			{
-				active = "Active"; // set litter active if not weaned
-			}
 
 			// Create a parentgroup
 
@@ -561,7 +529,8 @@ public class AnimalImporter
 				parentgroupNr = parentgroupNrMap.get(lineName) + 1;
 			}
 			parentgroupNrMap.put(lineName, parentgroupNr);
-			String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
+			// System.out.println(">>>>    hpgnr" + this.highestPGNr);
+			String parentgroupNrPart = ct.prependZeros("" + (this.highestPGNr + parentgroupNr), 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
 			// System.out.println("#########pgName: " + parentgroupName);
 			panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
@@ -590,11 +559,16 @@ public class AnimalImporter
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetStartDate"), now, null, "StartDate",
 					parentgroupName, startDate, null));
 			// set active to a sensible window
-			double deltaDays = (now.getTime() - dbFormat.parse(startDate).getTime()) / MILLSECS_PER_DAY;
-			if (deltaDays < 60)
+			if (startDate != null && startDate != "")
 			{
-				pgActive = "Active";
+				Date pairDate = inputFormat.parse(startDate);
+				double deltaDays = (now.getTime() - pairDate.getTime()) / MILLSECS_PER_DAY;
+				if (deltaDays < 60)
+				{
+					pgActive = "Active";
+				}
 			}
+
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
 					parentgroupName, pgActive, null));
 
@@ -605,27 +579,62 @@ public class AnimalImporter
 				litterNr = litterNrMap.get(lineName) + 1;
 			}
 			litterNrMap.put(lineName, litterNr);
-			String litterNrPart = ct.prependZeros("" + litterNr, 6);
+			String litterNrPart = ct.prependZeros("" + (this.highestLTNr + litterNr), 6);
 			String litterName = "LT_" + lineName + "_" + litterNrPart;
 			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
-					litterName, active, null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null, "DateOfBirth",
-					litterName, dobDate, null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
-					litterName, weanDate, null));
+
+			// FIXME we always need a birthdate, calculate one if it is missing
+			if (dobDate == null || dobDate.equals(""))
+			{
+				if (weanDate != null && weanDate.equals(""))
+				{
+					long dobDateT = inputFormat.parse(weanDate).getTime() - (MILLSECS_PER_DAY * 28);
+					Calendar tmpCal = Calendar.getInstance();
+					tmpCal.setTimeInMillis(dobDateT);
+					dobDate = inputFormat.format(tmpCal.getTime());
+					remark = remark + "; birtdate unknown on import, calculated from weandate (weandate 4wks)";
+				}
+				else
+				{
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
+							"DateOfBirth", litterName, "", null));
+					remark = remark + "; Birth date unknown";
+				}
+			}
+			else
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null,
+						"DateOfBirth", litterName, dobDate, null));
+				// only set weandate if it is measured if it is not there it
+				// means
+				// that litter is not weaned yet.
+			}
+			if (weanDate != null && !weanDate.equals(""))
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
+						litterName, weanDate, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
+						litterName, Integer.toString(FemaleCtr + MaleCtr + UnkSexCtr), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeMale"), now, null,
+						"WeanSizeMale", litterName, Integer.toString(MaleCtr), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), now, null,
+						"WeanSizeFemale", litterName, Integer.toString(FemaleCtr), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeUnknown"), now, null,
+						"WeanSizeUnknown", litterName, Integer.toString(UnkSexCtr), null));
+				// set litter inactive
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
+						litterName, "Inactive", null));
+			}
+			else
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
+						litterName, "Active", null));
+			}
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSize"), now, null, "Size", litterName,
 					Integer.toString(nrBorn), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), now, null, "WeanSize",
-					litterName, Integer.toString(FemaleCtr + MaleCtr + UnkSexCtr), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeMale"), now, null,
-					"WeanSizeMale", litterName, Integer.toString(MaleCtr), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), now, null,
-					"WeanSizeFemale", litterName, Integer.toString(FemaleCtr), null));
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeUnknown"), now, null,
-					"WeanSizeUnknown", litterName, Integer.toString(UnkSexCtr), null));
+
 			// Set Remark
 			if (remark != null && !remark.equals(""))
 			{
@@ -633,11 +642,9 @@ public class AnimalImporter
 						litterName, remark, null));
 			}
 			// Set line also on litter
-			if (!lineName.equals("unknown"))
-			{
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
-						litterName, null, lineName));
-			}
+
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line", litterName,
+					null, lineName));
 			// Set source also on litter
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source",
 					litterName, null, defaultSourceName));
@@ -649,29 +656,33 @@ public class AnimalImporter
 			// index for the map of litters and animals
 			if (litterMap.get(litter) != null)
 			{
-				System.out.println("--> litter: " + litter);
+
 				for (String animalName : litterMap.get(litter))
 				{
 					// Link animal to litter
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), now, null, "Litter",
-							animalName, null, litterName));
+					// valuesToAddList.add(ct.createObservedValue(invName,
+					// appMap.get("SetLitter"), now, null, "Litter",
+					// animalName, null, litterName));
 					// Set parents also on animal, using the Mother and
 					// Father measurements
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), now, null, "Mother",
 							animalName, null, motherName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), now, null, "Father",
 							animalName, null, fatherName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), now, null, "Litter",
+							animalName, null, litterName));
 					// Set birth date, line also on animal
 					// Get Active value from map; every animal has one
 
 					ObservedValue activeValue = activeMap.get(animalName);
-					System.out.println("----> " + activeValue.getTarget_Name());
-					if (activeValue.getTime() == null)
-					{
-						// FIXME is this still necessary ???
+					// System.out.println("----> " +
+					// activeValue.getTarget_Name());
+					// if (activeValue.getTime() == null)
+					// {
+					// FIXME is this still necessary ???
 
-						activeValue.setTime(dbFormat.parse(weanDate));
-					}
+					// activeValue.setTime(dbFormat.parse(weanDate));
+					// }
 					activeMap.remove(animalName);
 					valuesToAddList.add(activeValue);
 
@@ -684,11 +695,9 @@ public class AnimalImporter
 					// appMap.get("SetWeandDate"), now, null,
 					// "WeanDate", animalName, weanDate, null));
 
-					if (!lineName.equals("unknown"))
-					{
-						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), now, null, "Line",
-								animalName, null, lineName));
-					}
+					// valuesToAddList.add(ct.createObservedValue(invName,
+					// appMap.get("SetLine"), now, null, "Line",
+					// animalName, null, lineName));
 				}
 			}
 		}
@@ -701,8 +710,8 @@ public class AnimalImporter
 		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetSource");
 		makeProtocolApplication("SetSpecies");
-		// animals
-		makeProtocolApplication("SetOldAnimalId");
+
+		// animals makeProtocolApplication("SetOldAnimalId");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetOldLitterId");
 		makeProtocolApplication("SetSex");
@@ -713,6 +722,7 @@ public class AnimalImporter
 		makeProtocolApplication("SetDateOfBirth");
 		makeProtocolApplication("SetEarmark");
 		makeProtocolApplication("SetResponsibleResearcher");
+
 		// parent relations
 		makeProtocolApplication("SetParentgroupMother");
 		makeProtocolApplication("SetParentgroupFather");
