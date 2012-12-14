@@ -6,9 +6,9 @@ Imputation using Molgenis Compute
 Content
 =======
 
-1.	Introduction
-2.	General
-3.	Preparing the study data
+1.	Introduction  
+2.	General  
+3.	Preparing the study data  
 4.	Preparing the reference dataset  
 5.	Imputation using minimacV2 pipeline  
 6.	Imputation on the grid  
@@ -56,7 +56,7 @@ Compute:
   
   
 ####2.3 General compute settings for imputation  
-To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute any of the imputation pipelines. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
+To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute the imputation pipeline. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
   
 * scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs for Grid usage the value GRID should be specified.  
 * root: this is the "root" parameter shared by all other parameters. To ease the setup we recommend to install all tools in a *tools* directory and all resources in a *resources* directory in the "root".    
@@ -161,7 +161,7 @@ When all the above files are present the reference dataset is ready to be used.
 ###5. Imputation using minimacV2 pipeline  
   
   
-All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The version 2 pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 5.1.
+All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 5.1.
   
   
 ####5.1 Tools
@@ -312,8 +312,8 @@ The whole installation and running process can be done in seven steps.
   >Logout.  
   
 2. Checkout from git repository and build compute  
-  >git clone https://github.com/georgebyelas/molgenis.git  
-  >git clone https://github.com/georgebyelas/molgenis_apps.git  
+  >git clone https://github.com/molgenis/molgenis.git  
+  >git clone https://github.com/molgenis/molgenis_apps.git  
   >cd molgenis_apps  
   >ant -f build_compute.xml clean-generate-compile  
 
