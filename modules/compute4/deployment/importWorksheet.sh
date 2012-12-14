@@ -121,5 +121,5 @@ molgenis/lib/hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar \
 org.molgenis.compute.db.util.WorksheetImporter \
 -workflow_name $1 \
 -backend_name $2 \
--worksheet_file $3 \ 
--McId $4 \
+-worksheet_file $3 \
+-McId $4 
