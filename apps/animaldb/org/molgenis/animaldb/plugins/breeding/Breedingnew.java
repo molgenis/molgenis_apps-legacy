@@ -1643,8 +1643,6 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 
 		// Active
-		// TextLineInput<String> inputActive = new
-		// TextLineInput<String>("Active");
 		StringInput inputActive = new StringInput("Active");
 		inputActive.setId("Active");
 		if (observableFeat.containsKey("Active"))
@@ -1663,8 +1661,13 @@ public class Breedingnew extends PluginModel<Entity>
 		// DateOfBirth
 		DateInput dateInputBirthDate = new DateInput("DateOfBirth");
 		dateInputBirthDate.setDateFormat("yyyy-MM-dd");
+		String maxD = observableFeat.get("WeanDate") == null ? "" : observableFeat.get("WeanDate");
+		// dateInputBirthDate.setJqueryproperties("maxDate: "newDateOnlyFormat.parse(observableFeat.get("WeanDate")"")
 		if (observableFeat.containsKey("DateOfBirth"))
 		{
+
+			dateInputBirthDate.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxD
+					+ "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 
 			if (observableFeat.get("DateOfBirth").isEmpty())
 			{
@@ -1812,9 +1815,11 @@ public class Breedingnew extends PluginModel<Entity>
 
 			inputWeanSize.setValue(Integer.toString(getAnimalsInLitter(db).size()));
 			weansize = getAnimalsInLitter(db).size();
+			stillToWeanYN = false;
 		}
 		else
 		{
+			stillToWeanYN = true;
 			inputWeanSize.setValue("");
 
 		}
@@ -1865,24 +1870,32 @@ public class Breedingnew extends PluginModel<Entity>
 
 				String newValue = request.getString(e);
 
+				
 				List<ObservationTarget> listObsTargets = null;
 				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
-
-				for (ObservedValue v : individualValueList)
+				if (individualValueList.isEmpty())
 				{
-					listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
-							Operator.EQUALS, v.getTarget_Name()));
-					String targetName = listObsTargets.get(0).getName();
-
-					// Birthdate
-					ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
-							invName, invName.get(0)).get(0);
-					birthDate.setValue(newValue);
-					db.update(birthDate);
 					ov.setValue(newValue);
-
 					db.update(ov);
-
+				
+				}
+				else
+				{
+					for (ObservedValue v : individualValueList)
+					{
+						listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
+								Operator.EQUALS, v.getTarget_Name()));
+						String targetName = listObsTargets.get(0).getName();
+	
+						// Birthdate
+						ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
+								invName, invName.get(0)).get(0);
+						birthDate.setValue(newValue);
+						db.update(birthDate);
+						ov.setValue(newValue);
+						db.update(ov);
+	
+					}
 				}
 
 			}
@@ -2116,6 +2129,7 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 				this.setBackgroundList(bckgrlist);
 
+				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
 				// Populate gene name list
