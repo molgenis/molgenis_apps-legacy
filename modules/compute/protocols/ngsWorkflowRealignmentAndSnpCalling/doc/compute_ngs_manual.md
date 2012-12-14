@@ -99,70 +99,41 @@ All folders and jobs can be found in the output directory specified by the user.
 Analysis with Compute commandline is now started. A detailed description for execution on the grid can be found in the next chapter.  
   
   
-###4. Analysis on the grid  
+###4. Run analysis on the grid  
+    
   
-  
-To run Molgenis Compute on the grid one needs to prepare a webserver with the following requierements:  
-* java 1.6.0 or higher  
-* git 1.7.1 or higher  
-* ant 1.7.1 or higher  
-* mysql 5.1.54 or higher  
-  
-The whole installation and running process can be done in seven steps.  
-  
-1. Create database  
-  >Login as root to mysql.  
-  >CREATE USER ’molgenis’ IDENTIFIED BY ’molgenis’;  
-  >CREATE DATABASE compute;  
-  >GRANT ALL PRIVILEGES ON compute.* TO ’molgenis’@’%’ WITH GRANT OPTION;  
-  >FLUSH PRIVILEGES;  
-  >Logout.  
-  
-2. Checkout from git repository and build compute  
-  >git clone https://github.com/molgenis/molgenis.git  
-  >git clone https://github.com/molgenis/molgenis_apps.git  
-  >cd molgenis_apps  
-  >ant -f build_compute.xml clean-generate-compile  
+1. Move your data to your `$HOME` space on the grid and upload with the "srmcp" command to the "srm" storage. An example command is below:   
+  >srmcp -server_mode=passive file:///$HOME/dbsnp_135.b37.excluding_sites_after_129.vcf \\    
+  >srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/RP2/resources/hg19/dbsnp/dbsnp_135.b37.excluding_sites_after_129.vcf
 
-  Alternatively one can download the [clone_build.sh] shell script and execute it:  
-  >sh clone_build.sh  
-  
-3. Start webserver  
+2. Start webserver  
   >kill -9 \`lsof -i :<your port> -t`  
   >cd molgenis_apps;  
   >nohup ant -f build_compute.xml runOn -Dport=<your port> &  
-  
-4. Setup environment on the grid  
-  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` from [pilot directory] to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
-  >scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
-  
-  Edit `maverick.sh`, specify your ip and port of your webserver, which is started on step 3:  
-  >export WORKDIR=$TMPDIR  
-  >source dataTransferSRM.sh  
-  >curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
-  >sh script.sh 2>&1 | tee -a log.log  
-  >curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
-  
-5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
+    
+3. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
   >sh importWorkflow.sh \\  
   >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/parameters.csv \\  
   >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/workflow.csv \\  
   >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/protocols/  
   
-6. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
+4. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
   >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/workflow.csv \\  
   >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/demoWorksheet.csv \\  
   >run01  
   
-7. Execute imputation with user credentials using pilot job system: 
+5. Execute imputation with user credentials using pilot job system: 
   >sh runPilots.sh \\  
   >ui.grid.sara.nl \\  
   >\<username> \\  
   >\<password> \\  
   >grid  
-
-
+  
+6. Download your result, when analysis is finished with the same "srmcp" command to UI node  
+  >srmcp -server_mode=passive srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/  \\
+  >data/bbmri.nl/RP2/demo/120308_SN163_0457_BD0E5CACXX_L4_CAACCT.human_g1k_v37.recal.sorted.bam \\  
+  >file:///$HOME/120308_SN163_0457_BD0E5CACXX_L4_CAACCT.human_g1k_v37.recal.sorted.bam  
 
 
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  

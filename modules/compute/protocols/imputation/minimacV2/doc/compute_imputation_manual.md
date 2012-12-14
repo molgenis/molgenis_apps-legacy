@@ -327,15 +327,17 @@ The whole installation and running process can be done in seven steps.
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/parametersMinimac.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
-  
-6. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
+
+6. Edit the `molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv` file with your input values. In the column 'remoteWorksheet' add the desired location of this file on the grid's SRM. Be carefull to use the srm:// notation. The next step is to upload the worksheet.csv file to the grid's SRM in the path that you defined.
+
+7. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
   >ui.grid.sara.nl \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv \\  
   >step01  
   
-7. Execute imputation with user credentials using pilot job system: 
+8. Execute imputation with user credentials using pilot job system: 
   >sh runPilots.sh \\  
   >ui.grid.sara.nl \\  
   >\<username> \\  
