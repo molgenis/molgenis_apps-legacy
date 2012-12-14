@@ -1,5 +1,5 @@
 workdir=$( cd -P "$( dirname "$0" )" && pwd )
-source $workdir/initialize.sh
+. $workdir/initialize.sh
 
 CP="$workdir/../../../../../.."
 

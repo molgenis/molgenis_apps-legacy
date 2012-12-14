@@ -2,7 +2,7 @@
 
 # Initialize constant testResults and load function isEmpty
 workdir=$( cd -P "$( dirname "$0" )" && pwd )
-source $workdir/initialize.sh
+. $workdir/initialize.sh
 
 echo "\nStarting HelloWorld test.\n"
 echo "1. Remove previous results..."
