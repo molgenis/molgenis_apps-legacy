@@ -8,7 +8,7 @@ Content
   
   
 1. Introduction  
-2. Installation and setup for commandline usage  
+2. The Molgenis Compute binary  
 3. Analysis using Compute  
 4. Analysis on the grid  
   
@@ -16,29 +16,23 @@ Content
 ###1. Introduction  
   
   
-Next-generation sequencing methods produce a growing volume of data, leading to increasing difficulties in analysing this data. This manual describes how one can simplify, parallelize and distribute such analysis across high performance compute architecture by using a standardized pipeline and the [Molgenis Compute] framework. The first chapter gives a short introduction on the [Molgenis Compute] framework followed by installation and setup instructions. The third chapter describes how one can do NGS data analysis using the pipeline in [Molgenis Compute]. The pipeline is comprised of best-practice open-source software packages used in multiple institutions leading to 23 analysis steps. The four main part of the pipeline are:  
+Next-generation sequencing methods produce a growing volume of data, leading to increasing difficulties in analysing this data. This manual describes how one can simplify, parallelize and distribute such analysis across high performance compute architecture by using a standardized pipeline and the [Molgenis Compute] framework. The first chapter gives a short introduction on the [Molgenis Compute] framework followed by an overview of the content of the Compute binary. The third chapter describes how one can do NGS data analysis using the pipeline in [Molgenis Compute]. The pipeline is comprised of best-practice open-source software packages used in multiple institutions leading to 23 analysis steps. The four main parts of the pipeline are:  
   
 * *Alignment:* here alignment is performed using Burrows-Wheeler Aligner [BWA]. The produced [SAM] file is converted to a binary format using [Picard] and sorted afterwards.  
 * *Realignment:* in this part of the pipeline duplicate reads are marked using [Picard]. Afterwards realignment around known insertions and deletions (indels) from the Mills-Devine[^1] dataset using the Genome Analysis ToolKit [GATK] is performed. If reads are re-aligned, the fix-mates step will update the coordinates of the reads mate.  
 * *Quality score recalibration:* Here the base quality scores of a read a recalibrated using covariate information. This method takes several covariates like cycle, dinucleotides, readgroup etc. into account and recalculates the quality scores, leading to reads being re-written with better empirical quality scores.  
 * *Variant calling:* the last part of the pipeline performs indel and SNP calling using the [GATK]. The output of the pipeline are two VCF [reference] files, one with indels and one containing SNPs, ready for downstream analysis.  
   
-Chapter three describes how one can setup [Molgenis Compute] and execute the analysis pipeline on a cluster, supported backends are Portable Batch System (PBS), Sun Grid Engine (SGE), BSUB or a local machine. In the last chapter the manual describes how one can run the pipeline on the national Computing infrastructure for life Sciences, [eBioGrid].  
+Chapter three describes how one can execute the analysis pipeline on a cluster, supported backends are Portable Batch System (PBS), Sun Grid Engine (SGE), BSUB or a local machine. In the last chapter the manual describes how one can run the pipeline on the national Computing infrastructure for life Sciences, [eBioGrid].  
   
   
-###2. Installation and setup for commandline usage  
+###2. The Molgenis Compute binary  
   
   
-This chapter describes the content of the [Molgenis Compute] binary and how it should be installed. Before starting we recommend to read the [Molgenis Compute manual].  
+This chapter describes the content of the [Molgenis Compute] binary. Before starting we recommend to read the [Molgenis Compute manual].  
   
   
-####2.1 Installation
-To install [Molgenis Compute] one should download and unpack the binary using the following command:  
-  
->unzip molgenis_compute-\<version\>.zip  
->cd molgenis_compute-\<version\>  
-  
-####2.2 Overview  
+####2.1 Overview  
 All next-generation sequencing protocols are stored in the *protocols/ngsWorkflowRealignmentAndSnpCalling/* directory. This directory contains multiple sub-directories:
   
 * doc: this directory contains documentation for futher reference 
@@ -51,78 +45,14 @@ The following files can also be found in this directory:
 * workflow.csv  
 * worksheet.csv  
   
-####2.3 General setup  
-To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute the ngs pipeline. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
-  
-* scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs for Grid usage the value GRID should be specified.  
-* root: this is the "root" parameter shared by all other parameters. To ease the setup we recommend to install all tools in a *tools* directory and all resources in a *resources* directory in the "root".
-  
   
 ###3 Analysis using compute  
   
   
-This chapter describes how one can do the NGS data analysis via the commandline version. For this, one needs to setup tools and scripts and prepare reference data. Afterwards one needs to prepare the `worksheet.csv` with the proper sample information after which the analysis can be started.  
+This chapter describes how one can do the NGS data analysis via the commandline version. For this, one needs to setup tools and scripts and prepare reference data as described in the [Molgenis Compute NGS installation manual]. Afterwards one needs to prepare the `worksheet.csv` with the proper sample information after which the analysis can be started.  
   
   
-####3.1 Tools used in analysis  
-To run the pipeline one should first install all needed tools. We recommend to setup a directory `$root` directory which contains the following folders; *tools/* and *resources*. The following tools should be installed in the *tool/* directory:  
-  
-| Tools | Downloadlink |  
-| :----: | :----: |  
-| GATK | http://www.bbmriwiki.nl/svn/ebiogrid/modules/GATK/1.0.5069/GATK-1.0.5069.tgz |  
-| BWA | http://www.bbmriwiki.nl/svn/ebiogrid/modules/bwa/0.5.8c_patched/bwa-0.5.8c_patched.tgz |  
-| fastQC | http://www.bbmriwiki.nl/svn/ebiogrid/modules/fastqc/v0.10.1/fastqc-v0.10.1.tgz |  
-| picard-tools | http://www.bbmriwiki.nl/svn/ebiogrid/modules/picard-tools/1.61/picard-tools-1.61.tgz |  
-  
-  
-Scripts should be downloaded in installed in *tools/scripts/*. All scripts can be downloaded here:  
-  
-| script | Downloadlink |  
-| :----: | :----: |  
-| coverage.R | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/coverage.R |  
-| createInsertSizePlot | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/createInsertSizePlot.zip |  
-| filterSingleSampleCalls.pl | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/filterSingleSampleCalls.pl |  
-| plot_cumulative_coverage | http://www.bbmriwiki.nl/svn/ebiogrid/scripts/plot_cumulative_coverage-1.1.R |  
-  
-  
-All resources can be downloaded here: insert_link  
-After extracting the resources one can just move the *resources/* directory onder the `$root` since they are packed in the correct folder structure.  
-  
-  
-After installing all tools and resources one should have the following directory structure:  
-  
-  
-        -root  
-          |
-          +tools
-          |   |
-          |   +scripts
-          |   |   <analysis scripts>
-          |   |
-          |   +<several tools, one tool per folder> SEE: Note 1
-          |  
-          +resources
-               |
-               +hg19
-                  |
-                  +dbsnp
-                  |   <dbsnp files>
-                  |
-                  +indels
-                  |   <indel files (VCF)>
-                  |
-                  +indices
-                  |   <human_g1k_v37.fa files>
-                  |
-                  +intervals
-                      <interval_list files>  
-                      
-        Note:  
-        1 These tools are the ones described above  
-        2 When using the grid as described in chapter 4 all tools are installed and usable as `module`.   
-  
-  
-####3.2 Preparing the worksheet  
+####3.1 Preparing the worksheet  
 Before starting an analysis one has to specify the samples to analyse. For this the `"worksheet.csv"` is used. An example worksheet including the obligatory fieds is depicted below:  
   
 | internalSampleID | externalSampleID | project | sequencingStartDate | sequencer | run | flowcell | lane | seqType | capturingKit | barcode | barcodeType |  
@@ -146,7 +76,7 @@ The columns explained:
 An example worksheet can be found here: *protocols/ngsWorkflowRealignmentAndSnpCalling/demoWorksheet.csv*  
   
   
-####3.3 Starting an analysis  
+####3.2 Starting an analysis  
 All protocols to run the analysis can be found in the *protocols/ngsWorkflowRealignmentAndSnpCalling/* directory. All scripts/jobs for the four main steps described earlier are generated by one command.  
   
 To generate all jobs for the analysis one can execute the following command:  
@@ -246,4 +176,6 @@ The whole installation and running process can be done in seven steps.
 [Picard]: http://picard.sourceforge.net/  
 [^1]: http://genome.cshlp.org/content/21/6/830.abstract  
 [GATK]: http://www.broadinstitute.org/gatk/  
+[Molgenis Compute NGS installation manual]:  
+
 
