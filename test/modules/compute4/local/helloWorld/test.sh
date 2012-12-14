@@ -1,10 +1,11 @@
 #!/bin/bash
 
+printf "\nStarting HelloWorld test.\n\n"
+
 # Initialize constant testResults and load function isEmpty
 workdir=$( cd -P "$( dirname "$0" )" && pwd )
 . $workdir/initialize.sh
 
-printf "\nStarting HelloWorld test.\n\n"
 echo "1. Remove previous results..."
 sh $workdir/removeResults.sh
 
