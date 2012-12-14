@@ -58,7 +58,7 @@ public class ArgumentParser
 	 */
 	private static void fillParamMap(String set)
 	{
-		String inputdir = "input"; // is reused below
+		String inputdir = "."; // is reused below
 
 		// set default for inputdir
 		paramMap.put("inputdir", inputdir);
@@ -149,7 +149,7 @@ public class ArgumentParser
 			System.err.println("Valid command line arguments are:\n");
 
 			System.err
-					.println("  -inputdir=<input>                     # Directory with default inputs: workflow.cvs, protocols, parameters.csv, worksheet.csv.");
+					.println("  -inputdir=<.>                         # Directory with default inputs: workflow.cvs, protocols, parameters.csv, worksheet.csv.");
 			System.err
 					.println("  -outputdir=<inputdir/id>              # Directory where the generated scripts will be stored.");
 			System.err
