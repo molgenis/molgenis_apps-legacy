@@ -158,7 +158,7 @@ public class ArgumentParser
 			System.err
 					.println("  -system=<inputdir/system>             # A directory containing the system *.ftl template files (Submit.sh.ftl, Header.ftl, Footer.ftl).");
 			System.err
-					.println("  -protocols=<inputdir/protocols>       # A directory containing the *.ftl protocol files.");
+					.println("  -protocols=<inputdir/protocols>       # A directory containing your *.ftl protocol files. These will overwrite the system *.ftl's.");
 			System.err
 					.println("  -parameters=<inputdir/parameters.csv> # A file that describes the parameters that are used in the protocols.");
 			System.err.println("  -worksheet=<inputdir/worksheet.csv>   # A file that describes the work to be doen.");
