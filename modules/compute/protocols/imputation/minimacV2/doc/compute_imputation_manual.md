@@ -1,14 +1,14 @@
 Imputation using Molgenis Compute
-============================
+=================================
   
 
 
 Content
 =======
 
-1.	Introduction
-2.	General
-3.	Preparing the study data
+1.	Introduction  
+2.	General  
+3.	Preparing the study data  
 4.	Preparing the reference dataset  
 5.	Imputation using minimacV2 pipeline  
 6.	Imputation on the grid  
@@ -16,46 +16,36 @@ Content
 
   
   
-###1. Introduction
-To be written
+###1. Introduction  
+This manual explains how one can do imputation using the minimac[^3] analysis pipeline in the [Molgenis Compute] framework. The second chapter describes the content of the [Molgenis Compute] binary to be used with the minimac imputation pipeline. The sequential three chapters explain how to create the study and reference data for imputation followed by the actual execution of the imputation pipeline using one of the following five backends; PBS, SGE, BSUB, grid or your local computer. To run the analysis efficient it's needed to devide the analysis in three steps:  
+  
+* *Preparing and QCing the study data:* here bad SNPs are removed from the study data, afterwards the data is split per number of samples and chromosome chunk  
+* *Phasing:* here the data chunks are phased  
+* *Imputation:* this last step performs the imputation. This step is separate from the first two steps allowing the use of a new reference panel without having to recalculate the first two steps.  
+  
+Using the above explained method imputation is parallelized and ready to use on your cluster. For additional compute resources one can use the national Computing infrastructure for life Sciences, [eBioGrid]. How to setup [Molgenis Compute] for this grid infrastructure is explained in chapter six.  
   
   
 ###2. General
   
   
-This chapter describes the content of the [Molgenis Compute] binary and how it should be installed. Before starting we recommend to read the [Molgenis Compute manual].  
+This chapter describes the content of the [Molgenis Compute] binary. Before starting we recommend to read the [Molgenis Compute manual] and the [Molgenis Compute imputation installation manual].  
   
   
-####2.1 Installation of Molgenis Compute
-The first thing to do is to unpack the Molgenis Compute distro. To unpack the distro execute the following command:  
-  
->unzip molgenis_compute-\<version\>.zip  
->cd molgenis_compute-\<version\>  
-  
-  
-####2.2 Imputation overview  
+####2.1 Imputation overview  
 All imputation protocols are stored in the *protocols/imputation/* directory. This
 directory contains multiple sub-directories:
   
-* beagle
-* impute2
-* minimac
-* prepareReference
+* minimac  
+* prepareReference  
   
 Each of these directories contain the following files to be used as input for Molgenis
-Compute:
+Compute:  
   
 * parameters.csv
 * workflow.csv
 * worksheet.csv
 * protocols (*.ftl files)
-  
-  
-####2.3 General compute settings for imputation  
-To setup Compute several default parameters in the `"parameters.csv"` file should be changed to your specific system/cluster environment. Changing these settings is necessary to execute any of the imputation pipelines. After changing these parameters the parameters file is ready. Changing the following environment parameters is obliged:  
-  
-* scheduler: Every scheduler has different job specification syntax, this parameter specifies which header for a specific scheduling system should be generated. The following scheduling systems are supported BSUB (BSUB), Portable Batch System (PBS) and Sun Grid Engine (SGE). To generate jobs without headers for Grid usage the value GRID should be specified.  
-* root: this is the "root" parameter shared by all other parameters. To ease the setup we recommend to install all tools in a *tools* directory and all resources in a *resources* directory in the "root".    
   
   
 ###3.	Preparing the study data  
@@ -157,7 +147,7 @@ When all the above files are present the reference dataset is ready to be used.
 ###5. Imputation using minimacV2 pipeline  
   
   
-All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The version 2 pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 5.1.
+All protocols and files to run an imputation using Minimac[^3] can be found in the *protocols/imputation/minimacV2/* directory. The pipeline consists of three steps; preparing the data, phasing and imputation. Furthermore the pipeline has prerequisits which are listed in chapter 5.1.
   
   
 ####5.1 Tools
@@ -308,8 +298,8 @@ The whole installation and running process can be done in seven steps.
   >Logout.  
   
 2. Checkout from git repository and build compute  
-  >git clone https://github.com/georgebyelas/molgenis.git  
-  >git clone https://github.com/georgebyelas/molgenis_apps.git  
+  >git clone https://github.com/molgenis/molgenis.git  
+  >git clone https://github.com/molgenis/molgenis_apps.git  
   >cd molgenis_apps  
   >ant -f build_compute.xml clean-generate-compile  
 
@@ -337,14 +327,17 @@ The whole installation and running process can be done in seven steps.
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/parametersMinimac.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
-  
-6. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
+
+6. Edit the `molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv` file with your input values. In the column 'remoteWorksheet' add the desired location of this file on the grid's SRM. Be carefull to use the srm:// notation. The next step is to upload the worksheet.csv file to the grid's SRM in the path that you defined.
+
+7. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
-  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >workflowMinimacStage1.csv \\  
+  >ui.grid.sara.nl \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv \\  
   >step01  
   
-7. Execute imputation with user credentials using pilot job system: 
+8. Execute imputation with user credentials using pilot job system: 
   >sh runPilots.sh \\  
   >ui.grid.sara.nl \\  
   >\<username> \\  
@@ -354,14 +347,9 @@ The whole installation and running process can be done in seven steps.
 After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:  
 >scp \<username>@ui.grid.sara.nl:~srm:something? .  
   
-More text
-
-
-
-
-
-
-
+The new worksheet can now be imported in the database again, using above mentioned commands.  
+  
+  
 For further information read the [Molgenis Compute manual].  
   
   
@@ -394,8 +382,11 @@ Overview of the tools needed for the minimacV2 pipeline.
 [^7]: http://www.bbmriwiki.nl/wiki/ImputationTool
 [^8]: Link_to_shell_script  
 [Molgenis Compute]: http://www.molgenis.org/wiki/ComputeStart (Molgenis Compute)  
-[Molgenis Compute Manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
+[Molgenis Compute manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/doc/UserManual.pdf
 [VCFTools]: http://vcftools.sourceforge.net/
 [clone_build.sh]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute4/deployment/clone_build.sh  
 [deployment directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment  
 [pilot directory]: https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute/pilots/grid
+[eBioGrid]: http://www.ebiogrid.nl/  
+[Molgenis Compute imputation installation manual]: https://github.com/molgenis/molgenis_apps/blob/testing/modules/compute/protocols/imputation/minimacV2/doc/compute_imputation_installation_manual.md  
+

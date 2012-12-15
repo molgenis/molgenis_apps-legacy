@@ -49,18 +49,18 @@ function updateProtocolView(protocol) {
 	function buildTree(protocol) {
 		// add protocol
 		var item = $('<li class="folder"/>').attr('data', 'key: "' + protocol.id + '", title:"' + protocol.name + '"');
-		// add protocol: features
 		var list = $('<ul />');
-		if(protocol.features) {
-			$.each(protocol.features, function(i, feature) {
-				var item = $('<li />').attr('data', 'key: "' + feature.id + '", title:"' + feature.name + '"');
-				item.appendTo(list);
-			});
-		}
 		// add protocol: subprotocols
 		if(protocol.subProtocols) {
 			$.each(protocol.subProtocols, function(i, subProtocol) {
 				list.append(buildTree(subProtocol));
+			});
+		}
+		// add protocol: features
+		if(protocol.features) {
+			$.each(protocol.features, function(i, feature) {
+				var item = $('<li />').attr('data', 'key: "' + feature.id + '", title:"' + feature.name + '"');
+				item.appendTo(list);
 			});
 		}
 		list.appendTo(item);

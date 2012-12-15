@@ -150,7 +150,7 @@ recalstatsbeforedir,${intermediatedir}/${fileprefix}_${barcode}.recal.stats.befo
 recalstatsafterdir,${intermediatedir}/${fileprefix}_${barcode}.recal.stats.after,,,
 cyclecovariatebefore,${recalstatsbeforedir}/${lane}.CycleCovariate.dat,,,
 cyclecovariateafter,${recalstatsafterdir}/${lane}.CycleCovariate.dat,,,
-analyzecovariatesjar,${tooldir}/GATK-1.0.5069/Sting/dist/AnalyzeCovariates.jar,,,
+analyzecovariatesjar,$GATK_HOME/AnalyzeCovariates.jar,,,
 sample,${intermediatedir}/${externalSampleID},(PicardQCRecal),,
 samplealignmentmetrics,${sample}.alignmentmetrics,(PicardQCRecal),,
 samplegcbiasmetrics,${sample}.gcbiasmetrics,(PicardQCRecal),,
