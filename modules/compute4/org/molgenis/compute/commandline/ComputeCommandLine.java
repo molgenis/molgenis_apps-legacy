@@ -410,9 +410,9 @@ public class ComputeCommandLine
 		Configuration cfg = new Configuration();
 
 		// add path to loader
-		// first search in system, then in protocols
-		FileTemplateLoader ftl1 = new FileTemplateLoader(this.systemdir);
-		FileTemplateLoader ftl2 = new FileTemplateLoader(this.protocoldir);
+		// first search in protocols, then in system
+		FileTemplateLoader ftl1 = new FileTemplateLoader(this.protocoldir);
+		FileTemplateLoader ftl2 = new FileTemplateLoader(this.systemdir);
 		ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "");
 		TemplateLoader[] loaders = new TemplateLoader[]
 		{ ftl1, ftl2, ctl };
@@ -627,7 +627,7 @@ public class ComputeCommandLine
 		try
 		{
 			String result = filledtemplate(findProtocol("Submit.sh", this.computeBundle.getComputeProtocols())
-					.toString(), work, "Submit.sh.ftl");
+					.getScriptTemplate(), work, "Submit.sh.ftl");
 			// String result = new FreemarkerView(this.protocoldir +
 			// File.separator + "Submit.sh.ftl", params).render();
 			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
