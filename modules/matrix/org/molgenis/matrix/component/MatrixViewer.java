@@ -438,16 +438,11 @@ public class MatrixViewer extends HtmlWidget
 		}
 
 		// add remove columns from matrix.
-		ActionInput addRemCols = new ActionInput("Add/Remove Columns");
 
 		// addRemCols.setIcon("generated-res/img/plus.png");
-		String javaScript = "if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block';} else {document.getElementById('advancedSettings').style.display='none';}";
-		addRemCols.setJavaScriptAction(javaScript);
 
-		divContents += "<div style=\"float:left; vertical-align:middle\">" + addRemCols.render() + "</div>";
-
-		divContents += "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
-				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
+		divContents += "<img id='showHideSettingsButton' src=\"res/img/addremcol_36.jpeg\" "
+				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block';} else {document.getElementById('advancedSettings').style.display='none';} \" "
 				+ "/>";
 		divContents += "<div id='advancedSettings' style='display:none;float:left'><br /><hr>";
 		// column header filter
