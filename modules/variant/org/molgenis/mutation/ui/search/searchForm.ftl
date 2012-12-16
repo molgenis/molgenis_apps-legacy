@@ -10,24 +10,28 @@
 <#assign patients  = model.listAllPatientsForm>
 
 ${model.textWelcome}
+<#if model.geneDTO?? >
 
-<#if model.geneDTO.symbol == "COL7A1">
-<p>
-The registry is a work in progress. It currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
-</p>
-<#elseif model.geneDTO.symbol == "MYO5B">
-<p>
-The database currently contains ${model.numPatients} MVID patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} MYO5B mutations. Search or browse below.
-</p>
-<#elseif model.geneDTO.symbol == "CHD7">
-<p>
-The database currently contains ${model.getNumMutationsByPathogenicity("pathogenic")} pathogenic mutations in ${model.getNumPatientsByPathogenicity("pathogenic")} patients, ${model.getNumMutationsByPathogenicity("unclassified variant")} unclassified variants in ${model.getNumPatientsByPathogenicity("unclassified variant")} patients, and ${model.getNumMutationsByPathogenicity("benign")} benign variants.
-</p>
-<p>
-You can search or browse below.
-</p>
+	<#if model.geneDTO.symbol == "COL7A1">
+		<p>
+		The registry is a work in progress. It currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
+		</p>
+		<#elseif model.geneDTO.symbol == "MYO5B">
+		<p>
+		The database currently contains ${model.numPatients} MVID patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} MYO5B mutations. Search or browse below.
+		</p>
+		<#elseif model.geneDTO.symbol == "CHD7">
+		<p>
+		The database currently contains ${model.getNumMutationsByPathogenicity("pathogenic")} pathogenic mutations in ${model.getNumPatientsByPathogenicity("pathogenic")} patients, ${model.getNumMutationsByPathogenicity("unclassified variant")} unclassified variants in ${model.getNumPatientsByPathogenicity("unclassified variant")} patients, and ${model.getNumMutationsByPathogenicity("benign")} benign variants.
+		</p>
+		<p>
+		You can search or browse below.
+		</p>
+	</#if>
+	<br/>
+<#else>
+	Gene is not available
 </#if>
-<br/>
 
 ${model.textSearch}
 <br/>
@@ -84,7 +88,11 @@ ${muta.expertSearch}
 -->
 <#if model.mbrowse.isVisible>
 <div class="mbrowse">
-${model.getTopPanel().toHtml()}
+	<#if model.getTopPanel()??>
+		${model.getTopPanel().toHtml()}
+	<#else>
+	 There is no model.getTopPanel()
+	</#if>	
 </div>
 </#if>
 

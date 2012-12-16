@@ -1,7 +1,0 @@
-project,prePhasingResultDir,referencePanel,imputationPipeline,genomeBuild,chr,sampleChunk,chrChunk,imputationResultDir
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,1,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,1,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,1,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,2,1,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,2,2,${root}/home/fvandijk/minimacV2fulltest5/imputationResult
-1240Blood_b37,${root}/home/fvandijk/minimacV2fulltest5/prePhasingResult,gonl_release3.1,minimac,b37,20,2,3,${root}/home/fvandijk/minimacV2fulltest5/imputationResult

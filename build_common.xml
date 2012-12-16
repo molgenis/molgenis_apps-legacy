@@ -219,7 +219,7 @@ It should be used via 'import' plus passing of properties
 		</pathconvert>
 
    		<findbugs home="${findbugs.home}" 
-       		output="html" outputFile="${basedir}/dist/findbugs.xml"
+       		output="xml" outputFile="${basedir}/dist/findbugs.xml"
        		jvmargs="-Xms1024M -Xmx1024M ">
       		<!--
       		<sourcePath path="${molgenis.dir}/src" />
@@ -233,6 +233,26 @@ It should be used via 'import' plus passing of properties
    		</findbugs>
 	</target>
 
+	<target name="findbugs.html">
+		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
+			<map from="${basedir}/" to="" />
+		</pathconvert>
+
+   		<findbugs home="${findbugs.home}" 
+       		output="html" outputFile="${basedir}/dist/findbugs.html"
+       		jvmargs="-Xms1024M -Xmx1024M ">
+      		<!--
+      		<sourcePath path="${molgenis.dir}/src" />
+      		-->
+      		<sourcePath path="${app_src}" />
+       		<class location="${build.molgenis.dir}" />
+       		<class location="${build.molgenis_apps.dir}" />
+       		<auxclasspath>
+	   			<path refid="molgenis.classpath" />
+			</auxclasspath>
+   		</findbugs>
+	</target>
+		
 	<!--  cobertura -->
 	<property name="cb.file" location="${basedir}/dist/cobertura.ser" />
 	<path id="cb.classpath">
@@ -383,9 +403,9 @@ It should be used via 'import' plus passing of properties
 		<xmltask source=".settings/template.org.eclipse.wst.common.component" dest=".settings/org.eclipse.wst.common.component" outputter="simple">
 			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}" />
 		</xmltask>
-
+		
 		<antcall target="download-jars"/>
-
+		
 	</target>
 
 	<target name="generate-compile" depends="generate,compile" />

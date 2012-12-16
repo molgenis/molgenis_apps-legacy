@@ -29,7 +29,7 @@
 <h2>User manual</h2>
 
 <h3>Step 1: how to access the catalogue</h3>
-<p>The biobank catalogue can be found at <a href="http://vm7.target.rug.nl/bbmri_gcc">http://vm7.target.rug.nl/bbmri_gcc</a>.</p>
+<p>The biobank catalogue can be found at <a href="https://catalogue.bbmri.nl/biobanks/">https://catalogue.bbmri.nl/biobanks/</a>.</p>
 <p>To log in, click Login in the left hand menu. Are you a registered user? Then type in your user name and password. If you are not yet a registered user, click Register.</p>
 <p>After login, a welcome page is displayed, showing you a few of the options you have. Your main means of navigation are the left hand and top right menus.</p>
 
