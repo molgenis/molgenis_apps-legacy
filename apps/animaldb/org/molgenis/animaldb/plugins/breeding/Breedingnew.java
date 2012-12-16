@@ -1870,14 +1870,13 @@ public class Breedingnew extends PluginModel<Entity>
 
 				String newValue = request.getString(e);
 
-				
 				List<ObservationTarget> listObsTargets = null;
 				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
 				if (individualValueList.isEmpty())
 				{
 					ov.setValue(newValue);
 					db.update(ov);
-				
+
 				}
 				else
 				{
@@ -1886,7 +1885,7 @@ public class Breedingnew extends PluginModel<Entity>
 						listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
 								Operator.EQUALS, v.getTarget_Name()));
 						String targetName = listObsTargets.get(0).getName();
-	
+
 						// Birthdate
 						ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
 								invName, invName.get(0)).get(0);
@@ -1894,7 +1893,7 @@ public class Breedingnew extends PluginModel<Entity>
 						db.update(birthDate);
 						ov.setValue(newValue);
 						db.update(ov);
-	
+
 					}
 				}
 
@@ -1918,8 +1917,7 @@ public class Breedingnew extends PluginModel<Entity>
 							invName.get(0)).get(0);
 					ObservedValue active = ct.getObservedValuesByTargetAndFeature(targetName, "Active", invName,
 							invName.get(0)).get(0);
-					active.setTime(newDateOnlyFormat.parse(weanDate.getValue()));
-
+					active.setTime(newDateOnlyFormat.parse(newValue));
 					weanDate.setValue(newValue);
 					db.update(weanDate);
 					db.update(active);
