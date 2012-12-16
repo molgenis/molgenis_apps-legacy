@@ -17,9 +17,9 @@ Below is first described how to prepare the 'worksheet' describing your analysis
 
 If you didn't do so, please download compute:
 
->create mycompute #place where you want to work
->wget <path to compute>
->unzip molgenis-compute-<version>.zip
+>create mycompute #place where you want to work  
+>wget \<http address of compute binary>  
+>unzip molgenis-compute-<version>.zip  
 >move molgenis-compute-<version>/* .
     
 All next-generation sequencing protocols are stored in the `workflows/ngs/alignmentAndSnpCalling` directory. This folder has standard structure of *Compute* such as `parameters.csv`, `workflow.csv`, directory `protocols` and an example `worksheet.csv`.
@@ -117,8 +117,10 @@ log into ui node (change myname)
 
 put data into srm (change myname and myproject)
 >mysrm=srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/myname/myproject  
+>  
 >srmcp -server_mode=passive file:///$HOME/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_1.fq.gz \\     
 >$mysrm/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_1.fq.gz  
+>  
 >srmcp -server_mode=passive file:///$HOME/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_2.fq.gz \\     
 >$mysrm/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_2.fq.gz 
 

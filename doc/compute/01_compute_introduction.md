@@ -38,10 +38,10 @@ Before you start, please first download *Compute*.
 You can download a ready made binary as follows:
 
 >mkdir mycompute  
->cd mycompute 
+>cd mycompute  
 >wget #paste here url to binary zip  
->unzip molgenis_apps/dist/molgenis_compute-<version>.zip   
->mv molgenis_compute-<version>/* .  
+>unzip molgenis_apps/dist/molgenis_compute-\<version>.zip   
+>mv molgenis_compute-\<version>/* .  
 >  
 >\#test  
 >sh molgenis_compute.sh  
@@ -54,8 +54,8 @@ Alternatively to download you can checkout the latest code:
 >git clone https://github.com/molgenis/molgenis_apps.git  
 >git clone https://github.com/molgenis/molgenis.git  
 >ant -f molgenis_apps/build_compute clean-generate-compile-makedistro  
->unzip molgenis_apps/dist/molgenis_compute-<version>.zip  
->mv molgenis_compute-<version>/* .  
+>unzip molgenis_apps/dist/molgenis_compute-\<version>.zip  
+>mv molgenis_compute-\<version>/* .  
 >  
 >\#test  
 >sh molgenis_compute.sh  
@@ -87,10 +87,10 @@ Paste:
 		<tr><td>GuestInvitationStep,</td><td>GuestInvitation,</td><td></td></tr>
 </table>  
 
-*Explanation:* The first row contains the column headers, each of the following rows describes a step in the workflow. In the first column you'll find the step's `name` (unique per workflow), followed, in the second column, by the `protocol_name` that here referers to a file `protocol/GuestInvitation.ftl' (see [Protocols](#Protocol) for details). The third column contains a comma separated list of step names that should be finished before the step in a row starts (see [Previous steps](#Previous-steps)). In our current example, the list in the third column is empty.
+*Explanation:* The first row contains the column headers, each of the following rows describes a step in the workflow. In the first column you'll find the step's `name` (unique per workflow), followed, in the second column, by the `protocol_name` that here referers to a file `protocol/GuestInvitation.ftl` (see [Protocols](#Protocol) for details). The third column contains a comma separated list of step names that should be finished before the step in a row starts (see [Previous steps](#Previous-steps)). In our current example, the list in the third column is empty.
 
 ###Protocols
-A protocol generally is a template of a shell script written in Freemarker language that describes the work is to be done (see http://freemarker.org/ for a manual).
+A protocol generally is a template of a shell script written in [Freemarker](http://freemarker.org/) language that describes the work is to be done (see http://freemarker.org/ for a manual).
 
 Let's now create a directory called *protocols* and save our first protocol file *protocols/GuestInvitation.ftl* in there, with the following content.
 
@@ -100,7 +100,7 @@ Paste:
 >echo "Hello ${guest},"  
 >echo "We invite you for our ${party}."   
 
-*Explanation:* A protocol may refer to parameters, such as ${guest} and ${party} in our example. The idea is that you can use such templates to rapidly generate up to thousands of shell scripts, given different values for these parameters. Given a value for each of the parameters, this protocol echos an invitation to the standard out.
+*Explanation:* A protocol may refer to parameters, such as `${guest}` and `${party}` in our example. The idea is that you can use such templates to rapidly generate up to thousands of shell scripts, given different values for these parameters. Given a value for each of the parameters, this protocol echos an invitation to the standard out.
 
 ###Parameters
 Each parameter that is used in a protocol should be defined in a parameters file. Let's create such a file and call it `parameters.csv`. Now add our two parameters `${guest}` and `${party}` as follows to this file.
@@ -134,23 +134,19 @@ Paste:
 <tr><td>Adri</td></tr>
 </table>  
   
-*Explanation:* The idea of the worksheet is as follows. The first row contains parameter names (c.q. target types), comma separated. In our case we only have one parameter, called `guest`. Each of the following rows contains the parameters values. When running \mc, the protocols are subsequently applied to each of the values. I.e., in our example, we will generate a different invitation script for each of our guests.
+*Explanation:* The first row contains parameter names (c.q. target types), comma separated. In our case we only have one parameter, called `guest`. Each of the following rows contains the parameters values. When running \mc, the protocols are subsequently applied to each of the values. I.e., in our example, we will generate a different invitation script for each of our guests.
 
 ###Script generation
-You need at least two command line parameters to generate the scripts: `input` and `id`.  
-The first parameter (`input`) refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`.  
-The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where \mc~will store the generated scripts.   
+You need at least two command line parameters to generate the scripts: `input` and `id`. The first parameter (`input`) refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`. The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where \mc~will store the generated scripts.   
 
 Let's now generate the scripts with the invitations by running the following command. We assume that you have put your workflow, parameters, worksheet files and protocols directory in a directory called `helloWorld`.
   
 >cd ..  
 >sh molgenis\_compute.sh \   
->-input=invitateWorkflow \  
+>-input=invitationWorkflow \  
 >-id=run01 
 
-*Tip*: In your protocols, you may want to use the values of the command line parameters. However, be aware that the parameter names you have to use are slightly different from the command line parameters: `${McWorkflow}`,`${McProtocols}`, `${McParameters}`, `${McWorksheet}`, and `${McScripts\}`. 
-
-The second command line parameter (`id`) may have a different value, every time you generate. This may be useful, for example, in case you want to redo an analysis after slightly changing a protocol and compare the outcomes of both analyses. You could do so by making the {`McId`} parameter part of the file or directory names in which you store your output. In this way, you won't overwrite the output of the first analysis so that you can compare it with the outcome of our your second analysis.
+*Tip*: In your protocols, you may want to use the values of the command line parameters. However, be aware that the parameter names you have to use are slightly different from the command line parameters: `${McWorkflow}`,`${McProtocols}`, `${McParameters}`, `${McWorksheet}`, and `${McScripts}`. 
 
 ###Review generated scripts
 So, how do the generated scripts in the `run01` directory look like? Let's first consider one of the five scripts that contain the invitations to our five guests: `run01/run01_s00_GuestInvitation_1.sh`. The script name is constructed as follows.
@@ -190,21 +186,22 @@ In addition, a copy of your workflow, parameters and worksheet file are put in t
 This section adds more details to the "inviteWorkflow" we've developed above and demonstrates that \mc~can generate more realistic workflows, too. In addition of only inviting guests to our wedding, we will also organize some activity for our guests. The guests will be divided in two groups: child or adult. Each group has one organizer that will plan an activity for his group. After sending out the individual invitations to our guests, for each group, we will send its organizer a letter with a guest list.
 
 ###Workflow step dependencies
-Let's call the step that sends a letter to each organizer `OrganizerInvitation`. Suppose that before starting this step, we want the `GuestInvitation` step to be finished first. Let's add the new step `OrganizerInvitation` to our `workflow.csv` file and define its dependency on the `GuestInvitationStep` step using the column `PreviousSteps_name`:
+Let's call the step that sends a letter to each organizer `OrganizerInvitation`. Suppose that before starting this step, we want the `GuestInvitation` step to be finished first. Let's add the new step `OrganizerInvitationStep` to our `workflow.csv` file and define its dependency on the `GuestInvitationStep` step using the column `PreviousSteps_name`:
 
->nano inviteWorkflow/workflow.csv:
+>nano invitationWorkflow/workflow.csv:
 
 Paste:
 <table>
 <tr><td>name,</td><td>protocol_name,</td><td>PreviousSteps_name</td></tr>
 <tr><td>GuestInvitationStep,</td><td>GuestInvitation,</td></tr>
-<tr><td>OrganizerInvitation,</td><td>OrganizerInvitation,</td><td>GuestInvitationStep</td></tr>
+<tr><td>OrganizerInvitationStep,</td><td>OrganizerInvitation,</td><td>GuestInvitationStep</td></tr>
 </table>  
   
-Adding `GuestInvitationStep` to its `PreviousSteps_name` will ensure that the `GuestInvitation` scripts will be finished before the `OrganizerInvitation` step will be started. Be aware that the values in the third column refer to those in the first column, and not to those in the second column.
+Adding `GuestInvitationStep` to its `PreviousSteps_name` will ensure that the `GuestInvitation` scripts will be finished before the `OrganizerInvitation` scripts will be started. Be aware that the values in the third column refer to those in the first column, and not to those in the second column.
 
-###Protocol 'foreach' custom iteration
-We want the OrganizerInvitation to run only for each unique group. Therefore, let's create a new protocol and save it as `OrganizerInvitation.ftl` in the protocols directory and add a `#foreach` clause next to the script template content.
+###Customized'foreach' iteration
+Default all protocols are applied to all rows in the `worksheet.csv`. Often you don't want that and instead only run a particular protocol the unique values in one worksheet column.
+In this example we want the OrganizerInvitation to run only for each unique `group`. Therefore, let's create a new protocol and save it as `OrganizerInvitation.ftl` in the protocols directory and add a `#foreach` clause next to the script template content.
 
 >nano invitationWorkflow/protocols/OrganizationInvitation.ftl  
 
@@ -219,7 +216,7 @@ Paste:
 ></\#list>
 
 
-In this new protocol, we introduce a new parameter `group` which may have the values "child" and "adult". We will specify these values in the 'worksheet.csv' below. Instead of applying this template to all rows in the worksheet, the `#FOREACH group` statement in the first line of this protocol means that this protocol will be applied *only* to each unique values that `group` has. I.e., it will be applied once to "child", and once to "adult".  
+In this new protocol, we introduce a new parameter `group` which may have the values "child" and "adult". We will specify these values in the `worksheet.csv` below. Instead of applying this template to all rows in the worksheet, the `#FOREACH group` statement in the first line of this protocol means that this protocol will be applied *only* to each unique values that `group` has. I.e., it will be applied once to "child", and once to "adult".  
 What happens under the hood, is that the worksheet is *folded* based on the specified target. The folding reduces the worksheet to only two lines, one for each group. This will thus result in a list of guests per group. This protocol iterates through that list of guests by making use of the `<#list>` Freemarker syntax. Section [Worksheet folding]() explains the folding of the worksheet as a result of the `#FOREACH group` statement, in detail. That section also explains why the parameter `organizer`, which is also new in this protocol, can also be used as a value, insteadof a list.
 
 ###Worksheet folding
@@ -237,9 +234,9 @@ Paste:
 <tr><td>Adri,</td><td>adult,</td><td>Otto</td></tr>
 </table>
 
-In general, a protocol is applied to each of the rows in the original worksheet. However, if a protocol contains a `#FOREACH` statement, then the worksheet will first be *folded*. After the folding, the protocol will be applied to each line in the *folded* worksheet. Because the `OrganizerInvitation.ftl` protocol starts with "`#FOREACH group`", it will be executed *for each unique value* of `group` (i.e. "child" and "adult"). Under the hood, after folding each line contains a different value of group:
+In general, a protocol is applied to each of the rows in the original worksheet. However, if a protocol contains a `#FOREACH` statement, then the worksheet will first be *folded*. After the folding, the protocol will be applied to each line in the *folded* worksheet. Because the `OrganizerInvitation.ftl` protocol starts with "`#FOREACH group`", it will be executed *for each unique value* of `group` (i.e. "child" and "adult"). Under the hood, after folding each line contains a different value of group.
 
-Result of 'worksheet.csv' after folding
+Result of 'worksheet.csv' after folding:
 <table>
 <tr><td>guest,</td><td>group,</td><td>organizer</td></tr>
 <tr><td>[Charly, Cindy],</td><td>child,</td><td>[Oscar,Oscar]</td></tr>
@@ -260,10 +257,10 @@ Paste:
 <tr><td>guest,</td><td>,</td><td>,</td><td>,</td><td><tr>
 <tr><td>party,</td><td>wedding,</td><td>,</td><td>,</td><td></tr>
 <tr><td>organizer,</td><td>,</td><td>,</td><td>,</td><td></tr>
-<tr><td>group,</td><td>,</td><td>,</td><td>organizer</td></tr>
+<tr><td>group,</td><td>,</td><td>,</td><td>,</td><td>organizer</td></tr>
 </table>  
  
-Note that we have  added relationships between group and organizer in the `hasOne\_name` column: a group has only one organizer. If we now re-apply the folding as describing in [Worksheet folding](#Worksheet-folding) there result is now as desired:
+Note that we have  added relationships between group and organizer in the `hasOne_name` column: a group has only one organizer. If we now re-apply the folding as describing in [Worksheet folding](#Worksheet-folding) there result is now as desired:
 
 Output of 'worksheet.csv' after folding:
 <table>
@@ -289,7 +286,7 @@ All of this is described below.
 ###Requirements specification
 The header of a protocol may contain the following line in which you specify the hardware requirements for your workflow step:
 
->\#MOLGENIS walltime=hh:mm:ss mem=$m$ nodes=$n$ cores=$c$}
+>\#MOLGENIS walltime=hh:mm:ss mem=$m$ nodes=$n$ cores=$c$
 
 where `walltime` is the maximum execution time, `mem` is the memory (e.g. 512MB or 4GB), `nodes` is the number of nodes (default=1) and `cores` is the number of cores that you request for the execution of this analysis.
 
@@ -309,9 +306,9 @@ Where `"myOutputFile"` again is a parameter in your parameter list that refers t
 
 ###Load software modules
 In your protocols typically will want to use of some software tools that are already installed on the backend where your scripts will be run. However, the path to these tools may vary between different backends. One solution to this is to put the tools in the '$PATH$', so that you can just call them without specifying the path. 
-We recommend as best practice to use the [Module system](). On two backends, i.e. 'cluster.gcc.rug.nl' and 'grid.sara.nl', we made it quite easy for you to do so. The following statement will load a tool, say $yourModule$, to the path.
+We recommend as best practice to use the [Module system](). On two backends, i.e. 'cluster.gcc.rug.nl' and 'grid.sara.nl', we made it quite easy for you to do so. The following statement will load a tool, say ${yourModule}, to the path.
 	
->module load yourModule
+>module load ${yourModule}
 	
 On the two backends, the following modules are available so far:
 	
@@ -347,8 +344,7 @@ This part of the tutorial explains who to deploy the Database version of the Mol
 
 Molgenis/compute can be deployed and ready to submit jobs to the grid scheduler via `ssh` just in few straightforward steps. We prepared a shell scripts to automate every deployment and utilise step. The scripts are can be found in Molgenis github:
 
->https://github.com/molgenis/molgenis\_apps/tree/testing  
->/modules/compute4/deployment/  
+>https://github.com/molgenis/molgenis_apps/tree/testing/modules/compute4/deployment/  
 
 ###Compute database creation
 
@@ -375,17 +371,9 @@ In your console, you should see output like:
 >APPLICATION IS RUNNING AT: http://localhost:8080/compute/  
 >\*********************************************************  
 
-Later, you can copy the link into your browser and you will see generated user interface with empty database, like in Figure \ref{fig:ui1}. In this example, the DB contains two workflows. 
+Later, you can copy the link into your browser and you will see generated user interface with empty database, like in Figure below. In this example, the DB contains two workflows. 
 
-%
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.95\linewidth]{images/workflows}
-\caption{An example of Molgenis compute UI}
-%\vspace{-0.2cm}
-\label{fig:ui1}
-\end{figure}
-%
+![An example of Molgenis compute UI](img/workflows.png)
 
 Alternatively, you can use `sh restart.sh` script for it. Run the script specifying the port on which you like to run the web server
 
@@ -396,20 +384,20 @@ Alternatively, you can use `sh restart.sh` script for it. Run the script specify
 You can use the `sh importWorkflow.sh` script to import a workflow into a database. Run it with few parameters: 
 
 >sh importWorkflow.sh \  
-><workflow\_parameters\_file> \  
-><workflow\_elements\_file> \  
-><protocols\_directory>
+>\<workflow\_parameters\_file> \  
+>\<workflow\_elements\_file> \  
+>\<protocols\_directory>
 
 Alternatively, parameters, protocols and workflow elements can be added to the database manually in the mysql server or through the generated UI.
 
 Run the `sh importWorksheet.sh` script with the following parameters to generate *ComputeTasks*in the database. 
 
 >sh importWorksheet.sh \  
-><workflow_name> \  
-><worksheet\_file> \  
-><run\_id>
+>\<workflow_name> \  
+>\<worksheet\_file> \  
+>\<run\_id>
 
-where `worksheet_file` is the worksheet file with the targets, `workflow_name` is the workflow name in the database for which you would like to generate tasks and `run\_id` is the unique generation run id.
+where `worksheet_file` is the worksheet file with the targets, `workflow_name` is the workflow name in the database for which you would like to generate tasks and `run_id` is the unique generation run id.
 
 ###Execution on the grid with the pilot framework
 
@@ -423,7 +411,7 @@ The files can be found at:
 
 >https://github.com/molgenis/molgenis\_apps/tree/testing/modules/compute/pilots/grid/ 
  
-The `maverick.sh` should be edited accordingly to your execution setting. You need to specify `back_end`, where you like to submit you ComputeTask for execution. `back_end` can have a value e.g. `ui.grid.sara.nl`. Also, you need to specify `your_ip` and `your\_port` of your web-server, where Molgenis/compute is running.
+The `maverick.sh` should be edited accordingly to your execution setting. You need to specify `back_end`, where you like to submit you ComputeTask for execution. `back_end` can have a value e.g. `ui.grid.sara.nl`. Also, you need to specify `your_ip` and `your_port` of your web-server, where Molgenis/compute is running.
 
 > export WORKDIR=\$TMPDIR  
 > source dataTransferSRM.sh
