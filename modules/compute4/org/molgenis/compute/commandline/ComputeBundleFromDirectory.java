@@ -28,11 +28,25 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	{
 		// validate headers
 		ComputeBundleValidator cbv = new ComputeBundleValidator(this);
+		cbv.validateReferedFilesAndPathsExists(options);
 		cbv.validateFileHeaders(options);
 
 		// load files
 		this.setWorkflowElements(options.workflowfile);
-		this.setComputeProtocols(options.protocoldir);
+
+		// first load protocolsdir
+		this.addComputeProtocols(options.protocoldir);
+
+		// load the templates (Submit.sh.ftl, Header/Footer.ftl) in the default
+		// system directory:
+		if (options.systemdir.exists()) this.addComputeProtocols(options.systemdir);
+
+		// We now loaded first the 'custom protocols' made by the user, and then
+		// the system protocols
+		// If a protocol is loaded twice, then only keep first one
+		// only use system protocols if they are not in protocols folder
+		this.keepFirstProtocol();
+
 		this.setComputeParameters(options.parametersfile);
 		this.setWorksheet(options.worksheetfile);
 
@@ -71,10 +85,10 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		this.setComputeParameters(parametersfile);
 		this.setWorkflowElements(workflowfile);
 		this.setWorksheet(worksheetfile);
-		this.setComputeProtocols(protocoldir);
+		this.addComputeProtocols(protocoldir);
 	}
 
-	public void setComputeProtocols(File templateFolder) throws IOException
+	public void addComputeProtocols(File templateFolder) throws IOException
 	{
 		// assume each file.ftl in the 'protocols' folder to be a protocol
 		List<ComputeProtocol> protocols = new ArrayList<ComputeProtocol>();
@@ -217,7 +231,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				protocols.add(p);
 			}
 		}
-		this.setComputeProtocols(protocols);
+
+		this.appendComputeProtocols(protocols);
 	}
 
 	public void setComputeParameters(File file) throws Exception
