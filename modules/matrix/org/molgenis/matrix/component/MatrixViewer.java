@@ -76,6 +76,8 @@ public class MatrixViewer extends HtmlWidget
 {
 	private static final int BATCHSIZE = 100;
 
+	private static final String ADDREMCOLS = null;
+
 	ScreenController<?> callingScreenController;
 
 	SliceableMatrix<?, ?, ?> matrix;
@@ -435,6 +437,41 @@ public class MatrixViewer extends HtmlWidget
 
 		}
 
+		// add remove columns from matrix.
+		ActionInput addRemCols = new ActionInput("Add/Remove Columns");
+
+		// addRemCols.setIcon("generated-res/img/plus.png");
+		String javaScript = "if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block';} else {document.getElementById('advancedSettings').style.display='none';}";
+		addRemCols.setJavaScriptAction(javaScript);
+
+		divContents += "<div style=\"float:left; vertical-align:middle\">" + addRemCols.render() + "</div>";
+
+		divContents += "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
+				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
+				+ "/>";
+		divContents += "<div id='advancedSettings' style='display:none;float:left'><br /><hr>";
+		// column header filter
+		List<? extends Object> colHeaders = matrix.getColHeaders();
+		@SuppressWarnings("rawtypes")
+		List selectedMeasurements = new ArrayList(colHeaders);
+		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", selectedMeasurements,
+				false, false, "Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
+				Measurement.class);
+		// disable display of button for adding new measurements from here
+		measurementChooser.setIncludeAddButton(false);
+		divContents += new Newline().render();
+		divContents += "<div style=\"clear: both; vertical-align:middle\"> <strong>Add/remove columns: </strong><br />";
+		divContents += measurementChooser.render();
+		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+		if (this.APPLICATION_STRING != "ANIMALDB")
+		{
+			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
+		}
+
+		// divContents += new ActionInput(REMALLCOLHEADERFILTER, "",
+		// "Remove all").render();
+		divContents += "<hr></div></div>";
+
 		return divContents;
 	}
 
@@ -740,30 +777,6 @@ public class MatrixViewer extends HtmlWidget
 																			// FF+IE
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div><hr>";
 
-		divContents += "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
-				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
-				+ "/>";
-		divContents += "<div id='advancedSettings' style='display:none'>";
-		// column header filter
-		@SuppressWarnings("rawtypes")
-		List selectedMeasurements = new ArrayList(colHeaders);
-		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", selectedMeasurements,
-				false, false, "Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
-				Measurement.class);
-		// disable display of button for adding new measurements from here
-		measurementChooser.setIncludeAddButton(false);
-		divContents += new Newline().render();
-		divContents += "<div style=\"clear: both; vertical-align:middle\"> <strong>Add/remove columns: </strong><br />";
-		divContents += measurementChooser.render();
-		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
-		if (this.APPLICATION_STRING != "ANIMALDB")
-		{
-			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
-		}
-
-		// divContents += new ActionInput(REMALLCOLHEADERFILTER, "",
-		// "Remove all").render();
-		divContents += "</div></div>";
 		return divContents;
 	}
 
