@@ -102,14 +102,28 @@ Analysis with Compute commandline is now started. A detailed description for exe
 ###4. Run analysis on the grid  
     
   
-1. Move your data to your `$HOME` space on the grid and upload with the "srmcp" command to the "srm" storage. An example command is below:   
-  >srmcp -server_mode=passive file:///$HOME/dbsnp_135.b37.excluding_sites_after_129.vcf \\    
-  >srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/RP2/resources/hg19/dbsnp/dbsnp_135.b37.excluding_sites_after_129.vcf
+1. Move your data to your `$HOME` space on the grid and upload it with the "srmcp" command to the "srm" storage. An example command is below:
+  >#move into workflow directory (we will use test data from here)
+  >cd protocols/ngsWorkflowRealignmentAndSnpCalling/  
+  >#upload data to ui node  
+  >scp testdata/*.fq.gz myname@ui.grid.sara.nl:.  
+  >#log into ui node  
+  >ssh myname@ui.grid.sara.nl  
+  >#put data into srm  
+  >mysrm=srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/bbmri.nl/myname/myproject  
+  >srmcp -server_mode=passive file:///$HOME/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_1.fq.gz \\     
+  >$mysrm/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_1.fq.gz  
+  >srmcp -server_mode=passive file:///$HOME/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_2.fq.gz \\     
+  >$mysrm/120308_SN163_0457_BD0E5CACXX_L4_CAACCT_2.fq.gz 
+  >#verify
+  >srmls $mysrm
+  >#exit
+  >exit
 
-2. Start webserver  
-  >kill -9 \`lsof -i :<your port> -t`  
+2. Start webserver on your own pc (requires external IP, change 8080 if needed)  
+  >kill -9 \`lsof -i :8080 -t`  
   >cd molgenis_apps;  
-  >nohup ant -f build_compute.xml runOn -Dport=<your port> &  
+  >nohup ant -f build_compute.xml runOn -Dport=8080 &  
     
 3. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
   >sh importWorkflow.sh \\  
@@ -119,7 +133,8 @@ Analysis with Compute commandline is now started. A detailed description for exe
   
 4. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
-  >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/workflow.csv \\  
+  >workflow.csv \\  
+  >ui.grid.sara.nl \\  
   >molgenis_apps/modules/compute/protocols/ngsWorkflowRealignmentAndSnpCalling/demoWorksheet.csv \\  
   >run01  
   

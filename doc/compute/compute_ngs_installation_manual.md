@@ -129,6 +129,7 @@ The whole installation can be done in three steps.
   >git clone https://github.com/molgenis/molgenis_apps.git  
   >cd molgenis_apps  
   >ant -f build_compute.xml clean-generate-compile  
+  >sed -i '' 's/validate/update/g' build/classes/META-INF/persistence.xml
 
   Alternatively one can download the [clone_build.sh] shell script and execute it:  
   >sh clone_build.sh  
