@@ -3,6 +3,7 @@
 #FOREACH autostart
 
 getFile ${concatWorksheetsJar}
+getFile ${ssvQuoted(finalChunkChrWorksheet)}
 
 <#list finalChunkChrWorksheet as chunkFile>
 	getFile ${chunkFile}
