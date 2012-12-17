@@ -16,7 +16,7 @@ module load picard-tools/${picardVersion}
 getFile ${samfile}
 alloutputsexist "${bamfile}"
 
-java -jar -Xmx3g SamFormatConverter.jar \
+java -jar -Xmx3g ${samtobamjar} \
 INPUT=${samfile} \
 OUTPUT=${bamfile} \
 VALIDATION_STRINGENCY=LENIENT \
