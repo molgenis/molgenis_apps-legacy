@@ -328,7 +328,7 @@ The whole installation and running process can be done in seven steps.
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
   >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
 
-6. Edit the `molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv` file with your input values. In the column 'remoteWorksheet' add the desired location of this file on the grid's SRM. Be carefull to use the srm:// notation. The next step is to upload the worksheet.csv file to the grid's SRM in the path that you defined.
+6. Edit the `molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv` file with your input values. In the column 'remoteWorksheet' add the desired location of this file on the grid's SRM. Do not use the srm:// notation. Instead use the following: `${root}/the/relevant/location/AFTER/your/VO/worksheet.csv` . For example: `${root}/home/kanterak/worksheets/worksheet.csv'. The next step is to upload the worksheet.csv file to the grid's SRM in the path that you defined.
 
 7. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
   >sh importWorksheet.sh \\  
@@ -344,7 +344,7 @@ The whole installation and running process can be done in seven steps.
   >\<password> \\  
   >grid  
   
-After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:  
+After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:
 >scp \<username>@ui.grid.sara.nl:~srm:something? .  
   
 The new worksheet can now be imported in the database again, using above mentioned commands.  
