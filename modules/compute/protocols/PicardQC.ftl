@@ -34,7 +34,7 @@ alloutputsexist \
  "${bamindexstats}"
 
 
-java -jar -Xmx4g ${alignmentsummarymetricsjar} \
+java -jar -Xmx4g ${alignmentmetricsjar} \
 I=${sortedbam} \
 O=${alignmentmetrics} \
 R=${indexfile} \
