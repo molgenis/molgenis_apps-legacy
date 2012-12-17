@@ -337,7 +337,7 @@ public class MatrixViewer extends HtmlWidget
 			result += "</td></tr><tr><td>";
 			result += renderTable();
 			result += "</td></tr><tr><td>";
-			result += renderFilterPart();
+			// result += renderFilterPart();
 			result += "</td></tr></table>";
 			result += "</div>";
 
@@ -351,7 +351,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
-	public String renderHeader() throws MatrixException
+	public String renderHeader() throws MatrixException, DatabaseException
 	{
 		String divContents = "";
 		// reload
@@ -441,11 +441,14 @@ public class MatrixViewer extends HtmlWidget
 
 		// addRemCols.setIcon("generated-res/img/plus.png");
 
-		divContents += "<img id='showHideSettingsButton' src=\"res/img/addremcol_36.png\" "
-				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block';} else {document.getElementById('advancedSettings').style.display='none';} \" "
+		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;\" src=\"res/img/addremcol_32.png\" "
+				+ "onclick=\"if (document.getElementById('addRemCol').style.display=='none') {document.getElementById('addRemCol').style.display='block';} else {document.getElementById('addRemCol').style.display='none';} \" "
 				+ "/>";
-		divContents += "<div id='advancedSettings' style='display:none;float:left'><br /><hr>";
-		// column header filter
+		divContents += "<img id='showHideFilterButton' title=\"Add or Remove a data filter \" style=\"padding:2px;\" src=\"res/img/filter_32.png\" "
+				+ "onclick=\"if (document.getElementById('addFilter').style.display=='none') {document.getElementById('addFilter').style.display='block';} else {document.getElementById('addFilter').style.display='none';} \" "
+				+ "/>";
+		// the header filter div (add remo cols)
+		divContents += "<div id='addRemCol' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px;'><br />";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		@SuppressWarnings("rawtypes")
 		List selectedMeasurements = new ArrayList(colHeaders);
@@ -462,10 +465,14 @@ public class MatrixViewer extends HtmlWidget
 		{
 			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
 		}
-
 		// divContents += new ActionInput(REMALLCOLHEADERFILTER, "",
 		// "Remove all").render();
-		divContents += "<hr></div></div>";
+		divContents += "</div></div>";
+
+		// the filter div
+		divContents += "<div id='addFilter' style='display:none;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px;'>";
+		divContents += renderFilterPart();
+		divContents += "</div></div>";
 
 		return divContents;
 	}
@@ -746,13 +753,14 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-		String divContents = "<hr>"
-				+ new Paragraph("filterRules", "<strong>Active filters</strong>:" + generateFilterRules()).render();
+		String divContents = new Paragraph("filterRules", "<strong>Active filters</strong>:" + generateFilterRules())
+				.render();
 
 		// add column filter
 
 		List<? extends Object> colHeaders = matrix.getColHeaders();
-		divContents += "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
+		// divContents +=
+		// "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
 		divContents += buildFilterChoices(colHeaders).render();
 		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO:
 																			// chosen()
@@ -770,7 +778,7 @@ public class MatrixViewer extends HtmlWidget
 																			// alignment
 																			// under
 																			// FF+IE
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div><hr>";
+		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
 
 		return divContents;
 	}
