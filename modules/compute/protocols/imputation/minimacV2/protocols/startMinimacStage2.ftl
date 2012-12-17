@@ -18,6 +18,8 @@ alloutputsexist \
 
 ${stage} jdk/${javaversion}
 
+mkdir -p ${McScripts}
+
 java -jar ${concatWorksheetsJar} \
 	${tmpConcattedChunkWorksheet} \
 	${ssvQuoted(finalChunkChrWorksheet)}
