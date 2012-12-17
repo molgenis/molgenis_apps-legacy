@@ -265,7 +265,58 @@ The output is now ready for further analysis.
   
 ###Run workflow 4 on grid
 
-%todo 
+  Alternatively one can download the [clone_build.sh] shell script and execute it:  
+  >sh clone_build.sh  
+  
+3. Start webserver  
+  >kill -9 \`lsof -i :<your port> -t`  
+  >cd molgenis_apps;  
+  >nohup ant -f build_compute.xml runOn -Dport=<your port> &  
+  
+4. Setup environment on the grid  
+  Copy `maverick.sh`, `maverick.jdl` and `dataTransferSRM.sh` from [pilot directory] to your `$HOME/maverick` directory on the grid ui-node by executing the following command:  
+  >scp maverick.sh maverick.jdl dataTransferSRM.sh \<username>@ui.grid.sara.nl  
+  
+  Edit `maverick.sh`, specify your ip and port of your webserver, which is started on step 3:  
+  >export WORKDIR=$TMPDIR  
+  >source dataTransferSRM.sh  
+  >curl  -F status=started http://<ip>:<port>/compute/api/pilot > script.sh  
+  >sh script.sh 2>&1 | tee -a log.log  
+  >curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot  
+  
+5. Import the first workflow into database by running the `importWorkflow.sh` from [deployment directory]. Files to be imported can be found here:  
+  >sh importWorkflow.sh \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/parametersMinimac.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/workflowMinimacStage1.csv \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/protocols/  
+
+6. Edit the `molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv` file with your input values. In the column 'remoteWorksheet' add the desired location of this file on the grid's SRM. Do not use the srm:// notation. Instead use the following: `${root}/the/relevant/location/AFTER/your/VO/worksheet.csv` . For example: `${root}/home/kanterak/worksheets/worksheet.csv'. The next step is to upload the worksheet.csv file to the grid's SRM in the path that you defined.
+
+7. Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
+  >sh importWorksheet.sh \\  
+  >workflowMinimacStage1.csv \\  
+  >ui.grid.sara.nl \\  
+  >molgenis_apps/modules/compute/protocols/imputation/minimacV2/worksheet.csv \\  
+  >step01  
+  
+8. Execute imputation with user credentials using pilot job system: 
+  >sh runPilots.sh \\  
+  >ui.grid.sara.nl \\  
+  >\<username> \\  
+  >\<password> \\  
+  >grid  
+  
+After completion of the above generated jobs one needs to start step 2 of the pipeline. For this it is requiered to copy the generated worksheet from the grid back to your local computer and import it into the database. The worksheet can be copied back by executing:
+>scp \<username>@ui.grid.sara.nl:~srm:something? .  
+  
+The new worksheet can now be imported in the database again, using above mentioned commands.  
+  
+  
+For further information read the [Molgenis Compute manual].  
+  
+  
+###7 Appendix  
+=======
   
 ## Appendix  
   
