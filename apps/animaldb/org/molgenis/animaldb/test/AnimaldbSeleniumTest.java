@@ -278,7 +278,7 @@ public class AnimaldbSeleniumTest
 
 		selenium.click("id=selectt");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=showHideSettingsButton");
+		selenium.click("id=showHideFilterButton");
 		Thread.sleep(1000);
 		selenium.click("id=mothermatrix_removeFilter_2");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
