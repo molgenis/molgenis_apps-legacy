@@ -51,8 +51,8 @@ public class ConvertVcfToPatho
 		else
 		{
 			vcfFile = new File(
-					"pathoData/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
-			outputDir = new File("pathoData/tmp/");
+					"/pathoData/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
+			outputDir = new File("/pathoData/tmp/");
 		}
 
 		ConvertVcfToPatho convert = new ConvertVcfToPatho();
@@ -109,6 +109,7 @@ public class ConvertVcfToPatho
 
 					String result = "chr" + record.getChrom() + ":g.";
 					v.setName("chr" + record.getChrom() + ":g." + record.getPos() + record.getRef() + ">" + alt.get(i));
+					v.setName(v.getName().replace("|", "_"));
 
 					// ref
 					v.setResidues(record.getRef());
@@ -117,10 +118,12 @@ public class ConvertVcfToPatho
 					v.setAltResidues(alt.get(i));
 
 					// chr
-					v.setChromosome_Name(record.getChrom());
+					String chromName = record.getChrom().replace("|", "_");
+					v.setChromosome_Name(chromName);
 
 					// check if chrom exists, otherwise add
-					if (!chromosomes.contains(record.getChrom())) chromosomes.add(record.getChrom());
+					System.out.println(">>>>" + chromosomes);
+					if (!chromosomes.contains(chromName)) chromosomes.add(chromName);
 
 					// pos
 					v.setStartGdna(record.getPos());
@@ -167,15 +170,23 @@ public class ConvertVcfToPatho
 						{
 							patientObject = new Patient();
 							patientObject.setName(patientName);
-							patients.put(patientName, patientObject);
+
+							// List<String> mutations_name =
+							// record.getSampleValue(pateintName, key)
+							// patientObject.setMutations_Name(mutations_name);
+							//
+							if (!patients.containsKey(patientName)) patients.put(patientName, patientObject);
+							// patientObject.setMutations_Name()
 						}
 						// link mutation to patient
-						patientObject.getMutations_Name().add(v.getName());
+						if (!patientObject.getMutations_Name().contains(v.getName())) patientObject.getMutations_Name()
+								.add(v.getName());
 
 						// create genotype for patient-mutation
 						o.setTarget_Name(patientName);
 						o.setRelation_Name("Allele count");
 						o.setFeature_Name(v.getName());
+
 						o.setValue(record.getSampleValue(patientName, "GT"));
 					}
 
@@ -211,11 +222,12 @@ public class ConvertVcfToPatho
 			c.setGenomeBuild_Name("hg19");
 			c.setOrderNr(++order);
 
-			if (chr.matches("^(\\d+.*|-\\d+.*)"))
-			{
-				c.setIsAutosomal("yes");
-			}
-			else if (chr.matches("[a-zA-Z]+"))
+			// if (chr.matches("^(\\d+.*_-\\d+.*)"))
+			// {
+			// c.setIsAutosomal("yes");
+
+			// }
+			if (chr.matches("[a-zA-Z]+"))
 			{
 				c.setIsAutosomal("no");
 			}
@@ -226,6 +238,10 @@ public class ConvertVcfToPatho
 			else if (chr.startsWith("UN"))
 			{
 				c.setIsAutosomal("unknown");
+			}
+			else
+			{
+				c.setIsAutosomal("yes");
 			}
 
 			chrList.add(c);
