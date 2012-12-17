@@ -715,8 +715,7 @@ public class Breedingnew extends PluginModel<Entity>
 							this.startdate = newDateOnlyFormat.format(new Date());
 							this.remarks = null;
 							motherMatrixViewer = null;
-							this.setSuccess("Parentgroup " + pgNames
-									+ " successfully added; adding filter to matrix: name = " + pgNames);
+							this.setSuccess("Parentgroup(s) " + pgNames + " successfully created. ");
 						}
 						hashFathers.clear();
 						hashMothers.clear();
@@ -861,11 +860,13 @@ public class Breedingnew extends PluginModel<Entity>
 				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer
-						.getMatrix()
-						.getRules()
-						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
-								newLitterName));
+				litterMatrixViewer.getMatrix();
+
+				// Do not add filter
+				// .getRules()
+				// .add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+				// Individual.NAME, Operator.EQUALS,
+				// newLitterName));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				// Reset other fields
@@ -875,8 +876,10 @@ public class Breedingnew extends PluginModel<Entity>
 				// Return to start screen for litters
 				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = "
-						+ newLitterName);
+				// this.setSuccess("Litter " + newLitterName +
+				// " successfully added; adding filter to matrix: name = "
+				// + newLitterName);
+				this.setSuccess("Litter " + newLitterName + " successfully created. ");
 			}
 
 			if (action.equals("WeanLitter"))
