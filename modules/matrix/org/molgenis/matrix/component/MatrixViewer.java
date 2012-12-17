@@ -441,7 +441,7 @@ public class MatrixViewer extends HtmlWidget
 
 		// addRemCols.setIcon("generated-res/img/plus.png");
 
-		divContents += "<img id='showHideSettingsButton' src=\"res/img/addremcol_36.jpeg\" "
+		divContents += "<img id='showHideSettingsButton' src=\"res/img/addremcol_36.png\" "
 				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block';} else {document.getElementById('advancedSettings').style.display='none';} \" "
 				+ "/>";
 		divContents += "<div id='advancedSettings' style='display:none;float:left'><br /><hr>";
