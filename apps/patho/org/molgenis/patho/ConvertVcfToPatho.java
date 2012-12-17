@@ -51,8 +51,8 @@ public class ConvertVcfToPatho
 		else
 		{
 			vcfFile = new File(
-					"/Users/despoina/Documents/pathoData/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
-			outputDir = new File("/Users/despoina/Documents/pathoData/tmp/");
+					"/pathoData/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
+			outputDir = new File("/pathoData/tmp/");
 		}
 
 		ConvertVcfToPatho convert = new ConvertVcfToPatho();
