@@ -1,0 +1,35 @@
+<molgenis name="org.molgenis">
+	<module name="observ_omx.values">
+		<description>
+			Advanced value types for core
+		</description>
+
+
+		<entity name="ListObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is a list of strings.
+			</description>
+			<!--field name="Value" type="list[string]" / -->
+		</entity>
+
+		<entity name="DecimalObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is a decimal number.
+			</description>
+			<field name="Value" type="decimal" />
+		</entity>
+
+		<entity name="IntegerObservedValue" implements="ObservedValue">
+			<description>An observation for which the value is an integer number.
+			</description>
+			<field name="Value" type="int" />
+		</entity>
+
+		<entity name="XrefObservedValue" implements="ObservedValue">
+			<description>An observation for which the value refers to a Concept
+				in the database.
+			</description>
+			<field name="Value" type="xref" xref_entity="Concept" />
+		</entity>
+
+
+	</module>
+</molgenis>

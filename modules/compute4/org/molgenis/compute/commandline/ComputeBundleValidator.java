@@ -25,6 +25,24 @@ public class ComputeBundleValidator
 		this.cb = cb;
 	}
 
+	/*
+	 * Check whether all files and paths refered to in the parameters actually
+	 * exist
+	 */
+	public void validateReferedFilesAndPathsExists(ComputeCommandLine options) throws Exception
+	{
+		if (!options.parametersfile.exists()) fileNotExistsError(options.parametersfile.toString());
+		if (!options.worksheetfile.exists()) fileNotExistsError(options.worksheetfile.toString());
+		if (!options.workflowfile.exists()) fileNotExistsError(options.workflowfile.toString());
+		if (!options.protocoldir.exists()) fileNotExistsError(options.protocoldir.toString());
+		if (!options.systemdir.exists()) fileNotExistsError(options.systemdir.toString());
+	}
+
+	private void fileNotExistsError(String f)
+	{
+		printError("The file or path you refer to in your parameters does not exist:\n" + f);
+	}
+
 	public void validateFileHeaders(ComputeCommandLine options) throws Exception
 	{
 

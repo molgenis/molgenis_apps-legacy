@@ -38,8 +38,8 @@ import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -82,6 +82,7 @@ public class Breedingnew extends PluginModel<Entity>
 	private String pgMatrixViewerString;
 	private String litterMatrixViewerString;
 	private String entity = "Parentgroups";
+	private boolean addNew = false;
 	private String birthdate = null;
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String remarks = null;
@@ -935,7 +936,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 			if (action.equals("editIndividual"))
 			{
-				editIndividuals(db, this.litter);
+				editIndividuals(db, this.litter, request);
 			}
 
 			if (action.equals("GenotypeLitter"))
@@ -1049,7 +1050,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 				updateLitterIndividuals(db, request, investigationNames, invName);
 
-				editIndividuals(db, this.litter);
+				editIndividuals(db, this.litter, request);
 
 				this.action = "editIndividual";
 
@@ -1089,6 +1090,11 @@ public class Breedingnew extends PluginModel<Entity>
 				{
 					createDefCageLabels(db);
 				}
+			}
+
+			if (action.equals("addIndividualToWeanGroup"))
+			{
+				addIndividualToWeanGroup(db);
 			}
 
 			if (action.equals("AddGenoCol"))
@@ -1233,6 +1239,183 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
+	private void addIndividualToWeanGroup(Database db) throws DatabaseException, ParseException, IOException
+	{
+
+		String userName = this.getLogin().getUserName();
+		// String newValue = request.getString(e);
+
+		Query<ObservedValue> litterTypeQuery = db.query(ObservedValue.class);
+		litterTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
+		litterTypeQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.litter));
+		List<ObservedValue> individualValueList = litterTypeQuery.find();
+		List<ObservationTarget> listObsTargets = null;
+		List<String> listinvName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
+		String invName = ct.getObservationTargetByName(this.litter).getInvestigation_Name();
+		String nameBas = null;
+		String weaner = null;
+		String dob = null;
+		String aType = null;
+
+		String colorA = null;
+		String targetName = null;
+		// Al bestaande individuen
+		for (ObservedValue v : individualValueList)
+		{
+			listObsTargets = db.find(ObservationTarget.class,
+					new QueryRule(ObservationTarget.NAME, Operator.EQUALS, v.getTarget_Name()));
+			targetName = listObsTargets.get(0).getName();
+			nameBas = targetName.substring(0, 3);
+
+			// Birthdate
+			ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth", listinvName,
+					listinvName.get(0)).get(0);
+			ObservedValue wean = ct.getObservedValuesByTargetAndFeature(targetName, "WeanDate", listinvName,
+					listinvName.get(0)).get(0);
+			ObservedValue type = ct.getObservedValuesByTargetAndFeature(targetName, "AnimalType", listinvName,
+					listinvName.get(0)).get(0);
+
+			ObservedValue color = ct.getObservedValuesByTargetAndFeature(targetName, "Color", listinvName,
+					listinvName.get(0)).get(0);
+
+			weaner = wean.getValue();
+			dob = birthDate.getValue();
+			aType = type.getValue();
+			colorA = color.getValue();
+
+		}
+		Date weanDate = newDateOnlyFormat.parse(weaner);
+
+		int siz = individualValueList.size();
+
+		String nrPart = (ct.getHighestNumberForPrefix(nameBas) + 1) + "";
+		nrPart = ct.prependZeros(nrPart, 6);
+		ObservationTarget animalToAdd = ct.createIndividual(invName, nameBas + nrPart, userName);
+		// animalsToAddList.add(animalToAdd);
+		String animalName = nameBas + nrPart;
+		db.add(animalToAdd);
+		ct.updatePrefix("animal", nameBas, ct.getHighestNumberForPrefix(nameBas) + 1);
+		// getAnimalsInLitter(db);
+		int row = siz + 1;
+		ArrayList<ObservedValue> individualValuesToAddList = new ArrayList<ObservedValue>();
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetSex",
+				"Sex", animalName, null, "Male"));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetLitter", "Litter", animalName, null, this.litter));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetAnimalType", "AnimalType", animalName, aType, null));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetSpecies", "Species", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Species")));
+
+		// Set wean date on animal
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetWeanDate", "WeanDate", animalName, newDateOnlyFormat.format(weanDate), null));
+		// Set 'Active' -> starts at wean date
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetActive", "Active", animalName, "Alive", null));
+		// Set 'Date of Birth'
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetDateOfBirth", "DateOfBirth", animalName, dob, null));
+
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetLocation", "Location", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Location")));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetLine",
+				"Line", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Line")));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetFather", "Father", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Father")));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetMother", "Mother", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Mother")));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetBackground", "Background", animalName, null,
+				ct.getMostRecentValueAsXrefName(targetName, "Background")));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetSource", "Source", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Source")));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetColor", "Color", animalName, colorA, null));
+
+		db.add(individualValuesToAddList);
+
+		genotypeTable.addRow(animalName);
+		// Birth date
+		DateInput dateInput = new DateInput("0_" + row);
+		dateInput.setDateFormat("yyyy-MM-dd");
+		// get the weandate, in order to limit the input for the birthdate
+		// field
+		String maxDate = "";
+		try
+		{
+			maxDate = ct.getMostRecentValueAsString(animalName, "dateOfBirth");
+		}
+		catch (Exception e)
+		{
+			// do nothing.
+		}
+		dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxDate
+				+ "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		dateInput.setValue(getAnimalBirthDate(animalName));
+
+		genotypeTable.setCell(0, row, dateInput);
+		// Sex
+		SelectInput sexInput = new SelectInput("1_" + row);
+		for (ObservationTarget sex : this.sexList)
+		{
+			sexInput.addOption(sex.getName(), sex.getName());
+		}
+		sexInput.setValue(getAnimalSex(animalName));
+		sexInput.setWidth(-1);
+		genotypeTable.setCell(1, row, sexInput);
+		// Color
+		SelectInput colorInput = new SelectInput("2_" + row);
+		for (String color : this.colorList)
+		{
+			colorInput.addOption(color, color);
+		}
+		colorInput.setValue(getAnimalColor(animalName));
+		colorInput.setWidth(-1);
+		genotypeTable.setCell(2, row, colorInput);
+		// Earmark
+		SelectInput earmarkInput = new SelectInput("3_" + row);
+		for (Category earmark : this.earmarkList)
+		{
+			earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
+		}
+		earmarkInput.setValue(getAnimalEarmark(animalName));
+		earmarkInput.setWidth(-1);
+		genotypeTable.setCell(3, row, earmarkInput);
+		// Background
+		SelectInput backgroundInput = new SelectInput("4_" + row);
+		for (ObservationTarget background : this.backgroundList)
+		{
+			backgroundInput.addOption(background.getName(), background.getName());
+		}
+		backgroundInput.setValue(getAnimalBackground(animalName));
+		backgroundInput.setWidth(-1);
+		genotypeTable.setCell(4, row, backgroundInput);
+
+		// TODO: show columns and selectboxes for ALL set geno mods
+
+		// Gene mod name (1)
+		SelectInput geneNameInput = new SelectInput("5_" + row);
+		for (String geneName : this.geneNameList)
+		{
+			geneNameInput.addOption(geneName, geneName);
+		}
+		geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
+		geneNameInput.setWidth(-1);
+		genotypeTable.setCell(5, row, geneNameInput);
+		// Gene state (1)
+		SelectInput geneStateInput = new SelectInput("6_" + row);
+		for (String geneState : this.geneStateList)
+		{
+			geneStateInput.addOption(geneState, geneState);
+		}
+		geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, 0, db));
+		geneStateInput.setWidth(-1);
+		genotypeTable.setCell(6, row, geneStateInput);
+		row++;
+		action = "editIndividual";
+	}
+
 	private void weanLitter(Database db) throws DatabaseException, ParseException
 	{
 		// Find out species of litter user wants to wean, so we can provide the
@@ -1314,8 +1497,17 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private void editIndividuals(Database db, String litter) throws DatabaseException, ParseException
+	private void editIndividuals(Database db, String litter, Tuple request) throws DatabaseException, ParseException,
+			IOException
 	{
+		if (request.getString("addNew") != null)
+		{
+			if (request.getString("addNew").equals("true"))
+			{
+
+				addIndividualToWeanGroup(db);
+			}
+		}
 		nrOfGenotypes = 1;
 		// Prepare table
 		genotypeTable = new JQueryDataTable("GenoTable", "");
@@ -1409,6 +1601,7 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.setCell(6, row, geneStateInput);
 			row++;
 		}
+		action = "editIndividual";
 	}
 
 	private void editLitter(Database db) throws DatabaseException, ParseException
@@ -1420,19 +1613,24 @@ public class Breedingnew extends PluginModel<Entity>
 
 		for (String e : litterProtocol())
 		{
-			editTable.addColumn(e);
+			// editTable.addColumn(e);
+			editTable.addRow(e);
 		}
 
 		int row = 0;
 
 		List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET_NAME,
 				Operator.EQUALS, this.litter));
-		editTable.addRow(this.litter);
+		editTable.addColumn(this.litter);
 
+		List<ObservationTarget> listObsTargets = new ArrayList<ObservationTarget>();
 		Map<String, String> observableFeat = new HashMap<String, String>();
 
 		for (ObservedValue val : listObservedValues)
 		{
+
+			listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME, Operator.EQUALS,
+					val.getTarget_Name()));
 
 			if (val.getFeature_Name().equals("Parentgroup"))
 			{
@@ -1445,7 +1643,8 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 
 		// Active
-		TextLineInput<String> inputActive = new TextLineInput<String>("Active");
+		StringInput inputActive = new StringInput("Active");
+		inputActive.setId("Active");
 		if (observableFeat.containsKey("Active"))
 		{
 
@@ -1456,13 +1655,19 @@ public class Breedingnew extends PluginModel<Entity>
 			inputActive.setValue("");
 
 		}
-		editTable.setCell(row, 0, inputActive);
+		// editTable.setCell(row, 0, inputActive);
+		editTable.setCell(0, row, inputActive);
 		row++;
 		// DateOfBirth
 		DateInput dateInputBirthDate = new DateInput("DateOfBirth");
 		dateInputBirthDate.setDateFormat("yyyy-MM-dd");
+		String maxD = observableFeat.get("WeanDate") == null ? "" : observableFeat.get("WeanDate");
+		// dateInputBirthDate.setJqueryproperties("maxDate: "newDateOnlyFormat.parse(observableFeat.get("WeanDate")"")
 		if (observableFeat.containsKey("DateOfBirth"))
 		{
+
+			dateInputBirthDate.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxD
+					+ "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 
 			if (observableFeat.get("DateOfBirth").isEmpty())
 			{
@@ -1478,7 +1683,7 @@ public class Breedingnew extends PluginModel<Entity>
 			dateInputBirthDate.setValue(null);
 
 		}
-		editTable.setCell(row, 0, dateInputBirthDate);
+		editTable.setCell(0, row, dateInputBirthDate);
 		row++;
 		// GenotypeDate
 		DateInput dateInputGenotypeDate = new DateInput("GenotypeDate");
@@ -1502,13 +1707,13 @@ public class Breedingnew extends PluginModel<Entity>
 
 		}
 
-		editTable.setCell(row, 0, dateInputGenotypeDate);
+		editTable.setCell(0, row, dateInputGenotypeDate);
 		row++;
 		// Line
 
-		TextLineInput<String> inputLine = new TextLineInput<String>("Line");
-
-		inputLine.setDisabled(true);
+		StringInput inputLine = new StringInput("Line");
+		inputLine.setId("Line");
+		inputLine.setReadonly(true);
 
 		// for (ObservationTarget background : this.lineList)
 		// {
@@ -1525,7 +1730,7 @@ public class Breedingnew extends PluginModel<Entity>
 			inputLine.setValue("");
 
 		}
-		editTable.setCell(row, 0, inputLine);
+		editTable.setCell(0, row, inputLine);
 		row++;
 		// Parentgroup
 
@@ -1537,8 +1742,9 @@ public class Breedingnew extends PluginModel<Entity>
 
 		query.find().get(0);
 
-		TextLineInput<String> inputParentGroup = new TextLineInput<String>("Parentgroup");
-		inputParentGroup.setDisabled(true);
+		StringInput inputParentGroup = new StringInput("Parentgroup");
+		inputParentGroup.setId("Parentgroup");
+		inputParentGroup.setReadonly(true);
 		if (observableFeat.containsKey("Parentgroup"))
 		{
 			inputParentGroup.setValue(observableFeat.get("Parentgroup"));
@@ -1549,10 +1755,10 @@ public class Breedingnew extends PluginModel<Entity>
 			inputParentGroup.setValue("");
 
 		}
-		editTable.setCell(row, 0, inputParentGroup);
+		editTable.setCell(0, row, inputParentGroup);
 		row++;
 		// Remark
-		TextLineInput<String> inputRemark = new TextLineInput<String>("Remark");
+		StringInput inputRemark = new StringInput("Remark");
 		if (observableFeat.containsKey("Remark"))
 		{
 
@@ -1563,11 +1769,11 @@ public class Breedingnew extends PluginModel<Entity>
 			inputRemark.setValue("");
 
 		}
-		editTable.setCell(row, 0, inputRemark);
+		editTable.setCell(0, row, inputRemark);
 
 		row++;
 		// Size
-		TextLineInput<String> inputSize = new TextLineInput<String>("Size");
+		StringInput inputSize = new StringInput("Size");
 		if (observableFeat.containsKey("Size"))
 		{
 
@@ -1578,7 +1784,7 @@ public class Breedingnew extends PluginModel<Entity>
 			inputSize.setValue("");
 
 		}
-		editTable.setCell(row, 0, inputSize);
+		editTable.setCell(0, row, inputSize);
 		row++;
 		// WeanDate
 		DateInput dateInputWeanDate = new DateInput("WeanDate");
@@ -1599,24 +1805,25 @@ public class Breedingnew extends PluginModel<Entity>
 			dateInputWeanDate.setValue(null);
 
 		}
-		editTable.setCell(row, 0, dateInputWeanDate);
+		editTable.setCell(0, row, dateInputWeanDate);
 		row++;
 		// WeanSize
-		TextLineInput<String> inputWeanSize = new TextLineInput<String>("WeanSize");
-		inputWeanSize.setDisabled(true);
+		StringInput inputWeanSize = new StringInput("WeanSize");
+		inputWeanSize.setReadonly(true);
 		if (observableFeat.containsKey("WeanSize"))
 		{
 
-			inputWeanSize.setValue(observableFeat.get("WeanSize"));
-			weansize = Integer.parseInt(observableFeat.get("WeanSize"));
+			inputWeanSize.setValue(Integer.toString(getAnimalsInLitter(db).size()));
+			weansize = getAnimalsInLitter(db).size();
+			stillToWeanYN = false;
 		}
 		else
 		{
+			stillToWeanYN = true;
 			inputWeanSize.setValue("");
 
 		}
-		editTable.setCell(row, 0, inputWeanSize);
-
+		editTable.setCell(0, row, inputWeanSize);
 	}
 
 	private void editLitterToDb(Database db, Tuple request) throws Exception
@@ -1643,7 +1850,10 @@ public class Breedingnew extends PluginModel<Entity>
 			String e = ov.getFeature_Name();
 
 			existingColumns.add(e);
-
+			Query<ObservedValue> litterTypeQuery = db.query(ObservedValue.class);
+			litterTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
+			litterTypeQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.litter));
+			List<ObservedValue> individualValueList = litterTypeQuery.find();
 			// This has to go this way, when a field is disabled it will return
 			// a null when you do a request.getString(e)
 			if (e.equalsIgnoreCase("Parentgroup") || e.equalsIgnoreCase("Line"))
@@ -1659,28 +1869,33 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 
 				String newValue = request.getString(e);
-				Query<ObservedValue> litterTypeQuery = db.query(ObservedValue.class);
-				litterTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
-				litterTypeQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.litter));
-				List<ObservedValue> individualValueList = litterTypeQuery.find();
+
+				
 				List<ObservationTarget> listObsTargets = null;
 				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
-
-				for (ObservedValue v : individualValueList)
+				if (individualValueList.isEmpty())
 				{
-					listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
-							Operator.EQUALS, v.getTarget_Name()));
-					String targetName = listObsTargets.get(0).getName();
-
-					// Birthdate
-					ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
-							invName, invName.get(0)).get(0);
-					birthDate.setValue(newValue);
-					db.update(birthDate);
 					ov.setValue(newValue);
-
 					db.update(ov);
-
+				
+				}
+				else
+				{
+					for (ObservedValue v : individualValueList)
+					{
+						listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
+								Operator.EQUALS, v.getTarget_Name()));
+						String targetName = listObsTargets.get(0).getName();
+	
+						// Birthdate
+						ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
+								invName, invName.get(0)).get(0);
+						birthDate.setValue(newValue);
+						db.update(birthDate);
+						ov.setValue(newValue);
+						db.update(ov);
+	
+					}
 				}
 
 			}
@@ -1688,10 +1903,7 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 
 				String newValue = request.getString(e);
-				Query<ObservedValue> litterTypeQuery = db.query(ObservedValue.class);
-				litterTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
-				litterTypeQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.litter));
-				List<ObservedValue> individualValueList = litterTypeQuery.find();
+
 				List<ObservationTarget> listObsTargets = null;
 				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
 
@@ -1704,8 +1916,13 @@ public class Breedingnew extends PluginModel<Entity>
 					// Weandate
 					ObservedValue weanDate = ct.getObservedValuesByTargetAndFeature(targetName, "WeanDate", invName,
 							invName.get(0)).get(0);
+					ObservedValue active = ct.getObservedValuesByTargetAndFeature(targetName, "Active", invName,
+							invName.get(0)).get(0);
+					active.setTime(newDateOnlyFormat.parse(weanDate.getValue()));
+
 					weanDate.setValue(newValue);
 					db.update(weanDate);
+					db.update(active);
 					ov.setValue(newValue);
 
 					db.update(ov);
@@ -1717,7 +1934,7 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				String newValue = request.getString(e);
 
-				System.out.println(ov);
+				System.out.println("## " + ov);
 
 				ov.setValue(newValue);
 
@@ -1756,21 +1973,6 @@ public class Breedingnew extends PluginModel<Entity>
 		this.entity = "Litters";
 		return;
 	}
-
-	// private void updateWeanSize(int numberofAnimals)
-	// {
-	// String invName =
-	// ct.getObservationTargetByName(this.litter).getInvestigation_Name();
-	// for (int animalNumber = 0; animalNumber < numberofAnimals;
-	// animalNumber++)
-	// {
-	// String nrPart = "" + (startNumber + animalNumber);
-	// nrPart = ct.prependZeros(nrPart, 6);
-	// ObservationTarget animalToAdd = ct.createIndividual(invName, nameBase +
-	// nrPart, userName);
-	// animalsToAddList.add(animalToAdd);
-	// }
-	// }
 
 	private String AddParentgroup2(Database db, Tuple request, List<String> papa, List<String> mama, String startdate,
 			String remarks) throws Exception
@@ -1912,6 +2114,21 @@ public class Breedingnew extends PluginModel<Entity>
 			try
 			{
 				// Populate backgrounds list
+				// this.setBackgroundList(ct.getAllMarkedPanels("Background",
+				// investigationNames));
+				// FIXME, filter by species
+				String species = ct.getMostRecentValueAsXrefName(line, "Species");
+				List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
+				for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationNames))
+				{
+					// Only show if background belongs to chosen species
+					if (ct.getMostRecentValueAsXrefName(b.getName(), "Species").equals(species))
+					{
+						bckgrlist.add(b);
+					}
+				}
+				this.setBackgroundList(bckgrlist);
+
 				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
@@ -2772,9 +2989,6 @@ public class Breedingnew extends PluginModel<Entity>
 
 		for (Individual animal : this.getAnimalsInLitter(db))
 		{
-
-			// Here we (re)set the values from the genotyping
-
 			// Set sex
 			String sexName = request.getString("1_" + animalCount);
 			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
@@ -3434,5 +3648,15 @@ public class Breedingnew extends PluginModel<Entity>
 	public boolean isStillToGenotypeYN()
 	{
 		return stillToGenotypeYN;
+	}
+
+	public boolean isAddNew()
+	{
+		return addNew;
+	}
+
+	public void setAddNew(boolean addNew)
+	{
+		this.addNew = addNew;
 	}
 }

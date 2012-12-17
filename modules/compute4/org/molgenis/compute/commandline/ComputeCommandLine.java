@@ -21,9 +21,13 @@ import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.compute.runtime.ComputeTask;
-import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -44,7 +48,7 @@ public class ComputeCommandLine
 	private String currentScheduler = "null";
 
 	protected ComputeBundle computeBundle;
-	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
+	protected File parametersfile, workflowfile, worksheetfile, systemdir, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
 	protected Hashtable<String, Object> userValues = new Hashtable<String, Object>();
 	private List<ComputeTask> tasks = new ArrayList<ComputeTask>();
@@ -406,8 +410,17 @@ public class ComputeCommandLine
 		Configuration cfg = new Configuration();
 
 		// add path to loader
-		// FileTemplateLoader ftl1 = new FileTemplateLoader(this.workflowdir);
-		cfg.setDirectoryForTemplateLoading(this.protocoldir);
+		// first search in protocols, then in system
+		FileTemplateLoader ftl1 = new FileTemplateLoader(this.protocoldir);
+		FileTemplateLoader ftl2 = new FileTemplateLoader(this.systemdir);
+		ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "");
+		TemplateLoader[] loaders = new TemplateLoader[]
+		{ ftl1, ftl2, ctl };
+		MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
+
+		cfg.setTemplateLoader(mtl);
+
+		// cfg.setDirectoryForTemplateLoading(this.systemdir);
 
 		Template template = new Template(jobname, new StringReader(scripttemplate), cfg);
 		StringWriter filledtemplate = new StringWriter();
@@ -457,19 +470,17 @@ public class ComputeCommandLine
 		// Parse command line arguments
 		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args, new Exiter()
 		{
-
 			@Override
 			public void exit()
 			{
 				System.exit(1);
-
 			}
-
 		});
 
 		ComputeCommandLine ccl = new ComputeCommandLine();
 
 		ccl.workflowfile = new File(argsMap.get("workflow"));
+		ccl.systemdir = new File(argsMap.get("system"));
 		ccl.protocoldir = new File(argsMap.get("protocols"));
 		ccl.parametersfile = new File(argsMap.get("parameters"));
 		ccl.worksheetfile = new File(argsMap.get("worksheet"));
@@ -611,9 +622,14 @@ public class ComputeCommandLine
 		params.put("workflowfilename", (new File(this.getworkflowfilename())).getName());
 		params.put("scheduler", currentScheduler);
 
+		Tuple work = new SimpleTuple(params);
+
 		try
 		{
-			String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
+			String result = filledtemplate(findProtocol("Submit.sh", this.computeBundle.getComputeProtocols())
+					.getScriptTemplate(), work, "Submit.sh.ftl");
+			// String result = new FreemarkerView(this.protocoldir +
+			// File.separator + "Submit.sh.ftl", params).render();
 			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
 
 			// and produce submit.sh
@@ -690,6 +706,11 @@ public class ComputeCommandLine
 			e.printStackTrace();
 		}
 		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TemplateException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
