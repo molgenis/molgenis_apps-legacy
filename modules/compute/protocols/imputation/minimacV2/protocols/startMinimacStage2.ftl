@@ -4,6 +4,7 @@
 
 getFile ${concatWorksheetsJar}
 getFile ${ssvQuoted(finalChunkChrWorksheet)}
+getFile ${ssvQuoted(chunkChrWorkSheetResult)}
 
 <#list finalChunkChrWorksheet as chunkFile>
 	getFile ${chunkFile}
