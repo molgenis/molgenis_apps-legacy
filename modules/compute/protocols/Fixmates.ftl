@@ -10,6 +10,8 @@
 
 #MOLGENIS walltime=35:59:00 mem=6
 
+module load picard-tools/${picardVersion}
+
 inputs "${realignedbam}"
 alloutputsexist \
  "${matefixedbam}" \
