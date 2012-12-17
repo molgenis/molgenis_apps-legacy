@@ -11,6 +11,8 @@
 #MOLGENIS walltime=23:59:00 mem=6 cores=2
 #FOREACH externalSampleID
 
+module load picard-tools/${picardVersion}
+
 inputs <#list sortedrecalbam as srb> "${srb}" </#list>
 alloutputsexist "${mergedbam}" \
 "${mergedbamindex}"
