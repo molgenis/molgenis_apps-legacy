@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
@@ -29,8 +30,8 @@ import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.pheno.ui.form.ApplyProtocolForm;
 import org.molgenis.pheno.ui.form.ObservationTargetForm;
 import org.molgenis.pheno.ui.form.SelectProtocolForm;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.Tuple;
 
 public class ObservationElementViewer extends EasyPluginController<ObservationElementViewerModel>
 {
@@ -52,13 +53,14 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 		this.view = view;
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		return view;
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		// if (StringUtils.isNotEmpty(request.getAction()))
 		// this.getModel().setAction(request.getAction());
@@ -189,7 +191,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 		this.loadObservationElementDTO(db);
 
 		List<ObservedValueDTO> insertList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList = request.getFieldNames();
+		Iterable<String> parameterNameList = request.getColNames();
 
 		PhenoService phenoService = new PhenoService(db);
 
@@ -198,7 +200,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 		paDTO.setTime(request.getDate("paTime"));
 		paDTO.setProtocolId(this.getModel().getProtocolDTO().getProtocolId());
 		List<Integer> performerIdList = new ArrayList<Integer>();
-		for (String s : request.getStringList("paPerformer"))
+		for (String s : request.getList("paPerformer"))
 		{
 			performerIdList.add(Integer.parseInt(s));
 		}
@@ -247,11 +249,10 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 		this.loadObservationElementDTO(db);
 
 		List<ObservedValueDTO> updateList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList = request.getFieldNames();
 
 		PhenoService phenoService = new PhenoService(db);
 
-		for (String parameterName : parameterNameList)
+		for (String parameterName : request.getColNames())
 		{
 			if (parameterName.startsWith("ObservedValue"))
 			{
