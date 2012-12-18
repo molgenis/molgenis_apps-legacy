@@ -3,6 +3,8 @@
 #FOREACH autostart
 
 getFile ${concatWorksheetsJar}
+getFile ${ssvQuoted(finalChunkChrWorksheet)}
+getFile ${ssvQuoted(chunkChrWorkSheetResult)}
 
 <#list finalChunkChrWorksheet as chunkFile>
 	getFile ${chunkFile}
@@ -17,6 +19,8 @@ alloutputsexist \
 
 
 ${stage} jdk/${javaversion}
+
+mkdir -p ${McScripts}
 
 java -jar ${concatWorksheetsJar} \
 	${tmpConcattedChunkWorksheet} \

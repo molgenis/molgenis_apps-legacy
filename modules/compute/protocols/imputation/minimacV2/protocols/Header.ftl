@@ -12,9 +12,9 @@
 #!/bin/bash
 #$ -N ${jobname}
 #$ -q ${clusterQueue}
-#$ -p ${cores}
+#$ -pe smp ${cores}
 #$ -l h_rt=${walltime}
-#$ -l h_vmem=${mem}
+#$ -l mem_free=${mem}
 #$ -e ${jobname}.err
 #$ -o ${jobname}.out
 
