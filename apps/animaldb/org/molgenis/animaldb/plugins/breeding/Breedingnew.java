@@ -3359,13 +3359,13 @@ public class Breedingnew extends PluginModel<Entity>
 
 		List<String> elementLabelList;
 		List<String> elementList;
-
+		int sexctr = 0;
 		for (Individual animal : this.getAnimalsInLitter(litter, db))
 		{
 			String animalName = animal.getName();
 			elementList = new ArrayList<String>();
 			elementLabelList = new ArrayList<String>();
-
+			sexctr += 1;
 			// Name / custom label
 			elementLabelList.add("Name:");
 			elementList.add(animalName);
@@ -3424,35 +3424,41 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(decInfo);
 			elementLabelList.add("Remarks");
 			elementList.add("\n\n\n\n\n");
-			// Not needed at this time, maybe later:
-			// Birthdate
-			// elementList.add("Birthdate: " +
-			// ct.getMostRecentValueAsString(animalId,
-			// ct.getMeasurementId("DateOfBirth")));
-			// OldUliDbExperimentator -> TODO: add responsible researcher
-			// elementList.add("Experimenter: " +
-			// ct.getMostRecentValueAsString(animalId,
-			// ct.getMeasurementId("OldUliDbExperimentator")));
-			if (!sex.equals(lastSex))
+
+			if (sex.equals(lastSex))
 			{
+				System.out.println(sexctr + " equals: " + sex);
+				labelgenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+			else
+			{
+				System.out.println(sexctr + " not equals: " + sex);
+				// add empty label on odd labelnr.
+				if ((sexctr - 1) % 2 != 0)
+				{
+					labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+				}
 				labelgenerator.finishPage();
 				labelgenerator.nextPage();
+				sexctr = 1; // reset the sexcounter to keep track of odd and
+							// even numbers.
+				labelgenerator.addLabelToDocument(elementLabelList, elementList);
 			}
+
 			lastSex = sex;
-			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+
 			if (first)
 			{
 				first = false;
 			}
 		}
-		// In case of an odd number of animals, add extra label to make row
-		// full
-		if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
+
+		if (sexctr % 2 != 0)
 		{
-			elementLabelList = new ArrayList<String>();
-			elementList = new ArrayList<String>();
-			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+			labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
 		}
+
+		labelgenerator.finishPage();
 		labelgenerator.finishDocument();
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
 				+ "\" target=\"blank\">Download cage labels as pdf</a>");
