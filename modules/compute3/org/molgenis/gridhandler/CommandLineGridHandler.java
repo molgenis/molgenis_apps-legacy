@@ -1,6 +1,6 @@
 package org.molgenis.gridhandler;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.List;
 

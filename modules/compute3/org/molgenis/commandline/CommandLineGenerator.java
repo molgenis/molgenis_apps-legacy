@@ -6,7 +6,7 @@ import org.molgenis.generator.Compute3JobGenerator;
 import org.molgenis.generator.JobGenerator;
 import org.molgenis.generator.ModelLoader;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.File;
 import java.util.Hashtable;
