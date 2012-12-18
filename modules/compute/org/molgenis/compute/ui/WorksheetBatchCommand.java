@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public class WorksheetBatchCommand extends SimpleCommand
 		// getModel().setSuccess("Clean successful");
 	}
 
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream) throws Exception
 	{
 		String action = request.getString("__action");
 		String command = request.getString("__command");

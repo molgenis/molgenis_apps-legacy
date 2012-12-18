@@ -7,7 +7,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.List;
 

@@ -13,8 +13,8 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;

@@ -9,7 +9,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 // hardcoded test - don't be scared with listing !!
 public class HelloGridWorld extends EasyPluginController<HelloGridWorldView>

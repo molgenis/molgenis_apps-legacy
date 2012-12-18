@@ -23,8 +23,8 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.TablePanel;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class ConsolePlugin extends EasyPluginController
 {
@@ -160,7 +160,7 @@ public class ConsolePlugin extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (mcf == null)
 		{

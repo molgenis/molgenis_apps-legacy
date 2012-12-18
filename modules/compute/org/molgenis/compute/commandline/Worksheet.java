@@ -4,7 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.StringReader;
 import java.io.StringWriter;

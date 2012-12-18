@@ -9,7 +9,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.*;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.IOException;
 import java.util.ArrayList;

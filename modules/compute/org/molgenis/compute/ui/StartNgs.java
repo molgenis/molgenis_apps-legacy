@@ -7,7 +7,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.*;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.Hashtable;
 import java.util.List;
