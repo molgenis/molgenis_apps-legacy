@@ -41,8 +41,8 @@ import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public abstract class Upload extends PluginModel<Entity>
@@ -97,7 +97,7 @@ public abstract class Upload extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

@@ -12,7 +12,7 @@ import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class WorkflowService implements Serializable
 {

@@ -47,8 +47,8 @@ import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 import org.molgenis.mutation.vo.QueryParametersVO;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public abstract class SearchPlugin extends IntegratedPluginController<SearchModel>
@@ -90,7 +90,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		// this.reload(db);
 
