@@ -34,6 +34,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -70,7 +71,7 @@ import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class MatrixViewer extends HtmlWidget
 {
@@ -221,7 +222,7 @@ public class MatrixViewer extends HtmlWidget
 		this.showNameFilter = showNameFilter;
 	}
 
-	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest t) throws HandleRequestDelegationException
 	{
 		try
 		{
@@ -1198,16 +1199,7 @@ public class MatrixViewer extends HtmlWidget
 			WriteException
 	{
 		File excelFile = makeFile("_All", "xls");
-		if (matrix instanceof SliceablePhenoMatrixMV)
-		{
-			// ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// exporter =
-			// new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// ((SliceablePhenoMatrixMV<ObservationTarget, Measurement,
-			// ObservedValue>)matrix, new FileOutputStream(excelFile));
-			// exportAll(excelFile, exporter);
-		}
-		else
+		if (!(matrix instanceof SliceablePhenoMatrixMV))
 		{
 			// remember old limits and offset
 			int rowOffset = matrix.getRowOffset();
@@ -1296,16 +1288,7 @@ public class MatrixViewer extends HtmlWidget
 	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
 	{
 		File excelFile = makeFile("_Visible", "xls");
-		if (matrix instanceof SliceablePhenoMatrixMV)
-		{
-			// ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// exporter =
-			// new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// ((SliceablePhenoMatrixMV<ObservationTarget, Measurement,
-			// ObservedValue>)matrix, new FileOutputStream(excelFile));
-			// exportVisible(excelFile.getName(), exporter);
-		}
-		else
+		if (!(matrix instanceof SliceablePhenoMatrixMV))
 		{
 
 			if (this.matrix instanceof DatabaseMatrix)
@@ -1456,7 +1439,7 @@ public class MatrixViewer extends HtmlWidget
 			Operator op = Operator.valueOf(t.getString(OPERATOR));
 			// new Operator(t.getString(OPERATOR));
 			// Then do the actual slicing
-			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.get(COLVALUE));
 
 		}
 		else
@@ -1467,7 +1450,7 @@ public class MatrixViewer extends HtmlWidget
 			{ // Filter on name
 				matrix.getRules().add(
 						new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
-								.getObject(COLVALUE)));
+								.get(COLVALUE)));
 			}
 			else
 			{
@@ -1490,7 +1473,7 @@ public class MatrixViewer extends HtmlWidget
 				Operator op = Operator.valueOf(t.getString(OPERATOR));
 				// new Operator(t.getString(OPERATOR));
 				// Then do the actual slicing
-				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.get(COLVALUE));
 			}
 		}
 		matrix.reload(); // to make sure the paging info is correctly updated
@@ -1787,7 +1770,7 @@ public class MatrixViewer extends HtmlWidget
 				.intValue()) * matrix.getRowLimit());
 	}
 
-	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
+	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
 		// try/catch for method calling
