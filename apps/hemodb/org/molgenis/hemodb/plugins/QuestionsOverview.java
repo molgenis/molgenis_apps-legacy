@@ -24,7 +24,7 @@ import org.molgenis.hemodb.HemoSample;
 import org.molgenis.hemodb.HemoSampleGroup;
 import org.molgenis.hemodb.plugins.QuestionsModel.QuestionState;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.matrix.manager.Browser;
 import plugins.matrix.manager.MatrixManagerModel;
@@ -84,7 +84,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 	 * org.molgenis.framework.ui.EasyPluginController#handleRequest(org.molgenis
 	 * .framework.db.Database, org.molgenis.util.Tuple, java.io.OutputStream)
 	 */
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws HandleRequestDelegationException
 	{
 		try
 		{

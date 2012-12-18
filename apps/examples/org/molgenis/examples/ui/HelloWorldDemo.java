@@ -10,7 +10,7 @@ import org.molgenis.framework.ui.html.JavaInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class HelloWorldDemo extends EasyPluginController
 {
@@ -69,7 +69,7 @@ public class HelloWorldDemo extends EasyPluginController
 			+ "\n  import org.molgenis.framework.ui.html.FlowLayout;"
 			+ "\n  import org.molgenis.framework.ui.html.MolgenisForm;"
 			+ "\n  import org.molgenis.framework.ui.html.Paragraph;"
-			+ "\n  import org.molgenis.framework.ui.html.StringInput;" + "\n  import org.molgenis.util.Tuple;" + "\n"
+			+ "\n  import org.molgenis.framework.ui.html.StringInput;" + "\n  import org.molgenis.util.tuple.Tuple;" + "\n"
 			+ "\n  //include to this plugin in your molgenis_ui.xml via "
 			+ "\n  //<plugin name=\"myname\" type=\"org.molgenis.example.ui.HelloWorldDemo\"/>"
 			+ "\n  public class HelloWorldDemo extends EasyPluginController" + "\n  {"

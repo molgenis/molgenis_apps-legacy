@@ -12,7 +12,7 @@ import org.molgenis.ui.Label;
 import org.molgenis.ui.SelectInput;
 import org.molgenis.ui.StringInput;
 import org.molgenis.ui.theme.bootstrap.BootstrapTheme;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public class BootstrapTest extends EasyPluginController<BootstrapTest>

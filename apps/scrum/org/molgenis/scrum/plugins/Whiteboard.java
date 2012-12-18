@@ -21,7 +21,7 @@ import org.molgenis.scrum.Sprint;
 import org.molgenis.scrum.Story;
 import org.molgenis.scrum.Task;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class Whiteboard extends PluginModel<Entity>
 {
@@ -62,7 +62,7 @@ public class Whiteboard extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

@@ -16,7 +16,7 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * catalogueWelcomeScreenPluginController takes care of all user requests and

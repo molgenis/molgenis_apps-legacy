@@ -43,8 +43,8 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.emeasure.EMeasureEntityWriter;
 
@@ -119,7 +119,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws Exception
 	{
 
 		if (out == null)
@@ -135,7 +135,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 			{
 
 				System.out.println("showVariableInformation------------" + request);
-				List<String> listOfVariables = request.getStringList("variableName");
+				List<String> listOfVariables = request.getList("variableName");
 
 				PrintWriter writer = new PrintWriter(out);
 				JSONObject jsonVariableInformation = new JSONObject();
@@ -179,7 +179,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		MolgenisRequest req = (MolgenisRequest) request;
 		HttpServletResponse response = req.getResponse();
@@ -249,7 +249,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 					String checkboxID = Measurement.class.getSimpleName() + featureID + Protocol.class.getSimpleName()
 							+ protocol.getId();
 
-					if (request.getBool(checkboxID) != null)
+					if (request.getBoolean(checkboxID) != null)
 					{
 						Measurement measurement = Iterables.find(measurements, new Predicate<Measurement>()
 						{
@@ -316,7 +316,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 		for (Measurement m : measurements)
 		{
-			for (String fieldName : request.getFieldNames())
+			for (String fieldName : request.getColNames())
 			{
 				if (fieldName.startsWith(Measurement.class.getSimpleName()))
 				{
@@ -1182,4 +1182,3 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 	}
 
 }
-

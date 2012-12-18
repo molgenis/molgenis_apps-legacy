@@ -2,7 +2,6 @@ package plugins.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,33 +10,26 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
-import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-
-import app.FillMetadata;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.emptydb.emptyDatabase;
+import app.FillMetadata;
 
 /*
  * This is an importer that is specific for that DataShaper Schema excel file.
@@ -73,7 +65,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		if ("ImportDatashaperToPheno".equals(request.getAction()))

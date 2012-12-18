@@ -24,7 +24,7 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.VerticalLayout;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * InputsTestController takes care of all user requests and application logic.

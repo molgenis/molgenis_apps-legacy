@@ -12,7 +12,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.autohidelogin.AutoHideLogin;
 
@@ -45,7 +45,7 @@ public class TifnHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		if ("doLogout".equals(request.getAction()))
 		{

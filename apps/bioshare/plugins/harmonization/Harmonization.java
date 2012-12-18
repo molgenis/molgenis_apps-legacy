@@ -37,7 +37,7 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -76,7 +76,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		if (out == null)
 		{
@@ -674,7 +674,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

@@ -9,7 +9,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * HtmlEditorController takes care of all user requests and application logic.

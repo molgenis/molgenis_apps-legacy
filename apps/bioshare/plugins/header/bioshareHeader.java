@@ -19,7 +19,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 //import plugins.autohidelogin.AutoHideLoginModel; 
 
@@ -67,7 +67,7 @@ public class bioshareHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		if ("doLogout".equals(request.getAction()))
 		{

@@ -13,12 +13,14 @@ import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.system.database.Settings;
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
+import app.ExcelEntityImporter;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
 {
@@ -43,7 +45,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		String action = request.getString("__action");
 		if (action.equals("setPathAndLoad"))
@@ -73,9 +75,9 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 				{
 					throw new Exception("Annotation Excel file" + hemoAnnotations.getAbsolutePath() + " is missing!");
 				}
-
-				ExcelImport.importAll(hemoAnnotations, db, null);
-
+				
+				new EntitiesImporterImpl(db).importEntities(hemoAnnotations, DatabaseAction.ADD);
+				
 				// relink datasets
 				relinkDatasets(db, dmh);
 

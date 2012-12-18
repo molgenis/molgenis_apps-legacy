@@ -12,7 +12,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Shows table of experiment information for WormQTL
@@ -46,7 +46,7 @@ public class ExpTable extends PluginModel<Entity>
 		return "org/molgenis/wormqtl/exptable/ExpTable.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

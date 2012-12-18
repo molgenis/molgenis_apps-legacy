@@ -14,11 +14,13 @@ import matrix.general.DataMatrixHandler;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.system.database.Settings;
+import app.ExcelEntityImporter;
 import app.ExcelImport;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
@@ -44,7 +46,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		String action = request.getString("__action");
 		if (action.equals("setPathAndLoad"))
@@ -143,7 +145,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					throw new Exception("Annotation Excel file is missing!");
 				}
 
-				ExcelImport.importAll(metadata, db, null);
+				new ExcelEntityImporter(db).importData(metadata, db, DatabaseAction.ADD);
 
 				// relink datasets
 				// fails if filenames have uppercase characters!

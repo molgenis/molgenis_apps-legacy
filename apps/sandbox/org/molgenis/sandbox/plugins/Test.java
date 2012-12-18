@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * TestController takes care of all user requests updates model and view
@@ -66,7 +66,7 @@ public class Test extends EasyPluginController<TestModel>
 	 * automatically mapped to methods based request.getAction();
 	 */
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// automatically calls functions with same name as action
 		try

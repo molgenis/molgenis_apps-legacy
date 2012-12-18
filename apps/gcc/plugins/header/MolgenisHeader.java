@@ -10,7 +10,7 @@ package plugins.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
@@ -39,7 +39,7 @@ public class MolgenisHeader extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// static
 	}

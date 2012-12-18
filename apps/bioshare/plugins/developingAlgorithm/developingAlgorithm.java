@@ -20,7 +20,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.HarmonizationComponent.OWLFunction;
@@ -67,7 +67,7 @@ public class developingAlgorithm extends PluginModel<Entity>
 	private NGramMatchingModel model = new NGramMatchingModel();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		if (request.getAction().equals("generateAlgorithm"))

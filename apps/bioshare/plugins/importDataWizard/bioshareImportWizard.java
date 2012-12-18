@@ -18,7 +18,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class bioshareImportWizard extends PluginModel<Entity>
 {
@@ -48,7 +48,7 @@ public class bioshareImportWizard extends PluginModel<Entity>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws Exception
 	{
 
 		// The request is submit request, therefore the request goes to the
@@ -185,7 +185,7 @@ public class bioshareImportWizard extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 	}

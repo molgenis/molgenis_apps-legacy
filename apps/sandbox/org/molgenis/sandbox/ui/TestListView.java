@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ListView;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Extend GenericPlugin to use a plugin without freemarker. Instead you have to
@@ -39,7 +39,7 @@ public class TestListView extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// replace example below with yours
 		// try

@@ -26,7 +26,7 @@ import org.molgenis.scrum.Sprint;
 import org.molgenis.scrum.Story;
 import org.molgenis.scrum.TaskHistory;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class BurndownChart extends PluginModel<Entity>
 {
@@ -53,7 +53,7 @@ public class BurndownChart extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// no edits
 	}

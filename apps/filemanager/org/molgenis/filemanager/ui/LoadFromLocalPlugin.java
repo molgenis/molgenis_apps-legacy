@@ -15,7 +15,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.EntityTable;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class LoadFromLocalPlugin extends EasyPluginController<LoadFromLocalPlugin>
 {

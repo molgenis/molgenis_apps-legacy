@@ -8,7 +8,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.observ.Protocol;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Screen 1: Choose protocol []; This will create a table of all protocol

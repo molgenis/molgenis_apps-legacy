@@ -38,7 +38,7 @@ import org.molgenis.ngs.NgsStudy;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvStringReader;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**

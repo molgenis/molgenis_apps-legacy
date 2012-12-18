@@ -28,7 +28,7 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class ImportCompute extends EasyPluginController<ImportCompute>
 {

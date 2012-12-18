@@ -18,7 +18,7 @@ import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.TupleTable;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Query to show analysis worksheet

@@ -41,12 +41,12 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.emeasure.EMeasureEntityWriter;
 
-public class treeViewProxyPlugin extends PluginModel<Entity>
+public class TreeViewProxyPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -6143910771849972946L;
@@ -85,7 +85,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 	private List<String> listOfMeasurements = new ArrayList<String>();
 
-	public treeViewProxyPlugin(String name, ScreenController<?> parent)
+	public TreeViewProxyPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -108,7 +108,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
@@ -153,7 +153,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
 			for (Measurement m : allMeasList)
 			{
-				if (request.getBool(m.getId().toString()) != null)
+				if (request.getBoolean(m.getId().toString()) != null)
 				{
 					selectedMeasList.add(m);
 				}
@@ -188,7 +188,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 			for (Measurement m : allMeasList)
 			{
 
-				if (request.getBool(m.getId().toString()) != null)
+				if (request.getBoolean(m.getId().toString()) != null)
 				{
 					outputExcel.addCell(new Label(0, startingRow, m.getName()));
 					if (m.getDescription() != null)
@@ -208,8 +208,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 			workbook.write();
 			workbook.close();
 
-			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
-			HttpServletResponse httpResponse = rt.getResponse();
+			HttpServletResponse httpResponse = request.getResponse();
 			// System.out.println(">>> " + this.getParent().getName()+
 			// "or >>>  "+ this.getSelected().getLabel());
 			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
@@ -1028,7 +1027,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity>
 		List<Measurement> allMeasList = db.find(Measurement.class);
 		for (Measurement m : allMeasList)
 		{
-			if (request.getBool(m.getId().toString()) != null)
+			if (request.getBoolean(m.getId().toString()) != null)
 			{
 				this.shoppingCart.add(m);
 			}

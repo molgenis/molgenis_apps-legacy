@@ -16,7 +16,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ListView;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class InvestigationPager extends PluginModel<Investigation>
 {
@@ -48,7 +48,7 @@ public class InvestigationPager extends PluginModel<Investigation>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// replace example below with yours
 		// try

@@ -1,16 +1,14 @@
 package plugins.requestData;
 
+import gcc.catalogue.ShoppingCart;
+
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import jxl.write.WriteException;
-
-import gcc.catalogue.ShoppingCart;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
@@ -24,7 +22,6 @@ import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.EmailInput;
 import org.molgenis.framework.ui.html.IntInput;
-import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RichtextInput;
@@ -33,7 +30,7 @@ import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService.EmailException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.catalogueTree.WriteExcel;
 
