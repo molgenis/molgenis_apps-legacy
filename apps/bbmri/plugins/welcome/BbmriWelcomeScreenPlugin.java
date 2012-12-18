@@ -36,7 +36,7 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	// temporary variable for distinguish version of vm7 (without editable
 	// welcome message) with new version.
 
-	private String server = "noneditable"; // editable or noneditable
+	private String server = "editable"; // editable or noneditable
 
 	public void setDatabase(Database db)
 	{
@@ -171,7 +171,7 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 				// retrieving backup
 				backWelcome = db.find(Welcome.class, new QueryRule(Welcome.STATUS, Operator.EQUALS, "backup"));
 				// Welcome backWelcome =
-				// db.query(Welcome.class).eq(Welcome.STATUS,
+				// db.query(Welcome.class).eq(Welcome.STA TUS,
 				// "backup").find().get(0);
 
 				System.out.println("backup welcome" + backWelcome);
@@ -201,25 +201,33 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 		{
 
 		}
-		Welcome welcome = new Welcome();
 
-		welcome.setWelcomeTitle(request.getString("title"));
-		welcome.setWelcomeText(request.getString("welcomeText"));
-		welcome.setStatus("new");
-		Date today = new Date();
+		if (request == null || request.getString("title") == null || request.getString("welcomeText") == null)
+		{
+			this.setError("Something is wrong with the request and the welcome text is empty ");
+		}
+		else
+		{
+			Welcome welcome = new Welcome();
 
-		welcome.setWelcomeDatetime(today);
-		try
-		{
-			db.add(welcome);
+			welcome.setWelcomeTitle(request.getString("title"));
+			welcome.setWelcomeText(request.getString("welcomeText"));
+			welcome.setStatus("new");
+			Date today = new Date();
+
+			welcome.setWelcomeDatetime(today);
+			try
+			{
+				db.add(welcome);
+			}
+			catch (DatabaseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.setWelcomeTitle(request.getString("title"));
+			this.setWelcomeText(request.getString("welcomeText"));
 		}
-		catch (DatabaseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.setWelcomeTitle(request.getString("title"));
-		this.setWelcomeText(request.getString("welcomeText"));
 
 	}
 

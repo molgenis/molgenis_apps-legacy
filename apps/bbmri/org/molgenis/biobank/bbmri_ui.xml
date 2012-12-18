@@ -50,7 +50,7 @@
 					label="Batch Upload" />
 			</menu>
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
-			<plugin name="Settings" type="plugins.system.settings.Settings" />
+			<!-- plugin name="Settings" type="plugins.system.settings.Settings" /-->
 		</menu>
 	<!-- 	<menu name="submenu" position="left" label="Index powered Search">
 			<plugin name="DBIndex" label="DB Index"
