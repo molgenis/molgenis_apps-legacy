@@ -60,37 +60,48 @@ public class BbmriHeader extends PluginModel<Entity>
 		}
 	}
 
-	// private void prefillDb(Database db) {
-	// try {
-	//
-	// // Empty DB and run generated sql scripts
-	// new emptyDatabase(db, false);
-	// FillMetadata.fillMetadata(db, false, "SimpleUserLoginPlugin");
-	//
-	// this.getMessages().add(new
-	// ScreenMessage("Your database was empty, so it was prefilled with entities needed to make bbmri application run",
-	// true));
-	// } catch (Exception e) {
-	// String message =
-	// "Something went wrong while trying to prefill your database";
-	// if (e.getMessage() != null) {
-	// message += (": " + e.getMessage());
-	// }
-	// this.getMessages().add(new ScreenMessage(message, false));
-	// e.printStackTrace();
-	// }
-	// }
+	private void prefillDb(Database db)
+	{
+		// try
+		// {
+		//
+		// // Empty DB and run generated sql scripts
+		// new emptyDatabase(db, false);
+		// FillMetadata.fillMetadata(db, false, "SimpleUserLoginPlugin");
+		//
+		// this.getMessages()
+		// .add(new ScreenMessage(
+		// "Your database was empty, so it was prefilled with entities needed to make bbmri application run",
+		// true));
+		// }
+		// catch (Exception e)
+		// {
+		// String message =
+		// "Something went wrong while trying to prefill your database";
+		// if (e.getMessage() != null)
+		// {
+		// message += (": " + e.getMessage());
+		// }
+		// this.getMessages().add(new ScreenMessage(message, false));
+		// e.printStackTrace();
+		// }
+	}
 
 	@Override
 	public void reload(Database db)
 	{
-		// try {
-		// int nrOfUsersInDb = db.count(MolgenisUser.class);
-		// if (nrOfUsersInDb == 0) { // Check if DB is filled by counting the
-		// nr. of users (should always be >= 2)
+		// try
+		// {
+		// QueryRule rules = null;
+		// int nrOfUsersInDb = db.count(MolgenisUser.class, rules);
+		// if (nrOfUsersInDb == 0)
+		// { // Check if DB is filled by counting the nr. of users (should
+		// // always be >= 2)
 		// prefillDb(db);
 		// }
-		// } catch (Exception e) {
+		// }
+		// catch (Exception e)
+		// {
 		// prefillDb(db);
 		// }
 
