@@ -5,34 +5,34 @@
 
 #Compute framework overview
 
-MOLGENIS compute (or *Compute*) is 'just enough' to rapidly generate analysis workflows that can run locally, on parallel compute clusters and the grid. 
+MOLGENIS compute (or *MOLGENIS Compute*) is 'just enough' to rapidly generate analysis workflows that can run locally, on parallel compute clusters and the grid. 
 
 * Users can use build on their standard expertise in (shell) scripts
 * Users can rapidly share their workflows to accross Linux servers
 * Users can easily view the scripts generated for provenance and debugging.
-* Users can customize *Compute* to fit their local practices
+* Users can customize *MOLGENIS Compute* to fit their local practices
 
-To use *Compute*, you need the following.
+To use *MOLGENIS Compute*, you need the following.
 
 * `workflow.csv`: a file that describes steps to be executed in order.
 * `protocols`: a directory in which each file is a script template describing a step.
 * `parameters.csv`: a file which defines all protocol parameters and default values.
 * `worksheet.csv`: a file which contains the run specific values of parameters.
 
-Below use of *Compute* is described:
+Below use of *MOLGENIS Compute* is described:
 
 * [Download compute](#Download-compute) explains how to get the software
 * [Workflow creation](#Workflow-creation) explains the basic use of \mc in a basic workflow.  
 * [Workflow execution](#Workflow-execution) describes how to execute this workflow.  
-* [Compute advanced features](#Compute-advanced-features) extends that workflow commonly used features. All sections assume that you run \mc~from the command line.  
+* [Compute advanced features](#Compute-advanced-features) extends that workflow commonly used features. All sections assume that you run *MOLGENIS Compute* from the command line.  
 * [Workflow deployment](#Workflow-deployment) details best practices with binaries and files
-* [Compute database]() shows how one can run \mc~from a database instead of commandline which is needed when using grid (such as BigGrid).
+* [Compute database]() shows how one can run *MOLGENIS Compute* from a database instead of commandline which is needed when using grid (such as BigGrid).
 
 The manual is in the form of a walkthrough manual.
 
 ##Download compute
 
-Before you start, please first download *Compute*.
+Before you start, please first download *MOLGENIS Compute*.
 
 ###Download the compute distro
 You can download a ready made binary as follows:
@@ -53,9 +53,9 @@ Alternatively to download you can checkout the latest code:
 >cd mycompute  
 >git clone https://github.com/molgenis/molgenis_apps.git  
 >git clone https://github.com/molgenis/molgenis.git  
->ant -f molgenis_apps/build_compute clean-generate-compile-makedistro  
->unzip molgenis_apps/dist/molgenis_compute-\<version>.zip  
->mv molgenis_compute-\<version>/* .  
+>ant -f molgenis_apps/build_compute.xml clean-generate-compile-makedistro  
+>unzip molgenis_apps/dist/molgenis_compute-*.zip  
+>mv molgenis_compute-*/* .  
 >  
 >\#test  
 >sh molgenis_compute.sh  
@@ -71,7 +71,7 @@ Molgenis/compute is known to work with the following software:
 
 ##Workflow creation
 
-This section explains how one can use *Compute* to create a workflow of shell scripts using the example of printing invitations for a party. The next section [Workflow execution](#Workflow-Execution) discusses how to execute. Below is explained how one can create a workflow, a protocol, and a parameters list. 
+This section explains how one can use *MOLGENIS Compute* to create a workflow of shell scripts using the example of printing invitations for a party. The next section [Workflow execution](#Workflow-Execution) discusses how to execute. Below is explained how one can create a workflow, a protocol, and a parameters list. 
 
 
 ###Workflow
@@ -137,12 +137,12 @@ Paste:
 *Explanation:* The first row contains parameter names (c.q. target types), comma separated. In our case we only have one parameter, called `guest`. Each of the following rows contains the parameters values. When running \mc, the protocols are subsequently applied to each of the values. I.e., in our example, we will generate a different invitation script for each of our guests.
 
 ###Script generation
-You need at least two command line parameters to generate the scripts: `input` and `id`. The first parameter (`input`) refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`. The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where \mc~will store the generated scripts.   
+You need at least two command line parameters to generate the scripts: `input` and `id`. The first parameter (`input`) refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`. The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where *MOLGENIS Compute* will store the generated scripts.   
 
 Let's now generate the scripts with the invitations by running the following command. We assume that you have put your workflow, parameters, worksheet files and protocols directory in a directory called `helloWorld`.
   
 >cd ..  
->sh molgenis\_compute.sh \   
+>sh molgenis_compute.sh \   
 >-input=invitationWorkflow \  
 >-id=run01 
 
@@ -183,7 +183,7 @@ You can use these scripts to submit and start the execution of your analysis scr
 In addition, a copy of your workflow, parameters and worksheet file are put in the `scripts` directory, as well.
 
 ##Compute advanced features
-This section adds more details to the "inviteWorkflow" we've developed above and demonstrates that \mc~can generate more realistic workflows, too. In addition of only inviting guests to our wedding, we will also organize some activity for our guests. The guests will be divided in two groups: child or adult. Each group has one organizer that will plan an activity for his group. After sending out the individual invitations to our guests, for each group, we will send its organizer a letter with a guest list.
+This section adds more details to the "inviteWorkflow" we've developed above and demonstrates that *MOLGENIS Compute* can generate more realistic workflows, too. In addition of only inviting guests to our wedding, we will also organize some activity for our guests. The guests will be divided in two groups: child or adult. Each group has one organizer that will plan an activity for his group. After sending out the individual invitations to our guests, for each group, we will send its organizer a letter with a guest list.
 
 ###Workflow step dependencies
 Let's call the step that sends a letter to each organizer `OrganizerInvitation`. Suppose that before starting this step, we want the `GuestInvitation` step to be finished first. Let's add the new step `OrganizerInvitationStep` to our `workflow.csv` file and define its dependency on the `GuestInvitationStep` step using the column `PreviousSteps_name`:

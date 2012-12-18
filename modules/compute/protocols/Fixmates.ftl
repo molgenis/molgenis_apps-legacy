@@ -17,8 +17,7 @@ alloutputsexist \
  "${matefixedbam}" \
  "${matefixedbamindex}"
 
-java -jar -Xmx6g \
-${fixmateinformationjar} \
+java -jar -Xmx6g ${fixmateinformationjar} \
 INPUT=${realignedbam} \
 OUTPUT=${matefixedbam} \
 SORT_ORDER=coordinate \

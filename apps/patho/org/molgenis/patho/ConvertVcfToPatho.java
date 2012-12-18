@@ -2,6 +2,7 @@ package org.molgenis.patho;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -9,12 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.jackrabbit.uuid.UUID;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Species;
+import org.molgenis.submission.Submission;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
@@ -51,8 +54,8 @@ public class ConvertVcfToPatho
 		else
 		{
 			vcfFile = new File(
-					"/pathoData/vcf_files/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
-			outputDir = new File("/pathoData/tmp/");
+					"/Users/erwin/Documents/test_S0_L001_R1_001_converted_Unique_Output_MutationReport_CARDIO.vcf");
+			outputDir = new File("/Users/erwin/Documents/vcf");
 		}
 
 		ConvertVcfToPatho convert = new ConvertVcfToPatho();
@@ -64,6 +67,14 @@ public class ConvertVcfToPatho
 		System.out.println("converting aggregate data from vcf=" + vcfFile + " to directory " + outputDir);
 		final VcfReader vcf = new VcfReader(vcfFile);
 
+		final Submission submission = new Submission();
+		submission.setIdentifier(UUID.randomUUID().toString());
+
+		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy");
+		String date = sdf.format(new Date());
+		submission.setDate(date);
+		submission.setReleasedate(date);
+
 		final List<Variant> variants = new ArrayList<Variant>();
 		final List<ObservedValue> values = new ArrayList<ObservedValue>();
 		final List<String> chromosomes = new ArrayList<String>();
@@ -73,8 +84,16 @@ public class ConvertVcfToPatho
 		final Map<String, Patient> patients = new TreeMap<String, Patient>();
 		final List<ObservableFeature> features = new ArrayList<ObservableFeature>();
 
+		// Create target dir for patient so we can import the patient first.
+		// We need a patient before we can import the ObservedValues
+		File targetDir = new File(outputDir.getAbsolutePath(), "target");
+		if (!targetDir.exists())
+		{
+			targetDir.mkdir();
+		}
+
 		// create file names
-		final File fileVariants = new File(outputDir.getAbsolutePath() + File.separatorChar + "Variant.txt");
+		final File fileVariants = new File(targetDir, "Variant.txt");
 		final File fileObservedValues = new File(outputDir.getAbsolutePath() + File.separatorChar + "ObservedValue.txt");
 
 		// create file headers
@@ -170,7 +189,8 @@ public class ConvertVcfToPatho
 						{
 							patientObject = new Patient();
 							patientObject.setName(patientName);
-
+							patientObject.setSubmission_Identifier(submission.getIdentifier());
+							patientObject.setPhenotype("dummy");
 							// List<String> mutations_name =
 							// record.getSampleValue(pateintName, key)
 							// patientObject.setMutations_Name(mutations_name);
@@ -261,7 +281,7 @@ public class ConvertVcfToPatho
 		s.setName("homo sapiens");
 		species.add(s);
 
-		File chrFile = new File(outputDir.getAbsolutePath() + File.separatorChar + "Chromosome.txt");
+		File chrFile = new File(targetDir, "Chromosome.txt");
 		String[] chrHeader = new String[]
 		{ Chromosome.NAME, Chromosome.GENOMEBUILD_NAME, Chromosome.ORDERNR, Chromosome.ISAUTOSOMAL };
 		createFileAndHeader(chrFile, chrHeader);
@@ -278,15 +298,21 @@ public class ConvertVcfToPatho
 		build.setName("hg19");
 		builds.add(build);
 
-		final File buildsFile = new File(outputDir.getAbsolutePath() + File.separatorChar + "GenomeBuild.txt");
+		final File buildsFile = new File(targetDir, "GenomeBuild.txt");
 		String[] buildsHeader = new String[]
 		{ "name", "species_name" };
 		createFileAndHeader(buildsFile, buildsHeader);
 		writeBatch(builds, buildsFile, buildsHeader);
 
-		final File patientFile = new File(outputDir.getAbsolutePath() + File.separatorChar + "Patient.txt");
+		final File submissionFile = new File(targetDir, "Submission.txt");
+		String[] submissionHeader = new String[]
+		{ "identifier", "date_", "releasedate" };
+		createFileAndHeader(submissionFile, submissionHeader);
+		writeBatch(Arrays.asList(submission), submissionFile, submissionHeader);
+
+		final File patientFile = new File(targetDir, "Patient.txt");
 		String[] patientHeader = new String[]
-		{ "name", "mutations_name" };
+		{ "name", "phenotype", "submission_identifier", "mutations_name" };
 		createFileAndHeader(patientFile, patientHeader);
 		writeBatch(new ArrayList<Patient>(patients.values()), patientFile, patientHeader);
 
@@ -300,7 +326,7 @@ public class ConvertVcfToPatho
 		createFileAndHeader(featureFile, featureHeader);
 		writeBatch(features, featureFile, featureHeader);
 
-		final File speciesFile = new File(outputDir.getAbsolutePath() + File.separatorChar + "Species.txt");
+		final File speciesFile = new File(targetDir, "Species.txt");
 		String[] speciesHeader = new String[]
 		{ "name" };
 		createFileAndHeader(speciesFile, speciesHeader);
