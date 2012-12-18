@@ -36,7 +36,7 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	// temporary variable for distinguish version of vm7 (without editable
 	// welcome message) with new version.
 
-	private String server = "noneditable"; // editable or noneditable
+	private String server = "editable"; // editable or noneditable
 
 	public void setDatabase(Database db)
 	{
@@ -148,71 +148,86 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 		System.out.println("Request : " + request + ">>>>> " + request.getString("title") + ">>>>"
 				+ request.getString("welcomeText"));
 
-
 		List<Welcome> latestWelcome = new ArrayList<Welcome>();
 		Welcome w1 = new Welcome();
 		latestWelcome.add(w1);
-		try	{
+		try
+		{
 			latestWelcome = db.find(Welcome.class, new QueryRule(Welcome.STATUS, Operator.EQUALS, "new"),
 					new QueryRule(Operator.SORTASC, Welcome.WELCOMEDATETIME));
 		}
-		catch (DatabaseException e1) {
+		catch (DatabaseException e1)
+		{
 			e1.printStackTrace();
 		}
-		
 
-		if ("resetWelcomeTitleText".equals(request.getAction())) {
+		if ("resetWelcomeTitleText".equals(request.getAction()))
+		{
 			// Get 'backup' record from db
 			List<Welcome> backWelcome;
-			try {
+			try
+			{
 				// backup
 				// retrieving backup
 				backWelcome = db.find(Welcome.class, new QueryRule(Welcome.STATUS, Operator.EQUALS, "backup"));
 				// Welcome backWelcome =
-				// db.query(Welcome.class).eq(Welcome.STATUS,
+				// db.query(Welcome.class).eq(Welcome.STA TUS,
 				// "backup").find().get(0);
 
 				System.out.println("backup welcome" + backWelcome);
-				if (backWelcome.isEmpty())	{
+				if (backWelcome.isEmpty())
+				{
 					System.out.println("The welcome message is empty . Please set one first.");
 					this.setError("The welcome message is empty . Please set one first.");
 
 					this.setWelcomeTitle(latestWelcome.get(0).getWelcomeTitle());
 					this.setWelcomeText(latestWelcome.get(0).getWelcomeText());
-				} else	{
+				}
+				else
+				{
 					this.setWelcomeTitle(backWelcome.get(0).getWelcomeTitle());
 					this.setWelcomeText(backWelcome.get(0).getWelcomeText());
 				}
 
-
 				this.setWelcomeTitle(backWelcome.get(0).getWelcomeTitle());
 				this.setWelcomeText(backWelcome.get(0).getWelcomeText());
-			} catch (DatabaseException e)	{
+			}
+			catch (DatabaseException e)
+			{
 				e.printStackTrace();
 			}
 		}
-		else if ("submitChanges".equals(request.getAction())) {
-
-		}
-		Welcome welcome = new Welcome();
-
-		welcome.setWelcomeTitle(request.getString("title"));
-		welcome.setWelcomeText(request.getString("welcomeText"));
-		welcome.setStatus("new");
-		Date today = new Date();
-
-		welcome.setWelcomeDatetime(today);
-		try
+		else if ("submitChanges".equals(request.getAction()))
 		{
-			db.add(welcome);
+
 		}
-		catch (DatabaseException e)
+
+		if (request == null || request.getString("title") == null || request.getString("welcomeText") == null)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			this.setError("Something is wrong with the request and the welcome text is empty ");
 		}
-		this.setWelcomeTitle(request.getString("title"));
-		this.setWelcomeText(request.getString("welcomeText"));
+		else
+		{
+			Welcome welcome = new Welcome();
+
+			welcome.setWelcomeTitle(request.getString("title"));
+			welcome.setWelcomeText(request.getString("welcomeText"));
+			welcome.setStatus("new");
+			Date today = new Date();
+
+			welcome.setWelcomeDatetime(today);
+			try
+			{
+				db.add(welcome);
+			}
+			catch (DatabaseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.setWelcomeTitle(request.getString("title"));
+			this.setWelcomeText(request.getString("welcomeText"));
+		}
 
 	}
 
