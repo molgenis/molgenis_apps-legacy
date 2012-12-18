@@ -36,7 +36,8 @@
 <p><strong>The menus</strong><br />
 The left hand menu is your guide throughout the application. It contains the following items:
 <ul>
-	<li>Login</li>
+	<li>Welcome</li>
+	<li>My Account</li>
 	<li>Biobank Overview</li>
 	<li>Help</li>
 	<li>Contact</li>
@@ -61,16 +62,18 @@ The first item on the top right hand menu is 'Welcome (your name)'. Here, you ca
 <p>Click Biobank Overview in the left hand menu. The first page of the biobank catalogue will appear.<p>
 <p>The table contains several columns:
 <ul>
-	<li>Id = the database number</li>
-	<li>Owns = who can edit or remove this entry</li>
-	<li>Name</li>
+	<li>the database number</li>
+	<li>canReads = who can read this entry (hidden for simple users)</li>
+	<li>canWrite = who can write this entry (hidden for simple users)</li>
+	<li>Owns = who can edit or remove this entry (hidden for simple users)</li>
 	<li>Cohort = name of the cohort</li>
+	<li>Acronym (hidden for simple users)</li>
 	<li>Category = there are two categories: A, core biobanks (DNA available), and B, supporting biobanks (no DNA available)</li>
 	<li>Subcategory = the possible subcategories are: Population, growth and birth / Ageing / Asthma and allergy / Cardiovascular / Cancer / Dermatology / Diabetes, Metabolic syndrome, Nutrition, Storage disorders / Gastrointestinal and urinary system disorders / Infection and resistance / Hemostasis, thrombosis / Neurological, neurodegenerative / Rheumatoid disease / Psychiatric, behavioural</li>
 	<li>Topic = more specific denominator of research topic, e.g. breast cancer</li>
 	<li>Institutes = associated institutes</li>
-	<li>Coordinators = names of the associated co-ordinators</li>
-	<li>Current n= = number of participants</li>
+	<li>Coordinators = names of the associated co-ordinators (hidden for simple users)</li>
+	<li>Current n= = number of participants (hidden for simple users)</li>
 	<li>Biodata</li>
 	<li>GWA data n=</li>
 	<li>GWA platform</li>
