@@ -1935,9 +1935,22 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				String newValue = request.getString(e);
 
-				System.out.println("## " + ov);
-
-				ov.setValue(newValue);
+				System.out.println("########### " + ov);
+				String val = ov.getValue();
+				String rel = ov.getRelation_Name();
+				if (val != null || rel != null)
+				{
+					if (val != null)
+					{
+						ov.setValue(newValue);
+						System.out.println("###################--> " + val);
+					}
+					else
+					{
+						ov.setRelation_Name(rel);
+						System.out.println("###################--> " + rel);
+					}
+				}
 
 				db.update(ov);
 			}
@@ -3005,6 +3018,7 @@ public class Breedingnew extends PluginModel<Entity>
 			else
 			{
 				db.update(value);
+				System.out.println("---> GT litSex: " + value);
 			}
 			// Set birth date
 			String dob = request.getString("0_" + animalCount); // already in
