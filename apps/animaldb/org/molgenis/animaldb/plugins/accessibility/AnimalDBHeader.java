@@ -14,13 +14,13 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.framework.db.jpa.JpaUtil;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
@@ -116,7 +116,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{
