@@ -15,11 +15,11 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryEditable;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
 
@@ -143,28 +143,30 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		System.out.println("Request : " + request + ">>>>> " + request.getString("title") + ">>>>"
 				+ request.getString("welcomeText"));
 
-
 		List<Welcome> latestWelcome = new ArrayList<Welcome>();
 		Welcome w1 = new Welcome();
 		latestWelcome.add(w1);
-		try	{
+		try
+		{
 			latestWelcome = db.find(Welcome.class, new QueryRule(Welcome.STATUS, Operator.EQUALS, "new"),
 					new QueryRule(Operator.SORTASC, Welcome.WELCOMEDATETIME));
 		}
-		catch (DatabaseException e1) {
+		catch (DatabaseException e1)
+		{
 			e1.printStackTrace();
 		}
-		
 
-		if ("resetWelcomeTitleText".equals(request.getAction())) {
+		if ("resetWelcomeTitleText".equals(request.getAction()))
+		{
 			// Get 'backup' record from db
 			List<Welcome> backWelcome;
-			try {
+			try
+			{
 				// backup
 				// retrieving backup
 				backWelcome = db.find(Welcome.class, new QueryRule(Welcome.STATUS, Operator.EQUALS, "backup"));
@@ -173,25 +175,30 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 				// "backup").find().get(0);
 
 				System.out.println("backup welcome" + backWelcome);
-				if (backWelcome.isEmpty())	{
+				if (backWelcome.isEmpty())
+				{
 					System.out.println("The welcome message is empty . Please set one first.");
 					this.setError("The welcome message is empty . Please set one first.");
 
 					this.setWelcomeTitle(latestWelcome.get(0).getWelcomeTitle());
 					this.setWelcomeText(latestWelcome.get(0).getWelcomeText());
-				} else	{
+				}
+				else
+				{
 					this.setWelcomeTitle(backWelcome.get(0).getWelcomeTitle());
 					this.setWelcomeText(backWelcome.get(0).getWelcomeText());
 				}
 
-
 				this.setWelcomeTitle(backWelcome.get(0).getWelcomeTitle());
 				this.setWelcomeText(backWelcome.get(0).getWelcomeText());
-			} catch (DatabaseException e)	{
+			}
+			catch (DatabaseException e)
+			{
 				e.printStackTrace();
 			}
 		}
-		else if ("submitChanges".equals(request.getAction())) {
+		else if ("submitChanges".equals(request.getAction()))
+		{
 
 		}
 		Welcome welcome = new Welcome();

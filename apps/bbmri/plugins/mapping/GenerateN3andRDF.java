@@ -8,9 +8,9 @@
 package plugins.mapping;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Tuple;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -23,13 +23,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.DC;
-import com.itextpdf.text.pdf.hyphenation.TernaryTree.Iterator;
 
 import de.fuberlin.wiwiss.d2rq.GraphD2RQ;
 import de.fuberlin.wiwiss.d2rq.ModelD2RQ;
-import de.fuberlin.wiwiss.d2rq.map.Mapping;
-import de.fuberlin.wiwiss.d2rq.mapgen.MappingGenerator;
-import de.fuberlin.wiwiss.d2rq.vocab.D2RQ;
 
 public class GenerateN3andRDF extends PluginModel
 {
@@ -51,7 +47,7 @@ public class GenerateN3andRDF extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if ("GenerateN3".equals(request.getAction()))
 		{

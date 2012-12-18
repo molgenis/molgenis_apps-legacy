@@ -8,10 +8,10 @@ package plugins.header;
 
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 //import plugins.emptydb.emptyDatabase;
 //import app.FillMetadata;
@@ -48,7 +48,7 @@ public class BbmriHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		System.out.println("__________");
 
