@@ -17,11 +17,11 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.SimpleLogin;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class PermissionManagementPlugin extends PluginModel<Entity>
 {
@@ -51,7 +51,7 @@ public class PermissionManagementPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 		service.setDb(db);
@@ -96,7 +96,7 @@ public class PermissionManagementPlugin extends PluginModel<Entity>
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private MolgenisPermission updatePermission(Tuple request) throws DatabaseException, ParseException
+	private MolgenisPermission updatePermission(MolgenisRequest request) throws DatabaseException, ParseException
 	{
 		if (request.getString("entity") != null)
 		{
@@ -118,7 +118,7 @@ public class PermissionManagementPlugin extends PluginModel<Entity>
 	 * @param request
 	 * @return
 	 */
-	public MolgenisPermission addPermission(Tuple request) throws DatabaseException
+	public MolgenisPermission addPermission(MolgenisRequest request) throws DatabaseException
 	{
 		if (request.getString("entity") != null)
 		{
