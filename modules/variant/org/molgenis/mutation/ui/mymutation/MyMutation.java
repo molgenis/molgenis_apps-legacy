@@ -18,8 +18,8 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.service.SearchService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class MyMutation extends IntegratedPluginController<MyMutationModel>
 {
