@@ -3008,16 +3008,19 @@ public class Breedingnew extends PluginModel<Entity>
 			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
 					invName).get(0);
 			value.setRelation_Name(sexName);
-			value.setValue(null);
+			// value.setRelation(301);
+			// value.setValue(null);
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetSex");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
+				System.out.println("---> create new val '" + sexName + "'");
 			}
 			else
 			{
 				db.update(value);
+				System.out.println("---> '" + sexName + "'");
 				System.out.println("---> GT litSex: " + value);
 			}
 			// Set birth date
@@ -3072,7 +3075,7 @@ public class Breedingnew extends PluginModel<Entity>
 			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
 					.get(0);
 			value.setRelation_Name(backgroundName);
-			value.setValue(null);
+			// value.setValue(null);
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetBackground");
