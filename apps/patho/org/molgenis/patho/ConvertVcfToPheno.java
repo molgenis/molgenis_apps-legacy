@@ -191,7 +191,7 @@ public class ConvertVcfToPheno
 			c.setName(chr);
 			c.setGenomeBuild_Name("hg19");
 			c.setOrderNr(++order);
-			c.setIsAutosomal(StringUtils.isNumeric(chr));
+			c.setIsAutosomal(StringUtils.isNumeric(chr) ? "yes" : "no");
 			chrList.add(c);
 		}
 
