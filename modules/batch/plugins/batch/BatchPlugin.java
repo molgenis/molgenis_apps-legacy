@@ -14,6 +14,7 @@ import org.molgenis.batch.ui.form.BatchEntitySelectForm;
 import org.molgenis.batch.ui.form.BatchSelectForm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -23,8 +24,8 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.Tuple;
 
 public class BatchPlugin extends EasyPluginController
 {
@@ -58,7 +59,7 @@ public class BatchPlugin extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		try
 		{
