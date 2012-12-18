@@ -11,12 +11,12 @@ import org.molgenis.framework.tupletable.AbstractTupleTable;
 import org.molgenis.framework.tupletable.FilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.MapEntry;
 import org.molgenis.util.plink.datatypes.PedEntry;
 import org.molgenis.util.plink.drivers.CachingPedFileDriver;
 import org.molgenis.util.plink.drivers.MapFileDriver;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class PedMapTupleTable extends AbstractTupleTable implements FilterableTupleTable
 {
@@ -98,7 +98,7 @@ public class PedMapTupleTable extends AbstractTupleTable implements FilterableTu
 
 		PedEntry pe = pedEntries.get(0);
 
-		Tuple result = new SimpleTuple();
+		KeyValueTuple result = new KeyValueTuple();
 
 		for (Field column : columns)
 		{
