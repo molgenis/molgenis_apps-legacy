@@ -26,8 +26,9 @@ import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
 import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -155,7 +156,7 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 			for (ObservationSet os : query.find())
 			{
 
-				Tuple t = new SimpleTuple();
+				WritableTuple t = new KeyValueTuple();
 				Characteristic c = db.findById(Characteristic.class, os.getTarget_Id());
 				t.set("target", c.getName());
 
@@ -265,9 +266,10 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 					getDb().add(es);
 
 					List<ObservedValue> values = new ArrayList<ObservedValue>();
-					for (String name : t.getFieldNames())
+					String firstColName = t.getColNames().iterator().next();
+					for (String name : t.getColNames())
 					{
-						if (!name.equals(t.getColName(0)))
+						if (!name.equals(firstColName))
 						{
 							ObservedValue v = new ObservedValue();
 							v.setObservationSet(es.getId());
