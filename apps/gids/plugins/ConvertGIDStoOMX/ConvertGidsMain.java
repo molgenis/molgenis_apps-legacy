@@ -15,10 +15,8 @@ public class ConvertGidsMain
 
 		OutputStream os = new FileOutputStream(
 				"/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Converted/CeliacSprueData.csv");
-		OutputStream osMD = new FileOutputStream(
-				"/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Converted/CeliacMetaData.csv");
 
-		sample.convert(is, os, osMD);
+		sample.convert(is, os);
 
 	}
 

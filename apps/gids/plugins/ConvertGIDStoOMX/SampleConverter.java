@@ -1,5 +1,6 @@
 package plugins.ConvertGIDStoOMX;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.molgenis.io.TupleWriter;
@@ -31,11 +33,10 @@ public class SampleConverter
 	private Tuple features = null;
 	MakeObservationTarget mkObsT = null;
 	List<MakeObservationTarget> mkObsTlist = new ArrayList<MakeObservationTarget>();
-	OutputStream outMetadata = null;
 
-	public void convert(InputStream in, OutputStream out, OutputStream outMD) throws IOException
+	public void convert(InputStream in, OutputStream out) throws IOException
 	{
-		this.outMetadata = outMD;
+
 		ExcelReader excelReader = new ExcelReader(in);
 		excelReader.addCellProcessor(new TrimProcessor(false, true));
 		TupleWriter csvWriter = new CsvWriter(new OutputStreamWriter(out, Charset.forName("UTF-8")));
@@ -95,6 +96,7 @@ public class SampleConverter
 					}
 				}
 			}
+			mkMetadataFileObservationTarget();
 		}
 		finally
 		{
@@ -113,11 +115,6 @@ public class SampleConverter
 			{
 			}
 		}
-	}
-
-	public void makeObservationTargetsMetadata(String x, String y)
-	{
-
 	}
 
 	public boolean checkIfDouble(String sample)
@@ -142,17 +139,49 @@ public class SampleConverter
 		return sample;
 	}
 
-	public void mkMetadataFile()
+	public void mkMetadataFileObservationTarget() throws IOException
 	{
 
-		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(outMetadata, Charset.forName("UTF-8")));
+		OutputStream osMD = new FileOutputStream(
+				"/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Converted/CeliacMetaDataObservationTarget.csv");
+
+		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
 		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
-		Tuple tuple = null;
 		// KeyValueTuple
+		Map<String, String> hashObs = new HashMap<String, String>();
+
+		KeyValueTuple kvtHeader = new KeyValueTuple(hashObs);
+
+		hashObs.put("identifier", "identifier");
+		hashObs.put("name", "name");
+		csvWriterMD.writeColNames(kvtHeader);
+
 		for (MakeObservationTarget i : mkObsTlist)
 		{
-			// Write tuple
-			// csvWriterMD.getIdentifier();
+			hashObs = new HashMap<String, String>();
+			KeyValueTuple kvt = new KeyValueTuple(hashObs);
+			hashObs.put("identifier", i.getIdentifier());
+			hashObs.put("name", i.getName());
+			csvWriterMD.write(kvt);
+
 		}
+
+		System.out.println("CLOSING");
+		csvWriterMD.close();
+		System.out.println("CLOSED");
+		// closeMe(csvWriterMD);
 	}
+
+	// public void closeMe(TupleWriter twriter)
+	// {
+	//
+	// try
+	// {
+	// twriter.close();
+	// }
+	// catch (IOException e)
+	// {
+	// }
+	//
+	// }
 }
