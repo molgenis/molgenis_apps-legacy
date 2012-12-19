@@ -338,11 +338,40 @@
 	
 	<#else>
 	
-		<div style="clear:both" class="form_header">Litters</div>
+	<div style="clear:both" class="form_header">Litters</div>
 		<div>
 			<br />
 			${screen.litterMatrixViewer}
-			<br />
+		</div>
+			
+		<div id='litterActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			
+			
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Wean</th>
+						<th>Genotype</th>
+						<th>Edit</th>
+						<th>Print cagelabels</th>
+						<th>Activate/Deactivate</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="weanlitter" type="image" title="Wean the selected litter." onclick="__action.value='WeanLitter'" src="res/img/pacifier_32.png"  /></td>
+						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
+						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editview_32.png"  /></td>
+						<td><input id="label" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
+						<td><input id="deactivate" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="pushdown" style="clear:both;" >
+		</div>
+		
+		<!-- div style="clear:both">
 			<input type='submit' id='weanlitter' value='Wean selected litter' onclick="__action.value='WeanLitter'" />
 			<br />		
 			<input type='submit' id='genotypelitter' value='Genotype selected litter' onclick="__action.value='GenotypeLitter'" />
@@ -355,8 +384,8 @@
 			<input type='submit' id='label' value='Make cage labels for selected litter' onclick="__action.value='makeLabels'" />
 			<br />
 			<input type='submit' id='deactivate' value='(De)activate selected litter' onclick="__action.value='deActivateLitter'" />
-		</div>
-	
+		</div -->
+	</div>
 	</#if>
 
 </#if>
@@ -424,6 +453,8 @@
 	  "bAutoWidth": false,
 	  "bJQueryUI" : true }
 	);
+	
+	
 </script>
 
 </#macro>

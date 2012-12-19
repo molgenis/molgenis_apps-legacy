@@ -278,7 +278,7 @@ public class AnimaldbSeleniumTest
 
 		selenium.click("id=selectt");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=showHideSettingsButton");
+		selenium.click("id=showHideFilterButton");
 		Thread.sleep(1000);
 		selenium.click("id=mothermatrix_removeFilter_2");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -309,7 +309,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=from2to3");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("successfully created"));
 
 		// selenium.click("id=createParentgroup");
 		// selenium.waitForPageToLoad(pageLoadTimeout);
@@ -640,6 +640,13 @@ public class AnimaldbSeleniumTest
 		sleepHelper("removeAnimals");
 
 	}
+
+	// TODO add test for edit litter functionality
+	// @Test(dependsOnMethods =
+	// { "breedingWorkflow" })
+	// public void editLitters() throws Exception
+	// {
+	// }
 
 	/*
 	 * @Test(dependsOnMethods={"removeAnimals"}) public void applyProtocol()
