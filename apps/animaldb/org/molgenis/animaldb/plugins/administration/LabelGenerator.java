@@ -86,15 +86,6 @@ public class LabelGenerator
 
 	public void finishDocument() throws LabelGeneratorException
 	{
-		try
-		{
-			document.add(table);
-		}
-		catch (DocumentException e)
-		{
-			e.printStackTrace();
-			throw new LabelGeneratorException();
-		}
 		document.close();
 	}
 
