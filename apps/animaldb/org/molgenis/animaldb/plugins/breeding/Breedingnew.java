@@ -3000,11 +3000,6 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 
 		int animalCount = 0;
-		// HUGE FIXME: Why is it necessary to explicitly set the id and can
-		// we not just give the relation_name????
-		int maleID = ct.getObservationTargetByName("Male").getId();
-		int femaleID = ct.getObservationTargetByName("Female").getId();
-		int unknownSexID = ct.getObservationTargetByName("UnknownSex").getId();
 
 		for (Individual animal : this.getAnimalsInLitter(db))
 		{
@@ -3012,36 +3007,17 @@ public class Breedingnew extends PluginModel<Entity>
 			String sexName = request.getString("1_" + animalCount);
 			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
 					invName).get(0);
+			value.setRelation(ct.getObservationTargetByName(sexName).getId());
 
-			// HUGE FIXME: Why is it necessary to explicitly set the id and can
-			// we not just give the relation_name????
-			if (sexName.equals("Male"))
-			{
-				value.setRelation(maleID);
-			}
-			else if (sexName.equals("Female"))
-			{
-				value.setRelation(femaleID);
-			}
-			else
-			{
-				value.setRelation(unknownSexID);
-			}
-
-			// value.setRelation(301);
-			// value.setValue(null);
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetSex");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-				System.out.println("---> create new val '" + sexName + "'");
 			}
 			else
 			{
 				db.update(value);
-				System.out.println("---> '" + sexName + "'");
-				System.out.println("---> GT litSex: " + value);
 			}
 			// Set birth date
 			String dob = request.getString("0_" + animalCount); // already in
