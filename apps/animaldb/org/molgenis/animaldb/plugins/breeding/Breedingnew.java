@@ -715,8 +715,7 @@ public class Breedingnew extends PluginModel<Entity>
 							this.startdate = newDateOnlyFormat.format(new Date());
 							this.remarks = null;
 							motherMatrixViewer = null;
-							this.setSuccess("Parentgroup " + pgNames
-									+ " successfully added; adding filter to matrix: name = " + pgNames);
+							this.setSuccess("Parentgroup(s) " + pgNames + " successfully created. ");
 						}
 						hashFathers.clear();
 						hashMothers.clear();
@@ -861,11 +860,13 @@ public class Breedingnew extends PluginModel<Entity>
 				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer
-						.getMatrix()
-						.getRules()
-						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
-								newLitterName));
+				litterMatrixViewer.getMatrix();
+
+				// Do not add filter
+				// .getRules()
+				// .add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+				// Individual.NAME, Operator.EQUALS,
+				// newLitterName));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				// Reset other fields
@@ -875,8 +876,10 @@ public class Breedingnew extends PluginModel<Entity>
 				// Return to start screen for litters
 				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = "
-						+ newLitterName);
+				// this.setSuccess("Litter " + newLitterName +
+				// " successfully added; adding filter to matrix: name = "
+				// + newLitterName);
+				this.setSuccess("Litter " + newLitterName + " successfully created. ");
 			}
 
 			if (action.equals("WeanLitter"))
@@ -1870,14 +1873,13 @@ public class Breedingnew extends PluginModel<Entity>
 
 				String newValue = request.getString(e);
 
-				
 				List<ObservationTarget> listObsTargets = null;
 				List<String> invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName());
 				if (individualValueList.isEmpty())
 				{
 					ov.setValue(newValue);
 					db.update(ov);
-				
+
 				}
 				else
 				{
@@ -1886,7 +1888,7 @@ public class Breedingnew extends PluginModel<Entity>
 						listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
 								Operator.EQUALS, v.getTarget_Name()));
 						String targetName = listObsTargets.get(0).getName();
-	
+
 						// Birthdate
 						ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
 								invName, invName.get(0)).get(0);
@@ -1894,7 +1896,7 @@ public class Breedingnew extends PluginModel<Entity>
 						db.update(birthDate);
 						ov.setValue(newValue);
 						db.update(ov);
-	
+
 					}
 				}
 
@@ -1918,8 +1920,7 @@ public class Breedingnew extends PluginModel<Entity>
 							invName.get(0)).get(0);
 					ObservedValue active = ct.getObservedValuesByTargetAndFeature(targetName, "Active", invName,
 							invName.get(0)).get(0);
-					active.setTime(newDateOnlyFormat.parse(weanDate.getValue()));
-
+					active.setTime(newDateOnlyFormat.parse(newValue));
 					weanDate.setValue(newValue);
 					db.update(weanDate);
 					db.update(active);
@@ -1934,9 +1935,22 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				String newValue = request.getString(e);
 
-				System.out.println("## " + ov);
-
-				ov.setValue(newValue);
+				System.out.println("########### " + ov);
+				String val = ov.getValue();
+				String rel = ov.getRelation_Name();
+				if (val != null || rel != null)
+				{
+					if (val != null)
+					{
+						ov.setValue(newValue);
+						System.out.println("###################--> " + val);
+					}
+					else
+					{
+						ov.setRelation_Name(rel);
+						System.out.println("###################--> " + rel);
+					}
+				}
 
 				db.update(ov);
 			}
@@ -2994,16 +3008,20 @@ public class Breedingnew extends PluginModel<Entity>
 			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
 					invName).get(0);
 			value.setRelation_Name(sexName);
-			value.setValue(null);
+			// value.setRelation(301);
+			// value.setValue(null);
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetSex");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
+				System.out.println("---> create new val '" + sexName + "'");
 			}
 			else
 			{
 				db.update(value);
+				System.out.println("---> '" + sexName + "'");
+				System.out.println("---> GT litSex: " + value);
 			}
 			// Set birth date
 			String dob = request.getString("0_" + animalCount); // already in
@@ -3057,7 +3075,7 @@ public class Breedingnew extends PluginModel<Entity>
 			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
 					.get(0);
 			value.setRelation_Name(backgroundName);
-			value.setValue(null);
+			// value.setValue(null);
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetBackground");
@@ -3344,13 +3362,13 @@ public class Breedingnew extends PluginModel<Entity>
 
 		List<String> elementLabelList;
 		List<String> elementList;
-
+		int sexctr = 0;
 		for (Individual animal : this.getAnimalsInLitter(litter, db))
 		{
 			String animalName = animal.getName();
 			elementList = new ArrayList<String>();
 			elementLabelList = new ArrayList<String>();
-
+			sexctr += 1;
 			// Name / custom label
 			elementLabelList.add("Name:");
 			elementList.add(animalName);
@@ -3409,35 +3427,41 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(decInfo);
 			elementLabelList.add("Remarks");
 			elementList.add("\n\n\n\n\n");
-			// Not needed at this time, maybe later:
-			// Birthdate
-			// elementList.add("Birthdate: " +
-			// ct.getMostRecentValueAsString(animalId,
-			// ct.getMeasurementId("DateOfBirth")));
-			// OldUliDbExperimentator -> TODO: add responsible researcher
-			// elementList.add("Experimenter: " +
-			// ct.getMostRecentValueAsString(animalId,
-			// ct.getMeasurementId("OldUliDbExperimentator")));
-			if (!sex.equals(lastSex))
+
+			if (sex.equals(lastSex))
 			{
+				System.out.println(sexctr + " equals: " + sex);
+				labelgenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+			else
+			{
+				System.out.println(sexctr + " not equals: " + sex);
+				// add empty label on odd labelnr.
+				if ((sexctr - 1) % 2 != 0)
+				{
+					labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+				}
 				labelgenerator.finishPage();
 				labelgenerator.nextPage();
+				sexctr = 1; // reset the sexcounter to keep track of odd and
+							// even numbers.
+				labelgenerator.addLabelToDocument(elementLabelList, elementList);
 			}
+
 			lastSex = sex;
-			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+
 			if (first)
 			{
 				first = false;
 			}
 		}
-		// In case of an odd number of animals, add extra label to make row
-		// full
-		if (this.getAnimalsInLitter(litter, db).size() % 2 != 0)
+
+		if (sexctr % 2 != 0)
 		{
-			elementLabelList = new ArrayList<String>();
-			elementList = new ArrayList<String>();
-			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+			labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
 		}
+
+		labelgenerator.finishPage();
 		labelgenerator.finishDocument();
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
 				+ "\" target=\"blank\">Download cage labels as pdf</a>");
