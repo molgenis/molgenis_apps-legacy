@@ -8,15 +8,25 @@ import java.io.OutputStream;
 
 public class ConvertGidsMain
 {
+	private final static String OUTPUTDIR = "/Users/Roan/github/molgenis_apps/apps/gids/testoutput/testData";
+
 	public static void main(String[] args) throws IOException
 	{
+
 		SampleConverter sample = new SampleConverter();
-		InputStream is = new FileInputStream("/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Celiac Sprue.xls");
+		InputStream is = new FileInputStream(
+				"/Users/Roan/github/molgenis_apps/apps/gids/org/molgenis/gids/testInput.xls");
 
-		OutputStream os = new FileOutputStream(
-				"/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Converted/CeliacSprueData.csv");
+		OutputStream os = new FileOutputStream(OUTPUTDIR + "Output.csv");
 
-		sample.convert(is, os);
+		// SampleConverter sample = new SampleConverter();
+		// InputStream is = new
+		// FileInputStream("/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Celiac Sprue.xls");
+		//
+		// OutputStream os = new FileOutputStream(
+		// "/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Converted/CeliacSprueData.csv");
+
+		sample.convert(is, os, OUTPUTDIR);
 
 	}
 

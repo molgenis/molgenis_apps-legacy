@@ -30,13 +30,18 @@ public class SampleConverter
 	private int counter = 0;
 	// private Map<String, String> observationTargetMap = new HashMap<String,
 	// String>();
+
+	private static String OUTPUTDIR = null;
+
 	private Tuple features = null;
-	MakeObservationTarget mkObsT = null;
-	List<MakeObservationTarget> mkObsTlist = new ArrayList<MakeObservationTarget>();
+	MakeEntityNameAndIdentifier mkObsTarget = null;
+	MakeEntityNameAndIdentifier mkObsFeature = null;
+	List<MakeEntityNameAndIdentifier> mkObsTargetlist = new ArrayList<MakeEntityNameAndIdentifier>();
+	List<MakeEntityNameAndIdentifier> mkObsFeaturelist = new ArrayList<MakeEntityNameAndIdentifier>();
 
-	public void convert(InputStream in, OutputStream out) throws IOException
+	public void convert(InputStream in, OutputStream out, String outputdir) throws IOException
 	{
-
+		OUTPUTDIR = outputdir;
 		ExcelReader excelReader = new ExcelReader(in);
 		excelReader.addCellProcessor(new TrimProcessor(false, true));
 		TupleWriter csvWriter = new CsvWriter(new OutputStreamWriter(out, Charset.forName("UTF-8")));
@@ -55,6 +60,7 @@ public class SampleConverter
 					{
 						csvWriter.writeColNames(row);
 						writeHeader = false;
+
 						features = row;
 					}
 					// If the sample name exists
@@ -68,8 +74,10 @@ public class SampleConverter
 						}
 						else
 						{
-							mkObsT = new MakeObservationTarget(sampleId, sampleId);
-							mkObsTlist.add(mkObsT);
+							// Get the targets for metadatafile
+							mkObsTarget = new MakeEntityNameAndIdentifier(sampleId, sampleId);
+							mkObsTargetlist.add(mkObsTarget);
+							// Write the real data
 							csvWriter.write(row);
 						}
 					}
@@ -82,6 +90,7 @@ public class SampleConverter
 							if (keyTuple.equals("id_sample"))
 							{
 								hash.put(keyTuple, "unknown");
+								// Make a identifier for this sample
 								hash.put(keyTuple, emptySample());
 							}
 							else
@@ -91,12 +100,20 @@ public class SampleConverter
 
 						}
 						KeyValueTuple tup = new KeyValueTuple(hash);
-						// Write the edited row
+						// The identifier and sample are now set for this former
+						// empty sample name
 						csvWriter.write(tup);
 					}
 				}
 			}
+			// Fill a list with all the ObservableFeatures in the file
+			makeFeaturesList();
+
+			// Write the metadata to a file for the features
+			mkMetadataFileObservableFeature();
+			// Write the metadata to a file for the targets
 			mkMetadataFileObservationTarget();
+
 		}
 		finally
 		{
@@ -134,20 +151,19 @@ public class SampleConverter
 	public String emptySample()
 	{
 		String sample = "Dummy_2012_" + (++counter);
-		mkObsT = new MakeObservationTarget("unknown", sample);
-		mkObsTlist.add(mkObsT);
+		mkObsTarget = new MakeEntityNameAndIdentifier("unknown", sample);
+		mkObsTargetlist.add(mkObsTarget);
 		return sample;
 	}
 
 	public void mkMetadataFileObservationTarget() throws IOException
 	{
 
-		OutputStream osMD = new FileOutputStream(
-				"/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/Converted/CeliacMetaDataObservationTarget.csv");
+		OutputStream osMD = new FileOutputStream(OUTPUTDIR + "MetaDataObservationTarget.csv");
 
 		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
 		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
-		// KeyValueTuple
+
 		Map<String, String> hashObs = new HashMap<String, String>();
 
 		KeyValueTuple kvtHeader = new KeyValueTuple(hashObs);
@@ -156,7 +172,7 @@ public class SampleConverter
 		hashObs.put("name", "name");
 		csvWriterMD.writeColNames(kvtHeader);
 
-		for (MakeObservationTarget i : mkObsTlist)
+		for (MakeEntityNameAndIdentifier i : mkObsTargetlist)
 		{
 			hashObs = new HashMap<String, String>();
 			KeyValueTuple kvt = new KeyValueTuple(hashObs);
@@ -165,23 +181,43 @@ public class SampleConverter
 			csvWriterMD.write(kvt);
 
 		}
-
-		System.out.println("CLOSING");
 		csvWriterMD.close();
-		System.out.println("CLOSED");
-		// closeMe(csvWriterMD);
+
 	}
 
-	// public void closeMe(TupleWriter twriter)
-	// {
-	//
-	// try
-	// {
-	// twriter.close();
-	// }
-	// catch (IOException e)
-	// {
-	// }
-	//
-	// }
+	private void makeFeaturesList()
+	{
+		for (Iterator<String> it2 = features.getColNames(); it2.hasNext();)
+		{
+			String keyTuple = it2.next();
+
+			mkObsFeature = new MakeEntityNameAndIdentifier(keyTuple, keyTuple);
+			mkObsFeaturelist.add(mkObsFeature);
+		}
+
+	}
+
+	public void mkMetadataFileObservableFeature() throws IOException
+	{
+
+		OutputStream osMD = new FileOutputStream(OUTPUTDIR + "MetaDataObservableFeature.csv");
+
+		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
+		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
+
+		Map<String, String> hashFeatures = new HashMap<String, String>();
+
+		hashFeatures.put("identifier", "identifier");
+		hashFeatures.put("name", "name");
+
+		for (MakeEntityNameAndIdentifier m : mkObsFeaturelist)
+		{
+			KeyValueTuple kvt = new KeyValueTuple(hashFeatures);
+			hashFeatures.put("identifier", m.getIdentifier());
+			hashFeatures.put("name", m.getName());
+			csvWriterMD.write(kvt);
+		}
+		csvWriterMD.close();
+	}
+
 }
