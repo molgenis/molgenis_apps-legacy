@@ -3070,8 +3070,8 @@ public class Breedingnew extends PluginModel<Entity>
 			String backgroundName = request.getString("4_" + animalCount);
 			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
 					.get(0);
-			value.setRelation_Name(backgroundName);
-			// value.setValue(null);
+			value.setRelation(ct.getObservationTargetByName(backgroundName).getId());
+
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetBackground");
@@ -3082,6 +3082,7 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				db.update(value);
 			}
+
 			// Set genotype(s)
 			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++)
 			{
