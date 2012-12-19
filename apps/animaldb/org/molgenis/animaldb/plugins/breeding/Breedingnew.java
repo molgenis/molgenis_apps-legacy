@@ -1181,6 +1181,7 @@ public class Breedingnew extends PluginModel<Entity>
 			dateInput.setValue(getAnimalBirthDate(animalName));
 
 			genotypeTable.setCell(0, row, dateInput);
+
 			// Sex
 			SelectInput sexInput = new SelectInput("1_" + row);
 			for (ObservationTarget sex : this.sexList)
@@ -1190,6 +1191,7 @@ public class Breedingnew extends PluginModel<Entity>
 			sexInput.setValue(getAnimalSex(animalName));
 			sexInput.setWidth(-1);
 			genotypeTable.setCell(1, row, sexInput);
+
 			// Color
 			SelectInput colorInput = new SelectInput("2_" + row);
 			for (String color : this.colorList)
@@ -1199,6 +1201,7 @@ public class Breedingnew extends PluginModel<Entity>
 			colorInput.setValue(getAnimalColor(animalName));
 			colorInput.setWidth(-1);
 			genotypeTable.setCell(2, row, colorInput);
+
 			// Earmark
 			SelectInput earmarkInput = new SelectInput("3_" + row);
 			for (Category earmark : this.earmarkList)
@@ -1208,6 +1211,7 @@ public class Breedingnew extends PluginModel<Entity>
 			earmarkInput.setValue(getAnimalEarmark(animalName));
 			earmarkInput.setWidth(-1);
 			genotypeTable.setCell(3, row, earmarkInput);
+
 			// Background
 			SelectInput backgroundInput = new SelectInput("4_" + row);
 			for (ObservationTarget background : this.backgroundList)
@@ -1229,6 +1233,7 @@ public class Breedingnew extends PluginModel<Entity>
 			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
 			geneNameInput.setWidth(-1);
 			genotypeTable.setCell(5, row, geneNameInput);
+
 			// Gene state (1)
 			SelectInput geneStateInput = new SelectInput("6_" + row);
 			for (String geneState : this.geneStateList)
