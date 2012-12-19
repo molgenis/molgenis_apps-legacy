@@ -3,15 +3,10 @@
 <molgenis name="biobank" label="Catalogue of Dutch biobanks">
 	<plugin name="BbmriHeader" type="plugins.header.BbmriHeader" />
 	<menu name="main" position="left" startswith="WelcomeScreen">
-		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin"
-			label="Welcome" />
-		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin"
-			label="Login" />
-		<!-- <plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" 
-			/> -->
-		<!-- <menu name="BiobankOverview" label="Biobank Overview"> <plugin name="CohortPlugin" 
-			type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " /> </menu> -->
-
+		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
+		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
+		<!-- <plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin"  /> -->
+		<!-- <menu name="BiobankOverview" label="Biobank Overview"> <plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " /> </menu> -->
 		<menu name="BiobankOverview" label="Biobank Overview" groupRead="AllUsers">
 			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	groupRead="AllUsers" hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
 		</menu>
@@ -35,37 +30,26 @@
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
-				<form name="MolgenisPermission" entity="MolgenisPermission"
-					label="Permission" />
+				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
 				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
-				<plugin label="Upgrade person to user" name="UserToPersonPlugin"
-					type="org.molgenis.auth.service.persontouser.PersonToUser" />
+				<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
-			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"
-				label="Mapping" />
+			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
 			<menu name="ImportMenu" position="left" label="Importing data">
-				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter"
-					label="Biobank Importer" />
-				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
-					label="Batch Upload" />
+				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter" label="Biobank Importer" />
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+				<plugin name="BBMRILoadFromDir" label="Import data from directory" type="org.molgenis.load.ui.LoadFromDirectory" />	
 			</menu>
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<!-- plugin name="Settings" type="plugins.system.settings.Settings" /-->
 		</menu>
-	<!-- 	<menu name="submenu" position="left" label="Index powered Search">
-			<plugin name="DBIndex" label="DB Index"
-				type="plugins.LuceneIndex.DBIndexPlugin" />
-			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index"
-				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
-			<plugin name="AdminIndex" label="Admin Indexes"
-				type="plugins.LuceneIndex.AdminIndexes" />
+	    <!-- 	<menu name="submenu" position="left" label="Index powered Search">
+			<plugin name="DBIndex" label="DB Index"	type="plugins.LuceneIndex.DBIndexPlugin" />
+			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index"	type="plugins.LuceneIndex.OntoCatIndexPlugin" />
+			<plugin name="AdminIndex" label="Admin Indexes" type="plugins.LuceneIndex.AdminIndexes" />
 		</menu> -->
-		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin"
-			label="Help" />
-		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin"
-			label="Contact" />
-		<!-- <plugin name="HtmlTreePlugin" type="plugins.HtmlTree.HtmlTreePlugin" 
-			label="HtmlTree" /> <plugin name="JqueryTreePlugin" type="plugins.JqueryTree.JqueryTreePlugin" 
-			label="JqueryTree" /> -->
+		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin" label="Help" />
+		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact" />
+		<!-- <plugin name="HtmlTreePlugin" type="plugins.HtmlTree.HtmlTreePlugin"  label="HtmlTree" /> <plugin name="JqueryTreePlugin" type="plugins.JqueryTree.JqueryTreePlugin"  label="JqueryTree" /> -->
 	</menu>
 </molgenis>
