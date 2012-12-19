@@ -309,7 +309,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=from2to3");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("successfully created"));
 
 		// selenium.click("id=createParentgroup");
 		// selenium.waitForPageToLoad(pageLoadTimeout);
