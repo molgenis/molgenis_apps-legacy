@@ -36,7 +36,7 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	// temporary variable for distinguish version of vm7 (without editable
 	// welcome message) with new version.
 
-	private String server = "editable"; // editable or noneditable
+	private String server = "noneditable"; // editable or noneditable
 
 	public void setDatabase(Database db)
 	{
