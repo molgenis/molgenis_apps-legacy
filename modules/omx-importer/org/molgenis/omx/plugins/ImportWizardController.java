@@ -1,10 +1,10 @@
 package org.molgenis.omx.plugins;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * Import wizard controller
@@ -49,7 +49,8 @@ public class ImportWizardController extends PluginModel<Entity>
 		return s.toString();
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	@Override
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		String action = request.getString("__action");
 		if (action == null) return;

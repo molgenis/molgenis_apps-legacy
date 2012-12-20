@@ -10,14 +10,14 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.io.TupleReader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Standard importer for lifelines. Fields with name 'PA_ID' are considered to
@@ -82,7 +82,7 @@ public class LifeLinesStandardListener extends ImportTupleLoader
 
 			// we iterate through all fields. Each field that is also a
 			// Measurement
-			for (String field : tuple.getFieldNames())
+			for (String field : tuple.getColNames())
 			{
 				// only include fields that are selected as measurement
 				String mName = protocol.getName() + "_" + field; // temporarily

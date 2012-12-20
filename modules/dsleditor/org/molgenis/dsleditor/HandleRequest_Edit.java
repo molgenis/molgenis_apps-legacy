@@ -1,7 +1,7 @@
 package org.molgenis.dsleditor;
 
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class HandleRequest_Edit
 {

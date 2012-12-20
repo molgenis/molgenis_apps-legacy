@@ -8,6 +8,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/designgg" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="modules/webserver" />
 	</path>
 	

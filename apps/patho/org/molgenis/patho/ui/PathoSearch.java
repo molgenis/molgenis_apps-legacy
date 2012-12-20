@@ -13,7 +13,7 @@
 //import org.molgenis.framework.ui.ScreenView;
 //import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 //import org.molgenis.pheno.ObservedValue;
-//import org.molgenis.util.Tuple;
+//import org.molgenis.util.tuple.Tuple;
 //import org.molgenis.variant.Chromosome;
 //import org.molgenis.variant.SequenceVariant;
 //
@@ -56,7 +56,7 @@
 //		// getModel().getSelectedChrId());
 //	}
 //	
-//	public void search(Database db, Tuple request) throws DatabaseException
+//	public void search(Database db, MolgenisRequest request) throws DatabaseException
 //	{
 //		//reset
 //

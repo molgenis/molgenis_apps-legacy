@@ -12,8 +12,8 @@ import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class BinaryTupleTable extends AbstractFilterableTupleTable
 {
@@ -74,7 +74,7 @@ public class BinaryTupleTable extends AbstractFilterableTupleTable
 		{
 			try
 			{
-				Tuple result = new SimpleTuple();
+				KeyValueTuple result = new KeyValueTuple();
 
 				DataMatrixInstance memory = matrix.getSubMatrixByOffset(table.getOffset() + count, 1,
 						table.getColOffset(), colLimit);

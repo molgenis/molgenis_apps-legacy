@@ -7,7 +7,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.Protocol;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TableModelProtocolApp extends TableModel
 {

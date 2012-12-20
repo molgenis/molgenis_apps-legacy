@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.general.MatrixQueryRule;

@@ -27,7 +27,7 @@
 			<#else>
 				<div class="row-fluid grid">
 					<div class="span2">
-						<label>Choose a catalog:</label>
+						<label>Choose a dataset:</label>
 					</div>
 					<div class="btn-group btn-datasets" data-toggle="buttons-radio">
 					<#list model.dataSets as dataSet>

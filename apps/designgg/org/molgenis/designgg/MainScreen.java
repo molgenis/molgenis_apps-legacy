@@ -2,11 +2,18 @@ package org.molgenis.designgg;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
+
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
+import org.molgenis.util.tuple.Tuple;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class MainScreen extends PluginModel
 {
@@ -59,8 +66,32 @@ public class MainScreen extends PluginModel
 		{
 			this.selectedScreen = 3;
 			this.autoRefresh = 0;
-			screen3.setIndPerCondition(screen2.getIndPerCondition());
-			screen3.setIndPerSlide(screen2.getIndPerSlide());
+			screen3.setIndPerCondition(Lists.transform(screen2.getIndPerCondition(),
+					new Function<org.molgenis.util.Tuple, org.molgenis.util.tuple.Tuple>()
+					{
+
+						@Override
+						@Nullable
+						public Tuple apply(@Nullable
+						org.molgenis.util.Tuple arg0)
+						{
+							return new DeprecatedTupleTuple(arg0);
+						}
+
+					}));
+			screen3.setIndPerSlide(Lists.transform(screen2.getIndPerSlide(),
+					new Function<org.molgenis.util.Tuple, org.molgenis.util.tuple.Tuple>()
+					{
+
+						@Override
+						@Nullable
+						public Tuple apply(@Nullable
+						org.molgenis.util.Tuple arg0)
+						{
+							return new DeprecatedTupleTuple(arg0);
+						}
+
+					}));
 			screen3.setImageLink(screen2.getImageLink());
 			screen3.setIndXCondLink(screen2.getIndXCondLink());
 			screen3.setIndXSlideLink(screen2.getIndXSlideLink());
@@ -105,7 +136,7 @@ public class MainScreen extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// super.handleRequest(db, request);
 

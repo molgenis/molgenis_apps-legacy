@@ -21,7 +21,7 @@ import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.protocol.WorkflowElement;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

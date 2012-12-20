@@ -10,14 +10,14 @@ package plugins.genericwizard;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
 
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 import app.ImportWizardExcelPrognosis;
 
 public class GenericWizard extends PluginModel<Entity>
@@ -48,7 +48,8 @@ public class GenericWizard extends PluginModel<Entity>
 		return "plugins/genericwizard/GenericWizard.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	@Override
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -101,8 +102,7 @@ public class GenericWizard extends PluginModel<Entity>
 
 					// set import succes to false (again), to be sure
 					this.model.setImportSuccess(false);
-					ExcelImport.importAll(this.model.getCurrentFile(), db, new SimpleTuple());
-
+					new EntitiesImporterImpl(db).importEntities(this.model.getCurrentFile(), DatabaseAction.ADD);
 					// when no error, set success to true
 					this.model.setImportSuccess(true);
 				}
