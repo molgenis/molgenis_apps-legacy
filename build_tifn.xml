@@ -9,6 +9,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/tifn" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="modules/xgap" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
