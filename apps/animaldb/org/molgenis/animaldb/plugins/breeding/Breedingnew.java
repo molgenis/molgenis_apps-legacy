@@ -1181,6 +1181,7 @@ public class Breedingnew extends PluginModel<Entity>
 			dateInput.setValue(getAnimalBirthDate(animalName));
 
 			genotypeTable.setCell(0, row, dateInput);
+
 			// Sex
 			SelectInput sexInput = new SelectInput("1_" + row);
 			for (ObservationTarget sex : this.sexList)
@@ -1190,6 +1191,7 @@ public class Breedingnew extends PluginModel<Entity>
 			sexInput.setValue(getAnimalSex(animalName));
 			sexInput.setWidth(-1);
 			genotypeTable.setCell(1, row, sexInput);
+
 			// Color
 			SelectInput colorInput = new SelectInput("2_" + row);
 			for (String color : this.colorList)
@@ -1199,6 +1201,7 @@ public class Breedingnew extends PluginModel<Entity>
 			colorInput.setValue(getAnimalColor(animalName));
 			colorInput.setWidth(-1);
 			genotypeTable.setCell(2, row, colorInput);
+
 			// Earmark
 			SelectInput earmarkInput = new SelectInput("3_" + row);
 			for (Category earmark : this.earmarkList)
@@ -1208,6 +1211,7 @@ public class Breedingnew extends PluginModel<Entity>
 			earmarkInput.setValue(getAnimalEarmark(animalName));
 			earmarkInput.setWidth(-1);
 			genotypeTable.setCell(3, row, earmarkInput);
+
 			// Background
 			SelectInput backgroundInput = new SelectInput("4_" + row);
 			for (ObservationTarget background : this.backgroundList)
@@ -1229,6 +1233,7 @@ public class Breedingnew extends PluginModel<Entity>
 			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
 			geneNameInput.setWidth(-1);
 			genotypeTable.setCell(5, row, geneNameInput);
+
 			// Gene state (1)
 			SelectInput geneStateInput = new SelectInput("6_" + row);
 			for (String geneState : this.geneStateList)
@@ -3007,21 +3012,17 @@ public class Breedingnew extends PluginModel<Entity>
 			String sexName = request.getString("1_" + animalCount);
 			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
 					invName).get(0);
-			value.setRelation_Name(sexName);
-			// value.setRelation(301);
-			// value.setValue(null);
+			value.setRelation(ct.getObservationTargetByName(sexName).getId());
+
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetSex");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
-				System.out.println("---> create new val '" + sexName + "'");
 			}
 			else
 			{
 				db.update(value);
-				System.out.println("---> '" + sexName + "'");
-				System.out.println("---> GT litSex: " + value);
 			}
 			// Set birth date
 			String dob = request.getString("0_" + animalCount); // already in
@@ -3074,8 +3075,8 @@ public class Breedingnew extends PluginModel<Entity>
 			String backgroundName = request.getString("4_" + animalCount);
 			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
 					.get(0);
-			value.setRelation_Name(backgroundName);
-			// value.setValue(null);
+			value.setRelation(ct.getObservationTargetByName(backgroundName).getId());
+
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = ct.makeProtocolApplication(invName, "SetBackground");
@@ -3086,6 +3087,7 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				db.update(value);
 			}
+
 			// Set genotype(s)
 			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++)
 			{
