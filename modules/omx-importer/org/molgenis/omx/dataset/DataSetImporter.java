@@ -2,6 +2,7 @@ package org.molgenis.omx.dataset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,7 +96,7 @@ public class DataSetImporter
 			{
 				// find observation target
 				ObservationTarget observationTarget = findObservationTarget(row.getString(0));
-
+				ArrayList<ObservedValue> obsValueList = new ArrayList<ObservedValue>();
 				// create observation set
 				ObservationSet observationSet = new ObservationSet();
 				observationSet.setTarget(observationTarget);
@@ -112,8 +113,10 @@ public class DataSetImporter
 					observedValue.setObservationSet(observationSet);
 
 					// add to db
-					db.add(observedValue);
+
+					obsValueList.add(observedValue);
 				}
+				db.add(obsValueList);
 			}
 
 			if (doTx) db.commitTx();
