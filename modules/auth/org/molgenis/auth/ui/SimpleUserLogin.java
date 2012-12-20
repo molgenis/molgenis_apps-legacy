@@ -30,6 +30,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -38,8 +39,7 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TablePanel;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
 
 /**
  * Login box
@@ -59,7 +59,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		return new FreemarkerView("UserLogin.ftl", getModel());
 	}
 
-	public void Login(Database db, Tuple request) throws Exception
+	public void Login(Database db, MolgenisRequest request) throws Exception
 	{
 		this.getModel().setAction("Login");
 
@@ -134,7 +134,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 	}
 
-	public void Logout(Database db, Tuple request) throws Exception
+	public void Logout(Database db, MolgenisRequest request) throws Exception
 	{
 		this.getModel().setAction("Logout");
 		this.getApplicationController().getLogin().logout(db);
@@ -142,12 +142,12 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		this.getModel().setLabel("Login");
 	}
 
-	public void Cancel(Database db, Tuple request)
+	public void Cancel(Database db, MolgenisRequest request)
 	{
 		this.getModel().setAction("Cancel");
 	}
 
-	public void AddUser(Database db, Tuple request) throws Exception
+	public void AddUser(Database db, MolgenisRequest request) throws Exception
 	{
 		this.getModel().setAction("AddUser");
 
@@ -211,7 +211,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 	}
 
-	public void Activate(Database db, Tuple request) throws Exception
+	public void Activate(Database db, MolgenisRequest request) throws Exception
 	{
 		this.getModel().setAction("Activate");
 
@@ -255,7 +255,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 	}
 
-	public void sendPassword(Database db, Tuple request) throws Exception
+	public void sendPassword(Database db, MolgenisRequest request) throws Exception
 	{
 		try
 		{
@@ -318,7 +318,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 	}
 
-	public void ChgUser(Database db, Tuple request) throws NoSuchAlgorithmException, MolgenisUserException,
+	public void ChgUser(Database db, MolgenisRequest request) throws NoSuchAlgorithmException, MolgenisUserException,
 			DatabaseException, ParseException, IOException
 	{
 		this.getModel().setAction("ChgUser");
@@ -343,7 +343,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		this.getModel().getMessages().add(new ScreenMessage("Changes successfully applied", true));
 	}
 
-	public void Forgot(Database db, Tuple request)
+	public void Forgot(Database db, MolgenisRequest request)
 	{
 		this.getModel().setAction("Forgot");
 	}
@@ -400,7 +400,8 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		// throw new DatabaseException("Error when finding/creating Role");
 	}
 
-	private MolgenisUser toMolgenisUser(Database db, Tuple request) throws MolgenisUserException, DatabaseException
+	private MolgenisUser toMolgenisUser(Database db, MolgenisRequest request) throws MolgenisUserException,
+			DatabaseException
 	{
 		MolgenisUser user = new MolgenisUser();
 
@@ -433,7 +434,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		return user;
 	}
 
-	private void toMolgenisUser(Tuple request, MolgenisUser user, Database db) throws DatabaseException
+	private void toMolgenisUser(MolgenisRequest request, MolgenisUser user, Database db) throws DatabaseException
 	{
 		if (StringUtils.isNotEmpty(request.getString("newpwd"))) user.setPassword(request.getString("newpwd"));
 		if (StringUtils.isNotEmpty(request.getString("emailaddress"))) user.setEmail(request.getString("emailaddress"));

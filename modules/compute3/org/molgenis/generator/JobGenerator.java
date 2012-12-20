@@ -3,7 +3,7 @@ package org.molgenis.generator;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.Hashtable;
 import java.util.List;

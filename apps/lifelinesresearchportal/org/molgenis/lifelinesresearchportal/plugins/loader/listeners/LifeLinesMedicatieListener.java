@@ -11,13 +11,13 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.io.TupleReader;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
+import org.molgenis.util.tuple.Tuple;
 
 public class LifeLinesMedicatieListener extends ImportTupleLoader
 {

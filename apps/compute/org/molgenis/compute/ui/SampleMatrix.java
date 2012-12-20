@@ -39,7 +39,7 @@
 //	}
 //
 //	@Override
-//	public Show handleRequest(Database db, Tuple request, OutputStream out)
+//	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 //			throws HandleRequestDelegationException
 //	{
 //		if (request.getAction().startsWith(matrixViewer.getName()))

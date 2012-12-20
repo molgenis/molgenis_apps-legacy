@@ -9,13 +9,13 @@ package org.molgenis.omicsconnect.plugins.experiment;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.observ.target.Panel;
 import org.molgenis.organization.Study;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * Shows table of experiment information for WormQTL
@@ -49,7 +49,7 @@ public class ExpTable extends PluginModel<Entity>
 		return "org/molgenis/omicsconnect/plugins/experiment/ExpTable.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

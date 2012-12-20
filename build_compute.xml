@@ -8,6 +8,7 @@
 	<!-- This determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="modules/compute4" />
 		<pathelement location="test/modules/compute4" />
 		<pathelement location="modules/settings" />

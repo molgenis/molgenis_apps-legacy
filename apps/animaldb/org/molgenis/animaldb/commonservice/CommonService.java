@@ -24,6 +24,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
@@ -35,7 +36,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 import filehandling.generic.PerformUpload;
@@ -96,7 +96,7 @@ public class CommonService
 	 * @param request
 	 * @throws Exception
 	 */
-	public String addAnimalDbFile(String name, String uniquePostfix, Tuple request, boolean overwriteExisting)
+	public String addAnimalDbFile(String name, String uniquePostfix, MolgenisRequest request, boolean overwriteExisting)
 			throws Exception
 	{
 		// DEC application PDF

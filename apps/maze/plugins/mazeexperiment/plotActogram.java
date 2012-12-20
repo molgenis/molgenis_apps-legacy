@@ -26,7 +26,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.maze.BinaryChannelData;
 import org.molgenis.maze.ChannelMapping;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 
 public class plotActogram extends PluginModel<Entity>
@@ -145,7 +145,7 @@ public class plotActogram extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);

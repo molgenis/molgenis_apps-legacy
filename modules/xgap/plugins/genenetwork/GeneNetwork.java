@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -52,7 +53,7 @@ public class GeneNetwork extends PluginModel
 		return "plugins/genenetwork/GeneNetwork.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

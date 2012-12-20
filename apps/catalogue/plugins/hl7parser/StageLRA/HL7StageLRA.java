@@ -6,11 +6,11 @@
 package plugins.hl7parser.StageLRA;
 
 import java.util.ArrayList;
-import org.w3c.dom.Node;
-import javax.xml.parsers.*;
-import javax.xml.xpath.*;
 
-import org.w3c.dom.Document;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**

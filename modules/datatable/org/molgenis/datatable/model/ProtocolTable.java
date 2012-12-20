@@ -29,8 +29,11 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
+
+import com.google.common.collect.Lists;
 
 /**
  * Wrap one Protocol EAV model in a TupleTable so that you can query this
@@ -222,7 +225,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 			for (Integer rowId : getRowIds(false, getDb()))
 			{
 				boolean target = false;
-				Tuple row = new SimpleTuple();
+				WritableTuple row = new KeyValueTuple();
 
 				List<QueryRule> ovFromInv = new ArrayList<QueryRule>();
 				ovFromInv.add(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, rowId));
@@ -590,7 +593,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable implements Edita
 
 			try
 			{
-				List<String> listFields = request.getFieldNames();
+				List<String> listFields = Lists.newArrayList(request.getColNames());
 
 				List<QueryRule> listQuery = new ArrayList<QueryRule>();
 				listQuery.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetID));

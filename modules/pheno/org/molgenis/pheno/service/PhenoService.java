@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-//import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -22,8 +21,9 @@ import org.molgenis.pheno.dto.ProtocolApplicationDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+//import javax.persistence.EntityManager;
+//import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class PhenoService

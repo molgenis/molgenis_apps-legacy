@@ -22,7 +22,6 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import decorators.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
@@ -60,7 +59,7 @@ public class MolgenisFileManager extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		appLoc = ((MolgenisRequest) request).getAppLocation();
 		try

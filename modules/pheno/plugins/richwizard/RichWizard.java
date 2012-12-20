@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -18,7 +19,6 @@ import org.molgenis.model.MolgenisModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 import app.JDBCMetaDatabase;
@@ -70,7 +70,7 @@ public class RichWizard extends PluginModel<Entity>
 		return true;
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

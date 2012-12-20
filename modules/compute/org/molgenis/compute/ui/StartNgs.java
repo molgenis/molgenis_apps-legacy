@@ -4,10 +4,11 @@ import org.molgenis.compute.UserParameter;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.*;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -43,7 +44,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 	{
 	}
 
-	public void buttonTest(Database db, Tuple request) throws Exception
+	public void buttonTest(Database db, MolgenisRequest request) throws Exception
 	{
 		int stepID = request.getInt("inputStep");
 		System.out.println("step to debug: " + stepID);
@@ -61,7 +62,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
 	}
 
-	public void buttonGenerate(Database db, Tuple request) throws Exception
+	public void buttonGenerate(Database db, MolgenisRequest request) throws Exception
 	{
 		processing.setFlagJustGenerate(true);
 		buttonStart(db, request); // we will only generate the scripts in this
@@ -69,7 +70,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 		processing.setFlagJustGenerate(false);
 	}
 
-	public void buttonStart(Database db, Tuple request) throws Exception
+	public void buttonStart(Database db, MolgenisRequest request) throws Exception
 	{
 		ScreenController<?> parentController = this.getParent();
 
@@ -119,7 +120,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
 	}
 
-	public void buttonTestFrom(Database db, Tuple request) throws Exception
+	public void buttonTestFrom(Database db, MolgenisRequest request) throws Exception
 	{
 		int stepID = request.getInt("inputFromStep");
 		System.out.println("debug from step: " + stepID);

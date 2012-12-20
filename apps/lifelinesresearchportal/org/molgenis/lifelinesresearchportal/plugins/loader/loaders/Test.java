@@ -1,11 +1,6 @@
 package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
 import org.apache.log4j.PropertyConfigurator;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
 public class Test

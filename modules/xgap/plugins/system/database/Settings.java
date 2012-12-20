@@ -22,6 +22,7 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -29,7 +30,6 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Panel;
 import org.molgenis.pheno.Species;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.InvestigationFile;
 import org.molgenis.xgap.Marker;
@@ -63,7 +63,7 @@ public class Settings extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

@@ -3,6 +3,7 @@ package org.molgenis.load.ui;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -34,7 +35,7 @@ public class LoadFromDirectory extends EasyPluginController<LoadFromDirectoryMod
 		// flavor="freemarker"
 	}
 
-	public void loadDirectory(Database db, Tuple request) throws Exception
+	public void loadDirectory(Database db, MolgenisRequest request) throws Exception
 	{
 		File directory = new File(request.getString("directory"));
 
