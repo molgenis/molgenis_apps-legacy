@@ -18,6 +18,9 @@ import org.molgenis.io.TupleWriter;
 import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.io.excel.ExcelReader;
 import org.molgenis.io.excel.ExcelSheetReader;
+import org.molgenis.io.excel.ExcelSheetWriter;
+import org.molgenis.io.excel.ExcelWriter;
+import org.molgenis.io.excel.ExcelWriter.FileFormat;
 import org.molgenis.io.processor.LowerCaseProcessor;
 import org.molgenis.io.processor.TrimProcessor;
 import org.molgenis.util.tuple.KeyValueTuple;
@@ -32,20 +35,29 @@ public class SampleConverter
 	// String>();
 
 	private static String OUTPUTDIR = null;
-
+	private static String PROJECT = null;
 	private Tuple features = null;
 	MakeEntityNameAndIdentifier mkObsTarget = null;
 	MakeEntityNameAndIdentifier mkObsFeature = null;
 	List<MakeEntityNameAndIdentifier> mkObsTargetlist = new ArrayList<MakeEntityNameAndIdentifier>();
 	List<MakeEntityNameAndIdentifier> mkObsFeaturelist = new ArrayList<MakeEntityNameAndIdentifier>();
 
-	public void convert(InputStream in, OutputStream out, String outputdir) throws IOException
+	public void convert(InputStream in, OutputStream out, String outputdir, String projectName) throws IOException
 	{
+
 		OUTPUTDIR = outputdir;
+		PROJECT = projectName;
 		ExcelReader excelReader = new ExcelReader(in);
 		excelReader.addCellProcessor(new TrimProcessor(false, true));
 		TupleWriter csvWriter = new CsvWriter(new OutputStreamWriter(out, Charset.forName("UTF-8")));
 		csvWriter.addCellProcessor(new LowerCaseProcessor(true, false));
+		ArrayList<String> listOfEntity = new ArrayList<String>();
+		listOfEntity.add("dataset");
+		listOfEntity.add("observationtarget");
+		listOfEntity.add("observableFeature");
+		listOfEntity.add("dataset_" + PROJECT.toLowerCase().trim());
+
+		mkmetadataExcelFile(listOfEntity);
 
 		try
 		{
@@ -64,7 +76,7 @@ public class SampleConverter
 						features = row;
 					}
 					// If the sample name exists
-					if (row.getString("id_sample") != null)
+					if (row.getString("id_sample") != null && !row.getString("id_sample").isEmpty())
 					{
 						String sampleId = row.getString("id_sample");
 						if (checkIfDouble(sampleId))
@@ -107,7 +119,10 @@ public class SampleConverter
 				}
 			}
 			// Fill a list with all the ObservableFeatures in the file
-			makeFeaturesList();
+			if (features != null)
+			{
+				makeFeaturesList();
+			}
 
 			// Write the metadata to a file for the features
 			mkMetadataFileObservableFeature();
@@ -150,7 +165,7 @@ public class SampleConverter
 
 	public String emptySample()
 	{
-		String sample = "Dummy_2012_" + (++counter);
+		String sample = "Dummy_2012_" + PROJECT + "_" + (++counter);
 		mkObsTarget = new MakeEntityNameAndIdentifier("unknown", sample);
 		mkObsTargetlist.add(mkObsTarget);
 		return sample;
@@ -159,7 +174,7 @@ public class SampleConverter
 	public void mkMetadataFileObservationTarget() throws IOException
 	{
 
-		OutputStream osMD = new FileOutputStream(OUTPUTDIR + "MetaDataObservationTarget.csv");
+		OutputStream osMD = new FileOutputStream(OUTPUTDIR + PROJECT + "_MetaDataObservationTarget.csv");
 
 		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
 		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
@@ -200,7 +215,7 @@ public class SampleConverter
 	public void mkMetadataFileObservableFeature() throws IOException
 	{
 
-		OutputStream osMD = new FileOutputStream(OUTPUTDIR + "MetaDataObservableFeature.csv");
+		OutputStream osMD = new FileOutputStream(OUTPUTDIR + PROJECT + "_MetaDataObservableFeature.csv");
 
 		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
 		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
@@ -209,7 +224,8 @@ public class SampleConverter
 
 		hashFeatures.put("identifier", "identifier");
 		hashFeatures.put("name", "name");
-
+		KeyValueTuple kvtHeader = new KeyValueTuple(hashFeatures);
+		csvWriterMD.writeColNames(kvtHeader);
 		for (MakeEntityNameAndIdentifier m : mkObsFeaturelist)
 		{
 			KeyValueTuple kvt = new KeyValueTuple(hashFeatures);
@@ -218,6 +234,40 @@ public class SampleConverter
 			csvWriterMD.write(kvt);
 		}
 		csvWriterMD.close();
+	}
+
+	public void mkmetadataExcelFile(ArrayList<String> listOfEntity) throws IOException
+	{
+
+		OutputStream osMD = new FileOutputStream(OUTPUTDIR + PROJECT + "_metadata.xls");
+
+		ExcelWriter excelWriterMD = new ExcelWriter(osMD, FileFormat.XLS);
+		excelWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
+		Map<String, String> hashdataset = new HashMap<String, String>();
+
+		hashdataset.put("identifier", "identifier");
+		hashdataset.put("name", "name");
+		hashdataset.put("protocolused_identifier", "protocolused_identifier");
+		KeyValueTuple kvtHeader = new KeyValueTuple(hashdataset);
+		for (String sheetName : listOfEntity)
+		{
+			if (sheetName.equals("dataset"))
+			{
+				ExcelSheetWriter esw = excelWriterMD.createSheet("dataset");
+				esw.write(kvtHeader);
+				KeyValueTuple kvt = new KeyValueTuple(hashdataset);
+				hashdataset.put("protocolused_identifier", "");
+				hashdataset.put("identifier", PROJECT.toLowerCase());
+				hashdataset.put("name", PROJECT.toLowerCase());
+				esw.write(kvt);
+			}
+			else
+			{
+				excelWriterMD.createSheet(sheetName);
+			}
+		}
+		excelWriterMD.close();
+
 	}
 
 }
