@@ -258,7 +258,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Breeding lines"));
 		// Add a breeding line
-		selenium.type("id=linename", "MyLine");
+		selenium.type("id=lineName", "MyLine");
 		selenium.select("id=species", "label=House mouse");
 		selenium.click("id=add");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);

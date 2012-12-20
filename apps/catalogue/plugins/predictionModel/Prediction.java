@@ -12,10 +12,10 @@ import jxl.read.biff.BiffException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
-import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -24,9 +24,8 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.SingletonTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
@@ -176,7 +175,7 @@ public class Prediction extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		if ("UploadFileByColumn".equals(request.getAction()))
@@ -361,7 +360,7 @@ public class Prediction extends PluginModel<Entity>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException,
+	public void loadDataFromExcel(Database db, MolgenisRequest request, Investigation inv) throws BiffException, IOException,
 			DatabaseException
 	{
 
@@ -478,10 +477,8 @@ public class Prediction extends PluginModel<Entity>
 					else if (classType.equals(Category.class.getSimpleName() + ":" + Category.ISMISSING))
 					{
 
-						Tuple defaults = new SimpleTuple();
-						defaults.set(Category.ISMISSING, true);
 						table.addField(Category.class.getSimpleName(), "name", columnIndex.intValue(),
-								TableField.COLVALUE, defaults);
+								TableField.COLVALUE, new SingletonTuple<Boolean>(Category.ISMISSING, true));
 						table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(),
 								columnIndex.intValue());
 

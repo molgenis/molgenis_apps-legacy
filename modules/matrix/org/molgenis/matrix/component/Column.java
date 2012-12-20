@@ -2,7 +2,6 @@ package org.molgenis.matrix.component;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 

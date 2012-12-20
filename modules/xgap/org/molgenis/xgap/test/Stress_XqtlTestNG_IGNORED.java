@@ -26,10 +26,10 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.io.TupleWriter;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.pheno.Individual;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.DetectOS;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
@@ -333,8 +333,15 @@ class queryMarkers
 		{
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			TupleWriter writer = new CsvWriter(out);
-			db.find(Marker.class, writer, new QueryRule[]
-			{});
+			try
+			{
+				db.find(Marker.class, writer, new QueryRule[]
+				{});
+			}
+			finally
+			{
+				writer.close();
+			}
 			int lines = countLines(new ByteArrayInputStream(out.toByteArray()));
 			Assert.assertEquals(lines, 118); // 117 markers + 1 for col.header
 		}

@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.TupleTable;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TupleTableDemo extends EasyPluginController
 {

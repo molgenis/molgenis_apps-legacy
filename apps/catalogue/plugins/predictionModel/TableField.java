@@ -1,16 +1,13 @@
 package plugins.predictionModel;
 
-import java.util.HashMap;
-
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TableField
 {
@@ -33,12 +30,6 @@ public class TableField
 
 	Boolean vertical;
 
-	// TableField Object = null;
-
-	private String Relation = "";
-
-	private HashMap<String, Object> nameToClass;
-
 	Protocol protocol = null;
 
 	ObservedValue observedValue = null;
@@ -53,9 +44,7 @@ public class TableField
 
 	private TableField Feature = null;
 
-	private Tuple defaults = new SimpleTuple();
-
-	private ProtocolApplication protocolApplication = null;
+	private Tuple defaults = new KeyValueTuple();
 
 	private int observationTarget = -1;
 

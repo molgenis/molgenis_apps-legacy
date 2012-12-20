@@ -10,7 +10,6 @@
 package plugins.LuceneIndex;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +37,12 @@ import org.apache.lucene.util.Version;
 import org.molgenis.core.UseCase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
 
 /*
  * @param LUCENE_INDEX_DIRECTORY - an empty directory to store index files
@@ -96,7 +95,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		LuceneConfiguration LC = new LuceneConfiguration();
 

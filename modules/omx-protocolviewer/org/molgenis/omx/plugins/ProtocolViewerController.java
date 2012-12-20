@@ -21,7 +21,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.io.excel.ExcelSheetWriter;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.observ.Category;
 import org.molgenis.observ.DataSet;
@@ -31,8 +31,6 @@ import org.molgenis.observ.target.OntologyTerm;
 import org.molgenis.omx.EMeasureFeatureWriter;
 import org.molgenis.omx.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.tuple.HeaderTuple;
 import org.molgenis.util.tuple.ValueTuple;
 
 import com.google.gson.Gson;
@@ -83,7 +81,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws Exception
 	{
 		if (out == null)
 		{
@@ -127,7 +125,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		MolgenisRequest req = (MolgenisRequest) request;
 		HttpServletResponse response = req.getResponse();
@@ -187,8 +185,8 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			ExcelWriter excelWriter = new ExcelWriter(response.getOutputStream());
 			try
 			{
-				ExcelSheetWriter sheetWriter = excelWriter.createSheet("variables");
-				sheetWriter.writeColNames(new HeaderTuple(header));
+				TupleWriter sheetWriter = excelWriter.createTupleWriter("variables");
+				sheetWriter.writeColNames(header);
 
 				for (ObservableFeature feature : features)
 				{

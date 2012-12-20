@@ -31,8 +31,8 @@
 
 	<p><h2><#if screen.lineName?exists>Update<#else>Add</#if> breeding line</h2></p>
 	<div class='row'>
-		<label for='linename'>Line name:</label>
-		<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
+		<label for='lineName'>Line name:</label>
+		<input type='text' class='textbox' name='lineName' id='lineName' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
 	</div>
 	<div class='row'>
 		<label for='fullname'>Full line name:</label>

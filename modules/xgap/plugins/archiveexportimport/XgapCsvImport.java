@@ -1,12 +1,14 @@
 package plugins.archiveexportimport;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.EntitiesImporter;
 
-import app.CsvImport;
+import app.EntitiesImporterImpl;
 
 public class XgapCsvImport
 {
@@ -17,7 +19,8 @@ public class XgapCsvImport
 
 		try
 		{
-			CsvImport.importAll(extractDir, db, new SimpleTuple(), false);
+			EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+			entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles()), DatabaseAction.ADD);
 
 			File investigationFile = new File(extractDir + File.separator + "study.txt");
 			List<String> investigationNames = XgapCommonImport.getInvestigationNameFromFile(investigationFile);

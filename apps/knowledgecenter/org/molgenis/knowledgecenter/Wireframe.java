@@ -6,11 +6,12 @@ import java.util.List;
 import knowledgecenter.KcPage;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class Wireframe extends EasyPluginController<Wireframe>
 {
@@ -37,7 +38,7 @@ public class Wireframe extends EasyPluginController<Wireframe>
 		return new FreemarkerView("Wireframe.ftl", this);
 	}
 
-	public void show(Database db, Tuple request)
+	public void show(Database db, MolgenisRequest request)
 	{
 
 	}

@@ -37,7 +37,7 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.variant.Exon;
 import org.molgenis.variant.Gene;
 import org.molgenis.variant.Patient;

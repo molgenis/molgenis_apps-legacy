@@ -24,6 +24,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -47,8 +48,8 @@ import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 import org.molgenis.mutation.vo.QueryParametersVO;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public abstract class SearchPlugin extends IntegratedPluginController<SearchModel>
@@ -90,7 +91,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		// this.reload(db);
 
@@ -272,7 +273,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		return Show.SHOW_MAIN;
 	}
 
-	private void handleShowMutation(Database db, Tuple request) throws DatabaseException
+	private void handleShowMutation(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		if (StringUtils.isNotEmpty(request.getString("mid"))) this.mutationSearchCriteriaVO.setMid(request
 				.getString("mid"));
@@ -294,7 +295,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleFindPatients(Database db, Tuple request) throws DatabaseException
+	private void handleFindPatients(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		if (StringUtils.isNotEmpty(request.getString("mid"))) this.patientSearchCriteriaVO.setMid(request
 				.getString("mid"));
@@ -313,7 +314,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
-	private void handleFindMutationsByTerm(Database db, Tuple request) throws DatabaseException, ParseException,
+	private void handleFindMutationsByTerm(Database db, MolgenisRequest request) throws DatabaseException, ParseException,
 			ServletException, IOException
 	{
 		// if (StringUtils.isNotEmpty(request.getString("term")) &&
@@ -388,7 +389,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("freetext.ftl", this.getModel()));
 	}
 
-	private void handleShowNextMutation(Database db, Tuple request) throws DatabaseException
+	private void handleShowNextMutation(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		MutationService mutationService = new MutationService();
 		mutationService.setDatabase(db);
@@ -397,7 +398,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleShowPrevMutation(Database db, Tuple request) throws DatabaseException
+	private void handleShowPrevMutation(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		MutationService mutationService = new MutationService();
 		mutationService.setDatabase(db);
@@ -424,7 +425,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleListAllMutations(Database db, Tuple request) throws DatabaseException, ParseException
+	private void handleListAllMutations(Database db, MolgenisRequest request) throws DatabaseException, ParseException
 	{
 		MutationService mutationService = new MutationService();
 		mutationService.setDatabase(db);
@@ -439,7 +440,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("included.ftl", getModel()));
 	}
 
-	private void handleShowPatient(Database db, Tuple request) throws Exception
+	private void handleShowPatient(Database db, MolgenisRequest request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
@@ -457,7 +458,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		}
 	}
 
-	private void handleListAllPatients(Database db, Tuple request) throws DatabaseException
+	private void handleListAllPatients(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		// MolgenisUser user = new MolgenisUser();
 		// user.setId(this.getLogin().getUserId());
@@ -476,7 +477,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
-	private void handleShowPhenotypeDetails(Database db, Tuple request) throws Exception
+	private void handleShowPhenotypeDetails(Database db, MolgenisRequest request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
@@ -499,7 +500,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		}
 	}
 
-	private void handleShowProteinDomain(Database db, Tuple request) throws Exception
+	private void handleShowProteinDomain(Database db, MolgenisRequest request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("domain_id"))) this.mutationSearchCriteriaVO
 				.setProteinDomainId(request.getInt("domain_id"));
@@ -544,7 +545,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("proteindomain.ftl", getModel()));
 	}
 
-	private void handleShowExon(Database db, Tuple request) throws DatabaseException, RESyntaxException
+	private void handleShowExon(Database db, MolgenisRequest request) throws DatabaseException, RESyntaxException
 	{
 		if (StringUtils.isNotEmpty(request.getString("exon_id")))
 		{
@@ -710,7 +711,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	private void findAndAdd(Database db, Tuple request, MutationSearchCriteriaVO criteria, String key)
+	private void findAndAdd(Database db, MolgenisRequest request, MutationSearchCriteriaVO criteria, String key)
 			throws DatabaseException, ParseException, ServletException, IOException
 	{
 		MutationService mutationService = new MutationService();

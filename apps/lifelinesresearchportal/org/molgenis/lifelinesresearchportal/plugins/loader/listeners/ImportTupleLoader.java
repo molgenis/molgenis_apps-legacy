@@ -1,7 +1,7 @@
 package org.molgenis.lifelinesresearchportal.plugins.loader.listeners;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.TupleReader;
+import org.molgenis.io.TupleReader;
 
 /**
  * This listener will read tuples and write them to a target, e.g. a database or

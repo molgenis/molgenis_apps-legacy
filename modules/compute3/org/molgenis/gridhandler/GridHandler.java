@@ -1,7 +1,7 @@
 package org.molgenis.gridhandler;
 
 import org.molgenis.compute.ComputeJob;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.Hashtable;
 import java.util.List;

@@ -28,7 +28,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * Reads UploadBatch from Excel file.

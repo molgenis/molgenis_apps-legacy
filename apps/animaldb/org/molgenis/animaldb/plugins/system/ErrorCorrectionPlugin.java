@@ -14,11 +14,11 @@ import java.util.List;
 import org.molgenis.animaldb.DeletedObservedValue;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 //import commonservice.CommonService;
 
@@ -55,7 +55,7 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{
@@ -85,7 +85,7 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 				List<DeletedObservedValue> addList = new ArrayList<DeletedObservedValue>();
 				for (int i = 0; i < valueList.size(); i++)
 				{
-					if (request.getBool(Integer.toString(i)) != null)
+					if (request.getBoolean(Integer.toString(i)) != null)
 					{
 						ObservedValue val = valueList.get(i);
 						removalList.add(val);
@@ -115,7 +115,7 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 				List<ObservedValue> addList = new ArrayList<ObservedValue>();
 				for (int i = 0; i < deletedValueList.size(); i++)
 				{
-					if (request.getBool(Integer.toString(i)) != null)
+					if (request.getBoolean(Integer.toString(i)) != null)
 					{
 						DeletedObservedValue val = deletedValueList.get(i);
 						removalList.add(val);

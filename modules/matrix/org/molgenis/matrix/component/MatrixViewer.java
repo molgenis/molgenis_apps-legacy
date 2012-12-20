@@ -34,6 +34,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -70,7 +71,6 @@ import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 public class MatrixViewer extends HtmlWidget
 {
@@ -223,7 +223,7 @@ public class MatrixViewer extends HtmlWidget
 		this.showNameFilter = showNameFilter;
 	}
 
-	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest t) throws HandleRequestDelegationException
 	{
 		try
 		{
@@ -983,7 +983,7 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void clearFilters(Database db, Tuple t) throws MatrixException
+	public void clearFilters(Database db, MolgenisRequest t) throws MatrixException
 	{
 		matrix.reset();
 	}
@@ -995,7 +995,7 @@ public class MatrixViewer extends HtmlWidget
 	 * @param t
 	 * @throws MatrixException
 	 */
-	public void clearValueFilters(Database db, Tuple t) throws MatrixException
+	public void clearValueFilters(Database db, MolgenisRequest t) throws MatrixException
 	{
 		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -1024,13 +1024,13 @@ public class MatrixViewer extends HtmlWidget
 		return file;
 	}
 
-	public void download(Database db, Tuple t)
+	public void download(Database db, MolgenisRequest t)
 	{
 		// to prevent nullpointer error when clicking the Download menu button
 	}
 
 	@SuppressWarnings("unchecked")
-	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
+	public void downloadAllCsv(Database db, MolgenisRequest t) throws MatrixException, IOException
 	{
 		File file = makeFile("_All", "csv");
 
@@ -1133,7 +1133,7 @@ public class MatrixViewer extends HtmlWidget
 	// }
 
 	@SuppressWarnings("unchecked")
-	public void downloadVisibleCsv(Database db, Tuple t) throws MatrixException, IOException
+	public void downloadVisibleCsv(Database db, MolgenisRequest t) throws MatrixException, IOException
 	{
 		File file = makeFile("_Visible", "csv");
 		if (matrix instanceof SliceablePhenoMatrixMV)
@@ -1211,20 +1211,11 @@ public class MatrixViewer extends HtmlWidget
 	}
 
 	@SuppressWarnings("unchecked")
-	public void downloadAllExcel(Database db, Tuple t) throws MatrixException, IOException, RowsExceededException,
-			WriteException
+	public void downloadAllExcel(Database db, MolgenisRequest t) throws MatrixException, IOException,
+			RowsExceededException, WriteException
 	{
 		File excelFile = makeFile("_All", "xls");
-		if (matrix instanceof SliceablePhenoMatrixMV)
-		{
-			// ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// exporter =
-			// new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// ((SliceablePhenoMatrixMV<ObservationTarget, Measurement,
-			// ObservedValue>)matrix, new FileOutputStream(excelFile));
-			// exportAll(excelFile, exporter);
-		}
-		else
+		if (!(matrix instanceof SliceablePhenoMatrixMV))
 		{
 			// remember old limits and offset
 			int rowOffset = matrix.getRowOffset();
@@ -1310,19 +1301,10 @@ public class MatrixViewer extends HtmlWidget
 	}
 
 	@SuppressWarnings("unchecked")
-	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
+	public void downloadVisibleExcel(Database db, MolgenisRequest t) throws Exception
 	{
 		File excelFile = makeFile("_Visible", "xls");
-		if (matrix instanceof SliceablePhenoMatrixMV)
-		{
-			// ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// exporter =
-			// new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// ((SliceablePhenoMatrixMV<ObservationTarget, Measurement,
-			// ObservedValue>)matrix, new FileOutputStream(excelFile));
-			// exportVisible(excelFile.getName(), exporter);
-		}
-		else
+		if (!(matrix instanceof SliceablePhenoMatrixMV))
 		{
 
 			if (this.matrix instanceof DatabaseMatrix)
@@ -1440,12 +1422,12 @@ public class MatrixViewer extends HtmlWidget
 		return result;
 	}
 
-	public void reloadMatrix(Database db, Tuple t) throws MatrixException
+	public void reloadMatrix(Database db, MolgenisRequest t) throws MatrixException
 	{
 		matrix.reload();
 	}
 
-	public void filterCol(Database db, Tuple t) throws Exception
+	public void filterCol(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1473,7 +1455,7 @@ public class MatrixViewer extends HtmlWidget
 			Operator op = Operator.valueOf(t.getString(OPERATOR));
 			// new Operator(t.getString(OPERATOR));
 			// Then do the actual slicing
-			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.get(COLVALUE));
 
 		}
 		else
@@ -1484,7 +1466,7 @@ public class MatrixViewer extends HtmlWidget
 			{ // Filter on name
 				matrix.getRules().add(
 						new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
-								.getObject(COLVALUE)));
+								.get(COLVALUE)));
 			}
 			else
 			{
@@ -1507,14 +1489,13 @@ public class MatrixViewer extends HtmlWidget
 				Operator op = Operator.valueOf(t.getString(OPERATOR));
 				// new Operator(t.getString(OPERATOR));
 				// Then do the actual slicing
-				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.get(COLVALUE));
 			}
 		}
 		matrix.reload(); // to make sure the paging info is correctly updated
 	}
 
-	@SuppressWarnings("unchecked")
-	public void updateColHeaderFilter(Database db, Tuple t) throws Exception
+	public void updateColHeaderFilter(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1623,7 +1604,7 @@ public class MatrixViewer extends HtmlWidget
 		System.out.println("----------");
 	}
 
-	public void addAllColHeaderFilter(Database db, Tuple t) throws Exception
+	public void addAllColHeaderFilter(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1690,7 +1671,7 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void remAllColHeaderFilter(Database db, Tuple t) throws Exception
+	public void remAllColHeaderFilter(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1714,17 +1695,17 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
-	public void rowHeaderEquals(Database db, Tuple t) throws Exception
+	public void rowHeaderEquals(Database db, MolgenisRequest t) throws Exception
 	{
 		matrix.sliceByRowProperty(ObservationElement.ID, QueryRule.Operator.EQUALS, t.getString(ROWHEADER));
 	}
 
-	public void changeRowLimit(Database db, Tuple t)
+	public void changeRowLimit(Database db, MolgenisRequest t)
 	{
 		this.matrix.setRowLimit(t.getInt(ROWLIMIT));
 	}
 
-	public void moveLeftEnd(Database db, Tuple t) throws MatrixException
+	public void moveLeftEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1733,7 +1714,7 @@ public class MatrixViewer extends HtmlWidget
 		this.matrix.setColOffset(0);
 	}
 
-	public void moveLeft(Database db, Tuple t) throws MatrixException
+	public void moveLeft(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1743,7 +1724,7 @@ public class MatrixViewer extends HtmlWidget
 				- matrix.getColLimit() : 0);
 	}
 
-	public void moveRight(Database db, Tuple t) throws MatrixException
+	public void moveRight(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1753,7 +1734,7 @@ public class MatrixViewer extends HtmlWidget
 				.getColOffset() + matrix.getColLimit() : matrix.getColOffset());
 	}
 
-	public void moveRightEnd(Database db, Tuple t) throws MatrixException
+	public void moveRightEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1764,7 +1745,7 @@ public class MatrixViewer extends HtmlWidget
 				.intValue()) * matrix.getColLimit());
 	}
 
-	public void moveUpEnd(Database db, Tuple t) throws MatrixException
+	public void moveUpEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1773,7 +1754,7 @@ public class MatrixViewer extends HtmlWidget
 		this.matrix.setRowOffset(0);
 	}
 
-	public void moveUp(Database db, Tuple t) throws MatrixException
+	public void moveUp(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1783,7 +1764,7 @@ public class MatrixViewer extends HtmlWidget
 				- matrix.getRowLimit() : 0);
 	}
 
-	public void moveDown(Database db, Tuple t) throws MatrixException
+	public void moveDown(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1793,7 +1774,7 @@ public class MatrixViewer extends HtmlWidget
 				.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
 	}
 
-	public void moveDownEnd(Database db, Tuple t) throws MatrixException
+	public void moveDownEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1804,14 +1785,14 @@ public class MatrixViewer extends HtmlWidget
 				.intValue()) * matrix.getRowLimit());
 	}
 
-	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
+	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
 		// try/catch for method calling
 		try
 		{
 			System.out.println("trying to use reflection to call ######## " + this.getClass().getName() + "." + action);
-			Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
+			Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class);
 			m.invoke(this, db, request);
 			logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 					+ " completed");

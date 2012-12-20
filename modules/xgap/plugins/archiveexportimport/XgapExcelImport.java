@@ -2,7 +2,6 @@ package plugins.archiveexportimport;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +11,13 @@ import jxl.Sheet;
 import jxl.Workbook;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.EntitiesImporter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 
 public class XgapExcelImport
 {
@@ -50,7 +51,8 @@ public class XgapExcelImport
 
 		try
 		{
-			ExcelImport.importAll(excelFile, db, new SimpleTuple(), false);
+			EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+			entitiesImporter.importEntities(excelFile, DatabaseAction.ADD);
 
 			if (dataDir != null)
 			{

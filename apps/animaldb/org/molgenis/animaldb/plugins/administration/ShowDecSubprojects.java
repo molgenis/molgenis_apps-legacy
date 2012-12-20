@@ -19,6 +19,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -33,7 +34,6 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class ShowDecSubprojects extends PluginModel<Entity>
 {
@@ -367,7 +367,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		ct.setDatabase(db);
 		if (addAnimalsMatrixViewer != null)
@@ -729,7 +729,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				int rowCnt = 0;
 				for (ObservationElement row : rows)
 				{
-					if (request.getBool(REMANIMALSMATRIX + "_selected_" + rowCnt) != null)
+					if (request.getBoolean(REMANIMALSMATRIX + "_selected_" + rowCnt) != null)
 					{
 						int animalId = row.getId();
 						if (!animalRemoveIdList.contains(animalId))
@@ -931,7 +931,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				int rowCnt = 0;
 				for (ObservationElement row : rows)
 				{
-					if (request.getBool(ADDANIMALSMATRIX + "_selected_" + rowCnt) != null)
+					if (request.getBoolean(ADDANIMALSMATRIX + "_selected_" + rowCnt) != null)
 					{
 						int animalId = row.getId();
 						if (!animalIdList.contains(animalId))
