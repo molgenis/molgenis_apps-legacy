@@ -217,18 +217,12 @@
 		</div>
 		<div id="divnamebase" style="clear:both; display:block">
 			<label style="width:16em;float:left;" for="namebase">Name prefix (may be empty):</label>
-			<select id="namebase" name="namebase" onchange="updateStartNumberAndNewNameBase(this.value)">
-				<option value=""></option>
-				<option value="New">New (specify below)</option>
-				<#list screen.bases as base>
-					<option value="${base}" <#if screen.speciesBase == base>selected="selected"</#if> >${base}</option>
-				</#list>
-			</select>
+			<input type="text" class="text ui-widget-content ui-corner-all" readonly="true" name="namebase" id="namebase" value="${screen.speciesBase}" />
 		</div>
 		<input id="startnumberhelper" type="hidden" value="${screen.getStartNumberHelperContent()}" />
 		<div id="divnewnamebasePanel" style="display:none; clear:both">
 			<label style="width:16em;float:left;" for="newnamebase">New name prefix:</label>
-			<input type="text" class="text ui-widget-content ui-corner-all" name="newnamebase" id="newnamebase" class="textbox" />
+			<input type="text" class="text ui-widget-content ui-corner-all" readonly="true" name="newnamebase" id="newnamebase" class="textbox" />
 		</div>
 		<div id="divstartnumber" style="clear:both; display:block">
 			<label style="width:16em;float:left;" for="startnumber">Start numbering at:</label>
@@ -286,18 +280,38 @@
 	</#if>
 	
 	<#elseif screen.action == "EditLitter">
+	<div class="form_header">Edit litter ${screen.getLitter()}</div>
 	${screen.getEditTable()}
-		<input type='submit' id='saveEdit' value='Save' onclick="__action.value='applyEdit'" />
+		<div style="float:left">
+			<input type='submit' id='saveEdit' value='Save' onclick="__action.value='applyEdit'" />
+		</div>
+		<div style="float:left">
+			<input type='submit' id='go_back' value='Cancel' onclick="__action.value='editLitter'" />
+		</div>
+		<div style="float:right">
+		<#if screen.stillToWeanYN>
 		
-		<input type='submit' id='editIndividual' value='editIndividual' onclick="__action.value='editIndividual'" />
+			<input type='submit' id='editIndividual' disabled value='Edit individuals in litter' onclick="__action.value='editIndividual'" />
+		
+		<#else>
+			<input type='submit' id='editIndividual' value='Edit individuals in litter' onclick="__action.value='editIndividual'" />
+
+		</#if>
+		</div>
 	<br />
 	<br />
 	<hr>
 	<#elseif screen.action == "editIndividual">
-	${screen.getGenotypeTable()}
-	<input type='submit' id='save' value='SaveIndividuals' onclick="__action.value='applyLitterIndividuals'" />
-	
-	
+	<div class="form_header">Edit individuals in litter ${screen.getLitter()}</div>
+		${screen.getGenotypeTable()}
+	<div style="float:left">
+		<a href="molgenis.do?__target=${screen.name}&__action=editIndividual&addNew=true"><img id="addIndividualToWeanGroup" title="addIndividualToWeanGroup" alt="addIndividualToWeanGroup" src="generated-res/img/new.png"></a>
+	</div>
+	<!--<input type="image" title="saveIndi" src"generated-res/img/new.png" id='saveIMG' onclick="__action.value='applyLitterIndividuals'" />-->
+		<input type='submit' id='go_back' value='Cancel' onclick="__action.value='EditLitter'" />
+	<div style="float:left">
+		<input type='submit' id='save' value='Save' onclick="__action.value='applyLitterIndividuals'" />
+	</div>
 <#elseif screen.action == "makeLabels">
 
 	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
@@ -324,11 +338,40 @@
 	
 	<#else>
 	
-		<div style="clear:both" class="form_header">Litters</div>
+	<div style="clear:both" class="form_header">Litters</div>
 		<div>
 			<br />
 			${screen.litterMatrixViewer}
-			<br />
+		</div>
+			
+		<div id='litterActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			
+			
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Wean</th>
+						<th>Genotype</th>
+						<th>Edit</th>
+						<th>Print cagelabels</th>
+						<th>Activate/Deactivate</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="weanlitter" type="image" title="Wean the selected litter." onclick="__action.value='WeanLitter'" src="res/img/pacifier_32.png"  /></td>
+						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
+						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editview_32.png"  /></td>
+						<td><input id="print cagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
+						<td><input id="deactivate" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="pushdown" style="clear:both;" >
+		</div>
+		
+		<!-- div style="clear:both">
 			<input type='submit' id='weanlitter' value='Wean selected litter' onclick="__action.value='WeanLitter'" />
 			<br />		
 			<input type='submit' id='genotypelitter' value='Genotype selected litter' onclick="__action.value='GenotypeLitter'" />
@@ -341,8 +384,8 @@
 			<input type='submit' id='label' value='Make cage labels for selected litter' onclick="__action.value='makeLabels'" />
 			<br />
 			<input type='submit' id='deactivate' value='(De)activate selected litter' onclick="__action.value='deActivateLitter'" />
-		</div>
-	
+		</div -->
+	</div>
 	</#if>
 
 </#if>
@@ -381,12 +424,15 @@
 	jQuery('#breedingLine').chosen();
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
+	jQuery('#go_back').button();
+
+	
 	
 	$(function() {
 		$("#birthdate").datepicker({
 			numberOfMonths: 1,
 			showButtonPanel: true,
-			dateFormat: "yy-mm-dd"
+			dateFormat: "yy-mm-dd"			
 		});
 	});
 	$(function() {
@@ -407,6 +453,8 @@
 	  "bAutoWidth": false,
 	  "bJQueryUI" : true }
 	);
+	
+	
 </script>
 
 </#macro>

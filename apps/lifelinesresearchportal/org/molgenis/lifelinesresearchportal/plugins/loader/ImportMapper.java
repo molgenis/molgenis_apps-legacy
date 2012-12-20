@@ -16,6 +16,7 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.io.csv.CsvReader;
 import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.ImportTupleLoader;
 import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.LifeLinesMedicatieListener;
 import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.LifeLinesStandardListener;
@@ -23,8 +24,6 @@ import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VWCategoryL
 import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VwDictLoader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
 
 import app.DatabaseFactory;
 
@@ -99,17 +98,29 @@ public class ImportMapper
 		// load dictonary
 		final String DICT = "VW_DICT";
 		VwDictLoader dictLoader = new VwDictLoader(inv, DICT, db);
-		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA.csv"));
-
-		dictLoader.load(reader);
-
+		CsvReader reader = new CsvReader(new File(path + DICT + "_DATA.csv"));
+		try
+		{
+			dictLoader.load(reader);
+		}
+		finally
+		{
+			reader.close();
+		}
 		dictLoader.commit();
 
 		// load categories
 		final String CATE = "VW_DICT_VALUESETS";
 		VWCategoryLoader catListener = new VWCategoryLoader(dictLoader.getProtocols(), inv, CATE, db);
-		reader = new CsvFileReader(new File(path + CATE + "_DATA.csv"));
-		catListener.load(reader);
+		reader = new CsvReader(new File(path + CATE + "_DATA.csv"));
+		try
+		{
+			catListener.load(reader);
+		}
+		finally
+		{
+			reader.close();
+		}
 		catListener.commit();
 
 		// iterate through the protocols map assuming CSV files
@@ -125,19 +136,25 @@ public class ImportMapper
 				File f = new File(path + "VW_" + protocol.getName() + "_DATA.csv");
 
 				ImportTupleLoader llListener;
-				reader = new CsvFileReader(f);
-				if ("MEDICATIE".equals(protocol.getName()))
+				reader = new CsvReader(f);
+				try
 				{
-					protocol.getFeatures().clear();
-					llListener = new LifeLinesMedicatieListener(db, protocol);
-					llListener.load(reader);
+					if ("MEDICATIE".equals(protocol.getName()))
+					{
+						protocol.getFeatures().clear();
+						llListener = new LifeLinesMedicatieListener(db, protocol);
+						llListener.load(reader);
+					}
+					else
+					{
+						llListener = new LifeLinesStandardListener(inv, protocol, db);
+						llListener.load(reader);
+					}
 				}
-				else
+				finally
 				{
-					llListener = new LifeLinesStandardListener(inv, protocol, db);
-					llListener.load(reader);
+					reader.close();
 				}
-
 				llListener.commit();
 			}
 		}

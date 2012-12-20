@@ -10,7 +10,7 @@ import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class ComputeBundle
 {

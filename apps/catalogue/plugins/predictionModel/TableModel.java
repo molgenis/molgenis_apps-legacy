@@ -2,11 +2,9 @@ package plugins.predictionModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-//import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,10 +22,12 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.DatabaseFactory;
+//import java.util.Iterator;
+//import java.util.Set;
 
 public class TableModel
 {
@@ -46,57 +46,11 @@ public class TableModel
 
 	private HashMap<String, String> InputToMolgenisDataType = new HashMap<String, String>();
 
-	private HashMap<Integer, Integer> protocolSubprotocolIndex = new HashMap<Integer, Integer>();
-
-	private HashMap<Integer, Integer> protocolSubProtocol = new HashMap<Integer, Integer>();
-
 	private HashMap<Integer, TableField> columnIndexToTableField = new HashMap<Integer, TableField>();
-
-	private HashMap<TableField, TableField> referenceField = new HashMap<TableField, TableField>();
-
-	// private int protocolIndex = -1;
-	//
-	// private int featureIndex = -1;
-
-	// private String protocolName = null;
-	//
-	// private String subProtocolName = null;
-	//
-	// private int unitsIndex = -1;
-	//
-	// private int temporalIndex = -1;
-	//
-	// private int measurementIndex = -1;
-	//
-	// private int categoryIndex = -1;
-	//
-	// private int missingCategoryIndex = -1;
 
 	private List<Integer> missingCategoryList = new ArrayList<Integer>();
 
-	private HashMap<Integer, List<Integer>> categoryAddToMeasurement = new HashMap<Integer, List<Integer>>();
-
-	// OntologyTerm Parameters
-	// private int ontologyTermIndex = -1;
-	//
-	// private int ontologyNameIndex = -1;
-	//
-	// private int ontologyTermAccessIndex = -1;
-	//
-	// private int ontologyDefinitionIndex = -1;
-	//
-	// private int ontologyTermPathIndex = -1;
 	private HashMap<Integer, List<Integer>> relationIndex = new HashMap<Integer, List<Integer>>();
-	private String[] updateMeasurementDatabaseRules =
-	{ Measurement.NAME, Measurement.DESCRIPTION, Measurement.DATATYPE, Measurement.CATEGORIES_NAME,
-			Measurement.UNIT_NAME, Measurement.INVESTIGATION_NAME };
-	private String[] updateProtocolDatabaseRules =
-	{ Protocol.NAME, Protocol.FEATURES_NAME, Protocol.SUBPROTOCOLS_NAME, Protocol.INVESTIGATION_NAME };
-	private String[] updateCategoryDatabaseRules =
-	{ Category.NAME, Category.CODE_STRING, Category.DESCRIPTION, Category.LABEL, Category.ISMISSING,
-			Category.INVESTIGATION_NAME };
-	private String[] updateObservedValuesDatabaseRules =
-	{ ObservedValue.VALUE, ObservedValue.TARGET_NAME, ObservedValue.FEATURE_NAME, ObservedValue.INVESTIGATION_NAME };
 
 	private String investigationName = null;
 
@@ -111,7 +65,7 @@ public class TableModel
 
 	public void addField(String classType, String fieldName, int[] columnList, Boolean Vertical)
 	{
-		this.addField(classType, fieldName, columnList, Vertical, new SimpleTuple());
+		this.addField(classType, fieldName, columnList, Vertical, new KeyValueTuple());
 	}
 
 	public void addField(String ClassType, String fieldName, int[] columnList, Boolean Vertical, Tuple defaults)
@@ -140,7 +94,7 @@ public class TableModel
 			else
 			{
 
-				this.addField(ClassType, fieldName, columnIndexes[i], Vertical, new SimpleTuple(), dependedIndex);
+				this.addField(ClassType, fieldName, columnIndexes[i], Vertical, new KeyValueTuple(), dependedIndex);
 				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
 			}
 			columnList.add(columnIndexes[i]);
@@ -150,14 +104,14 @@ public class TableModel
 
 	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical)
 	{
-		this.addField(ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), -1);
+		this.addField(ClassType, fieldName, columnIndex, Vertical, new KeyValueTuple(), -1);
 	}
 
 	public void addField(String ClassType, String fieldName, int columnIndex, boolean Vertical,
 			int... dependentColumnIndex)
 	{
 
-		this.addField(ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
+		this.addField(ClassType, fieldName, columnIndex, Vertical, new KeyValueTuple(), dependentColumnIndex);
 
 	}
 
@@ -170,7 +124,7 @@ public class TableModel
 	public void addField(String ClassType, String fieldName, int[] coHeaders, int targetIndex, boolean Vertical)
 	{
 		observationTarget = targetIndex;
-		this.addField(ClassType, fieldName, coHeaders, Vertical, new SimpleTuple());
+		this.addField(ClassType, fieldName, coHeaders, Vertical, new KeyValueTuple());
 		observationTarget = -1;
 	}
 
@@ -551,10 +505,6 @@ public class TableModel
 				}
 			}
 
-			// convert the columnValues into one list per column for the
-			// database
-			Map<Integer, List<InvestigationElement>> dataToAdd = new LinkedHashMap<Integer, List<InvestigationElement>>();
-
 			List<InvestigationElement> measurementList = new ArrayList<InvestigationElement>();
 			List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
 			List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
@@ -564,7 +514,6 @@ public class TableModel
 			{
 				// dataToAdd.put(colIndex, new
 				// ArrayList<InvestigationElement>());
-				List<InvestigationElement> addedList = new ArrayList<InvestigationElement>();
 				for (List<InvestigationElement> list : colValues.get(colIndex))
 				{
 					// addedList.addAll(list);
@@ -659,8 +608,6 @@ public class TableModel
 					Protocol.INVESTIGATION_NAME);
 
 			List<InvestigationElement> subProtocols = new ArrayList<InvestigationElement>();
-
-			List<InvestigationElement> noneDuplicatedElements = new ArrayList<InvestigationElement>();
 
 			for (InvestigationElement p : protocolList)
 			{

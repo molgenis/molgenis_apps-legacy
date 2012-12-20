@@ -3,8 +3,9 @@ package org.molgenis.load.ui;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
@@ -34,9 +35,17 @@ public class LoadFromDirectory extends EasyPluginController<LoadFromDirectoryMod
 		// flavor="freemarker"
 	}
 
-	public void loadDirectory(Database db, Tuple request) throws Exception
+	public void loadDirectory(Database db, MolgenisRequest request) throws Exception
 	{
 		File directory = new File(request.getString("directory"));
+
+		// If there is a target dir import that one first, otherwise we maybe
+		// can't import the ObservedValues because they need a target
+		File targetDir = new File(directory, "target");
+		if (targetDir.exists() && targetDir.isDirectory())
+		{
+			CsvImport.importAll(targetDir, db, null);
+		}
 
 		CsvImport.importAll(directory, db, null);
 	}

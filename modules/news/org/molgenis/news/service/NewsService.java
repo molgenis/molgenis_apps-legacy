@@ -1,14 +1,11 @@
 package org.molgenis.news.service;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.news.MolgenisNews;
-
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.news.MolgenisNews;
 
 public class NewsService
 {

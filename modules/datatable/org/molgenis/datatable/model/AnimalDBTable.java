@@ -19,10 +19,13 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 import app.DatabaseFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * Wrap one Protocol EAV model in a TupleTable so that you can query this
@@ -170,7 +173,7 @@ public class AnimalDBTable extends AbstractFilterableTupleTable implements Edita
 
 			String lastTarget = "";
 
-			Tuple t = null;
+			WritableTuple t = null;
 
 			for (ObservedValue v : getDb().find(ObservedValue.class,
 					new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, targetNames)))
@@ -183,7 +186,7 @@ public class AnimalDBTable extends AbstractFilterableTupleTable implements Edita
 						result.add(t);
 					}
 
-					t = new SimpleTuple();
+					t = new KeyValueTuple();
 
 					lastTarget = v.getTarget_Name();
 
@@ -330,7 +333,7 @@ public class AnimalDBTable extends AbstractFilterableTupleTable implements Edita
 
 			try
 			{
-				List<String> listFields = request.getFieldNames();
+				List<String> listFields = Lists.newArrayList(request.getColNames());
 
 				List<QueryRule> listQuery = new ArrayList<QueryRule>();
 				listQuery.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetID));

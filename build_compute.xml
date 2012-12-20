@@ -8,6 +8,7 @@
 	<!-- This determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="modules/compute4" />
 		<pathelement location="test/modules/compute4" />
 		<pathelement location="modules/settings" />
@@ -19,6 +20,28 @@
 
 	<!-- Import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
+	
+	<target name="test">
+		<!-- combine classpaths -->
+		<path id="combined.class.path">
+			<path refid="molgenis.classpath" />
+			<path refid="app.class.path" />
+			<path location="${output_src}" />
+		</path>
+
+
+		<!-- run the tests -->
+		<testng  outputDir="${testng.report.dir}" haltOnFailure="true">
+			<xmlfileset dir="${build.molgenis_apps.dir}" includes="org/molgenis/compute/commandline/testng-compute.xml" />
+			<classpath location="${cb.instrument.dir}" />
+			<classpath refid="combined.class.path"/>
+			<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
+			<jvmarg value="-noverify" />
+			<jvmarg value="-ea" />
+			<jvmarg value="-Xmx2048m" />
+		</testng>
+	</target>
 		
 	<target name="gitversion">
 		<!-- Get GIT revision info from the commandline GIT client-->

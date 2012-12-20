@@ -52,7 +52,7 @@ public class GenomeBrowser extends PluginModel<Entity>
 		return "plugins/genomebrowser/GenomeBrowser.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// on any request, set the location of the app based on how the user
 		// 'contacted' the app

@@ -28,7 +28,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 
-import app.CsvExport;
+import app.CsvEntityExporter;
 import converters.dbgap.jaxb.Study;
 import converters.dbgap.jaxb.data_dict.Data_Dict;
 import converters.dbgap.jaxb.data_dict.Value;
@@ -120,7 +120,8 @@ public class DbGapToPheno
 
 	public void write(File dir) throws Exception
 	{
-		new CsvExport().exportAll(dir, investigations, new ArrayList<OntologyTerm>(ontologyterms), protocols,
+		CsvEntityExporter entityExporter = new CsvEntityExporter();
+		entityExporter.exportAll(dir, investigations, new ArrayList<OntologyTerm>(ontologyterms), protocols,
 				new ArrayList(measurements.values()), new ArrayList(categories.values()), panels, observedValues);
 	}
 

@@ -2,6 +2,7 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
@@ -13,7 +14,7 @@ import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -95,13 +96,13 @@ public class WorksheetBatchCommand extends SimpleCommand
 		return null;
 	}
 
-	public void findVariants(Database db, Tuple request) throws Exception
+	public void findVariants(Database db, MolgenisRequest request) throws Exception
 	{
 		print("WE ARE IN FINDVARIANTS!");
 		// getModel().setSuccess("Clean successful");
 	}
 
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
+	public ScreenModel.Show handleRequest(Database db, MolgenisRequest request, OutputStream downloadStream) throws Exception
 	{
 		String action = request.getString("__action");
 		String command = request.getString("__command");

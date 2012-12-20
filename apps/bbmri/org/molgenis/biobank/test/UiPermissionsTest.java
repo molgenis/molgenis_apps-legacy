@@ -106,8 +106,5 @@ public class UiPermissionsTest
 		// WritableWorkbook workbook = Workbook.createWorkbook(excelFile,
 		// wbSettings);
 		// WritableSheet s = workbook.createSheet("Sheet1", 0);
-
-		// XlsWriter xlswr = new XlsWriter();
-
 	}
 }

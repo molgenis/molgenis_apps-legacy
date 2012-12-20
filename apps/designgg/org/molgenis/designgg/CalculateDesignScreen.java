@@ -19,11 +19,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.DetectOS;
+import org.molgenis.util.FileLink;
 import org.molgenis.util.Tuple;
 
 /**
@@ -75,7 +77,7 @@ public class CalculateDesignScreen extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// will refresh automatically, so nothing to do here.
 		System.out.println("**** handleRequest CalculateDesignScreen");

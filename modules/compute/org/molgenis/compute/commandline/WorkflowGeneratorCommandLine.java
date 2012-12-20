@@ -7,7 +7,7 @@ import org.molgenis.compute.pipelinemodel.*;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.IOException;
 import java.text.ParseException;

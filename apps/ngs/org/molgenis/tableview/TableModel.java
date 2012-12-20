@@ -2,7 +2,7 @@ package org.molgenis.tableview;
 
 import java.util.List;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TableModel
 {

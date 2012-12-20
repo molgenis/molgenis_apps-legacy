@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.AbstractEntity;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * DesignParameters: .
@@ -460,88 +461,88 @@ public class DesignParameters extends AbstractEntity
 		if (tuple != null)
 		{
 			// set TwoColorArray
-			if (tuple.getObject("twocolorarray") != null || strict)
+			if (tuple.get("twocolorarray") != null || strict)
 			{
 				this.setTwoColorArray(tuple.getBoolean("twocolorarray"));
 			}
 			// set Genotype
-			if (tuple.getObject("genotype") != null || strict)
+			if (tuple.get("genotype") != null || strict)
 			{
 				this.setGenotype(tuple.getString("genotype"));
-				this.setGenotypeAttachedFile(tuple.getFile("filefor_genotype"));
+				this.setGenotypeAttachedFile(((MolgenisRequest) tuple).getFile("filefor_genotype"));
 			}
 			// set Factor1active
-			if (tuple.getObject("factor1active") != null || strict)
+			if (tuple.get("factor1active") != null || strict)
 			{
 				this.setFactor1active(tuple.getBoolean("factor1active"));
 			}
 			// set Factor2active
-			if (tuple.getObject("factor2active") != null || strict)
+			if (tuple.get("factor2active") != null || strict)
 			{
 				this.setFactor2active(tuple.getBoolean("factor2active"));
 			}
 			// set Factor3active
-			if (tuple.getObject("factor3active") != null || strict)
+			if (tuple.get("factor3active") != null || strict)
 			{
 				this.setFactor3active(tuple.getBoolean("factor3active"));
 			}
 			// set Factor1Label
-			if (tuple.getObject("factor1label") != null || strict)
+			if (tuple.get("factor1label") != null || strict)
 			{
 				this.setFactor1Label(tuple.getString("factor1label"));
 			}
 			// set Factor2Label
-			if (tuple.getObject("factor2label") != null || strict)
+			if (tuple.get("factor2label") != null || strict)
 			{
 				this.setFactor2Label(tuple.getString("factor2label"));
 			}
 			// set Factor3Label
-			if (tuple.getObject("factor3label") != null || strict)
+			if (tuple.get("factor3label") != null || strict)
 			{
 				this.setFactor3Label(tuple.getString("factor3label"));
 			}
 			// set Factor1Level
-			if (tuple.getObject("factor1level") != null || strict)
+			if (tuple.get("factor1level") != null || strict)
 			{
 				this.setFactor1Level(tuple.getList("factor1level"));
 			}
 			// set Factor2Level
-			if (tuple.getObject("factor2level") != null || strict)
+			if (tuple.get("factor2level") != null || strict)
 			{
 				this.setFactor2Level(tuple.getList("factor2level"));
 			}
 			// set Factor3Level
-			if (tuple.getObject("factor3level") != null || strict)
+			if (tuple.get("factor3level") != null || strict)
 			{
 				this.setFactor3Level(tuple.getList("factor3level"));
 			}
 			// set Weights
-			if (tuple.getObject("weight") != null || strict)
+			if (tuple.get("weight") != null || strict)
 			{
 				this.setWeight(tuple.getList("weight"));
 			}
 
 			// set NoRilsPerLevel
-			if (tuple.getObject("norilsperlevel") != null || strict)
+			if (tuple.get("norilsperlevel") != null || strict)
 			{
 				this.setNoRilsPerLevel(tuple.getDouble("norilsperlevel"));
 			}
 			// set NoSlides
-			if (tuple.getObject("noslides") != null || strict)
+			if (tuple.get("noslides") != null || strict)
 			{
 				this.setNoSlides(tuple.getDouble("noslides"));
 			}
 			// set NoIterations
-			if (tuple.getObject("noiterations") != null || strict)
+			if (tuple.get("noiterations") != null || strict)
 			{
 				this.setNoIterations(tuple.getInt("noiterations"));
 			}
 			// set start_range
-			if (tuple.getObject("range_start") != null || strict)
+			if (tuple.get("range_start") != null || strict)
 			{
 				this.setRangeStart(tuple.getList("range_start"));
 			}
-			if (tuple.getObject("range_end") != null || strict)
+			if (tuple.get("range_end") != null || strict)
 			{
 				this.setRangeEnd(tuple.getList("range_end"));
 			}

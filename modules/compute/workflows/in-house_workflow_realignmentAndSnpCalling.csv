@@ -2,7 +2,7 @@ name,protocol_name,PreviousSteps_name
 Fastqc,Fastqc,
 BwaAlignLeft,BwaAlignLeft,
 BwaAlignRight,BwaAlignRight,
-BwaSampe,BwaSampe,"BwaAlignLeft, BwaAlignRight"
+BwaSampe,BwaSampe,"BwaAlignLeft,BwaAlignRight"
 SamToBam,SamToBam,BwaSampe
 SamSort,SamSort,SamToBam
 PicardQC,PicardQC,SamSort
@@ -11,10 +11,10 @@ RealignTargetCreator,RealignTargetCreator,Markduplicates
 Realign,Realign,RealignTargetCreator
 Fixmates,Fixmates,Realign
 CovariatesBefore,CovariatesBefore,Fixmates
-Recalibrate,Recalibrate,"Fixmates, CovariatesBefore"
+Recalibrate,Recalibrate,"Fixmates,CovariatesBefore"
 SamSortRecal,SamSortRecal,Recalibrate
 CovariatesAfter,CovariatesAfter,SamSortRecal
-AnalyzeCovariates,AnalyzeCovariates,"CovariatesBefore, CovariatesAfter"
+AnalyzeCovariates,AnalyzeCovariates,"CovariatesBefore,CovariatesAfter"
 MergeBam,MergeBam,SamSortRecal
 PicardQCrecal,PicardQCrecal,MergeBam
 Coverage,Coverage,MergeBam
@@ -26,6 +26,6 @@ MakeIndelMask,MakeIndelMask,FilterIndels
 GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
 VariantAnnotator,VariantAnnotator,GenomicAnnotator
 VcfToTable,VcfToTable,VariantAnnotator
-ConcordanceCheck,ConcordanceCheck,"MergeBam, UnifiedGenotyper"
-QCReport,QCReport,"PicardQCrecal, Markduplicates, ConcordanceCheck, Coverage, VcfToTable"
-CopyToResultsDir,CopyToResultsDir,"Fastqc, MergeBam, PicardQCrecal, VariantAnnotator, VcfToTable, ConcordanceCheck, QCReport"
+ConcordanceCheck,ConcordanceCheck,"MergeBam,UnifiedGenotyper"
+QCReport,QCReport,"PicardQCrecal,Markduplicates,ConcordanceCheck,Coverage,VcfToTable"
+CopyToResultsDir,CopyToResultsDir,"Fastqc,MergeBam,PicardQCrecal,VariantAnnotator,VcfToTable,ConcordanceCheck,QCReport"

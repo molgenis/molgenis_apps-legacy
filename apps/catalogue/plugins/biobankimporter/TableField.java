@@ -4,19 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.organization.InvestigationElement;
-import org.molgenis.pheno.Category;
-import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
-import org.molgenis.protocol.Protocol;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TableField
 {
-
-	// Prediction prediction = null;
-
 	public static boolean COLVALUE = true;
 
 	public static boolean COLHEADER = false;
@@ -34,21 +26,11 @@ public class TableField
 
 	private Boolean vertical;
 
-	private Protocol protocol = null;
-
-	private ObservedValue observedValue = null;
-
-	private Measurement measurement = null;
-
-	private Panel panel = null;
-
-	private Category category = null;
-
 	private TableField Target = null;
 
 	private TableField Feature = null;
 
-	private Tuple defaults = new SimpleTuple();
+	private Tuple defaults = new KeyValueTuple();
 
 	private int observationTarget = -1;
 

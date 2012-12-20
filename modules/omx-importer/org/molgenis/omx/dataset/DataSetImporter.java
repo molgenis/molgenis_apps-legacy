@@ -2,33 +2,31 @@ package org.molgenis.omx.dataset;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.tupletable.TableException;
-import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.framework.tupletable.impl.CsvTable;
-import org.molgenis.model.elements.Field;
+import org.molgenis.io.TableReader;
+import org.molgenis.io.TableReaderFactory;
+import org.molgenis.io.TupleReader;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
 import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
-import org.molgenis.util.ExcelUtils;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class DataSetImporter
 {
 	private static final Logger LOG = Logger.getLogger(DataSetImporter.class);
-	private static final String ENTITY_DATASET_PREFIX = "DataSet";
+	private static final String DATASET_SHEET_PREFIX = "dataset_";
 	private Database db;
 
 	public DataSetImporter(Database db)
@@ -37,38 +35,29 @@ public class DataSetImporter
 		this.db = db;
 	}
 
-	public void importXLS(File file, List<String> dataSetSheetNames) throws IOException, DatabaseException
+	public void importDataSet(File file, List<String> dataSetEntityNames) throws IOException, DatabaseException
 	{
-		Workbook workbook = null;
-
-		String sheetPrefix = ENTITY_DATASET_PREFIX.toLowerCase() + '_';
+		TableReader tableReader = TableReaderFactory.create(file);
 		try
 		{
-			workbook = WorkbookFactory.create(file);
-		}
-		catch (InvalidFormatException e)
-		{
-			String msg = "InvalidFormatException creating Workbook for file [" + file.getName() + "]";
-			LOG.error(msg, e);
-			throw new IOException(msg, e);
-		}
-
-		for (int i = 0; i < workbook.getNumberOfSheets(); i++)
-		{
-			String sheetName = workbook.getSheetName(i);
-			if (dataSetSheetNames.contains(sheetName))
+			for (String tableName : tableReader.getTableNames())
 			{
-				String identifier = sheetName.substring(sheetPrefix.length());
-				File csvFile = convertToCSVFile(workbook.getSheetAt(i), identifier);
-				importCSV(csvFile, identifier);
+				if (dataSetEntityNames.contains(tableName))
+				{
+					LOG.info("importing dataset " + tableName + " from file " + file + "...");
+					importSheet(tableReader.getTupleReader(tableName), tableName);
+				}
 			}
 		}
-
+		finally
+		{
+			tableReader.close();
+		}
 	}
 
-	private void importCSV(File file, String identifier) throws IOException, DatabaseException
+	private void importSheet(TupleReader sheetReader, String sheetName) throws DatabaseException, IOException
 	{
-		LOG.info("importing dataset " + identifier + " from file " + file + "...");
+		String identifier = sheetName.substring(DATASET_SHEET_PREFIX.length());
 
 		List<DataSet> dataSets = db.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, identifier));
 		if (dataSets == null || dataSets.isEmpty())
@@ -84,118 +73,85 @@ public class DataSetImporter
 
 		DataSet dataSet = dataSets.get(0);
 
-		boolean startNewTrans = !db.inTx();
-		TupleTable csvTable = null;
+		Iterator<String> colIt = sheetReader.colNamesIterator();
+		if (!colIt.hasNext()) throw new IOException("sheet '" + sheetName + "' contains no columns");
+
+		// create observation feature map
+		Map<String, ObservableFeature> featureMap = new LinkedHashMap<String, ObservableFeature>();
+		// skip target column (= column 0)
+		colIt.next();
+		while (colIt.hasNext())
+		{
+			String observableFeatureIdentifier = colIt.next();
+			ObservableFeature observableFeature = findObservableFeature(observableFeatureIdentifier);
+			featureMap.put(observableFeatureIdentifier, observableFeature);
+		}
+
+		boolean doTx = !db.inTx();
 		try
 		{
-			if (startNewTrans)
-			{
-				db.beginTx();
-			}
+			if (doTx) db.beginTx();
 
-			csvTable = new CsvTable(file);
-			List<Field> headerFields = csvTable.getAllColumns();
-			for (Tuple row : csvTable.getRows())
+			for (Tuple row : sheetReader)
 			{
-				// find current observation target
-				String observationTargetIdentifier = row.getString(0);
-				List<ObservationTarget> observationTargets = db.find(ObservationTarget.class, new QueryRule(
-						ObservationTarget.IDENTIFIER, Operator.EQUALS, observationTargetIdentifier));
-				if (observationTargets == null || observationTargets.isEmpty()) throw new DatabaseException(
-						"ObservationTarget " + observationTargetIdentifier + " does not exist in db");
-				ObservationTarget observationTarget = observationTargets.get(0);
-
+				// find observation target
+				ObservationTarget observationTarget = findObservationTarget(row.getString(0));
+				ArrayList<ObservedValue> obsValueList = new ArrayList<ObservedValue>();
 				// create observation set
 				ObservationSet observationSet = new ObservationSet();
 				observationSet.setTarget(observationTarget);
 				observationSet.setPartOfDataSet(dataSet);
 				db.add(observationSet);
 
-				for (int col = 1; col < headerFields.size(); ++col)
+				for (Map.Entry<String, ObservableFeature> entry : featureMap.entrySet())
 				{
-					// find current observation feature
-					String observableFeatureIdentifier = headerFields.get(col).getLabel();
-					List<ObservableFeature> observableFeatures = db.find(ObservableFeature.class, new QueryRule(
-							ObservableFeature.IDENTIFIER, Operator.EQUALS, observableFeatureIdentifier));
-					if (observableFeatures == null || observableFeatures.isEmpty()) throw new IOException(
-							"ObservableFeature " + observableFeatureIdentifier + " does not exist in db");
-					ObservableFeature observableFeature = observableFeatures.get(0);
-
 					// create observed value
-					String value = row.getString(col);
+					String value = row.getString(entry.getKey());
 					ObservedValue observedValue = new ObservedValue();
-					observedValue.setFeature(observableFeature);
+					observedValue.setFeature(entry.getValue());
 					observedValue.setValue(value);
 					observedValue.setObservationSet(observationSet);
 
 					// add to db
-					db.add(observedValue);
+
+					obsValueList.add(observedValue);
 				}
+				db.add(obsValueList);
 			}
 
-			if (startNewTrans)
-			{
-				db.commitTx();
-			}
+			if (doTx) db.commitTx();
 		}
 		catch (DatabaseException e)
 		{
-			if (startNewTrans)
-			{
-				db.rollbackTx();
-			}
+			if (doTx) db.rollbackTx();
 			throw e;
 		}
 		catch (Exception e)
 		{
-			if (startNewTrans)
-			{
-				db.rollbackTx();
-			}
+			if (doTx) db.rollbackTx();
 			throw new IOException(e);
 		}
-		finally
-		{
-			if (csvTable != null) try
-			{
-				csvTable.close();
-			}
-			catch (TableException e)
-			{
-				throw new IOException(e);
-			}
-		}
 	}
 
-	private File convertToCSVFile(Sheet sheet, String identifier) throws IOException
+	private ObservationTarget findObservationTarget(String observationTargetIdentifier) throws DatabaseException,
+			IOException
 	{
-		String tmpFileName = "tmp" + ENTITY_DATASET_PREFIX + '_' + identifier + ".txt";
-
-		// copied from *ExcelReader.java
-		File tmpDataSet = new File(System.getProperty("java.io.tmpdir") + File.separator + tmpFileName);
-		if (tmpDataSet.exists())
-		{
-			boolean deleteSuccess = tmpDataSet.delete();
-			if (!deleteSuccess)
-			{
-				throw new IOException("Deletion of tmp file '" + tmpFileName + "' failed, cannot proceed.");
-			}
-		}
-		boolean createSuccess = tmpDataSet.createNewFile();
-		if (!createSuccess)
-		{
-			throw new IOException("Creation of tmp file '" + tmpFileName + "' failed, cannot proceed.");
-		}
-		boolean fileHasHeaders = ExcelUtils.writeSheetToFile(sheet, tmpDataSet, false);
-		if (fileHasHeaders)
-		{
-			return tmpDataSet;
-		}
-		else
-		{
-			tmpDataSet.delete();
-			throw new IOException("error occured writing sheet to file: " + tmpFileName);
-		}
+		List<ObservationTarget> observationTargets = db.find(ObservationTarget.class, new QueryRule(
+				ObservationTarget.IDENTIFIER, Operator.EQUALS, observationTargetIdentifier));
+		if (observationTargets == null || observationTargets.isEmpty()) throw new DatabaseException(
+				"ObservationTarget " + observationTargetIdentifier + " does not exist in db");
+		ObservationTarget observationTarget = observationTargets.get(0);
+		return observationTarget;
 	}
 
+	private ObservableFeature findObservableFeature(String observableFeatureIdentifier) throws DatabaseException,
+			IOException
+	{
+		List<ObservableFeature> observableFeatures = db.find(ObservableFeature.class, new QueryRule(
+				ObservableFeature.IDENTIFIER, Operator.EQUALS, observableFeatureIdentifier));
+		if (observableFeatures == null || observableFeatures.isEmpty()) throw new IOException("ObservableFeature "
+				+ observableFeatureIdentifier + " does not exist in db");
+		ObservableFeature observableFeature = observableFeatures.get(0);
+		return observableFeature;
+	}
 }

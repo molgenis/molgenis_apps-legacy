@@ -16,7 +16,7 @@ import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.target.Individual;
 import org.molgenis.omx.dataset.DataSetTable;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
