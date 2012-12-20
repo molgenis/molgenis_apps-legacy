@@ -22,13 +22,14 @@
 				<form name="BiobankDataType" entity="BiobankDataType" />
 				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole"  />
 				<form name="ChangeLog" entity="ChangeLog" />
-				<form name="Protocol"  entity="Protocol" />
+				<!-- <form name="Protocol"  entity="Protocol" />
 				<form name="Individual"  entity="Individual" />
-				<form name="Measurement"  entity="Measurement" />
+				<form name="Measurement"  entity="Measurement" /> -->
 			</menu>
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
+				<form name="MolgenisRole" entity="MolgenisRole" label="Roler" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
 				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
 				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
