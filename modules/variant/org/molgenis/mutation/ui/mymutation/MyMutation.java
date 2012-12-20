@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -18,8 +19,8 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.service.SearchService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class MyMutation extends IntegratedPluginController<MyMutationModel>
 {
@@ -47,7 +48,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 		return result;
 	}
 
-	public void show(Database db, Tuple request)
+	public void show(Database db, MolgenisRequest request)
 	{
 		try
 		{

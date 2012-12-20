@@ -12,7 +12,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

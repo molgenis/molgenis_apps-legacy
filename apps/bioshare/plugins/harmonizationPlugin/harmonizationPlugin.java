@@ -19,6 +19,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -29,7 +30,7 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.HarmonizationComponent.LinkedInformation;
 import plugins.HarmonizationComponent.MappingList;
@@ -109,7 +110,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 		return "plugins/harmonizationPlugin/harmonizationPlugin.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 		try
@@ -393,7 +394,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 							String identifier = eachMatching.measurementName + "_" + entry.getKey();
 
-							if (request.getBool(identifier.replaceAll(" ", "_")) != null)
+							if (request.getBoolean(identifier.replaceAll(" ", "_")) != null)
 							{
 
 								String dataItemName = eachMatching.measurementName;
@@ -757,7 +758,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 				finalQuery.add(eachQuery.replaceAll(separator, " "));
 
-				if (request.getBool("baseline") != null)
+				if (request.getBoolean("baseline") != null)
 				{
 					finalQuery.add(eachQuery.replaceAll(separator, " ") + " baseline");
 				}
@@ -770,7 +771,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 					if (!finalQuery.contains(blocks[i].toLowerCase())) finalQuery.add(blocks[i].toLowerCase());
 
-					if (request.getBool("baseline") != null)
+					if (request.getBoolean("baseline") != null)
 					{
 						if (!finalQuery.contains(blocks[i].toLowerCase() + " baseline")) finalQuery.add(blocks[i]
 								.toLowerCase() + " baseline");

@@ -31,6 +31,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -53,7 +54,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class Breedingnew extends PluginModel<Entity>
 {
@@ -507,7 +507,7 @@ public class Breedingnew extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		ct.setDatabase(db);
 		action = request.getString("__action");
@@ -592,7 +592,7 @@ public class Breedingnew extends PluginModel<Entity>
 						sex = "not selected";
 						for (ObservationElement row : rows)
 						{
-							if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null)
+							if (request.getBoolean(MOTHERMATRIX + "_selected_" + rowCnt) != null)
 							{
 								String fatherName = row.getName();
 								sex = ct.getMostRecentValueAsXrefName(fatherName, "Sex");
@@ -623,7 +623,7 @@ public class Breedingnew extends PluginModel<Entity>
 						for (ObservationElement row : rows)
 						{
 
-							if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null)
+							if (request.getBoolean(MOTHERMATRIX + "_selected_" + rowCnt) != null)
 							{
 								String motherName = row.getName();
 								sex = ct.getMostRecentValueAsXrefName(motherName, "Sex");
@@ -1500,8 +1500,8 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private void editIndividuals(Database db, String litter, Tuple request) throws DatabaseException, ParseException,
-			IOException
+	private void editIndividuals(Database db, String litter, MolgenisRequest request) throws DatabaseException,
+			ParseException, IOException
 	{
 		if (request.getString("addNew") != null)
 		{
@@ -1829,7 +1829,7 @@ public class Breedingnew extends PluginModel<Entity>
 		editTable.setCell(0, row, inputWeanSize);
 	}
 
-	private void editLitterToDb(Database db, Tuple request) throws Exception
+	private void editLitterToDb(Database db, MolgenisRequest request) throws Exception
 	{
 
 		Query<ObservedValue> query = db.query(ObservedValue.class);
@@ -1988,8 +1988,8 @@ public class Breedingnew extends PluginModel<Entity>
 		return;
 	}
 
-	private String AddParentgroup2(Database db, Tuple request, List<String> papa, List<String> mama, String startdate,
-			String remarks) throws Exception
+	private String AddParentgroup2(Database db, MolgenisRequest request, List<String> papa, List<String> mama,
+			String startdate, String remarks) throws Exception
 	{
 		Date now = new Date();
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
@@ -2032,7 +2032,7 @@ public class Breedingnew extends PluginModel<Entity>
 	}
 
 	/*
-	 * private String AddParentgroup(Database db, Tuple request) throws
+	 * private String AddParentgroup(Database db, MolgenisRequest request) throws
 	 * Exception { Date now = new Date(); String invName =
 	 * ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0); //
 	 * Save start date and remarks that were set in screen 4 if
@@ -2208,7 +2208,7 @@ public class Breedingnew extends PluginModel<Entity>
 		return "Error: no parentgoup selected";
 	}
 
-	private String ApplyAddLitter(Database db, Tuple request) throws Exception
+	private String ApplyAddLitter(Database db, MolgenisRequest request) throws Exception
 	{
 		Date now = new Date();
 
@@ -2280,7 +2280,7 @@ public class Breedingnew extends PluginModel<Entity>
 		return litterName;
 	}
 
-	private void setUserFields(Tuple request, boolean wean) throws Exception
+	private void setUserFields(MolgenisRequest request, boolean wean) throws Exception
 	{
 		if (wean == true)
 		{
@@ -2348,7 +2348,7 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 			birthdate = request.getString("birthdate"); // in old date format!
 			this.litterSize = request.getInt("littersize");
-			if (request.getBool("sizeapp_toggle") != null)
+			if (request.getBoolean("sizeapp_toggle") != null)
 			{
 				this.litterSizeApproximate = true;
 			}
@@ -2379,7 +2379,7 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private int Wean(Database db, Tuple request) throws Exception
+	private int Wean(Database db, MolgenisRequest request) throws Exception
 	{
 		Date now = new Date();
 		String invName = ct.getObservationTargetByName(litter).getInvestigation_Name();
@@ -2962,7 +2962,7 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private int Genotype(Database db, Tuple request) throws Exception
+	private int Genotype(Database db, MolgenisRequest request) throws Exception
 	{
 		Date now = new Date();
 
@@ -2995,8 +2995,8 @@ public class Breedingnew extends PluginModel<Entity>
 		return animalCount;
 	}
 
-	private int updateLitterIndividuals(Database db, Tuple request, List<String> investigationNames, String invName)
-			throws DatabaseException, ParseException, IOException
+	private int updateLitterIndividuals(Database db, MolgenisRequest request, List<String> investigationNames,
+			String invName) throws DatabaseException, ParseException, IOException
 	{
 
 		int animalCount = 0;
@@ -3152,7 +3152,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 	@SuppressWarnings(
 	{ "rawtypes", "unchecked" })
-	private void storeGenotypeTable(Database db, Tuple request)
+	private void storeGenotypeTable(Database db, MolgenisRequest request)
 	{
 		HtmlInput input;
 		for (int animalCount = 0; animalCount < this.getAnimalsInLitter(db).size(); animalCount++)
@@ -3225,7 +3225,7 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private void AddGenoCol(Database db, Tuple request)
+	private void AddGenoCol(Database db, MolgenisRequest request)
 	{
 		nrOfGenotypes++;
 		genotypeTable.addColumn("Gene modification");

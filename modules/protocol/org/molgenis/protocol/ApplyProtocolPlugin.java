@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -25,7 +26,6 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Tuple;
 
 public class ApplyProtocolPlugin extends EasyPluginController
 {
@@ -43,7 +43,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		ScreenMessage message = null;
 		String action = request.getString("__action");
@@ -129,7 +129,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return form;
 	}
 
-	ScreenMessage handleApply(Tuple request, Database db)
+	ScreenMessage handleApply(MolgenisRequest request, Database db)
 	{
 
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.US);
@@ -329,7 +329,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return null;
 	}
 
-	ScreenMessage handleApplyAllDefaults(Database db, Tuple request)
+	ScreenMessage handleApplyAllDefaults(Database db, MolgenisRequest request)
 	{
 
 		int sizeTargets = model.getFullTargetList().size();
@@ -388,7 +388,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	 * @param request
 	 * @param i
 	 */
-	ScreenMessage handleApplyDefaults(Database db, Tuple request, int col)
+	ScreenMessage handleApplyDefaults(Database db, MolgenisRequest request, int col)
 	{
 
 		int featureNr = col;
@@ -445,12 +445,12 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	 * @param request
 	 * @throws MatrixException
 	 */
-	ScreenMessage handleSelect(Database db, Tuple request) throws MatrixException
+	ScreenMessage handleSelect(Database db, MolgenisRequest request) throws MatrixException
 	{
 		List<String> fullTargetList = new ArrayList<String>();
 
 		// Get protocol
-		Object protocol = request.getObject("Protocols");
+		Object protocol = request.get("Protocols");
 		if (protocol == null)
 		{
 			return new ScreenMessage("No protocol selected", false);
@@ -473,7 +473,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		int rowCnt = 0;
 		for (ObservationElement row : rows)
 		{
-			if (request.getBool(ApplyProtocolUI.TARGETMATRIX + "_selected_" + rowCnt) != null)
+			if (request.getBoolean(ApplyProtocolUI.TARGETMATRIX + "_selected_" + rowCnt) != null)
 			{
 				model.getTargetList().add(row.getId().toString());
 				fullTargetList.add(row.getId().toString());
@@ -525,7 +525,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		}
 
 		// Get date-time info yes/no
-		if (request.getBool("TimeBox") != null)
+		if (request.getBoolean("TimeBox") != null)
 		{
 			model.setTimeInfo(true);
 		}
@@ -535,7 +535,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		}
 
 		// Get all values yes/no
-		if (request.getBool("AllValuesBox") != null)
+		if (request.getBoolean("AllValuesBox") != null)
 		{
 			model.setAllValues(true);
 		}
@@ -560,7 +560,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return null;
 	}
 
-	public ScreenMessage handleApplyStartTime(Database db, Tuple request, int col)
+	public ScreenMessage handleApplyStartTime(Database db, MolgenisRequest request, int col)
 	{
 
 		fixValues(db, request);
@@ -582,7 +582,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return null;
 	}
 
-	public ScreenMessage handleApplyEndTime(Database db, Tuple request, int col)
+	public ScreenMessage handleApplyEndTime(Database db, MolgenisRequest request, int col)
 	{
 
 		fixValues(db, request);
@@ -609,7 +609,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	 * the user already made don't get lost. Works only for cells that contain
 	 * one input.
 	 */
-	private void fixValues(Database db, Tuple request)
+	private void fixValues(Database db, MolgenisRequest request)
 	{
 
 		int nrOfCols = model.getFeaturesList().size();

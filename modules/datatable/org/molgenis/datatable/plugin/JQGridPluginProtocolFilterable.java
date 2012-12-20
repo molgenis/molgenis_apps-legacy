@@ -4,6 +4,7 @@ import java.io.OutputStream;
 
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -11,11 +12,12 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 /** Simple plugin that only shows a data table for testing */
 public class JQGridPluginProtocolFilterable extends EasyPluginController<JQGridPluginProtocolFilterable>
 {
+	private static final long serialVersionUID = 1L;
+
 	JQGridView tableView;
 
 	public JQGridPluginProtocolFilterable(String name, ScreenController<?> parent)
@@ -43,7 +45,7 @@ public class JQGridPluginProtocolFilterable extends EasyPluginController<JQGridP
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json_test(Database db, Tuple request, OutputStream out)
+	public void download_json_test(Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		tableView.handleRequest(db, request, out);

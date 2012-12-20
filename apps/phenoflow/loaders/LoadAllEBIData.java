@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.Molgenis;
+import org.molgenis.framework.db.CsvEntityImporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.SimpleTuple;
 
-import app.CsvImport;
+import app.CsvEntityImporterImpl;
 import app.DatabaseFactory;
-import app.JDBCDatabase;
 
 public class LoadAllEBIData
 {
@@ -30,8 +30,9 @@ public class LoadAllEBIData
 		// Europhenome
 		directory = "../pheno_data/Europhenome2";
 
-		CsvImport
-				.importAll(new File(directory), db, new SimpleTuple(), null, DatabaseAction.ADD_IGNORE_EXISTING, "N/A");
+		CsvEntityImporter entityImporter = new CsvEntityImporterImpl();
+		entityImporter.importAll(new File(directory), db, new SimpleTuple(), null, DatabaseAction.ADD_IGNORE_EXISTING,
+				"N/A");
 
 		// MPD
 

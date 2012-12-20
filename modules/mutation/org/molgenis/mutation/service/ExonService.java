@@ -25,7 +25,7 @@ import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
 import org.molgenis.mutation.vo.ExonSummaryVO;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.xgap.Gene;
 
 public class ExonService implements Serializable

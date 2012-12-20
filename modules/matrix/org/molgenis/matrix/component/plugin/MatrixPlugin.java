@@ -56,7 +56,7 @@
 //	}
 //
 //	@Override
-//	public void handleRequest(Database db, Tuple request)
+//	public void handleRequest(Database db, MolgenisRequest request)
 //	{
 //		if (targetMatrixViewer != null) {
 //			targetMatrixViewer.setDatabase(db);

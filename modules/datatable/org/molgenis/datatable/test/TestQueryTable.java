@@ -18,7 +18,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -127,16 +127,16 @@ public class TestQueryTable
 		// Djibouti Djibouti 0.6003
 		// Cook Islands Avarua 0.595
 		final List<Tuple> rows = table.getRows();
-		assertEquals(rows.get(0).getDecimal("ratio"), 1.1264, EPSILON);
-		assertEquals(rows.get(1).getDecimal("ratio"), 1.081, EPSILON);
-		assertEquals(rows.get(2).getDecimal("ratio"), 0.9249, EPSILON);
-		assertEquals(rows.get(3).getDecimal("ratio"), 0.84, EPSILON);
-		assertEquals(rows.get(4).getDecimal("ratio"), 0.8383, EPSILON);
-		assertEquals(rows.get(5).getDecimal("ratio"), 0.8297, EPSILON);
-		assertEquals(rows.get(6).getDecimal("ratio"), 0.818, EPSILON);
-		assertEquals(rows.get(7).getDecimal("ratio"), 0.6316, EPSILON);
-		assertEquals(rows.get(8).getDecimal("ratio"), 0.6003, EPSILON);
-		assertEquals(rows.get(9).getDecimal("ratio"), 0.595, EPSILON);
+		assertEquals(rows.get(0).getDouble("ratio"), 1.1264, EPSILON);
+		assertEquals(rows.get(1).getDouble("ratio"), 1.081, EPSILON);
+		assertEquals(rows.get(2).getDouble("ratio"), 0.9249, EPSILON);
+		assertEquals(rows.get(3).getDouble("ratio"), 0.84, EPSILON);
+		assertEquals(rows.get(4).getDouble("ratio"), 0.8383, EPSILON);
+		assertEquals(rows.get(5).getDouble("ratio"), 0.8297, EPSILON);
+		assertEquals(rows.get(6).getDouble("ratio"), 0.818, EPSILON);
+		assertEquals(rows.get(7).getDouble("ratio"), 0.6316, EPSILON);
+		assertEquals(rows.get(8).getDouble("ratio"), 0.6003, EPSILON);
+		assertEquals(rows.get(9).getDouble("ratio"), 0.595, EPSILON);
 		assertEquals(rows.size(), 10);
 
 		// add extra where
@@ -162,9 +162,9 @@ public class TestQueryTable
 		{
 			rows.add(t);
 		}
-		assertEquals(rows.get(0).getDecimal("ratio"), 1.1264, EPSILON);
-		assertEquals(rows.get(1).getDecimal("ratio"), 1.081, EPSILON);
-		assertEquals(rows.get(2).getDecimal("ratio"), 0.9249, EPSILON);
+		assertEquals(rows.get(0).getDouble("ratio"), 1.1264, EPSILON);
+		assertEquals(rows.get(1).getDouble("ratio"), 1.081, EPSILON);
+		assertEquals(rows.get(2).getDouble("ratio"), 0.9249, EPSILON);
 		table.close();
 	}
 
@@ -191,9 +191,9 @@ public class TestQueryTable
 
 		// limit is still 10
 		assertEquals(rows.size(), 10);
-		assertEquals(rows.get(0).getDecimal("ratio"), 0.84, EPSILON);
-		assertEquals(rows.get(1).getDecimal("ratio"), 0.8383, EPSILON);
-		assertEquals(rows.get(2).getDecimal("ratio"), 0.8297, EPSILON);
+		assertEquals(rows.get(0).getDouble("ratio"), 0.84, EPSILON);
+		assertEquals(rows.get(1).getDouble("ratio"), 0.8383, EPSILON);
+		assertEquals(rows.get(2).getDouble("ratio"), 0.8297, EPSILON);
 	}
 
 }

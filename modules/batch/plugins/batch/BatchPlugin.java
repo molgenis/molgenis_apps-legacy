@@ -14,6 +14,7 @@ import org.molgenis.batch.ui.form.BatchEntitySelectForm;
 import org.molgenis.batch.ui.form.BatchSelectForm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -23,7 +24,6 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public class BatchPlugin extends EasyPluginController
@@ -58,7 +58,7 @@ public class BatchPlugin extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		try
 		{
@@ -97,7 +97,8 @@ public class BatchPlugin extends EasyPluginController
 	 * @throws ParseException
 	 * @throws DatabaseException
 	 */
-	private void handleAddRequest(Database db, Tuple request) throws DatabaseException, ParseException, IOException
+	private void handleAddRequest(Database db, MolgenisRequest request) throws DatabaseException, ParseException,
+			IOException
 	{
 		List<Integer> ids = new ArrayList<Integer>();
 
@@ -117,7 +118,8 @@ public class BatchPlugin extends EasyPluginController
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private void handleRemoveRequest(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	private void handleRemoveRequest(Database db, MolgenisRequest request) throws DatabaseException, IOException,
+			ParseException
 	{
 		List<Integer> ids = new ArrayList<Integer>();
 
@@ -137,7 +139,7 @@ public class BatchPlugin extends EasyPluginController
 		return this.container;
 	}
 
-	private void handleSelectRequest(Database db, Tuple request) throws DatabaseException, ParseException
+	private void handleSelectRequest(Database db, MolgenisRequest request) throws DatabaseException, ParseException
 	{
 		this.batchId = request.getInt("batches");
 

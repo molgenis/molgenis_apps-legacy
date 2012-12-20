@@ -17,7 +17,6 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -83,7 +82,7 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json_test(Database db, Tuple request, OutputStream out)
+	public void download_json_test(Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// handle requests for the table named 'test'
@@ -93,6 +92,7 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 	}
 
 	// what is shown to the user
+	@Override
 	public ScreenView getView()
 	{
 		MolgenisForm view = new MolgenisForm(this);

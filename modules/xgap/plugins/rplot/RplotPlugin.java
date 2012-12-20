@@ -15,6 +15,7 @@ import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
@@ -60,7 +61,7 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 		return "plugins/rplot/RplotPlugin.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

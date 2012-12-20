@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.DatabaseFactory;
 

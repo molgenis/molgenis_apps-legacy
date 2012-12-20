@@ -1,9 +1,8 @@
 package org.molgenis.omx.plugins;
 
-import jxl.common.Logger;
-
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.server.MolgenisRequest;
 
 public class WizardPage
 {
@@ -40,7 +39,7 @@ public class WizardPage
 		return viewTemplate;
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 	}

@@ -17,7 +17,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import decorators.NameConvention;
 

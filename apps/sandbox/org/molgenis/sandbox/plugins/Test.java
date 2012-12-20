@@ -6,6 +6,7 @@ import java.text.ParseException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -13,7 +14,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * TestController takes care of all user requests updates model and view
@@ -66,7 +67,7 @@ public class Test extends EasyPluginController<TestModel>
 	 * automatically mapped to methods based request.getAction();
 	 */
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// automatically calls functions with same name as action
 		try
@@ -87,7 +88,7 @@ public class Test extends EasyPluginController<TestModel>
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public void addInvestigation(Database db, Tuple request) throws Exception
+	public void addInvestigation(Database db, MolgenisRequest request) throws Exception
 	{
 		// Easily create object from request and use it
 		Investigation i = new Investigation();

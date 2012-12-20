@@ -1,6 +1,5 @@
 package org.molgenis.lifelinesresearchportal.legacy;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaUtil;
 

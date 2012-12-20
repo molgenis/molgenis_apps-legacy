@@ -5,7 +5,7 @@ import java.io.File;
 import org.molgenis.framework.db.Database;
 
 import app.DatabaseFactory;
-import app.ExcelExport;
+import app.ExcelEntityExporter;
 
 public class TestExcelExport
 {
@@ -26,7 +26,7 @@ public class TestExcelExport
 
 		File file = new File(System.getProperty("java.io.tmpdir") + File.separator + "file.xls");
 
-		new ExcelExport().exportAll(file, db, true);
+		new ExcelEntityExporter().exportAll(file, db, true);
 
 	}
 

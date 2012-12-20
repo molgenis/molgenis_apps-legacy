@@ -3,10 +3,7 @@ package org.molgenis.lifelinesresearchportal.plugins.loader.ThreadReaders;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.molgenis.util.SimpleTuple;
 
 public class CSVFileSpliter
 {
@@ -84,22 +81,6 @@ public class CSVFileSpliter
 			}
 		}
 		return result;
-	}
-
-	public synchronized List<SimpleTuple> getTuples() throws Exception
-	{
-		List<String[]> lines = getLines();
-		List<SimpleTuple> simpleTuples = new ArrayList<SimpleTuple>(lines.size());
-		for (String[] line : lines)
-		{
-			Map<String, Object> valueMap = new HashMap<String, Object>(headers.length);
-			for (int i = 0; i < line.length; ++i)
-			{
-				valueMap.put(headers[i], line[i]);
-			}
-			simpleTuples.add(new SimpleTuple(valueMap));
-		}
-		return simpleTuples;
 	}
 
 	public synchronized boolean hasMore()

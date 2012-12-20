@@ -10,7 +10,7 @@ import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.BufferedReader;
 import java.io.File;
