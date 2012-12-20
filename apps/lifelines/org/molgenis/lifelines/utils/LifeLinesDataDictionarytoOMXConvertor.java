@@ -19,9 +19,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.molgenis.io.TupleReader;
+import org.molgenis.io.TupleWriter;
 import org.molgenis.io.excel.ExcelReader;
-import org.molgenis.io.excel.ExcelSheetReader;
-import org.molgenis.io.excel.ExcelSheetWriter;
 import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.io.processor.LowerCaseProcessor;
 import org.molgenis.io.processor.TrimProcessor;
@@ -111,11 +111,15 @@ public class LifeLinesDataDictionarytoOMXConvertor
 		try
 		{
 			// create entity sheets
-			Map<String, ExcelSheetWriter> sheetMap = createOMXSheets(excelWriter);
+			Map<String, TupleWriter> sheetMap = createOMXSheets(excelWriter);
 
 			// write data
-			for (ExcelSheetReader sheetReader : excelReader)
-				convertSheet(sheetReader, sheetMap);
+			for (String tableName : excelReader.getTableNames())
+			{
+				// hardcoded : currently only consider one specific sheet
+				if (!tableName.equals("UVACH")) continue;
+				convertSheet(excelReader.getTupleReader(tableName), sheetMap);
+			}
 		}
 		finally
 		{
@@ -136,34 +140,31 @@ public class LifeLinesDataDictionarytoOMXConvertor
 		}
 	}
 
-	private Map<String, ExcelSheetWriter> createOMXSheets(ExcelWriter excelWriter) throws IOException
+	private Map<String, TupleWriter> createOMXSheets(ExcelWriter excelWriter) throws IOException
 	{
-		Map<String, ExcelSheetWriter> sheetMap = new HashMap<String, ExcelSheetWriter>();
+		Map<String, TupleWriter> sheetMap = new HashMap<String, TupleWriter>();
 
-		ExcelSheetWriter protocolWriter = excelWriter.createSheet(SHEET_PROTOCOL);
+		TupleWriter protocolWriter = excelWriter.createTupleWriter(SHEET_PROTOCOL);
 		protocolWriter.writeColNames(HEADER_PROTOCOL.keySet());
 		sheetMap.put(SHEET_PROTOCOL, protocolWriter);
 
-		ExcelSheetWriter featureWriter = excelWriter.createSheet(SHEET_FEATURE);
+		TupleWriter featureWriter = excelWriter.createTupleWriter(SHEET_FEATURE);
 		featureWriter.writeColNames(HEADER_FEATURE.keySet());
 		sheetMap.put(SHEET_FEATURE, featureWriter);
 
-		ExcelSheetWriter categoryWriter = excelWriter.createSheet(SHEET_CATEGORY);
+		TupleWriter categoryWriter = excelWriter.createTupleWriter(SHEET_CATEGORY);
 		categoryWriter.writeColNames(HEADER_CATEGORY.keySet());
 		sheetMap.put(SHEET_CATEGORY, categoryWriter);
 
-		ExcelSheetWriter dataSetWriter = excelWriter.createSheet(SHEET_DATASET);
+		TupleWriter dataSetWriter = excelWriter.createTupleWriter(SHEET_DATASET);
 		dataSetWriter.writeColNames(HEADER_DATASET.keySet());
 		sheetMap.put(SHEET_DATASET, dataSetWriter);
 
 		return sheetMap;
 	}
 
-	private void convertSheet(ExcelSheetReader sheet, Map<String, ExcelSheetWriter> sheetMap) throws IOException
+	private void convertSheet(TupleReader sheet, Map<String, TupleWriter> sheetMap) throws IOException
 	{
-		// hardcoded : currently only consider one specific sheet
-		if (!sheet.getName().equals("UVACH")) return;
-
 		List<String> featureIdentifiers = new ArrayList<String>();
 		Protocol rootProtocol = new Protocol("protocol_root", "Cohort");
 		Map<String, Protocol> protocolMap = new LinkedHashMap<String, Protocol>();
@@ -350,7 +351,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 		}
 
 		// write protocols
-		ExcelSheetWriter protocolWriter = sheetMap.get(SHEET_PROTOCOL);
+		TupleWriter protocolWriter = sheetMap.get(SHEET_PROTOCOL);
 
 		for (Protocol protocol : protocolMap.values())
 		{
@@ -362,7 +363,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 			protocolWriter.write(row);
 		}
 
-		ExcelSheetWriter dataSetWriter = sheetMap.get(SHEET_DATASET);
+		TupleWriter dataSetWriter = sheetMap.get(SHEET_DATASET);
 		KeyValueTuple row = new KeyValueTuple();
 		row.set(ENTITY_IDENTIFIER, "dataset_lifelines");
 		row.set(ENTITY_NAME, "LifeLines");
