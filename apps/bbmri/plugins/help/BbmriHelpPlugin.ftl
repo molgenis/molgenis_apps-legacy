@@ -54,7 +54,7 @@ The left hand menu is your guide throughout the application. It contains the fol
 </p>
 
 <p><strong>Settings</strong><br />
-The first item on the top right hand menu is 'Welcome (your name)'. Here, you can fill in your personal information and change your password.</p>
+The first item on the top right hand menu is 'Welcome (your name)' that can also be found in the left menu 'My account'. Here, you can fill in your personal information and change your password.</p>
 <p>Next to the Welcome button is the Logout option.</p>
 <p>Once you are in Biobank Overview, an additional top menu is visible at the top left corner of the table. More on that in the Biobank Overview section.</p>
 
@@ -62,7 +62,7 @@ The first item on the top right hand menu is 'Welcome (your name)'. Here, you ca
 <p>Click Biobank Overview in the left hand menu. The first page of the biobank catalogue will appear.<p>
 <p>The table contains several columns:
 <ul>
-	<li>the database number</li>
+	<li>the database number (link to edit this record which is hidden for simple users)</li>
 	<li>canReads = who can read this entry (hidden for simple users)</li>
 	<li>canWrite = who can write this entry (hidden for simple users)</li>
 	<li>Owns = who can edit or remove this entry (hidden for simple users)</li>
@@ -83,15 +83,26 @@ The first item on the top right hand menu is 'Welcome (your name)'. Here, you ca
 </ul>
 </p>
 
-<p>The table can be sorted by any of the columns (in alphabetical order) by clicking on the column heading. Clicking twice will give you the same sorting, only in Z-A order.</p>
+<p>The table can be sorted by the following columns : 
+<ul>
+	<li>Cohort</li>
+	<li>Category</li>
+	<li>SubCategory</li>
+	<li>Current n= </li>
+	<li>GWA data n=</li>
+	<li>GWA platform</li>
+	<li>GWA comments</li>
+	<li>General comments</li>
+	<li>Publications</li>
+ (in alphabetical order) by clicking on the column heading. Clicking twice will give you the same sorting, only in Z-A order.</p>
 
 <h3>Step 3: working with the data: download, upload, edit, remove, search</h3>
 <p>In the top left corner you see a small menu: File, Edit and View</p>
 <p>File: here is where you can download or upload one or several records.</p>
-<p>To download, choose if you want to download all visible records, only the ones you've selected, or all records. Selecting records is done by ticking the box between the 'Id' and the 'Owns' column.</p>
+<p>To download, choose if you want to download all visible records, only the ones you've selected, or all records. Selecting records is done by ticking the box between the 'Id' and the 'Cohort' (simple users) or 'Owns' column(for admin users).</p>
 <p>To upload, choose Add in batch / upload CSV. A form will appear; fill out all the relevant fields, add the csv-data (by simply copying and pasting) and press the Save-icon. Your data will be sent to the BBMRI-NL office, where it will be checked for accuracy and redundancy before publication.</p>
 <p><em>What is a csv file? Csv stands for 'comma-separated values', that is, data you would expect to find in a table, complete with columns, rows and column headers, is now grouped together with only commas between each data entry. Most spreadsheet formats, e.g. Excel files can be easily converted to (saved as) csv files.</em></p>
-<p>Edit: here, you can add, update or remove a selected record - pending approval by the BBMRI-NL office. <span style="color:red">NB: Update selected record does not work!</span></p>
+<p>Edit: here, you can add, update or remove a selected record - pending approval by the BBMRI-NL office. <span style="color:red">NB: Update selected record is not a regular update .This feature allows you to update ALL the fields of the record. The regular update where the current values of a record are visible is the button between the 'id' and the 'Cohort' on every record. </span></p>
 <p>View: select the view you're most comfortable with. You can choose to view 5, 10, 20, 50, 100 or 500 records per page.</p>
 <p><strong>Search:</strong> you can search the records in several ways. As soon as you click the form field next to 'Search', options appear:
 <ol>
