@@ -1,6 +1,7 @@
 package org.molgenis.xgap.test;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,7 +147,14 @@ public class Archiver_XqtlTestNG
 	{
 		File extractDir = TarGz.tarExtract(archive);
 		EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
-		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles()), DatabaseAction.ADD);
+		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles(new FileFilter()
+		{
+			@Override
+			public boolean accept(File pathname)
+			{
+				return pathname.getName().endsWith(".xls");
+			}
+		})), DatabaseAction.ADD);
 
 		// we expect to see database records
 		Assert.assertTrue(db.find(Marker.class).size() > 0);
