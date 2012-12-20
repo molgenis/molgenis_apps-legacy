@@ -440,7 +440,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	}
 
-	private void importUploadFile(Database db, Tuple request) throws DatabaseException, TableException
+	private void importUploadFile(Database db, MolgenisRequest request) throws DatabaseException, TableException
 	{
 
 		try
@@ -824,7 +824,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	}
 
-	public void checkHeaders(Database db, Tuple request, String filePath)
+	public void checkHeaders(Database db, MolgenisRequest request, String filePath)
 	{
 
 		File file = new File(filePath);

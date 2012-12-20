@@ -26,7 +26,6 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.tuple.Tuple;
 
 public class ApplyProtocolPlugin extends EasyPluginController
 {
@@ -130,7 +129,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return form;
 	}
 
-	ScreenMessage handleApply(Tuple request, Database db)
+	ScreenMessage handleApply(MolgenisRequest request, Database db)
 	{
 
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.US);
@@ -330,7 +329,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return null;
 	}
 
-	ScreenMessage handleApplyAllDefaults(Database db, Tuple request)
+	ScreenMessage handleApplyAllDefaults(Database db, MolgenisRequest request)
 	{
 
 		int sizeTargets = model.getFullTargetList().size();
@@ -389,7 +388,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	 * @param request
 	 * @param i
 	 */
-	ScreenMessage handleApplyDefaults(Database db, Tuple request, int col)
+	ScreenMessage handleApplyDefaults(Database db, MolgenisRequest request, int col)
 	{
 
 		int featureNr = col;
@@ -561,7 +560,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return null;
 	}
 
-	public ScreenMessage handleApplyStartTime(Database db, Tuple request, int col)
+	public ScreenMessage handleApplyStartTime(Database db, MolgenisRequest request, int col)
 	{
 
 		fixValues(db, request);
@@ -583,7 +582,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		return null;
 	}
 
-	public ScreenMessage handleApplyEndTime(Database db, Tuple request, int col)
+	public ScreenMessage handleApplyEndTime(Database db, MolgenisRequest request, int col)
 	{
 
 		fixValues(db, request);
@@ -610,7 +609,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	 * the user already made don't get lost. Works only for cells that contain
 	 * one input.
 	 */
-	private void fixValues(Database db, Tuple request)
+	private void fixValues(Database db, MolgenisRequest request)
 	{
 
 		int nrOfCols = model.getFeaturesList().size();

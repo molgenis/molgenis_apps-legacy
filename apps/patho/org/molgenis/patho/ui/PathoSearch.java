@@ -56,7 +56,7 @@
 //		// getModel().getSelectedChrId());
 //	}
 //	
-//	public void search(Database db, Tuple request) throws DatabaseException
+//	public void search(Database db, MolgenisRequest request) throws DatabaseException
 //	{
 //		//reset
 //

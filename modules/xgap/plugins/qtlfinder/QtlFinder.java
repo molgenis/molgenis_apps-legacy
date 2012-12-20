@@ -24,13 +24,13 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
@@ -107,7 +107,7 @@ public class QtlFinder extends PluginModel<Entity>
 		return uniqueInputs;
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -190,7 +190,7 @@ public class QtlFinder extends PluginModel<Entity>
 					// 'disambig_option_Y37E31@Gene'
 					// OK because '@' are not allowed in names
 					HashMap<String, String> chosenItems = new HashMap<String, String>();
-					List<String> reqFields = request.getFields();
+					Iterable<String> reqFields = request.getColNames();
 					for (String s : reqFields)
 					{
 						if (s.startsWith("disambig_option_"))
@@ -231,7 +231,7 @@ public class QtlFinder extends PluginModel<Entity>
 		}
 	}
 
-	private QueryRule makeDataFilter(Tuple request)
+	private QueryRule makeDataFilter(MolgenisRequest request)
 	{
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		ArrayList<String> names = new ArrayList<String>();

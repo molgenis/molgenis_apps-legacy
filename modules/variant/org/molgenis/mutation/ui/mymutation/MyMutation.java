@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -47,7 +48,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 		return result;
 	}
 
-	public void show(Database db, Tuple request)
+	public void show(Database db, MolgenisRequest request)
 	{
 		try
 		{

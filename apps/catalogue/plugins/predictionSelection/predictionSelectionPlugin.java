@@ -210,7 +210,7 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	 * @param request
 	 * @throws DatabaseException
 	 */
-	private String makeHtmlTable(Database db, Tuple request) throws DatabaseException
+	private String makeHtmlTable(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		if (selectedComputeProtocolName != null && selectedStudyProtocolName != null)
 		{

@@ -13,6 +13,7 @@ import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.download.ui.DownloadModel;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -32,7 +33,7 @@ public class Download extends EasyPluginController<DownloadModel>
 		this.getModel().setOutput("");
 	}
 
-	public void start(Database db, Tuple request)
+	public void start(Database db, MolgenisRequest request)
 	{
 		try
 		{
@@ -73,11 +74,11 @@ public class Download extends EasyPluginController<DownloadModel>
 		}
 	}
 
-	protected void init(Database db, Tuple request)
+	protected void init(Database db, MolgenisRequest request)
 	{
 	}
 
-	public void check(Database db, Tuple request)
+	public void check(Database db, MolgenisRequest request)
 	{
 		try
 		{

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -53,7 +54,7 @@ public class GonlSearch extends EasyPluginController<GonlSearchModel>
 		// getModel().getSelectedChrId());
 	}
 
-	public void search(Database db, Tuple request) throws DatabaseException
+	public void search(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		// reset
 		getModel().setAlleleCounts(null);

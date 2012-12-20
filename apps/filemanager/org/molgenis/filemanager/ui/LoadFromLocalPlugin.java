@@ -8,6 +8,7 @@ import java.util.List;
 import org.molgenis.filemanager.FileLocation;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -27,7 +28,7 @@ public class LoadFromLocalPlugin extends EasyPluginController<LoadFromLocalPlugi
 		this.setModel(this); // you can create a seperate class as 'model'.
 	}
 
-	public void list(Database db, Tuple request) throws Exception
+	public void list(Database db, MolgenisRequest request) throws Exception
 	{
 		files.clear();
 
@@ -55,7 +56,7 @@ public class LoadFromLocalPlugin extends EasyPluginController<LoadFromLocalPlugi
 		}
 	}
 
-	public void load(Database db, Tuple request) throws DatabaseException
+	public void load(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		db.add(files);
 		files.clear();
@@ -86,7 +87,7 @@ public class LoadFromLocalPlugin extends EasyPluginController<LoadFromLocalPlugi
 	private String helloName = "UNKNOWN";
 
 	// matches ActionInput("sayHello")
-	public void sayHello(Database db, Tuple request)
+	public void sayHello(Database db, MolgenisRequest request)
 	{
 		if (!request.isNull("helloName"))
 		{

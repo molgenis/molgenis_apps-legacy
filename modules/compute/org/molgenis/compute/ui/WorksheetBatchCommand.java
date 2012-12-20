@@ -2,6 +2,7 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
@@ -95,7 +96,7 @@ public class WorksheetBatchCommand extends SimpleCommand
 		return null;
 	}
 
-	public void findVariants(Database db, Tuple request) throws Exception
+	public void findVariants(Database db, MolgenisRequest request) throws Exception
 	{
 		print("WE ARE IN FINDVARIANTS!");
 		// getModel().setSuccess("Clean successful");

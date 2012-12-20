@@ -1,6 +1,7 @@
 package org.molgenis.sandbox.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -51,7 +52,7 @@ public class BootstrapTest extends EasyPluginController<BootstrapTest>
 	private String helloName = "UNKNOWN";
 
 	// matches ActionInput("sayHello")
-	public void sayHello(Database db, Tuple request)
+	public void sayHello(Database db, MolgenisRequest request)
 	{
 		if (!request.isNull("helloName"))
 		{

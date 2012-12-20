@@ -1013,7 +1013,7 @@ public class TreeViewProxyPlugin extends PluginModel<Entity>
 	 * @param x
 	 * @throws Exception
 	 */
-	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation,
+	private void addMeasurementsForDownload(Database db, MolgenisRequest request, String selectedInvestigation,
 			String dateOfDownload, String selectionName) throws Exception
 	{
 

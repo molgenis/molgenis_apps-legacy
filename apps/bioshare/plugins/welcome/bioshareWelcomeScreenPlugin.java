@@ -9,6 +9,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -153,7 +154,7 @@ public class bioshareWelcomeScreenPlugin extends EasyPluginController<bioshareWe
 	 * Exceptions will be logged and shown to the user automatically. All db
 	 * actions are within one transaction.
 	 */
-	public void updateDate(Database db, Tuple request) throws Exception
+	public void updateDate(Database db, MolgenisRequest request) throws Exception
 	{
 		getModel().date = request.getDate("date");
 

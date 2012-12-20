@@ -196,7 +196,7 @@ public class QTLDataSetWizard extends PluginModel
 	 * @param db
 	 * @throws Exception
 	 */
-	private void uploadData(String type, Tuple request, Database db) throws Exception
+	private void uploadData(String type, MolgenisRequest request, Database db) throws Exception
 	{
 		File file = request.getFile(type + "File");
 

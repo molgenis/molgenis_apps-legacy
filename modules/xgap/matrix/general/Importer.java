@@ -21,6 +21,7 @@ import org.molgenis.core.MolgenisFile;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -31,7 +32,7 @@ import filehandling.generic.PerformUpload;
 public class Importer
 {
 
-	public void performImport(Tuple request, Data data, Database db) throws Exception
+	public void performImport(MolgenisRequest request, Data data, Database db) throws Exception
 	{
 
 		File importFile = null;

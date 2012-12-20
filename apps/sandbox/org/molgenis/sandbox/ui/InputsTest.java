@@ -2,6 +2,7 @@ package org.molgenis.sandbox.ui;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -70,7 +71,7 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 				+ "<script type=\"text/javascript\" src=\"http://jqueryui.com/themeroller/themeswitchertool/\"></script>";
 	}
 
-	public void changelibrary(Database db, Tuple request)
+	public void changelibrary(Database db, MolgenisRequest request)
 	{
 		logger.info("changelibrary: " + request);
 		String lib = request.getString("library");

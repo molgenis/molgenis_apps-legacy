@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package plugins.ConvertGIDStoOMX;
 
 import java.io.FileInputStream;
@@ -47,6 +46,4 @@ public class ConvertGidsMain
 		sample.convert(is, os, osMD);
 
 	}
-
->>>>>>> 131ae04de12d172bb5db86e71a012c54328ab4e3
 }

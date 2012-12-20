@@ -17,6 +17,7 @@ import org.molgenis.compute.ComputeWorkflowStep;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -58,7 +59,7 @@ public class ImportCompute extends EasyPluginController<ImportCompute>
 
 	}
 
-	public void uploadWorkflow(Database db, Tuple request) throws IOException, DataFormatException, Exception
+	public void uploadWorkflow(Database db, MolgenisRequest request) throws IOException, DataFormatException, Exception
 	{
 		workflows = new ArrayList<ComputeWorkflow>();
 		parameters = new ArrayList<ComputeParameter>();
@@ -126,7 +127,7 @@ public class ImportCompute extends EasyPluginController<ImportCompute>
 		state = State.REVIEW;
 	}
 
-	public void saveUpload(Database db, Tuple request) throws DatabaseException
+	public void saveUpload(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		int count = 0;
 
@@ -170,7 +171,7 @@ public class ImportCompute extends EasyPluginController<ImportCompute>
 		this.setSuccess("Added or updated " + count + " records succesfully");
 	}
 
-	public void resetUpload(Database db, Tuple request)
+	public void resetUpload(Database db, MolgenisRequest request)
 	{
 		state = State.UPLOAD;
 	}

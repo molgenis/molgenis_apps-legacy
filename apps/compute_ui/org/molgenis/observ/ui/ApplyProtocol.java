@@ -1,6 +1,7 @@
 package org.molgenis.observ.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -43,7 +44,7 @@ public class ApplyProtocol extends EasyPluginController<ApplyProtocolModel>
 		// getModel().investigations = q.find();
 	}
 
-	public void changeProtocol(Database db, Tuple request)
+	public void changeProtocol(Database db, MolgenisRequest request)
 	{
 		
 	}

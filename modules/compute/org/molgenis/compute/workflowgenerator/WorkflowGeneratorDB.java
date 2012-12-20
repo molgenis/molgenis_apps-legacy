@@ -9,6 +9,7 @@ import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.compute.monitor.ComputeAppPaths;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
@@ -76,7 +77,7 @@ public class WorkflowGeneratorDB
 	private boolean isToWriteLocally = false;
 	private String localLocation = "/";
 
-	public void processSingleWorksheet(Database db, Tuple request, Hashtable<String, String> userValues,
+	public void processSingleWorksheet(Database db, MolgenisRequest request, Hashtable<String, String> userValues,
 			Workflow workflow, String applicationName /* should be unique somehow */, String environment)
 			throws Exception
 	{
@@ -188,7 +189,7 @@ public class WorkflowGeneratorDB
 
 	}
 
-	private void processWorkflowElement(Database db, Tuple request, WorkflowElement workflowElement)
+	private void processWorkflowElement(Database db, MolgenisRequest request, WorkflowElement workflowElement)
 			throws DatabaseException, ParseException, IOException
 	{
 
@@ -240,7 +241,7 @@ public class WorkflowGeneratorDB
 		return null;
 	}
 
-	private void generateComputeApplication(Database db, Tuple request, WorkflowElement workflowElement,
+	private void generateComputeApplication(Database db, MolgenisRequest request, WorkflowElement workflowElement,
 			ComputeProtocol protocol, Hashtable<String, String> weavingValues, Vector<ComputeParameter> featuresToDerive)
 			throws IOException, DatabaseException, ParseException
 	{

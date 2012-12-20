@@ -6,6 +6,7 @@ import java.text.ParseException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -87,7 +88,7 @@ public class Test extends EasyPluginController<TestModel>
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public void addInvestigation(Database db, Tuple request) throws Exception
+	public void addInvestigation(Database db, MolgenisRequest request) throws Exception
 	{
 		// Easily create object from request and use it
 		Investigation i = new Investigation();

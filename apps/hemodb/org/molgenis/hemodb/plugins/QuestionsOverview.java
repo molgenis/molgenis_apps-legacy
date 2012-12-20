@@ -15,6 +15,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -354,7 +355,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 	 * @param db
 	 * @param request
 	 */
-	public void geneExpressionSearch(Database db, Tuple request)
+	public void geneExpressionSearch(Database db, MolgenisRequest request)
 	{
 		/**
 		 * geneExpressionSearch generates a subMatrix with the genes and samples
@@ -477,7 +478,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 	 * @param request
 	 * @throws Exception
 	 */
-	public void significantGenesBetweenTwoGroups(Database db, Tuple request) throws Exception
+	public void significantGenesBetweenTwoGroups(Database db, MolgenisRequest request) throws Exception
 	{
 		/**
 		 * significantGenesBetweenTwoGroups calculates significantly
@@ -588,7 +589,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 	 * @param request
 	 * @throws DatabaseException
 	 */
-	public void conversingBetweenProbesAndGenes(Database db, Tuple request) throws DatabaseException
+	public void conversingBetweenProbesAndGenes(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		/**
 		 * This is a method to convert between (hemo)probes and (hemo)genes.

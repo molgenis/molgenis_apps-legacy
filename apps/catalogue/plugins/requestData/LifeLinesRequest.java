@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -86,7 +87,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 	 * Exceptions will be logged and shown to the user automatically. All db
 	 * actions are within one transaction.
 	 */
-	public void updateDate(Database db, Tuple request) throws Exception
+	public void updateDate(Database db, MolgenisRequest request) throws Exception
 	{
 		getModel().date = request.getDate("date");
 
@@ -98,7 +99,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		getModel().setSuccess("Update successful");
 	}
 
-	public void submit(Database db, Tuple request) throws DatabaseException, EmailException, WriteException,
+	public void submit(Database db, MolgenisRequest request) throws DatabaseException, EmailException, WriteException,
 			IOException
 	{
 		sentEmail(db, request);
@@ -107,8 +108,8 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		tuple = request;
 	}
 
-	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException, WriteException,
-			IOException
+	public void sentEmail(Database db, MolgenisRequest request) throws DatabaseException, EmailException,
+			WriteException, IOException
 	{
 		String subject = "Data request";
 		ShoppingCart shc = new ShoppingCart();

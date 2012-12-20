@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -33,7 +34,7 @@ public class TestR extends EasyPluginController<TestRView>
 	{
 	}
 
-	public void buttonRunTest(Database db, Tuple request) throws Exception
+	public void buttonRunTest(Database db, MolgenisRequest request) throws Exception
 	{
 		System.out.println("Run R");
 

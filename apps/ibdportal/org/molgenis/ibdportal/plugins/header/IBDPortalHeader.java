@@ -9,6 +9,7 @@ package org.molgenis.ibdportal.plugins.header;
 
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;

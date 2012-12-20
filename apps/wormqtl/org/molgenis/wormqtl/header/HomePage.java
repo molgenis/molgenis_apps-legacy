@@ -15,6 +15,7 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.tuple.Tuple;

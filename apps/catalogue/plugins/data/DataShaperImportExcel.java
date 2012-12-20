@@ -107,7 +107,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException,
+	public void loadDataFromExcel(Database db, MolgenisRequest request, Investigation inv) throws BiffException, IOException,
 			DatabaseException
 	{
 

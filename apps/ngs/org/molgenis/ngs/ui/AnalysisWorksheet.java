@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -96,17 +97,17 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheet>
 		}
 	}
 
-	public void download_txt_all(Database db, Tuple request, OutputStream out)
+	public void download_txt_all(Database db, MolgenisRequest request, OutputStream out)
 	{
 		this.download(db, request, out, null);
 	}
 
-	public void download_txt_selected(Database db, Tuple request, OutputStream out)
+	public void download_txt_selected(Database db, MolgenisRequest request, OutputStream out)
 	{
 		this.download(db, request, out, request.getList("selectIndex"));
 	}
 
-	private void download(Database db, Tuple request, OutputStream out, List<?> indexes)
+	private void download(Database db, MolgenisRequest request, OutputStream out, List<?> indexes)
 	{
 		// skip first column
 		List<String> headers = sheet.get(0).getFields().subList(1, sheet.get(0).getFields().size());

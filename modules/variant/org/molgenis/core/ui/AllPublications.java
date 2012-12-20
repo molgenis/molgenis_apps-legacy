@@ -10,6 +10,7 @@ package org.molgenis.core.ui;
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -44,7 +45,7 @@ public class AllPublications extends IntegratedPluginController<AllPublicationsM
 		return result;
 	}
 
-	public void show(Database db, Tuple request)
+	public void show(Database db, MolgenisRequest request)
 	{
 		try
 		{

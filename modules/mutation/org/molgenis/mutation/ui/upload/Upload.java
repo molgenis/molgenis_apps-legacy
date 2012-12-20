@@ -23,6 +23,7 @@ import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -121,7 +122,7 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 
-	private void handleBatch(Database db, Tuple request) throws Exception
+	private void handleBatch(Database db, MolgenisRequest request) throws Exception
 	{
 		if (this.action.equals("newBatch"))
 		{
@@ -170,7 +171,7 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 
-	private void handlePatient(Database db, Tuple request) throws Exception
+	private void handlePatient(Database db, MolgenisRequest request) throws Exception
 	{
 		this.patientSummaryVO = this.toPatientSummaryVO(request);
 
@@ -197,7 +198,7 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 
-	private void handleMutation(Database db, Tuple request) throws Exception
+	private void handleMutation(Database db, MolgenisRequest request) throws Exception
 	{
 		this.toMutationUploadVO(request);
 

@@ -44,12 +44,12 @@
 //				getModel());
 //	}
 //	
-//	public void refresh(Database db, Tuple request)
+//	public void refresh(Database db, MolgenisRequest request)
 //	{
 //		// nothing to do, because reload does all the work
 //	}
 //
-//	public void remove(Database db, Tuple request) {
+//	public void remove(Database db, MolgenisRequest request) {
 //		// we want to kill current job
 //		try
 //		{
@@ -66,7 +66,7 @@
 //	/**
 //	 * Handle the submit
 //	 */
-//	public void submit(Database db, Tuple request)
+//	public void submit(Database db, MolgenisRequest request)
 //	{
 //		try
 //		{

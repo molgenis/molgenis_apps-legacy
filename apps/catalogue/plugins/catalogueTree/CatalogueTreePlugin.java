@@ -306,7 +306,7 @@ public class CatalogueTreePlugin extends PluginModel<Entity>
 
 	}
 
-	private List<Measurement> getSelectedMeasurements(Database db, Tuple request) throws DatabaseException
+	private List<Measurement> getSelectedMeasurements(Database db, MolgenisRequest request) throws DatabaseException
 	{
 
 		List<Measurement> measurements = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,

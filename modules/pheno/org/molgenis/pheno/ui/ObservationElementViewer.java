@@ -31,7 +31,6 @@ import org.molgenis.pheno.ui.form.ApplyProtocolForm;
 import org.molgenis.pheno.ui.form.ObservationTargetForm;
 import org.molgenis.pheno.ui.form.SelectProtocolForm;
 import org.molgenis.util.ValueLabel;
-import org.molgenis.util.tuple.Tuple;
 
 public class ObservationElementViewer extends EasyPluginController<ObservationElementViewerModel>
 {
@@ -107,7 +106,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param request
 	 * @throws HtmlInputException
 	 */
-	private void handleSelect(Database db, Tuple request) throws HtmlInputException
+	private void handleSelect(Database db, MolgenisRequest request) throws HtmlInputException
 	{
 		this.setView(new FreemarkerView("select.ftl", getModel()));
 
@@ -125,7 +124,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param request
 	 * @throws HtmlInputException
 	 */
-	private void handleAdd(Database db, Tuple request) throws HtmlInputException
+	private void handleAdd(Database db, MolgenisRequest request) throws HtmlInputException
 	{
 		try
 		{
@@ -184,7 +183,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param request
 	 * @throws ParseException
 	 */
-	private void handleInsert(Database db, Tuple request) throws ParseException
+	private void handleInsert(Database db, MolgenisRequest request) throws ParseException
 	{
 		this.setView(new FreemarkerView("show.ftl", getModel()));
 
@@ -242,7 +241,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param db
 	 * @param request
 	 */
-	private void handleUpdate(Database db, Tuple request)
+	private void handleUpdate(Database db, MolgenisRequest request)
 	{
 		this.setView(new FreemarkerView("edit.ftl", getModel()));
 

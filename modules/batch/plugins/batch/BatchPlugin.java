@@ -25,7 +25,6 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.ValueLabel;
-import org.molgenis.util.tuple.Tuple;
 
 public class BatchPlugin extends EasyPluginController
 {
@@ -98,7 +97,8 @@ public class BatchPlugin extends EasyPluginController
 	 * @throws ParseException
 	 * @throws DatabaseException
 	 */
-	private void handleAddRequest(Database db, Tuple request) throws DatabaseException, ParseException, IOException
+	private void handleAddRequest(Database db, MolgenisRequest request) throws DatabaseException, ParseException,
+			IOException
 	{
 		List<Integer> ids = new ArrayList<Integer>();
 
@@ -118,7 +118,8 @@ public class BatchPlugin extends EasyPluginController
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private void handleRemoveRequest(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	private void handleRemoveRequest(Database db, MolgenisRequest request) throws DatabaseException, IOException,
+			ParseException
 	{
 		List<Integer> ids = new ArrayList<Integer>();
 
@@ -138,7 +139,7 @@ public class BatchPlugin extends EasyPluginController
 		return this.container;
 	}
 
-	private void handleSelectRequest(Database db, Tuple request) throws DatabaseException, ParseException
+	private void handleSelectRequest(Database db, MolgenisRequest request) throws DatabaseException, ParseException
 	{
 		this.batchId = request.getInt("batches");
 

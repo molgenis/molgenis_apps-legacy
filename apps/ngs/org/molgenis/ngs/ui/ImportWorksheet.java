@@ -16,6 +16,7 @@ import org.molgenis.contribution.Person;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -87,7 +88,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet>
 	}
 
 	// handle the upload
-	public void uploadWorksheet(Database db, Tuple request) throws IOException, DataFormatException, ParseException
+	public void uploadWorksheet(Database db, MolgenisRequest request) throws IOException, DataFormatException, ParseException
 	{
 		CsvReader reader = null;
 		if (!request.isNull("filefor_worksheetFile"))
@@ -369,7 +370,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet>
 		return result;
 	}
 
-	public void saveUpload(Database db, Tuple request) throws DatabaseException
+	public void saveUpload(Database db, MolgenisRequest request) throws DatabaseException
 	{
 
 		try
@@ -413,7 +414,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheet>
 		}
 	}
 
-	public void resetUpload(Database db, Tuple request)
+	public void resetUpload(Database db, MolgenisRequest request)
 	{
 		state = State.UPLOAD;
 	}

@@ -5,6 +5,7 @@ import org.molgenis.compute.host.Glite;
 import org.molgenis.compute.host.Job;
 import org.molgenis.compute.host.Pbs;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -91,7 +92,7 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		return form;
 	}
 
-	public void refreshJobs(Database db, Tuple request) throws Exception
+	public void refreshJobs(Database db, MolgenisRequest request) throws Exception
 	{
 		for (Job job : jobs)
 		{
@@ -100,7 +101,7 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		}
 	}
 
-	public void addHost(Database db, Tuple request) throws Exception
+	public void addHost(Database db, MolgenisRequest request) throws Exception
 	{
 		String hostname = request.getString("hostname");
 		String username = request.getString("username");
@@ -121,7 +122,7 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		backends.put(username + "@" + hostname + ":" + workingDir, m);
 	}
 
-	public void submitJob(Database db, Tuple request) throws IOException
+	public void submitJob(Database db, MolgenisRequest request) throws IOException
 	{
 		Job j = new Job();
 		j.setScript(request.getString("script"));
@@ -135,7 +136,7 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		jobs.add(j);
 	}
 
-	public void submitPilot(Database db, Tuple request) throws IOException
+	public void submitPilot(Database db, MolgenisRequest request) throws IOException
 	{
 		Job j = new Job();
 		j.setScript(request.getString("script"));

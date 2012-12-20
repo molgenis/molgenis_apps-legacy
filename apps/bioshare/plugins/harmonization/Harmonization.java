@@ -28,6 +28,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -931,7 +932,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		this.getModel().getScheduler().scheduleJob(termExpansion, triggerTermExpasion);
 	}
 
-	private void collectExistingMapping(Database db, Tuple request) throws DatabaseException
+	private void collectExistingMapping(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		String predictionModel = request.getString("selectPredictionModel");
 
