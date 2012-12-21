@@ -11,7 +11,7 @@ import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.framework.tupletable.impl.EntityTable;
 import org.molgenis.pheno.Individual;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -62,7 +62,7 @@ public class TestEntityTable
 		int i = 1;
 		for (Tuple row : table.getRows())
 		{
-			Assert.assertEquals(row.getObject("name"), "individual" + i);
+			Assert.assertEquals(row.get("name"), "individual" + i);
 
 			i = i + 1;
 		}

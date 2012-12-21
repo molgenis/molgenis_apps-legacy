@@ -9,10 +9,10 @@ package org.molgenis.auth.ui;
 
 import org.molgenis.auth.ui.form.RegistrationForm;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
 
 //import commonservice.CommonService;
 
@@ -35,7 +35,7 @@ public class UserLogin extends SimpleUserLogin
 		return new FreemarkerView("UserLogin.ftl", getModel());
 	}
 
-	public void Register(Database db, Tuple request)
+	public void Register(Database db, MolgenisRequest request)
 	{
 		this.getModel().setAction("Register");
 	}

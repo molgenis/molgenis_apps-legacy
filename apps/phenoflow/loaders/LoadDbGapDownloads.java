@@ -2,18 +2,12 @@ package loaders;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
-import org.apache.log4j.BasicConfigurator;
-import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.util.SimpleTuple;
 
-import app.CsvImport;
-import app.DatabaseFactory;
+import app.EntitiesImporterImpl;
 import app.JDBCDatabase;
 
 public class LoadDbGapDownloads
@@ -59,7 +53,8 @@ public class LoadDbGapDownloads
 			// list,
 			// DatabaseAction.ADD_IGNORE_EXISTING, "");
 			// measurements already in, proceed loading a complete set
-			CsvImport.importAll(investigationDir, db, new SimpleTuple(), null, DatabaseAction.ADD_IGNORE_EXISTING, "");
+			new EntitiesImporterImpl(db).importEntities(Arrays.asList(investigationDir.listFiles()),
+					DatabaseAction.ADD_IGNORE_EXISTING);
 		}
 
 	}

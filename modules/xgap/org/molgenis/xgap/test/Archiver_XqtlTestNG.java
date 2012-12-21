@@ -1,24 +1,26 @@
 package org.molgenis.xgap.test;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
-import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.EntitiesImporter;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.TarGz;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
@@ -28,9 +30,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import regressiontest.cluster.DataLoader;
-import app.CsvExport;
-import app.CsvImport;
+import app.CsvEntityExporter;
 import app.DatabaseFactory;
+import app.EntitiesImporterImpl;
 import filehandling.storage.StorageHandler;
 
 /**
@@ -105,7 +107,8 @@ public class Archiver_XqtlTestNG
 		specialCases.add(org.molgenis.auth.MolgenisRoleGroupLink.class);
 		specialCases.add(org.molgenis.auth.MolgenisUser.class);
 		specialCases.add(org.molgenis.core.MolgenisEntity.class);
-		new CsvExport().exportSpecial(tmpDir, db, specialCases, true);
+		CsvEntityExporter entityExporter = new CsvEntityExporter();
+		entityExporter.exportSpecial(tmpDir, db, specialCases, true);
 		archive = TarGz.tarDir(tmpDir);
 		Assert.assertTrue(archive.exists());
 	}
@@ -124,8 +127,8 @@ public class Archiver_XqtlTestNG
 	public void importArchive() throws Exception
 	{
 		File extractDir = TarGz.tarExtract(archive);
-		ImportResult i = CsvImport.importAll(extractDir, db, new SimpleTuple(), true);
-		Assert.assertTrue(i.getErrorItem().equals("no error found"));
+		EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles()), DatabaseAction.ADD);
 		checkIfExampleDataIsOK();
 	}
 
@@ -143,8 +146,15 @@ public class Archiver_XqtlTestNG
 	public void importArchiveAgain() throws Exception
 	{
 		File extractDir = TarGz.tarExtract(archive);
-		ImportResult i = CsvImport.importAll(extractDir, db, new SimpleTuple(), true);
-		Assert.assertTrue(i.getErrorItem().equals("no error found"));
+		EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles(new FileFilter()
+		{
+			@Override
+			public boolean accept(File pathname)
+			{
+				return pathname.getName().endsWith(".xls");
+			}
+		})), DatabaseAction.ADD);
 
 		// we expect to see database records
 		Assert.assertTrue(db.find(Marker.class).size() > 0);

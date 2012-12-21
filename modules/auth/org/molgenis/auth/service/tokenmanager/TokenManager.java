@@ -12,10 +12,10 @@ import java.util.Date;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.SimpleLogin;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Tuple;
 
 public class TokenManager extends PluginModel
 {
@@ -43,7 +43,7 @@ public class TokenManager extends PluginModel
 		return "org/molgenis/auth/service/tokenmanager/TokenManager.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

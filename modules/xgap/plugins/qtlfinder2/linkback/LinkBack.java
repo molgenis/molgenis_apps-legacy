@@ -12,6 +12,7 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
@@ -19,7 +20,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
 import org.molgenis.xgap.Probe;
 
@@ -53,7 +53,7 @@ public class LinkBack extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 	}

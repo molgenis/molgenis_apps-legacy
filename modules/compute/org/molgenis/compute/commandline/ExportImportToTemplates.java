@@ -12,7 +12,7 @@ import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.io.File;
 import java.io.FileNotFoundException;

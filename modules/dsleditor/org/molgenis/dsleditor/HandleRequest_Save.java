@@ -3,7 +3,7 @@ package org.molgenis.dsleditor;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.model.jaxb.Entity;
 import org.molgenis.model.jaxb.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class HandleRequest_Save
 {

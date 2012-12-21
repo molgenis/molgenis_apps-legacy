@@ -258,7 +258,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Breeding lines"));
 		// Add a breeding line
-		selenium.type("id=linename", "MyLine");
+		selenium.type("id=lineName", "MyLine");
 		selenium.select("id=species", "label=House mouse");
 		selenium.click("id=add");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -359,7 +359,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=label");
+		selenium.click("id=print cagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
@@ -378,7 +378,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=label");
+		selenium.click("id=print cagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");

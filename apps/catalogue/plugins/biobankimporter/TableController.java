@@ -28,8 +28,8 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.DatabaseFactory;
 
@@ -73,7 +73,7 @@ public class TableController
 
 	public void addField(String classType, String fieldName, String multipleValues, int[] columnList, Boolean Vertical)
 	{
-		this.addField(classType, fieldName, multipleValues, columnList, Vertical, new SimpleTuple());
+		this.addField(classType, fieldName, multipleValues, columnList, Vertical, new KeyValueTuple());
 	}
 
 	public void addField(String ClassType, String fieldName, String multipleValues, int[] columnList, Boolean Vertical,
@@ -104,7 +104,7 @@ public class TableController
 			else
 			{
 
-				this.addField(ClassType, fieldName, multipleValues, columnIndexes[i], Vertical, new SimpleTuple(),
+				this.addField(ClassType, fieldName, multipleValues, columnIndexes[i], Vertical, new KeyValueTuple(),
 						dependedIndex);
 				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
 			}
@@ -115,14 +115,14 @@ public class TableController
 
 	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex, Boolean Vertical)
 	{
-		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new SimpleTuple(), -1);
+		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new KeyValueTuple(), -1);
 	}
 
 	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex, boolean Vertical,
 			int... dependentColumnIndex)
 	{
 
-		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new SimpleTuple(),
+		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new KeyValueTuple(),
 				dependentColumnIndex);
 
 	}
@@ -138,7 +138,7 @@ public class TableController
 			boolean Vertical)
 	{
 		observationTarget = targetIndex;
-		this.addField(ClassType, fieldName, multipleValues, coHeaders, Vertical, new SimpleTuple());
+		this.addField(ClassType, fieldName, multipleValues, coHeaders, Vertical, new KeyValueTuple());
 		observationTarget = -1;
 	}
 

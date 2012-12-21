@@ -20,7 +20,6 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.sqlbackend.Backend;
 import org.molgenis.matrix.component.sqlbackend.EAVViewBackend;
 import org.molgenis.organization.Investigation;

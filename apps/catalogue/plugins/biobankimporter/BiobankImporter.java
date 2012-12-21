@@ -24,6 +24,7 @@ import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
@@ -34,9 +35,9 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.SingletonTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
@@ -247,7 +248,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		mappingForMolgenisEntity.clear();
@@ -516,7 +517,7 @@ public class BiobankImporter extends PluginModel<Entity>
 						}
 					}
 
-					if (request.getBool(columnIndex) != null)
+					if (request.getBoolean(columnIndex) != null)
 					{
 						System.out.println();
 					}
@@ -569,7 +570,7 @@ public class BiobankImporter extends PluginModel<Entity>
 
 	}
 
-	public void readHeaders(Tuple request) throws BiffException, IOException
+	public void readHeaders(MolgenisRequest request) throws BiffException, IOException
 	{
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -601,14 +602,14 @@ public class BiobankImporter extends PluginModel<Entity>
 
 			startingRowIndex--;
 
-			if (request.getBool("multipleSheets") != null && request.getBool("multipleSheets") == true)
+			if (request.getBoolean("multipleSheets") != null && request.getBoolean("multipleSheets") == true)
 			{
-				multipleSheets = request.getBool("multipleSheets");
+				multipleSheets = request.getBoolean("multipleSheets");
 			}
 
-			if (request.getBool("sheetImportProtocol") != null && request.getBool("sheetImportProtocol") == true)
+			if (request.getBoolean("sheetImportProtocol") != null && request.getBoolean("sheetImportProtocol") == true)
 			{
-				sheetImportProtocol = request.getBool("sheetImportProtocol");
+				sheetImportProtocol = request.getBoolean("sheetImportProtocol");
 			}
 
 			if (request.getAction().equals("UploadFileByColumn"))
@@ -659,7 +660,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException,
+	public void loadDataFromExcel(Database db, MolgenisRequest request, Investigation inv) throws BiffException, IOException,
 			DatabaseException
 	{
 
@@ -723,13 +724,10 @@ public class BiobankImporter extends PluginModel<Entity>
 					else if (classType.equals(Category.class.getSimpleName() + ":" + Category.ISMISSING))
 					{
 
-						Tuple defaults = new SimpleTuple();
-						defaults.set(Category.ISMISSING, true);
 						table.addField(Category.class.getSimpleName(), "name", multipleValues, columnIndex.intValue(),
-								TableField.COLVALUE, defaults);
+								TableField.COLVALUE, new SingletonTuple<Boolean>(Category.ISMISSING, true));
 						table.addField(classType, fieldName, multipleValues, TableField.COLVALUE,
 								dependedColumn.intValue(), columnIndex.intValue());
-
 					}
 					else
 					{

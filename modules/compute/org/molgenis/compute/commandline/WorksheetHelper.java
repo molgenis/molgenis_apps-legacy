@@ -16,7 +16,7 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.DatabaseFactory;
 

@@ -14,11 +14,11 @@ import java.util.Map;
 
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class BackgroundPlugin extends PluginModel<Entity>
 {
@@ -87,7 +87,7 @@ public class BackgroundPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		ct.setDatabase(db);
 		try

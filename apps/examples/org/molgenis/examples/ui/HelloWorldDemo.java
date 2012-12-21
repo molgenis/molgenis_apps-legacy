@@ -1,6 +1,7 @@
 package org.molgenis.examples.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -10,7 +11,7 @@ import org.molgenis.framework.ui.html.JavaInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class HelloWorldDemo extends EasyPluginController
 {
@@ -53,7 +54,7 @@ public class HelloWorldDemo extends EasyPluginController
 	// here we handle the action named 'sayHello'
 	private String name = "UNKNOWN";
 
-	public void sayHello(Database db, Tuple request)
+	public void sayHello(Database db, MolgenisRequest request)
 	{
 		if (request.isNull("name")) name = "UNKNOWN";
 		else
@@ -69,7 +70,7 @@ public class HelloWorldDemo extends EasyPluginController
 			+ "\n  import org.molgenis.framework.ui.html.FlowLayout;"
 			+ "\n  import org.molgenis.framework.ui.html.MolgenisForm;"
 			+ "\n  import org.molgenis.framework.ui.html.Paragraph;"
-			+ "\n  import org.molgenis.framework.ui.html.StringInput;" + "\n  import org.molgenis.util.Tuple;" + "\n"
+			+ "\n  import org.molgenis.framework.ui.html.StringInput;" + "\n  import org.molgenis.util.tuple.Tuple;" + "\n"
 			+ "\n  //include to this plugin in your molgenis_ui.xml via "
 			+ "\n  //<plugin name=\"myname\" type=\"org.molgenis.example.ui.HelloWorldDemo\"/>"
 			+ "\n  public class HelloWorldDemo extends EasyPluginController" + "\n  {"
@@ -82,7 +83,7 @@ public class HelloWorldDemo extends EasyPluginController
 			+ "\n  		f.add(new StringInput(\"name\"));" + "\n  		//action below maps to public void sayHello()"
 			+ "\n  		f.add(new ActionInput(\"sayHello\"));" + "\n  		" + "\n  		return f;" + "\n  	}" + "\n"
 			+ "\n  	//here we handle the action named 'sayHello'" + "\n  	private String name = \"UNKNOWN\";"
-			+ "\n  	public void sayHello(Database db, Tuple request)" + "\n  	{"
+			+ "\n  	public void sayHello(Database db, MolgenisRequest request)" + "\n  	{"
 			+ "\n  		if(request.isNull(\"name\")) name = \"UNKNOWN\";"
 			+ "\n  		else name = request.getString(\"name\");" + "\n  	}" + "\n  	" + "\n  	@Override"
 			+ "\n  	public void reload(Database db) throws Exception" + "\n  	{"

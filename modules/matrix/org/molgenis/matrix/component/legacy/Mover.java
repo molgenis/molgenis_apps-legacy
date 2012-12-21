@@ -3,7 +3,6 @@
 
 package org.molgenis.matrix.component.legacy;
 
-import org.molgenis.framework.db.QueryRule.Operator;
 
 public class Mover<R, C, V>
 {

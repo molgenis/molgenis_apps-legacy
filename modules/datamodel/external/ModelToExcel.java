@@ -7,14 +7,12 @@ import java.util.Arrays;
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
-import org.molgenis.util.CsvStringWriter;
-import org.molgenis.util.CsvWriter;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
 
 import app.JDBCMetaDatabase;
 
@@ -29,56 +27,65 @@ public class ModelToExcel
 
 	public static String write(Model m)
 	{
-		StringWriter sw = new StringWriter();
-		CsvStringWriter w;
+		StringWriter strWriter = new StringWriter();
+		CsvWriter csvWriter = new CsvWriter(strWriter);
 		try
 		{
-			w = new CsvStringWriter(sw);
-
-			write(m, w);
-
+			write(m, csvWriter);
 		}
-		catch (Exception e)
+		catch (MolgenisModelException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return sw.toString();
+		catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			try
+			{
+				csvWriter.close();
+			}
+			catch (IOException e)
+			{
+			}
+		}
+		return strWriter.toString();
 	}
 
 	public static void write(Model m, CsvWriter w) throws MolgenisModelException, IOException
 	{
-		w.setHeaders(Arrays.asList("module", "entity", "field", "type", "nillable", "xref", "description"));
-		w.writeHeader();
+		w.writeColNames(Arrays.asList("module", "entity", "field", "type", "nillable", "xref", "description"));
 
 		for (Entity e : m.getEntities())
 			if (!e.isAbstract())
 			{
-				Tuple t = new SimpleTuple();
-				if (e.getModule() != null) t.set("module", e.getModule().getName());
-				t.set("entity", e.getName());
-				t.set("field", "====");
-				t.set("type", e.getAncestor() != null ? e.getAncestor().getName() : "");
-				t.set("nillable", "====");
-				t.set("xref", "====");
-				t.set("description", e.getDescription());
+				KeyValueTuple tuple = new KeyValueTuple();
+				if (e.getModule() != null) tuple.set("module", e.getModule().getName());
+				tuple.set("entity", e.getName());
+				tuple.set("field", "====");
+				tuple.set("type", e.getAncestor() != null ? e.getAncestor().getName() : "");
+				tuple.set("nillable", "====");
+				tuple.set("xref", "====");
+				tuple.set("description", e.getDescription());
 
-				w.writeRow(t);
+				w.write(tuple);
 
 				for (Field f : e.getAllFields())
 				{
-					t.set("field", f.getName());
-					t.set("type", f.getType());
-					t.set("nillable", f.isNillable());
-					t.set("description", f.getDescription());
-					t.set("xref", null);
+					tuple.set("field", f.getName());
+					tuple.set("type", f.getType());
+					tuple.set("nillable", f.isNillable());
+					tuple.set("description", f.getDescription());
+					tuple.set("xref", null);
 
 					if (f.getType() instanceof XrefField || f.getType() instanceof MrefField)
 					{
-						t.set("xref", f.getXrefEntityName());
+						tuple.set("xref", f.getXrefEntityName());
 					}
 
-					w.writeRow(t);
+					w.write(tuple);
 				}
 			}
 	}

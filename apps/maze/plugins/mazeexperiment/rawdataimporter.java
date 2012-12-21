@@ -27,7 +27,7 @@ import org.molgenis.maze.MazeData;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class rawdataimporter extends PluginModel<Entity>
 {
@@ -225,7 +225,7 @@ public class rawdataimporter extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// clear the old messages
 		ScreenMessage msg = null;
