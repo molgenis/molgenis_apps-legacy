@@ -145,13 +145,13 @@ Import the first workflow into database by running the `importWorkflow.sh` from 
 >workflows/ngs/alignmentAndSnpCalling/workflow.csv \\  
 >workflows/ngs/alignmentAndSnpCalling/protocols/  
   
-Generate imputation jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:  
+Generate ngs jobs in the database with the `importWorksheet.sh` from [deployment directory] and example worksheet:
 
 >sh importWorksheet.sh \\  
 >workflow.csv \\  
 >ui.grid.sara.nl \\  
 >workflows/ngs/alignmentAndSnpCalling/worksheet.csv \\  
->run01  
+>test1
 
 ###Start pilot jobs on the grid and monitor 
 
