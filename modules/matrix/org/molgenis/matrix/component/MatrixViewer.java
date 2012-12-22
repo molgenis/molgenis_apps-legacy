@@ -1770,8 +1770,11 @@ public class MatrixViewer extends HtmlWidget
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
-				.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
+		if (!this.matrix.getRowCount().equals(0))
+		{
+			this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
+					.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
+		}
 	}
 
 	public void moveDownEnd(Database db, MolgenisRequest t) throws MatrixException
@@ -1780,9 +1783,14 @@ public class MatrixViewer extends HtmlWidget
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix.getRowCount()
-				/ matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount() / matrix.getRowLimit())
-				.intValue()) * matrix.getRowLimit());
+		// prevent sql out of bounds error.
+		if (!this.matrix.getRowCount().equals(0))
+		{
+			this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix
+					.getRowCount() / matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount()
+					/ matrix.getRowLimit()).intValue())
+					* matrix.getRowLimit());
+		}
 	}
 
 	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
