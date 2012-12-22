@@ -359,7 +359,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=print cagelabels");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
