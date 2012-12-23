@@ -333,15 +333,15 @@
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
 				<thead>
 					<tr style="text-align:center;">
-						<th>create new parentgroup</th>
-						<th>create new litter</th>
+						<th>Add parentgroup(s)</th>
+						<th>New litter</th>
 						<th>(De)Activate parent group</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr style="text-align:center;">
-						<td><input id="createParentgroup" type="image" title="Add parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
-						<td><input id="createLitter" type="image" title="New litter." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
+						<td><input id="createParentgroup" type="image" title="New parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
+						<td><input id="createLitter" type="image" title="Create new litter from selected parent group." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
 						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
 					</tr>
 				</tbody>
