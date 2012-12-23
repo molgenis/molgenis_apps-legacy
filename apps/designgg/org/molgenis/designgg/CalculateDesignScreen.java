@@ -377,7 +377,10 @@ public class CalculateDesignScreen extends PluginModel
 		// 1.6 set weights
 		if (p.getWeight() != null && p.getWeight().size() > 1)
 		{
-			List<?> weights = p.getWeight();
+			List<String> weights = (List<String>) p.getWeight();
+			
+			//hotfix: request parsing is now different, first element of list gets '[' attached..
+			weights.set(0, weights.get(0).toString().replace("[", ""));
 
 			// source order from web
 			// Q
