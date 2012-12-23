@@ -326,15 +326,27 @@
 	
 		<div class="form_header">Parentgroups</div>
 		<div>
-			<br />
-			<a href="molgenis.do?__target=${screen.name}&__action=createParentgroup"><img id="createParentgroup" title="Create parentgroup" alt="Create parentgroup" src="generated-res/img/new.png"></a>
-			<br /><br />
+		<br />
 			${screen.pgMatrixViewer}
-			<br />
-			<input type='submit' id='createlitter' value='Create new litter from selected parentgroup' onclick="__action.value='createLitter'" />
-			<br />
-			<input type='submit' id='deactivate' value='(De)activate selected parentgroup' onclick="__action.value='deActivate'" />
 		</div>
+			<div id='pgActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>create new parentgroup</th>
+						<th>create new litter</th>
+						<th>(De)Activate parent group</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="createParentgroup" type="image" title="Create new parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/new_32.png"  /></td>
+						<td><input id="createlitter" type="submit" value='Create litter' title="Create new litter from selected parent group." onclick="__action.value='createLitter'" /></td>
+						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
 	
 	<#else>
 	
@@ -345,8 +357,6 @@
 		</div>
 			
 		<div id='litterActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
-			
-			
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
 				<thead>
 					<tr style="text-align:center;">
@@ -368,9 +378,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div id="pushdown" style="clear:both;" >
-		</div>
-		
+				
 		<!-- div style="clear:both">
 			<input type='submit' id='weanlitter' value='Wean selected litter' onclick="__action.value='WeanLitter'" />
 			<br />		
@@ -387,6 +395,7 @@
 		</div -->
 	</div>
 	</#if>
+	<div id="pushdown" style="clear:both;" ></div>
 
 </#if>
 	
@@ -405,6 +414,7 @@
 	jQuery('#cancel2').button();
 	jQuery('#cancel3').button();
 	jQuery('#cancel4').button();
+	jQuery('#createParentgroup').button();
 	jQuery('#addpg').button();
 	jQuery('#deactivate').button();
 	jQuery('#weanlitter').button();
