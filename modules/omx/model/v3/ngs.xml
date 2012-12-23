@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="Observ-OMX">
-	<module name="org.molgenis.omx.ngs" label="ngs">
+<molgenis name="org.molgenis.omx">
+	<module name="ngs" label="NGS module">
 		<description>Extension to Observ-OM to support Next Gen Sequencing
 			projects
 			using the Illumina platform. Each work consists of NgsStudy
@@ -20,7 +20,6 @@
 			<field name="study" type="xref" xref_entity="NgsStudy" />
 			<field name="sampletype" type="enum" default="dna" enum_options="[dna,rna]" description="Type of sample (dna/rna). Will become ontologyReference" />
 			<field name="externalIdentifier" type="string" nillable="true" description="(Optional) alternative sample identifier as known by sample supplier" />
-			<unique fields="identifier" description="Identifier is globally unique" />
 			<field name="labStatus" type="enum" default="Not started"
 				enum_options="[Not started,Sample prep - started,Sample prep - failed,Ready for clustering,Clustering and sequencing - started,Clustering and sequencing - failed,Gerald,Finished successfully,Other issue]"
 				description="Lab status phase of this sample" />
@@ -42,7 +41,7 @@
 			<field name="run" nillable="true" description="The run number (string), always use 4 digits (with leading 0's)" />
 			<field name="startDate" type="date" nillable="true" description="The date the flowcell was run on the machine" />
 		</entity>
-		<entity name="LibraryLane" extends="Target" decorator="org.molgenis.ngs.decorators.LibraryLaneDecorator">
+		<entity name="LibraryLane" extends="Target">
 			<description>This is actually our worksheet. Name is typically
 				library name, or of there is only one sample per library it may be
 				sample name. Description of the sample library that has been

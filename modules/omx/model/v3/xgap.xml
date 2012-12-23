@@ -1,5 +1,5 @@
-<molgenis name="Observ-OMX">
-	<module name="org.molgenis.omx.xgap" label="xgap">
+<molgenis name="org.molgenis.omx">
+	<module name="xgap" label="XGAP module">
 		<description>XGAP</description>
 		<entity name="Locus" abstract="true">
 			<description> position. Typical examples of such traits are genes,

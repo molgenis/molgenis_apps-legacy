@@ -1,5 +1,5 @@
-<molgenis name="Observ-OMX">
-	<module name="org.molgenis.omx.file" label="file">
+<molgenis name="org.molgenis.omx">
+	<module name="file" label="File module">
 		<description>
 			DEPENDS ON: core
 		</description>

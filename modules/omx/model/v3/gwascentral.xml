@@ -1,5 +1,5 @@
-<molgenis name="Observ-OMX">
-	<module name="org.molgenis.omx.gwascentral" label="gwascentral">
+<molgenis name="org.molgenis.omx">
+	<module name="gwascentral" label="GWAS Central module">
 		
 		<entity name="PanelSource" implements="Autoid">
 			<!-- todo: this should probably be a subclass of protocolApplication? -->
@@ -80,7 +80,7 @@
 			<field name="Sample" length="100" nillable="true" description="Biological system or sample type being assessed"/>
 		</entity>
 		
-		<entity name="PhenotypeValue" implements="ObservedValue">
+		<entity name="PhenotypeValue" implements="Value">
 			<field name="PhenotypePropertyID" label="Phenotype property name" type="xref" xref_entity="PhenotypeProperty"/>
 			<field name="Name" length="255" nillable="true"/>
 			<field name="Value" label="Value"/>
