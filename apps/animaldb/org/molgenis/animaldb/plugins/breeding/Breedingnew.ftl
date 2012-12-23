@@ -340,8 +340,8 @@
 				</thead>
 				<tbody>
 					<tr style="text-align:center;">
-						<td><input id="createParentgroup" type="image" title="Create new parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
-						<td><input id="createLitter" type="image" title="Create new litter from selected parent group." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
+						<td><input id="createParentgroup" type="image" title="Add parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
+						<td><input id="createLitter" type="image" title="New litter." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
 						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
 					</tr>
 				</tbody>
