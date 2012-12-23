@@ -340,8 +340,8 @@
 				</thead>
 				<tbody>
 					<tr style="text-align:center;">
-						<td><input id="createParentgroup" type="image" title="Create new parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/new_32.png"  /></td>
-						<td><input id="createlitter" type="submit" value='Create litter' title="Create new litter from selected parent group." onclick="__action.value='createLitter'" /></td>
+						<td><input id="createParentgroup" type="image" title="Create new parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
+						<td><input id="createLitter" type="image" title="Create new litter from selected parent group." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
 						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
 					</tr>
 				</tbody>
@@ -371,7 +371,7 @@
 					<tr style="text-align:center;">
 						<td><input id="weanlitter" type="image" title="Wean the selected litter." onclick="__action.value='WeanLitter'" src="res/img/pacifier_32.png"  /></td>
 						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
-						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editview_32.png"  /></td>
+						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editLT_32.png"  /></td>
 						<td><input id="printcagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
 						<td><input id="deactivate" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
 					</tr>
@@ -406,7 +406,7 @@
 </form>
 
 <script>
-	jQuery('#createlitter').button();
+	jQuery('#createLitter').button();
 	jQuery('#from2to3').button();
 	jQuery('#from3to4').button();
 	jQuery('#from4to3').button();
