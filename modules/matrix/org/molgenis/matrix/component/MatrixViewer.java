@@ -1525,6 +1525,8 @@ public class MatrixViewer extends HtmlWidget
 			List<String> chosenMeasurementNames = new ArrayList<String>();
 			for (Object measurementId : chosenMeasurementIds)
 			{
+				System.out.println("__objmeasid: " + measurementId + "\n");
+				// FIXME, somehow remove the extra bracket here.
 				int measId = Integer.parseInt((String) measurementId);
 				chosenMeasurementNames.add(db.findById(Measurement.class, measId).getName());
 			}
