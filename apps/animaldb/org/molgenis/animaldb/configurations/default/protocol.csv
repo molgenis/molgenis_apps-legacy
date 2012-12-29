@@ -6,6 +6,6 @@ SetAddress;To set an address.;Street,Housenumber,City
 SetDecProjectSpecs;To set the specifications of a DEC project.;DecNr,DecTitle,DecApplicantId,DecApplicationPdf,DecApprovalPdf,StartDate,EndDate,DecBudget
 SetDecSubprojectSpecs;To set the specifications of a DEC subproject.;ExperimentNr,DecSubprojectApplicationPdf,Concern,Goal,SpecialTechn,LawDef,ToxRes,Anaesthesia,PainManagement,AnimalEndStatus,Remark,DecApplication,StartDate,EndDate,DecSubprojectBudget
 AnimalInSubproject;To add an animal to an experiment.;Experiment,ExperimentTitle,SourceTypeSubproject,PainManagement,Anaesthesia,ExpectedDiscomfort,ExpectedAnimalEndStatus
-AnimalFromSubproject;To remove an animal from an experiment.;FromExperiment,ActualDiscomfort,ActualAnimalEndStatus
+AnimalFromSubproject;To remove an animal from an experiment.;FromExperiment,ActualDiscomfort,ActualAnimalEndStatus,Remark
 SetGenotype;To set part (one gene modification) of an animal's genotype.;GeneModification,GeneState
 Wean;To wean an animal.;Litter,Sex,WeanDate,Active,DateOfBirth,Species,AnimalType,Source,Color,Earmark

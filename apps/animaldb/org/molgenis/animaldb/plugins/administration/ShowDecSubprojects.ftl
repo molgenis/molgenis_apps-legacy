@@ -283,6 +283,11 @@
 	</div>
 	
 	<div class='row'>
+		<label for='removalremarks'>Remarks:</label>
+		<input type='texbox' class='textbox' id='removalremarks' name='removalremarks'>
+	</div>
+		
+	<div class='row'>
 		<input type='submit' id='dorem' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
 	</div>
 	

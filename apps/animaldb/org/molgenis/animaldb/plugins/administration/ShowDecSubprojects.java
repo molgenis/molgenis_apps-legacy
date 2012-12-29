@@ -70,6 +70,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private int userId = -1;
 	private String projectStartDateString = null;
 	private String projectEndDateString = null;
+	private String removalRemarks = null;
 
 	// hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -278,6 +279,16 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public List<Category> getAnimalEndStatusCodeList()
 	{
 		return animalEndStatusCodeList;
+	}
+
+	public String getRemovalRemarks()
+	{
+		return removalRemarks;
+	}
+
+	public void setRemovalRemarks(String removalRemarks)
+	{
+		this.removalRemarks = removalRemarks;
 	}
 
 	public void setDecApplicationList(List<ObservationTarget> decApplicationList)
@@ -803,6 +814,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					}
 				}
 
+				// Remarks
+				String removalRemarks = null;
+				if (request.getString("removalremarks") != null && !request.getString("removalremarks").equals(""))
+				{
+					removalRemarks = request.getString("removalremarks");
+				}
+
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 
@@ -866,6 +884,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 								endstatusDate, null, "ActualDiscomfort", animalName, discomfort, null));
 						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 								endstatusDate, null, "ActualAnimalEndStatus", animalName, endstatus, null));
+
+						// add removalRemarks:
+						if (removalRemarks != null)
+						{
+							valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
+									endstatusDate, null, "Remark", animalName, removalRemarks, null));
+						}
 					}
 					else
 					{
