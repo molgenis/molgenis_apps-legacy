@@ -87,7 +87,7 @@
 		<label for="startdate">Project start date:</label>
 		<script>
 			$(function() {
-                $( "#subprojectadditiondate" ).datepicker({
+                $( "#startdate" ).datepicker({
                     numberOfMonths: 1,
                     showButtonPanel: true,
                     dateFormat: "yy-mm-dd",
@@ -102,7 +102,7 @@
 	<div class="row">
 		<script>
 			$(function() {
-                $( "#subprojectadditiondate" ).datepicker({
+                $( "#enddate" ).datepicker({
                     numberOfMonths: 1,
                     showButtonPanel: true,
                     dateFormat: "yy-mm-dd",
