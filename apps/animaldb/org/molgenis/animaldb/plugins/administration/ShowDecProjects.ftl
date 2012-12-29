@@ -87,12 +87,14 @@
 		<label for="startdate">Project start date:</label>
 		<script>
 			$(function() {
-				$( "#startdate" ).datepicker({
-					numberOfMonths: 2,
-					showButtonPanel: true,
-					dateFormat: "yy-mm-dd"
-				});
-			});
+                $( "#subprojectadditiondate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
 		</script>			
 		<input type='text' id='startdate' name='startdate' <#if currentDecProject?? && currentDecProject.getStartDate()??> value="${currentDecProject.startDate}"</#if> />
 	</div>
@@ -100,12 +102,14 @@
 	<div class="row">
 		<script>
 			$(function() {
-				$( "#enddate" ).datepicker({
-					numberOfMonths: 2,
-					showButtonPanel: true,
-					dateFormat: "yy-mm-dd"
-				});
-			});
+                $( "#subprojectadditiondate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
 		</script>
 		<label for="enddate">Project end date:</label>
 		<input type='text' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> />
