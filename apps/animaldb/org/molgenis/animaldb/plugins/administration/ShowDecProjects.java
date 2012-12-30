@@ -165,7 +165,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 				else
 				{
-					File fileFromRequest = request.getFile("DecApplicationPdf".toLowerCase());
+					File fileFromRequest = request.getFile("DecApprovalPdf".toLowerCase());
 					if (fileFromRequest != null)
 					{
 						decapprovalpdf = ct.addAnimalDbFile("DecApprovalPdf", decnumber, request, true);
