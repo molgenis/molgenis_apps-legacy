@@ -438,7 +438,10 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=experimenttitle", "MyProject");
 		selenium.type("id=expnumber", "A");
-		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
+		// pretend like these are PDFs...
+		selenium.type("id=decsubprojectapplicationpdf", pdfFileName);
+		selenium.type("id=decsubprojectapprovalpdf", pdfFileName);
+		// selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		// int thisMonth = calendar.get(Calendar.MONTH);
 		// int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
