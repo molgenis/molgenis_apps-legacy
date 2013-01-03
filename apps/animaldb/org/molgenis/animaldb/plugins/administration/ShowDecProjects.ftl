@@ -73,14 +73,14 @@
 	
 	<div class="row">
 		<label for="decapplicationpdf">DEC application PDF:</label>
-		<#if currentDecProject?? && currentDecProject.pdfDecApplication??>File already present! <a href="downloadfile?name=${currentDecProject.pdfDecApplication}">${currentDecProject.pdfDecApplication}</a> </#if>
-		<input type="file" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
+		<#if currentDecProject?? && currentDecProject.pdfDecApplication??>Current file: <a href="downloadfile?name=${currentDecProject.pdfDecApplication}">${currentDecProject.pdfDecApplication}</a> </#if>
+		<br />Select replacement file: <input type="file" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
 	</div>
 	
 	<div class="row">
 		<label for="decapprovalpdf">DEC approval PDF:</label>
-		<#if currentDecProject?? && currentDecProject.pdfDecApproval??>File already present! <a href="downloadfile?name=${currentDecProject.pdfDecApproval}">${currentDecProject.pdfDecApproval}</a> </#if>
-		<input type="file" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
+		<#if currentDecProject?? && currentDecProject.pdfDecApproval??>Current file: <a href="downloadfile?name=${currentDecProject.pdfDecApproval}">${currentDecProject.pdfDecApproval}</a> </#if>
+		<br />Select replacement file: <input type="file" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
 	</div>
 	
 	<div class="row">

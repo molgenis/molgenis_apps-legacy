@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.administration;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -503,6 +504,40 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					decapppdf = request.getString("decapppdf");
 				}
 
+				// DEC application PDF
+				String decsubapplicationpdf = null;
+				if (listId == 0)
+				{
+					decsubapplicationpdf = ct.addAnimalDbFile("DecSubprojectApplicationPdf", decappName + expnumber,
+							request, true);
+				}
+				else
+				{
+					File fileFromRequest = request.getFile("DecSubprojectApplicationPdf".toLowerCase());
+					if (fileFromRequest != null)
+					{
+						decsubapplicationpdf = ct.addAnimalDbFile("DecSubprojectApplicationPdf",
+								decappName + expnumber, request, true);
+					}
+				}
+
+				// DEC approval PDF
+				String decsubapprovalpdf = null;
+				if (listId == 0)
+				{
+					decsubapprovalpdf = ct.addAnimalDbFile("DecSubprojectApprovalPdf", decappName + expnumber, request,
+							true);
+				}
+				else
+				{
+					File fileFromRequest = request.getFile("DecSubprojectApprovalPdf".toLowerCase());
+					if (fileFromRequest != null)
+					{
+						decsubapprovalpdf = ct.addAnimalDbFile("DecSubprojectApprovalPdf", decappName + expnumber,
+								request, true);
+					}
+				}
+
 				// Variables from lookup boxes
 				String concern = request.getString("concern");
 				String goal = request.getString("goal");
@@ -646,9 +681,25 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						enddate, "ExperimentTitle", name, title, null));
 				if (decapppdf != null)
 				{
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
-							enddate, "DecSubprojectApplicationPdf", name, decapppdf, null));
+					// valuesToAddList.add(ct.createObservedValue(investigationName,
+					// protocolApplicationName, startdate,
+					// enddate, "DecSubprojectApplicationPdf", name, decapppdf,
+					// null));
 				}
+				//
+				if (decsubapplicationpdf != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
+							enddate, "DecSubprojectApplicationPdf", name, decsubapplicationpdf, null));
+					System.out.println("################## subapppdf " + decsubapplicationpdf);
+				}
+				if (decsubapprovalpdf != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
+							enddate, "DecSubprojectApprovalPdf", name, decsubapprovalpdf, null));
+					System.out.println("################## subapprovalpdf " + decsubapprovalpdf);
+				}
+
 				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "Concern", name, concern, null));
 				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
@@ -1153,8 +1204,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					String expName = currentExp.getName();
 					String experimentNr = ct.getMostRecentValueAsString(expName, "ExperimentNr");
 					String experimentTitle = ct.getMostRecentValueAsString(expName, "ExperimentTitle");
-					String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expName,
-							"DecSubprojectApplicationPdf");
+					String pdfDecSubApplication = ct.getMostRecentValueAsString(expName, "DecSubprojectApplicationPdf");
+					String pdfDecSubApproval = ct.getMostRecentValueAsString(expName, "DecSubprojectApprovalPdf");
 					String concern = ct.getMostRecentValueAsString(expName, "Concern");
 					String goal = ct.getMostRecentValueAsString(expName, "Goal");
 					String specialTechn = ct.getMostRecentValueAsString(expName, "SpecialTechn");
@@ -1191,7 +1242,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					tmpExp.setName(expName);
 					tmpExp.setExperimentTitle(experimentTitle);
 					tmpExp.setExperimentNr(experimentNr);
-					tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
+					// tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
+					System.out.println("------------> " + pdfDecSubApplication + " " + pdfDecSubApproval);
+
+					if (pdfDecSubApproval != null) tmpExp.setDecSubprojectApprovalPdf(pdfDecSubApproval);
+					if (pdfDecSubApplication != null) tmpExp.setDecSubprojectApplicationPdf(pdfDecSubApplication);
+					System.out.println("------------> " + tmpExp.getDecSubprojectApplicationPdf() + " "
+							+ tmpExp.getDecSubprojectApprovalPdf());
 					tmpExp.setConcern(concern);
 					tmpExp.setGoal(goal);
 					tmpExp.setSpecialTechn(specialTechn);
