@@ -66,14 +66,14 @@
 	
 	<div class="row">
 		<label for="decsubprojectapplicationpdf">DEC application PDF:</label>
-		<#if currentDecSubproject?? && currentDecSubproject.decSubprojectApplicationPdf??>Current file: <a href="downloadfile?name=${currentDecSubproject.decSubprojectApplicationPdf}">${currentDecSubproject.decSubprojectApplicationPdf}</a> </#if>
-		<br />Select replacement file: <input type="file" name="decsubprojectapplicationpdf" id="decsubprojectapplicationpdf" class="textbox" <#if currentDecSubproject?? && currentDecSubproject.getDecSubprojectApplicationPdf()??> value="${currentDecSubproject.decSubprojectApplicationPdf}"</#if> />
+		<#if currentDecSubproject?? && currentDecSubproject.decSubprojectApplicationPdf??>Current file: <a href="downloadfile?name=${currentDecSubproject.decSubprojectApplicationPdf}">${currentDecSubproject.decSubprojectApplicationPdf}</a><br />Select replacement file: </#if>
+		<input type="file" name="decsubprojectapplicationpdf" id="decsubprojectapplicationpdf" class="textbox" <#if currentDecSubproject?? && currentDecSubproject.getDecSubprojectApplicationPdf()??> value="${currentDecSubproject.decSubprojectApplicationPdf}"</#if> />
 	</div>
 	
 	<div class="row">
 		<label for="decsubprojectapprovalpdf">DEC approval PDF:</label>
-		<#if currentDecSubproject?? && currentDecSubproject.decSubprojectApprovalPdf??>Current file: <a href="downloadfile?name=${currentDecSubproject.decSubprojectApprovalPdf}">${currentDecSubproject.decSubprojectApprovalPdf}</a> </#if>
-		<br />Select replacement file: <input type="file" name="decsubprojectapprovalpdf" id="decsubprojectapprovalpdf" class="textbox" <#if currentDecSubproject?? && currentDecSubproject.getDecSubprojectApprovalPdf()??> value="${currentDecSubproject.decSubprojectApprovalPdf}"</#if> />
+		<#if currentDecSubproject?? && currentDecSubproject.decSubprojectApprovalPdf??>Current file: <a href="downloadfile?name=${currentDecSubproject.decSubprojectApprovalPdf}">${currentDecSubproject.decSubprojectApprovalPdf}</a><br />Select replacement file: </#if>
+		<input type="file" name="decsubprojectapprovalpdf" id="decsubprojectapprovalpdf" class="textbox" <#if currentDecSubproject?? && currentDecSubproject.getDecSubprojectApprovalPdf()??> value="${currentDecSubproject.decSubprojectApprovalPdf}"</#if> />
 	</div>
 	
 	<div class="row">
