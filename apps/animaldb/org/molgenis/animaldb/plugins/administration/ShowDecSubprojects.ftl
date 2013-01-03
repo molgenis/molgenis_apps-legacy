@@ -248,7 +248,7 @@
                 $( "#subprojectremovaldate" ).datepicker({
                     numberOfMonths: 1,
                     showButtonPanel: true,
-                    dateFormat: "yy-mm-dd"
+                    dateFormat: "yy-mm-dd",
                     changeMonth: true,
                     changeYear: true
                 });
@@ -283,6 +283,7 @@
                     numberOfMonths: 1,
                     showButtonPanel: true,
                     dateFormat: "yy-mm-dd",
+                    changeMonth: true,
                     changeYear: true
                 });
             });
