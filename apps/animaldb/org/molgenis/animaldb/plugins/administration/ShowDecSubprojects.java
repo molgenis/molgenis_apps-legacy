@@ -762,12 +762,24 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Experiment");
+				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Experiment"), ObservedValue.RELATION, Operator.EQUALS,
 						getSelectedDecSubproject().getId()));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Experiment"), ObservedValue.ENDTIME, Operator.EQUALS, null)); // only
+																											// show
+																											// if
+																											// currently
+																											// active
+																											// in
+																											// the
+																											// experiment
+
 				// TODO: find a way to filter out only the animals that are
 				// CURRENTLY in this DEC subproject
 				remAnimalsMatrixViewer = new MatrixViewer(this, REMANIMALSMATRIX,
@@ -814,11 +826,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-				// filterRules.add(new
-				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
-				// ct.getMeasurementId("Experiment"),
-				// ObservedValue.RELATION, Operator.NOT,
-				// getSelectedDecSubproject().getId()));
+
 				// filterRules.add(new
 				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
 				// ct.getMeasurementId("Experiment"),
