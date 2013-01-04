@@ -112,9 +112,6 @@
 		<javac srcdir="generated/java/app" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath path="${zipme}" />
 		</javac>
-		<javac srcdir="generated/java/test" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
-			<classpath path="${zipme}" />
-		</javac>
 	</target>
 	
 	<target name="copy_resources">

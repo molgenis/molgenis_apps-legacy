@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -37,9 +38,11 @@ import org.molgenis.mutation.ui.html.GenomePanel;
 import org.molgenis.mutation.ui.html.MBrowse;
 import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
 import org.molgenis.pheno.service.PhenoService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.SingletonTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 public class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
@@ -73,8 +76,9 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		mBrowse.setTarget(this.getName());
 
 		this.getModel().setMbrowse(mBrowse);
-		
-//		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
+
+		// this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new
+		// ExpertSearchForm()));
 	}
 
 	private ScreenView view;
@@ -90,7 +94,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		try
 		{
@@ -364,32 +368,28 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.setView(new FreemarkerView("freetext.ftl", this.getModel()));
 	}
 
-	protected void handleShowNextMutation(Tuple request)
+	protected void handleShowNextMutation(MolgenisRequest request)
 	{
 		MutationSummaryDTO mutationSummaryDTO = searchService.findNextMutation(request.getString("mid"));
-		request.set("mid", mutationSummaryDTO.getIdentifier());
-		this.handleShowMutation(request);
+		this.handleShowMutation(new SingletonTuple<String>("mid", mutationSummaryDTO.getIdentifier()));
 	}
 
-	protected void handleShowPrevMutation(Tuple request)
+	protected void handleShowPrevMutation(MolgenisRequest request)
 	{
 		MutationSummaryDTO mutationSummaryVO = searchService.findPrevMutation(request.getString("mid"));
-		request.set("mid", mutationSummaryVO.getIdentifier());
-		this.handleShowMutation(request);
+		this.handleShowMutation(new SingletonTuple<String>("mid", mutationSummaryVO.getIdentifier()));
 	}
 
-	protected void handleShowLastMutation(Tuple request)
+	protected void handleShowLastMutation(MolgenisRequest request)
 	{
 		MutationSummaryDTO mutationSummaryVO = searchService.findLastMutation();
-		request.set("mid", mutationSummaryVO.getIdentifier());
-		this.handleShowMutation(request);
+		this.handleShowMutation(new SingletonTuple<String>("mid", mutationSummaryVO.getIdentifier()));
 	}
 
-	protected void handleShowFirstMutation(Tuple request)
+	protected void handleShowFirstMutation(MolgenisRequest request)
 	{
 		MutationSummaryDTO mutationSummaryVO = searchService.findFirstMutation();
-		request.set("mid", mutationSummaryVO.getIdentifier());
-		this.handleShowMutation(request);
+		this.handleShowMutation(new SingletonTuple<String>("mid", mutationSummaryVO.getIdentifier()));
 	}
 
 	protected void listAllMutations(Tuple request)
@@ -456,10 +456,10 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	{
 		if (StringUtils.isNotEmpty(request.getString("gene_id")))
 		{
-			Integer geneId  = request.getInt("gene_id");
-			
+			Integer geneId = request.getInt("gene_id");
+
 			GeneDTO geneDTO = this.searchService.findGene(geneId);
-			
+
 			this.getModel().setGeneDTO(geneDTO);
 			GenePanel genePanel = this.getModel().getMbrowse().createGenePanel(geneDTO.getProteinDomainDTOList());
 			genePanel.setLabel("Browse the " + geneDTO.getName() + " gene");
@@ -484,12 +484,13 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
 
-		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createExonIntronPanel(searchService.findAllExons()));
-//		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createProteinDomainPanel(this.getModel().getProteinDomainDTO()));
+		this.getModel().setMBrowsePanel(
+				this.getModel().getMbrowse().createExonIntronPanel(searchService.findAllExons()));
+		// this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createProteinDomainPanel(this.getModel().getProteinDomainDTO()));
 		this.setView(new FreemarkerView("proteindomain.ftl", getModel()));
 	}
 
-	protected void handleShowExon(Tuple request)
+	protected void handleShowExon(MolgenisRequest request)
 	{
 		Integer exonId = request.getInt("exon_id");
 
@@ -503,38 +504,47 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 		}
 		this.getModel().setHeader("");
-		this.getModel().setMBrowsePanel(this.getModel().getMbrowse().createSequencePanel(this.getModel().getExonDTO(), this.getModel().getMutationSummaryDTOList()));
+		this.getModel()
+				.setMBrowsePanel(
+						this.getModel()
+								.getMbrowse()
+								.createSequencePanel(this.getModel().getExonDTO(),
+										this.getModel().getMutationSummaryDTOList()));
 		this.setView(new FreemarkerView("exon.ftl", getModel()));
 	}
 
-	protected void handleShowNextExon(Tuple request)
+	protected void handleShowNextExon(MolgenisRequest request) throws Exception
 	{
+		WritableMolgenisRequest wRequest = new WritableMolgenisRequest(request);
 		ExonDTO exonDTO = searchService.findNextExon(request.getInt("exon_id"));
-		request.set("__action", "showExon");
-		request.set("exon_id", exonDTO.getId());
-		this.handleShowExon(request);
+		wRequest.set("__action", "showExon");
+		wRequest.set("exon_id", exonDTO.getId());
+		this.handleShowExon(wRequest);
 	}
 
-	protected void handleShowPrevExon(Tuple request)
+	protected void handleShowPrevExon(MolgenisRequest request) throws Exception
 	{
+		WritableMolgenisRequest wRequest = new WritableMolgenisRequest(request);
 		ExonDTO exonDTO = searchService.findPrevExon(request.getInt("exon_id"));
-		request.set("__action", "showExon");
-		request.set("exon_id", exonDTO.getId());
-		this.handleShowExon(request);
+		wRequest.set("__action", "showExon");
+		wRequest.set("exon_id", exonDTO.getId());
+		this.handleShowExon(wRequest);
 	}
 
-	protected void handleShowLastExon(Tuple request)
+	protected void handleShowLastExon(MolgenisRequest request) throws Exception
 	{
+		WritableMolgenisRequest wRequest = new WritableMolgenisRequest(request);
 		ExonDTO exonDTO = searchService.findLastExon();
-		request.set("exon_id", exonDTO.getId());
-		this.handleShowExon(request);
+		wRequest.set("exon_id", exonDTO.getId());
+		this.handleShowExon(wRequest);
 	}
 
-	protected void handleShowFirstExon(Tuple request)
+	protected void handleShowFirstExon(MolgenisRequest request) throws Exception
 	{
+		WritableMolgenisRequest wRequest = new WritableMolgenisRequest(request);
 		ExonDTO exonDTO = searchService.findFirstExon();
-		request.set("exon_id", exonDTO.getId());
-		this.handleShowExon(request);
+		wRequest.set("exon_id", exonDTO.getId());
+		this.handleShowExon(wRequest);
 	}
 
 	@Override
@@ -822,33 +832,18 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			((SelectInput) this.getModel().getDisplayOptionsForm().get("showMutations")).setValue("hide");
 	}
 
-	// private CmsService getCmsService(Database db)
-	// {
-	// CmsService cmsService = ServiceLocator.instance().getCmsService();
-	// cmsService.setDatabase(db);
-	// return cmsService;
-	// }
-	//
-	// private PhenoService getPhenoService(Database db)
-	// {
-	// PhenoService phenoService = ServiceLocator.instance().getPhenoService();
-	// phenoService.setDatabase(db);
-	// return phenoService;
-	// }
-	//
-	// private SearchService getSearchService(Database db)
-	// {
-	// SearchService searchService =
-	// ServiceLocator.instance().getSearchService();
-	// searchService.setDatabase(db);
-	// return searchService;
-	// }
-	//
-	// private StatisticsService getStatisticsService(Database db)
-	// {
-	// StatisticsService statisticsService =
-	// ServiceLocator.instance().getStatisticsService();
-	// statisticsService.setDatabase(db);
-	// return statisticsService;
-	// }
+	private static class WritableMolgenisRequest extends MolgenisRequest implements WritableTuple
+	{
+
+		public WritableMolgenisRequest(MolgenisRequest molgenisRequest) throws Exception
+		{
+			super(molgenisRequest.getRequest(), molgenisRequest.getResponse());
+		}
+
+		@Override
+		public void set(String colName, Object value)
+		{
+			getRequest().getParameterMap().put(colName, value);
+		}
+	}
 }

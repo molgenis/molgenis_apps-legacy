@@ -21,7 +21,6 @@ import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.omx.view.DataSetChooser;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -76,17 +75,17 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json_dataset(Database db, Tuple request, OutputStream out)
+	public void download_json_dataset(Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// handle requests for the table named 'dataset'
 		tableView.handleRequest(db, request, out);
 	}
 
-	public void selectDataSet(Database db, Tuple request) throws HandleRequestDelegationException
+	public void selectDataSet(Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		Integer selectedDataSetId = request.getInt("dataSetId");
-		HttpSession session = ((MolgenisRequest) request).getRequest().getSession();
+		HttpSession session = request.getRequest().getSession();
 
 		if (selectedDataSetId != null)
 		{
@@ -186,6 +185,7 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 	}
 
 	// what is shown to the user
+	@Override
 	public ScreenView getView()
 	{
 		MolgenisForm view = new MolgenisForm(this);

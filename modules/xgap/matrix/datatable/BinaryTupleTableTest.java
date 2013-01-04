@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -19,12 +19,12 @@ public class BinaryTupleTableTest
 		List<Tuple> rows = t.getRows();
 		Assert.assertEquals(rows.size(), 10);
 
-		Assert.assertEquals(rows.get(0).getObject("pkP1050"), 0.008762753);
-		Assert.assertEquals(rows.get(9).getObject("pkP6171"), 85.99224806);
+		Assert.assertEquals(rows.get(0).get("pkP1050"), 0.008762753);
+		Assert.assertEquals(rows.get(9).get("pkP6171"), 85.99224806);
 
 		for (Tuple row : t.getRows())
 		{
-			Assert.assertEquals(row.size(), 121);
+			Assert.assertEquals(row.getNrCols(), 121);
 			System.out.println(row);
 		}
 	}
@@ -42,10 +42,10 @@ public class BinaryTupleTableTest
 		for (Tuple row : t.getRows())
 		{
 			System.out.println(row);
-			Assert.assertEquals(row.size(), 121);
+			Assert.assertEquals(row.getNrCols(), 121);
 		}
 
-		Assert.assertEquals(rows.get(0).getObject("pkP1050"), 0.027330887);
+		Assert.assertEquals(rows.get(0).get("pkP1050"), 0.027330887);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class BinaryTupleTableTest
 			Assert.assertEquals(rows.size(), 10);
 		}
 
-		Assert.assertEquals(rows.get(0).getObject("pkP1059"), 0.043075);
-		Assert.assertEquals(rows.get(9).getObject("pkP1072"), 142.16);
+		Assert.assertEquals(rows.get(0).get("pkP1059"), 0.043075);
+		Assert.assertEquals(rows.get(9).get("pkP1072"), 142.16);
 	}
 }

@@ -10,17 +10,18 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.io.csv.CsvReader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.DatabaseFactory;
+
+import com.google.common.collect.Lists;
 
 public class mainImporter
 {
@@ -62,70 +63,75 @@ public class mainImporter
 			p.setName(i.getName());
 			db.add(p);
 
-			CsvReader reader = new CsvFileReader(voorbeeld1_dataset);
-			// CsvReader reader = new CsvFileReader(new
-			// File("/Users/Roan/Work/LifeLines/voorbeeld1_dataset.csv"));
-
-			// add measurements
-			for (String name : reader.colnames())
+			CsvReader reader = new CsvReader(voorbeeld1_dataset);
+			try
 			{
-				if (!"Pa_Id".equals(name))
+				List<String> colNames = Lists.newArrayList(reader.colNamesIterator());
+
+				// add measurements
+				for (String name : colNames)
 				{
-					Measurement m = new Measurement();
-					m.setInvestigation(i);
-					m.setName(name + "_" + i.getName());
-					m.setLabel(name);
-
-					listOfFeatures.add(m.getName());
-					listOfMeas.add(m);
-				}
-			}
-			db.add(listOfMeas);
-
-			// read the rows into protocolApp and values
-			int count = 1;
-			for (Tuple row : reader)
-			{
-				Individual indi = new Individual();
-				indi.setName(row.getString("Pa_Id"));
-				indi.setInvestigation(i);
-				listOfIndv.add(indi);
-
-				final ProtocolApplication pa = new ProtocolApplication();
-				pa.setName("pa" + count++);
-				pa.setProtocol(p);
-				pa.setInvestigation_Name(i.getName());
-				paList.add(pa);
-
-				for (String column : reader.colnames())
-				{
-					if (!"Pa_Id".equals(column))
+					if (!"Pa_Id".equals(name))
 					{
-						ObservedValue ob = new ObservedValue();
-						ob.setFeature_Name(column + "_" + i.getName());
-						ob.setTarget_Name(indi.getName());
-						ob.setValue(row.getString(column));
-						ob.setProtocolApplication_Name(pa.getName());
-						ob.setInvestigation(i);
+						Measurement m = new Measurement();
+						m.setInvestigation(i);
+						m.setName(name + "_" + i.getName());
+						m.setLabel(name);
 
-						listOfValues.add(ob);
+						listOfFeatures.add(m.getName());
+						listOfMeas.add(m);
 					}
 				}
+				db.add(listOfMeas);
 
-				// write if list too long
-				if (listOfValues.size() > 100000)
+				// read the rows into protocolApp and values
+				int count = 1;
+				for (Tuple row : reader)
 				{
-					System.out.println("Done");
-					db.add(listOfIndv);
-					db.add(paList);
-					db.add(listOfValues);
+					Individual indi = new Individual();
+					indi.setName(row.getString("Pa_Id"));
+					indi.setInvestigation(i);
+					listOfIndv.add(indi);
 
-					listOfIndv.clear();
-					paList.clear();
-					listOfValues.clear();
+					final ProtocolApplication pa = new ProtocolApplication();
+					pa.setName("pa" + count++);
+					pa.setProtocol(p);
+					pa.setInvestigation_Name(i.getName());
+					paList.add(pa);
+
+					for (String column : colNames)
+					{
+						if (!"Pa_Id".equals(column))
+						{
+							ObservedValue ob = new ObservedValue();
+							ob.setFeature_Name(column + "_" + i.getName());
+							ob.setTarget_Name(indi.getName());
+							ob.setValue(row.getString(column));
+							ob.setProtocolApplication_Name(pa.getName());
+							ob.setInvestigation(i);
+
+							listOfValues.add(ob);
+						}
+					}
+
+					// write if list too long
+					if (listOfValues.size() > 100000)
+					{
+						System.out.println("Done");
+						db.add(listOfIndv);
+						db.add(paList);
+						db.add(listOfValues);
+
+						listOfIndv.clear();
+						paList.clear();
+						listOfValues.clear();
+					}
 				}
 			}
-
+			finally
+			{
+				reader.close();
+			}
 			// add remaining
 			db.add(listOfIndv);
 			db.add(paList);

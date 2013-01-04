@@ -18,10 +18,10 @@ import java.util.Locale;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -39,8 +39,6 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.SimpleTuple;
 
 public class AddAnimalPlugin extends EasyPluginController
 {
@@ -148,7 +146,8 @@ public class AddAnimalPlugin extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
+			throws HandleRequestDelegationException
 	{
 		ct.setDatabase(db);
 		try
@@ -223,7 +222,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		return Show.SHOW_MAIN;
 	}
 
-	private void handleFirstScreenRequest(Database db, Tuple request) throws Exception
+	private void handleFirstScreenRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		if (species.getObject() != null)
 		{
@@ -282,7 +281,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		}
 	}
 
-	private void handleSecondScreenRequest(Database db, Tuple request) throws Exception
+	private void handleSecondScreenRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		if (background.getObject() != null)
@@ -303,7 +302,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		}
 	}
 
-	private void handleThirdScreenRequest(Database db, Tuple request) throws Exception
+	private void handleThirdScreenRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		genestates = new ArrayList<String>();
@@ -313,7 +312,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		}
 	}
 
-	private void handleAddRequest(Database db, Tuple request) throws Exception
+	private void handleAddRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		ct.setDatabase(db);

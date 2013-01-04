@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.tools.ant.Project;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.io.TupleReader;
 
 public class WorksheetLoader
 {

@@ -24,7 +24,7 @@ import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.ui.HtmlFormWrapper;
 import org.molgenis.mutation.ui.search.SearchPlugin;
 import org.molgenis.pheno.service.PhenoService;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public class Search extends SearchPlugin

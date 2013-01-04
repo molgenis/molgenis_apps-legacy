@@ -8,6 +8,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -18,7 +19,6 @@ import org.molgenis.lifelinesresearchportal.plugins.hl7parser.HL7PhenoImporter;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.TarGz;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
@@ -174,7 +174,7 @@ public class LifeLines extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

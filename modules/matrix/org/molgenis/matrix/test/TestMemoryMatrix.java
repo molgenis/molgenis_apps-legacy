@@ -13,7 +13,7 @@ import org.molgenis.matrix.DoubleCsvMemoryMatrix;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.MemoryMatrix;
-import org.molgenis.util.CsvStringWriter;
+import org.molgenis.util.CsvWriter;
 
 public class TestMemoryMatrix
 {
@@ -47,7 +47,8 @@ public class TestMemoryMatrix
 
 		DoubleCsvMemoryMatrix m2 = new DoubleCsvMemoryMatrix(m);
 
-		CsvStringWriter csvWriter = new CsvStringWriter(new StringWriter());
+		StringWriter strWriter = new StringWriter();
+		CsvWriter csvWriter = new CsvWriter(strWriter);
 		m2.write(csvWriter);
 
 		System.out.println(csvWriter.toString());

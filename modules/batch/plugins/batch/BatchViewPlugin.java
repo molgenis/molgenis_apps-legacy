@@ -8,10 +8,10 @@
 package plugins.batch;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
 
 public class BatchViewPlugin extends EasyPluginController
 {
@@ -27,7 +27,7 @@ public class BatchViewPlugin extends EasyPluginController
 		service = new BatchService();
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

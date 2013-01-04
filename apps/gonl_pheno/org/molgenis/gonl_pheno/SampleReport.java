@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.html.ActionInput.Type;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.TupleTable;
 import org.molgenis.util.CsvWriter;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class SampleReport extends EasyPluginController<SampleReport>
 {

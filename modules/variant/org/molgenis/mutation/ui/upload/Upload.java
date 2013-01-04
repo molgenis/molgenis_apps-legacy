@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -30,9 +31,8 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.BatchForm;
-import org.molgenis.variant.Patient;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.variant.Patient;
 
 public class Upload extends EasyPluginController<UploadModel>
 {
@@ -55,6 +55,7 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	private ScreenView view;
 
+	@Override
 	public ScreenView getView()
 	{
 		return view;
@@ -66,7 +67,7 @@ public class Upload extends EasyPluginController<UploadModel>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		try
 		{
@@ -204,7 +205,7 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.populatePatientForm();
 	}
 
-	private void handleEmailBatch(Tuple request)
+	private void handleEmailBatch(MolgenisRequest request)
 	{
 		try
 		{
@@ -232,7 +233,7 @@ public class Upload extends EasyPluginController<UploadModel>
 		}
 	}
 
-	private void handleInsertBatch(Tuple request)
+	private void handleInsertBatch(MolgenisRequest request)
 	{
 		int count = uploadService.insert(request.getFile("filefor_upload"));
 		this.getModel().getMessages().add(new ScreenMessage("Successfully inserted " + count + " rows", true));
