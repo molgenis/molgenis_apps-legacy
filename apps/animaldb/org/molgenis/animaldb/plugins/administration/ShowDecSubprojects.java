@@ -826,7 +826,19 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				// add the animals that have been in an experiment before but
+				// are currently not
 
+				// add the animals that never have been in an experiment at all.
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+				// .getMeasurementId("Experiment"), ObservedValue.RELATION_NAME,
+				// Operator.NOT,
+				// getSelectedDecSubproject().getName()));
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+				// .getMeasurementId("Experiment"), ObservedValue.ENDTIME,
+				// Operator.NOT, null));
 				// filterRules.add(new
 				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
 				// ct.getMeasurementId("Experiment"),
