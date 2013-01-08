@@ -387,6 +387,38 @@ public class AnimaldbSeleniumTest
 		sleepHelper("breedingWorkflow");
 	}
 
+	// TODO add test for edit litter functionality
+	@Test(dependsOnMethods =
+	{ "breedingWorkflow" })
+	public void editLitters() throws Exception
+	{
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=Breeding_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=menuLitters");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=editlitter");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.type("id=DateOfBirth", "2012-01-03");
+		selenium.click("saveEdit");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertTrue(selenium.isTextPresent("2012-01-03"));
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=editlitter");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=editIndividual");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=addIndividualToWeanGroup");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=save");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+
+		Assert.assertEquals(selenium.getText("//div[@id='EditTable_wrapper']/table/tbody/tr[9]/td[1]"), "6");
+		sleepHelper("editLitters");
+	}
+
 	@Test(dependsOnMethods =
 	{ "breedingWorkflow" })
 	public void decWorkflow() throws Exception
@@ -581,7 +613,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Muizen");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "5");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "6");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "10");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]/strong"), "0");
@@ -596,7 +628,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "13");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "14");
 		// Report 5
 		selenium.select("id=form", "value=5");
 		selenium.click("id=generate");
@@ -640,13 +672,6 @@ public class AnimaldbSeleniumTest
 		sleepHelper("removeAnimals");
 
 	}
-
-	// TODO add test for edit litter functionality
-	// @Test(dependsOnMethods =
-	// { "breedingWorkflow" })
-	// public void editLitters() throws Exception
-	// {
-	// }
 
 	/*
 	 * @Test(dependsOnMethods={"removeAnimals"}) public void applyProtocol()
