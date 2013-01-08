@@ -123,3 +123,5 @@ org.molgenis.compute.db.util.WorksheetImporter \
 -backend_name $2 \
 -worksheet_file $3 \
 -McId $4 
+
+exit $?

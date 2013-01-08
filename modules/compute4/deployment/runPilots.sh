@@ -119,3 +119,5 @@ molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-api-1.5.6.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-log4j12-1.5.6.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar \
 org.molgenis.compute.db.RunPilotsOnBackEnd $1 $2 $3 $4 
+
+exit $?
