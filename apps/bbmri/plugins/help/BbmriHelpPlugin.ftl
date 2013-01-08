@@ -55,7 +55,7 @@ The left hand menu is your guide throughout the application. It contains the fol
 </p>
 
 <p><strong>Settings</strong><br />
-The first item on the top right hand menu is 'Welcome (your name)' that can also be found in the left menu 'My account'. Here, you can fill in your personal information and change your password.</p>
+The first item on the top right hand menu is 'Welcome (your name)' that can also be found in the left menu 'My account'. Here, you can fill in your personal information and change your password. A small note: The value of the field "Position" has to be inserted in the "Coordinator Roles" first.</p>
 <p>Next to the Welcome button is the Logout option.</p>
 <p>Once you are in Biobank Overview, an additional top menu is visible at the top left corner of the table. More on that in the Biobank Overview section.</p>
 
