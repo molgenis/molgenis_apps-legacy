@@ -335,11 +335,11 @@ public class AnimaldbSeleniumTest
 		// Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Add a litter
 		selenium.click("id=pgmatrix_selected_0");
-		selenium.click("id=createlitter");
+		selenium.click("id=createLitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=littersize", "5");
 		selenium.click("id=birthdate");
-		selenium.type("id=birthdate", "2012-01-01");
+		selenium.type("id=birthdate", "2013-01-01");
 
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -349,7 +349,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=weanlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=weandate");
-		selenium.type("id=weandate", "2012-01-02");
+		selenium.type("id=weandate", "2013-01-02");
 		selenium.type("id=weansizefemale", "2");
 		selenium.type("id=weansizemale", "3");
 		selenium.click("id=wean");
@@ -359,7 +359,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=print cagelabels");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
@@ -370,7 +370,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=genotypelitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=genodate");
-		selenium.type("id=genodate", "2012-01-03");
+		selenium.type("id=genodate", "2013-01-03");
 		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_000001"));
 		Assert.assertTrue(selenium.isTextPresent("Line: MyLine"));
 		selenium.click("id=save");
@@ -378,7 +378,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=print cagelabels");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
@@ -470,7 +470,10 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=experimenttitle", "MyProject");
 		selenium.type("id=expnumber", "A");
-		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
+		// pretend like these are PDFs...
+		selenium.type("id=decsubprojectapplicationpdf", pdfFileName);
+		selenium.type("id=decsubprojectapprovalpdf", pdfFileName);
+		// selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		// int thisMonth = calendar.get(Calendar.MONTH);
 		// int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
