@@ -1525,8 +1525,6 @@ public class MatrixViewer extends HtmlWidget
 			List<String> chosenMeasurementNames = new ArrayList<String>();
 			for (Object measurementId : chosenMeasurementIds)
 			{
-				System.out.println("__objmeasid: " + measurementId + "\n");
-				// FIXME, somehow remove the extra bracket here.
 				int measId = Integer.parseInt((String) measurementId);
 				chosenMeasurementNames.add(db.findById(Measurement.class, measId).getName());
 			}
@@ -1774,7 +1772,8 @@ public class MatrixViewer extends HtmlWidget
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		if (!this.matrix.getRowCount().equals(0))
+		// prevent sql out of bounds error.
+		if (this.matrix.getRowCount() > 0)
 		{
 			this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
 					.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
@@ -1788,7 +1787,7 @@ public class MatrixViewer extends HtmlWidget
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
 		// prevent sql out of bounds error.
-		if (!this.matrix.getRowCount().equals(0))
+		if (this.matrix.getRowCount() > 0)
 		{
 			this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix
 					.getRowCount() / matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount()
