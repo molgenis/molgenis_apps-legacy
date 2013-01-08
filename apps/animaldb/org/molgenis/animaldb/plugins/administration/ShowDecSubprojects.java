@@ -691,13 +691,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				{
 					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 							enddate, "DecSubprojectApplicationPdf", name, decsubapplicationpdf, null));
-					System.out.println("################## subapppdf " + decsubapplicationpdf);
 				}
 				if (decsubapprovalpdf != null)
 				{
 					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 							enddate, "DecSubprojectApprovalPdf", name, decsubapprovalpdf, null));
-					System.out.println("################## subapprovalpdf " + decsubapprovalpdf);
 				}
 
 				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
@@ -1263,12 +1261,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					tmpExp.setExperimentTitle(experimentTitle);
 					tmpExp.setExperimentNr(experimentNr);
 					// tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
-					System.out.println("------------> " + pdfDecSubApplication + " " + pdfDecSubApproval);
-
 					if (pdfDecSubApproval != null) tmpExp.setDecSubprojectApprovalPdf(pdfDecSubApproval);
 					if (pdfDecSubApplication != null) tmpExp.setDecSubprojectApplicationPdf(pdfDecSubApplication);
-					System.out.println("------------> " + tmpExp.getDecSubprojectApplicationPdf() + " "
-							+ tmpExp.getDecSubprojectApprovalPdf());
 					tmpExp.setConcern(concern);
 					tmpExp.setGoal(goal);
 					tmpExp.setSpecialTechn(specialTechn);
