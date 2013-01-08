@@ -31,7 +31,7 @@ import org.molgenis.observ.target.OntologyTerm;
 import org.molgenis.omx.EMeasureFeatureWriter;
 import org.molgenis.omx.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
-import org.molgenis.util.tuple.ValueTuple;
+import org.molgenis.util.tuple.KeyValueTuple;
 
 import com.google.gson.Gson;
 
@@ -190,8 +190,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 
 				for (ObservableFeature feature : features)
 				{
-					List<String> values = Arrays.asList(feature.getName(), feature.getDescription(), protocolId);
-					sheetWriter.write(new ValueTuple(values));
+					KeyValueTuple tuple = new KeyValueTuple();
+					tuple.set(header.get(0), feature.getName());
+					tuple.set(header.get(1), feature.getDescription());
+					tuple.set(header.get(2), protocolId);
+					sheetWriter.write(tuple);
 				}
 			}
 			finally
