@@ -153,10 +153,10 @@
 			<unique fields="Observation,Feature" />
 		</entity>
 
-		<entity name="StringValue" implements="Value">
+		<entity name="TextValue" implements="Value">
 			<description>An observation for which the value is a string of text.
 			</description>
-			<field name="Value" type="string" nillable="true" />
+			<field name="Value" type="text" nillable="true" />
 		</entity>
 
 		<entity name="AlternativeIdentifier" extends="Concept">
