@@ -7,24 +7,23 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.molgenis.io.TupleReader;
 import org.molgenis.io.TupleWriter;
 import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.io.excel.ExcelReader;
-import org.molgenis.io.excel.ExcelSheetReader;
-import org.molgenis.io.excel.ExcelSheetWriter;
 import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.io.excel.ExcelWriter.FileFormat;
 import org.molgenis.io.processor.LowerCaseProcessor;
 import org.molgenis.io.processor.TrimProcessor;
 import org.molgenis.util.tuple.KeyValueTuple;
 import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 public class SampleConverter
 {
@@ -36,7 +35,7 @@ public class SampleConverter
 
 	private static String OUTPUTDIR = null;
 	private static String PROJECT = null;
-	private Tuple features = null;
+	private List<String> featureColNames = null;
 	MakeEntityNameAndIdentifier mkObsTarget = null;
 	MakeEntityNameAndIdentifier mkObsFeature = null;
 	List<MakeEntityNameAndIdentifier> mkObsTargetlist = new ArrayList<MakeEntityNameAndIdentifier>();
@@ -62,19 +61,21 @@ public class SampleConverter
 		try
 		{
 			// write data
-			for (ExcelSheetReader sheetReader : excelReader)
+			for (TupleReader sheetReader : excelReader)
 			{
-				boolean writeHeader = true;
+				featureColNames = new ArrayList<String>();
+				for (Iterator<String> it = sheetReader.colNamesIterator(); it.hasNext();)
+				{
+					String colName = it.next();
+					if (colName.equals("id_sample")) featureColNames.add(0, colName);
+					else
+						featureColNames.add(colName);
+				}
+
+				csvWriter.writeColNames(featureColNames);
 				for (Iterator<Tuple> it = sheetReader.iterator(); it.hasNext();)
 				{
 					Tuple row = it.next();
-					if (writeHeader)
-					{
-						csvWriter.writeColNames(row);
-						writeHeader = false;
-
-						features = row;
-					}
 					// If the sample name exists
 					if (row.getString("id_sample") != null && !row.getString("id_sample").isEmpty())
 					{
@@ -95,23 +96,20 @@ public class SampleConverter
 					}
 					else
 					{
-						HashMap<String, String> hash = new HashMap<String, String>();
-						for (Iterator<String> it2 = row.getColNames(); it2.hasNext();)
+						WritableTuple tup = new KeyValueTuple();
+						for (String featureColName : featureColNames)
 						{
-							String keyTuple = it2.next();
-							if (keyTuple.equals("id_sample"))
+							if (featureColName.equals("id_sample"))
 							{
-								hash.put(keyTuple, "unknown");
 								// Make a identifier for this sample
-								hash.put(keyTuple, emptySample());
+								tup.set(featureColName, emptySample());
 							}
 							else
 							{
-								hash.put(keyTuple, row.getString(keyTuple));
+								tup.set(featureColName, row.getString(featureColName));
 							}
 
 						}
-						KeyValueTuple tup = new KeyValueTuple(hash);
 						// The identifier and sample are now set for this former
 						// empty sample name
 						csvWriter.write(tup);
@@ -119,7 +117,7 @@ public class SampleConverter
 				}
 			}
 			// Fill a list with all the ObservableFeatures in the file
-			if (features != null)
+			if (featureColNames != null)
 			{
 				makeFeaturesList();
 			}
@@ -178,23 +176,14 @@ public class SampleConverter
 
 		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
 		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
-
-		Map<String, String> hashObs = new HashMap<String, String>();
-
-		KeyValueTuple kvtHeader = new KeyValueTuple(hashObs);
-
-		hashObs.put("identifier", "identifier");
-		hashObs.put("name", "name");
-		csvWriterMD.writeColNames(kvtHeader);
+		csvWriterMD.writeColNames(Arrays.asList("identifier", " name"));
 
 		for (MakeEntityNameAndIdentifier i : mkObsTargetlist)
 		{
-			hashObs = new HashMap<String, String>();
-			KeyValueTuple kvt = new KeyValueTuple(hashObs);
-			hashObs.put("identifier", i.getIdentifier());
-			hashObs.put("name", i.getName());
+			WritableTuple kvt = new KeyValueTuple();
+			kvt.set("identifier", i.getIdentifier());
+			kvt.set("name", i.getName());
 			csvWriterMD.write(kvt);
-
 		}
 		csvWriterMD.close();
 
@@ -202,11 +191,9 @@ public class SampleConverter
 
 	private void makeFeaturesList()
 	{
-		for (Iterator<String> it2 = features.getColNames(); it2.hasNext();)
+		for (String featureColName : featureColNames)
 		{
-			String keyTuple = it2.next();
-
-			mkObsFeature = new MakeEntityNameAndIdentifier(keyTuple, keyTuple);
+			mkObsFeature = new MakeEntityNameAndIdentifier(featureColName, featureColName);
 			mkObsFeaturelist.add(mkObsFeature);
 		}
 
@@ -219,18 +206,12 @@ public class SampleConverter
 
 		TupleWriter csvWriterMD = new CsvWriter(new OutputStreamWriter(osMD, Charset.forName("UTF-8")));
 		csvWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
-
-		Map<String, String> hashFeatures = new HashMap<String, String>();
-
-		hashFeatures.put("identifier", "identifier");
-		hashFeatures.put("name", "name");
-		KeyValueTuple kvtHeader = new KeyValueTuple(hashFeatures);
-		csvWriterMD.writeColNames(kvtHeader);
+		csvWriterMD.writeColNames(Arrays.asList("identifier", "name"));
 		for (MakeEntityNameAndIdentifier m : mkObsFeaturelist)
 		{
-			KeyValueTuple kvt = new KeyValueTuple(hashFeatures);
-			hashFeatures.put("identifier", m.getIdentifier());
-			hashFeatures.put("name", m.getName());
+			WritableTuple kvt = new KeyValueTuple();
+			kvt.set("identifier", m.getIdentifier());
+			kvt.set("name", m.getName());
 			csvWriterMD.write(kvt);
 		}
 		csvWriterMD.close();
@@ -243,27 +224,23 @@ public class SampleConverter
 
 		ExcelWriter excelWriterMD = new ExcelWriter(osMD, FileFormat.XLS);
 		excelWriterMD.addCellProcessor(new LowerCaseProcessor(true, false));
-		Map<String, String> hashdataset = new HashMap<String, String>();
 
-		hashdataset.put("identifier", "identifier");
-		hashdataset.put("name", "name");
-		hashdataset.put("protocolused_identifier", "protocolused_identifier");
-		KeyValueTuple kvtHeader = new KeyValueTuple(hashdataset);
 		for (String sheetName : listOfEntity)
 		{
 			if (sheetName.equals("dataset"))
 			{
-				ExcelSheetWriter esw = excelWriterMD.createSheet("dataset");
-				esw.write(kvtHeader);
-				KeyValueTuple kvt = new KeyValueTuple(hashdataset);
-				hashdataset.put("protocolused_identifier", "");
-				hashdataset.put("identifier", PROJECT.toLowerCase());
-				hashdataset.put("name", PROJECT.toLowerCase());
+				TupleWriter esw = excelWriterMD.createTupleWriter("dataset");
+				esw.writeColNames(Arrays.asList("identifier", "name", "protocolused_identifier"));
+				WritableTuple kvt = new KeyValueTuple();
+				kvt.set("protocolused_identifier", "");
+				kvt.set("identifier", PROJECT.toLowerCase());
+				kvt.set("name", PROJECT.toLowerCase());
 				esw.write(kvt);
 			}
 			else
 			{
-				excelWriterMD.createSheet(sheetName);
+				// create empty sheet
+				excelWriterMD.createTupleWriter(sheetName);
 			}
 		}
 		excelWriterMD.close();
