@@ -73,13 +73,13 @@
 	
 	<div class="row">
 		<label for="decapplicationpdf">DEC application PDF:</label>
-		<#if currentDecProject?? && currentDecProject.pdfDecApplication??>File already present! <a href="downloadfile?name=${currentDecProject.pdfDecApplication}">${currentDecProject.pdfDecApplication}</a> </#if>
+		<#if currentDecProject?? && currentDecProject.pdfDecApplication??>Current file: <a href="downloadfile?name=${currentDecProject.pdfDecApplication}">${currentDecProject.pdfDecApplication}</a> <br />Select replacement file: </#if>
 		<input type="file" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
 	</div>
 	
 	<div class="row">
 		<label for="decapprovalpdf">DEC approval PDF:</label>
-		<#if currentDecProject?? && currentDecProject.pdfDecApproval??>File already present! <a href="downloadfile?name=${currentDecProject.pdfDecApproval}">${currentDecProject.pdfDecApproval}</a> </#if>
+		<#if currentDecProject?? && currentDecProject.pdfDecApproval??>Current file: <a href="downloadfile?name=${currentDecProject.pdfDecApproval}">${currentDecProject.pdfDecApproval}</a> <br />Select replacement file: </#if>
 		<input type="file" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
 	</div>
 	
@@ -87,12 +87,14 @@
 		<label for="startdate">Project start date:</label>
 		<script>
 			$(function() {
-				$( "#startdate" ).datepicker({
-					numberOfMonths: 2,
-					showButtonPanel: true,
-					dateFormat: "yy-mm-dd"
-				});
-			});
+                $( "#startdate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
 		</script>			
 		<input type='text' id='startdate' name='startdate' <#if currentDecProject?? && currentDecProject.getStartDate()??> value="${currentDecProject.startDate}"</#if> />
 	</div>
@@ -100,12 +102,14 @@
 	<div class="row">
 		<script>
 			$(function() {
-				$( "#enddate" ).datepicker({
-					numberOfMonths: 2,
-					showButtonPanel: true,
-					dateFormat: "yy-mm-dd"
-				});
-			});
+                $( "#enddate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
 		</script>
 		<label for="enddate">Project end date:</label>
 		<input type='text' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> />

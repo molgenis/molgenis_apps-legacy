@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.administration;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,6 +71,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private int userId = -1;
 	private String projectStartDateString = null;
 	private String projectEndDateString = null;
+	private String removalRemarks = null;
 
 	// hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -278,6 +280,16 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public List<Category> getAnimalEndStatusCodeList()
 	{
 		return animalEndStatusCodeList;
+	}
+
+	public String getRemovalRemarks()
+	{
+		return removalRemarks;
+	}
+
+	public void setRemovalRemarks(String removalRemarks)
+	{
+		this.removalRemarks = removalRemarks;
 	}
 
 	public void setDecApplicationList(List<ObservationTarget> decApplicationList)
@@ -492,6 +504,40 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					decapppdf = request.getString("decapppdf");
 				}
 
+				// DEC application PDF
+				String decsubapplicationpdf = null;
+				if (listId == 0)
+				{
+					decsubapplicationpdf = ct.addAnimalDbFile("DecSubprojectApplicationPdf", decappName + expnumber,
+							request, true);
+				}
+				else
+				{
+					File fileFromRequest = request.getFile("DecSubprojectApplicationPdf".toLowerCase());
+					if (fileFromRequest != null)
+					{
+						decsubapplicationpdf = ct.addAnimalDbFile("DecSubprojectApplicationPdf",
+								decappName + expnumber, request, true);
+					}
+				}
+
+				// DEC approval PDF
+				String decsubapprovalpdf = null;
+				if (listId == 0)
+				{
+					decsubapprovalpdf = ct.addAnimalDbFile("DecSubprojectApprovalPdf", decappName + expnumber, request,
+							true);
+				}
+				else
+				{
+					File fileFromRequest = request.getFile("DecSubprojectApprovalPdf".toLowerCase());
+					if (fileFromRequest != null)
+					{
+						decsubapprovalpdf = ct.addAnimalDbFile("DecSubprojectApprovalPdf", decappName + expnumber,
+								request, true);
+					}
+				}
+
 				// Variables from lookup boxes
 				String concern = request.getString("concern");
 				String goal = request.getString("goal");
@@ -635,9 +681,23 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						enddate, "ExperimentTitle", name, title, null));
 				if (decapppdf != null)
 				{
-					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
-							enddate, "DecSubprojectApplicationPdf", name, decapppdf, null));
+					// valuesToAddList.add(ct.createObservedValue(investigationName,
+					// protocolApplicationName, startdate,
+					// enddate, "DecSubprojectApplicationPdf", name, decapppdf,
+					// null));
 				}
+				//
+				if (decsubapplicationpdf != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
+							enddate, "DecSubprojectApplicationPdf", name, decsubapplicationpdf, null));
+				}
+				if (decsubapprovalpdf != null)
+				{
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
+							enddate, "DecSubprojectApprovalPdf", name, decsubapprovalpdf, null));
+				}
+
 				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "Concern", name, concern, null));
 				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
@@ -700,12 +760,24 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Experiment");
+				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Experiment"), ObservedValue.RELATION, Operator.EQUALS,
 						getSelectedDecSubproject().getId()));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Experiment"), ObservedValue.ENDTIME, Operator.EQUALS, null)); // only
+																											// show
+																											// if
+																											// currently
+																											// active
+																											// in
+																											// the
+																											// experiment
+
 				// TODO: find a way to filter out only the animals that are
 				// CURRENTLY in this DEC subproject
 				remAnimalsMatrixViewer = new MatrixViewer(this, REMANIMALSMATRIX,
@@ -752,11 +824,19 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				// add the animals that have been in an experiment before but
+				// are currently not
+
+				// add the animals that never have been in an experiment at all.
 				// filterRules.add(new
-				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
-				// ct.getMeasurementId("Experiment"),
-				// ObservedValue.RELATION, Operator.NOT,
-				// getSelectedDecSubproject().getId()));
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+				// .getMeasurementId("Experiment"), ObservedValue.RELATION_NAME,
+				// Operator.NOT,
+				// getSelectedDecSubproject().getName()));
+				// filterRules.add(new
+				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+				// .getMeasurementId("Experiment"), ObservedValue.ENDTIME,
+				// Operator.NOT, null));
 				// filterRules.add(new
 				// MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
 				// ct.getMeasurementId("Experiment"),
@@ -801,6 +881,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					{
 						deathDate = newDateOnlyFormat.parse(deathDateString);
 					}
+				}
+
+				// Remarks
+				String removalRemarks = null;
+				if (request.getString("removalremarks") != null && !request.getString("removalremarks").equals(""))
+				{
+					removalRemarks = request.getString("removalremarks");
 				}
 
 				// Init lists that we can later add to the DB at once
@@ -866,6 +953,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 								endstatusDate, null, "ActualDiscomfort", animalName, discomfort, null));
 						valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
 								endstatusDate, null, "ActualAnimalEndStatus", animalName, endstatus, null));
+
+						// add removalRemarks:
+						if (removalRemarks != null)
+						{
+							valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName,
+									endstatusDate, null, "Remark", animalName, removalRemarks, null));
+						}
 					}
 					else
 					{
@@ -1128,8 +1222,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					String expName = currentExp.getName();
 					String experimentNr = ct.getMostRecentValueAsString(expName, "ExperimentNr");
 					String experimentTitle = ct.getMostRecentValueAsString(expName, "ExperimentTitle");
-					String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expName,
-							"DecSubprojectApplicationPdf");
+					String pdfDecSubApplication = ct.getMostRecentValueAsString(expName, "DecSubprojectApplicationPdf");
+					String pdfDecSubApproval = ct.getMostRecentValueAsString(expName, "DecSubprojectApprovalPdf");
 					String concern = ct.getMostRecentValueAsString(expName, "Concern");
 					String goal = ct.getMostRecentValueAsString(expName, "Goal");
 					String specialTechn = ct.getMostRecentValueAsString(expName, "SpecialTechn");
@@ -1166,7 +1260,9 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					tmpExp.setName(expName);
 					tmpExp.setExperimentTitle(experimentTitle);
 					tmpExp.setExperimentNr(experimentNr);
-					tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
+					// tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
+					if (pdfDecSubApproval != null) tmpExp.setDecSubprojectApprovalPdf(pdfDecSubApproval);
+					if (pdfDecSubApplication != null) tmpExp.setDecSubprojectApplicationPdf(pdfDecSubApplication);
 					tmpExp.setConcern(concern);
 					tmpExp.setGoal(goal);
 					tmpExp.setSpecialTechn(specialTechn);

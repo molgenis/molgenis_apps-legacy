@@ -310,7 +310,7 @@
 	<!--<input type="image" title="saveIndi" src"generated-res/img/new.png" id='saveIMG' onclick="__action.value='applyLitterIndividuals'" />-->
 		<input type='submit' id='go_back' value='Cancel' onclick="__action.value='EditLitter'" />
 	<div style="float:left">
-		<input type='submit' id='save' value='Save' onclick="__action.value='applyLitterIndividuals'" />
+		<input type='submit' id='save' value='Save' onclick="__action.value='EditLitter'" />
 	</div>
 <#elseif screen.action == "makeLabels">
 
@@ -326,15 +326,27 @@
 	
 		<div class="form_header">Parentgroups</div>
 		<div>
-			<br />
-			<a href="molgenis.do?__target=${screen.name}&__action=createParentgroup"><img id="createParentgroup" title="Create parentgroup" alt="Create parentgroup" src="generated-res/img/new.png"></a>
-			<br /><br />
+		<br />
 			${screen.pgMatrixViewer}
-			<br />
-			<input type='submit' id='createlitter' value='Create new litter from selected parentgroup' onclick="__action.value='createLitter'" />
-			<br />
-			<input type='submit' id='deactivate' value='(De)activate selected parentgroup' onclick="__action.value='deActivate'" />
 		</div>
+			<div id='pgActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Add parentgroup(s)</th>
+						<th>New litter</th>
+						<th>(De)Activate parent group</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="createParentgroup" type="image" title="New parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
+						<td><input id="createLitter" type="image" title="Create new litter from selected parent group." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
+						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
 	
 	<#else>
 	
@@ -345,8 +357,6 @@
 		</div>
 			
 		<div id='litterActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
-			
-			
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
 				<thead>
 					<tr style="text-align:center;">
@@ -361,16 +371,14 @@
 					<tr style="text-align:center;">
 						<td><input id="weanlitter" type="image" title="Wean the selected litter." onclick="__action.value='WeanLitter'" src="res/img/pacifier_32.png"  /></td>
 						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
-						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editview_32.png"  /></td>
-						<td><input id="print cagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
+						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editLT_32.png"  /></td>
+						<td><input id="printcagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
 						<td><input id="deactivate" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		<div id="pushdown" style="clear:both;" >
-		</div>
-		
+				
 		<!-- div style="clear:both">
 			<input type='submit' id='weanlitter' value='Wean selected litter' onclick="__action.value='WeanLitter'" />
 			<br />		
@@ -387,6 +395,7 @@
 		</div -->
 	</div>
 	</#if>
+	<div id="pushdown" style="clear:both;" ></div>
 
 </#if>
 	
@@ -397,7 +406,7 @@
 </form>
 
 <script>
-	jQuery('#createlitter').button();
+	jQuery('#createLitter').button();
 	jQuery('#from2to3').button();
 	jQuery('#from3to4').button();
 	jQuery('#from4to3').button();
@@ -405,12 +414,13 @@
 	jQuery('#cancel2').button();
 	jQuery('#cancel3').button();
 	jQuery('#cancel4').button();
+	jQuery('#createParentgroup').button();
 	jQuery('#addpg').button();
 	jQuery('#deactivate').button();
 	jQuery('#weanlitter').button();
 	jQuery('#genotypelitter').button();
 	jQuery('#editlitter').button();
-	jQuery('#label').button();
+	jQuery('#printcagelabels').button();
 	jQuery('#addlitter').button();
 	jQuery('#wean').button();
 	jQuery('#addgenocol').button();
