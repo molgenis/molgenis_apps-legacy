@@ -15,14 +15,13 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.EntitiesImporter;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.tuple.Tuple;
 
 import plugins.system.database.Settings;
-import app.ExcelEntityImporter;
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
 {
@@ -146,7 +145,8 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					throw new Exception("Annotation Excel file is missing!");
 				}
 
-				new ExcelEntityImporter(db).importData(metadata, db, DatabaseAction.ADD);
+				EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+				entitiesImporter.importEntities(metadata, DatabaseAction.ADD);
 
 				// relink datasets
 				// fails if filenames have uppercase characters!
