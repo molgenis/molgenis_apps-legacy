@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -325,6 +326,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			jsFeatures = new ArrayList<JSFeature>(features.size());
 			for (ObservableFeature feature : features)
 				jsFeatures.add(toJSFeature(db, feature));
+
+			// sort alphabetically by name
+			Collections.sort(jsFeatures, new Comparator<JSFeature>()
+			{
+				@Override
+				public int compare(JSFeature o1, JSFeature o2)
+				{
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 		}
 
 		// get sub protocols (recursive)
@@ -335,6 +346,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			jsSubProtocols = new ArrayList<JSProtocol>(subProtocols.size());
 			for (Protocol subProtocol : subProtocols)
 				jsSubProtocols.add(toJSProtocol(db, subProtocol));
+
+			// sort alphabetically by name
+			Collections.sort(jsSubProtocols, new Comparator<JSProtocol>()
+			{
+				@Override
+				public int compare(JSProtocol o1, JSProtocol o2)
+				{
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 		}
 
 		return new JSProtocol(protocol, jsFeatures, jsSubProtocols);
@@ -350,6 +371,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			jsCategories = new ArrayList<JSCategory>(categories.size());
 			for (Category category : categories)
 				jsCategories.add(new JSCategory(category));
+
+			// sort alphabetically by name
+			Collections.sort(jsCategories, new Comparator<JSCategory>()
+			{
+				@Override
+				public int compare(JSCategory o1, JSCategory o2)
+				{
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 		}
 
 		OntologyTerm ontologyTerm = findOntologyTerm(db, feature);
@@ -400,6 +431,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.features = features;
 			this.subProtocols = subProtocols;
 		}
+
+		public String getName()
+		{
+			return name;
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -420,6 +456,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.dataType = feature.getDataType();
 			this.unit = unit;
 			this.categories = categories;
+		}
+
+		public String getName()
+		{
+			return name;
 		}
 	}
 
@@ -450,6 +491,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.name = category.getName();
 			this.code = category.getValueCode();
 			this.description = category.getDescription();
+		}
+
+		public String getName()
+		{
+			return name;
 		}
 	}
 }
