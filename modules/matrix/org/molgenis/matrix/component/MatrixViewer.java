@@ -448,7 +448,8 @@ public class MatrixViewer extends HtmlWidget
 				+ "onclick=\"if (document.getElementById('addFilter').style.display=='none') {document.getElementById('addFilter').style.display='block';} else {document.getElementById('addFilter').style.display='none';} \" "
 				+ "/>";
 		// the header filter div (add remo cols)
-		divContents += "<div id='addRemCol' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px;'><br />";
+		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		divContents += "<div id='closeAddRemCol' style='float:right;clear:both' ><img id='close' onclick=\"document.getElementById('addRemCol').style.display='none';\" src='res/img/exit.png' /></div> ";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		@SuppressWarnings("rawtypes")
 		List selectedMeasurements = new ArrayList(colHeaders);
@@ -471,7 +472,8 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "</div></div>";
 
 		// the filter div
-		divContents += "<div id='addFilter' style='display:none;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px;'>";
+		divContents += "<div id='addFilter' style='display:none;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		divContents += "<div id='closeAddFilter' style='float:right;clear:both' ><img id='closeButton' onclick=\"document.getElementById('addFilter').style.display='none';\" src='res/img/exit.png' /></div> ";
 		divContents += renderFilterPart();
 		divContents += "</div></div>";
 
@@ -1770,8 +1772,12 @@ public class MatrixViewer extends HtmlWidget
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
-				.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
+		// prevent sql out of bounds error.
+		if (this.matrix.getRowCount() > 0)
+		{
+			this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
+					.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
+		}
 	}
 
 	public void moveDownEnd(Database db, MolgenisRequest t) throws MatrixException
@@ -1780,9 +1786,14 @@ public class MatrixViewer extends HtmlWidget
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix.getRowCount()
-				/ matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount() / matrix.getRowLimit())
-				.intValue()) * matrix.getRowLimit());
+		// prevent sql out of bounds error.
+		if (this.matrix.getRowCount() > 0)
+		{
+			this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix
+					.getRowCount() / matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount()
+					/ matrix.getRowLimit()).intValue())
+					* matrix.getRowLimit());
+		}
 	}
 
 	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException

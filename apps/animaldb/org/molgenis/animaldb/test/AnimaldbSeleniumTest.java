@@ -335,11 +335,11 @@ public class AnimaldbSeleniumTest
 		// Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Add a litter
 		selenium.click("id=pgmatrix_selected_0");
-		selenium.click("id=createlitter");
+		selenium.click("id=createLitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=littersize", "5");
 		selenium.click("id=birthdate");
-		selenium.type("id=birthdate", "2012-01-01");
+		selenium.type("id=birthdate", "2013-01-01");
 
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -349,7 +349,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=weanlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=weandate");
-		selenium.type("id=weandate", "2012-01-02");
+		selenium.type("id=weandate", "2013-01-02");
 		selenium.type("id=weansizefemale", "2");
 		selenium.type("id=weansizemale", "3");
 		selenium.click("id=wean");
@@ -359,7 +359,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=print cagelabels");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
@@ -370,7 +370,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=genotypelitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=genodate");
-		selenium.type("id=genodate", "2012-01-03");
+		selenium.type("id=genodate", "2013-01-03");
 		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_000001"));
 		Assert.assertTrue(selenium.isTextPresent("Line: MyLine"));
 		selenium.click("id=save");
@@ -378,13 +378,45 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=print cagelabels");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 
 		sleepHelper("breedingWorkflow");
+	}
+
+	// TODO add test for edit litter functionality
+	@Test(dependsOnMethods =
+	{ "breedingWorkflow" })
+	public void editLitters() throws Exception
+	{
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=Breeding_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=menuLitters");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=editlitter");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.type("id=DateOfBirth", "2012-01-03");
+		selenium.click("saveEdit");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertTrue(selenium.isTextPresent("2012-01-03"));
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=editlitter");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=editIndividual");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=addIndividualToWeanGroup");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=save");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+
+		Assert.assertEquals(selenium.getText("//div[@id='EditTable_wrapper']/table/tbody/tr[9]/td[1]"), "6");
+		sleepHelper("editLitters");
 	}
 
 	@Test(dependsOnMethods =
@@ -438,7 +470,10 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=experimenttitle", "MyProject");
 		selenium.type("id=expnumber", "A");
-		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
+		// pretend like these are PDFs...
+		selenium.type("id=decsubprojectapplicationpdf", pdfFileName);
+		selenium.type("id=decsubprojectapprovalpdf", pdfFileName);
+		// selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		// int thisMonth = calendar.get(Calendar.MONTH);
 		// int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
@@ -581,7 +616,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Muizen");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "5");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "6");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "10");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]/strong"), "0");
@@ -596,7 +631,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "13");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "14");
 		// Report 5
 		selenium.select("id=form", "value=5");
 		selenium.click("id=generate");
@@ -640,13 +675,6 @@ public class AnimaldbSeleniumTest
 		sleepHelper("removeAnimals");
 
 	}
-
-	// TODO add test for edit litter functionality
-	// @Test(dependsOnMethods =
-	// { "breedingWorkflow" })
-	// public void editLitters() throws Exception
-	// {
-	// }
 
 	/*
 	 * @Test(dependsOnMethods={"removeAnimals"}) public void applyProtocol()
