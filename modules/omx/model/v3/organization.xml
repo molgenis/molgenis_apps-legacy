@@ -1,9 +1,49 @@
-<molgenis name="org.molgenis">
-	<module name="observ_omx.organization">
+<molgenis name="org.molgenis.omx">
+	<module name="organization" label="Organization module">
 		<description>
 			Adds organizational info to core
 		</description>
 
+		<entity name="Individual" extends="Target">
+			<description> The Individuals class defines the subjects that are
+				used
+				as observation target. The Individual class maps to
+				XGAP:Individual
+				and PaGE:Individual. Groups of individuals can be
+				defined via
+				Panel.
+			</description>
+			<field name="Mother" type="xref" nillable="true" xref_entity="Individual"
+				description="Refers to the mother of the individual." />
+			<field name="Father" type="xref" nillable="true" xref_entity="Individual"
+				description="Refers to the father of the individual." />
+		</entity>
+		<entity name="Panel" extends="Target">
+			<!-- panel has: identifier, description, accessions -->
+			<description>The Panel class defines groups of individuals based on
+				cohort design, case/controls, families, etc. For instance:
+				'LifeLines
+				cohort', 'middle aged man', 'recombinant mouse inbred Line
+				dba x b6'
+				or 'Smith family'. A Panel can act as a single
+				ObservationTarget.
+				For example: average height (Measurement) in the
+				LifeLines cohort
+				(Panel) is 174cm (ObservedValue). The Panel class
+				maps to XGAP:Strain and PaGE:Panel
+				classes. In METABASE this is
+				assumed there is one panel per study.
+			</description>
+			<field name="PanelType" type="xref" xref_entity="AlternativeIdentifier"
+				nillable="true"
+				description="Indicate the type of Panel (example: Sample panel, AssayedPanel, Natural=wild type, Parental=parents of a cross, F1=First generation of cross, RCC=Recombinant congenic, CSS=chromosome substitution)" />
+			<field name="NumberOfIndividuals" type="int" nillable="true" />
+			<field name="Species" type="xref" nillable="true"
+				xref_entity="AlternativeIdentifier"
+				description="The species this panel is an instance of, part of or extracted from." />
+			<field name="Individuals" type="mref" xref_entity="Individual"
+				nillable="true" description="The list of individuals in this panel" />
+		</entity>
 
 		<entity name="Contact" implements="Identifiable" abstract="true">
 			<description> A contact is either a person or an organization. Taken
@@ -59,7 +99,7 @@
 				nillable="true" />
 			<field name="Department" type="string" nillable="true"
 				description="Added from the old definition of MolgenisUser. Department of this contact." />
-			<field name="Roles" type="xref" xref_entity="OntologyTerm"
+			<field name="Roles" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true" description="Indicate role of the contact, e.g. lab worker or PI." />
 			<unique fields="FirstName,MidInitials,LastName" />
 		</entity>
@@ -160,18 +200,16 @@
 				nillable="true" />
 			<field name="DOI" label="Publication DOI" unique="true"
 				nillable="true" />
-			<field name="ontologyTerms" type="mref" xref_entity="OntologyTerm"
+			<field name="ontologyTerms" type="mref" xref_entity="AlternativeIdentifier"
 				nillable="true" description="ontology terms such as MeSH" />
 			<field name="authorList" type="text"
 				description="The names of the authors of the publication" nillable="true" />
 			<field name="Title" label="Publication Title" description="The title of the Publication" />
 			<field name="Description" type="text" />
 			<field name="Status" label="Publication Status" description="The status of the Publication"
-				type="xref" xref_entity="OntologyTerm" nillable="true" />
+				type="xref" xref_entity="AlternativeIdentifier" nillable="true" />
 
 			<!-- what should be xref_label??? -->
-
-			<unique fields="identifier" description="Identifier is globally is unique" />
 
 		</entity>
 		
