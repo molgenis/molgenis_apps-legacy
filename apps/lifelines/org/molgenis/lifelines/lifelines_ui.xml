@@ -4,5 +4,6 @@
 	<menu name="main">
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
 		<plugin label="Data Viewer" name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
+		<plugin label="Importer" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
 	</menu>
 </molgenis>
