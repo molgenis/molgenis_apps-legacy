@@ -1,4 +1,4 @@
-package org.molgenis.framework.ui.html;
+package plugins.LLcatalogueSplitter;
 
 public class JQuerySplitterContents
 {

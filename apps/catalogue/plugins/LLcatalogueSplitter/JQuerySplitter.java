@@ -1,4 +1,6 @@
-package org.molgenis.framework.ui.html;
+package plugins.LLcatalogueSplitter;
+
+import org.molgenis.framework.ui.html.HtmlWidget;
 
 public class JQuerySplitter<E> extends HtmlWidget
 {
