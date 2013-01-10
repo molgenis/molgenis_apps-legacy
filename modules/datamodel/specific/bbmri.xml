@@ -15,11 +15,19 @@
 		<entity name="BiobankInstitute" extends="Institute"></entity> 
 		
 		<entity name="BiobankCategory" extends="OntologyTerm">
-			<description>This is the categories of the entries commonly written
+			<description>These are the categories of the entries commonly written
 				in the xls file in the first column with bold letters. Obviously
 				this list should be cleaned up against a proper ontology.
 			</description>
 		</entity>
+		
+		<entity name="BiobankSubCategory" extends="OntologyTerm">
+			<description>These are the subcategories of the entries commonly written
+				in the xls file in the first column with bold letters. Obviously
+				this list should be cleaned up against a proper ontology.
+			</description>
+		</entity>
+		
 		<entity name="BiobankTopic"  xref_label="name" extends="OntologyTerm">
 			<description>This is the controlled list of values used in 'topic'
 				such as 'Anal atresia','Birth weight and growth parameters', 'Birth,
@@ -41,7 +49,7 @@
 			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" /><!--  unique="true"/>   -->
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
 			<field name="Category" type="xref" xref_entity="BiobankCategory" description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)" />
-			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />
+			<field name="SubCategory" type="xref" xref_entity="BiobankSubCategory" description="For example: Population, development, birth and growth" />
 			<field name="Topic" type="mref" xref_label="name" nillable="true" xref_entity="BiobankTopic" />
 			<field name="Coordinator" type="mref" nillable="true" xref_entity="BiobankCoordinator" description="One or more contact persons for this biobank" />
 			<!--<field name="Coordinator" type="xref" nillable="true" xref_entity="BiobankCoordinator" description="One or more contact persons for this biobank" />
