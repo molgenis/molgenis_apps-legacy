@@ -363,9 +363,11 @@ If you have further questions about database creation, please follow the MOLGENI
 
 Now, the compute project is built and you can start the web-server and run the DB version of compute with running the following command:  
 
->nohup ant -f build\_compute.xml runOn -Dport=\$1 \& 
+>cd molgenis\_apps  
+>sed -i 's/validate/update/g' build/classes/META-INF/persistence.xml  
+>nohup ant -f build\_compute.xml runOn -Dport=8080 \&  
 
-In your console, you should see output like:
+In the nohup.out, you should see output like:
 
 >\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*  
 >APPLICATION IS RUNNING AT: http://localhost:8080/compute/  
