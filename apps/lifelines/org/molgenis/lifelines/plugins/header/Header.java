@@ -16,6 +16,12 @@ public class Header extends PluginModel<Entity>
 	}
 
 	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"res/css/lifelines/colors.css\">\n";
+	}
+
+	@Override
 	public String getViewName()
 	{
 		return "plugins_header_Header";
