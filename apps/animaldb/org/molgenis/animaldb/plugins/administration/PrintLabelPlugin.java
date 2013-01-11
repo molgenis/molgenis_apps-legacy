@@ -126,35 +126,40 @@ public class PrintLabelPlugin extends EasyPluginController
 		// PDF file stuff to start each different sex on a new page.
 		boolean first = true;
 		String lastSex = "";
+		int sexctr = 0;
+		List<String> elementLabelList;
+		List<String> elementList;
+		boolean defaultCheckBox = true;
+		if (request.get("printDefaultCageLabel") == null)
+		{
+			defaultCheckBox = false;
+		}
 
 		// if default label is selected
-		if (request.get("printDefaultCageLabel") != null)
+
+		for (ObservationTarget animal : individualList)
 		{
-			List<String> elementLabelList;
-			List<String> elementList;
-			int sexctr = 0;
-
-			for (ObservationTarget animal : individualList)
+			String animalName = animal.getName();
+			elementList = new ArrayList<String>();
+			elementLabelList = new ArrayList<String>();
+			String sex = cs.getMostRecentValueAsXrefName(animalName, "Sex");
+			if (first)
 			{
+				lastSex = sex;
+			}
+			sexctr += 1;
+			// Name / custom label
+			elementLabelList.add("Name:");
+			elementList.add(animalName);
 
-				String animalName = animal.getName();
-				elementList = new ArrayList<String>();
-				elementLabelList = new ArrayList<String>();
-				sexctr += 1;
-				// Name / custom label
-				elementLabelList.add("Name:");
-				elementList.add(animalName);
+			if (defaultCheckBox)
+			{
 				// Species
 				elementLabelList.add("Species:");
 				elementList.add(cs.getMostRecentValueAsXrefName(animalName, "Species"));
 				// Sex
-				String sex = cs.getMostRecentValueAsXrefName(animalName, "Sex");
 				elementLabelList.add("Sex:");
 				elementList.add(sex);
-				if (first)
-				{
-					lastSex = sex;
-				}
 				// Earmark
 				elementLabelList.add("Earmark:");
 				elementList.add(cs.getMostRecentValueAsString(animalName, "Earmark"));
@@ -207,58 +212,11 @@ public class PrintLabelPlugin extends EasyPluginController
 				elementList.add(decInfo);
 				elementLabelList.add("Remarks");
 				elementList.add("\n\n\n\n\n");
-
-				if (sex.equals(lastSex))
-				{
-					System.out.println(sexctr + " equals: " + sex);
-					labelGenerator.addLabelToDocument(elementLabelList, elementList);
-				}
-				else
-				{
-					System.out.println(sexctr + " not equals: " + sex);
-					// add empty label on odd labelnr.
-					if ((sexctr - 1) % 2 != 0)
-					{
-						labelGenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
-					}
-					labelGenerator.finishPage();
-					labelGenerator.nextPage();
-					sexctr = 1; // reset the sexcounter to keep track of odd and
-								// even numbers.
-					labelGenerator.addLabelToDocument(elementLabelList, elementList);
-				}
-
-				lastSex = sex;
-
-				if (first)
-				{
-					first = false;
-				}
 			}
-
-			if (sexctr % 2 != 0)
+			else
 			{
-				labelGenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
-			}
-
-			labelGenerator.finishPage();
-			labelGenerator.finishDocument();
-			text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename
-					+ "\" target=\"blank\">Download labels as pdf</a>");
-			text.setLabel("");
-			// text is added to panel on reload()
-			// if customlabel is to be made:
-		}
-		else
-		{
-			for (ObservationTarget ind : individualList)
-			{
-
-				List<String> lineList = new ArrayList<String>();
-				List<String> lineLabelList = new ArrayList<String>();
-				lineLabelList.add("Name:");
-				lineList.add(ind.getName());
-				List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getName(), measurementList,
+				// print the custom selected label...
+				List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(animalName, measurementList,
 						investigationNames, ownInvName);
 				for (ObservedValue value : valueList)
 				{
@@ -275,29 +233,80 @@ public class PrintLabelPlugin extends EasyPluginController
 					{
 						actualValue = "NA";
 					}
-					lineLabelList.add(value.getFeature_Name());
-					lineList.add(actualValue);
+					elementLabelList.add(value.getFeature_Name());
+					elementList.add(actualValue);
 				}
 
-				labelGenerator.addLabelToDocument(lineLabelList, lineList);
-			}
-			if (individualList.size() % 2 != 0)
-			{
-				// In case of uneven number of animals, add empty label to make
-				// row
-				// full
-				List<String> lineLabelList = new ArrayList<String>();
-				List<String> lineList = new ArrayList<String>();
-				labelGenerator.addLabelToDocument(lineLabelList, lineList);
 			}
 
-			labelGenerator.finishDocument();
-			text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename
-					+ "\" target=\"blank\">Download labels as pdf</a>");
-			text.setLabel("");
-			// text is added to panel on reload()
+			if (sex.equals(lastSex))
+			{
+				System.out.println(sexctr + " equals: " + sex);
+				labelGenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+			else
+			{
+				System.out.println(sexctr + " not equals: " + sex);
+				// add empty label on odd labelnr.
+				if ((sexctr - 1) % 2 != 0)
+				{
+					labelGenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+				}
+				labelGenerator.finishPage();
+				labelGenerator.nextPage();
+				sexctr = 1; // reset the sexcounter to keep track of odd and
+							// even numbers.
+				labelGenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+
+			lastSex = sex;
+
+			if (first)
+			{
+				first = false;
+			}
 		}
+
+		if (sexctr % 2 != 0)
+		{
+			labelGenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+		}
+
+		labelGenerator.finishPage();
+		labelGenerator.finishDocument();
+		text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename
+				+ "\" target=\"blank\">Download labels as pdf</a>");
+		text.setLabel("");
+		// text is added to panel on reload()
+		// if customlabel is to be made:
 	}
+
+	/*
+	 * else { for (ObservationTarget ind : individualList) {
+	 * 
+	 * 
+	 * List<String> lineList = new ArrayList<String>(); List<String>
+	 * lineLabelList = new ArrayList<String>(); lineLabelList.add("Name:");
+	 * lineList.add(ind.getName()); List<ObservedValue> valueList =
+	 * cs.getObservedValuesByTargetAndFeatures(ind.getName(), measurementList,
+	 * investigationNames, ownInvName); for (ObservedValue value : valueList) {
+	 * String actualValue; if (value.getValue() != null) { actualValue =
+	 * value.getValue(); } else { actualValue = value.getRelation_Name(); } if
+	 * (actualValue == null) { actualValue = "NA"; }
+	 * lineLabelList.add(value.getFeature_Name()); lineList.add(actualValue); }
+	 * 
+	 * labelGenerator.addLabelToDocument(lineLabelList, lineList); } if
+	 * (individualList.size() % 2 != 0) { // In case of uneven number of
+	 * animals, add empty label to make // row // full List<String>
+	 * lineLabelList = new ArrayList<String>(); List<String> lineList = new
+	 * ArrayList<String>(); labelGenerator.addLabelToDocument(lineLabelList,
+	 * lineList); }
+	 * 
+	 * labelGenerator.finishDocument(); text = new Paragraph("pdfFilename",
+	 * "<a href=\"tmpfile/" + filename +
+	 * "\" target=\"blank\">Download labels as pdf</a>"); text.setLabel(""); //
+	 * text is added to panel on reload() }
+	 */
 
 	/**
 	 * Get the animals (Individuals) selected by the user.
