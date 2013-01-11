@@ -188,7 +188,7 @@ function processSearch(query) {
 	}
 }
 
-function clearSearch() {console.log("clear");
+function clearSearch() {
 	var root = $("#dataset-browser").dynatree("getRoot");
 	
 	// reset to initial display
