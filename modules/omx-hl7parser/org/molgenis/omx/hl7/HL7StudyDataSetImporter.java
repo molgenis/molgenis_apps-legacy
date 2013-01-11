@@ -17,7 +17,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
-import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
 import org.molgenis.observ.Protocol;
 import org.molgenis.observ.target.OntologyTerm;
@@ -53,7 +52,6 @@ public class HL7StudyDataSetImporter
 
 		Map<String, OntologyTerm> ontologyTerms = new HashMap<String, OntologyTerm>();
 		Map<String, ObservableFeature> features = new LinkedHashMap<String, ObservableFeature>();
-		List<ObservationTarget> targets = new ArrayList<ObservationTarget>();
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
 		List<ObservationSet> observationSets = new ArrayList<ObservationSet>();
 
@@ -65,22 +63,30 @@ public class HL7StudyDataSetImporter
 
 		for (REPCMT000400UV01Component4 rootComponent : actCategory.getComponent())
 		{
+			// create observation set
+			ObservationSet observationSet = new ObservationSet();
+			observationSet.setPartOfDataSet(dataSet);
+			observationSets.add(observationSet);
+
 			REPCMT000100UV01Organizer organizer = rootComponent.getOrganizer().getValue();
 
 			if (protocol == null) protocol = HL7OrganizerConvertor.toProtocol(organizer);
 
-			// create target
-			REPCMT000100UV01RecordTarget recordTarget = organizer.getRecordTarget().getValue();
-			ObservationTarget target = HL7RecordTargetConvertor.toObservationTarget(recordTarget);
-			targets.add(target);
+			// create feature for record target
+			REPCMT000100UV01RecordTarget target = organizer.getRecordTarget().getValue();
+			String recordTargetIdentifier = HL7RecordTargetConvertor.toObservableFeatureIdentifier(target);
+			ObservableFeature targetFeature = features.get(recordTargetIdentifier);
+			if (targetFeature == null)
+			{
+				targetFeature = HL7RecordTargetConvertor.toObservableFeature(target);
+				features.put(recordTargetIdentifier, targetFeature);
+			}
 
-			// create observation set
-			ObservationSet observationSet = new ObservationSet();
-			observationSet.setTarget(target);
-			observationSet.setPartOfDataSet(dataSet);
-			observationSets.add(observationSet);
+			// create value for record target
+			ObservedValue targetValue = HL7RecordTargetConvertor.toObservedValue(target, targetFeature, observationSet);
+			values.add(targetValue);
 
-			// create features and values
+			// create other features and values
 			for (REPCMT000100UV01Component3 organizerComponent : organizer.getComponent())
 			{
 				JAXBElement<REPCMT000100UV01Observation> jaxbObservation = organizerComponent.getObservation();
@@ -129,7 +135,6 @@ public class HL7StudyDataSetImporter
 		{
 			db.beginTx();
 
-			db.add(targets);
 			db.add(ontologyTermsList);
 			db.add(featureList);
 			if (protocol != null) db.add(protocol);

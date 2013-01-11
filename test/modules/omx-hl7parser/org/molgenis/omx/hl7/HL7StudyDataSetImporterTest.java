@@ -14,7 +14,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
-import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
 import org.molgenis.observ.Protocol;
 import org.molgenis.observ.target.OntologyTerm;
@@ -41,36 +40,36 @@ public class HL7StudyDataSetImporterTest
 
 			verify(db).beginTx();
 
-			ObservationTarget target1 = new ObservationTarget();
-			target1.setIdentifier("2.16.840.1.113883.2.4.3.8.1000.52.9269");
-			target1.setName("9269");
-			ObservationTarget target2 = new ObservationTarget();
-			target2.setIdentifier("2.16.840.1.113883.2.4.3.8.1000.52.61520");
-			target2.setName("61520");
-			verify(db).add(Arrays.asList(target1, target2));
-
 			OntologyTerm ontologyTerm = new OntologyTerm();
 			ontologyTerm.setIdentifier("mm[Hg]");
 			ontologyTerm.setName("mm[Hg]");
 			verify(db).add(Arrays.asList(ontologyTerm));
 
+			ObservableFeature feature0 = new ObservableFeature();
+			feature0.setIdentifier("2.16.840.1.113883.2.4.3.8.1000.52");
+			feature0.setName("patient");
+			feature0.setDataType("string");
 			ObservableFeature feature1 = new ObservableFeature();
 			feature1.setIdentifier("2.16.840.1.113883.6.96.271649006");
 			feature1.setName("systolic blood pressure");
 			feature1.setUnit(ontologyTerm);
+			feature1.setDataType("decimal");
 			ObservableFeature feature2 = new ObservableFeature();
 			feature2.setIdentifier("2.16.840.1.113883.6.96.251074006");
 			feature2.setName("non-invasive mean arterial pressure");
 			feature2.setUnit(ontologyTerm);
+			feature2.setDataType("decimal");
 			ObservableFeature feature3 = new ObservableFeature();
 			feature3.setIdentifier("2.16.840.1.113883.6.96.87179004");
 			feature3.setName("arterial pulse pressure");
 			feature3.setUnit(ontologyTerm);
+			feature3.setDataType("decimal");
 			ObservableFeature feature4 = new ObservableFeature();
 			feature4.setIdentifier("2.16.840.1.113883.6.96.271650006");
 			feature4.setName("diastolic blood pressure");
 			feature4.setUnit(ontologyTerm);
-			verify(db).add(Arrays.asList(feature1, feature2, feature3, feature4));
+			feature4.setDataType("decimal");
+			verify(db).add(Arrays.asList(feature0, feature1, feature2, feature3, feature4));
 
 			Protocol protocol = new Protocol();
 			protocol.setIdentifier("2.16.840.1.113883.6.96.75367002");
@@ -82,47 +81,56 @@ public class HL7StudyDataSetImporterTest
 			dataSet.setName("DataSet");
 			verify(db).add(dataSet);
 
+			ObservationSet observationSet0 = new ObservationSet();
+			observationSet0.setPartOfDataSet(dataSet);
 			ObservationSet observationSet1 = new ObservationSet();
-			observationSet1.setTarget(target1);
 			observationSet1.setPartOfDataSet(dataSet);
-			ObservationSet observationSet2 = new ObservationSet();
-			observationSet2.setTarget(target2);
-			observationSet2.setPartOfDataSet(dataSet);
-			verify(db).add(Arrays.asList(observationSet1, observationSet2));
+			verify(db).add(Arrays.asList(observationSet0, observationSet1));
 
+			ObservedValue value0a = new ObservedValue();
+			value0a.setFeature(feature0);
+			value0a.setObservationSet(observationSet0);
+			value0a.setValue("9269");
 			ObservedValue value1a = new ObservedValue();
-			value1a.setFeature(feature1);
-			value1a.setObservationSet(observationSet1);
-			value1a.setValue("112");
+			value1a.setFeature(feature0);
+			value1a.setObservationSet(observationSet0);
+			value1a.setValue("61520");
+
+			ObservedValue valueob = new ObservedValue();
+			valueob.setFeature(feature1);
+			valueob.setObservationSet(observationSet0);
+			valueob.setValue("112");
+			ObservedValue value0c = new ObservedValue();
+			value0c.setFeature(feature2);
+			value0c.setObservationSet(observationSet0);
+			value0c.setValue("88");
+			ObservedValue value0d = new ObservedValue();
+			value0d.setFeature(feature3);
+			value0d.setObservationSet(observationSet0);
+			value0d.setValue("84");
+			ObservedValue value0e = new ObservedValue();
+			value0e.setFeature(feature4);
+			value0e.setObservationSet(observationSet0);
+			value0e.setValue("79");
 			ObservedValue value1b = new ObservedValue();
-			value1b.setFeature(feature2);
+			value1b.setFeature(feature1);
 			value1b.setObservationSet(observationSet1);
-			value1b.setValue("88");
+			value1b.setValue("148");
 			ObservedValue value1c = new ObservedValue();
-			value1c.setFeature(feature3);
+			value1c.setFeature(feature2);
 			value1c.setObservationSet(observationSet1);
-			value1c.setValue("84");
+			value1c.setValue("102");
 			ObservedValue value1d = new ObservedValue();
-			value1d.setFeature(feature4);
+			value1d.setFeature(feature3);
 			value1d.setObservationSet(observationSet1);
 			value1d.setValue("79");
-			ObservedValue value2a = new ObservedValue();
-			value2a.setFeature(feature1);
-			value2a.setObservationSet(observationSet2);
-			value2a.setValue("148");
-			ObservedValue value2b = new ObservedValue();
-			value2b.setFeature(feature2);
-			value2b.setObservationSet(observationSet2);
-			value2b.setValue("102");
-			ObservedValue value2c = new ObservedValue();
-			value2c.setFeature(feature3);
-			value2c.setObservationSet(observationSet2);
-			value2c.setValue("79");
-			ObservedValue value2d = new ObservedValue();
-			value2d.setFeature(feature4);
-			value2d.setObservationSet(observationSet2);
-			value2d.setValue("79");
-			verify(db).add(Arrays.asList(value1a, value1b, value1c, value1d, value2a, value2b, value2c, value2d));
+			ObservedValue value1e = new ObservedValue();
+			value1e.setFeature(feature4);
+			value1e.setObservationSet(observationSet1);
+			value1e.setValue("79");
+			verify(db).add(
+					Arrays.asList(value0a, valueob, value0c, value0d, value0e, value1a, value1b, value1c, value1d,
+							value1e));
 
 			verify(db).commitTx();
 
