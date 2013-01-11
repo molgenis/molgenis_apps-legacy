@@ -378,7 +378,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 				@Override
 				public int compare(JSCategory o1, JSCategory o2)
 				{
-					return o1.getName().compareTo(o2.getName());
+					return o1.getCode().compareTo(o2.getCode());
 				}
 			});
 		}
@@ -493,9 +493,9 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.description = category.getDescription();
 		}
 
-		public String getName()
+		public String getCode()
 		{
-			return name;
+			return code;
 		}
 	}
 }
