@@ -19,7 +19,6 @@ import org.molgenis.io.TupleReader;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
-import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
 import org.molgenis.util.tuple.Tuple;
 
@@ -78,8 +77,6 @@ public class DataSetImporter
 
 		// create observation feature map
 		Map<String, ObservableFeature> featureMap = new LinkedHashMap<String, ObservableFeature>();
-		// skip target column (= column 0)
-		colIt.next();
 		while (colIt.hasNext())
 		{
 			String observableFeatureIdentifier = colIt.next();
@@ -94,12 +91,10 @@ public class DataSetImporter
 
 			for (Tuple row : sheetReader)
 			{
-				// find observation target
-				ObservationTarget observationTarget = findObservationTarget(row.getString(0));
 				ArrayList<ObservedValue> obsValueList = new ArrayList<ObservedValue>();
+
 				// create observation set
 				ObservationSet observationSet = new ObservationSet();
-				observationSet.setTarget(observationTarget);
 				observationSet.setPartOfDataSet(dataSet);
 				db.add(observationSet);
 
@@ -113,7 +108,6 @@ public class DataSetImporter
 					observedValue.setObservationSet(observationSet);
 
 					// add to db
-
 					obsValueList.add(observedValue);
 				}
 				db.add(obsValueList);
@@ -131,17 +125,6 @@ public class DataSetImporter
 			if (doTx) db.rollbackTx();
 			throw new IOException(e);
 		}
-	}
-
-	private ObservationTarget findObservationTarget(String observationTargetIdentifier) throws DatabaseException,
-			IOException
-	{
-		List<ObservationTarget> observationTargets = db.find(ObservationTarget.class, new QueryRule(
-				ObservationTarget.IDENTIFIER, Operator.EQUALS, observationTargetIdentifier));
-		if (observationTargets == null || observationTargets.isEmpty()) throw new DatabaseException(
-				"ObservationTarget " + observationTargetIdentifier + " does not exist in db");
-		ObservationTarget observationTarget = observationTargets.get(0);
-		return observationTarget;
 	}
 
 	private ObservableFeature findObservableFeature(String observableFeatureIdentifier) throws DatabaseException,

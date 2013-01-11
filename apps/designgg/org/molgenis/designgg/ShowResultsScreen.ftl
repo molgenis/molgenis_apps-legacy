@@ -81,16 +81,18 @@
 <table border="1">
 <#list listOfTuples as row>
 <#--header-->
-<#if row_index = 0>
+<#if row_index = 0 && row.fields??>
 <tr><#list row.fields as f>
 <th>&nbsp;${f}&nbsp;</th>
 </#list>
 </tr>
 </#if>
 <#--body-->
+<#if row.fields??>
 <tr><#list row.fields as f>
 <td>${row.getString(f)}</td>
 </#list>
+</#if>
 </tr>
 </#list>
 </table>
