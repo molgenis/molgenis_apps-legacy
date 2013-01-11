@@ -3399,25 +3399,33 @@ public class Breedingnew extends PluginModel<Entity>
 			elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Background"));
 
 			// FIXME (can only show one gene modification....
+
 			elementLabelList.add("Genotype:");
-			String genoTypeString = ct.getMostRecentValueAsString(animalName, "GeneModification") + ": "
-					+ ct.getMostRecentValueAsString(animalName, "GeneState");
-			elementList.add(genoTypeString);
-			// Color + Sex
-			// elementLabelList.add("Color and Sex:");
-			// String color = ct.getMostRecentValueAsString(animalName,
-			// "Color");
-			// if (color == null || color.equals("null") || color.equals("")) {
-			// color = "unknown";
-			// }
-			// String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
-			// elementList.add(color + "\t\t" + sex);
+			String genotypeValue = "";
+			String geneMod = ct.getMostRecentValueAsString(animalName, "GeneModification");
+			String geneState = ct.getMostRecentValueAsString(animalName, "GeneState");
+			if (geneMod != null)
+			{
+				genotypeValue += (geneMod + ": " + geneState);
+			}
+			elementList.add(genotypeValue);
+
 			// Birthdate
 			elementLabelList.add("Birthdate:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
 			// Geno mother
 			elementLabelList.add("Father:\nMother:");
-			elementList.add(fatherName + "\n" + motherName + "\n");
+			String fatherValue = ct.getMostRecentValueAsXrefName(animalName, "Father");
+			String motherValue = ct.getMostRecentValueAsXrefName(animalName, "Mother");
+			if (fatherValue == null)
+			{
+				fatherValue = "";
+			}
+			if (motherValue == null)
+			{
+				motherValue = "";
+			}
+			elementList.add(fatherValue + "\n" + motherValue);
 			// litter
 			elementLabelList.add("Litter:");
 			elementList.add(litter);
