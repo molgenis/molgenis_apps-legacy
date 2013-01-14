@@ -24,6 +24,7 @@ import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
 import org.molgenis.observ.ObservedValue;
+import org.molgenis.observ.Protocol;
 import org.molgenis.util.tuple.KeyValueTuple;
 import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.tuple.WritableTuple;
@@ -88,23 +89,77 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 	{
 		try
 		{
-			// instead ask for protocol.features?
-			// TODO do not use hardcoded SQL query
-			String sql = "SELECT DISTINCT Characteristic.identifier as name, Characteristic.name as label FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
-					+ dataSet.getId()
-					+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
+			Integer protocolId = dataSet.getProtocolUsed_Id();
+			List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.ID, Operator.EQUALS, protocolId));
 
-			columns = new ArrayList<Field>();
-			for (Tuple t : getDb().sql(sql))
+			// if dataset has protocol-used, determine columns from protocol
+			if (protocols != null && !protocols.isEmpty())
 			{
-				Field f = new Field(t.getString("name"));
-				f.setLabel(t.getString("label"));
-				columns.add(f);
+				List<Integer> featureIds = getFeatureIds(protocols);
+				List<ObservableFeature> features = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID,
+						Operator.IN, featureIds));
+				if (features != null && !features.isEmpty())
+				{
+					columns = new ArrayList<Field>(features.size());
+					for (ObservableFeature feature : features)
+					{
+						Field field = new Field(feature.getIdentifier());
+						field.setLabel(feature.getName());
+						columns.add(field);
+					}
+				}
+				else
+				{
+					columns = Collections.emptyList();
+				}
+			}
+			else
+			{
+				// determine columns from ObservationSets
+				// TODO do not use hardcoded SQL query
+				String sql = "SELECT DISTINCT Characteristic.identifier as name, Characteristic.name as label FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
+						+ dataSet.getId()
+						+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
+
+				columns = new ArrayList<Field>();
+				for (Tuple t : getDb().sql(sql))
+				{
+					Field f = new Field(t.getString("name"));
+					f.setLabel(t.getString("label"));
+					columns.add(f);
+				}
 			}
 		}
 		catch (Exception e)
 		{
 			throw new TableException(e);
+		}
+	}
+
+	private List<Integer> getFeatureIds(List<Protocol> protocols) throws DatabaseException
+	{
+		List<Integer> protocolIds = new ArrayList<Integer>();
+		for (Protocol protocol : protocols)
+			getFeatureIdsRec(protocol, protocolIds);
+		return protocolIds;
+	}
+
+	private void getFeatureIdsRec(Protocol protocol, List<Integer> featureIds) throws DatabaseException
+	{
+		// store feature ids
+		featureIds.addAll(protocol.getFeatures_Id());
+
+		// recurse sub protocols
+		List<Integer> subProtocolIds = protocol.getSubprotocols_Id();
+		if (subProtocolIds != null && !subProtocolIds.isEmpty())
+		{
+			List<Protocol> subProtocols = db.find(Protocol.class, new QueryRule(Protocol.ID, Operator.IN,
+					subProtocolIds));
+			if (subProtocols != null)
+			{
+				for (Protocol subProtocol : subProtocols)
+					getFeatureIdsRec(subProtocol, featureIds);
+			}
 		}
 	}
 
