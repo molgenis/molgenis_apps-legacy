@@ -140,6 +140,24 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			value.setRelation(ct.getObservationTargetById(species.getId()).getId());
 			db.update(value);
 
+			// AnimalType
+			String animalTypeName = request.getString("3_" + e.getName());
+
+			value = ct.getObservedValuesByTargetAndFeature(e.getName(), "AnimalType", investigationNames, invName).get(
+					0);
+			value.setValue(animalTypeName);
+
+			if (value.getProtocolApplication_Id() == null)
+			{
+				String paName = ct.makeProtocolApplication(invName, "SetAnimalType");
+				value.setProtocolApplication_Name(paName);
+				db.add(value);
+			}
+			else
+			{
+
+				db.update(value);
+			}
 			// Sex
 			String sexName = request.getString("2_" + e.getName());
 			value = ct.getObservedValuesByTargetAndFeature(e.getName(), "Sex", investigationNames, invName).get(0);
@@ -155,14 +173,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			{
 				db.update(value);
 			}
-
-			// AnimalType
-			String animalTypeName = request.getString("3_" + e.getName());
-
-			value = ct.getObservedValuesByTargetAndFeature(e.getName(), "AnimalType", investigationNames, invName).get(
-					0);
-			// value.setRelation_Name(ct.getObservationTargetByName(animalTypeName).getName());
-			db.update(value);
 
 			// Source
 			String sourceName = request.getString("4_" + e.getName());
@@ -200,11 +210,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public void makeTable(Database db) throws ParseException
 	{
 		List<Individual> obsTargets;
-		// List<String> investigationNames =
-		// ct.getAllUserInvestigationNames(db.getLogin().getUserName());
-		// List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-		// filterRules.add(new MatrixQueryRule(Individual.class,
-		// Individual.INVESTIGATION_NAME,Operator.IN, investigationNames));
 		Map<String, String> observableFeat = new HashMap<String, String>();
 		int row = 0;
 		try
@@ -236,24 +241,24 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				{
 					observableFeat.put(val.getFeature_Name(), val.getValue());
 				}
-				String line = getAnimalLine(e.getName());
-				String specie = null;
+				// String line = getAnimalLine(e.getName());
+				// String specie = null;
 
 				// Species
 				SelectInput speciesInput = new SelectInput("1_" + e.getName());
-				speciesInput.setId("Species");
+				speciesInput.setId("1_" + e.getName());
 				for (ObservationTarget species : this.speciesList)
 				{
 					speciesInput.addOption(species.getName(), species.getName());
 				}
-				speciesInput.setValue(getAnimalSpecies(line));
-				specie = getAnimalSpecies(line);
+				speciesInput.setValue(getAnimalSpecies(e.getName()));
+
 				speciesInput.setWidth(-1);
 				editTable.setCell(1, row, speciesInput);
 
 				// Sex
 				SelectInput sexInput = new SelectInput("2_" + e.getName());
-				sexInput.setId("Sex");
+				sexInput.setId("2_" + e.getName());
 				for (ObservationTarget sex : this.sexList)
 				{
 					sexInput.addOption(sex.getName(), sex.getName());
@@ -264,31 +269,24 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				// AnimalType
 				SelectInput animalTypeInput = new SelectInput("3_" + e.getName());
-				animalTypeInput.setId("AnimalType");
+				animalTypeInput.setId("3_" + e.getName());
 				for (Category animalType : this.animalTypeList)
 				{
-					animalTypeInput.addOption(animalType.getDescription(), animalType.getDescription());
+					animalTypeInput.addOption(animalType.getName(), animalType.getDescription());
 				}
-				animalTypeInput.setValue(getAnimalType(line));
+				// animalTypeInput.setValue(getAnimalType(e.getName()));
+				animalTypeInput.setValue(ct.getMostRecentValueAsString(e.getName(), "AnimalType"));
+				// System.out.println("### " +
+				// ct.getMostRecentValueAsString(e.getName(), "AnimalType"));
 				animalTypeInput.setWidth(-1);
 				editTable.setCell(3, row, animalTypeInput);
 
 				// Source
 				SelectInput sourceInput = new SelectInput("4_" + e.getName());
-				sourceInput.setId("Source");
+				sourceInput.setId("4_" + e.getName());
 				for (ObservationTarget source : this.sourceList)
 				{
-					List<ObservedValue> sourceTypeValueList = db.query(ObservedValue.class)
-							.eq(ObservedValue.TARGET, source.getId()).eq(ObservedValue.FEATURE_NAME, "SourceType")
-							.find();
-					if (sourceTypeValueList.size() > 0)
-					{
-						String sourcetype = sourceTypeValueList.get(0).getValue();
-						if (!sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid"))
-						{
-							sourceInput.addOption(source.getName(), source.getName());
-						}
-					}
+					sourceInput.addOption(source.getName(), source.getName());
 
 				}
 				sourceInput.setValue(getAnimalSource(e.getName()));
@@ -297,7 +295,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				// Line
 				SelectInput lineInput = new SelectInput("5_" + e.getName());
-				lineInput.setId("Line");
+				lineInput.setId("5_" + e.getName());
 				for (ObservationTarget lineT : this.lineList)
 				{
 
@@ -367,11 +365,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		}
 	}
 
-	public String getAnimalType(String line)
+	public String getAnimalType(String animal)
 	{
 		try
 		{
-			return ct.getMostRecentValueAsXrefName(line, "AnimalType");
+			return ct.getMostRecentValueAsString(animal, "AnimalType");
 		}
 		catch (Exception e)
 		{
