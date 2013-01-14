@@ -113,13 +113,35 @@ public class LifeLinesDataDictionarytoOMXConvertor
 			// create entity sheets
 			Map<String, TupleWriter> sheetMap = createOMXSheets(excelWriter);
 
+			Protocol rootProtocol = new Protocol("protocol_root", "Cohort");
+			Map<String, Protocol> protocolMap = new LinkedHashMap<String, Protocol>();
+			protocolMap.put(null, rootProtocol);
+
 			// write data
 			for (String tableName : excelReader.getTableNames())
 			{
-				// hardcoded : currently only consider one specific sheet
-				if (!tableName.equals("UVACH")) continue;
-				convertSheet(excelReader.getTupleReader(tableName), sheetMap);
+				logger.debug("converting sheet: " + tableName);
+				convertSheet(excelReader.getTupleReader(tableName), sheetMap, protocolMap, rootProtocol);
 			}
+
+			// write protocols
+			TupleWriter protocolWriter = sheetMap.get(SHEET_PROTOCOL);
+			for (Protocol protocol : protocolMap.values())
+			{
+				KeyValueTuple row = new KeyValueTuple();
+				row.set(ENTITY_IDENTIFIER, protocol.getIdentifier());
+				row.set(ENTITY_NAME, protocol.getName());
+				row.set(FEATURES_IDENTIFIER, StringUtils.join(protocol.getFeatureIdentifiers(), ','));
+				row.set(SUB_PROTOCOLS_IDENTIFIER, StringUtils.join(protocol.getSubProtocols(), ','));
+				protocolWriter.write(row);
+			}
+
+			TupleWriter dataSetWriter = sheetMap.get(SHEET_DATASET);
+			KeyValueTuple row = new KeyValueTuple();
+			row.set(ENTITY_IDENTIFIER, "dataset_lifelines");
+			row.set(ENTITY_NAME, "LifeLines");
+			row.set(PROTOCOLUSED_IDENTIFIER, rootProtocol.getIdentifier());
+			dataSetWriter.write(row);
 		}
 		finally
 		{
@@ -163,15 +185,14 @@ public class LifeLinesDataDictionarytoOMXConvertor
 		return sheetMap;
 	}
 
-	private void convertSheet(TupleReader sheet, Map<String, TupleWriter> sheetMap) throws IOException
+	private void convertSheet(TupleReader sheet, Map<String, TupleWriter> sheetMap, Map<String, Protocol> protocolMap,
+			Protocol rootProtocol) throws IOException
 	{
 		List<String> featureIdentifiers = new ArrayList<String>();
-		Protocol rootProtocol = new Protocol("protocol_root", "Cohort");
-		Map<String, Protocol> protocolMap = new LinkedHashMap<String, Protocol>();
-		protocolMap.put(null, rootProtocol);
 
 		String lastFeatureIdentifier = null;
-		int rownr = 0;
+
+		int rownr = 1; // 0-based, skip header
 		for (Tuple row : sheet)
 		{
 			if (!includeRow(row))
@@ -185,7 +206,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 			{
 				if (lastFeatureIdentifier == null)
 				{
-					logger.info("skipping non-feature row " + rownr++);
+					logger.debug("skipping non-feature row " + rownr++);
 					continue;
 				}
 				else
@@ -193,6 +214,9 @@ public class LifeLinesDataDictionarytoOMXConvertor
 					// value row for the last detected feature
 					String value = row.getString(COL_VALUE);
 					String description = row.getString(COL_VALUE_DESCRIPTION);
+					if (value != null && (description == null || description.isEmpty())) throw new IOException(
+							"missing translation for value '" + value + "'");
+
 					if (value == null || value.isEmpty() || description == null || description.isEmpty())
 					{
 						logger.info("skipping non-feature row " + rownr++);
@@ -214,11 +238,16 @@ public class LifeLinesDataDictionarytoOMXConvertor
 			}
 			String code = row.getString(COL_CODE);
 
+			logger.debug("converting row: " + (rownr + 1) + " - " + row.getString(COL_GROUP) + ", "
+					+ row.getString(COL_CODE));
+
 			// add feature
 			String featureIdentifier = group + '.' + code;
 			String featureName = row.getString(COL_DISPLAY_NAME);
 			String featureDescription = row.getString(COL_DESCRIPTION);
-			if (featureName == null || featureName.isEmpty()) featureName = "UNKNOWN FEATURE NAME";
+			if (featureName == null || featureName.isEmpty()) throw new IOException();
+			if (featureDescription == null || featureDescription.isEmpty()) throw new IOException();
+			// featureName = "UNKNOWN FEATURE NAME";
 			KeyValueTuple featureMap = new KeyValueTuple();
 			featureMap.set(ENTITY_IDENTIFIER, featureIdentifier);
 			featureMap.set(ENTITY_NAME, featureName);
@@ -232,6 +261,9 @@ public class LifeLinesDataDictionarytoOMXConvertor
 			// add category
 			String categoryValue = row.getString(COL_VALUE);
 			String categoryDescription = row.getString(COL_VALUE_DESCRIPTION);
+			if (categoryValue != null && (categoryDescription == null || categoryDescription.isEmpty())) throw new IOException(
+					"missing translation for value '" + categoryValue + "'");
+
 			if (categoryValue != null && categoryDescription != null)
 			{
 				KeyValueTuple categoryMap = new KeyValueTuple();
@@ -244,13 +276,14 @@ public class LifeLinesDataDictionarytoOMXConvertor
 
 			// get protocol
 			String cohort = row.getString(COL_COHORT);
+			if (cohort == null) throw new IOException("missing cohort");
 			String time = row.getString(COL_TIME);
 			String type = row.getString(COL_TYPE);
 			String section = row.getString(COL_SECTION);
 			String subSection = row.getString(COL_SUB_SECTION);
 			String subSubSection = row.getString(COL_SUB_SECTION2);
 
-			String protocolIdentifier = cohort;
+			String protocolIdentifier = cohort.replace(",", "");
 			String protocolName = cohort;
 
 			// TODO use recursive function
@@ -265,7 +298,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 			if (time == null || time.isEmpty()) subProtocol.addFeatureIdentifier(featureIdentifier);
 			else
 			{
-				protocolIdentifier = protocolIdentifier + '.' + time;
+				protocolIdentifier = protocolIdentifier + '.' + time.replace(",", "");
 				protocolName = time;
 
 				protocol = subProtocol;
@@ -280,7 +313,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 				if (type == null || type.isEmpty()) subProtocol.addFeatureIdentifier(featureIdentifier);
 				else
 				{
-					protocolIdentifier = protocolIdentifier + '.' + type;
+					protocolIdentifier = protocolIdentifier + '.' + type.replace(",", "");
 					protocolName = type;
 
 					protocol = subProtocol;
@@ -295,7 +328,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 					if (section == null || section.isEmpty()) subProtocol.addFeatureIdentifier(featureIdentifier);
 					else
 					{
-						protocolIdentifier = protocolIdentifier + '.' + section;
+						protocolIdentifier = protocolIdentifier + '.' + section.replace(",", "");
 						protocolName = section;
 
 						protocol = subProtocol;
@@ -311,7 +344,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 								.addFeatureIdentifier(featureIdentifier);
 						else
 						{
-							protocolIdentifier = protocolIdentifier + '.' + subSection;
+							protocolIdentifier = protocolIdentifier + '.' + subSection.replace(",", "");
 							protocolName = subSection;
 
 							protocol = subProtocol;
@@ -327,7 +360,7 @@ public class LifeLinesDataDictionarytoOMXConvertor
 									.addFeatureIdentifier(featureIdentifier);
 							else
 							{
-								protocolIdentifier = protocolIdentifier + '.' + subSubSection;
+								protocolIdentifier = protocolIdentifier + '.' + subSubSection.replace(",", "");
 								protocolName = subSubSection;
 
 								protocol = subProtocol;
@@ -349,155 +382,6 @@ public class LifeLinesDataDictionarytoOMXConvertor
 
 			++rownr;
 		}
-
-		// write protocols
-		TupleWriter protocolWriter = sheetMap.get(SHEET_PROTOCOL);
-
-		for (Protocol protocol : protocolMap.values())
-		{
-			KeyValueTuple row = new KeyValueTuple();
-			row.set(ENTITY_IDENTIFIER, protocol.getIdentifier());
-			row.set(ENTITY_NAME, protocol.getName());
-			row.set(FEATURES_IDENTIFIER, StringUtils.join(protocol.getFeatureIdentifiers(), ','));
-			row.set(SUB_PROTOCOLS_IDENTIFIER, StringUtils.join(protocol.getSubProtocols(), ','));
-			protocolWriter.write(row);
-		}
-
-		TupleWriter dataSetWriter = sheetMap.get(SHEET_DATASET);
-		KeyValueTuple row = new KeyValueTuple();
-		row.set(ENTITY_IDENTIFIER, "dataset_lifelines");
-		row.set(ENTITY_NAME, "LifeLines");
-		row.set(PROTOCOLUSED_IDENTIFIER, rootProtocol.getIdentifier());
-		dataSetWriter.write(row);
-		//
-		// dataSetSheet.addCell(new
-		// Label(HEADER_DATASET.get(PROTOCOLUSED_IDENTIFIER), 1,
-		// rootProtocol.getIdentifier()));
-		//
-		// // create header map
-		// Cell[] headerCells = sheet.getRow(0);
-		// Map<String, Integer> headerMap = new HashMap<String, Integer>();
-		// for (int i = 0; i < headerCells.length; ++i)
-		// headerMap.put(headerCells[i].getContents(), i);
-		//
-		// // dummy dataset
-		// WritableSheet dataSetSheet = dataSetWriter;
-		// dataSetSheet.addCell(new Label(HEADER_DATASET.get(IDENTIFIER), 1,
-		// "DataSet-Dummy"));
-		// dataSetSheet.addCell(new Label(HEADER_DATASET.get(NAME), 1,
-		// "Dummy"));
-		//
-		// Protocol rootProtocol = new Protocol("Protocol", "Protocol");
-		// Map<String, Protocol> protocolMap = new LinkedHashMap<String,
-		// Protocol>();
-		// protocolMap.put(null, rootProtocol);
-		// List<String> featureIdentifiers = new ArrayList<String>();
-		// final int rows = sheet.getRows();
-		// for (int i = 1, j = 1; i < rows; ++i)
-		// {
-		// Cell[] row = sheet.getRow(i);
-		// if (!includeRow(row, headerMap))
-		// {
-		// logger.debug("skipping row " + i);
-		// continue;
-		// }
-		//
-		// String group = row[headerMap.get("Group")].getContents();
-		// if (group == null || group.isEmpty())
-		// {
-		// logger.info("skipping non-feature row " + i);
-		// continue;
-		// }
-		// String code = row[headerMap.get("Code")].getContents();
-		//
-		// // add feature
-		// WritableSheet featureSheet = sheetMap.get(SHEET_FEATURE);
-		// String featureIdentifier = group + '.' + code;
-		// String featureName =
-		// row[headerMap.get("Dysplay name")].getContents();
-		// if (featureName == null || featureName.isEmpty()) featureName =
-		// "UNKNOWN FEATURE NAME";
-		// featureSheet.addCell(new Label(HEADER_FEATURE.get(IDENTIFIER), j,
-		// featureIdentifier));
-		// featureSheet.addCell(new Label(HEADER_FEATURE.get(NAME), j,
-		// featureName));
-		//
-		// featureIdentifiers.add(featureIdentifier);
-		//
-		// // get protocol
-		// String section = row[headerMap.get("Section")].getContents().trim();
-		// String subSection =
-		// row[headerMap.get("Sub-section")].getContents().trim();
-		// String subSubSection =
-		// row[headerMap.get("Sub-section 2")].getContents().trim();
-		//
-		// String protocolIdentifier = section;
-		// Protocol protocol = protocolMap.get(protocolIdentifier);
-		// if (protocol == null)
-		// {
-		// protocol = new Protocol(protocolIdentifier, section);
-		// protocolMap.put(protocolIdentifier, protocol);
-		// rootProtocol.addSubProtocol(protocol);
-		// }
-		// if (subSection == null || subSection.isEmpty())
-		// protocol.addFeatureIdentifier(featureIdentifier);
-		// else
-		// {
-		// String subProtocolIdentifier = section + '.' + subSection;
-		// Protocol subProtocol = protocolMap.get(subProtocolIdentifier);
-		// if (subProtocol == null)
-		// {
-		// subProtocol = new Protocol(subProtocolIdentifier, subSection);
-		// protocolMap.put(subProtocolIdentifier, subProtocol);
-		// protocol.addSubProtocol(subProtocol);
-		// }
-		//
-		// if (subSubSection == null || subSubSection.isEmpty()) subProtocol
-		// .addFeatureIdentifier(featureIdentifier);
-		// else
-		// {
-		// String subSubProtocolIdentifier = section + '.' + subSection + '.' +
-		// subSubSection;
-		// Protocol subSubProtocol = protocolMap.get(subSubProtocolIdentifier);
-		// if (subSubProtocol == null)
-		// {
-		// subSubProtocol = new Protocol(subSubProtocolIdentifier,
-		// subSubSection);
-		// protocolMap.put(subSubProtocolIdentifier, subSubProtocol);
-		// subProtocol.addSubProtocol(subSubProtocol);
-		// }
-		//
-		// subSubProtocol.addFeatureIdentifier(featureIdentifier);
-		// }
-		// }
-		//
-		// ++j;
-		// }
-		//
-		// // write protocols
-		// WritableSheet protocolSheet = sheetMap.get(SHEET_PROTOCOL);
-		//
-		// int i = 1;
-		// for (Protocol protocol : protocolMap.values())
-		// {
-		// protocolSheet.addCell(new Label(HEADER_PROTOCOL.get(IDENTIFIER), i,
-		// protocol.getIdentifier()));
-		// protocolSheet.addCell(new Label(HEADER_PROTOCOL.get(NAME), i,
-		// protocol.getName()));
-		// protocolSheet.addCell(new
-		// Label(HEADER_PROTOCOL.get(FEATURE_IDENTIFIER), i, StringUtils.join(
-		// protocol.getFeatureIdentifiers(), ',')));
-		// protocolSheet.addCell(new
-		// Label(HEADER_PROTOCOL.get(SUB_PROTOCOLS_IDENTIFIER), i,
-		// StringUtils.join(
-		// protocol.getSubProtocols(), ',')));
-		//
-		// ++i;
-		// }
-		//
-		// dataSetSheet.addCell(new
-		// Label(HEADER_DATASET.get(PROTOCOLUSED_IDENTIFIER), 1,
-		// rootProtocol.getIdentifier()));
 	}
 
 	private boolean includeRow(Tuple row)

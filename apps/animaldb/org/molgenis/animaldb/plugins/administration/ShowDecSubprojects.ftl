@@ -65,8 +65,15 @@
 	</div>
 	
 	<div class="row">
-		<label for="decapppdf">DEC subproject application PDF:</label>
-		<input type="text" name="decapppdf" id="decapppdf" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.decSubprojectApplicationPDF}"</#if> />
+		<label for="decsubprojectapplicationpdf">DEC application PDF:</label>
+		<#if currentDecSubproject?? && currentDecSubproject.decSubprojectApplicationPdf??>Current file: <a href="downloadfile?name=${currentDecSubproject.decSubprojectApplicationPdf}">${currentDecSubproject.decSubprojectApplicationPdf}</a><br />Select replacement file: </#if>
+		<input type="file" name="decsubprojectapplicationpdf" id="decsubprojectapplicationpdf" class="textbox" <#if currentDecSubproject?? && currentDecSubproject.getDecSubprojectApplicationPdf()??> value="${currentDecSubproject.decSubprojectApplicationPdf}"</#if> />
+	</div>
+	
+	<div class="row">
+		<label for="decsubprojectapprovalpdf">DEC approval PDF:</label>
+		<#if currentDecSubproject?? && currentDecSubproject.decSubprojectApprovalPdf??>Current file: <a href="downloadfile?name=${currentDecSubproject.decSubprojectApprovalPdf}">${currentDecSubproject.decSubprojectApprovalPdf}</a><br />Select replacement file: </#if>
+		<input type="file" name="decsubprojectapprovalpdf" id="decsubprojectapprovalpdf" class="textbox" <#if currentDecSubproject?? && currentDecSubproject.getDecSubprojectApprovalPdf()??> value="${currentDecSubproject.decSubprojectApprovalPdf}"</#if> />
 	</div>
 	
 	<div class="row">
@@ -241,7 +248,7 @@
                 $( "#subprojectremovaldate" ).datepicker({
                     numberOfMonths: 1,
                     showButtonPanel: true,
-                    dateFormat: "yy-mm-dd"
+                    dateFormat: "yy-mm-dd",
                     changeMonth: true,
                     changeYear: true
                 });
@@ -276,12 +283,18 @@
                     numberOfMonths: 1,
                     showButtonPanel: true,
                     dateFormat: "yy-mm-dd",
+                    changeMonth: true,
                     changeYear: true
                 });
             });
         </script>
 	</div>
 	
+	<div class='row'>
+		<label for='removalremarks'>Remarks:</label>
+		<input type='texbox' class='textbox' id='removalremarks' name='removalremarks'>
+	</div>
+		
 	<div class='row'>
 		<input type='submit' id='dorem' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
 	</div>
@@ -407,6 +420,7 @@
 					<th>DEC subproject code</th>
 					<th>DEC subproject title</th>
 					<th>DEC subproject application PDF</th>
+					<th>DEC subproject approval PDF</th>
 					<th>Concern</th>
 					<th>Goal</th>
 					<th>Special techniques</th>
@@ -432,7 +446,8 @@
 							<td><#if expl.decApplication??>${expl.decApplication}</#if></td>
 							<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>
 							<td><#if expl.experimentTitle??>${expl.experimentTitle}</#if></td>
-							<td><#if expl.decSubprojectApplicationPDF??>${expl.decSubprojectApplicationPDF}</#if></td>
+							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}">${expl.decSubprojectApplicationPdf}</a></#if></td>
+							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}">${expl.decSubprojectApprovalPdf}</a></#if></td>
 							<td><#if expl.concern??>${expl.concern}</#if></td>
 							<td><#if expl.goal??>${expl.goal}</#if></td>
 							<td><#if expl.specialTechn??>${expl.specialTechn}</#if></td>

@@ -90,6 +90,7 @@ public class Breedingnew extends PluginModel<Entity>
 	private int litterSize;
 	private boolean litterSizeApproximate;
 	private String locName = null;
+	private String motherLocation = null;
 	private String respres = null;
 	private int weanSizeFemale;
 	private int weanSizeMale;
@@ -1431,6 +1432,8 @@ public class Breedingnew extends PluginModel<Entity>
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
 		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
+		// this.setMotherLocation(ct.getMostRecentValueAsXrefName(motherName,
+		// "Location"));
 		// TODO: get rid of duplication with AddAnimalPlugin
 		// TODO: put this hardcoded info in the database (NamePrefix table)
 		if (speciesName.equals("House mouse"))
@@ -3684,5 +3687,15 @@ public class Breedingnew extends PluginModel<Entity>
 	public void setAddNew(boolean addNew)
 	{
 		this.addNew = addNew;
+	}
+
+	public String getMotherLocation()
+	{
+		return motherLocation;
+	}
+
+	public void setMotherLocation(String motherLocation)
+	{
+		this.motherLocation = motherLocation;
 	}
 }
