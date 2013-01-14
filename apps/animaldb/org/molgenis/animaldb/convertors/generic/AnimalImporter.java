@@ -142,12 +142,6 @@ public class AnimalImporter
 	public void writeToDb() throws Exception
 	{
 
-		// db.add(measurementsToAddList);
-		// logger.debug("Measurements successfully added");
-
-		db.add(protocolAppsToAddList);
-		logger.debug("Protocol applications successfully added");
-
 		db.add(panelsToAddList);
 		logger.debug("Panels successfully added");
 
@@ -195,7 +189,6 @@ public class AnimalImporter
 				db.update(prefixList.get(0));
 			}
 		}
-		// db.add(prefixList);
 		logger.debug("Prefixes successfully added");
 
 		// Add remaining Active, Project StartDate and Project EndDate values to
@@ -420,6 +413,8 @@ public class AnimalImporter
 		try
 		{
 			db.add(animalsToAddList);
+			db.add(valuesToAddList);
+			valuesToAddList.clear();
 			logger.debug("Animals successfully added");
 			// update the prefix table with new highest nr.
 			List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal")
@@ -438,12 +433,13 @@ public class AnimalImporter
 		{
 			logger.debug(e);
 		}
+
 	}
 
 	public void parseParentRelations(String filename) throws Exception
 	{
 		System.out.println("############## Start parsing parent relations");
-
+		animalsToAddList = new ArrayList<Individual>();
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		for (Tuple tuple : reader)
@@ -753,6 +749,7 @@ public class AnimalImporter
 		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
+		db.add(app);
 	}
 
 	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
