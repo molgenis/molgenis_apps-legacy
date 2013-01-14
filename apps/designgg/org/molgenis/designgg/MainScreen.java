@@ -66,32 +66,44 @@ public class MainScreen extends PluginModel
 		{
 			this.selectedScreen = 3;
 			this.autoRefresh = 0;
-			screen3.setIndPerCondition(Lists.transform(screen2.getIndPerCondition(),
-					new Function<org.molgenis.util.Tuple, org.molgenis.util.tuple.Tuple>()
-					{
-
-						@Override
-						@Nullable
-						public Tuple apply(@Nullable
-						org.molgenis.util.Tuple arg0)
+			
+			//hotfix: for some reason, (sometimes?) parts of the output is no longer produced
+			//check if not null, otherwise it crashes the app
+			//FIXME
+			if(screen2.getIndPerCondition() != null)
+			{
+				screen3.setIndPerCondition(Lists.transform(screen2.getIndPerCondition(),
+						new Function<org.molgenis.util.Tuple, org.molgenis.util.tuple.Tuple>()
 						{
-							return new DeprecatedTupleTuple(arg0);
-						}
 
-					}));
-			screen3.setIndPerSlide(Lists.transform(screen2.getIndPerSlide(),
-					new Function<org.molgenis.util.Tuple, org.molgenis.util.tuple.Tuple>()
-					{
+							@Override
+							@Nullable
+							public Tuple apply(@Nullable
+							org.molgenis.util.Tuple arg0)
+							{
+								return new DeprecatedTupleTuple(arg0);
+							}
 
-						@Override
-						@Nullable
-						public Tuple apply(@Nullable
-						org.molgenis.util.Tuple arg0)
+						}));
+			}
+			
+			if(screen2.getIndPerSlide() != null)
+			{
+				screen3.setIndPerSlide(Lists.transform(screen2.getIndPerSlide(),
+						new Function<org.molgenis.util.Tuple, org.molgenis.util.tuple.Tuple>()
 						{
-							return new DeprecatedTupleTuple(arg0);
-						}
 
-					}));
+							@Override
+							@Nullable
+							public Tuple apply(@Nullable
+							org.molgenis.util.Tuple arg0)
+							{
+								return new DeprecatedTupleTuple(arg0);
+							}
+
+						}));
+			}
+		
 			screen3.setImageLink(screen2.getImageLink());
 			screen3.setIndXCondLink(screen2.getIndXCondLink());
 			screen3.setIndXSlideLink(screen2.getIndXSlideLink());

@@ -15,15 +15,13 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.EntitiesImporter;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.tuple.Tuple;
 
 import plugins.system.database.Settings;
-import app.CsvImport;
-import app.ExcelEntityImporter;
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
 {
@@ -160,10 +158,9 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					throw new Exception("USA probe file is missing!");
 				}
 
-				new ExcelEntityImporter(db).importData(wormQtlAnnotations, db, DatabaseAction.ADD);
-				
-				
-				CsvImport.importAll(new File(importDir), db, null);
+				EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+				entitiesImporter.importEntities(wormQtlAnnotations, DatabaseAction.ADD);
+				entitiesImporter.importEntities(new File(importDir, "probe.txt"), DatabaseAction.ADD);
 
 				// relink datasets
 				relinkDatasets(db, dmh);
