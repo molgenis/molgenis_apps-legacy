@@ -83,7 +83,7 @@ public class GenerateExampleData
 			for (Individual i : iList)
 			{
 				ObservationSet os = new ObservationSet();
-				os.setTarget_Id(i.getId());
+
 				os.setPartOfDataSet(ds.getId());
 
 				db.add(os);
