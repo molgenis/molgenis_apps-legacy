@@ -1,7 +1,6 @@
 package org.molgenis.xgap.test;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,6 +120,10 @@ public class Archiver_XqtlTestNG
 		Assert.assertTrue(db.find(Marker.class).size() == 0);
 		Assert.assertTrue(db.find(Individual.class).size() == 0);
 		Assert.assertTrue(db.find(Data.class).size() == 0);
+
+		// check if file storage is gone
+		StorageHandler sh = new StorageHandler(db);
+		Assert.assertFalse(sh.hasFileStorage(false, db));
 	}
 
 	@Test(dependsOnMethods = "softResetDb")
@@ -129,6 +132,13 @@ public class Archiver_XqtlTestNG
 		File extractDir = TarGz.tarExtract(archive);
 		EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
 		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles()), DatabaseAction.ADD);
+
+		// setup file storage
+		StorageHandler sh = new StorageHandler(db);
+		sh.setFileStorage(storagePath(), db);
+		sh.validateFileStorage(db);
+		Assert.assertTrue(sh.hasValidFileStorage(db));
+
 		checkIfExampleDataIsOK();
 	}
 
@@ -140,6 +150,10 @@ public class Archiver_XqtlTestNG
 		Assert.assertTrue(db.find(Marker.class).size() == 0);
 		Assert.assertTrue(db.find(Individual.class).size() == 0);
 		Assert.assertTrue(db.find(Data.class).size() == 0);
+
+		// check if file storage is gone
+		StorageHandler sh = new StorageHandler(db);
+		Assert.assertFalse(sh.hasFileStorage(false, db));
 	}
 
 	@Test(dependsOnMethods = "hardResetDb")
@@ -147,14 +161,13 @@ public class Archiver_XqtlTestNG
 	{
 		File extractDir = TarGz.tarExtract(archive);
 		EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
-		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles(new FileFilter()
-		{
-			@Override
-			public boolean accept(File pathname)
-			{
-				return pathname.getName().endsWith(".xls");
-			}
-		})), DatabaseAction.ADD);
+		entitiesImporter.importEntities(Arrays.asList(extractDir.listFiles()), DatabaseAction.ADD);
+
+		// setup file storage
+		StorageHandler sh = new StorageHandler(db);
+		sh.setFileStorage(storagePath(), db);
+		sh.validateFileStorage(db);
+		Assert.assertTrue(sh.hasValidFileStorage(db));
 
 		// we expect to see database records
 		Assert.assertTrue(db.find(Marker.class).size() > 0);

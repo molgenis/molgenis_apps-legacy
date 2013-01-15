@@ -41,7 +41,8 @@ Litter;TargetLink;panel;Litter;false;xref;To link an animal to a litter.
 ExperimentNr;String;;;false;string;To set a (sub)experiment's number.
 ExperimentTitle;String;;;false;string;To set a (sub)experiment's title.
 DecSubprojectApplicationPdf;String;;;false;string;To set a link to a PDF file with the (sub)experiment's DEC application.
-DecApplicationPdf;String;;;false;string;To set a link to a PDF file with the DEC application.
+DecSubprojectApprovalPdf;String;;;false;string;To set a link to a PDF file with the (sub)experiment's DEC application.
+DecApplicationPdf;String;;;false;string;To set a link to a PDF file with the DEC the DEC sub project approval.
 DecApprovalPdf;String;;;false;string;To set a link to a PDF file with the DEC approval.
 DecApplication;TargetLink;panel;DecApplication;false;xref;To link a DEC subproject (experiment) to a DEC application.
 DecNr;String;;;false;string;To set a DEC application's DEC number.
