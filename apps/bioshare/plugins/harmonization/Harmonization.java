@@ -38,7 +38,6 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.tuple.Tuple;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -857,7 +856,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return table.toString();
 	}
 
-	public void stringMatching(Tuple request, Database db) throws Exception
+	public void stringMatching(MolgenisRequest request, Database db) throws Exception
 	{
 		collectExistingMapping(db, request);
 
