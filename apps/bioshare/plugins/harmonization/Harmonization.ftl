@@ -387,7 +387,7 @@
 								<select id="listOfCohortStudies" name = "listOfCohortStudies" style="width:185px;">
 									<#if screen.getValidationStudies()??>
 										<#list screen.getValidationStudies() as study>
-											<option>${study}</option>
+											<option <#if screen.getSelectedValidationStudy()?? && screen.getSelectedValidationStudy() == study>selected="selected"</#if>>${study}</option>
 										</#list>
 									</#if>
 								</select>
@@ -420,6 +420,14 @@
 									</td>
 									<td>
 										<input id="nameOfPredictor" class="predictorInput" type="text"/>
+									</td>
+								</tr>
+								<tr>
+									<td style="margin-right:10px;">
+										<span style="display:block;margin:5px;">Label: </span>
+									</td>
+									<td>
+										<input id="labelOfPredictor" class="predictorInput" type="text"/>
 									</td>
 								</tr>
 								<tr>
