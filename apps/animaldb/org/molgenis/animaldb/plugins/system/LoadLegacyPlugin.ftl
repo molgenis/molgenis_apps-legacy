@@ -45,6 +45,7 @@ Type of import:
 </div>
 <div class="row">
 <br>
+<br>
 	<input id='load' type='submit' class='addbutton' value='Load' onclick="__action.value='load'" />
 </div>
 <div>
