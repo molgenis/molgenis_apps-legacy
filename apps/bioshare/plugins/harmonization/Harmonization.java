@@ -38,7 +38,6 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.tuple.Tuple;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -140,9 +139,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					String categories = data.getString("category").trim();
 					String buildingBlockString = data.getString("buildingBlocks").trim();
 
-					m.setName(stringBuilder.append(data.getString("name").trim()).append("_")
-							.append(predictionModelName).toString());
-					m.setLabel(data.getString("name").trim());
+					m.setName(stringBuilder.append(data.getString("name").trim()).toString());
+					m.setLabel(data.getString("label").trim());
 					m.setDescription(data.getString("description"));
 					m.setDataType(data.getString("dataType").trim());
 					m.setUnit_Name(unitName);
@@ -254,6 +252,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 								Operator.IN, cp.getFeatures_Name())))
 						{
 							JSONObject jsonForPredictor = new JSONObject();
+							jsonForPredictor.put("name", eachPredictor.getName());
 							jsonForPredictor.put("label", eachPredictor.getLabel());
 							jsonForPredictor.put("identifier", eachPredictor.getName().replaceAll(" ", "_"));
 							jsonForPredictor.put("description", (eachPredictor.getDescription() == null ? ""
@@ -685,6 +684,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				{
 					String validationStudy = request.getString("listOfCohortStudies");
 
+					this.getModel().setSelectedValidationStudy(validationStudy);
+
 					System.out.println(validationStudy);
 
 					stringMatching(request, db);
@@ -855,7 +856,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return table.toString();
 	}
 
-	public void stringMatching(Tuple request, Database db) throws Exception
+	public void stringMatching(MolgenisRequest request, Database db) throws Exception
 	{
 		collectExistingMapping(db, request);
 
@@ -1022,12 +1023,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
 	{
-		StringBuilder predictorName = new StringBuilder();
-
-		Measurement m = db.find(
-				Measurement.class,
-				new QueryRule(Measurement.NAME, Operator.EQUALS, predictorName.append(predictor).append("_")
-						.append(predictionModel).toString())).get(0);
+		Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, predictor)).get(0);
 
 		ComputeProtocol cp = db.find(ComputeProtocol.class,
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
