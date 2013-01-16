@@ -60,6 +60,10 @@
 			<plugin name="PrintLabels" 
 				type="org.molgenis.animaldb.plugins.administration.PrintLabelPlugin"
 				label="(Cage) labels" />
+			
+			<plugin name="AnimalManagement"
+				type="org.molgenis.animaldb.plugins.animal.AnimalManagement" label="Manage Animals" />
+			
 		</menu>
 
 		<menu name="decmenu" position="left" label="DEC and NVWA">
