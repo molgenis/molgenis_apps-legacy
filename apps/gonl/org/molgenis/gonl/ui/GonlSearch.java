@@ -15,7 +15,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.tuple.Tuple;
 import org.molgenis.variant.Chromosome;
 import org.molgenis.variant.SequenceVariant;
 
@@ -31,6 +30,8 @@ import org.molgenis.variant.SequenceVariant;
  */
 public class GonlSearch extends EasyPluginController<GonlSearchModel>
 {
+	private static final long serialVersionUID = 1L;
+
 	public GonlSearch(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -63,7 +64,7 @@ public class GonlSearch extends EasyPluginController<GonlSearchModel>
 		// Get the ID of the chromosome.
 		Query<Chromosome> qChromosome = db.query(Chromosome.class).eq(Chromosome.NAME, request.getString("chromosome"));
 		int ChrId = qChromosome.find().get(0).getId();
-		this.logger.debug("Lookedup chromosome ID: " + ChrId + "for Chr " + request.getString("chromosome"));
+		logger.debug("Lookedup chromosome ID: " + ChrId + "for Chr " + request.getString("chromosome"));
 
 		// set search params
 		// getModel().setSelectedChrId(request.getInt("chromosome"));
@@ -111,10 +112,17 @@ public class GonlSearch extends EasyPluginController<GonlSearchModel>
 		List<ObservedValue> values = db.query(ObservedValue.class).in(ObservedValue.FEATURE, ids).find();
 
 		// put values in a map to used in view
-		Map<String, ObservedValue> valueMap = new LinkedHashMap<String, ObservedValue>();
+		Map<String, List<ObservedValue>> valueMap = new LinkedHashMap<String, List<ObservedValue>>();
 		for (ObservedValue value : values)
 		{
-			valueMap.put(value.getFeature_Name(), value);
+			String featureName = value.getFeature_Name();
+			List<ObservedValue> valueList = valueMap.get(featureName);
+			if (valueList == null)
+			{
+				valueList = new ArrayList<ObservedValue>();
+				valueMap.put(featureName, valueList);
+			}
+			valueList.add(value);
 		}
 		getModel().setAlleleCounts(valueMap);
 	}

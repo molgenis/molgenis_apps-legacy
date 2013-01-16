@@ -37,7 +37,7 @@ public class GonlSearchModel extends EasyPluginModel
 	// results
 	private int count;
 	private List<SequenceVariant> variants;
-	private Map<String, ObservedValue> alleleCounts;
+	private Map<String, List<ObservedValue>> alleleCounts;
 
 	public GonlSearchModel(GonlSearch controller)
 	{
@@ -104,12 +104,12 @@ public class GonlSearchModel extends EasyPluginModel
 		this.count = count;
 	}
 
-	protected Map<String, ObservedValue> getAlleleCounts()
+	protected Map<String, List<ObservedValue>> getAlleleCounts()
 	{
 		return alleleCounts;
 	}
 
-	protected void setAlleleCounts(Map<String, ObservedValue> alleleCounts)
+	protected void setAlleleCounts(Map<String, List<ObservedValue>> alleleCounts)
 	{
 		this.alleleCounts = alleleCounts;
 	}
