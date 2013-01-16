@@ -1,5 +1,11 @@
 package org.molgenis.gonl.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.commons.lang3.StringUtils;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -52,28 +58,45 @@ public class GonlSearchView implements ScreenView
 		// provide a box with the current results
 		form.add(new Newline());
 
-		if (model.getVariants() != null && model.getAlleleCounts() != null)
+		List<SequenceVariant> variants = model.getVariants();
+		Map<String, List<ObservedValue>> alleleCountMap = model.getAlleleCounts();
+		if (variants != null && alleleCountMap != null)
 		{
 			JQueryDataTable table = new JQueryDataTable("Result");
 			table.addColumn("Panel");
 			table.addColumn("Chr");
 			table.addColumn("Pos");
+			table.addColumn("EndBp");
 			table.addColumn("Ref");
 			table.addColumn("Alt");
-			table.addColumn("AlleleCount");
+			table.addColumn("HomRefCount");
+			table.addColumn("HetCount");
+			table.addColumn("HomAltCount");
 
-			for (SequenceVariant v : model.getVariants())
+			for (SequenceVariant variant : variants)
 			{
-				ObservedValue alleleCount = model.getAlleleCounts().get(v.getName());
-				int row = table.addRow(v.getName());
+				// aggregate individuals and panels
+				List<String> individuals = new ArrayList<String>();
+				AlleleCount aggregateCount = new AlleleCount();
+				List<ObservedValue> variantValues = alleleCountMap.get(variant.getName());
+				for (ObservedValue variantValue : variantValues)
+				{
+					aggregateCount.add(AlleleCount.parse(variantValue.getValue()));
+					individuals.add(variantValue.getTarget_Name());
+				}
 
-				table.setCell(0, row, alleleCount.getTarget_Name());
-				table.setCell(1, row, v.getChr_Name());
-				table.setCell(2, row, v.getStartBP());
-				table.setCell(3, row, v.getRef());
-				table.setCell(4, row, v.getAlt());
-				table.setCell(5, row, alleleCount.getValue());
-
+				// create table row
+				int row = table.addRow(variant.getName());
+				int col = 0;
+				table.setCell(col++, row, StringUtils.join(individuals, ','));
+				table.setCell(col++, row, variant.getChr_Name());
+				table.setCell(col++, row, variant.getStartBP());
+				table.setCell(col++, row, variant.getEndBP());
+				table.setCell(col++, row, variant.getRef());
+				table.setCell(col++, row, variant.getAlt());
+				table.setCell(col++, row, aggregateCount.getHomRefCount());
+				table.setCell(col++, row, aggregateCount.getHetCount());
+				table.setCell(col++, row, aggregateCount.getHomAltCount());
 			}
 
 			form.add(table);
@@ -82,10 +105,73 @@ public class GonlSearchView implements ScreenView
 		return form.render();
 	}
 
+	private static class AlleleCount
+	{
+		private final AtomicInteger homRefCount;
+		private final AtomicInteger hetCount;
+		private final AtomicInteger homAltCount;
+
+		private AlleleCount()
+		{
+			this(new AtomicInteger(0), new AtomicInteger(0), new AtomicInteger(0));
+		}
+
+		private AlleleCount(AtomicInteger homRefCount, AtomicInteger hetCount, AtomicInteger homAltCount)
+		{
+			this.homRefCount = homRefCount;
+			this.hetCount = hetCount;
+			this.homAltCount = homAltCount;
+		}
+
+		public int getHomRefCount()
+		{
+			return homRefCount.get();
+		}
+
+		public int getHetCount()
+		{
+			return hetCount.get();
+		}
+
+		public int getHomAltCount()
+		{
+			return homAltCount.get();
+		}
+
+		public void add(AlleleCount other)
+		{
+			homRefCount.addAndGet(other.getHomRefCount());
+			hetCount.addAndGet(other.getHetCount());
+			homAltCount.addAndGet(other.getHomAltCount());
+		}
+
+		public static AlleleCount parse(String str)
+		{
+			AtomicInteger homRefCount = new AtomicInteger(0);
+			AtomicInteger hetCount = new AtomicInteger(0);
+			AtomicInteger homAltCount = new AtomicInteger(0);
+
+			if (str.equals("0/0")) homRefCount.incrementAndGet();
+			else if (str.equals("0/1")) hetCount.incrementAndGet();
+			else
+			{
+				int off = str.indexOf('/');
+				String part1 = str.substring(0, off);
+				String part2 = str.substring(off + 1);
+				if (part1.equals(part2)) homAltCount.incrementAndGet(); // e.g.
+																		// 1/1
+				else
+					hetCount.incrementAndGet(); // e.g. 1/2 TODO check with
+												// Pieter
+
+			}
+			return new AlleleCount(homRefCount, hetCount, homAltCount);
+		}
+	}
+
 	@Override
 	public String getCustomHtmlHeaders()
 	{
 		return null;
 	}
-
 }
