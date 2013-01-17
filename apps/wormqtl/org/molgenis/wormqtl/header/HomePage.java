@@ -152,15 +152,15 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 
 				// USA probes (original name: 'probes_usa.txt', but renamed for
 				// CsvImport)
-				File probes = new File(importDir + File.separator + "probe.txt");
-				if (!probes.exists())
+				File usaProbes = new File(importDir, "probe.tsv");
+				if (!usaProbes.exists())
 				{
 					throw new Exception("USA probe file is missing!");
 				}
 
 				EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
 				entitiesImporter.importEntities(wormQtlAnnotations, DatabaseAction.ADD);
-				entitiesImporter.importEntities(new File(importDir, "probe.txt"), DatabaseAction.ADD);
+				entitiesImporter.importEntities(usaProbes, DatabaseAction.ADD);
 
 				// relink datasets
 				relinkDatasets(db, dmh);
