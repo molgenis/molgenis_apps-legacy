@@ -237,6 +237,8 @@ public class TermExpansionJob implements Job
 				{
 					expandedQueries.add(ot.getLabel());
 
+					expandedQueries.addAll(os.getDefinitions(ot));
+
 					for (String synonym : os.getSynonyms(ot))
 					{
 						expandedQueries.add(synonym);
