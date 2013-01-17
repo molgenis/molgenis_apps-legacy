@@ -39,23 +39,14 @@ public class LoadFromDirectory extends EasyPluginController<LoadFromDirectoryMod
 	public void loadDirectory(Database db, MolgenisRequest request) throws Exception
 	{
 		File directory = new File(request.getString("directory"));
-
-		// If there is a target dir import that one first, otherwise we maybe
-		// can't import the ObservedValues because they need a target
-		File targetDir = new File(directory, "target");
-		if (targetDir.exists() && targetDir.isDirectory())
-		{
-			new EntitiesImporterImpl(db).importEntities(Arrays.asList(targetDir.listFiles()), DatabaseAction.ADD);
-		}
-
-		new EntitiesImporterImpl(db).importEntities(Arrays.asList(directory.listFiles()), DatabaseAction.ADD);
+		new EntitiesImporterImpl(db).importEntities(Arrays.asList(directory.listFiles()),
+				DatabaseAction.ADD_IGNORE_EXISTING);
 	}
 
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		// TODO Auto-generated method stub
-
+		// noop
 	}
 
 	@Override
