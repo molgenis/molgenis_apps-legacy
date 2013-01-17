@@ -183,6 +183,36 @@ public class AnimalManagement extends PluginModel<Entity>
 			}
 
 			List<ObservationElement> animalList = new ArrayList<ObservationElement>();
+			if (action.equals("Give read rights"))
+			{
+				@SuppressWarnings("unchecked")
+				List<ObservationElement> rows = (List<ObservationElement>) animalMatrixViewer.getSelection(db);
+				int rowCnt = 0;
+				for (ObservationElement row : rows)
+				{
+					if (request.getBoolean(ANIMALMATRIX + "_selected_" + rowCnt) != null)
+					{
+						animalList.add(row);
+					}
+					rowCnt++;
+				}
+
+				String selectedUser = request.getString("usersList");
+
+				MolgenisUser selectedMolgenisUser = db.find(MolgenisUser.class,
+						new QueryRule(MolgenisUser.NAME, Operator.EQUALS, selectedUser)).get(0);
+
+				for (ObservationElement animal : animalList)
+				{
+					// animal.setCanRead(selectedMolgenisUser);
+					animal.setCanWrite(selectedMolgenisUser);
+
+					db.update(animal);
+					// System.out.println("AnimalName: " + animalName + "_" +
+					// selectedUser);
+
+				}
+			}
 			if (action.equals("Chosen Animals"))
 			{
 				@SuppressWarnings("unchecked")
@@ -198,18 +228,16 @@ public class AnimalManagement extends PluginModel<Entity>
 				}
 
 				String selectedUser = request.getString("usersList");
-				
+
 				MolgenisUser selectedMolgenisUser = db.find(MolgenisUser.class,
 						new QueryRule(MolgenisUser.NAME, Operator.EQUALS, selectedUser)).get(0);
 
-				
-				selectedMolgenisUser.getCanReadObservationElementCollection()
-				
-				for (Integer animalId : animalList)
+				for (ObservationElement animal : animalList)
 				{
+					// animal.setCanRead(selectedMolgenisUser);
+					animal.setCanWrite(selectedMolgenisUser);
 
-					String animalName = cs.getObservationTargetLabel(animalId);
-
+					db.update(animal);
 					// System.out.println("AnimalName: " + animalName + "_" +
 					// selectedUser);
 
