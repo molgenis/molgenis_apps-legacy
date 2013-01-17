@@ -66,7 +66,9 @@ public class TermExpansionJob implements Job
 
 					model.incrementFinishedJob();
 
-					System.out.println("Finished: " + count + " out of " + predictors.size());
+					System.out.println("Finished: " + count + " out of " + predictors.size() + ". The predictor "
+							+ predictor.getLabel() + " has " + predictor.getExpandedQuery().size()
+							+ " expanded queries!");
 				}
 
 				createNGramMeasurements(model);
