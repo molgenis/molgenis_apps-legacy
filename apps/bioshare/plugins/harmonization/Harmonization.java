@@ -666,7 +666,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 			}
 
-			PrintWriter writer;
+			PrintWriter writer = null;
 
 			try
 			{
@@ -679,6 +679,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			finally
+			{
+				if (writer != null) writer.close();
 			}
 		}
 
