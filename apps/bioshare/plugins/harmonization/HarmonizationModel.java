@@ -55,7 +55,7 @@ public class HarmonizationModel extends EasyPluginModel
 
 	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
 	private String[] ontologies =
-	{ "1032" };
+	{ "1032", "1136" };
 
 	private List<String> ontologyAccessions = Arrays.asList(ontologies);
 
