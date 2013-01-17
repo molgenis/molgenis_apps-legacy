@@ -130,7 +130,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 				mp.setEntity_ClassName(e);
 				mp.setRole_Name("anonymous");
 				mp.setPermission("read");
-				db.add(mp);
+				//db.add(mp);
 			}
 
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
