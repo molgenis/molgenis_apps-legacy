@@ -595,6 +595,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						}
 						else
 						{
+							System.out.println("Currently number of running jobs is: ========== "
+									+ this.getModel().getScheduler().getCurrentlyExecutingJobs().size());
 							System.out.println("Finished: " + this.getModel().getFinishedNumber()
 									+ ". Total number is " + this.getModel().getTotalNumber());
 						}
@@ -673,7 +675,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
 				writer.write(status.toString());
 				writer.flush();
-				writer.close();
 			}
 			catch (UnsupportedEncodingException e)
 			{
