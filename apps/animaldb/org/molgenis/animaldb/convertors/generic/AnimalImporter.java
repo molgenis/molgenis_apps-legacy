@@ -79,6 +79,7 @@ public class AnimalImporter
 	private int highestLTNr;
 	private String defaultSourceName;
 	private String defaultBreedingLine;
+	private String importName;
 
 	// private List<String> lineNamesList;
 
@@ -110,6 +111,16 @@ public class AnimalImporter
 		activeMap = new HashMap<String, ObservedValue>();
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
+
+		// create panel wich will contain all the animals from this importbatch
+		makeProtocolApplication("SetImportTimestamp");
+		Date nowDate = new Date();
+		String now = nowDate.toString();
+		this.importName = "nonGMOImport_" + now;
+
+		panelsToAddList.add(ct.createPanel(invName, importName, userName));
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), nowDate, null,
+				"TypeOfGroup", importName, "ImportTimestamp", null));
 
 	}
 
@@ -241,6 +252,10 @@ public class AnimalImporter
 			animalNames.add(animalName);
 			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 			animalsToAddList.add(newAnimal);
+
+			// label as part of this import batch
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), now, null,
+					"ImportTimestamp", animalName, null, importName));
 
 			// Set some defaults: --> Animal Type,
 			String animalType = "A. Gewoon dier";
