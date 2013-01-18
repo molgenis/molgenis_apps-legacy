@@ -13,7 +13,6 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.variant.Chromosome;
 import org.molgenis.variant.SequenceVariant;
@@ -35,24 +34,17 @@ public class GonlSearch extends EasyPluginController<GonlSearchModel>
 	public GonlSearch(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new GonlSearchModel(this)); // the default model
-		// this.setView(new GonlSearchView(getModel())); //
+		this.setModel(new GonlSearchModel(this));
 	}
 
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		SliceableMatrix m = null;
-
 		getModel().setChromosomes(new ArrayList<String>());
 		for (Chromosome c : db.query(Chromosome.class).find())
 		{
 			this.getModel().getChromosomes().add(c.getName());
 		}
-
-		// select chromosome, startpos, endpos
-		// m.sliceByRow(SequenceVariant.CHR, QueryRule.Operator.EQUALS,
-		// getModel().getSelectedChrId());
 	}
 
 	public void search(Database db, MolgenisRequest request) throws DatabaseException
@@ -67,18 +59,12 @@ public class GonlSearch extends EasyPluginController<GonlSearchModel>
 		logger.debug("Lookedup chromosome ID: " + ChrId + "for Chr " + request.getString("chromosome"));
 
 		// set search params
-		// getModel().setSelectedChrId(request.getInt("chromosome"));
 		getModel().setSelectedChrId(ChrId);
 		getModel().setSelectedChrName(request.getString("chromosome"));
 		getModel().setSelectedFrom(request.getInt("from"));
 		getModel().setSelectedTo(request.getInt("to"));
 
 		// count available variants, if too much return error
-		// Query<SequenceVariant> q =
-		// db.query(SequenceVariant.class).eq(SequenceVariant.CHR_NAME,
-		// getModel().getSelectedChrId())
-		// .greaterOrEqual(SequenceVariant.ENDBP, request.getInt("from"))
-		// .lessOrEqual(SequenceVariant.STARTBP, request.getInt("to"));
 		Query<SequenceVariant> q = db.query(SequenceVariant.class)
 				.eq(SequenceVariant.CHR, getModel().getSelectedChrId())
 				.greaterOrEqual(SequenceVariant.ENDBP, request.getInt("from"))
@@ -130,7 +116,6 @@ public class GonlSearch extends EasyPluginController<GonlSearchModel>
 	@Override
 	public ScreenView getView()
 	{
-		return new GonlSearchView(getModel()); // <plugin
+		return new GonlSearchView(getModel());
 	}
-
 }
