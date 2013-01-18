@@ -26,7 +26,7 @@ public class GonlSearchModel extends EasyPluginModel
 	private static final long serialVersionUID = 1L;
 
 	// lookup list
-	private List<String> chromosomes = new ArrayList<String>();
+	private List<String> chromosomes;
 
 	// selected parameters
 	private int selectedChrId;
@@ -42,6 +42,7 @@ public class GonlSearchModel extends EasyPluginModel
 	public GonlSearchModel(GonlSearch controller)
 	{
 		super(controller);
+		chromosomes = new ArrayList<String>();
 	}
 
 	public List<String> getChromosomes()
@@ -123,5 +124,4 @@ public class GonlSearchModel extends EasyPluginModel
 	{
 		this.variants = variants;
 	}
-
 }
