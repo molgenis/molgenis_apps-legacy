@@ -1,15 +1,18 @@
 package org.molgenis.gonl.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.core.OntologyTerm;
@@ -20,6 +23,8 @@ import org.molgenis.pheno.Species;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.WritableTuple;
 import org.molgenis.util.vcf.VcfReader;
 import org.molgenis.util.vcf.VcfReaderListener;
 import org.molgenis.util.vcf.VcfRecord;
@@ -41,23 +46,42 @@ public class VcfToGoNLVariantConverter
 
 	public static void main(String[] args) throws Exception
 	{
-		if (args.length != 2) System.err.println("Usage: <input.vcf> <output.dir>");
+
+		if (args.length != 3)
+		{
+			System.err.println("Usage: <input.vcf> <output.dir> <encryption_salt>");
+			return;
+		}
 
 		BasicConfigurator.configure();
 
 		File vcfFile = new File(args[0]);
+		if (!vcfFile.exists()) throw new FileNotFoundException("input does not exist: " + args[0]);
+		else if (vcfFile.isDirectory()) throw new IOException("input is a directory: " + args[0]);
 		File outputDir = new File(args[1]);
-		VcfToGoNLVariantConverter convert = new VcfToGoNLVariantConverter();
+		if (!outputDir.exists()) if (!outputDir.mkdir()) throw new IOException("Could not create directory: "
+				+ outputDir);
+		else if (!outputDir.isDirectory()) throw new IOException("output directory is not a directory");
+
+		VcfToGoNLVariantConverter convert = new VcfToGoNLVariantConverter(args[2]);
 		convert.convertVariants(vcfFile, outputDir);
+	}
+
+	/**
+	 * Random data used as additional input for patient name encryption
+	 */
+	private final String salt;
+
+	public VcfToGoNLVariantConverter(String salt)
+	{
+		if (salt == null) throw new IllegalArgumentException();
+		this.salt = salt;
 	}
 
 	public void convertVariants(final File vcfFile, final File outputDir) throws Exception
 	{
 		System.out.println("converting aggregate data from vcf=" + vcfFile + " to directory " + outputDir);
 		final VcfReader vcf = new VcfReader(vcfFile);
-
-		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy");
-		String date = sdf.format(new Date());
 
 		final List<SequenceVariant> variants = new ArrayList<SequenceVariant>();
 		final List<ObservedValue> values = new ArrayList<ObservedValue>();
@@ -89,9 +113,10 @@ public class VcfToGoNLVariantConverter
 		final List<Integer> count = new ArrayList<Integer>();
 		count.add(0);
 
+		final String encryptionSalt = this.salt;
+		final Map<String, String> encIndividualMap = new HashMap<String, String>();
 		vcf.parse(new VcfReaderListener()
 		{
-
 			@Override
 			public void handleLine(int lineNumber, VcfRecord record) throws Exception
 			{
@@ -145,35 +170,31 @@ public class VcfToGoNLVariantConverter
 								logger.warn("unknown key: " + key);
 
 						}
-						// o.setValue(record.getInfo("AC").get(i));
 					}
-					// TODO: fetch panel and relation from VCF if possible...
-					// and create it first, so we can use it here.
 
-					for (String patientName : vcf.getSampleList())
+					for (String individualName : vcf.getSampleList())
 					{
-						// create patient object if missing
-						Individual patientObject = patients.get(patientName);
-						if (patientObject == null)
+						// encrypt individual name
+						String encIndividualName = DigestUtils.md5Hex(individualName + encryptionSalt);
+
+						// create encrypted individual
+						Individual individual = patients.get(encIndividualName);
+						if (individual == null)
 						{
-							patientObject = new Individual();
-							patientObject.setName(patientName);
-							if (!patients.containsKey(patientName)) patients.put(patientName, patientObject);
+							individual = new Individual();
+							individual.setName(encIndividualName);
+							patients.put(encIndividualName, individual);
+
+							// store individual encryption info
+							encIndividualMap.put(individualName, encIndividualName);
 						}
-						// link mutation to patient
-						// TODO do we really need this? suggestion: make
-						// observed value
-						// if
-						// (!patientObject.getMutations_Name().contains(v.getName()))
-						// patientObject.getMutations_Name()
-						// .add(v.getName());
 
 						// create genotype for patient-mutation
-						o.setTarget_Name(patientName);
+						o.setTarget_Name(individualName);
 						o.setRelation_Name("Allele count");
 						o.setFeature_Name(v.getName());
 
-						o.setValue(record.getSampleValue(patientName, "GT"));
+						o.setValue(record.getSampleValue(individualName, "GT"));
 					}
 
 					variants.add(v);
@@ -193,6 +214,9 @@ public class VcfToGoNLVariantConverter
 				}
 			}
 		});
+
+		// write individual encryption information
+		writeEncryptedIndividuals(outputDir, encIndividualMap);
 
 		// write remaining data for last batch.
 		writeBatch(variants, fileVariants, variantHeaders);
@@ -283,6 +307,30 @@ public class VcfToGoNLVariantConverter
 		createFileAndHeader(speciesFile, speciesHeader);
 		writeBatch(species, speciesFile, speciesHeader);
 
+	}
+
+	private void writeEncryptedIndividuals(File outputDir, Map<String, String> encIndividualMap) throws IOException
+	{
+		String colIndividualName = "individual_name";
+		String colIndividualNameMD5Salted = "individual_name_md5_salted";
+
+		File patientFile = new File(outputDir.getAbsolutePath() + File.separatorChar + "encrypted_individuals.csv");
+		org.molgenis.io.csv.CsvWriter csvWriter = new org.molgenis.io.csv.CsvWriter(patientFile);
+		try
+		{
+			csvWriter.writeColNames(Arrays.asList(colIndividualName, colIndividualNameMD5Salted));
+			for (Entry<String, String> entry : encIndividualMap.entrySet())
+			{
+				WritableTuple tuple = new KeyValueTuple();
+				tuple.set(colIndividualName, entry.getKey());
+				tuple.set(colIndividualNameMD5Salted, entry.getValue());
+				csvWriter.write(tuple);
+			}
+		}
+		finally
+		{
+			csvWriter.close();
+		}
 	}
 
 	private void createFileAndHeader(File file, String[] fields) throws IOException
