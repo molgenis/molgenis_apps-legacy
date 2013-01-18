@@ -431,9 +431,17 @@ function insertNewRow(url)
 	if($('#' + $('#nameOfPredictor').val()).length == 0){
 
 		data = {};
+		
 		data["selected"] = $('#selectPredictionModel').val();
-		data["name"] = $('#nameOfPredictor').val();
-		data["label"] = $('#nameOfPredictor').val();
+		data["name"] = $('#nameOfPredictor').val() + "_" + data["selected"];
+	
+		if($('#labelOfPredictor').val() == "")
+		{
+			data["label"] = $('#nameOfPredictor').val();
+		
+		}else{
+			data["label"] = $('#labelOfPredictor').val();
+		}
 		data["description"] = $('#descriptionOfPredictor').val();
 		data["dataType"] = $('#dataTypeOfPredictor').val();
 		data["unit"] = $('#unitOfPredictor').val();
@@ -445,6 +453,7 @@ function insertNewRow(url)
 
 		//add the data to table
 		identifier = data["name"].replace(/\s/g,"_");
+		
 		data["identifier"] = identifier;
 
 		$.ajax({
@@ -471,6 +480,7 @@ function insertNewRow(url)
 
 function populateRowInTable(data, url)
 {
+	name = data["name"];
 	label = data["label"];
 	description = data["description"];
 	dataType = data["dataType"];
@@ -481,6 +491,7 @@ function populateRowInTable(data, url)
 
 	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
 	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + label + "</span>";
+	newRow += "<input id=\"" + name + "_name\" type=\"hidden\" value=\"" + name + "\"/>";
 	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
@@ -566,7 +577,8 @@ function addNewPredictionModel(url)
 
 function removePredictionModel(url)
 {	
-	if($('#selectPredictionModel option').length > 0){
+	if($('#selectPredictionModel option').length > 0)
+	{
 		selected = $('#selectPredictionModel').val();
 
 		$.ajax({
@@ -613,18 +625,26 @@ function addPredictor(url)
 
 function removePredictor(element, url)
 {	
-	predictor = $(element).parents('td').eq(0).text();
+	predictorName = $(element).parents('td').children('input:hidden').eq(0).val();
+	
 	selected = $('#selectPredictionModel').val();
+	
 	$.ajax({
 		url : url + "&__action=download_json_removePredictors&name=" 
-		+ predictor + "&predictionModel=" + selected,
+		+ predictorName + "&predictionModel=" + selected,
 		async: false,
 	}).done(function(status){
+		
 		message = status["message"];
+		
 		success = status["success"];
+		
 		showMessage(message, success);
-		if(success == true){
-			summaryRemoveOne(identifier);
+		
+		if(success == true)
+		{
+			summaryRemoveOne(predictorName);
+			
 			$(element).parents('tr').eq(0).remove();
 		}
 	});

@@ -310,7 +310,7 @@
 	<!--<input type="image" title="saveIndi" src"generated-res/img/new.png" id='saveIMG' onclick="__action.value='applyLitterIndividuals'" />-->
 		<input type='submit' id='go_back' value='Cancel' onclick="__action.value='EditLitter'" />
 	<div style="float:left">
-		<input type='submit' id='save' value='Save' onclick="__action.value='EditLitter'" />
+		<input type='submit' id='save' value='Save' onclick="__action.value='applyLitterIndividuals'" />
 	</div>
 <#elseif screen.action == "makeLabels">
 
