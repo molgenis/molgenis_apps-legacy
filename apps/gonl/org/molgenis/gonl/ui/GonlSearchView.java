@@ -1,8 +1,9 @@
 package org.molgenis.gonl.ui;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,19 +77,19 @@ public class GonlSearchView implements ScreenView
 			for (SequenceVariant variant : variants)
 			{
 				// aggregate individuals and panels
-				List<String> individuals = new ArrayList<String>();
+				Set<String> panels = new LinkedHashSet<String>();
 				AlleleCount aggregateCount = new AlleleCount();
 				List<ObservedValue> variantValues = alleleCountMap.get(variant.getName());
 				for (ObservedValue variantValue : variantValues)
 				{
 					aggregateCount.add(AlleleCount.parse(variantValue.getValue()));
-					individuals.add(variantValue.getTarget_Name());
+					panels.add(variantValue.getTarget_Name());
 				}
 
 				// create table row
 				int row = table.addRow(variant.getName());
 				int col = 0;
-				table.setCell(col++, row, StringUtils.join(individuals, ','));
+				table.setCell(col++, row, StringUtils.join(panels, ','));
 				table.setCell(col++, row, variant.getChr_Name());
 				table.setCell(col++, row, variant.getStartBP());
 				table.setCell(col++, row, variant.getEndBP());
@@ -151,18 +152,19 @@ public class GonlSearchView implements ScreenView
 			AtomicInteger hetCount = new AtomicInteger(0);
 			AtomicInteger homAltCount = new AtomicInteger(0);
 
-			if (str.equals("0/0")) homRefCount.incrementAndGet();
-			else if (str.equals("0/1")) hetCount.incrementAndGet();
+			if (str.equals("0/0") || str.equals("0|0")) homRefCount.incrementAndGet();
+			else if (str.equals("0/1") || str.equals("0|1")) hetCount.incrementAndGet();
 			else
 			{
 				int off = str.indexOf('/');
+				if (off == -1) off = str.indexOf('|');
+
 				String part1 = str.substring(0, off);
 				String part2 = str.substring(off + 1);
 				if (part1.equals(part2)) homAltCount.incrementAndGet(); // e.g.
 																		// 1/1
 				else
-					hetCount.incrementAndGet(); // e.g. 1/2 TODO check with
-												// Pieter
+					hetCount.incrementAndGet(); // e.g. 1/2
 
 			}
 			return new AlleleCount(homRefCount, hetCount, homAltCount);
