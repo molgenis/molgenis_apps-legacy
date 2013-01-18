@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.molgenis.core.OntologyTerm;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.pheno.Species;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
@@ -47,9 +49,9 @@ public class VcfToGoNLVariantConverter
 	public static void main(String[] args) throws Exception
 	{
 
-		if (args.length != 3)
+		if (args.length != 4)
 		{
-			System.err.println("Usage: <input.vcf> <output.dir> <encryption_salt>");
+			System.err.println("Usage: <input.vcf> <output.dir> <panel_name> <encryption_salt>");
 			return;
 		}
 
@@ -63,18 +65,21 @@ public class VcfToGoNLVariantConverter
 				+ outputDir);
 		else if (!outputDir.isDirectory()) throw new IOException("output directory is not a directory");
 
-		VcfToGoNLVariantConverter convert = new VcfToGoNLVariantConverter(args[2]);
+		VcfToGoNLVariantConverter convert = new VcfToGoNLVariantConverter(args[2], args[3]);
 		convert.convertVariants(vcfFile, outputDir);
 	}
 
+	private final String panelName;
 	/**
-	 * Random data used as additional input for patient name encryption
+	 * Random data used as additional input for individual name encryption
 	 */
 	private final String salt;
 
-	public VcfToGoNLVariantConverter(String salt)
+	public VcfToGoNLVariantConverter(String panelName, String salt)
 	{
+		if (panelName == null) throw new IllegalArgumentException();
 		if (salt == null) throw new IllegalArgumentException();
+		this.panelName = panelName;
 		this.salt = salt;
 	}
 
@@ -88,8 +93,9 @@ public class VcfToGoNLVariantConverter
 		final List<String> chromosomes = new ArrayList<String>();
 		final List<GenomeBuild> builds = new ArrayList<GenomeBuild>();
 		final List<Species> species = new ArrayList<Species>();
-		final Map<String, Individual> patients = new TreeMap<String, Individual>();
+		final Map<String, Individual> individuals = new TreeMap<String, Individual>();
 		final List<ObservableFeature> features = new ArrayList<ObservableFeature>();
+		final Panel panel = new Panel();
 
 		// create file names
 		final File fileVariants = new File(outputDir.getAbsolutePath() + File.separatorChar
@@ -127,7 +133,7 @@ public class VcfToGoNLVariantConverter
 				for (int i = 0; i < alt.size(); i++)
 				{
 					SequenceVariant v = new SequenceVariant();
-					ObservedValue o = new ObservedValue();
+					ObservedValue observedValue = new ObservedValue();
 
 					// TODO result is not used, do we need this?
 					// String result = "chr" + record.getChrom() + ":g.";
@@ -165,7 +171,7 @@ public class VcfToGoNLVariantConverter
 							List<String> var3 = vcf.getInfoFields();
 							String key = var3.get(j);
 							List<String> info = record.getInfo(key);
-							if (info == null | info.isEmpty()) o.setValue(info.get(0));
+							if (info == null | info.isEmpty()) observedValue.setValue(info.get(0));
 							else
 								logger.warn("unknown key: " + key);
 
@@ -175,30 +181,29 @@ public class VcfToGoNLVariantConverter
 					for (String individualName : vcf.getSampleList())
 					{
 						// encrypt individual name
-						String encIndividualName = DigestUtils.md5Hex(individualName + encryptionSalt);
+						String encIndividualName = encrypt(individualName, encryptionSalt);
 
-						// create encrypted individual
-						Individual individual = patients.get(encIndividualName);
+						encIndividualMap.put(individualName, encIndividualName);
+
+						// create individual
+						Individual individual = individuals.get(encIndividualName);
 						if (individual == null)
 						{
 							individual = new Individual();
 							individual.setName(encIndividualName);
-							patients.put(encIndividualName, individual);
-
-							// store individual encryption info
-							encIndividualMap.put(individualName, encIndividualName);
+							individuals.put(encIndividualName, individual);
 						}
 
 						// create genotype for patient-mutation
-						o.setTarget_Name(individualName);
-						o.setRelation_Name("Allele count");
-						o.setFeature_Name(v.getName());
+						observedValue.setTarget_Name(panelName);
+						observedValue.setRelation_Name("Allele count");
+						observedValue.setFeature_Name(v.getName());
 
-						o.setValue(record.getSampleValue(individualName, "GT"));
+						observedValue.setValue(record.getSampleValue(individualName, "GT"));
 					}
 
 					variants.add(v);
-					values.add(o);
+					values.add(observedValue);
 				}
 
 				if (variants.size() >= BATCH_SIZE)
@@ -282,12 +287,22 @@ public class VcfToGoNLVariantConverter
 		createFileAndHeader(buildsFile, buildsHeader);
 		writeBatch(builds, buildsFile, buildsHeader);
 
-		final File patientFile = new File(outputDir.getAbsolutePath() + File.separatorChar
+		panel.setName(this.panelName);
+		panel.setIndividuals(new ArrayList<Individual>(individuals.values()));
+
+		final File panelFile = new File(outputDir.getAbsolutePath() + File.separatorChar + Panel.class.getSimpleName()
+				+ ".txt");
+		String[] panelHeader = new String[]
+		{ "name", "individuals_name" };
+		createFileAndHeader(panelFile, panelHeader);
+		writeBatch(Collections.singletonList(panel), panelFile, panelHeader);
+
+		final File individualFile = new File(outputDir.getAbsolutePath() + File.separatorChar
 				+ Individual.class.getSimpleName() + ".txt");
 		String[] patientHeader = new String[]
 		{ "name", "phenotype", "submission_identifier", "mutations_name" };
-		createFileAndHeader(patientFile, patientHeader);
-		writeBatch(new ArrayList<Individual>(patients.values()), patientFile, patientHeader);
+		createFileAndHeader(individualFile, patientHeader);
+		writeBatch(new ArrayList<Individual>(individuals.values()), individualFile, patientHeader);
 
 		ObservableFeature f = new ObservableFeature();
 		f.setName("Allele count");
@@ -307,6 +322,11 @@ public class VcfToGoNLVariantConverter
 		createFileAndHeader(speciesFile, speciesHeader);
 		writeBatch(species, speciesFile, speciesHeader);
 
+	}
+
+	private String encrypt(String value, String salt)
+	{
+		return DigestUtils.md5Hex(value + salt);
 	}
 
 	private void writeEncryptedIndividuals(File outputDir, Map<String, String> encIndividualMap) throws IOException
