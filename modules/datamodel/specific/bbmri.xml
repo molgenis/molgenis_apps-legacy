@@ -14,6 +14,8 @@
 		
 		<entity name="BiobankInstitute" extends="Institute"></entity> 
 		
+		<entity name="BiobankPersonRole" extends="PersonRole"></entity>
+		
 		<entity name="BiobankCategory" extends="OntologyTerm">
 			<description>These are the categories of the entries commonly written
 				in the xls file in the first column with bold letters. Obviously
