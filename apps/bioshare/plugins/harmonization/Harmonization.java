@@ -9,7 +9,9 @@ package plugins.harmonization;
 import gcc.catalogue.MappingMeasurement;
 
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -593,6 +595,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						}
 						else
 						{
+							System.out.println("Currently number of running jobs is: ========== "
+									+ this.getModel().getScheduler().getCurrentlyExecutingJobs().size());
 							System.out.println("Finished: " + this.getModel().getFinishedNumber()
 									+ ". Total number is " + this.getModel().getTotalNumber());
 						}
@@ -664,10 +668,23 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 			}
 
-			PrintWriter writer = new PrintWriter(out);
-			writer.write(status.toString());
-			writer.flush();
-			writer.close();
+			PrintWriter writer = null;
+
+			try
+			{
+				writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
+				writer.write(status.toString());
+				writer.flush();
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally
+			{
+				if (writer != null) writer.close();
+			}
 		}
 
 		return Show.SHOW_MAIN;
