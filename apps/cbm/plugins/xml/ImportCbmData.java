@@ -1,6 +1,11 @@
 package plugins.xml;
 
+import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CbmNode;
+import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CollectionProtocol;
+import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.ParticipantCollectionSummary;
+
 import java.io.File;
+import java.util.List;
 
 import org.molgenis.cbm.CbmXmlParser;
 import org.molgenis.framework.db.Database;
@@ -60,8 +65,17 @@ public class ImportCbmData extends PluginModel<Entity>
 			CbmXmlParser cbmXmlParser = new CbmXmlParser();
 
 			File currentXsdfile = new File("/Users/despoina/Documents/__CTMM_project/CBM/CBM.xsd");
-			cbmXmlParser.load(currentFile, currentXsdfile);
+			CbmNode result = cbmXmlParser.load(currentFile, currentXsdfile);
 
+			List<CollectionProtocol> collectionProtocol = result.getProtocols().getCollectionProtocol();
+			System.out.println(collectionProtocol);
+
+			List<ParticipantCollectionSummary> cps = collectionProtocol.get(0).getEnrolls()
+					.getParticipantCollectionSummary();
+			System.out.println(cps.get(0).getId());// 91286
+
+			// Participant_Collection_Summary pcs = new
+			// Participant_Collection_Summary();
 		}
 
 	}
