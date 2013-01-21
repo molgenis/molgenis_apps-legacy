@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Properties;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,12 +46,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import plugins.HarmonizationComponent.NGramMatchingModel;
-import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
 public class Harmonization extends EasyPluginController<HarmonizationModel>
@@ -584,19 +583,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 						if (this.getModel().getFinishedNumber() == this.getModel().getTotalNumber())
 						{
-							try
-							{
-								this.getModel().getScheduler().shutdown();
-							}
-							catch (SchedulerException e)
-							{
-								e.printStackTrace();
-							}
+							this.getModel().setScheduler(null);
 						}
 						else
 						{
-							System.out.println("Currently number of running jobs is: ========== "
-									+ this.getModel().getScheduler().getCurrentlyExecutingJobs().size());
 							System.out.println("Finished: " + this.getModel().getFinishedNumber()
 									+ ". Total number is " + this.getModel().getTotalNumber());
 						}
@@ -635,10 +625,11 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						status.put(predictor.getName(), eachPredictor);
 					}
 
-					this.getModel().setCatalogue(
-							new catalogueTreeComponent(this.getModel().getSelectedValidationStudy()));
-
-					status.put("treeView", this.getModel().getCatalogue().getTreeView());
+					// this.getModel().setCatalogue(
+					// new
+					// catalogueTreeComponent(this.getModel().getSelectedValidationStudy()));
+					//
+					status.put("treeView", "");
 				}
 				else if ("download_json_existingMapping".equals(request.getAction()))
 				{
@@ -648,7 +639,9 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 				else
 				{
-					status = this.getModel().getCatalogue().requestHandle(request, db, out);
+					// status =
+					// this.getModel().getCatalogue().requestHandle(request, db,
+					// out);
 				}
 
 				db.commitTx();
@@ -678,7 +671,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			}
 			catch (UnsupportedEncodingException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			finally
@@ -881,7 +873,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			this.getModel().setOs(new BioportalOntologyService());
 
-			this.getModel().setMatchingModel(new NGramMatchingModel());
+			this.getModel().setMatchingModel(new NGramMatchingModel(3));
 
 			this.getModel().setIsStringMatching(false);
 
@@ -895,7 +887,13 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			this.getModel().setStartTime(System.currentTimeMillis());
 
-			this.getModel().setScheduler(new StdSchedulerFactory().getScheduler());
+			Properties prop = new Properties();
+
+			prop.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
+
+			prop.setProperty("org.quartz.threadPool.threadCount", "2");
+
+			this.getModel().setScheduler(new StdSchedulerFactory(prop).getScheduler());
 
 			this.getModel().getScheduler().start();
 		}
@@ -1156,6 +1154,49 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return freeMarkerView;
 	}
 
+	public class StringMatchingListener implements JobListener
+	{
+		private String name;
+
+		public StringMatchingListener(String name)
+		{
+			this.name = name;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public void jobToBeExecuted(JobExecutionContext arg0)
+		{
+		}
+
+		public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception)
+		{
+			try
+			{
+				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
+
+				if (model.getScheduler() != null)
+				{
+					model.getScheduler().deleteJob(context.getJobDetail().getName(), context.getJobDetail().getGroup());
+
+					model.getScheduler().removeJobListener(this.getName());
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void jobExecutionVetoed(JobExecutionContext arg0)
+		{
+		}
+	}
+
 	public class TermExpansionListener implements JobListener
 	{
 		private String name;
@@ -1190,8 +1231,16 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 				for (JobDetail eachJob : listOfJobs.keySet())
 				{
+					StringMatchingListener listener = new StringMatchingListener(eachJob.getName() + "_listener");
+
+					model.getScheduler().addJobListener(listener);
+
+					eachJob.addJobListener(listener.getName());
+
 					model.getScheduler().scheduleJob(eachJob, listOfJobs.get(eachJob));
 				}
+
+				model.getScheduler().deleteJob(context.getJobDetail().getName(), context.getJobDetail().getGroup());
 			}
 			catch (Exception e)
 			{

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.molgenis.pheno.Measurement;
 
@@ -17,11 +18,11 @@ public class PredictorInfo
 	private String identifier = null;
 	private List<String> buildingBlocks = new ArrayList<String>();
 	private List<String> expandedQuery = new ArrayList<String>();
-	private HashMap<String, Measurement> finalMappings = new HashMap<String, Measurement>();
-	private HashMap<String, String> category = new HashMap<String, String>();
-	private HashMap<String, String> description = new HashMap<String, String>();
-	private HashMap<String, Double> similarity = new HashMap<String, Double>();
-	private LinkedHashMap<String, List<String>> expandedQueryPerMapping = new LinkedHashMap<String, List<String>>();
+	private Map<String, Measurement> finalMappings = new HashMap<String, Measurement>();
+	private Map<String, String> category = new HashMap<String, String>();
+	private Map<String, String> description = new HashMap<String, String>();
+	private Map<String, Double> similarity = new HashMap<String, Double>();
+	private Map<String, List<String>> expandedQueryPerMapping = new LinkedHashMap<String, List<String>>();
 	private MappingList mappings = new MappingList();
 
 	public PredictorInfo(String name)
@@ -111,10 +112,10 @@ public class PredictorInfo
 		for (int i = allMappings.size(); i > 0; i--)
 		{
 			LinkedInformation eachRow = allMappings.get(i - 1);
-			String expandedQuery = eachRow.expandedQuery;
-			String matchedItem = eachRow.matchedItem;
-			Double similarity = eachRow.similarity;
-			String measurementName = eachRow.measurementName;
+			String expandedQuery = eachRow.getExpandedQuery();
+			String matchedItem = eachRow.getMatchedItem();
+			double similarity = eachRow.getSimilarity();
+			String measurementName = eachRow.getMeasurementName();
 			StringBuilder expandedQueryIdentifier = new StringBuilder();
 			expandedQueryIdentifier.append(expandedQuery).append("_").append(measurementName);
 
@@ -164,7 +165,7 @@ public class PredictorInfo
 		return expandedQuery;
 	}
 
-	public HashMap<String, Measurement> getFinalMappings()
+	public Map<String, Measurement> getFinalMappings()
 	{
 		return finalMappings;
 	}
@@ -174,7 +175,7 @@ public class PredictorInfo
 		return label;
 	}
 
-	public HashMap<String, String> getCategory()
+	public Map<String, String> getCategory()
 	{
 		return category;
 	}
