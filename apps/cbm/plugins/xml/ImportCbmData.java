@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.List;
 
 import org.molgenis.cbm.CbmXmlParser;
+import org.molgenis.cbm.Participant_Collection_Summary;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
@@ -65,17 +66,32 @@ public class ImportCbmData extends PluginModel<Entity>
 			CbmXmlParser cbmXmlParser = new CbmXmlParser();
 
 			File currentXsdfile = new File("/Users/despoina/Documents/__CTMM_project/CBM/CBM.xsd");
+
 			CbmNode result = cbmXmlParser.load(currentFile, currentXsdfile);
 
 			List<CollectionProtocol> collectionProtocol = result.getProtocols().getCollectionProtocol();
-			System.out.println(collectionProtocol);
 
-			List<ParticipantCollectionSummary> cps = collectionProtocol.get(0).getEnrolls()
-					.getParticipantCollectionSummary();
-			System.out.println(cps.get(0).getId());// 91286
+			for (int i = 0; i < collectionProtocol.size(); i++)
+			{
+				List<ParticipantCollectionSummary> participantCollectionSummaryList = collectionProtocol.get(i)
+						.getEnrolls().getParticipantCollectionSummary();
+				System.out.println(participantCollectionSummaryList.get(i).getId());
 
-			// Participant_Collection_Summary pcs = new
-			// Participant_Collection_Summary();
+				Participant_Collection_Summary participantCollectionSummary = new Participant_Collection_Summary();
+
+				participantCollectionSummary.setParticipant_Count(participantCollectionSummaryList.get(i)
+						.getParticipantCount());
+				// participantCollectionSummary.setRegistered_To(participantCollectionSummaryList.get(i).get)
+				participantCollectionSummary.setParticipant_Collection_Summary_ID(participantCollectionSummaryList.get(
+						i).getId());
+				participantCollectionSummary.setEthnicity(participantCollectionSummaryList.get(i).getEthnicity());
+				// participantCollectionSummary.setEthnicityId(participantCollectionSummaryList.get(i).getEthnicityId());
+				participantCollectionSummary.setGender(participantCollectionSummaryList.get(i).getGender());
+				// participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
+
+				System.out.println(participantCollectionSummary);
+				db.add(participantCollectionSummary);
+			}
 		}
 
 	}
