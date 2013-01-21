@@ -480,10 +480,16 @@ public class AnimalImporter
 			}
 
 			// get the all the animals with this litterid
+			// FIXME: this does not work, animals are not yet in db, Pull from
+			// Roan first to check if the fix is in his code already,
+			// else fix this (2013-01-21)
 			Query<ObservedValue> OldLitterQuery = db.query(ObservedValue.class);
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldLitterId"));
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
 			List<ObservedValue> individualValueList = OldLitterQuery.find();
+
+			System.out.println("!!!!!!!!!!!!!!! oldlitterid: " + litter + ":  littersize: --> "
+					+ individualValueList.size());
 			int FemaleCtr = 0;
 			int MaleCtr = 0;
 			int UnkSexCtr = 0;
@@ -491,7 +497,7 @@ public class AnimalImporter
 			String dobDate = null;
 			String lineName = null;
 			// Get breedingline from mother (FIXME this assumes that the mother
-			// has been imported alrady, is this really always true?)
+			// has been imported already, is this really always true?)
 			lineName = this.defaultBreedingLine;
 			for (ObservedValue v : individualValueList)
 			{
