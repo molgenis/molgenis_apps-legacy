@@ -21,7 +21,7 @@
 				<form name="Topics" entity="BiobankTopic" groupWrite="editor"  />
 				<form name="OntologyTerm" entity="OntologyTerm" />
 				<form name="BiobankDataType" entity="BiobankDataType" groupWrite="editor"  />
-				<form name="PersonRole" label="Coordinator Roles" entity="PersonRole" groupWrite="editor"  />
+				<form name="PersonRole" entity="BiobankPersonRole" label="Coordinator Roles" groupWrite="editor"  />
 				<form name="ChangeLog" entity="ChangeLog" />
 				<!-- <form name="Protocol"  entity="Protocol" />
 				<form name="Individual"  entity="Individual" />

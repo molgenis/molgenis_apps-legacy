@@ -14,7 +14,7 @@
 	<tr>
 		<td align="right">
 			<font style="font-size:14px;">
-				<a href="molgenis.do?select=Home">Home</a> | <a href="plantqtl_contact.html">Contact</a> | <a href="plantqtl_about.html">About</a>
+				<a href="molgenis.do?select=Home">Home</a> | <a href="plantqtl_contact.html">Contact</a> | <a href="plantqtl_about.html">About</a> | ${screen.userLogin}
 			</font>
 		</td>
 	</tr>
