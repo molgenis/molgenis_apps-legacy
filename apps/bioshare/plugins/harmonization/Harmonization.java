@@ -52,6 +52,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import plugins.HarmonizationComponent.NGramMatchingModel;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
+import com.google.gson.Gson;
+
 public class Harmonization extends EasyPluginController<HarmonizationModel>
 {
 	private static final long serialVersionUID = 4255876428416189905L;
@@ -86,6 +88,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		else
 		{
 			JSONObject status = new JSONObject();
+
+			Object src = null;
 
 			try
 			{
@@ -225,6 +229,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 					status.put("message", "You successfully added a new predictor!");
 
+					status.put("identifier", m.getId());
+
 					status.put("success", true);
 
 				}
@@ -232,9 +238,11 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				{
 					String predictorName = request.getString("name");
 
+					String predictorID = request.getString("predictorID");
+
 					String predictionModel = request.getString("predictionModel");
 
-					this.removePredictor(predictorName, predictionModel, db);
+					this.removePredictor(predictorID, predictionModel, db);
 
 					status.put("message", "You successfully deleted the predictor: " + predictorName);
 
@@ -247,85 +255,135 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					ComputeProtocol cp = db.find(ComputeProtocol.class,
 							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
 
+					List<JSONFeature> listOfFeatures = new ArrayList<JSONFeature>();
+
 					if (cp.getFeatures_Name().size() > 0)
 					{
 						for (Measurement eachPredictor : db.find(Measurement.class, new QueryRule(Measurement.NAME,
 								Operator.IN, cp.getFeatures_Name())))
 						{
-							JSONObject jsonForPredictor = new JSONObject();
-							jsonForPredictor.put("name", eachPredictor.getName());
-							jsonForPredictor.put("label", eachPredictor.getLabel());
-							jsonForPredictor.put("identifier", eachPredictor.getName().replaceAll(" ", "_"));
-							jsonForPredictor.put("description", (eachPredictor.getDescription() == null ? ""
-									: eachPredictor.getDescription()));
-							jsonForPredictor.put("dataType", eachPredictor.getDataType());
-							jsonForPredictor.put("unit",
-									(eachPredictor.getUnit_Name() == null ? "" : eachPredictor.getUnit_Name()));
 
-							StringBuilder categories = new StringBuilder();
+							List<JSONCategory> categories = new ArrayList<JSONCategory>();
 
 							if (eachPredictor.getCategories_Name().size() > 0)
 							{
 								for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
 										eachPredictor.getCategories_Name())))
 								{
-									categories.append(c.getCode_String()).append("=").append(c.getDescription())
-											.append(",");
+									JSONCategory jsonCategory = new JSONCategory(c);
+
+									categories.add(jsonCategory);
 								}
-
-								categories.subSequence(0, categories.length() - 1);
 							}
-							jsonForPredictor.put("category", categories.toString());
 
-							status.put(eachPredictor.getName(), jsonForPredictor);
-						}
+							Query<ObservedValue> query = db.query(ObservedValue.class);
 
-						Query<ObservedValue> query = db.query(ObservedValue.class);
-						query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, cp.getFeatures_Name()));
-						query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
+							query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, eachPredictor
+									.getName()));
+							query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
 
-						// Count how many variables have defined buildingBlocks
-						int definedBlocks = 0;
-						for (ObservedValue ov : query.find())
-						{
-							if (status.has(ov.getTarget_Name()))
+							String buildingBlocks = null;
+
+							if (query.find().size() > 0)
 							{
-								definedBlocks++;
-								JSONObject json = (JSONObject) status.get(ov.getTarget_Name());
-								json.put("buildingBlocks", ov.getValue());
-								status.put(ov.getTarget_Name(), json);
+								buildingBlocks = query.find().get(0).getValue();
 							}
+							JSONFeature feature = new JSONFeature(eachPredictor, buildingBlocks, categories);
+
+							listOfFeatures.add(feature);
+							// JSONObject jsonForPredictor = new JSONObject();
+							// jsonForPredictor.put("name",
+							// eachPredictor.getName());
+							// jsonForPredictor.put("label",
+							// eachPredictor.getLabel());
+							// jsonForPredictor.put("identifier",
+							// eachPredictor.getName().replaceAll(" ", "_"));
+							// jsonForPredictor.put("description",
+							// (eachPredictor.getDescription() == null ? ""
+							// : eachPredictor.getDescription()));
+							// jsonForPredictor.put("dataType",
+							// eachPredictor.getDataType());
+							// jsonForPredictor.put("unit",
+							// (eachPredictor.getUnit_Name() == null ? "" :
+							// eachPredictor.getUnit_Name()));
+							//
+							// StringBuilder categories = new StringBuilder();
+							//
+							// if (eachPredictor.getCategories_Name().size() >
+							// 0)
+							// {
+							// for (Category c : db.find(Category.class, new
+							// QueryRule(Category.NAME, Operator.IN,
+							// eachPredictor.getCategories_Name())))
+							// {
+							// categories.append(c.getCode_String()).append("=").append(c.getDescription())
+							// .append(",");
+							// }
+							//
+							// categories.subSequence(0, categories.length() -
+							// 1);
+							// }
+							// jsonForPredictor.put("category",
+							// categories.toString());
+							//
+							// status.put(eachPredictor.getName(),
+							// jsonForPredictor);
 						}
-						status.put("buildingBlocksDefined", definedBlocks);
 
+						// Query<ObservedValue> query =
+						// db.query(ObservedValue.class);
+						// query.addRules(new
+						// QueryRule(ObservedValue.TARGET_NAME, Operator.IN,
+						// cp.getFeatures_Name()));
+						// query.addRules(new
+						// QueryRule(ObservedValue.FEATURE_NAME,
+						// Operator.EQUALS, "BuildingBlocks"));
+						//
+						// // Count how many variables have defined
+						// buildingBlocks
+						// int definedBlocks = 0;
+						//
+						// for (ObservedValue ov : query.find())
+						// {
+						// if (status.has(ov.getTarget_Name()))
+						// {
+						// definedBlocks++;
+						// JSONObject json = (JSONObject)
+						// status.get(ov.getTarget_Name());
+						// json.put("buildingBlocks", ov.getValue());
+						// status.put(ov.getTarget_Name(), json);
+						// }
+						// }
+
+						// status.put("buildingBlocksDefined", definedBlocks);
+						src = new JSONProtocol(cp, listOfFeatures);
 					}
-					// Meta-data for the summary
-					status.put("selected", predictionModel);
-					status.put("numberOfPredictors", cp.getFeatures_Name().size());
-					status.put("formula", cp.getScriptTemplate());
-
 				}
-				else if ("download_json_defineFormula".equals(request.getAction()))
-				{
-					JSONObject data = new JSONObject(request.getString("data"));
-
-					ComputeProtocol cp = db.find(ComputeProtocol.class,
-							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, data.getString("selected"))).get(0);
-
-					if (cp.getScriptTemplate().equals(data.getString("formula").trim())
-							|| cp.getScriptTemplate().equals(""))
-					{
-						status.put("message", "The formula has not changed!");
-						status.put("success", false);
-					}
-					else
-					{
-						cp.setScriptTemplate(data.getString("formula"));
-						db.update(cp);
-						status.put("message", "You successfully updated the formula in database!");
-						status.put("success", true);
-					}
-				}
+				// else if
+				// ("download_json_defineFormula".equals(request.getAction()))
+				// {
+				// JSONObject data = new JSONObject(request.getString("data"));
+				//
+				// ComputeProtocol cp = db.find(ComputeProtocol.class,
+				// new QueryRule(ComputeProtocol.NAME, Operator.EQUALS,
+				// data.getString("selected"))).get(0);
+				//
+				// if
+				// (cp.getScriptTemplate().equals(data.getString("formula").trim())
+				// || cp.getScriptTemplate().equals(""))
+				// {
+				// status.put("message", "The formula has not changed!");
+				// status.put("success", false);
+				// }
+				// else
+				// {
+				// cp.setScriptTemplate(data.getString("formula"));
+				// db.update(cp);
+				// status.put("message",
+				// "You successfully updated the formula in database!");
+				// status.put("success", true);
+				// }
+				// }
 				else if ("download_json_retrieveExpandedQuery".equals(request.getAction()))
 				{
 					String predictor = request.getString("predictor");
@@ -666,8 +724,16 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			try
 			{
 				writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
-				writer.write(status.toString());
-				writer.flush();
+
+				if (src == null)
+				{
+					writer.write(status.toString());
+					writer.flush();
+				}
+				else
+				{
+					new Gson().toJson(src, writer);
+				}
 			}
 			catch (UnsupportedEncodingException e)
 			{
@@ -1036,9 +1102,9 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	public void removePredictor(String predictor, String predictionModel, Database db) throws DatabaseException
+	public void removePredictor(String predictorID, String predictionModel, Database db) throws DatabaseException
 	{
-		Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, predictor)).get(0);
+		Measurement m = db.find(Measurement.class, new QueryRule(Measurement.ID, Operator.EQUALS, predictorID)).get(0);
 
 		ComputeProtocol cp = db.find(ComputeProtocol.class,
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
@@ -1152,6 +1218,60 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	{
 		FreemarkerView freeMarkerView = new FreemarkerView(this.getModel().getFreeMakerTemplate(), this.getModel());
 		return freeMarkerView;
+	}
+
+	public static class JSONProtocol
+	{
+		private final String name;
+		private final String formula;
+		private final List<JSONFeature> predictorObjects;
+
+		public JSONProtocol(ComputeProtocol p, List<JSONFeature> features)
+		{
+			this.name = p.getName();
+			this.formula = p.getScriptTemplate();
+			this.predictorObjects = features;
+		}
+	}
+
+	public static class JSONCategory
+	{
+		private final String name;
+		private final String codeString;
+		private final String label;
+		private final String description;
+
+		public JSONCategory(Category c)
+		{
+			this.name = c.getName();
+			this.codeString = c.getCode_String();
+			this.label = c.getLabel();
+			this.description = c.getDescription();
+		}
+	}
+
+	public static class JSONFeature
+	{
+		private final String name;
+		private final String label;
+		private final String description;
+		private final String dataType;
+		private final String unit;
+		private final Integer identifier;
+		private final String buildingBlocks;
+		private final List<JSONCategory> categories;
+
+		public JSONFeature(Measurement m, String buildingBlocks, List<JSONCategory> categories)
+		{
+			this.name = m.getName();
+			this.label = m.getLabel();
+			this.description = m.getDescription();
+			this.identifier = m.getId();
+			this.dataType = m.getDataType();
+			this.unit = m.getUnit_Name();
+			this.categories = categories;
+			this.buildingBlocks = buildingBlocks;
+		}
 	}
 
 	public class StringMatchingListener implements JobListener
