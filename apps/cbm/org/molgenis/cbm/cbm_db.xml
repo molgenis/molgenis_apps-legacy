@@ -99,8 +99,9 @@
 		<field unique="true" type="int" name="organization_ID" auto="true" />
 		<field length="150" nillable="true" name="name" />
 	</entity>
-	<entity name="participant_collection_summary" xref_label="participant_collection_summary_ID">
-		<field unique="true" type="int" name="participant_collection_summary_ID" auto="true"/>
+	<entity name="participant_collection_summary">
+		<field name="id" type="autoid" description="automatically generated id" />
+		<field unique="true" type="int" name="participant_collection_summary_ID"/>
 		<field nillable="true" type="int" name="participant_count" />
 		<field nillable="true" type="int" name="registered_to" />
 		<field length="50" nillable="true" name="ethnicity" />
@@ -150,7 +151,8 @@
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
 	<entity name="race">
-		<field unique="true" type="int" name="race_ID" auto="true" />
+		<field name="id" type="autoid" description="automatically generated id" />
+		<field unique="true" type="int" name="race_ID"/>
 		<field unique="true" length="50" name="race" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_Definition" />
@@ -174,8 +176,7 @@
 			name="address_id" />
 	</entity>
 	<entity name="specimen_collection_summary">
-		<field unique="true" type="int" name="specimen_collection_summary_ID"
-			auto="true" />
+		<field unique="true" type="int" name="specimen_collection_summary_ID" auto="true"/>
 		<field xref_field="anatomic_source.id" nillable="true" type="xref"
 			name="anatomic_source_id" />
 		<field length="150" nillable="true" name="anatomic_source" />

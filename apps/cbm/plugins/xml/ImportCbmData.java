@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.cbm.CbmXmlParser;
+import org.molgenis.cbm.Join_Participant_Collection_Summary_To_Race;
 import org.molgenis.cbm.Participant_Collection_Summary;
 import org.molgenis.cbm.Race;
 import org.molgenis.framework.db.Database;
@@ -77,12 +78,14 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			Map<Integer, Race> racesToAdd = new HashMap<Integer, Race>();
 
+			List<Participant_Collection_Summary> listOfParticipantSummary = new ArrayList<Participant_Collection_Summary>();
+
+			Map<String, Join_Participant_Collection_Summary_To_Race> listOfParticipantRaceLinkTable = new HashMap<String, Join_Participant_Collection_Summary_To_Race>();
+
 			for (int i = 0; i < collectionProtocol.size(); i++)
 			{
 				List<ParticipantCollectionSummary> participantCollectionSummaryList = collectionProtocol.get(i)
 						.getEnrolls().getParticipantCollectionSummary();
-
-				List<Participant_Collection_Summary> listOfParticipantSummary = new ArrayList<Participant_Collection_Summary>();
 
 				for (ParticipantCollectionSummary participantSummary : participantCollectionSummaryList)
 				{
@@ -101,18 +104,42 @@ public class ImportCbmData extends PluginModel<Entity>
 					List<gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race> listOfRaces = participantSummary
 							.getIsClassifiedBy().getRace();
 
+					// participantCollectionSummary.setRegistered_To(registered_to)
+
 					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race eachRace : listOfRaces)
 					{
 						Race race = new Race();
 
 						String identifier = eachRace.getId() + eachRace.getRace();
 
-						race.setNCI_Code(eachRace.getId().toString());
+						race.setRace_ID(eachRace.getId());
+
 						race.setRace(eachRace.getRace());
 
 						if (!racesToAdd.containsKey(identifier.toLowerCase().trim()))
 						{
 							racesToAdd.put(race.getRace_ID(), race);
+						}
+
+						// Make linkTable for ParticipantCollectionSummary and
+						// Race, therefore should check the uniqueness of
+						// combination of both ids
+						StringBuilder uniqueLinktableKey = new StringBuilder();
+
+						uniqueLinktableKey.append(participantSummary.getId()).append(eachRace.getId());
+
+						if (!listOfParticipantRaceLinkTable.containsKey(uniqueLinktableKey.toString().toLowerCase()
+								.trim()))
+						{
+							Join_Participant_Collection_Summary_To_Race linkTable = new Join_Participant_Collection_Summary_To_Race();
+
+							linkTable.setParticipant_Collection_Summary_ID(participantCollectionSummary
+									.getParticipant_Collection_Summary_ID());
+
+							linkTable.setRace_Id(race.getRace_ID());
+
+							listOfParticipantRaceLinkTable.put(uniqueLinktableKey.toString().toLowerCase().trim(),
+									linkTable);
 						}
 					}
 
@@ -123,18 +150,14 @@ public class ImportCbmData extends PluginModel<Entity>
 					// participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
 					System.out.println("Just before import in db : " + participantSummary);
 				}
-				// db.add(new ArrayList<Race>(racesToAdd.values()));
-
-				db.add(listOfParticipantSummary);
 			}
 
-			for (Race race : racesToAdd.values())
-			{
-				System.out.println(race);
-				db.add(race);
-			}
+			db.add(listOfParticipantSummary);
+
+			db.add(new ArrayList<Race>(racesToAdd.values()));
+
+			db.add(new ArrayList<Join_Participant_Collection_Summary_To_Race>(listOfParticipantRaceLinkTable.values()));
 		}
-
 	}
 
 	private void setCurrentFile(File file)
