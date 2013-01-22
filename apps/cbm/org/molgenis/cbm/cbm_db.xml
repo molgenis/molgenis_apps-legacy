@@ -30,7 +30,7 @@
 	</entity>
 	<entity name="annotation_availability_profile">
 		<field unique="true" type="int" name="annotation_availability_profile_ID"
-			auto="true" />
+			auto="true" default="0" />
 		<field nillable="true" type="bool"
 			name="has_additional_patient_demographics" />
 		<field nillable="true" type="bool" name="has_exposure_history" />
@@ -100,7 +100,7 @@
 		<field length="150" nillable="true" name="name" />
 	</entity>
 	<entity name="participant_collection_summary" xref_label="participant_collection_summary_ID">
-		<field unique="true" type="int" name="participant_collection_summary_ID" default="1"  />
+		<field unique="true" type="int" name="participant_collection_summary_ID" auto="true" default="1"  />
 		<field nillable="true" type="int" name="participant_count" />
 		<field nillable="true" type="int" name="registered_to" />
 		<field length="50" nillable="true" name="ethnicity" />
