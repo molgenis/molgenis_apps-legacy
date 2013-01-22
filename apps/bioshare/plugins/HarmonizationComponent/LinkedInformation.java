@@ -2,38 +2,63 @@ package plugins.HarmonizationComponent;
 
 public class LinkedInformation implements Comparable<LinkedInformation>
 {
+	private final String measurementName;
 
-	public String measurementName = "";
+	private final String expandedQuery;
 
-	public String name = "";
+	private final String matchedItem;
 
-	public String expandedQuery = "";
+	private double similarity;
 
-	public String matchedItem = "";
-
-	public Double similarity = 0.0;
-
-	public LinkedInformation(String expandedQuery, String matchedItem, Double similarity, String measurementName)
-			throws Exception
+	public LinkedInformation(String expandedQuery, String matchedItem, double similarity, String measurementName)
 	{
 
-		if (expandedQuery == null || matchedItem == null || similarity == null) throw new Exception(
+		if (expandedQuery == null || matchedItem == null) throw new IllegalArgumentException(
 				"Parameters have to be not null!");
 
-		if (expandedQuery.equals("") || matchedItem.equals("")) throw new Exception("Parameters have to be not empty");
+		if (expandedQuery.isEmpty() || matchedItem.isEmpty()) throw new IllegalArgumentException(
+				"Parameters have to be not empty");
 
 		this.expandedQuery = expandedQuery;
 		this.matchedItem = matchedItem;
-		this.similarity = similarity;
-		this.name = expandedQuery + matchedItem;
+		this.setSimilarity(similarity);
 		this.measurementName = measurementName;
 	}
 
 	@Override
 	public int compareTo(LinkedInformation o)
 	{
-		// TODO Auto-generated method stub
-		return Double.compare(this.similarity, o.similarity);
+		return Double.compare(this.getSimilarity(), o.getSimilarity());
+	}
+
+	public String getMeasurementName()
+	{
+		return measurementName;
+	}
+
+	public String getName()
+	{
+		return expandedQuery + matchedItem;
+	}
+
+	public String getExpandedQuery()
+	{
+		return expandedQuery;
+	}
+
+	public String getMatchedItem()
+	{
+		return matchedItem;
+	}
+
+	public Double getSimilarity()
+	{
+		return similarity;
+	}
+
+	public void setSimilarity(Double similarity)
+	{
+		this.similarity = similarity;
 	}
 
 }
