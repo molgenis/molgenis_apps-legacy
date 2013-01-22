@@ -30,7 +30,7 @@
 	</entity>
 	<entity name="annotation_availability_profile">
 		<field unique="true" type="int" name="annotation_availability_profile_ID"
-			auto="true" default="0" />
+			auto="true"/>
 		<field nillable="true" type="bool"
 			name="has_additional_patient_demographics" />
 		<field nillable="true" type="bool" name="has_exposure_history" />
@@ -47,7 +47,7 @@
 	</entity>
 	<entity name="collection_protocol">
 		<field unique="true" type="int" name="collectionProtocolID"
-			auto="true" default="0" />
+			auto="true"/>
 		<field nillable="true" type="date" name="date_last_updated" />
 		<field nillable="true" type="date" name="end_date" />
 		<field nillable="true" name="name" />
@@ -70,13 +70,13 @@
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
-	<entity name="ethnicity">
+	<entity name="ethnicity" xref_label="id">
 		<field unique="true" type="int" name="id" auto="true" />
 		<field unique="true" length="50" name="ethnicity" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_definition" />
 	</entity>
-	<entity name="gender">
+	<entity name="gender" xref_label="id">
 		<field unique="true" type="int" name="id" auto="true" />
 		<field unique="true" length="50" name="gender" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
@@ -100,7 +100,7 @@
 		<field length="150" nillable="true" name="name" />
 	</entity>
 	<entity name="participant_collection_summary" xref_label="participant_collection_summary_ID">
-		<field unique="true" type="int" name="participant_collection_summary_ID" auto="true" default="1"  />
+		<field unique="true" type="int" name="participant_collection_summary_ID" auto="true"/>
 		<field nillable="true" type="int" name="participant_count" />
 		<field nillable="true" type="int" name="registered_to" />
 		<field length="50" nillable="true" name="ethnicity" />
