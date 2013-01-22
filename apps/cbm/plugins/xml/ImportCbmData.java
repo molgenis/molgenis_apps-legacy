@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.List;
 
 import org.molgenis.cbm.CbmXmlParser;
-import org.molgenis.cbm.Participant_Collection_Summary;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
@@ -82,14 +81,15 @@ public class ImportCbmData extends PluginModel<Entity>
 				participantCollectionSummary.setParticipant_Count(participantCollectionSummaryList.get(i)
 						.getParticipantCount());
 				// participantCollectionSummary.setRegistered_To(participantCollectionSummaryList.get(i).get)
-				participantCollectionSummary.setParticipant_Collection_Summary_ID(participantCollectionSummaryList.get(
-						i).getId());
+				// participantCollectionSummary.setParticipant_Collection_Summary_ID(participantCollectionSummaryList.get(
+				// i).getId()); --exception ! this field is AUTO ! although
+				// there are values in the xml ?? Morris?
 				participantCollectionSummary.setEthnicity(participantCollectionSummaryList.get(i).getEthnicity());
 				// participantCollectionSummary.setEthnicityId(participantCollectionSummaryList.get(i).getEthnicityId());
 				participantCollectionSummary.setGender(participantCollectionSummaryList.get(i).getGender());
 				// participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
 
-				System.out.println(participantCollectionSummary);
+				System.out.println("Just before import in db : " + participantCollectionSummary);
 				db.add(participantCollectionSummary);
 			}
 		}
