@@ -47,7 +47,7 @@
 	</entity>
 	<entity name="collection_protocol">
 		<field unique="true" type="int" name="collectionProtocolID"
-			auto="true" />
+			auto="true" default="0" />
 		<field nillable="true" type="date" name="date_last_updated" />
 		<field nillable="true" type="date" name="end_date" />
 		<field nillable="true" name="name" />
@@ -100,16 +100,15 @@
 		<field length="150" nillable="true" name="name" />
 	</entity>
 	<entity name="participant_collection_summary" xref_label="participant_collection_summary_ID">
-		<field unique="true" type="int" name="participant_collection_summary_ID"
-			auto="true" />
+		<field unique="true" type="int" name="participant_collection_summary_ID" default="1"  />
 		<field nillable="true" type="int" name="participant_count" />
 		<field nillable="true" type="int" name="registered_to" />
 		<field length="50" nillable="true" name="ethnicity" />
-		<field xref_field="ethnicity.id" nillable="true" type="xref"
-			name="ethnicity_id" />
+		<field xref_field="ethnicity.id" nillable="true" type="xref" name="ethnicity_id" />
 		<field length="50" nillable="true" name="gender" />
 		<field xref_field="gender.id" nillable="true" type="xref" name="gender_id" />
 	</entity>
+	
 	<entity name="join_participant_collection_summary_to_race">
 		<field type="autoid" name="id" />
 		<field nillable="true" type="xref"
