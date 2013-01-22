@@ -392,12 +392,12 @@ public class harmonizationPlugin extends PluginModel<Entity>
 						for (LinkedInformation eachMatching : listOfMatchedResult)
 						{
 
-							String identifier = eachMatching.measurementName + "_" + entry.getKey();
+							String identifier = eachMatching.getMeasurementName() + "_" + entry.getKey();
 
 							if (request.getBoolean(identifier.replaceAll(" ", "_")) != null)
 							{
 
-								String dataItemName = eachMatching.measurementName;
+								String dataItemName = eachMatching.getMeasurementName();
 
 								listOFMatchedItem.add(dataItemName);
 							}
@@ -919,10 +919,10 @@ public class harmonizationPlugin extends PluginModel<Entity>
 			{
 
 				LinkedInformation eachRow = links.get(i - 1);
-				String expandedQuery = eachRow.expandedQuery;
-				String matchedItem = eachRow.matchedItem;
-				Double similarity = eachRow.similarity;
-				String measurementName = eachRow.measurementName;
+				String expandedQuery = eachRow.getExpandedQuery();
+				String matchedItem = eachRow.getMatchedItem();
+				Double similarity = eachRow.getSimilarity();
+				String measurementName = eachRow.getMeasurementName();
 				String identifier = measurementName + "_" + eachOriginalQuery;
 
 				if (!uniqueMapping.containsKey(identifier))
