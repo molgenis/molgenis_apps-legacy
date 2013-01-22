@@ -223,6 +223,8 @@
 <input type="hidden" name="__action">
 <!-- remember the clicked variable -->
 <input type="hidden" id="clickedVariable"/>
+<input type="hidden" name="selectedVariableID"/>
+
 
 	<#--optional: mechanism to show messages-->
 	<div class="formscreen">
@@ -485,7 +487,8 @@
 									</tr>
 								</table>
 							</div>
-							<table id="variableDetail" class="ui-corner-all table table-striped table-bordered" style="width:50%;float:left;margin-top:10px;">
+							<table id="variableDetail" class="ui-corner-all table table-striped table-bordered" 
+								style="width:65%;float:left;margin-top:10px;margin-left:10px;">
 							</table>
 						</div>
 					</div>

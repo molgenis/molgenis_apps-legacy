@@ -291,99 +291,12 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 							JSONFeature feature = new JSONFeature(eachPredictor, buildingBlocks, categories);
 
 							listOfFeatures.add(feature);
-							// JSONObject jsonForPredictor = new JSONObject();
-							// jsonForPredictor.put("name",
-							// eachPredictor.getName());
-							// jsonForPredictor.put("label",
-							// eachPredictor.getLabel());
-							// jsonForPredictor.put("identifier",
-							// eachPredictor.getName().replaceAll(" ", "_"));
-							// jsonForPredictor.put("description",
-							// (eachPredictor.getDescription() == null ? ""
-							// : eachPredictor.getDescription()));
-							// jsonForPredictor.put("dataType",
-							// eachPredictor.getDataType());
-							// jsonForPredictor.put("unit",
-							// (eachPredictor.getUnit_Name() == null ? "" :
-							// eachPredictor.getUnit_Name()));
-							//
-							// StringBuilder categories = new StringBuilder();
-							//
-							// if (eachPredictor.getCategories_Name().size() >
-							// 0)
-							// {
-							// for (Category c : db.find(Category.class, new
-							// QueryRule(Category.NAME, Operator.IN,
-							// eachPredictor.getCategories_Name())))
-							// {
-							// categories.append(c.getCode_String()).append("=").append(c.getDescription())
-							// .append(",");
-							// }
-							//
-							// categories.subSequence(0, categories.length() -
-							// 1);
-							// }
-							// jsonForPredictor.put("category",
-							// categories.toString());
-							//
-							// status.put(eachPredictor.getName(),
-							// jsonForPredictor);
 						}
 
-						// Query<ObservedValue> query =
-						// db.query(ObservedValue.class);
-						// query.addRules(new
-						// QueryRule(ObservedValue.TARGET_NAME, Operator.IN,
-						// cp.getFeatures_Name()));
-						// query.addRules(new
-						// QueryRule(ObservedValue.FEATURE_NAME,
-						// Operator.EQUALS, "BuildingBlocks"));
-						//
-						// // Count how many variables have defined
-						// buildingBlocks
-						// int definedBlocks = 0;
-						//
-						// for (ObservedValue ov : query.find())
-						// {
-						// if (status.has(ov.getTarget_Name()))
-						// {
-						// definedBlocks++;
-						// JSONObject json = (JSONObject)
-						// status.get(ov.getTarget_Name());
-						// json.put("buildingBlocks", ov.getValue());
-						// status.put(ov.getTarget_Name(), json);
-						// }
-						// }
-
-						// status.put("buildingBlocksDefined", definedBlocks);
 						src = new JSONProtocol(cp, listOfFeatures);
 					}
 				}
-				// else if
-				// ("download_json_defineFormula".equals(request.getAction()))
-				// {
-				// JSONObject data = new JSONObject(request.getString("data"));
-				//
-				// ComputeProtocol cp = db.find(ComputeProtocol.class,
-				// new QueryRule(ComputeProtocol.NAME, Operator.EQUALS,
-				// data.getString("selected"))).get(0);
-				//
-				// if
-				// (cp.getScriptTemplate().equals(data.getString("formula").trim())
-				// || cp.getScriptTemplate().equals(""))
-				// {
-				// status.put("message", "The formula has not changed!");
-				// status.put("success", false);
-				// }
-				// else
-				// {
-				// cp.setScriptTemplate(data.getString("formula"));
-				// db.update(cp);
-				// status.put("message",
-				// "You successfully updated the formula in database!");
-				// status.put("success", true);
-				// }
-				// }
+
 				else if ("download_json_retrieveExpandedQuery".equals(request.getAction()))
 				{
 					String predictor = request.getString("predictor");
@@ -957,7 +870,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			prop.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
 
-			prop.setProperty("org.quartz.threadPool.threadCount", "2");
+			prop.setProperty("org.quartz.threadPool.threadCount", "4");
 
 			this.getModel().setScheduler(new StdSchedulerFactory(prop).getScheduler());
 
@@ -1020,6 +933,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		String validationStudy = request.getString("listOfCohortStudies");
 
+		String selectedVariableName = request.getString("selectedVariableID");
+
 		this.getModel().setCatalogue(null);
 
 		this.getModel().setMeasurements(null);
@@ -1033,10 +948,23 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		ComputeProtocol cp = db.find(ComputeProtocol.class,
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
 
-		if (cp.getFeatures_Name().size() > 0)
+		List<String> listOfFeatureNames = cp.getFeatures_Name();
+
+		if (listOfFeatureNames.size() > 0)
 		{
-			for (Measurement m : db.find(Measurement.class,
-					new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
+			List<Measurement> listOfMeasurements = null;
+
+			if (selectedVariableName != null)
+			{
+				listOfFeatureNames.clear();
+
+				listOfFeatureNames.add(selectedVariableName);
+			}
+
+			listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN,
+					listOfFeatureNames));
+
+			for (Measurement m : listOfMeasurements)
 			{
 				PredictorInfo predictor = new PredictorInfo(m.getName());
 
@@ -1062,7 +990,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			Query<ObservedValue> query = db.query(ObservedValue.class);
 
-			query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, cp.getFeatures_Name()));
+			query.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, listOfFeatureNames));
 
 			query.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "BuildingBlocks"));
 
@@ -1078,8 +1006,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 			Query<MappingMeasurement> queryForMappings = db.query(MappingMeasurement.class);
 
-			queryForMappings
-					.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN, cp.getFeatures_Name()));
+			queryForMappings.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN, listOfFeatureNames));
 			queryForMappings.addRules(new QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.EQUALS,
 					validationStudy));
 
