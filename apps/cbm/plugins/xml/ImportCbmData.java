@@ -4,15 +4,8 @@ import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CbmNode;
 import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CollectionProtocol;
 import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.ParticipantCollectionSummary;
 
-import java.io.File;
-import java.util.List;
-
 import org.molgenis.cbm.CbmXmlParser;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.server.MolgenisRequest;
-import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
+import org.molgenis.cbm.Participant_Collection_Summary;
 
 public class ImportCbmData extends PluginModel<Entity>
 {
@@ -80,14 +73,23 @@ public class ImportCbmData extends PluginModel<Entity>
 
 				participantCollectionSummary.setParticipant_Count(participantCollectionSummaryList.get(i)
 						.getParticipantCount());
-				// participantCollectionSummary.setRegistered_To(participantCollectionSummaryList.get(i).get)
-				// participantCollectionSummary.setParticipant_Collection_Summary_ID(participantCollectionSummaryList.get(
-				// i).getId()); --exception ! this field is AUTO ! although
-				// there are values in the xml ?? Morris?
+				participantCollectionSummary.setRegistered_To(participantCollectionSummaryList.get(i)
+						.getRegistered_To());
+
+				if (participantCollectionSummaryList.get(i).getId() == null)
+				{
+					System.out.println("participantCollectionSummaryID is null");
+				}
+				else
+				{
+					participantCollectionSummary.setParticipant_Collection_Summary_ID(participantCollectionSummaryList
+							.get(i).getId());// --exception ! this field is AUTO
+
+				}
 				participantCollectionSummary.setEthnicity(participantCollectionSummaryList.get(i).getEthnicity());
-				// participantCollectionSummary.setEthnicityId(participantCollectionSummaryList.get(i).getEthnicityId());
+				participantCollectionSummary.setEthnicityId(participantCollectionSummaryList.get(i).getEthnicityId());
 				participantCollectionSummary.setGender(participantCollectionSummaryList.get(i).getGender());
-				// participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
+				participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
 
 				System.out.println("Just before import in db : " + participantCollectionSummary);
 				db.add(participantCollectionSummary);
