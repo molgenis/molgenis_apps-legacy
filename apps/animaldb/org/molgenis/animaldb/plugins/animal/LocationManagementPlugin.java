@@ -265,6 +265,8 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, Operator.IN,
 				investigationNames));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+				ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Location"),
 				ObservedValue.RELATION_NAME, Operator.EQUALS, locationName));
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Location"),
