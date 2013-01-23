@@ -53,8 +53,8 @@ public class VariantSearchService
 
 			// find variants
 			Query<SequenceVariant> query = db.query(SequenceVariant.class).eq(SequenceVariant.CHR, chrId)
-					.greaterOrEqual(SequenceVariant.ENDBP, startBp)
-					.lessOrEqual(SequenceVariant.STARTBP, request.getEndBp());
+					.greaterOrEqual(SequenceVariant.STARTBP, startBp)
+					.lessOrEqual(SequenceVariant.ENDBP, endBp);
 
 			int count = query.count();
 			if (count > MAX_SEARCH_RESULTS)
