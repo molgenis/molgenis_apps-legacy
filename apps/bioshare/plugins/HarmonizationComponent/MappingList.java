@@ -1,77 +1,136 @@
 package plugins.HarmonizationComponent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MappingList
 {
+	private Map<ExpandedQueryObject, SimilarityRecord> uniqueElements = new HashMap<ExpandedQueryObject, SimilarityRecord>();
 
-	private List<LinkedInformation> links = new ArrayList<LinkedInformation>();
+	// private Map<ExpandedQueryObject, LinkedInformation> uniqueElements = new
+	// HashMap<ExpandedQueryObject, LinkedInformation>();
 
-	private HashMap<String, LinkedInformation> uniqueElements = new HashMap<String, LinkedInformation>();
-
-	public void add(String expandedQuery, String matchedItem, Double similarity, String measurementName)
+	public void add(String expandedQuery, String matchedItem, double similarity, String measurementName)
 			throws Exception
 	{
-
-		if (expandedQuery == null || matchedItem == null || similarity == null || measurementName == null) throw new Exception(
+		if (expandedQuery == null || matchedItem == null || measurementName == null) throw new Exception(
 				"Parameters have to be not null!");
 
-		if (expandedQuery.equals("") || matchedItem.equals("")) throw new Exception("Parameters have to be not empty");
+		if (expandedQuery.isEmpty() || matchedItem.isEmpty()) throw new Exception("Parameters have to be not empty");
 
-		LinkedInformation inf = new LinkedInformation(expandedQuery, matchedItem, similarity, measurementName);
+		ExpandedQueryObject uniqueName = new ExpandedQueryObject(expandedQuery, measurementName);
 
-		if (uniqueElements.containsKey(expandedQuery + measurementName))
+		if (uniqueElements.containsKey(uniqueName))
 		{
-			if (similarity > uniqueElements.get(inf.expandedQuery + measurementName).similarity)
+			if (similarity > uniqueElements.get(uniqueName).getSimilarity())
 			{
-				uniqueElements.get(expandedQuery + measurementName).similarity = similarity;
+				uniqueElements.get(uniqueName).setSimilarity(similarity);
 			}
 		}
 		else
 		{
-			links.add(inf);
-			uniqueElements.put(expandedQuery + measurementName, inf);
-		}
-	}
+			// LinkedInformation inf = new LinkedInformation(expandedQuery,
+			// matchedItem, similarity, measurementName);
 
-	public void remove(String expandedQuery)
-	{
-		if (uniqueElements.containsKey(expandedQuery))
-		{
-			uniqueElements.remove(expandedQuery);
-			links.remove(uniqueElements.get(expandedQuery));
+			uniqueElements.put(uniqueName, new SimilarityRecord(matchedItem, similarity));
 		}
 	}
 
 	public List<LinkedInformation> getSortedInformation()
 	{
+		List<LinkedInformation> sortedLinks = new ArrayList<LinkedInformation>(uniqueElements.size());
 
-		LinkedInformation[] columns = new LinkedInformation[links.size()];
-
-		if (links != null)
+		for (Map.Entry<ExpandedQueryObject, SimilarityRecord> entry : uniqueElements.entrySet())
 		{
-			int i = 0;
-
-			for (LinkedInformation eachElement : links)
-			{
-				columns[i] = eachElement;
-				i++;
-			}
-			Arrays.sort(columns);
-
-			links = Arrays.asList(columns);
-			//
-			// for (LinkedInformation inf : links)
-			// {
-			// System.out.println(inf.expandedQuery +
-			// " ------------ similarity: " + inf.similarity);
-			//
-			// }
+			sortedLinks.add(new LinkedInformation(entry.getKey().getExpandedQuery(), entry.getValue().getMatchedItem(),
+					entry.getValue().getSimilarity(), entry.getKey().getMeasurementName()));
 		}
 
-		return (links.size() > 100 ? links.subList(links.size() - 100, links.size()) : links);
+		Collections.sort(sortedLinks);
+
+		return (sortedLinks.size() > 100 ? sortedLinks.subList(sortedLinks.size() - 100, sortedLinks.size())
+				: sortedLinks);
+	}
+
+	private static class SimilarityRecord
+	{
+		private final String matchedItem;
+		private double similarity;
+
+		public SimilarityRecord(String matchedItem, double similarity)
+		{
+			this.matchedItem = matchedItem;
+			this.setSimilarity(similarity);
+		}
+
+		public double getSimilarity()
+		{
+			return similarity;
+		}
+
+		public void setSimilarity(double similarity)
+		{
+			this.similarity = similarity;
+		}
+
+		public String getMatchedItem()
+		{
+			return matchedItem;
+		}
+	}
+
+	private static class ExpandedQueryObject
+	{
+		private final String expandedQuery;
+		private final String measurementName;
+
+		public ExpandedQueryObject(String expandedQuery, String measurementName)
+		{
+			this.expandedQuery = expandedQuery;
+			this.measurementName = measurementName;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((getExpandedQuery() == null) ? 0 : getExpandedQuery().hashCode());
+			result = prime * result + ((getMeasurementName() == null) ? 0 : getMeasurementName().hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			ExpandedQueryObject other = (ExpandedQueryObject) obj;
+			if (getExpandedQuery() == null)
+			{
+				if (other.getExpandedQuery() != null) return false;
+			}
+			else if (!getExpandedQuery().equals(other.getExpandedQuery())) return false;
+			if (getMeasurementName() == null)
+			{
+				if (other.getMeasurementName() != null) return false;
+			}
+			else if (!getMeasurementName().equals(other.getMeasurementName())) return false;
+			return true;
+		}
+
+		public String getExpandedQuery()
+		{
+			return expandedQuery;
+		}
+
+		public String getMeasurementName()
+		{
+			return measurementName;
+		}
 	}
 }
