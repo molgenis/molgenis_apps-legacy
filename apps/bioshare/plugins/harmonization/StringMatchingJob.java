@@ -34,14 +34,12 @@ public class StringMatchingJob implements StatefulJob
 
 				// dataModel.setFinishedNumber(dataModel.getFinishedNumber() +
 				// 1);
-
 				dataModel.incrementFinishedQueries();
 			}
 
 			dataModel.incrementFinishedJob();
 
 			predictor.setMappings(mappings);
-
 		}
 		catch (Exception e)
 		{
@@ -58,9 +56,7 @@ public class StringMatchingJob implements StatefulJob
 		{
 			Measurement m = entry.getKey();
 
-			List<Set<String>> dataItemTokens = entry.getValue();
-
-			for (Set<String> eachNGrams : dataItemTokens)
+			for (Set<String> eachNGrams : entry.getValue())
 			{
 				double similarity = matchingModel.calculateScore(eachNGrams, tokens);
 
