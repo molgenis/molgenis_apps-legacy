@@ -197,8 +197,12 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				// null));
 				// TODO: make MQRs combinable with OR so we can have animals
 				// with location NULL OR NOT current
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+
 				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, new SliceablePhenoMatrix(
-						Individual.class, Measurement.class), true, 2, false, true, null, new MatrixQueryRule(
+						Individual.class, Measurement.class), true, 2, false, true, filterRules, new MatrixQueryRule(
 						MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
 			}
