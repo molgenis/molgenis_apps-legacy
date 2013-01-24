@@ -1299,7 +1299,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 		String nrPart = (ct.getHighestNumberForPrefix(nameBas) + 1) + "";
 		nrPart = ct.prependZeros(nrPart, 6);
-		ObservationTarget animalToAdd = ct.createIndividual(invName, nameBas + nrPart, userName);
+		ObservationTarget animalToAdd = ct.createIndividual(invName, nameBas + nrPart);
 		// animalsToAddList.add(animalToAdd);
 		String animalName = nameBas + nrPart;
 		db.add(animalToAdd);
@@ -2484,7 +2484,7 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 			String nrPart = "" + (startNumber + animalNumber);
 			nrPart = ct.prependZeros(nrPart, 6);
-			ObservationTarget animalToAdd = ct.createIndividual(invName, nameBase + nrPart, userName);
+			ObservationTarget animalToAdd = ct.createIndividual(invName, nameBase + nrPart);
 			animalsToAddList.add(animalToAdd);
 		}
 		db.add(animalsToAddList);

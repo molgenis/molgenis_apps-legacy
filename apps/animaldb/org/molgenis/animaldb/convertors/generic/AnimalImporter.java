@@ -22,7 +22,6 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.auth.MolgenisRole;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -247,15 +246,16 @@ public class AnimalImporter
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 
-		MolgenisRole user = db.find(MolgenisRole.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
-				.get(0);
+		// MolgenisRole user = db.find(MolgenisRole.class, new
+		// QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
+		// .get(0);
 
 		for (Tuple tuple : reader)
 		{
 			// FIXME prefix string
 			String animalName = this.defaultSpeciesNamePrefix + ct.prependZeros(Integer.toString(this.highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividualByImporter(invName, animalName, user);
+			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
 
 			// label as part of this import batch
