@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.animaldb.AnimalDbFile;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
@@ -470,6 +471,16 @@ public class CommonService
 		newInd.setInvestigation_Name(investigationName);
 		newInd.setName(individualName); // placeholder
 		newInd.setOwns_Name(userName);
+		return newInd;
+	}
+
+	public Individual createIndividualByImporter(String investigationName, String individualName, MolgenisRole userName)
+			throws DatabaseException, ParseException, IOException
+	{
+		Individual newInd = new Individual();
+		newInd.setInvestigation_Name(investigationName);
+		newInd.setName(individualName); // placeholder
+		newInd.setOwns(userName);
 		return newInd;
 	}
 
