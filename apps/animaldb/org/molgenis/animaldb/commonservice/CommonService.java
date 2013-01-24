@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.animaldb.AnimalDbFile;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
@@ -441,7 +442,7 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public Individual createIndividual(int investigationId, String individualName, int userId)
+	public Individual createIndividualOwnedByUser(int investigationId, String individualName, int userId)
 			throws DatabaseException, ParseException, IOException
 	{
 		Individual newInd = new Individual();
@@ -451,26 +452,16 @@ public class CommonService
 		return newInd;
 	}
 
-	/**
-	 * Creates an Individual but does NOT add it to the database. Uses
-	 * Investigation and User Names so it can be used with lists.
-	 * 
-	 * @param investigationName
-	 * @param individualName
-	 * @param userName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws IOException
-	 */
-	public Individual createIndividual(String investigationName, String individualName, String userName)
-			throws DatabaseException, ParseException, IOException
+	public Individual createIndividual(String investigationName, String individualName) throws DatabaseException,
+			ParseException, IOException
 	{
 		Individual newInd = new Individual();
 		newInd.setInvestigation_Name(investigationName);
 		newInd.setName(individualName); // placeholder
-		newInd.setOwns_Name(userName);
+		// set default ownwer to be admin.
+		newInd.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
 		return newInd;
+
 	}
 
 	/**

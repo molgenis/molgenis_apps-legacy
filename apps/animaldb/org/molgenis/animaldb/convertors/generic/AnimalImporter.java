@@ -79,6 +79,7 @@ public class AnimalImporter
 	private int highestLTNr;
 	private String defaultSourceName;
 	private String defaultBreedingLine;
+	private String importName;
 
 	// private List<String> lineNamesList;
 
@@ -111,6 +112,18 @@ public class AnimalImporter
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
 
+		/*
+		 * TODO re-enable later // create panel wich will contain all the
+		 * animals from this importbatch
+		 * makeProtocolApplication("SetImportTimestamp"); Date nowDate = new
+		 * Date(); String now = nowDate.toString(); this.importName =
+		 * "nonGMOImport_" + now;
+		 * 
+		 * panelsToAddList.add(ct.createPanel(invName, importName, userName));
+		 * valuesToAddList.add(ct.createObservedValue(invName,
+		 * appMap.get("SetImportTimestamp"), nowDate, null, "TypeOfGroup",
+		 * importName, "ImportTimestamp", null));
+		 */
 	}
 
 	public void convertFromZip(String filename) throws Exception
@@ -139,14 +152,13 @@ public class AnimalImporter
 		writeToDb();
 	}
 
-	public void writeToDb() throws Exception
+	public void writeAnimalsToDb() throws Exception
 	{
 
-		// db.add(measurementsToAddList);
-		// logger.debug("Measurements successfully added");
+	}
 
-		db.add(protocolAppsToAddList);
-		logger.debug("Protocol applications successfully added");
+	public void writeToDb() throws Exception
+	{
 
 		db.add(panelsToAddList);
 		logger.debug("Panels successfully added");
@@ -195,7 +207,6 @@ public class AnimalImporter
 				db.update(prefixList.get(0));
 			}
 		}
-		// db.add(prefixList);
 		logger.debug("Prefixes successfully added");
 
 		// Add remaining Active, Project StartDate and Project EndDate values to
@@ -241,13 +252,24 @@ public class AnimalImporter
 
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
+
+		// MolgenisRole user = db.find(MolgenisRole.class, new
+		// QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
+		// .get(0);
+
 		for (Tuple tuple : reader)
 		{
 			// FIXME prefix string
 			String animalName = this.defaultSpeciesNamePrefix + ct.prependZeros(Integer.toString(this.highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
+			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
+
+			// label as part of this import batch
+			// TODO re-enable import timestamp, findout why it creates an error.
+			// valuesToAddList.add(ct.createObservedValue(invName,
+			// appMap.get("SetImportTimestamp"), now, null,
+			// "ImportTimestamp", animalName, null, importName));
 
 			// Set some defaults: --> Animal Type,
 			String animalType = "A. Gewoon dier";
@@ -420,6 +442,8 @@ public class AnimalImporter
 		try
 		{
 			db.add(animalsToAddList);
+			db.add(valuesToAddList);
+			valuesToAddList.clear();
 			logger.debug("Animals successfully added");
 			// update the prefix table with new highest nr.
 			List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal")
@@ -430,20 +454,27 @@ public class AnimalImporter
 				NamePrefix namePrefix = prefixList.get(0);
 				namePrefix.setHighestNumber(this.highestNr);
 				db.update(namePrefix);
+				logger.debug("Nameprefix for animals successfully updated");
+				System.out.println("------ > Nameprefix for animals successfully updated");
 			}
-			logger.debug("Namprefix for animals successfully updated");
+			else
+			{
+				logger.error("Nameprefix not updated!!!!!!!! check why, this will cause trouble");
+				System.out.println("------ > Nameprefix not updated!!!!!!!! check why, this will cause trouble");
+			}
 
 		}
 		catch (Exception e)
 		{
 			logger.debug(e);
 		}
+
 	}
 
 	public void parseParentRelations(String filename) throws Exception
 	{
 		System.out.println("############## Start parsing parent relations");
-
+		animalsToAddList = new ArrayList<Individual>();
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		for (Tuple tuple : reader)
@@ -469,10 +500,16 @@ public class AnimalImporter
 			}
 
 			// get the all the animals with this litterid
+			// FIXME: this does not work, animals are not yet in db, Pull from
+			// Roan first to check if the fix is in his code already,
+			// else fix this (2013-01-21)
 			Query<ObservedValue> OldLitterQuery = db.query(ObservedValue.class);
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldLitterId"));
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
 			List<ObservedValue> individualValueList = OldLitterQuery.find();
+
+			System.out.println("!!!!!!!!!!!!!!! oldlitterid: " + litter + ":  littersize: --> "
+					+ individualValueList.size());
 			int FemaleCtr = 0;
 			int MaleCtr = 0;
 			int UnkSexCtr = 0;
@@ -480,7 +517,7 @@ public class AnimalImporter
 			String dobDate = null;
 			String lineName = null;
 			// Get breedingline from mother (FIXME this assumes that the mother
-			// has been imported alrady, is this really always true?)
+			// has been imported already, is this really always true?)
 			lineName = this.defaultBreedingLine;
 			for (ObservedValue v : individualValueList)
 			{
@@ -753,6 +790,7 @@ public class AnimalImporter
 		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
+		db.add(app);
 	}
 
 	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException

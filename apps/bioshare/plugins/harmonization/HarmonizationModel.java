@@ -43,7 +43,7 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private catalogueTreeComponent catalogue = null;
 
-	private HashMap<String, Measurement> measurements = null;
+	private Map<String, Measurement> measurements = null;
 
 	private List<String> predictionModels = new ArrayList<String>();
 
@@ -51,11 +51,11 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private List<String> reservedInv = new ArrayList<String>();
 
-	private HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+	private Map<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
 
 	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
 	private String[] ontologies =
-	{ "1032" };
+	{ "1032", "1136", "1353" };
 
 	private List<String> ontologyAccessions = Arrays.asList(ontologies);
 
@@ -149,7 +149,7 @@ public class HarmonizationModel extends EasyPluginModel
 		this.catalogue = catalogue;
 	}
 
-	public HashMap<String, Measurement> getMeasurements()
+	public Map<String, Measurement> getMeasurements()
 	{
 		return measurements;
 	}
@@ -174,7 +174,7 @@ public class HarmonizationModel extends EasyPluginModel
 		return reservedInv;
 	}
 
-	public HashMap<String, PredictorInfo> getPredictors()
+	public Map<String, PredictorInfo> getPredictors()
 	{
 		return predictors;
 	}

@@ -1,20 +1,28 @@
 package org.molgenis.gonl.ui;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.pheno.ObservedValue;
+import org.molgenis.gonl.service.VariantRequest;
+import org.molgenis.gonl.service.VariantResponse;
+import org.molgenis.gonl.service.VariantSearchException;
+import org.molgenis.gonl.service.VariantSearchService;
+import org.molgenis.gonl.utils.VariantAggregator;
+import org.molgenis.gonl.utils.VariantAggregator.VariantAggregate;
+import org.molgenis.io.TableReader;
+import org.molgenis.io.TableReaderFactory;
+import org.molgenis.io.TupleReader;
 import org.molgenis.util.tuple.Tuple;
 import org.molgenis.variant.Chromosome;
 import org.molgenis.variant.SequenceVariant;
@@ -29,100 +37,110 @@ import org.molgenis.variant.SequenceVariant;
  * holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
+@SuppressWarnings("deprecation")
 public class GonlSearch extends EasyPluginController<GonlSearchModel>
 {
+	private static final long serialVersionUID = 1L;
+
+	private VariantSearchService variantSearchService;
+	private VariantAggregator variantAggregator;
+
 	public GonlSearch(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new GonlSearchModel(this)); // the default model
-		// this.setView(new GonlSearchView(getModel())); //
+		this.setModel(new GonlSearchModel(this));
+		this.variantSearchService = new VariantSearchService();
+		this.variantAggregator = new VariantAggregator();
 	}
 
-	@Override
-	public void reload(Database db) throws Exception
+	public void search(Database db, MolgenisRequest request) throws VariantSearchException, DatabaseException,
+			IOException
 	{
-		SliceableMatrix m = null;
+		variantSearchService.setDatabase(db);
+		variantAggregator.setDatabase(db);
 
-		getModel().setChromosomes(new ArrayList<String>());
-		for (Chromosome c : db.query(Chromosome.class).find())
+		List<VariantRequest> variantRequests = createVariantRequests(db, request);
+
+		try
 		{
-			this.getModel().getChromosomes().add(c.getName());
-		}
+			Set<SequenceVariant> sequenceVariants = new LinkedHashSet<SequenceVariant>();
+			for (VariantRequest variantRequest : variantRequests)
+			{
+				VariantResponse variantResponse = variantSearchService.search(variantRequest);
+				sequenceVariants.addAll(variantResponse.getVariants());
+			}
 
-		// select chromosome, startpos, endpos
-		// m.sliceByRow(SequenceVariant.CHR, QueryRule.Operator.EQUALS,
-		// getModel().getSelectedChrId());
+			// aggregate search results
+			List<SequenceVariant> sequenceVariantList = new ArrayList<SequenceVariant>(sequenceVariants);
+			List<VariantAggregate> variantAggregates = variantAggregator.aggregate(sequenceVariantList);
+
+			// fill model with search results
+			getModel().setVariantRequests(variantRequests);
+			getModel().setVariantAggregates(variantAggregates);
+		}
+		catch (DatabaseException e)
+		{
+			setModel(new GonlSearchModel(this));
+			getModel().setMessages(new ScreenMessage(e.getMessage(), false));
+		}
+		catch (VariantSearchException e)
+		{
+			setModel(new GonlSearchModel(this));
+			getModel().setMessages(new ScreenMessage(e.getMessage(), false));
+		}
 	}
 
-	public void search(Database db, MolgenisRequest request) throws DatabaseException
+	private List<VariantRequest> createVariantRequests(Database db, MolgenisRequest request) throws IOException
 	{
-		// reset
-		getModel().setAlleleCounts(null);
-		getModel().setVariants(null);
+		List<VariantRequest> variantRequests = new ArrayList<VariantRequest>();
 
-		// Get the ID of the chromosome.
-		Query<Chromosome> qChromosome = db.query(Chromosome.class).eq(Chromosome.NAME, request.getString("chromosome"));
-		int ChrId = qChromosome.find().get(0).getId();
-		this.logger.debug("Lookedup chromosome ID: " + ChrId + "for Chr " + request.getString("chromosome"));
-
-		// set search params
-		// getModel().setSelectedChrId(request.getInt("chromosome"));
-		getModel().setSelectedChrId(ChrId);
-		getModel().setSelectedChrName(request.getString("chromosome"));
-		getModel().setSelectedFrom(request.getInt("from"));
-		getModel().setSelectedTo(request.getInt("to"));
-
-		// count available variants, if too much return error
-		// Query<SequenceVariant> q =
-		// db.query(SequenceVariant.class).eq(SequenceVariant.CHR_NAME,
-		// getModel().getSelectedChrId())
-		// .greaterOrEqual(SequenceVariant.ENDBP, request.getInt("from"))
-		// .lessOrEqual(SequenceVariant.STARTBP, request.getInt("to"));
-		Query<SequenceVariant> q = db.query(SequenceVariant.class)
-				.eq(SequenceVariant.CHR, getModel().getSelectedChrId())
-				.greaterOrEqual(SequenceVariant.ENDBP, request.getInt("from"))
-				.lessOrEqual(SequenceVariant.STARTBP, request.getInt("to"));
-		int count = q.count();
-		if (count == 0)
+		// batch search
+		String searchRequestFileStr = request.getString("searchfile");
+		if (searchRequestFileStr != null)
 		{
-			throw new DatabaseException("No variants found in the search window...");
-		}
-		else if (count > 1000)
-		{
-			throw new DatabaseException("Your query resulted in too much data; Please reduce the search window...");
-		}
-		else if (count == 1)
-		{
-			this.getMessages().add(new ScreenMessage("Found 1 variant", true));
+			File searchRequestFile = new File(searchRequestFileStr);
+			TableReader tableReader = TableReaderFactory.create(searchRequestFile);
+			try
+			{
+				for (TupleReader tupleReader : tableReader)
+				{
+					for (Tuple tuple : tupleReader)
+					{
+						VariantRequest variantRequest = new VariantRequest();
+						variantRequest.setChromosome(tuple.getString("chr"));
+						variantRequest.setStartBp(tuple.getInt("startBp"));
+						variantRequest.setEndBp(tuple.getInt("endBp"));
+						variantRequests.add(variantRequest);
+					}
+				}
+			}
+			finally
+			{
+				tableReader.close();
+			}
 		}
 		else
 		{
-			this.getMessages().add(new ScreenMessage("Found " + count + " variants", true));
+			// single batch
+			VariantRequest variantRequest = new VariantRequest();
+			variantRequest.setChromosome(request.getString("chromosome"));
+			variantRequest.setStartBp(request.getInt("from"));
+			variantRequest.setEndBp(request.getInt("to"));
+			variantRequests.add(variantRequest);
 		}
-
-		// set count and variants into model
-		getModel().setCount(count);
-		getModel().setVariants(q.find());
-
-		// get selected ids and retrieve matching observations
-		List<Integer> ids = new ArrayList<Integer>();
-		for (SequenceVariant v : getModel().getVariants())
-			ids.add(v.getId());
-		List<ObservedValue> values = db.query(ObservedValue.class).in(ObservedValue.FEATURE, ids).find();
-
-		// put values in a map to used in view
-		Map<String, ObservedValue> valueMap = new LinkedHashMap<String, ObservedValue>();
-		for (ObservedValue value : values)
-		{
-			valueMap.put(value.getFeature_Name(), value);
-		}
-		getModel().setAlleleCounts(valueMap);
+		return variantRequests;
 	}
 
 	@Override
 	public ScreenView getView()
 	{
-		return new GonlSearchView(getModel()); // <plugin
+		return new GonlSearchView(getModel());
 	}
 
+	@Override
+	public void reload(Database db) throws Exception
+	{
+		// refresh chromosome list
+		getModel().setAllChromosomes(db.query(Chromosome.class).find());
+	}
 }

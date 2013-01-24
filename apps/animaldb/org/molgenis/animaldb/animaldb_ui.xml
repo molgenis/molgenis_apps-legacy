@@ -42,6 +42,9 @@
 				type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin" label="Bring in animals" />
 			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype 
 				and browse litters, print cage labels; Flavor: Freemarker -->
+			<plugin name="EditAnimalPlugin"
+				type="org.molgenis.animaldb.plugins.animal.EditAnimalPlugin" label="Edit Animals" />
+				
 			<plugin name="Breeding"
 				type="org.molgenis.animaldb.plugins.breeding.Breedingnew" label="Breeding" />
 
@@ -57,6 +60,10 @@
 			<plugin name="PrintLabels" 
 				type="org.molgenis.animaldb.plugins.administration.PrintLabelPlugin"
 				label="(Cage) labels" />
+			
+			<plugin name="AnimalManagement"
+				type="org.molgenis.animaldb.plugins.animal.AnimalManagement" label="Manage Animals" />
+			
 		</menu>
 
 		<menu name="decmenu" position="left" label="DEC and NVWA">
