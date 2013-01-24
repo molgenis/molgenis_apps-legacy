@@ -112,16 +112,18 @@ public class AnimalImporter
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
 
-		// create panel wich will contain all the animals from this importbatch
-		makeProtocolApplication("SetImportTimestamp");
-		Date nowDate = new Date();
-		String now = nowDate.toString();
-		this.importName = "nonGMOImport_" + now;
-
-		panelsToAddList.add(ct.createPanel(invName, importName, userName));
-		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), nowDate, null,
-				"TypeOfGroup", importName, "ImportTimestamp", null));
-
+		/*
+		 * TODO re-enable later // create panel wich will contain all the
+		 * animals from this importbatch
+		 * makeProtocolApplication("SetImportTimestamp"); Date nowDate = new
+		 * Date(); String now = nowDate.toString(); this.importName =
+		 * "nonGMOImport_" + now;
+		 * 
+		 * panelsToAddList.add(ct.createPanel(invName, importName, userName));
+		 * valuesToAddList.add(ct.createObservedValue(invName,
+		 * appMap.get("SetImportTimestamp"), nowDate, null, "TypeOfGroup",
+		 * importName, "ImportTimestamp", null));
+		 */
 	}
 
 	public void convertFromZip(String filename) throws Exception
@@ -148,6 +150,11 @@ public class AnimalImporter
 		// parseDecRelations(path + "IDsInExp.csv");
 
 		writeToDb();
+	}
+
+	public void writeAnimalsToDb() throws Exception
+	{
+
 	}
 
 	public void writeToDb() throws Exception
@@ -259,8 +266,10 @@ public class AnimalImporter
 			animalsToAddList.add(newAnimal);
 
 			// label as part of this import batch
-			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), now, null,
-					"ImportTimestamp", animalName, null, importName));
+			// TODO re-enable import timestamp, findout why it creates an error.
+			// valuesToAddList.add(ct.createObservedValue(invName,
+			// appMap.get("SetImportTimestamp"), now, null,
+			// "ImportTimestamp", animalName, null, importName));
 
 			// Set some defaults: --> Animal Type,
 			String animalType = "A. Gewoon dier";
@@ -445,8 +454,14 @@ public class AnimalImporter
 				NamePrefix namePrefix = prefixList.get(0);
 				namePrefix.setHighestNumber(this.highestNr);
 				db.update(namePrefix);
+				logger.debug("Nameprefix for animals successfully updated");
+				System.out.println("------ > Nameprefix for animals successfully updated");
 			}
-			logger.debug("Namprefix for animals successfully updated");
+			else
+			{
+				logger.error("Nameprefix not updated!!!!!!!! check why, this will cause trouble");
+				System.out.println("------ > Nameprefix not updated!!!!!!!! check why, this will cause trouble");
+			}
 
 		}
 		catch (Exception e)
