@@ -276,7 +276,7 @@ public class ConvertRhutDbToPheno
 		{
 			String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
+			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
 
 			// ID -> OldRhutDbAnimalId

@@ -150,7 +150,7 @@ public class LoadAnimalDB
 			String oldlocid = tuple.getString("location");
 			String oldlitterid = tuple.getString("litter");
 
-			ObservationTarget newAnimal = ct.createIndividual(invName, name, userName);
+			ObservationTarget newAnimal = ct.createIndividual(invName, name);
 			db.add(newAnimal);
 
 			// Init lists that we can later add to the DB at once
