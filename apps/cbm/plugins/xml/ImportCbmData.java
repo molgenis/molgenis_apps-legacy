@@ -3,6 +3,7 @@ package plugins.xml;
 import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CbmNode;
 import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CollectionProtocol;
 import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.ParticipantCollectionSummary;
+import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.SpecimenCollectionSummary;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,10 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.cbm.CbmXmlParser;
+import org.molgenis.cbm.Collection_Protocol;
 import org.molgenis.cbm.Join_Participant_Collection_Summary_To_Race;
+import org.molgenis.cbm.Join_Participant_Collection_Summary_Todiagnosis;
 import org.molgenis.cbm.Participant_Collection_Summary;
-import org.molgenis.cbm.Race;
+import org.molgenis.cbm.Specimen_Collection_Summary;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -74,53 +79,51 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			CbmNode result = cbmXmlParser.load(currentFile, currentXsdfile);
 
-			List<CollectionProtocol> collectionProtocol = result.getProtocols().getCollectionProtocol();
-
-			Map<Integer, Race> racesToAdd = new HashMap<Integer, Race>();
+			List<CollectionProtocol> collectionProtocolList = result.getProtocols().getCollectionProtocol();
 
 			List<Participant_Collection_Summary> listOfParticipantSummary = new ArrayList<Participant_Collection_Summary>();
 
 			Map<String, Join_Participant_Collection_Summary_To_Race> listOfParticipantRaceLinkTable = new HashMap<String, Join_Participant_Collection_Summary_To_Race>();
 
-			for (int i = 0; i < collectionProtocol.size(); i++)
+			Map<String, Join_Participant_Collection_Summary_Todiagnosis> listOfParticipantDiagnosisLinkTable = new HashMap<String, Join_Participant_Collection_Summary_Todiagnosis>();
+
+			for (CollectionProtocol collectionProtocolFromJaxb : collectionProtocolList)
 			{
-				List<ParticipantCollectionSummary> participantCollectionSummaryList = collectionProtocol.get(i)
+				List<ParticipantCollectionSummary> participantCollectionSummaryList = collectionProtocolFromJaxb
 						.getEnrolls().getParticipantCollectionSummary();
+
+				Collection_Protocol cp = new Collection_Protocol();
+
+				String collectionProtocolName = collectionProtocolFromJaxb.getName();
+
+				String collectionProtocolIdentifier = collectionProtocolFromJaxb.getIdentifier();
+
+				Integer collectionProtocolID = collectionProtocolFromJaxb.getId();
 
 				for (ParticipantCollectionSummary participantSummary : participantCollectionSummaryList)
 				{
+					// Create molgenis object for it
 					Participant_Collection_Summary participantCollectionSummary = new Participant_Collection_Summary();
 
+					// Set participant count
 					participantCollectionSummary.setParticipant_Count(participantSummary.getParticipantCount());
-					// participantCollectionSummary.setRegistered_To(participantCollectionSummaryList.get(i)
-					// .getRegistered_To());
 
 					participantCollectionSummary.setParticipant_Collection_Summary_ID(participantSummary.getId());
 
 					// Ethnicity should go to Race table.
 					participantCollectionSummary.setEthnicity(participantSummary.getEthnicity());
 
+					// Set gender to participant
+					participantCollectionSummary.setGender(participantSummary.getGender());
+
 					// This race is from CBM model, not molgenis
 					List<gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race> listOfRaces = participantSummary
 							.getIsClassifiedBy().getRace();
 
-					// participantCollectionSummary.setRegistered_To(registered_to)
-
+					// Collect all the races from Jaxb Object and create
+					// Molgenis entities
 					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race eachRace : listOfRaces)
 					{
-						Race race = new Race();
-
-						String identifier = eachRace.getId() + eachRace.getRace();
-
-						race.setRace_ID(eachRace.getId());
-
-						race.setRace(eachRace.getRace());
-
-						if (!racesToAdd.containsKey(identifier.toLowerCase().trim()))
-						{
-							racesToAdd.put(race.getRace_ID(), race);
-						}
-
 						// Make linkTable for ParticipantCollectionSummary and
 						// Race, therefore should check the uniqueness of
 						// combination of both ids
@@ -133,30 +136,107 @@ public class ImportCbmData extends PluginModel<Entity>
 						{
 							Join_Participant_Collection_Summary_To_Race linkTable = new Join_Participant_Collection_Summary_To_Race();
 
-							linkTable.setParticipant_Collection_Summary_ID(participantCollectionSummary
-									.getParticipant_Collection_Summary_ID());
+							linkTable.setParticipant_Collection_Summary_ID(participantSummary.getId());
 
-							linkTable.setRace_Id(race.getRace_ID());
+							linkTable.setRace_Id(eachRace.getId());
 
 							listOfParticipantRaceLinkTable.put(uniqueLinktableKey.toString().toLowerCase().trim(),
 									linkTable);
 						}
 					}
 
-					// participantCollectionSummary.setEthnicityId(participantCollectionSummaryList.get(i).getEthnicityId());
-					participantCollectionSummary.setGender(participantSummary.getGender());
+					// Get the specimenCollection from the participant summary
+					List<SpecimenCollectionSummary> listOfSpecimen = participantSummary.getProvides()
+							.getSpecimenCollectionSummary();
 
+					List<Integer> listoFSpecimenID = new ArrayList<Integer>();
+
+					for (SpecimenCollectionSummary specimen : listOfSpecimen)
+					{
+						listoFSpecimenID.add(specimen.getId());
+					}
+
+					// participantCollectionSummary.setIs_Collected_FromSpecimen_Collection_SummaryCollection(collection)
+
+					List<Specimen_Collection_Summary> collectionOfSpecimens = db.find(
+							Specimen_Collection_Summary.class, new QueryRule(
+									Specimen_Collection_Summary.SPECIMEN_COLLECTION_SUMMARY_ID, Operator.IN,
+									listoFSpecimenID));
+
+					participantCollectionSummary
+							.setIs_Collected_FromSpecimen_Collection_SummaryCollection(collectionOfSpecimens);
+
+					List<gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Diagnosis> listOfDiagnosis = participantSummary
+							.getReceives().getDiagnosis();
+
+					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Diagnosis diagnosis : listOfDiagnosis)
+					{
+
+						StringBuilder uniqueIdentifer = new StringBuilder();
+
+						uniqueIdentifer.append(participantSummary.getId()).append(diagnosis.getId());
+
+						if (!listOfParticipantDiagnosisLinkTable.containsKey(uniqueIdentifer.toString().trim()
+								.toLowerCase()))
+						{
+							Join_Participant_Collection_Summary_Todiagnosis joinTableParticipantDiagnosis = new Join_Participant_Collection_Summary_Todiagnosis();
+
+							// joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diagnosis.getId());
+
+							joinTableParticipantDiagnosis
+									.setParticipant_Collection_Summary_ID_Participant_Collection_Summary_ID(participantSummary
+											.getId());
+
+							org.molgenis.cbm.Diagnosis diag = db.find(
+									org.molgenis.cbm.Diagnosis.class,
+									new QueryRule(org.molgenis.cbm.Diagnosis.DIAGNOSIS_ID, Operator.EQUALS, diagnosis
+											.getId())).get(0);
+
+							joinTableParticipantDiagnosis.setDiagnosis_Id(diag);
+
+							joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diag.getDiagnosis_ID());
+
+							joinTableParticipantDiagnosis.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
+
+							// joinTableParticipantDiagnosis.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
+
+							listOfParticipantDiagnosisLinkTable.put(uniqueIdentifer.toString().trim().toLowerCase(),
+									joinTableParticipantDiagnosis);
+						}
+
+					}
+
+					// Add this participantSummary to the list collection
 					listOfParticipantSummary.add(participantCollectionSummary);
 					// participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
 					System.out.println("Just before import in db : " + participantSummary);
 				}
+
 			}
 
 			db.add(listOfParticipantSummary);
 
-			db.add(new ArrayList<Race>(racesToAdd.values()));
+			// db.add(new ArrayList<Race>(racesToAdd.values()));
 
-			db.add(new ArrayList<Join_Participant_Collection_Summary_To_Race>(listOfParticipantRaceLinkTable.values()));
+			// db.add();
+
+			for (Join_Participant_Collection_Summary_To_Race joinRace : new ArrayList<Join_Participant_Collection_Summary_To_Race>(
+					listOfParticipantRaceLinkTable.values()))
+			{
+				System.out.println(joinRace);
+
+				db.add(joinRace);
+			}
+
+			for (Join_Participant_Collection_Summary_Todiagnosis diagnosis : listOfParticipantDiagnosisLinkTable
+					.values())
+			{
+
+				System.out.println(diagnosis);
+
+				db.add(diagnosis);
+			}
+
 		}
 	}
 

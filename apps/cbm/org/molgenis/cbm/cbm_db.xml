@@ -1,5 +1,4 @@
 <molgenis name="org.molgenis.cbm">
-
 	<entity name="address" xref_label="address_ID">
 		<field unique="true" type="int" name="address_ID" auto="true" />
 		<field length="50" nillable="true" name="city" />
@@ -89,7 +88,6 @@
 
 	<entity name="join_collection_protocol_to_institution">
 		<field type="autoid" name="id" />
-
 		<field xref_field="institution.institution_ID" nillable="true"
 			type="xref" name="institution_ID" />
 		<field xref_field="collection_protocol.collectionProtocolID"
@@ -100,7 +98,7 @@
 		<field length="150" nillable="true" name="name" />
 	</entity>
 	<entity name="participant_collection_summary">
-		<field name="id" type="autoid" description="automatically generated id" />
+		<field unique="true" type="autoid" name="id" nillable="true"/>
 		<field unique="true" type="int" name="participant_collection_summary_ID"/>
 		<field nillable="true" type="int" name="participant_count" />
 		<field nillable="true" type="int" name="registered_to" />
@@ -120,11 +118,11 @@
 	</entity>
 	<entity name="join_participant_collection_summary_todiagnosis">
 		<field type="autoid" name="id" />
-		<field xref_field="diagnosis.diagnosis_ID" nillable="true" type="xref"
-			name="diagnosis_id" />
 		<field
 			xref_field="participant_collection_summary.participant_collection_summary_ID"
 			nillable="true" type="xref" name="participant_collection_summary_ID" />
+		<field xref_field="diagnosis.diagnosis_ID" nillable="true" type="xref"
+			name="diagnosis_id" />
 	</entity>
 	<entity name="patient_age_group_at_collection">
 		<field unique="true" type="int" name="id" auto="true" />
@@ -151,8 +149,7 @@
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
 	<entity name="race">
-		<field name="id" type="autoid" description="automatically generated id" />
-		<field unique="true" type="int" name="race_ID"/>
+		<field unique="true" type="int" name="race_ID" auto="true"/>
 		<field unique="true" length="50" name="race" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_Definition" />
