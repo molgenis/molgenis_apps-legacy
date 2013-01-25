@@ -112,18 +112,18 @@ public class AnimalImporter
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
 
-		/*
-		 * TODO re-enable later // create panel wich will contain all the
-		 * animals from this importbatch
-		 * makeProtocolApplication("SetImportTimestamp"); Date nowDate = new
-		 * Date(); String now = nowDate.toString(); this.importName =
-		 * "nonGMOImport_" + now;
-		 * 
-		 * panelsToAddList.add(ct.createPanel(invName, importName, userName));
-		 * valuesToAddList.add(ct.createObservedValue(invName,
-		 * appMap.get("SetImportTimestamp"), nowDate, null, "TypeOfGroup",
-		 * importName, "ImportTimestamp", null));
-		 */
+		// create panel wich will contain all the animals from this importbatch
+		ProtocolApplication app = ct.createProtocolApplication(invName, "SetImportTimestamp");
+		db.add(app);
+		ProtocolApplication app2 = ct.createProtocolApplication(invName, "SetTypeOfGroup");
+		db.add(app2);
+		Date nowDate = new Date();
+		String now = nowDate.toString();
+		this.importName = "nonGMOImport_" + now;
+		db.add(ct.createPanel(invName, importName, userName));
+		db.add(ct.createObservedValue(invName, app2.getName(), nowDate, null, "TypeOfGroup", importName,
+				"ImportTimestamp", null));
+
 	}
 
 	public void convertFromZip(String filename) throws Exception
@@ -267,9 +267,8 @@ public class AnimalImporter
 
 			// label as part of this import batch
 			// TODO re-enable import timestamp, findout why it creates an error.
-			// valuesToAddList.add(ct.createObservedValue(invName,
-			// appMap.get("SetImportTimestamp"), now, null,
-			// "ImportTimestamp", animalName, null, importName));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), now, null,
+					"ImportTimestamp", animalName, null, this.importName));
 
 			// Set some defaults: --> Animal Type,
 			String animalType = "A. Gewoon dier";
@@ -743,17 +742,20 @@ public class AnimalImporter
 
 	public void populateProtocolApplication() throws Exception
 	{
+
 		// lines
 		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetSource");
 		makeProtocolApplication("SetSpecies");
 
-		// animals makeProtocolApplication("SetOldAnimalId");
+		// animals
+		makeProtocolApplication("SetOldAnimalId");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetOldLitterId");
 		makeProtocolApplication("SetSex");
 		makeProtocolApplication("SetBackground");
 
+		makeProtocolApplication("SetImportTimestamp");
 		makeProtocolApplication("SetActive");
 		makeProtocolApplication("SetRemoval");
 		makeProtocolApplication("SetDateOfBirth");
