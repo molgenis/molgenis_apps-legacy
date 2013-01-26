@@ -498,29 +498,10 @@ public class AnimalImporter
 
 			// get the all the animals with this litterid and the correct
 			// importTimestamp.
-			// FIXME: this does not work, animals are not yet in db, Pull from
-			// Roan first to check if the fix is in his code already,
-			// else fix this (2013-01-21)
 			Query<ObservedValue> TimeStampQuery = db.query(ObservedValue.class);
-			// QueryRule qrLitter = new QueryRule(
-			// new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS,
-			// "OldLitterId"), new QueryRule(
-			// ObservedValue.VALUE, Operator.EQUALS, litter));
-			// QueryRule qrTimestamp = new QueryRule(new
-			// QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS,
-			// "ImportTimestamp"), new QueryRule(ObservedValue.VALUE,
-			// Operator.EQUALS, this.importName));
-			// OldLitterQuery.addRules(qrLitter, new QueryRule(Operator.AND),
-			// qrTimestamp);
-			// OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
-			// Operator.EQUALS, "OldLitterId"));
-			// OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE,
-			// Operator.EQUALS, litter));
-			// /OldLitterQuery.addRules(new QueryRule(Operator.AND));
 			TimeStampQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ImportTimestamp"));
 			TimeStampQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.importName));
 			List<ObservedValue> individualValueList = TimeStampQuery.find();
-			System.out.println("---- timestampresultsize:  " + individualValueList.size());
 			List<String> importedAnimals = new ArrayList<String>();
 			for (ObservedValue v : individualValueList)
 			{
@@ -531,8 +512,7 @@ public class AnimalImporter
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, importedAnimals));
 			individualValueList = OldLitterQuery.find();
-			System.out.println("!!!!!!!!!!!!!!! oldlitterid: " + litter + ":  littersize: --> "
-					+ individualValueList.size());
+
 			int FemaleCtr = 0;
 			int MaleCtr = 0;
 			int UnkSexCtr = 0;
@@ -550,7 +530,6 @@ public class AnimalImporter
 					weanDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "WeanDate");
 					// Get birthDate from first sibling
 					dobDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "DateOfBirth");
-					System.out.println(">>>>>>>>>>>> " + v.getTarget_Name() + " " + dobDate + " " + weanDate);
 				}
 				String sex = ct.getMostRecentValueAsXrefName(v.getTarget_Name(), "Sex");
 				if (sex.equalsIgnoreCase("Male"))
@@ -589,21 +568,18 @@ public class AnimalImporter
 				parentgroupNr = parentgroupNrMap.get(lineName) + 1;
 			}
 			parentgroupNrMap.put(lineName, parentgroupNr);
-			// System.out.println(">>>>    hpgnr" + this.highestPGNr);
+
 			String parentgroupNrPart = ct.prependZeros("" + (this.highestPGNr + parentgroupNr), 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-			// System.out.println("#########pgName: " + parentgroupName);
 			panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					parentgroupName, "Parentgroup", null));
 			// Link parents to parentgroup (if known)
-			// System.out.println("#########pgM: " + motherName);
 			if (motherName != null)
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), now, null,
 						"ParentgroupMother", parentgroupName, null, motherName));
 			}
-			// System.out.println("#########pgM: " + fatherName);
 			if (fatherName != null)
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), now, null,
@@ -645,7 +621,7 @@ public class AnimalImporter
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
 
-			// FIXME we always need a birthdate, calculate one if it is missing
+			// we always need a birthdate, calculate one if it is missing
 			if (dobDate == null || dobDate.equals(""))
 			{
 				if (weanDate != null && weanDate.equals(""))
@@ -735,14 +711,6 @@ public class AnimalImporter
 					// Get Active value from map; every animal has one
 
 					ObservedValue activeValue = activeMap.get(animalName);
-					// System.out.println("----> " +
-					// activeValue.getTarget_Name());
-					// if (activeValue.getTime() == null)
-					// {
-					// FIXME is this still necessary ???
-
-					// activeValue.setTime(dbFormat.parse(weanDate));
-					// }
 					activeMap.remove(animalName);
 					valuesToAddList.add(activeValue);
 
