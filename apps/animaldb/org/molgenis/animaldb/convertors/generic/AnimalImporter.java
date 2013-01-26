@@ -120,8 +120,8 @@ public class AnimalImporter
 		Date nowDate = new Date();
 		String now = nowDate.toString();
 		this.importName = "nonGMOImport_" + now;
-		db.add(ct.createPanel(invName, importName, userName));
-		db.add(ct.createObservedValue(invName, app2.getName(), nowDate, null, "TypeOfGroup", importName,
+		db.add(ct.createPanel(invName, this.importName, userName));
+		db.add(ct.createObservedValue(invName, app2.getName(), nowDate, null, "TypeOfGroup", this.importName,
 				"ImportTimestamp", null));
 
 	}
@@ -259,14 +259,12 @@ public class AnimalImporter
 
 		for (Tuple tuple : reader)
 		{
-			// FIXME prefix string
 			String animalName = this.defaultSpeciesNamePrefix + ct.prependZeros(Integer.toString(this.highestNr++), 6);
 			animalNames.add(animalName);
 			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
 
 			// label as part of this import batch
-			// TODO re-enable import timestamp, findout why it creates an error.
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), now, null,
 					"ImportTimestamp", animalName, null, this.importName));
 
@@ -498,15 +496,41 @@ public class AnimalImporter
 				startDate = newDateOnlyFormat.format(tmpStartDate);
 			}
 
-			// get the all the animals with this litterid
+			// get the all the animals with this litterid and the correct
+			// importTimestamp.
 			// FIXME: this does not work, animals are not yet in db, Pull from
 			// Roan first to check if the fix is in his code already,
 			// else fix this (2013-01-21)
+			Query<ObservedValue> TimeStampQuery = db.query(ObservedValue.class);
+			// QueryRule qrLitter = new QueryRule(
+			// new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS,
+			// "OldLitterId"), new QueryRule(
+			// ObservedValue.VALUE, Operator.EQUALS, litter));
+			// QueryRule qrTimestamp = new QueryRule(new
+			// QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS,
+			// "ImportTimestamp"), new QueryRule(ObservedValue.VALUE,
+			// Operator.EQUALS, this.importName));
+			// OldLitterQuery.addRules(qrLitter, new QueryRule(Operator.AND),
+			// qrTimestamp);
+			// OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME,
+			// Operator.EQUALS, "OldLitterId"));
+			// OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE,
+			// Operator.EQUALS, litter));
+			// /OldLitterQuery.addRules(new QueryRule(Operator.AND));
+			TimeStampQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ImportTimestamp"));
+			TimeStampQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.importName));
+			List<ObservedValue> individualValueList = TimeStampQuery.find();
+			System.out.println("---- timestampresultsize:  " + individualValueList.size());
+			List<String> importedAnimals = new ArrayList<String>();
+			for (ObservedValue v : individualValueList)
+			{
+				importedAnimals.add(v.getTarget_Name());
+			}
 			Query<ObservedValue> OldLitterQuery = db.query(ObservedValue.class);
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldLitterId"));
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
-			List<ObservedValue> individualValueList = OldLitterQuery.find();
-
+			OldLitterQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, importedAnimals));
+			individualValueList = OldLitterQuery.find();
 			System.out.println("!!!!!!!!!!!!!!! oldlitterid: " + litter + ":  littersize: --> "
 					+ individualValueList.size());
 			int FemaleCtr = 0;
