@@ -715,7 +715,7 @@ public class ConvertUliDbToPheno
 		Date now = new Date();
 
 		// Make line panel
-		ct.makePanel(investigationName, lineName, userName);
+		ct.createPanel(investigationName, lineName);
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
 		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup",
 				"TypeOfGroup", lineName, "Line", null));
@@ -749,7 +749,7 @@ public class ConvertUliDbToPheno
 		Date now = new Date();
 
 		// Make background panel
-		ct.makePanel(investigationName, bkgName, login.getUserName());
+		ct.createPanel(investigationName, bkgName);
 		// Label it as background using the (Set)TypeOfGroup protocol and
 		// feature
 		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup",

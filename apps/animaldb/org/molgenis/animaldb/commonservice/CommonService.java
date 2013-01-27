@@ -753,8 +753,8 @@ public class CommonService
 	 * Creates a Panel but does NOT add it to the database. Uses Investigation
 	 * and User Names so it can be used with lists.
 	 */
-	public Panel createPanel(String investigationName, String panelName, String userName) throws DatabaseException,
-			IOException, ParseException
+	public Panel preparePanel(String investigationName, String panelName) throws DatabaseException, IOException,
+			ParseException
 	{
 		if (panelName == null)
 		{
@@ -763,7 +763,7 @@ public class CommonService
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation_Name(investigationName);
-		newGroup.setOwns_Name(userName);
+		newGroup.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
 		return newGroup;
 	}
 

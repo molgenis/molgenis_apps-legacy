@@ -2009,7 +2009,7 @@ public class Breedingnew extends PluginModel<Entity>
 		String groupNrPart = "" + groupNr;
 		groupNrPart = ct.prependZeros(groupNrPart, 6);
 		String groupName = groupPrefix + groupNrPart;
-		ct.makePanel(invName, groupName, userName);
+		ct.createPanel(invName, groupName);
 		// Make or update name prefix entry
 		ct.updatePrefix("parentgroup", groupPrefix, groupNr);
 		// Mark group as parent group using a special event
@@ -2233,7 +2233,7 @@ public class Breedingnew extends PluginModel<Entity>
 		String litterNrPart = "" + litterNr;
 		litterNrPart = ct.prependZeros(litterNrPart, 6);
 		String litterName = litterPrefix + litterNrPart;
-		ct.makePanel(invName, litterName, userName);
+		ct.createPanel(invName, litterName);
 		// Make or update name prefix entry
 		ct.updatePrefix("litter", litterPrefix, litterNr);
 		// Mark group as a litter
@@ -2646,7 +2646,7 @@ public class Breedingnew extends PluginModel<Entity>
 				if (ct.getObservationTargetByName(backgroundName) == null)
 				{
 					// create the new mixed background if it does not exist
-					ct.makePanel(invName, backgroundName, userName);
+					ct.createPanel(invName, backgroundName);
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 							"SetTypeOfGroup", "TypeOfGroup", backgroundName, "Background", null));
 					// set the correct species on the newly created background

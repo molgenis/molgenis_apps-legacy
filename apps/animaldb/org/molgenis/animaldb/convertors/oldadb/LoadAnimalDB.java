@@ -340,7 +340,7 @@ public class LoadAnimalDB
 			List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 			// Name
 			String name = tuple.getString("customlitterid");
-			ct.makePanel(invName, name, userName);
+			ct.createPanel(invName, name);
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
 					"TypeOfGroup", name, "Litter", null));
 			// pairstartdate -> time
@@ -359,7 +359,7 @@ public class LoadAnimalDB
 			}
 			// Parentgroup
 			String pgName = "Parentgroup" + name;
-			ct.makePanel(invName, pgName, userName);
+			ct.createPanel(invName, pgName);
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
 					"TypeOfGroup", pgName, "Parentgroup", null));
 			// Link litter to parentgroup
@@ -455,7 +455,7 @@ public class LoadAnimalDB
 
 			// Name
 			String name = tuple.getString("title");
-			ct.makePanel(invName, name, userName);
+			ct.createPanel(invName, name);
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
 					"TypeOfGroup", name, "Experiment", null));
 
@@ -588,7 +588,7 @@ public class LoadAnimalDB
 			// Name
 			String name = tuple.getString("projecttitle");
 			String decName = "DEC project: " + name;
-			ct.makePanel(invName, decName, userName);
+			ct.createPanel(invName, decName);
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
 					"TypeOfGroup", decName, "DecApplication", null));
 
@@ -886,7 +886,7 @@ public class LoadAnimalDB
 			// Name
 			String name = tuple.getString("name");
 			// add the group in the newAnimaldb
-			ct.makePanel(invName, name, userName);
+			ct.createPanel(invName, name);
 			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup", "TypeOfGroup",
 					name, "Selection", null));
 			// link the OldAnimalDBPResetID to the newly created group

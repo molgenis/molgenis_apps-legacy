@@ -120,7 +120,7 @@ public class AnimalImporter
 		Date nowDate = new Date();
 		String now = nowDate.toString();
 		this.importName = "nonGMOImport_" + now;
-		db.add(ct.createPanel(invName, this.importName, userName));
+		db.add(ct.preparePanel(invName, this.importName));
 		db.add(ct.createObservedValue(invName, app2.getName(), nowDate, null, "TypeOfGroup", this.importName,
 				"ImportTimestamp", null));
 
@@ -571,7 +571,7 @@ public class AnimalImporter
 
 			String parentgroupNrPart = ct.prependZeros("" + (this.highestPGNr + parentgroupNr), 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-			panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, parentgroupName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					parentgroupName, "Parentgroup", null));
 			// Link parents to parentgroup (if known)
@@ -617,7 +617,7 @@ public class AnimalImporter
 			litterNrMap.put(lineName, litterNr);
 			String litterNrPart = ct.prependZeros("" + (this.highestLTNr + litterNr), 6);
 			String litterName = "LT_" + lineName + "_" + litterNrPart;
-			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, litterName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
 
