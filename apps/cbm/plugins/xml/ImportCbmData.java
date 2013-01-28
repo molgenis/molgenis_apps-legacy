@@ -90,9 +90,9 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			CbmNode result = cbmXmlParser.load(currentFile, currentXsdfile);
 
-			List<Participant_Collection_Summary> listOfParticipantSummary = new ArrayList<Participant_Collection_Summary>();
+			Map<Integer, Participant_Collection_Summary> listOfParticipantSummary = new HashMap<Integer, Participant_Collection_Summary>();
 
-			List<Collection_Protocol> listOfCollectionProtocol = new ArrayList<Collection_Protocol>();
+			Map<Integer, Collection_Protocol> listOfCollectionProtocol = new HashMap<Integer, Collection_Protocol>();
 
 			Map<String, Join_Participant_Collection_Summary_To_Race> listOfParticipantRaceLinkTable = new HashMap<String, Join_Participant_Collection_Summary_To_Race>();
 
@@ -116,337 +116,353 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			for (CollectionProtocol collectionProtocolFromJaxb : result.getProtocols().getCollectionProtocol())
 			{
-				List<ParticipantCollectionSummary> participantCollectionSummaryList = collectionProtocolFromJaxb
-						.getEnrolls().getParticipantCollectionSummary();
 
-				for (ParticipantCollectionSummary participantSummary : participantCollectionSummaryList)
+				if (!listOfCollectionProtocol.containsKey(collectionProtocolFromJaxb.getId()))
 				{
-					// Create molgenis object for it
-					Participant_Collection_Summary participantCollectionSummary = new Participant_Collection_Summary();
 
-					// Set participant count
-					participantCollectionSummary.setParticipant_Count(participantSummary.getParticipantCount());
+					List<ParticipantCollectionSummary> participantCollectionSummaryList = collectionProtocolFromJaxb
+							.getEnrolls().getParticipantCollectionSummary();
 
-					participantCollectionSummary.setParticipant_Collection_Summary_ID(participantSummary.getId());
-
-					// Ethnicity should go to Race table.
-					participantCollectionSummary.setEthnicity(participantSummary.getEthnicity());
-
-					// Set gender to participant
-					participantCollectionSummary.setGender(participantSummary.getGender());
-
-					// This race is from CBM model, not molgenis
-					List<gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race> listOfRaces = participantSummary
-							.getIsClassifiedBy().getRace();
-
-					// Collect all the races from Jaxb Object and create
-					// Molgenis entities
-					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race eachRace : listOfRaces)
+					for (ParticipantCollectionSummary participantSummary : participantCollectionSummaryList)
 					{
-						// Make linkTable for ParticipantCollectionSummary and
-						// Race, therefore should check the uniqueness of
-						// combination of both ids
-						StringBuilder uniqueLinktableKey = new StringBuilder();
 
-						uniqueLinktableKey.append(participantSummary.getId()).append(eachRace.getId());
-
-						if (!listOfParticipantRaceLinkTable.containsKey(uniqueLinktableKey.toString().toLowerCase()
-								.trim()))
+						if (!listOfParticipantSummary.containsKey(participantSummary.getId()))
 						{
-							Join_Participant_Collection_Summary_To_Race linkTable = new Join_Participant_Collection_Summary_To_Race();
 
-							linkTable.setParticipant_Collection_Summary_ID(participantSummary.getId());
+							// Create molgenis object for it
+							Participant_Collection_Summary participantCollectionSummary = new Participant_Collection_Summary();
 
-							linkTable.setRace_Id(eachRace.getId());
+							// Set participant count
+							participantCollectionSummary.setParticipant_Count(participantSummary.getParticipantCount());
 
-							listOfParticipantRaceLinkTable.put(uniqueLinktableKey.toString().toLowerCase().trim(),
-									linkTable);
-						}
-					}
+							participantCollectionSummary.setParticipant_Collection_Summary_ID(participantSummary
+									.getId());
 
-					// Get the specimenCollection from the participant summary
-					List<SpecimenCollectionSummary> listOfSpecimen = participantSummary.getProvides()
-							.getSpecimenCollectionSummary();
+							// Ethnicity should go to Race table.
+							participantCollectionSummary.setEthnicity(participantSummary.getEthnicity());
 
-					List<Integer> listoFSpecimenID = new ArrayList<Integer>();
+							// Set gender to participant
+							participantCollectionSummary.setGender(participantSummary.getGender());
 
-					for (SpecimenCollectionSummary specimen : listOfSpecimen)
-					{
-						listoFSpecimenID.add(specimen.getId());
-					}
-
-					// participantCollectionSummary.setIs_Collected_FromSpecimen_Collection_SummaryCollection(collection)
-
-					List<Specimen_Collection_Summary> collectionOfSpecimens = db.find(
-							Specimen_Collection_Summary.class, new QueryRule(
-									Specimen_Collection_Summary.SPECIMEN_COLLECTION_SUMMARY_ID, Operator.IN,
-									listoFSpecimenID));
-
-					participantCollectionSummary
-							.setIs_Collected_FromSpecimen_Collection_SummaryCollection(collectionOfSpecimens);
-
-					List<gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Diagnosis> listOfDiagnosis = participantSummary
-							.getReceives().getDiagnosis();
-
-					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Diagnosis diagnosis : listOfDiagnosis)
-					{
-
-						StringBuilder uniqueIdentifer = new StringBuilder();
-
-						uniqueIdentifer.append(participantSummary.getId()).append(diagnosis.getId());
-
-						if (!listOfParticipantDiagnosisLinkTable.containsKey(uniqueIdentifer.toString().trim()
-								.toLowerCase()))
-						{
-							Join_Participant_Collection_Summary_Todiagnosis joinTableParticipantDiagnosis = new Join_Participant_Collection_Summary_Todiagnosis();
-
-							// joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diagnosis.getId());
-
-							joinTableParticipantDiagnosis
-									.setParticipant_Collection_Summary_ID_Participant_Collection_Summary_ID(participantSummary
-											.getId());
-
-							org.molgenis.cbm.Diagnosis diag = db.find(
-									org.molgenis.cbm.Diagnosis.class,
-									new QueryRule(org.molgenis.cbm.Diagnosis.DIAGNOSIS_ID, Operator.EQUALS, diagnosis
-											.getId())).get(0);
-
-							joinTableParticipantDiagnosis.setDiagnosis_Id(diag);
-
-							joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diag.getDiagnosis_ID());
-
-							joinTableParticipantDiagnosis.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
-
-							// joinTableParticipantDiagnosis.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
-
-							listOfParticipantDiagnosisLinkTable.put(uniqueIdentifer.toString().trim().toLowerCase(),
-									joinTableParticipantDiagnosis);
-						}
-
-					}
-
-					// Add this participantSummary to the list collection
-					listOfParticipantSummary.add(participantCollectionSummary);
-					// participantCollectionSummary.setGender_Id(participantCollectionSummaryList.get(i).getGenderId());
-					System.out.println("Just before import in db : " + participantSummary);
-				}
-
-				Collection_Protocol cp = new Collection_Protocol();
-
-				String collectionProtocolName = collectionProtocolFromJaxb.getName();
-
-				String collectionProtocolIdentifier = collectionProtocolFromJaxb.getIdentifier();
-
-				Integer collectionProtocolID = collectionProtocolFromJaxb.getId();
-
-				cp.setCollectionProtocolID(collectionProtocolID);
-
-				cp.setName(collectionProtocolName);
-
-				cp.setIdentifier(collectionProtocolIdentifier);
-
-				// cp.setDate_Last_Updated(collectionProtocolFromJaxb.getDateLastUpdated().toString());
-				//
-				// cp.setEnd_Date(collectionProtocolFromJaxb.getEndDate().toString());
-
-				for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Institution cbmInsititue : collectionProtocolFromJaxb
-						.getResidesAt().getInstitution())
-				{
-
-					if (!listOfOrganizations.containsKey(cbmInsititue.getId()))
-					{
-						Organization organization = new Organization();
-
-						organization.setName(cbmInsititue.getName());
-
-						organization.setOrganization_ID(cbmInsititue.getId());
-
-						Institution institue = new Institution();
-
-						institue.setInstitution_ID(cbmInsititue.getId());
-
-						institue.setHomepage_URL(cbmInsititue.getHomepageURL());
-
-						if (!listOfInstitues.containsKey(cbmInsititue.getId()))
-						{
-							listOfInstitues.put(cbmInsititue.getId(), institue);
-						}
-
-						listOfOrganizations.put(cbmInsititue.getId(), organization);
-
-					}
-
-					StringBuilder builder = new StringBuilder();
-
-					if (!listOfCollectionInstituteLinkTable.containsKey(builder.append(collectionProtocolID)
-							.append(cbmInsititue.getId()).toString()))
-					{
-						Join_Collection_Protocol_To_Institution joinTable = new Join_Collection_Protocol_To_Institution();
-
-						joinTable.setInstitution_ID(cbmInsititue.getId());
-
-						joinTable.setCollection_Protocol_ID(collectionProtocolID);
-
-						listOfCollectionInstituteLinkTable
-								.put(builder.append(collectionProtocolID).append(cbmInsititue.getId()).toString(),
-										joinTable);
-					}
-				}
-
-				// Set the isconstrained entity
-				if (collectionProtocolFromJaxb.getIsConstrainedBy() != null)
-				{
-					SpecimenAvailabilitySummaryProfile profileJaxb = collectionProtocolFromJaxb.getIsConstrainedBy();
-
-					if (!listOfCollectionConstrained.containsKey(profileJaxb.getId()))
-					{
-						Specimen_Availability_Summary_Profile specimenProfile = new Specimen_Availability_Summary_Profile();
-
-						specimenProfile.setIs_Collaboration_Required(profileJaxb.isIsCollaborationRequired());
-
-						specimenProfile.setIs_Available_To_Outside_Institution(profileJaxb
-								.isIsAvailableToOutsideInstitution());
-
-						specimenProfile.setIs_Available_To_Foreign_Investigators(profileJaxb
-								.isIsAvailableToForeignInvestigators());
-
-						specimenProfile.setIs_Available_To_Commercial_Organizations(profileJaxb
-								.isIsAvailableToCommercialOrganizations());
-
-						specimenProfile.setSpecimen_Availability_Summary_Profile_ID(profileJaxb.getId());
-
-						listOfCollectionConstrained.put(profileJaxb.getId(), specimenProfile);
-					}
-
-					cp.setIs_Constrained_By_Specimen_Availability_Summary_Profile_ID(profileJaxb.getId());
-				}
-
-				if (collectionProtocolFromJaxb.getMakesAvailable() != null)
-				{
-					AnnotationAvailabilityProfile annotationProfileJaxb = collectionProtocolFromJaxb
-							.getMakesAvailable();
-
-					if (!listOfAnnotationProfile.containsKey(annotationProfileJaxb.getId()))
-					{
-						Annotation_Availability_Profile profile = new Annotation_Availability_Profile();
-
-						profile.setHas_Additional_Patient_Demographics(annotationProfileJaxb
-								.isHasAdditionalPatientDemographics());
-
-						profile.setHas_Exposure_History(annotationProfileJaxb.isHasExposureHistory());
-
-						profile.setHas_Family_History(annotationProfileJaxb.isHasFamilyHistory());
-
-						profile.setHas_Histopathologic_Information(annotationProfileJaxb
-								.isHasHistopathologicInformation());
-
-						profile.setHas_Lab_Data(annotationProfileJaxb.isHasLabData());
-
-						profile.setHas_Longitudinal_Specimens(annotationProfileJaxb.isHasLongitudinalSpecimens());
-
-						profile.setHas_Matched_Specimens(annotationProfileJaxb.isHasMatchedSpecimens());
-
-						profile.setHas_Outcome_Information(annotationProfileJaxb.isHasOutcomeInformation());
-
-						profile.setHas_Participants_Available_For_Followup(annotationProfileJaxb
-								.isHasParticipantsAvailableForFollowup());
-
-						profile.setHas_Treatment_Information(annotationProfileJaxb.isHasTreatmentInformation());
-
-						profile.setAnnotation_Availability_Profile_ID(annotationProfileJaxb.getId());
-
-						listOfAnnotationProfile.put(annotationProfileJaxb.getId(), profile);
-					}
-
-					cp.setMakes_Available(annotationProfileJaxb.getId());
-				}
-
-				if (collectionProtocolFromJaxb.getIsAssignedTo() != null)
-				{
-					SpecimenCollectionContact collectionContactJaxb = collectionProtocolFromJaxb.getIsAssignedTo();
-
-					if (!listOfContacts.containsKey(collectionContactJaxb.getId()))
-					{
-						Person person = new Person();
-
-						person.setFirst_Name(collectionContactJaxb.getFirstName());
-
-						person.setLast_Name(collectionContactJaxb.getLastName());
-
-						person.setFull_Name(collectionContactJaxb.getFullName());
-
-						person.setEmail_Address(collectionContactJaxb.getEmailAddress());
-
-						person.setMiddle_Name_Or_Initial(collectionContactJaxb.getMiddleNameOrInitial());
-
-						person.setPerson_ID(collectionContactJaxb.getId());
-
-						listOfPersons.put(collectionContactJaxb.getId(), person);
-
-						Specimen_Collection_Contact contact = new Specimen_Collection_Contact();
-
-						contact.setSpecimen_Collection_Contact_ID(collectionContactJaxb.getId());
-
-						contact.setPhone(collectionContactJaxb.getPhone());
-
-						gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Address addressJaxb = collectionContactJaxb
-								.getIsLocatedAt();
-
-						if (addressJaxb != null)
-						{
-							if (!listOfAddress.containsKey(addressJaxb.getId()))
+							// ############# Collect all the races from Jaxb
+							// Object
+							// and
+							// ###########
+							// ############# create Molgenis entities ##########
+							for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Race eachRace : participantSummary
+									.getIsClassifiedBy().getRace())
 							{
-								contact.setAddress_Id(addressJaxb.getId());
+								// Make linkTable for
+								// ParticipantCollectionSummary
+								// and
+								// Race, therefore should check the uniqueness
+								// of
+								// combination of both ids
+								StringBuilder uniqueLinktableKey = new StringBuilder();
 
-								Address address = new Address();
+								uniqueLinktableKey.append(participantSummary.getId()).append(eachRace.getId());
 
-								address.setAddress_ID(addressJaxb.getId());
+								if (!listOfParticipantRaceLinkTable.containsKey(uniqueLinktableKey.toString()
+										.toLowerCase().trim()))
+								{
+									Join_Participant_Collection_Summary_To_Race linkTable = new Join_Participant_Collection_Summary_To_Race();
 
-								address.setCity(addressJaxb.getCity());
+									linkTable.setParticipant_Collection_Summary_ID(participantSummary.getId());
 
-								address.setCountry(addressJaxb.getCountry());
+									linkTable.setRace_Id(eachRace.getId());
 
-								address.setDepartment_Or_Division(addressJaxb.getDepartmentOrDivision());
-
-								address.setEntity_Name(addressJaxb.getEntityName());
-
-								address.setEntity_Number(addressJaxb.getEntityNumber());
-
-								address.setFloor_Or_Premises(addressJaxb.getFloorOrPremises());
-
-								address.setPost_Office_Box(addressJaxb.getPostOfficeBox());
-
-								address.setState(addressJaxb.getState());
-
-								address.setStreet_Or_Thoroughfare_Extension_Name(addressJaxb
-										.getStreetOrThoroughfareExtensionName());
-
-								address.setStreet_Or_Thoroughfare_Name_And_Type(addressJaxb
-										.getStreetOrThoroughfareNameAndType());
-
-								address.setStreet_Or_Thoroughfare_Number(addressJaxb.getStreetOrThoroughfareNumber());
-
-								address.setStreet_Or_Thoroughfare_Section_Name(addressJaxb
-										.getStreetOrThoroughfareSectionName());
-
-								address.setStreet_Post_Directional(addressJaxb.getStreetPostDirectional());
-
-								address.setStreet_Pre_Directional(addressJaxb.getStreetPreDirectional());
-
-								address.setZip_Code(addressJaxb.getZipCode());
-
-								listOfAddress.put(addressJaxb.getId(), address);
+									listOfParticipantRaceLinkTable.put(uniqueLinktableKey.toString().toLowerCase()
+											.trim(), linkTable);
+								}
 							}
-						}
 
-						listOfContacts.put(collectionContactJaxb.getId(), contact);
+							// Get the specimenCollection from the participant
+							// summary
+							List<Integer> listoFSpecimenID = new ArrayList<Integer>();
+
+							for (SpecimenCollectionSummary specimen : participantSummary.getProvides()
+									.getSpecimenCollectionSummary())
+							{
+								listoFSpecimenID.add(specimen.getId());
+							}
+
+							List<Specimen_Collection_Summary> collectionOfSpecimens = db.find(
+									Specimen_Collection_Summary.class, new QueryRule(
+											Specimen_Collection_Summary.SPECIMEN_COLLECTION_SUMMARY_ID, Operator.IN,
+											listoFSpecimenID));
+
+							participantCollectionSummary
+									.setIs_Collected_FromSpecimen_Collection_SummaryCollection(collectionOfSpecimens);
+
+							// Diagnosis
+							for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Diagnosis diagnosis : participantSummary
+									.getReceives().getDiagnosis())
+							{
+
+								StringBuilder uniqueIdentifer = new StringBuilder();
+
+								uniqueIdentifer.append(participantSummary.getId()).append(diagnosis.getId());
+
+								if (!listOfParticipantDiagnosisLinkTable.containsKey(uniqueIdentifer.toString().trim()
+										.toLowerCase()))
+								{
+									Join_Participant_Collection_Summary_Todiagnosis joinTableParticipantDiagnosis = new Join_Participant_Collection_Summary_Todiagnosis();
+
+									// joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diagnosis.getId());
+
+									joinTableParticipantDiagnosis
+											.setParticipant_Collection_Summary_ID_Participant_Collection_Summary_ID(participantSummary
+													.getId());
+
+									org.molgenis.cbm.Diagnosis diag = db.find(
+											org.molgenis.cbm.Diagnosis.class,
+											new QueryRule(org.molgenis.cbm.Diagnosis.DIAGNOSIS_ID, Operator.EQUALS,
+													diagnosis.getId())).get(0);
+
+									joinTableParticipantDiagnosis.setDiagnosis_Id(diag);
+
+									joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diag.getDiagnosis_ID());
+
+									joinTableParticipantDiagnosis
+											.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
+
+									// joinTableParticipantDiagnosis.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
+
+									listOfParticipantDiagnosisLinkTable.put(uniqueIdentifer.toString().trim()
+											.toLowerCase(), joinTableParticipantDiagnosis);
+								}
+
+							}
+
+							// Add this participantSummary to the list
+							// collection
+							listOfParticipantSummary.put(participantSummary.getId(), participantCollectionSummary);
+						}
 					}
 
-					cp.setIs_Assigned_To(collectionContactJaxb.getId());
+					// Collect information for collection_protocol
+					Collection_Protocol cp = new Collection_Protocol();
+
+					String collectionProtocolName = collectionProtocolFromJaxb.getName();
+
+					String collectionProtocolIdentifier = collectionProtocolFromJaxb.getIdentifier();
+
+					Integer collectionProtocolID = collectionProtocolFromJaxb.getId();
+
+					cp.setCollectionProtocolID(collectionProtocolID);
+
+					cp.setName(collectionProtocolName);
+
+					cp.setIdentifier(collectionProtocolIdentifier);
+
+					// cp.setDate_Last_Updated(collectionProtocolFromJaxb.getDateLastUpdated().toString());
+					//
+					// cp.setEnd_Date(collectionProtocolFromJaxb.getEndDate().toString());
+
+					// Collection information for institution and organization
+					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Institution cbmInsititue : collectionProtocolFromJaxb
+							.getResidesAt().getInstitution())
+					{
+
+						if (!listOfOrganizations.containsKey(cbmInsititue.getId()))
+						{
+							Organization organization = new Organization();
+
+							organization.setName(cbmInsititue.getName());
+
+							organization.setOrganization_ID(cbmInsititue.getId());
+
+							Institution institue = new Institution();
+
+							institue.setInstitution_ID(cbmInsititue.getId());
+
+							institue.setHomepage_URL(cbmInsititue.getHomepageURL());
+
+							if (!listOfInstitues.containsKey(cbmInsititue.getId()))
+							{
+								listOfInstitues.put(cbmInsititue.getId(), institue);
+							}
+
+							listOfOrganizations.put(cbmInsititue.getId(), organization);
+
+						}
+
+						StringBuilder builder = new StringBuilder();
+
+						if (!listOfCollectionInstituteLinkTable.containsKey(builder.append(collectionProtocolID)
+								.append(cbmInsititue.getId()).toString()))
+						{
+							Join_Collection_Protocol_To_Institution joinTable = new Join_Collection_Protocol_To_Institution();
+
+							joinTable.setInstitution_ID(cbmInsititue.getId());
+
+							joinTable.setCollection_Protocol_ID(collectionProtocolID);
+
+							listOfCollectionInstituteLinkTable.put(
+									builder.append(collectionProtocolID).append(cbmInsititue.getId()).toString(),
+									joinTable);
+						}
+					}
+
+					// Set the isconstrained entity
+					if (collectionProtocolFromJaxb.getIsConstrainedBy() != null)
+					{
+						SpecimenAvailabilitySummaryProfile profileJaxb = collectionProtocolFromJaxb
+								.getIsConstrainedBy();
+
+						if (!listOfCollectionConstrained.containsKey(profileJaxb.getId()))
+						{
+							Specimen_Availability_Summary_Profile specimenProfile = new Specimen_Availability_Summary_Profile();
+
+							specimenProfile.setIs_Collaboration_Required(profileJaxb.isIsCollaborationRequired());
+
+							specimenProfile.setIs_Available_To_Outside_Institution(profileJaxb
+									.isIsAvailableToOutsideInstitution());
+
+							specimenProfile.setIs_Available_To_Foreign_Investigators(profileJaxb
+									.isIsAvailableToForeignInvestigators());
+
+							specimenProfile.setIs_Available_To_Commercial_Organizations(profileJaxb
+									.isIsAvailableToCommercialOrganizations());
+
+							specimenProfile.setSpecimen_Availability_Summary_Profile_ID(profileJaxb.getId());
+
+							listOfCollectionConstrained.put(profileJaxb.getId(), specimenProfile);
+						}
+
+						cp.setIs_Constrained_By_Specimen_Availability_Summary_Profile_ID(profileJaxb.getId());
+					}
+
+					if (collectionProtocolFromJaxb.getMakesAvailable() != null)
+					{
+						AnnotationAvailabilityProfile annotationProfileJaxb = collectionProtocolFromJaxb
+								.getMakesAvailable();
+
+						if (!listOfAnnotationProfile.containsKey(annotationProfileJaxb.getId()))
+						{
+							Annotation_Availability_Profile profile = new Annotation_Availability_Profile();
+
+							profile.setHas_Additional_Patient_Demographics(annotationProfileJaxb
+									.isHasAdditionalPatientDemographics());
+
+							profile.setHas_Exposure_History(annotationProfileJaxb.isHasExposureHistory());
+
+							profile.setHas_Family_History(annotationProfileJaxb.isHasFamilyHistory());
+
+							profile.setHas_Histopathologic_Information(annotationProfileJaxb
+									.isHasHistopathologicInformation());
+
+							profile.setHas_Lab_Data(annotationProfileJaxb.isHasLabData());
+
+							profile.setHas_Longitudinal_Specimens(annotationProfileJaxb.isHasLongitudinalSpecimens());
+
+							profile.setHas_Matched_Specimens(annotationProfileJaxb.isHasMatchedSpecimens());
+
+							profile.setHas_Outcome_Information(annotationProfileJaxb.isHasOutcomeInformation());
+
+							profile.setHas_Participants_Available_For_Followup(annotationProfileJaxb
+									.isHasParticipantsAvailableForFollowup());
+
+							profile.setHas_Treatment_Information(annotationProfileJaxb.isHasTreatmentInformation());
+
+							profile.setAnnotation_Availability_Profile_ID(annotationProfileJaxb.getId());
+
+							listOfAnnotationProfile.put(annotationProfileJaxb.getId(), profile);
+						}
+
+						cp.setMakes_Available(annotationProfileJaxb.getId());
+					}
+
+					// Collect information on Specimen_collection_contact and
+					// Person
+					// and Address
+					if (collectionProtocolFromJaxb.getIsAssignedTo() != null)
+					{
+						SpecimenCollectionContact collectionContactJaxb = collectionProtocolFromJaxb.getIsAssignedTo();
+
+						if (!listOfContacts.containsKey(collectionContactJaxb.getId()))
+						{
+							Person person = new Person();
+
+							person.setFirst_Name(collectionContactJaxb.getFirstName());
+
+							person.setLast_Name(collectionContactJaxb.getLastName());
+
+							person.setFull_Name(collectionContactJaxb.getFullName());
+
+							person.setEmail_Address(collectionContactJaxb.getEmailAddress());
+
+							person.setMiddle_Name_Or_Initial(collectionContactJaxb.getMiddleNameOrInitial());
+
+							person.setPerson_ID(collectionContactJaxb.getId());
+
+							listOfPersons.put(collectionContactJaxb.getId(), person);
+
+							Specimen_Collection_Contact contact = new Specimen_Collection_Contact();
+
+							contact.setSpecimen_Collection_Contact_ID(collectionContactJaxb.getId());
+
+							contact.setPhone(collectionContactJaxb.getPhone());
+
+							gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Address addressJaxb = collectionContactJaxb
+									.getIsLocatedAt();
+
+							if (addressJaxb != null)
+							{
+								if (!listOfAddress.containsKey(addressJaxb.getId()))
+								{
+									contact.setAddress_Id(addressJaxb.getId());
+
+									Address address = new Address();
+
+									address.setAddress_ID(addressJaxb.getId());
+
+									address.setCity(addressJaxb.getCity());
+
+									address.setCountry(addressJaxb.getCountry());
+
+									address.setDepartment_Or_Division(addressJaxb.getDepartmentOrDivision());
+
+									address.setEntity_Name(addressJaxb.getEntityName());
+
+									address.setEntity_Number(addressJaxb.getEntityNumber());
+
+									address.setFloor_Or_Premises(addressJaxb.getFloorOrPremises());
+
+									address.setPost_Office_Box(addressJaxb.getPostOfficeBox());
+
+									address.setState(addressJaxb.getState());
+
+									address.setStreet_Or_Thoroughfare_Extension_Name(addressJaxb
+											.getStreetOrThoroughfareExtensionName());
+
+									address.setStreet_Or_Thoroughfare_Name_And_Type(addressJaxb
+											.getStreetOrThoroughfareNameAndType());
+
+									address.setStreet_Or_Thoroughfare_Number(addressJaxb
+											.getStreetOrThoroughfareNumber());
+
+									address.setStreet_Or_Thoroughfare_Section_Name(addressJaxb
+											.getStreetOrThoroughfareSectionName());
+
+									address.setStreet_Post_Directional(addressJaxb.getStreetPostDirectional());
+
+									address.setStreet_Pre_Directional(addressJaxb.getStreetPreDirectional());
+
+									address.setZip_Code(addressJaxb.getZipCode());
+
+									listOfAddress.put(addressJaxb.getId(), address);
+								}
+							}
+
+							listOfContacts.put(collectionContactJaxb.getId(), contact);
+						}
+
+						cp.setIs_Assigned_To(collectionContactJaxb.getId());
+					}
+
+					listOfCollectionProtocol.put(collectionProtocolFromJaxb.getId(), cp);
 				}
-
-				listOfCollectionProtocol.add(cp);
-
 			}
 
 			db.add(new ArrayList<Person>(listOfPersons.values()));
@@ -463,9 +479,9 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			db.add(new ArrayList<Institution>(listOfInstitues.values()));
 
-			db.add(listOfParticipantSummary);
+			db.add(new ArrayList<Participant_Collection_Summary>(listOfParticipantSummary.values()));
 
-			db.add(listOfCollectionProtocol);
+			db.add(new ArrayList<Collection_Protocol>(listOfCollectionProtocol.values()));
 
 			db.add(new ArrayList<Join_Participant_Collection_Summary_To_Race>(listOfParticipantRaceLinkTable.values()));
 
