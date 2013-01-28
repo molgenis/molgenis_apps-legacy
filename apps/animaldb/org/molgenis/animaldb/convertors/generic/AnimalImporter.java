@@ -519,6 +519,7 @@ public class AnimalImporter
 			String weanDate = null;
 			String dobDate = null;
 			String lineName = null;
+			String oldLitterId = null;
 			// Get breedingline from mother (FIXME this assumes that the mother
 			// has been imported already, is this really always true?)
 			lineName = this.defaultBreedingLine;
@@ -526,10 +527,13 @@ public class AnimalImporter
 			{
 				if ((MaleCtr + FemaleCtr + UnkSexCtr) == 0)
 				{
+					String animal = v.getTarget_Name();
 					// Get weanDate from first sibling
-					weanDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "WeanDate");
+					weanDate = ct.getMostRecentValueAsString(animal, "WeanDate");
 					// Get birthDate from first sibling
-					dobDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "DateOfBirth");
+					dobDate = ct.getMostRecentValueAsString(animal, "DateOfBirth");
+					// Get old litter id from first sibling
+					oldLitterId = ct.getMostRecentValueAsString(animal, "OldLitterId");
 				}
 				String sex = ct.getMostRecentValueAsXrefName(v.getTarget_Name(), "Sex");
 				if (sex.equalsIgnoreCase("Male"))
@@ -621,6 +625,10 @@ public class AnimalImporter
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
 
+			// Set old litter nr also on new litter
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("OldLitterId"), now, null, "OldLitterId",
+					litterName, oldLitterId, null));
+
 			// we always need a birthdate, calculate one if it is missing
 			if (dobDate == null || dobDate.equals(""))
 			{
@@ -630,7 +638,7 @@ public class AnimalImporter
 					Calendar tmpCal = Calendar.getInstance();
 					tmpCal.setTimeInMillis(dobDateT);
 					dobDate = inputFormat.format(tmpCal.getTime());
-					remark = remark + "; birtdate unknown on import, calculated from weandate (weandate 4wks)";
+					remark = remark + "; birtdate unknown on import, calculated from weandate (weandate - 4wks)";
 				}
 				else
 				{
