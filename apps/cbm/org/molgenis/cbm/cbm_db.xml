@@ -84,7 +84,8 @@
 	</entity>
 	<entity name="institution">
 		<field type="autoid" name="id" />
-		<field unique="true" type="int" name="institution_ID"/>
+		<field unique="true" xref_field="organization.organization_ID" nillable="true"
+			type="xref" name="institution_ID" />
 		<field unique="true"  length="50" nillable="true" name="homepage_URL" />
 	</entity>
 
@@ -96,7 +97,8 @@
 			nillable="true" type="xref" name="collection_protocol_ID" />
 	</entity>
 	<entity name="organization">
-		<field unique="true" type="int" name="organization_ID" auto="true" />
+		<field type="autoid" name="id" />
+		<field unique="true" type="int" name="organization_ID"/>
 		<field length="150" nillable="true" name="name" />
 	</entity>
 	<entity name="participant_collection_summary">

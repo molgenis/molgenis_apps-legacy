@@ -22,6 +22,7 @@ import org.molgenis.cbm.Institution;
 import org.molgenis.cbm.Join_Collection_Protocol_To_Institution;
 import org.molgenis.cbm.Join_Participant_Collection_Summary_To_Race;
 import org.molgenis.cbm.Join_Participant_Collection_Summary_Todiagnosis;
+import org.molgenis.cbm.Organization;
 import org.molgenis.cbm.Participant_Collection_Summary;
 import org.molgenis.cbm.Person;
 import org.molgenis.cbm.Specimen_Availability_Summary_Profile;
@@ -97,7 +98,9 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			Map<String, Join_Participant_Collection_Summary_Todiagnosis> listOfParticipantDiagnosisLinkTable = new HashMap<String, Join_Participant_Collection_Summary_Todiagnosis>();
 
-			Map<String, Institution> listOfInstitues = new HashMap<String, Institution>();
+			Map<Integer, Institution> listOfInstitues = new HashMap<Integer, Institution>();
+
+			Map<Integer, Organization> listOfOrganizations = new HashMap<Integer, Organization>();
 
 			Map<String, Join_Collection_Protocol_To_Institution> listOfCollectionInstituteLinkTable = new HashMap<String, Join_Collection_Protocol_To_Institution>();
 
@@ -249,35 +252,44 @@ public class ImportCbmData extends PluginModel<Entity>
 				for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Institution cbmInsititue : collectionProtocolFromJaxb
 						.getResidesAt().getInstitution())
 				{
-					String URL = cbmInsititue.getHomepageURL();
 
-					Integer id = cbmInsititue.getId();
-
-					Institution institue = new Institution();
-
-					institue.setInstitution_ID(id);
-
-					institue.setHomepage_URL(URL);
-
-					if (!listOfInstitues.containsKey(URL))
+					if (!listOfOrganizations.containsKey(cbmInsititue.getId()))
 					{
-						listOfInstitues.put(URL, institue);
+						Organization organization = new Organization();
+
+						organization.setName(cbmInsititue.getName());
+
+						organization.setOrganization_ID(cbmInsititue.getId());
+
+						Institution institue = new Institution();
+
+						institue.setInstitution_ID(cbmInsititue.getId());
+
+						institue.setHomepage_URL(cbmInsititue.getHomepageURL());
+
+						if (!listOfInstitues.containsKey(cbmInsititue.getId()))
+						{
+							listOfInstitues.put(cbmInsititue.getId(), institue);
+						}
+
+						listOfOrganizations.put(cbmInsititue.getId(), organization);
+
 					}
 
 					StringBuilder builder = new StringBuilder();
 
-					if (!listOfCollectionInstituteLinkTable.containsKey(builder.append(collectionProtocolID).append(id)
-							.toString()))
+					if (!listOfCollectionInstituteLinkTable.containsKey(builder.append(collectionProtocolID)
+							.append(cbmInsititue.getId()).toString()))
 					{
 						Join_Collection_Protocol_To_Institution joinTable = new Join_Collection_Protocol_To_Institution();
 
-						joinTable.setInstitution_ID(id);
+						joinTable.setInstitution_ID(cbmInsititue.getId());
 
 						joinTable.setCollection_Protocol_ID(collectionProtocolID);
 
-						listOfCollectionInstituteLinkTable.put(builder.append(collectionProtocolID).append(id)
-								.toString()
-								+ id, joinTable);
+						listOfCollectionInstituteLinkTable
+								.put(builder.append(collectionProtocolID).append(cbmInsititue.getId()).toString(),
+										joinTable);
 					}
 				}
 
@@ -447,31 +459,36 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			db.add(new ArrayList<Specimen_Availability_Summary_Profile>(listOfCollectionConstrained.values()));
 
+			db.add(new ArrayList<Organization>(listOfOrganizations.values()));
+
 			db.add(new ArrayList<Institution>(listOfInstitues.values()));
 
 			db.add(listOfParticipantSummary);
 
 			db.add(listOfCollectionProtocol);
 
-			// db.add(new ArrayList<Race>(racesToAdd.values()));
+			db.add(new ArrayList<Join_Participant_Collection_Summary_To_Race>(listOfParticipantRaceLinkTable.values()));
 
-			// db.add();
+			db.add(new ArrayList<Join_Participant_Collection_Summary_Todiagnosis>(listOfParticipantDiagnosisLinkTable
+					.values()));
 
-			for (Join_Participant_Collection_Summary_To_Race joinRace : new ArrayList<Join_Participant_Collection_Summary_To_Race>(
-					listOfParticipantRaceLinkTable.values()))
-			{
-				System.out.println(joinRace);
-
-				db.add(joinRace);
-			}
-
-			for (Join_Participant_Collection_Summary_Todiagnosis diagnosis : listOfParticipantDiagnosisLinkTable
-					.values())
-			{
-				System.out.println(diagnosis);
-
-				db.add(diagnosis);
-			}
+			// for (Join_Participant_Collection_Summary_To_Race joinRace : new
+			// ArrayList<Join_Participant_Collection_Summary_To_Race>(
+			// listOfParticipantRaceLinkTable.values()))
+			// {
+			// System.out.println(joinRace);
+			//
+			// db.add(joinRace);
+			// }
+			//
+			// for (Join_Participant_Collection_Summary_Todiagnosis diagnosis :
+			// listOfParticipantDiagnosisLinkTable
+			// .values())
+			// {
+			// System.out.println(diagnosis);
+			//
+			// db.add(diagnosis);
+			// }
 		}
 	}
 
