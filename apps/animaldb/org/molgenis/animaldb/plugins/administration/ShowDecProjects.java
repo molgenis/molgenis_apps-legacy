@@ -221,7 +221,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 					// autogenerate name to be the DEC id prepended with "DEC "
 					projectName = name + decnumber;
 					// Make new DEC project
-					ct.makePanel(investigationName, projectName, this.getLogin().getUserName());
+					ct.createPanelOwnedByUser(investigationName, projectName, this.getLogin().getUserId());
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null,
 							"SetTypeOfGroup", "TypeOfGroup", projectName, "DecApplication", null));
 				}

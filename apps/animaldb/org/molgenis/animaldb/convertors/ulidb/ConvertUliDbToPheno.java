@@ -198,7 +198,7 @@ public class ConvertUliDbToPheno
 		{
 			String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
+			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
 		}
 	}
@@ -645,7 +645,7 @@ public class ConvertUliDbToPheno
 				parentgroupNrMap.put(lineName, parentgroupNr);
 				String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
 				String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-				panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+				panelsToAddList.add(ct.preparePanel(invName, parentgroupName));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null,
 						"TypeOfGroup", parentgroupName, "Parentgroup", null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
@@ -682,7 +682,7 @@ public class ConvertUliDbToPheno
 				litterNrMap.put(lineName, litterNr);
 				String litterNrPart = ct.prependZeros("" + litterNr, 6);
 				String litterName = "LT_" + lineName + "_" + litterNrPart;
-				panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+				panelsToAddList.add(ct.preparePanel(invName, litterName));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null,
 						"TypeOfGroup", litterName, "Litter", null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), now, null, "WeanDate",
@@ -715,7 +715,7 @@ public class ConvertUliDbToPheno
 		Date now = new Date();
 
 		// Make line panel
-		ct.makePanel(investigationName, lineName, userName);
+		ct.createPanel(investigationName, lineName);
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
 		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup",
 				"TypeOfGroup", lineName, "Line", null));
@@ -749,7 +749,7 @@ public class ConvertUliDbToPheno
 		Date now = new Date();
 
 		// Make background panel
-		ct.makePanel(investigationName, bkgName, login.getUserName());
+		ct.createPanel(investigationName, bkgName);
 		// Label it as background using the (Set)TypeOfGroup protocol and
 		// feature
 		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup",
