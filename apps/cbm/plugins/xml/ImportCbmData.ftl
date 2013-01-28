@@ -24,9 +24,10 @@
 			<div class="screenpadding">	
 			<h1>Import xml data</h1>
 			<i>Upload Xml file with your data</i>
-			<br>
-			<input type="file" name="upload"/>
-			<input type="submit" value="Upload" id="upload_xml" onclick="__action.value='upload';return true;"/><br>
+			<br /><br />
+			Please upload the data<input type="file" name="uploadData"/><br /><br />
+			Please upload the schema, file end with xsd<input type="file" name="uploadSchema"/><br /><br />
+			<input type="submit" value="Upload" id="upload_xml" onclick="__action.value='upload';return true;"/><br />
 			
 			
 		</div>
