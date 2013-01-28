@@ -16,11 +16,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -390,11 +387,8 @@ public class AddAnimalPlugin extends EasyPluginController
 			// Make and add animal
 			String nrPart = "" + (startNumber + i);
 			nrPart = ct.prependZeros(nrPart, 6);
-			Individual newAnimal = ct.createIndividual(invName, nameBase + nrPart, userName);
+			Individual newAnimal = ct.createIndividual(invName, nameBase + nrPart);
 			animalsToAddList.add(newAnimal);
-			MolgenisUser user = db.find(MolgenisUser.class,
-					new QueryRule(MolgenisUser.NAME, Operator.EQUALS, db.getLogin().getUserName())).get(0);
-			newAnimal.setOwns(user);
 		}
 		db.add(animalsToAddList);
 
