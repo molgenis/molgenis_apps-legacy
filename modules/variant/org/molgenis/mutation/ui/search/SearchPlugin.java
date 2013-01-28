@@ -76,9 +76,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		mBrowse.setTarget(this.getName());
 
 		this.getModel().setMbrowse(mBrowse);
-
-		// this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new
-		// ExpertSearchForm()));
 	}
 
 	private ScreenView view;
@@ -274,11 +271,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		if (StringUtils.isNotEmpty(request.getString("mid")))
 		{
 			String mutationIdentifier = request.getString("mid");
-
-			// if (StringUtils.isNotEmpty(request.getString("snpbool")))
-			// if (request.getString("snpbool").equals("hide"))
-			// this.getModel().getMutationSearchCriteriaVO().setReportedAsSNP(false);
-
+			
 			MutationSummaryDTO mutationSummaryDTO = searchService.findMutationByIdentifier(mutationIdentifier);
 
 			this.getModel().setMutationSummaryVO(mutationSummaryDTO);
@@ -311,11 +304,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	protected void handleFindMutationsByTerm(Tuple request)
 	{
-		// if (StringUtils.isNotEmpty(request.getString("term")) &&
-		// request.getString("term").length() < 3)
-		// throw new
-		// SearchException("Search term is too general. Please use a more specific one.");
-
 		if (StringUtils.isNotEmpty(request.getString("result"))) this.getModel().setResult(request.getString("result"));
 		else
 			this.getModel().setResult("mutations"); // Default: Show mutations
@@ -422,9 +410,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 	protected void listAllPatients(Tuple request)
 	{
-		// MolgenisUser user = new MolgenisUser();
-		// user.setId(this.getLogin().getUserId());
-		// this.getModel().setPatientSummaryVOs(this.patientService.find(user));
 		List<PatientSummaryDTO> patientSummaryVOs = searchService.findAllPatientSummaries();
 		this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 		((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs",
@@ -609,66 +594,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			}
 	}
 
-	// private void convert2eav(Database db) throws DatabaseException,
-	// ParseException
-	// {
-	// List<Patient> patients = db.query(Patient.class).find();
-	// for (Patient patient : patients)
-	// {
-	// PhenotypeDetails details = db.findById(PhenotypeDetails.class,
-	// patient.getPhenotype_Details_Id());
-	// for (String field : details.getFields())
-	// {
-	// if ("id".equals(field))
-	// continue;
-	// if (details.get(field) == null)
-	// continue;
-	// String value = details.get(field).toString();
-	// System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, "
-	// + patient.getId() + ", 'ObservedValue', '" + value +
-	// "' FROM ObservationElement f WHERE name = '" + field + "';");
-	// }
-	//
-	// List<I_F> ifs = db.query(I_F.class).equals(I_F.PATIENT,
-	// patient.getId()).find();
-	// for (I_F if_ : ifs)
-	// {
-	// String field = "Amount of type VII collagen";
-	// String value = if_.getValue();
-	// System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, "
-	// + patient.getId() + ", 'ObservedValue', '" + value +
-	// "' FROM ObservationElement f WHERE name = '" + field + "';");
-	// String field2 = "IF Retention of type VII Collagen in basal cells";
-	// String value2 = if_.getRetention();
-	// System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, "
-	// + patient.getId() + ", 'ObservedValue', '" + value2 +
-	// "' FROM ObservationElement f WHERE name = '" + field2 + "';");
-	// }
-	//
-	// List<E_M> ems = db.query(E_M.class).equals(E_M.PATIENT,
-	// patient.getId()).find();
-	// for (E_M em_ : ems)
-	// {
-	// String field = "Anchoring fibrils Number";
-	// String value = em_.getNumber();
-	// System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, "
-	// + patient.getId() + ", 'ObservedValue', '" + value +
-	// "' FROM ObservationElement f WHERE name = '" + field + "';");
-	// String field2 = "Anchoring fibrils Ultrastructure";
-	// String value2 = em_.getAppearance();
-	// System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, "
-	// + patient.getId() + ", 'ObservedValue', '" + value2 +
-	// "' FROM ObservationElement f WHERE name = '" + field2 + "';");
-	// String field3 = "EM Retention of type VII Collagen in basal cells";
-	// String value3 = em_.getRetention();
-	// System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, "
-	// + patient.getId() + ", 'ObservedValue', '" + value3 +
-	// "' FROM ObservationElement f WHERE name = '" + field3 + "';");
-	// }
-	// }
-	//
-	// }
-
 	private void initTopPanel()
 	{
 		if (this.getModel().getMbrowse().getIsVisible())
@@ -844,6 +769,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		public void set(String colName, Object value)
 		{
 			getRequest().getParameterMap().put(colName, value);
+		}
+		
+		@Override
+		public void set(Tuple tuple)
+		{
+			for (String col : tuple.getColNames())
+			{
+				this.set(col, tuple.get(col));
+			}
 		}
 	}
 }
