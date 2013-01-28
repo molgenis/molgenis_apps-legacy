@@ -169,7 +169,16 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				// List<String> investigationNames =
 				// ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
+				measurementsToShow.add("Active");
+				measurementsToShow.add("DateOfBirth");
+				measurementsToShow.add("Experiment");
+				measurementsToShow.add("GeneModification");
+				measurementsToShow.add("GeneState");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("Litter");
 				measurementsToShow.add("Location");
+				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
 				// List<MatrixQueryRule> filterRules = new
 				// ArrayList<MatrixQueryRule>();
 				// filterRules.add(new
@@ -188,8 +197,12 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				// null));
 				// TODO: make MQRs combinable with OR so we can have animals
 				// with location NULL OR NOT current
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
+						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+
 				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, new SliceablePhenoMatrix(
-						Individual.class, Measurement.class), true, 2, false, true, null, new MatrixQueryRule(
+						Individual.class, Measurement.class), true, 2, false, true, filterRules, new MatrixQueryRule(
 						MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
 			}
@@ -261,10 +274,21 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 	{
 		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 		List<String> measurementsToShow = new ArrayList<String>();
+		measurementsToShow.add("Active");
+		measurementsToShow.add("DateOfBirth");
+		measurementsToShow.add("Experiment");
+		measurementsToShow.add("GeneModification");
+		measurementsToShow.add("GeneState");
+		measurementsToShow.add("Line");
+		measurementsToShow.add("Litter");
 		measurementsToShow.add("Location");
+		measurementsToShow.add("Sex");
+		measurementsToShow.add("Species");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, Operator.IN,
 				investigationNames));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+				ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Location"),
 				ObservedValue.RELATION_NAME, Operator.EQUALS, locationName));
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Location"),

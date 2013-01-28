@@ -156,7 +156,7 @@ public class ConvertRhutDbToPheno
 
 	private void createLine(String lineName) throws DatabaseException, IOException, ParseException
 	{
-		panelsToAddList.add(ct.createPanel(invName, lineName, userName));
+		panelsToAddList.add(ct.preparePanel(invName, lineName));
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
 		Date now = new Date();
 		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
@@ -276,7 +276,7 @@ public class ConvertRhutDbToPheno
 		{
 			String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividual(invName, animalName, userName);
+			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
 
 			// ID -> OldRhutDbAnimalId
@@ -624,7 +624,7 @@ public class ConvertRhutDbToPheno
 			parentgroupNrMap.put(lineName, parentgroupNr);
 			String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-			panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, parentgroupName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					parentgroupName, "Parentgroup", null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), now, null, "Active",
@@ -659,7 +659,7 @@ public class ConvertRhutDbToPheno
 			litterNrMap.put(lineName, litterNr);
 			String litterNrPart = ct.prependZeros("" + litterNr, 6);
 			String litterName = "LT_" + lineName + "_" + litterNrPart;
-			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, litterName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), now, null, "DateOfBirth",
@@ -771,7 +771,7 @@ public class ConvertRhutDbToPheno
 			if (!addedDecApps.contains(project))
 			{
 				addedDecApps.add(project);
-				panelsToAddList.add(ct.createPanel(invName, project, userName));
+				panelsToAddList.add(ct.preparePanel(invName, project));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null,
 						"TypeOfGroup", project, "DecApplication", null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), now, null,
@@ -780,7 +780,7 @@ public class ConvertRhutDbToPheno
 						"DecTitle", project, subproject, null));
 			}
 			// Make a DEC subproject
-			panelsToAddList.add(ct.createPanel(invName, subproject, userName));
+			panelsToAddList.add(ct.preparePanel(invName, subproject));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					subproject, "Experiment", null));
 			// Link to DEC app
