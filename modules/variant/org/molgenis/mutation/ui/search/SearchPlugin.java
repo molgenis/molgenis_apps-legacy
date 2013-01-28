@@ -774,9 +774,9 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		@Override
 		public void set(Tuple tuple)
 		{
-			for (String col : t.getColNames())
+			for (String col : tuple.getColNames())
 			{
-				this.set(col, t.get(col));
+				this.set(col, tuple.get(col));
 			}
 		}
 	}
