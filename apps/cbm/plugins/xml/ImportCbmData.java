@@ -67,12 +67,25 @@ public class ImportCbmData extends PluginModel<Entity>
 		{
 
 			// get uploaded file and do checks
-			File file = request.getFile("upload");
+			File file = request.getFile("uploadData");
+
 			if (file == null)
 			{
 				throw new Exception("No file selected.");
 			}
 			else if (!file.getName().endsWith(".xml"))
+			{
+				throw new Exception("File does not end with '.xml', other formats are not supported.");
+			}
+
+			// get uploaded file and do checks
+			File currentXsdfile = request.getFile("uploadSchema");
+
+			if (currentXsdfile == null)
+			{
+				throw new Exception("No file selected.");
+			}
+			else if (!currentXsdfile.getName().endsWith(".xsd"))
 			{
 				throw new Exception("File does not end with '.xml', other formats are not supported.");
 			}
@@ -85,8 +98,6 @@ public class ImportCbmData extends PluginModel<Entity>
 			// Parsing a document with JAXP
 
 			CbmXmlParser cbmXmlParser = new CbmXmlParser();
-
-			File currentXsdfile = new File("/Users/chaopang/Documents/Chao_Work/Data/CBM_data/CBM/CBM.xsd");
 
 			CbmNode result = cbmXmlParser.load(currentFile, currentXsdfile);
 
@@ -165,11 +176,16 @@ public class ImportCbmData extends PluginModel<Entity>
 								if (!listOfParticipantRaceLinkTable.containsKey(uniqueLinktableKey.toString()
 										.toLowerCase().trim()))
 								{
+									org.molgenis.cbm.Race existingRace = db.find(
+											org.molgenis.cbm.Race.class,
+											new QueryRule(org.molgenis.cbm.Race.RACE_ID, Operator.EQUALS, eachRace
+													.getId())).get(0);
+
 									Join_Participant_Collection_Summary_To_Race linkTable = new Join_Participant_Collection_Summary_To_Race();
 
-									linkTable.setParticipant_Collection_Summary_ID(participantSummary.getId());
+									linkTable.setParticipant_Collection_Summary_ID(participantCollectionSummary);
 
-									linkTable.setRace_Id(eachRace.getId());
+									linkTable.setRace_Id(existingRace);
 
 									listOfParticipantRaceLinkTable.put(uniqueLinktableKey.toString().toLowerCase()
 											.trim(), linkTable);
@@ -208,11 +224,8 @@ public class ImportCbmData extends PluginModel<Entity>
 								{
 									Join_Participant_Collection_Summary_Todiagnosis joinTableParticipantDiagnosis = new Join_Participant_Collection_Summary_Todiagnosis();
 
-									// joinTableParticipantDiagnosis.setDiagnosis_Id_Diagnosis_ID(diagnosis.getId());
-
 									joinTableParticipantDiagnosis
-											.setParticipant_Collection_Summary_ID_Participant_Collection_Summary_ID(participantSummary
-													.getId());
+											.setParticipant_Collection_Summary_ID(participantCollectionSummary);
 
 									org.molgenis.cbm.Diagnosis diag = db.find(
 											org.molgenis.cbm.Diagnosis.class,
@@ -226,12 +239,9 @@ public class ImportCbmData extends PluginModel<Entity>
 									joinTableParticipantDiagnosis
 											.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
 
-									// joinTableParticipantDiagnosis.setDiagnosis_Id_DiagnosisType(diag.getDiagnosisType());
-
 									listOfParticipantDiagnosisLinkTable.put(uniqueIdentifer.toString().trim()
 											.toLowerCase(), joinTableParticipantDiagnosis);
 								}
-
 							}
 
 							// Add this participantSummary to the list
@@ -255,14 +265,20 @@ public class ImportCbmData extends PluginModel<Entity>
 
 					cp.setIdentifier(collectionProtocolIdentifier);
 
+					// TODO: The date format comes in XMLDateFormat, need to
+					// convert it
 					// cp.setDate_Last_Updated(collectionProtocolFromJaxb.getDateLastUpdated().toString());
 					//
+					// TODO: The date format comes in XMLDateFormat, need to
+					// convert it
 					// cp.setEnd_Date(collectionProtocolFromJaxb.getEndDate().toString());
 
 					// Collection information for institution and organization
 					for (gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.Institution cbmInsititue : collectionProtocolFromJaxb
 							.getResidesAt().getInstitution())
 					{
+
+						Institution institue = null;
 
 						if (!listOfOrganizations.containsKey(cbmInsititue.getId()))
 						{
@@ -272,9 +288,9 @@ public class ImportCbmData extends PluginModel<Entity>
 
 							organization.setOrganization_ID(cbmInsititue.getId());
 
-							Institution institue = new Institution();
+							institue = new Institution();
 
-							institue.setInstitution_ID(cbmInsititue.getId());
+							institue.setInstitution_ID(organization);
 
 							institue.setHomepage_URL(cbmInsititue.getHomepageURL());
 
@@ -286,6 +302,10 @@ public class ImportCbmData extends PluginModel<Entity>
 							listOfOrganizations.put(cbmInsititue.getId(), organization);
 
 						}
+						else
+						{
+							institue = listOfInstitues.get(cbmInsititue.getId());
+						}
 
 						StringBuilder builder = new StringBuilder();
 
@@ -294,9 +314,9 @@ public class ImportCbmData extends PluginModel<Entity>
 						{
 							Join_Collection_Protocol_To_Institution joinTable = new Join_Collection_Protocol_To_Institution();
 
-							joinTable.setInstitution_ID(cbmInsititue.getId());
+							joinTable.setInstitution_ID(institue);
 
-							joinTable.setCollection_Protocol_ID(collectionProtocolID);
+							joinTable.setCollection_Protocol_ID(cp);
 
 							listOfCollectionInstituteLinkTable.put(
 									builder.append(collectionProtocolID).append(cbmInsititue.getId()).toString(),
@@ -310,9 +330,11 @@ public class ImportCbmData extends PluginModel<Entity>
 						SpecimenAvailabilitySummaryProfile profileJaxb = collectionProtocolFromJaxb
 								.getIsConstrainedBy();
 
+						Specimen_Availability_Summary_Profile specimenProfile = null;
+
 						if (!listOfCollectionConstrained.containsKey(profileJaxb.getId()))
 						{
-							Specimen_Availability_Summary_Profile specimenProfile = new Specimen_Availability_Summary_Profile();
+							specimenProfile = new Specimen_Availability_Summary_Profile();
 
 							specimenProfile.setIs_Collaboration_Required(profileJaxb.isIsCollaborationRequired());
 
@@ -328,9 +350,13 @@ public class ImportCbmData extends PluginModel<Entity>
 							specimenProfile.setSpecimen_Availability_Summary_Profile_ID(profileJaxb.getId());
 
 							listOfCollectionConstrained.put(profileJaxb.getId(), specimenProfile);
-						}
 
-						cp.setIs_Constrained_By_Specimen_Availability_Summary_Profile_ID(profileJaxb.getId());
+						}
+						else
+						{
+							specimenProfile = listOfCollectionConstrained.get(profileJaxb.getId());
+						}
+						cp.setIs_Constrained_By(specimenProfile);
 					}
 
 					if (collectionProtocolFromJaxb.getMakesAvailable() != null)
@@ -338,9 +364,11 @@ public class ImportCbmData extends PluginModel<Entity>
 						AnnotationAvailabilityProfile annotationProfileJaxb = collectionProtocolFromJaxb
 								.getMakesAvailable();
 
+						Annotation_Availability_Profile profile = null;
+
 						if (!listOfAnnotationProfile.containsKey(annotationProfileJaxb.getId()))
 						{
-							Annotation_Availability_Profile profile = new Annotation_Availability_Profile();
+							profile = new Annotation_Availability_Profile();
 
 							profile.setHas_Additional_Patient_Demographics(annotationProfileJaxb
 									.isHasAdditionalPatientDemographics());
@@ -369,8 +397,12 @@ public class ImportCbmData extends PluginModel<Entity>
 
 							listOfAnnotationProfile.put(annotationProfileJaxb.getId(), profile);
 						}
+						else
+						{
+							profile = listOfAnnotationProfile.get(annotationProfileJaxb.getId());
+						}
 
-						cp.setMakes_Available(annotationProfileJaxb.getId());
+						cp.setMakes_Available(profile);
 					}
 
 					// Collect information on Specimen_collection_contact and
@@ -379,6 +411,8 @@ public class ImportCbmData extends PluginModel<Entity>
 					if (collectionProtocolFromJaxb.getIsAssignedTo() != null)
 					{
 						SpecimenCollectionContact collectionContactJaxb = collectionProtocolFromJaxb.getIsAssignedTo();
+
+						Specimen_Collection_Contact contact = null;
 
 						if (!listOfContacts.containsKey(collectionContactJaxb.getId()))
 						{
@@ -398,9 +432,9 @@ public class ImportCbmData extends PluginModel<Entity>
 
 							listOfPersons.put(collectionContactJaxb.getId(), person);
 
-							Specimen_Collection_Contact contact = new Specimen_Collection_Contact();
+							contact = new Specimen_Collection_Contact();
 
-							contact.setSpecimen_Collection_Contact_ID(collectionContactJaxb.getId());
+							contact.setSpecimen_Collection_Contact_ID(person);
 
 							contact.setPhone(collectionContactJaxb.getPhone());
 
@@ -409,10 +443,12 @@ public class ImportCbmData extends PluginModel<Entity>
 
 							if (addressJaxb != null)
 							{
-								if (!listOfAddress.containsKey(addressJaxb.getId()))
+								if (listOfAddress.containsKey(addressJaxb.getId()))
 								{
-									contact.setAddress_Id(addressJaxb.getId());
-
+									contact.setAddress_Id(listOfAddress.get(addressJaxb.getId()));
+								}
+								else
+								{
 									Address address = new Address();
 
 									address.setAddress_ID(addressJaxb.getId());
@@ -456,9 +492,14 @@ public class ImportCbmData extends PluginModel<Entity>
 							}
 
 							listOfContacts.put(collectionContactJaxb.getId(), contact);
+
+						}
+						else
+						{
+							contact = listOfContacts.get(collectionContactJaxb.getId());
 						}
 
-						cp.setIs_Assigned_To(collectionContactJaxb.getId());
+						cp.setIs_Assigned_To(contact);
 					}
 
 					listOfCollectionProtocol.put(collectionProtocolFromJaxb.getId(), cp);
@@ -487,24 +528,6 @@ public class ImportCbmData extends PluginModel<Entity>
 
 			db.add(new ArrayList<Join_Participant_Collection_Summary_Todiagnosis>(listOfParticipantDiagnosisLinkTable
 					.values()));
-
-			// for (Join_Participant_Collection_Summary_To_Race joinRace : new
-			// ArrayList<Join_Participant_Collection_Summary_To_Race>(
-			// listOfParticipantRaceLinkTable.values()))
-			// {
-			// System.out.println(joinRace);
-			//
-			// db.add(joinRace);
-			// }
-			//
-			// for (Join_Participant_Collection_Summary_Todiagnosis diagnosis :
-			// listOfParticipantDiagnosisLinkTable
-			// .values())
-			// {
-			// System.out.println(diagnosis);
-			//
-			// db.add(diagnosis);
-			// }
 		}
 	}
 
@@ -523,19 +546,7 @@ public class ImportCbmData extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		// try
-		// {
-		// Database db = this.getDatabase();
-		// Query q = db.query(Experiment.class);
-		// q.like("name", "test");
-		// List<Experiment> recentExperiments = q.find();
-		//
-		// //do something
-		// }
-		// catch(Exception e)
-		// {
-		// //...
-		// }
+
 	}
 
 	@Override
