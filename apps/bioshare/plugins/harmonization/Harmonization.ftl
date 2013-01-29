@@ -31,7 +31,8 @@
 	var CLASSES = $.treeview.classes;
 	var settings = {};
 	var searchNode = new Array();
-
+	var listOfDataTypes=[<#list screen.getDataTypes() as dataType>"${dataType}",</#list>];
+	
 	$(document).ready(function()
 	{	
 		if("${screen.isRetrieveResult()}" == "true")
@@ -51,6 +52,11 @@
 			
 			showPredictors(selected, URL);
 		});
+		
+		for(var i = 0; i < listOfDataTypes.length; i++){
+			
+			$('#dataTypeOfPredictor').append("<option>" + listOfDataTypes[i] + "</option>");
+		}
 		
 		if($('#selectPredictionModel option').length == 0){
 			message = "There are no prediction models in database, add one first";
@@ -79,22 +85,6 @@
         	buttons: {
                 Update: function(){
                 	defineFormula(URL);
-                },
-                Cancel: function() {
-                    $( this ).dialog( "close" );
-                }
-        	},
-		});
-		
-		$('#confirmWindow').dialog({
-			autoOpen : false,
-			title : "Warning",
-			height: 300,
-        	width: 500,
-        	modal: true,
-        	buttons: {
-                Confirm: function() {
-                	removePredictionModel(URL);
                 },
                 Cancel: function() {
                     $( this ).dialog( "close" );
@@ -185,16 +175,26 @@
 			}
 		});
 		
-		$('#cancelSelectCohortStudy').click(function(){
-			$('#selectCohortStudyPanel').fadeOut();
+		$('#addOnePredictorButton').click(function(){
+			$('#batchUploadPredictorsModal').hide();
+			$('#addOnePredictorModal').show();
+			$('#submitBatchPredictors').hide();
+			$('#addPredictor').show();
+			$(this).addClass('active');
+			$('#batchUploadPredictorsButton').removeClass('active');
 		});
 		
-		$('#addPredictorButton').click(function(){
-			//TODO: this is a quick-dirty-nasty way to position the element. It needs
-			//to be improved later on
-			$('#defineVariablePanel').fadeIn().draggable().css({
-				top : 300
-			});
+		$('#batchUploadPredictorsButton').click(function(){
+			$('#addOnePredictorModal').hide();
+			$('#batchUploadPredictorsModal').show();
+			$('#submitBatchPredictors').show();
+			$('#addPredictor').hide();
+			$(this).addClass('active');
+			$('#addOnePredictorButton').removeClass('active');
+		});
+		
+		$('#cancelSelectCohortStudy').click(function(){
+			$('#selectCohortStudyPanel').fadeOut();
 		});
 		
 		$('#addPredictor').click(function(){
@@ -210,18 +210,13 @@
 			addNewPredictionModel(URL);
 		});
 		//Remove a prediction model in the dropdown menu
-		$('#removeModelButton').click(function(){
-			try
-			{
-				$('#confirmWindow').dialog('open');
-			}
-			catch(err)
-			{
-				$('#confirmWindow').parent().css({
-					left : 300,
-					top : 200
-				});
-			}
+		$('#confirmRemoveModel').click(function(){
+			removePredictionModel(URL);
+			$('#confirmWindow').modal('hide');
+		});
+		
+		$('#closeConfirmWinodw').click(function(){
+			$('#confirmWindow').modal('hide');
 		});
 	});
 </script>
@@ -361,18 +356,20 @@
 												</#list>
 											</select>
 										</div>
-										<i id="removeModelButton" class="icon-trash" style="cursor:pointer;margin-left:10px;"  title="remove a model"></i>
+										<i href="#confirmWindow" id="removeModelButton" class="icon-trash" style="cursor:pointer;margin-left:10px;" 
+											title="remove a model" data-toggle="modal"></i>
 									</div>
 									<div class="span3">
 										<span style="display:block;margin-bottom:5px;" class="text-info">Add a prediction model:</span>
 										<input type="text" id="addPredictionModel" name="addPredictionModel" class="ui-corner-all" style="height:20px;width:180px;float:left;"/>
-										<i id="addModelButton" class="icon-plus" style="cursor:pointer;margin-left:10px;" title="add a model"></i>
+										<i id="addModelButton" class="icon-plus" style="cursor:pointer;margin-left:10px;" title="add a model" ></i>
 									</div>
 								</div>
 								<hr style="background:#0088CC;margin:10px;margin-top:15px;">
 								<div class="row">
 									<div class="span1">
-										<input type="button" id="addPredictorButton" class="btn btn-info" style="margin-left:12px;" value="add new predictor">
+										<input href="#defineVariablePanel" type="button" id="addPredictorButton" 
+											class="btn btn-info" style="margin-left:12px;" data-toggle="modal" value="add new predictor">
 									</div>
 									<div class="span1 offset3">
 										<input type="button" id="defineFormula" value="formula" class="btn btn-info" style="font-size:12px;" />
@@ -408,83 +405,83 @@
 							<textarea id="showFormula" style="width:90%;height:90%;font-size:12px;">
 							</textarea>
 						</div>
-						<div id="confirmWindow" style="display:none;">
-							<p>
-								WARN: All data for this prediction model will be deleted! It is not repairable!
-							</p>
-						</div>
-						<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:42%;width:50%;float:left;margin:5px;z-index:1500;">
-							<div class="btn-info ui-corner-all" style="padding-top:3%;height:10%;width:100%;cursor:pointer;">
-								<span style="margin-left:10px;font-size:20px;font-style:italic;">Define a predictor</span>
-							</div>
-							<table style="margin-top:10px;margin-left:2px;width:100%;">
-								<tr>
-									<td style="margin-right:5px;">
+					    <div id="confirmWindow" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-header">
+						    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						   		<h3 id="myModalLabel">Confirmation</h3>
+						    </div>
+						    <div class="modal-body">
+						    	<p>WARN: All data for this prediction model will be deleted! It is not repairable!</p>
+						    </div>
+						    <div class="modal-footer">
+						    	<input type="button" id="confirmRemoveModel" class="btn btn-primary" value="Confirm">
+							    <input type="button" id="closeConfirmWinodw" class="btn btn-primary" value="Close">
+						    </div>
+					    </div>
+						<div id="defineVariablePanel" class="modal hide fade in" tabindex="-1" role="dialog" 
+							aria-hidden="true" style="width:600px;">
+							<div class="modal-header">
+							    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							    <div class="btn-group" data-toggle="buttons-radio">
+									<input type="button" id="addOnePredictorButton" class="btn btn-primary active" value="Add a predictor" />
+									<input type="button" id="batchUploadPredictorsButton" class="btn btn-primary" value="Batch upload predictors" />
+								</div>
+						  	</div>
+							<div class="modal-body">
+								<div id="addOnePredictorModal" class="row">
+									<div class="span2">
 										<span style="display:block;margin:5px;">Name: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="nameOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td style="margin-right:5px;">
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Label: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="labelOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td style="margin-right:5px;">
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Description: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="descriptionOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Data type: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<select id="dataTypeOfPredictor" class="predictorInput" style="width:215px">
-											<#list screen.getDataTypes() as dataType>
-												<option>${dataType}</option>
-											</#list>
 										</select>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Categories: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="categoryOfPredictor" class="predictorInput" type="text" disabled="disabled"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Unit: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="unitOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Building blocks: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="buildingBlocks" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-							</table>
-							<hr>
-							<div style="margin:3px">
-								<input name="batchUploadPredictors" class="ui-corner-all" type="file" style="font-size:10px;"/>
-								<input id="submitBatchPredictors" class="btn btn-info" style="margin-left:-5px;" type="button" value="submit batch"/>
-								<input id="cancelPredictor" type="button" value="cancel" class="btn btn-info" style="float:right;"/>
-								<input id="addPredictor" type="button" value="add" class="btn btn-info" style="float:right;"/>
+									</div>
+								</div>
+								<div id="batchUploadPredictorsModal" style="display:none;">
+									Please upload the variable definition in <strong>CSV format</strong></br></br>
+									<input name="batchUploadPredictors" class="ui-corner-all" type="file" style="Border-radius:4px 4px 4px 4px"/></br></br>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
+								<button id="addPredictor" type="button" class="btn btn-info" style="float:right;"/>Add</button>
+								<button id="submitBatchPredictors" class="btn btn-info" style="float:right;display:none;" type="button"/>Upload file</button>
 							</div>
 						</div>
 						<div id="showPredictorPanel" style="height:100%;width:100%;">
@@ -498,7 +495,7 @@
 								</table>
 							</div>
 							<table id="variableDetail" class="ui-corner-all table table-striped table-bordered" 
-								style="width:65%;float:left;margin-top:10px;margin-left:10px;">
+								style="width:60%;float:left;margin-top:10px;margin-left:10px;">
 							</table>
 						</div>
 					</div>

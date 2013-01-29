@@ -155,7 +155,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					{
 						String fieldName = iteratorFields.next().toString();
 
-						measurementInfo.put(fieldName, data.getString(fieldName));
+						measurementInfo.put(fieldName.toLowerCase(), data.getString(fieldName));
 					}
 
 					Measurement m = addNewPredictorToDB(db, measurementInfo);
@@ -928,7 +928,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		StringBuilder stringBuilder = new StringBuilder();
 
 		String predictionModelName = data.get("selected").trim();
-		String buildingBlockString = data.get("buildingBlocks").trim();
+		String buildingBlockString = data.get("buildingBlocks".toLowerCase()).trim();
 		String unitName = data.get(Measurement.UNIT_NAME.toLowerCase()).trim();
 		String categories = data.get(Measurement.CATEGORIES_NAME.toLowerCase()).trim();
 		String dataType = data.get(Measurement.DATATYPE.toLowerCase()).trim();
@@ -1134,8 +1134,15 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						value = StringUtils.EMPTY;
 					}
 
-					if (eachColumn.equalsIgnoreCase(Measurement.NAME)) value = value.replaceAll("[^(a-zA-Z0-9_)]", "_")
-							.trim();
+					if (eachColumn.equalsIgnoreCase(Measurement.NAME))
+					{
+						StringBuilder builder = new StringBuilder();
+
+						builder.append(value.replaceAll("[^(a-zA-Z0-9_)]", "_").trim()).append('_')
+								.append(selectedPredictionModel);
+
+						value = builder.toString();
+					}
 
 					measurementInfo.put(eachColumn.toLowerCase(), value);
 				}
@@ -1161,7 +1168,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					}
 				}
 
-				measurementInfo.put("buildingBlocks",
+				measurementInfo.put("buildingblocks",
 						eachRow.isNull("Definition") ? StringUtils.EMPTY : eachRow.get("Definition").toString());
 
 				measurementInfo.put("selected", selectedPredictionModel);

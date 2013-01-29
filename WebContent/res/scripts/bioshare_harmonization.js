@@ -598,7 +598,7 @@ function populateRowInTable(data, url)
 			});
 		});
 		
-		$('#overviewTable').parents('div').eq(0).css('width', '30%');
+		$('#overviewTable').parents('div').eq(0).css('width', '35%');
 	});
 
 	cancelAddPredictorPanel();
@@ -763,7 +763,7 @@ function defineFormula(url)
 //Make the add predictor panel disappear
 function cancelAddPredictorPanel()
 {	
-	$('#defineVariablePanel').fadeOut();
+	$('#defineVariablePanel').modal('hide');
 	$('#defineVariablePanel input[type="text"]').val('');
 	$('#dataTypeOfPredictor option:first-child').attr('selected',true);
 	$('#categoryOfPredictor').attr('disabled', true);
