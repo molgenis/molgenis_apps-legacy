@@ -188,7 +188,7 @@ public class ManageLines extends PluginModel<Entity>
 				// Make or get group
 				if (lineId == -1)
 				{
-					lineId = cs.makePanel(invName, lineName, this.getLogin().getUserName());
+					lineId = cs.createPanel(invName, lineName);
 					message = "Line successfully added";
 				}
 				else

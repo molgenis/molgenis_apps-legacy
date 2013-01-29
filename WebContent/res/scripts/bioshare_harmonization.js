@@ -232,7 +232,7 @@ function showExistingMapping(url)
 	}
 }
 
-function validateStudy(name)
+function validateStudy(formName)
 {
 	if($('#listOfCohortStudies option').length == 0){
 
@@ -262,7 +262,7 @@ function validateStudy(name)
 
 		$("input[name=\"__action\"]").val("loadMapping");
 
-		$("form[name=\"" + name + "\"]").submit();
+		$("form[name=\"" + formName + "\"]").submit();
 	}
 }
 
@@ -431,9 +431,17 @@ function insertNewRow(url)
 	if($('#' + $('#nameOfPredictor').val()).length == 0){
 
 		data = {};
+		
 		data["selected"] = $('#selectPredictionModel').val();
-		data["name"] = $('#nameOfPredictor').val();
-		data["label"] = $('#nameOfPredictor').val();
+		data["name"] = $('#nameOfPredictor').val() + "_" + data["selected"];
+	
+		if($('#labelOfPredictor').val() == "")
+		{
+			data["label"] = $('#nameOfPredictor').val();
+		
+		}else{
+			data["label"] = $('#labelOfPredictor').val();
+		}
 		data["description"] = $('#descriptionOfPredictor').val();
 		data["dataType"] = $('#dataTypeOfPredictor').val();
 		data["unit"] = $('#unitOfPredictor').val();
@@ -445,6 +453,7 @@ function insertNewRow(url)
 
 		//add the data to table
 		identifier = data["name"].replace(/\s/g,"_");
+		
 		data["identifier"] = identifier;
 
 		$.ajax({
@@ -453,7 +462,7 @@ function insertNewRow(url)
 		}).done(function(status){
 			message["message"] = status["message"];
 			message["success"] = status["success"];
-			message["identifier"] = data["identifier"];
+			data["identifier"] = message["identifier"];
 		});
 
 		if(message["success"] == true){
@@ -471,55 +480,22 @@ function insertNewRow(url)
 
 function populateRowInTable(data, url)
 {
+	name = data["name"];
 	label = data["label"];
 	description = data["description"];
-	dataType = data["dataType"];
-	categories = data["category"];
-	unit = data["unit"];
-	buildingBlocks = data["buildingBlocks"];
 	identifier = data["identifier"];
 
 	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
-	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + label + "</span>";
-	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
+	newRow += "<td name=\"variableName\" class=\"ui-corner-all\"><span style=\"float:left;cursor:pointer;\">" + name + "</span>";
+	newRow += "<input id=\"" + name + "_name\" type=\"hidden\" value=\"" + name + "\"/>";
+	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:2px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
 	+ "</div></td>";
-	newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"width:20%;\">" + description + "</td>";
-	newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"width:8%;\">" + dataType + "</td>";
-	newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"width:10%;\">" + unit + "</td>";
-
-	addedCategory = "";
-
-	if(categories != "" && categories != null)
-	{
-		blocks = categories.split(",");
-		addedCategory = createMultipleSelect(blocks);
-	}
-
-	newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"width:20%;\">" + addedCategory + "</td>";
-
-	selectBlocks = "";
-
-	if(buildingBlocks != "" && buildingBlocks != null)
-	{
-
-		for( var i = 0 ; i < buildingBlocks.split(";").length ; i++)
-		{
-			eachDefinition = buildingBlocks.split(";")[i];
-			blocks = eachDefinition.split(",");
-			selectBlocks += createMultipleSelect(blocks);		
-		}
-	}
-
-	newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"width:40%\">" + selectBlocks + "</td>";
-	newRow += "</tr>";
+	newRow += "<td id=\"label\" name=\"label\" class=\"ui-corner-all\">" + label + "</td>";
+	newRow += "<td id=\"description\" name=\"description\" class=\"ui-corner-all\">" + description + "</td></tr>";
 
 	$('#overviewTable').append(newRow);
-
-	$('td[name="buildingBlocks"] >select').chosen();
-
-	$('td[name="category"] >select').chosen();
 
 	$('#' + identifier + '_remove').click(function(){
 		removePredictor($(this), url);
@@ -529,6 +505,100 @@ function populateRowInTable(data, url)
 		'vertical-align':'middle',
 		'text-align':'center',
 		'font-size':'16px',
+	});
+	
+	$('#' + identifier).data('dataObject', data);
+	
+	$('#' + identifier + ' td:first-child').click(function(){
+		
+		dataObject = $(this).parents('tr').eq(0).data("dataObject");
+		
+		$(document).data("selectedVariable", dataObject["name"]);
+		
+		identifier = dataObject["identifier"];
+		label = dataObject["label"];
+		name = dataObject["name"];
+		description = dataObject["description"];
+		dataType = data["dataType"];
+		categories = data["category"];
+		unit = data["unit"];
+		buildingBlocks = data["buildingBlocks"];
+		
+		row = "<tr><th class=\"ui-corner-all\">ID:</td>";
+		row += "<td class=\"ui-corner-all\">" + identifier + "<div style=\"cursor:pointer;height:16px;width:16px;" 
+			+ "float:right;margin:10px;margin-left:2px;\" "
+			+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
+			+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
+			+ "</div></td></tr>";
+		row += "<tr><th class=\"ui-corner-all\">Name:</td>";
+		row += "<td class=\"ui-corner-all\"><span style=\"float:left;cursor:pointer;\">" + name + "</span></td></tr>";
+		row += "<tr><th class=\"ui-corner-all\">Label:</td>";
+		row += "<td class=\"ui-corner-all\">" + label + "</td></tr>";
+		row += "<tr><th class=\"ui-corner-all\">Description:</td>";
+		row += "<td id=\"variableDescription\" name=\"variableDescription\"  class=\"ui-corner-all\">" + description + "</td></tr>";
+
+		if(buildingBlocks != "" && buildingBlocks != null)
+		{
+			selectBlocks = "";
+			
+			for( var i = 0 ; i < buildingBlocks.split(";").length ; i++)
+			{
+				eachDefinition = buildingBlocks.split(";")[i];
+				blocks = eachDefinition.split(",");
+				selectBlocks += createMultipleSelect(blocks);		
+			}
+			
+			row += "<tr><th class=\"ui-corner-all\">Building blocks:</td>";
+			row += "<td id=\"variableBuildingBlocks\" name=\"variableBuildingBlocks\" class=\"ui-corner-all\">" + selectBlocks + "</td></tr>";
+		}
+		
+		row += "<tr><td></td><td><input type=\"button\" id=\"matchSelectedVariable\"  style=\"margin-left:250px;\"" 
+			+  "class=\"btn btn-info btn-small\" value=\"Match selected variable\"></td><tr>";
+		
+		$('#variableDetail').empty().append(row);
+		
+		$('td[name="variableBuildingBlocks"] >select').chosen();
+
+		$('td[name="category"] >select').chosen();
+		
+		$('#variableDetail tr:eq(0) div').click(function()
+		{
+			$('#variableDetail').empty();
+			$('#overviewTable td').show();
+			$('#overviewTable th').show();
+			$('#overviewTable').parents('div').eq(0).width("100%");
+			$("input[name=\"selectedVariableID\"]").val(null);
+		});
+		
+		$('#matchSelectedVariable').click(function()
+		{	
+			formName = $(this).parents('form').eq(0).attr('name');
+			
+			selectedVariableID = $(document).data('selectedVariable');
+			
+			$("input[name=\"selectedVariableID\"]").val(selectedVariableID);
+			
+			$("input[name=\"__action\"]").val("loadMapping");
+			
+			$("form[name=\"" + formName + "\"]").submit();
+		});
+		
+		$('#overviewTable tr').each(function(){
+			
+			var i = 0;
+			
+			$(this).children().each(function()
+			{
+				if(i > 0)
+				{
+					$(this).hide();
+				}
+				
+				i++;
+			});
+		});
+		
+		$('#overviewTable').parents('div').eq(0).css('width', '30%');
 	});
 
 	cancelAddPredictorPanel();
@@ -566,7 +636,8 @@ function addNewPredictionModel(url)
 
 function removePredictionModel(url)
 {	
-	if($('#selectPredictionModel option').length > 0){
+	if($('#selectPredictionModel option').length > 0)
+	{
 		selected = $('#selectPredictionModel').val();
 
 		$.ajax({
@@ -604,27 +675,35 @@ function addPredictor(url)
 		message = result["message"];
 		success = result["success"];
 		predictor = result["identifier"];
-		if(success == true){
-			summaryAddOne(predictor);
-		}
 	}
+	
 	showMessage(message, success);
+	
+	showPredictors($('#selectPredictionModel').val(), url);
 }
 
 function removePredictor(element, url)
 {	
-	predictor = $(element).parents('td').eq(0).text();
+	predictorName = $(element).parents('td').children('input:hidden').eq(0).val();
+	
+	predictorID = $(element).parents('tr').eq(0).attr('id');
+	
 	selected = $('#selectPredictionModel').val();
+	
 	$.ajax({
 		url : url + "&__action=download_json_removePredictors&name=" 
-		+ predictor + "&predictionModel=" + selected,
+		+ predictorName + "&predictorID=" + predictorID + "&predictionModel=" + selected,
 		async: false,
 	}).done(function(status){
+		
 		message = status["message"];
+		
 		success = status["success"];
+		
 		showMessage(message, success);
-		if(success == true){
-			summaryRemoveOne(identifier);
+		
+		if(success == true)
+		{
 			$(element).parents('tr').eq(0).remove();
 		}
 	});
@@ -636,24 +715,28 @@ function showPredictors(predictionModelName, url)
 		url : url + "&__action=download_json_showPredictors&name=" + predictionModelName,
 		async: false,
 	}).done(function(status){
-
-		$('#selectedPredictionModelName').val(status["selected"]);
-		$('#numberOfPredictors').val(status["numberOfPredictors"]);
-		$('#buildingBlocksDefined').val(status["buildingBlocksDefined"]);
+		
+		$('#selectedPredictionModelName').val(status["name"]);
+		
 		$('#formula').val(status["formula"]);
+		
 		$('#showFormula').val(status["formula"]);
-		delete status["selected"];
-		delete status["numberOfPredictors"];
-		delete status["buildingBlocksDefined"]; 
-		delete status["formula"];  
 
 		$('#showPredictorPanel table tr:gt(0)').remove();
-
-		$.each(status, function(predictor, Info){
-			populateRowInTable(Info, url);
-		});
-
-		$('#summaryPanel').fadeIn().draggable();
+		
+		listOfFeatures = status["predictorObjects"];
+		
+		if(listOfFeatures != null)
+		{
+			for(var i = 0; i < listOfFeatures.length; i++)
+			{
+				populateRowInTable(listOfFeatures[i], url);
+			}
+		}
+		
+//		$.each(predictionModelObject["predictorObjects"], function(predictor, Info){
+//			populateRowInTable(Info, url);
+//		});
 	});
 }
 
@@ -728,28 +811,6 @@ function createMultipleSelect(listOfTerms)
 	selectBlocks += "</select>";
 
 	return selectBlocks;
-}
-
-function summaryAddOne(identifier)
-{	
-	numberOfPredcitors = $('#numberOfPredictors').val();
-	buildingBlocksDefine = $('#buildingBlocksDefined').val();
-	$('#numberOfPredictors').val(++numberOfPredcitors);
-	if($('#' + identifier + ' td:last-child >select').length > 0){
-		++buildingBlocksDefine;
-	}
-	$('#buildingBlocksDefined').val(buildingBlocksDefine);
-}
-
-function summaryRemoveOne(identifier)
-{
-	numberOfPredcitors = $('#numberOfPredictors').val();
-	buildingBlocksDefine = $('#buildingBlocksDefined').val();
-	$('#numberOfPredictors').val(--numberOfPredcitors);
-	if($('#' + identifier + ' td:last-child >select').length > 0){
-		--buildingBlocksDefine;
-	}
-	$('#buildingBlocksDefined').val(buildingBlocksDefine);
 }
 
 function showMessage(message, success)

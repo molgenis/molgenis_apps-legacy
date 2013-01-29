@@ -1,5 +1,10 @@
 package org.molgenis.gonl.ui;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -9,8 +14,14 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.pheno.ObservedValue;
+import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.gonl.service.VariantRequest;
+import org.molgenis.gonl.utils.VariantAggregator.VariantAggregate;
+import org.molgenis.variant.Chromosome;
 import org.molgenis.variant.SequenceVariant;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class GonlSearchView implements ScreenView
 {
@@ -18,6 +29,7 @@ public class GonlSearchView implements ScreenView
 
 	public GonlSearchView(GonlSearchModel model)
 	{
+		if (model == null) throw new IllegalArgumentException("model is null");
 		this.model = model;
 	}
 
@@ -35,45 +47,81 @@ public class GonlSearchView implements ScreenView
 
 		form.add(new Newline());
 
+		List<VariantRequest> requests = model.getVariantRequests();
+		String chromosome = null;
+		int startBp = 0;
+		int endBp = 0;
+		if (requests != null && requests.size() == 1)
+		{
+			VariantRequest variantRequest = requests.get(0);
+			chromosome = variantRequest.getChromosome();
+			startBp = variantRequest.getStartBp();
+			endBp = variantRequest.getEndBp();
+		}
+
+		List<String> allChromosomeNames = Lists.transform(model.getAllChromosomes(), new Function<Chromosome, String>()
+		{
+			@Override
+			@Nullable
+			public String apply(@Nullable
+			Chromosome arg0)
+			{
+				return arg0 != null ? arg0.getName() : null;
+			}
+		});
+
+		// batch search inputs
+		form.add(new StringInput("searchfile"));
+		form.add(new ActionInput("Browse"));
+		form.add(new Newline());
+
 		// provide a search box
-		SelectInput chromosomes = new SelectInput("chromosome", model.getSelectedChrName());
-		chromosomes.setOptions(model.getChromosomes(), model.getChromosomes());
+		SelectInput chromosomes = new SelectInput("chromosome", chromosome);
+		chromosomes.setOptions(allChromosomeNames, allChromosomeNames);
 		chromosomes.setNillable(false);
 		form.add(chromosomes);
 
 		// provide a 'from' box
-		form.add(new IntInput("from", model.getSelectedFrom()));
+		form.add(new IntInput("from", startBp));
 
 		// provide a 'range' box
-		form.add(new IntInput("to", model.getSelectedTo()));
+		form.add(new IntInput("to", endBp));
 
 		form.add(new ActionInput("search"));
 
 		// provide a box with the current results
 		form.add(new Newline());
 
-		if (model.getVariants() != null && model.getAlleleCounts() != null)
+		List<VariantAggregate> variantAggregates = model.getVariantAggregates();
+		if (variantAggregates != null && !variantAggregates.isEmpty())
 		{
 			JQueryDataTable table = new JQueryDataTable("Result");
 			table.addColumn("Panel");
 			table.addColumn("Chr");
 			table.addColumn("Pos");
+			table.addColumn("EndBp");
 			table.addColumn("Ref");
 			table.addColumn("Alt");
-			table.addColumn("AlleleCount");
+			table.addColumn("HomRefCount");
+			table.addColumn("HetCount");
+			table.addColumn("HomAltCount");
 
-			for (SequenceVariant v : model.getVariants())
+			for (VariantAggregate variantAggregate : variantAggregates)
 			{
-				ObservedValue alleleCount = model.getAlleleCounts().get(v.getName());
-				int row = table.addRow(v.getName());
+				SequenceVariant variant = variantAggregate.getVariant();
 
-				table.setCell(0, row, alleleCount.getTarget_Name());
-				table.setCell(1, row, v.getChr_Name());
-				table.setCell(2, row, v.getStartBP());
-				table.setCell(3, row, v.getRef());
-				table.setCell(4, row, v.getAlt());
-				table.setCell(5, row, alleleCount.getValue());
-
+				// create table row
+				int row = table.addRow(variant.getName());
+				int col = 0;
+				table.setCell(col++, row, StringUtils.join(variantAggregate.getPanels(), ','));
+				table.setCell(col++, row, variant.getChr_Name());
+				table.setCell(col++, row, variant.getStartBP());
+				table.setCell(col++, row, variant.getEndBP());
+				table.setCell(col++, row, variant.getRef());
+				table.setCell(col++, row, variant.getAlt());
+				table.setCell(col++, row, variantAggregate.getHomRefCount());
+				table.setCell(col++, row, variantAggregate.getHetCount());
+				table.setCell(col++, row, variantAggregate.getHomAltCount());
 			}
 
 			form.add(table);
@@ -87,5 +135,4 @@ public class GonlSearchView implements ScreenView
 	{
 		return null;
 	}
-
 }

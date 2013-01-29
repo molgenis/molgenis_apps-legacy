@@ -2,7 +2,10 @@ package org.molgenis.omx.dataset;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -93,10 +96,12 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 	public void download_xls(Database db, MolgenisRequest request) throws TableException, IOException
 	{
 		if (tupleTable instanceof DatabaseTupleTable) ((DatabaseTupleTable) tupleTable).setDb(db);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 		HttpServletResponse response = request.getResponse();
 		response.setContentType("application/ms-excel");
-		response.addHeader("Content-Disposition", "attachment; filename=" + tableView.getName() + ".xls");
+		response.addHeader("Content-Disposition",
+				"attachment; filename=" + tableView.getName() + "_" + dateFormat.format(new Date()) + ".xls");
 		new ExcelExporter(tupleTable).export(response.getOutputStream());
 	}
 

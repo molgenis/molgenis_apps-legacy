@@ -10,6 +10,9 @@
 			</menu>
 
 		</form>
+		<menu name="ImportData" label="Import Data" position="left">
+			<plugin label="Import xml data" name="ImportXmlData" type="plugins.xml.ImportCbmData" />
+		</menu>
 		<menu name="DataTables" position="left">
 			<form name="address" entity="address" />
 			<form name="anatomic_source" entity="anatomic_source" />

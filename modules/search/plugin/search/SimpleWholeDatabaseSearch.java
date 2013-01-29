@@ -116,7 +116,8 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 						// superclasses from results
 						// 3. Lowercased value matches the lowercased search
 						// string
-						if (e.get(field) != null && e.get(Field.TYPE_FIELD).toString().equals(name)
+						if (e.get(field) != null && e.get(Field.TYPE_FIELD) != null
+								&& e.get(Field.TYPE_FIELD).toString().equals(name)
 								&& e.get(field).toString().toLowerCase().contains(searchThis.toLowerCase()))
 						{
 							res.add(e);

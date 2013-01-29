@@ -5,5 +5,6 @@
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
 		<plugin label="Data Viewer" name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
 		<plugin label="Importer" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
+		<plugin label="Importer (Dataset)" name="HL7StudyDataSetImporter" type="org.molgenis.omx.plugins.HL7StudyDataSetImporterController" />
 	</menu>
 </molgenis>

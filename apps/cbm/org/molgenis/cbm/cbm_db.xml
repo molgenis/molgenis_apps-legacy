@@ -1,7 +1,6 @@
 <molgenis name="org.molgenis.cbm">
-
 	<entity name="address" xref_label="address_ID">
-		<field unique="true" type="int" name="address_ID" auto="true" />
+		<field unique="true" type="autoid" name="address_ID"/>
 		<field length="50" nillable="true" name="city" />
 		<field length="50" nillable="true" name="country" />
 		<field length="50" nillable="true" name="department_or_division" />
@@ -29,8 +28,7 @@
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
 	<entity name="annotation_availability_profile">
-		<field unique="true" type="int" name="annotation_availability_profile_ID"
-			auto="true" />
+		<field unique="true" type="autoid" name="annotation_availability_profile_ID" />
 		<field nillable="true" type="bool"
 			name="has_additional_patient_demographics" />
 		<field nillable="true" type="bool" name="has_exposure_history" />
@@ -46,8 +44,7 @@
 
 	</entity>
 	<entity name="collection_protocol">
-		<field unique="true" type="int" name="collectionProtocolID"
-			auto="true" />
+		<field unique="true" type="autoid" name="collectionProtocolID"/>
 		<field nillable="true" type="date" name="date_last_updated" />
 		<field nillable="true" type="date" name="end_date" />
 		<field nillable="true" name="name" />
@@ -70,46 +67,46 @@
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
-	<entity name="ethnicity">
+	<entity name="ethnicity" xref_label="id">
 		<field unique="true" type="int" name="id" auto="true" />
 		<field unique="true" length="50" name="ethnicity" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_definition" />
 	</entity>
-	<entity name="gender">
+	<entity name="gender" xref_label="id">
 		<field unique="true" type="int" name="id" auto="true" />
 		<field unique="true" length="50" name="gender" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
 	<entity name="institution">
-		<field type="autoid" name="institution_ID" />
-		<field length="50" nillable="true" name="homepage_URL" />
+		<field type="autoid" name="id" />
+		<field unique="true" xref_field="organization.organization_ID" nillable="true"
+			type="xref" name="institution_ID" />
+		<field unique="true"  length="50" nillable="true" name="homepage_URL" />
 	</entity>
 
 	<entity name="join_collection_protocol_to_institution">
 		<field type="autoid" name="id" />
-
 		<field xref_field="institution.institution_ID" nillable="true"
 			type="xref" name="institution_ID" />
 		<field xref_field="collection_protocol.collectionProtocolID"
 			nillable="true" type="xref" name="collection_protocol_ID" />
 	</entity>
 	<entity name="organization">
-		<field unique="true" type="int" name="organization_ID" auto="true" />
+		<field unique="true" type="autoid" name="organization_ID"/>
 		<field length="150" nillable="true" name="name" />
 	</entity>
-	<entity name="participant_collection_summary" xref_label="participant_collection_summary_ID">
-		<field unique="true" type="int" name="participant_collection_summary_ID"
-			auto="true" />
+	<entity name="participant_collection_summary">
+		<field unique="true" type="autoid" name="participant_collection_summary_ID"/>
 		<field nillable="true" type="int" name="participant_count" />
 		<field nillable="true" type="int" name="registered_to" />
 		<field length="50" nillable="true" name="ethnicity" />
-		<field xref_field="ethnicity.id" nillable="true" type="xref"
-			name="ethnicity_id" />
+		<field xref_field="ethnicity.id" nillable="true" type="xref" name="ethnicity_id" />
 		<field length="50" nillable="true" name="gender" />
 		<field xref_field="gender.id" nillable="true" type="xref" name="gender_id" />
 	</entity>
+	
 	<entity name="join_participant_collection_summary_to_race">
 		<field type="autoid" name="id" />
 		<field nillable="true" type="xref"
@@ -120,11 +117,11 @@
 	</entity>
 	<entity name="join_participant_collection_summary_todiagnosis">
 		<field type="autoid" name="id" />
-		<field xref_field="diagnosis.diagnosis_ID" nillable="true" type="xref"
-			name="diagnosis_id" />
 		<field
 			xref_field="participant_collection_summary.participant_collection_summary_ID"
 			nillable="true" type="xref" name="participant_collection_summary_ID" />
+		<field xref_field="diagnosis.diagnosis_ID" nillable="true" type="xref"
+			name="diagnosis_id" />
 	</entity>
 	<entity name="patient_age_group_at_collection">
 		<field unique="true" type="int" name="id" auto="true" />
@@ -132,7 +129,7 @@
 		<field nillable="true" type="int" name="age_group_high" />
 	</entity>
 	<entity name="person">
-		<field unique="true" type="int" name="person_ID" auto="true" />
+		<field unique="true" type="autoid" name="person_ID"/>
 		<field length="50" nillable="true" name="full_name" />
 		<field length="50" nillable="true" name="first_name" />
 		<field length="50" nillable="true" name="last_name" />
@@ -151,14 +148,14 @@
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
 	<entity name="race">
-		<field unique="true" type="int" name="race_ID" auto="true" />
+		<field type="autoid" name="race_ID" />
 		<field unique="true" length="50" name="race" />
 		<field unique="true" length="50" nillable="true" name="NCI_code" />
 		<field nillable="true" type="text" name="NCI_Definition" />
 	</entity>
 	<entity name="specimen_availability_summary_profile">
-		<field unique="true" type="int"
-			name="specimen_availability_summary_profile_ID" auto="true" />
+		<field unique="true" type="autoid"
+			name="specimen_availability_summary_profile_ID"/>
 		<field nillable="true" type="bool"
 			name="is_available_to_commercial_organizations" />
 		<field nillable="true" type="bool"
@@ -168,15 +165,15 @@
 		<field nillable="true" type="bool" name="is_collaboration_required" />
 	</entity>
 	<entity name="specimen_collection_contact">
-		<field unique="true" type="int" name="specimen_collection_contact_ID"
-			auto="true" />
-		<field length="50" nillable="true" name="phone" />
+		<field type="autoid" name="id"/>
+		<field unique="true" xref_field="person.person_ID" type="xref"
+			name="specimen_collection_contact_ID"/>
+		<field length="50" nillable="true" name="phone"/>
 		<field xref_field="address.address_ID" nillable="true" type="xref"
 			name="address_id" />
 	</entity>
 	<entity name="specimen_collection_summary">
-		<field unique="true" type="int" name="specimen_collection_summary_ID"
-			auto="true" />
+		<field unique="true" type="autoid" name="specimen_collection_summary_ID"/>
 		<field xref_field="anatomic_source.id" nillable="true" type="xref"
 			name="anatomic_source_id" />
 		<field length="150" nillable="true" name="anatomic_source" />

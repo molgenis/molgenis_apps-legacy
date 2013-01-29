@@ -387,7 +387,7 @@ public class AddAnimalPlugin extends EasyPluginController
 			// Make and add animal
 			String nrPart = "" + (startNumber + i);
 			nrPart = ct.prependZeros(nrPart, 6);
-			Individual newAnimal = ct.createIndividual(invName, nameBase + nrPart, userName);
+			Individual newAnimal = ct.createIndividual(invName, nameBase + nrPart);
 			animalsToAddList.add(newAnimal);
 		}
 		db.add(animalsToAddList);
