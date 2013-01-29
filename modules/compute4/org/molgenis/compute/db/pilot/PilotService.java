@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class PilotService implements MolgenisService
 {
+    private static final String CURL_DONE = "\ncp log.log done.log\ncurl -F status=done -F log_file=@done.log http://129.125.141.171:8080/compute/api/pilot\n";
 
 	public PilotService(MolgenisContext mc)
 	{
@@ -29,15 +30,6 @@ public class PilotService implements MolgenisService
 	{
 		System.out.println(">> In handleRequest!");
 		System.out.println(request);
-
-//        Connection connection = request.getDatabase().getConnection();
-//        while(connection == null)
-//        {
-//            connection = request.getDatabase().getConnection();
-//        }
-//
-//        System.out.println("connection " + connection.toString());
-
 
 		if ("started".equals(request.getString("status")))
 		{
@@ -63,7 +55,7 @@ public class PilotService implements MolgenisService
 
                     // we add task id to the run listing to identify task when it is
                     // done
-                    taskScript = "echo TASKID:" + taskName + "\n" + taskScript;
+                    taskScript = "echo TASKID:" + taskName + "\n" + taskScript + CURL_DONE;
                     // change status to running
                     System.out.println("script " + taskScript);
                     request.getDatabase().beginTx();
@@ -76,7 +68,7 @@ public class PilotService implements MolgenisService
                 }
             }
 		}
-		else if ("done".equals(request.getString("status")))
+		else
 		{
 			String results = FileUtils.readFileToString(request.getFile("log_file"));
 			// parsing for TaskID
@@ -84,32 +76,56 @@ public class PilotService implements MolgenisService
 			int endPos = results.indexOf("\n");
 
 			String taskID = results.substring(idPos, endPos).trim();
-			System.out.println(">>> task " + taskID + " is finished");
 
-			ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.NAME, taskID).limit(1)
-					.find().get(0);
+			ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.NAME, taskID).limit(1).find().get(0);
 
-			if (task != null && task.getStatusCode().equalsIgnoreCase("running"))
-			{
-                request.getDatabase().beginTx();
-				task.setStatusCode("done");
-				task.setRunLog(results);
-				request.getDatabase().update(task);
-                request.getDatabase().commitTx();
-			}
-            else
+            if(task == null)
             {
-                System.out.println("something is wrong");
+                System.out.println("TASK null pointer exception");
             }
-		}
 
-//        try
-//        {
-//            connection.close();
-//        }
-//        catch (SQLException e)
-//        {
-//            e.printStackTrace();
-//        }
+
+            if ("done".equals(request.getString("status")))
+            {
+                System.out.println(">>> task " + taskID + " is finished");
+                if (task.getStatusCode().equalsIgnoreCase("running"))
+                {
+                    request.getDatabase().beginTx();
+                    task.setStatusCode("done");
+                    task.setRunLog(results);
+                }
+                else
+                {
+                    System.out.println("from done: something is wrong with " + taskID);
+                }
+		    }
+            else if ("pulse".equals(request.getString("status")))
+            {
+                if (task.getStatusCode().equalsIgnoreCase("running"))
+                {
+                    System.out.println(">>> pulse from " + taskID);
+                    request.getDatabase().beginTx();
+                    task.setRunLog(results);
+
+                }
+            }
+            else if ("nopulse".equals(request.getString("status")))
+            {
+                if (task.getStatusCode().equalsIgnoreCase("running"))
+                 {
+                     System.out.println(">>> no pulse from " + taskID);
+                     request.getDatabase().beginTx();
+                     task.setRunLog(results);
+                     task.setStatusCode("failed");
+                 }
+                else if(task != null && task.getStatusCode().equalsIgnoreCase("done"))
+                {
+                    System.out.println("double check: job is finished & no pulse from it");
+                }
+            }
+
+            request.getDatabase().update(task);
+            request.getDatabase().commitTx();
+        }
     }
 }

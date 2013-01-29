@@ -77,7 +77,7 @@ molgenis/lib/spring-test-3.1.2.RELEASE.jar:\
 molgenis/lib/stax-utils-20060502.jar:\
 molgenis/lib/tar.jar:\
 molgenis/lib/testng-5.14.10.jar:\
-molgenis/lib/tjws-1.99.jar:\
+molgenis/lib/tjws-1.98.jar:\
 molgenis/lib/validation-api-1.0.0.GA.jar:\
 molgenis/lib/velocity-1.6.4.jar:\
 molgenis/lib/wsdl4j-1.6.2.jar:\
@@ -118,4 +118,4 @@ molgenis/lib/hibernate-validator-4.1.0.Final/log4j-1.2.14.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-api-1.5.6.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-log4j12-1.5.6.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar \
-org.molgenis.compute.db.RunPilotsOnBackEnd $1 $2 $3 $4 
+org.molgenis.compute.test.RunPilotsOnBackEnd $1 $2 $3 $4 

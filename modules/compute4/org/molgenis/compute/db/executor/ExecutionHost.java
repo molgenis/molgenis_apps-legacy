@@ -23,7 +23,7 @@ public class ExecutionHost extends Ssh
 		// do wee need any unique id here? - if yes why?
 		String uniqueID = "pilot-one";
 
-		String command = "glite-wms-job-submit  -d $USER -o " + uniqueID + " $HOME/maverick/maverick.jdl";
+		String command = "glite-wms-job-submit  -d $USER -o " + uniqueID + " $HOME/maverick/maverick_pulse.jdl";
 		System.out.println(">>> " + command);
 		SshResult result = this.executeCommand(command);
 

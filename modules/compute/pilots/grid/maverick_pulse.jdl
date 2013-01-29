@@ -1,0 +1,45 @@
+# General
+Type = "Job";
+VirtualOrganisation = "bbmri.nl";
+DefaultNodeShallowRetryCount = 5;
+
+# Executables, input and output
+Executable = "/bin/sh";
+Arguments = "maverick_pulse.sh";
+StdOutput = "maverick_pulse.out";
+StdError = "maverick_pulse.err";
+InputSandbox = {"$HOME/maverick/maverick_pulse.sh","$HOME/maverick/dataTransferSRM.sh"};
+OutputSandbox = {"maverick_pulse.err","maverick_pulse.out"};
+MyProxyServer = "px.grid.sara.nl";
+RetryCount = 0;
+
+# Only run in queues longer than 1440 minutes (36 hours)
+# Requirements = (other.GlueCEPolicyMaxCPUTime >= 1440);
+# && other.GlueCEPolicyMaxCPUTime >= 1440
+
+#Requirements = ((other.GlueCEInfoHostName == "creamce.gina.sara.nl" ||
+#	 other.GlueCEInfoHostName == "creamce2.gina.sara.nl" ||
+#	 other.GlueCEInfoHostName == "gb-ce-ams.els.sara.nl" ||
+#	 other.GlueCEInfoHostName ==  "gb-ce-uu.science.uu.nl" ||
+#	 other.GlueCEInfoHostName == "gb-ce-tud.ewi.tudelft.nl" ||
+#	 other.GlueCEInfoHostName == "gb-ce-rug.sara.usor.nl" ||
+#	 other.GlueCEInfoHostName == "creamce.grid.rug.nl" ||
+#	 other.GlueCEInfoHostName == "cygnus.grid.rug.nl" ||
+#	 other.GlueCEInfoHostName == "gb-ce-amc.amc.nl" ||
+#	 other.GlueCEInfoHostName == "gb-ce-emc.erasmusmc.nl" ||
+#	 other.GlueCEInfoHostName == "gb-ce-kun.els.sara.nl")
+#	 && other.GlueCEPolicyMaxCPUTime >= 1440);
+
+Requirements = ((other.GlueCEInfoHostName == "ce.lsg.psy.vu.nl" ||
+	 other.GlueCEInfoHostName ==  "gb-ce-amc.amc.nl" ||
+	 other.GlueCEInfoHostName == "creamce.grid.rug.nl" ||
+	 other.GlueCEInfoHostName == "gazon.nikhef.nl" ||
+	 other.GlueCEInfoHostName == "gb-ce-nki.els.sara.nl" ||
+	 other.GlueCEInfoHostName == "gb-ce-lumc.lumc.nl" ||
+	 other.GlueCEInfoHostName == "gb-ce-wur.els.sara.nl" ||
+	 other.GlueCEInfoHostName == "ce.lsg.hubrecht.eu")
+	&& other.GlueCEPolicyMaxCPUTime >= 1440);
+
+
+
+
