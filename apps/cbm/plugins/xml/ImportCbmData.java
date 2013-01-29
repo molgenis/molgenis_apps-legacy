@@ -290,7 +290,7 @@ public class ImportCbmData extends PluginModel<Entity>
 
 							institue = new Institution();
 
-							institue.setInstitution_ID(organization);
+							institue.setInstitution_ID(organization.getOrganization_ID());
 
 							institue.setHomepage_URL(cbmInsititue.getHomepageURL());
 
@@ -434,7 +434,7 @@ public class ImportCbmData extends PluginModel<Entity>
 
 							contact = new Specimen_Collection_Contact();
 
-							contact.setSpecimen_Collection_Contact_ID(person);
+							contact.setSpecimen_Collection_Contact_ID(person.getPerson_ID());
 
 							contact.setPhone(collectionContactJaxb.getPhone());
 
