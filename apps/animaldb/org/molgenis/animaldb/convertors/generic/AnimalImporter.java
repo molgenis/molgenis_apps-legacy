@@ -22,7 +22,6 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.auth.MolgenisRole;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -80,6 +79,7 @@ public class AnimalImporter
 	private int highestLTNr;
 	private String defaultSourceName;
 	private String defaultBreedingLine;
+	private String importName;
 
 	// private List<String> lineNamesList;
 
@@ -112,6 +112,18 @@ public class AnimalImporter
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
 
+		// create panel wich will contain all the animals from this importbatch
+		ProtocolApplication app = ct.createProtocolApplication(invName, "SetImportTimestamp");
+		db.add(app);
+		ProtocolApplication app2 = ct.createProtocolApplication(invName, "SetTypeOfGroup");
+		db.add(app2);
+		Date nowDate = new Date();
+		String now = nowDate.toString();
+		this.importName = "nonGMOImport_" + now;
+		db.add(ct.preparePanel(invName, this.importName));
+		db.add(ct.createObservedValue(invName, app2.getName(), nowDate, null, "TypeOfGroup", this.importName,
+				"ImportTimestamp", null));
+
 	}
 
 	public void convertFromZip(String filename) throws Exception
@@ -138,6 +150,11 @@ public class AnimalImporter
 		// parseDecRelations(path + "IDsInExp.csv");
 
 		writeToDb();
+	}
+
+	public void writeAnimalsToDb() throws Exception
+	{
+
 	}
 
 	public void writeToDb() throws Exception
@@ -236,16 +253,20 @@ public class AnimalImporter
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 
-		MolgenisRole user = db.find(MolgenisRole.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
-				.get(0);
+		// MolgenisRole user = db.find(MolgenisRole.class, new
+		// QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
+		// .get(0);
 
 		for (Tuple tuple : reader)
 		{
-			// FIXME prefix string
 			String animalName = this.defaultSpeciesNamePrefix + ct.prependZeros(Integer.toString(this.highestNr++), 6);
 			animalNames.add(animalName);
-			Individual newAnimal = ct.createIndividualByImporter(invName, animalName, user);
+			Individual newAnimal = ct.createIndividual(invName, animalName);
 			animalsToAddList.add(newAnimal);
+
+			// label as part of this import batch
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetImportTimestamp"), now, null,
+					"ImportTimestamp", animalName, null, this.importName));
 
 			// Set some defaults: --> Animal Type,
 			String animalType = "A. Gewoon dier";
@@ -430,8 +451,14 @@ public class AnimalImporter
 				NamePrefix namePrefix = prefixList.get(0);
 				namePrefix.setHighestNumber(this.highestNr);
 				db.update(namePrefix);
+				logger.debug("Nameprefix for animals successfully updated");
+				System.out.println("------ > Nameprefix for animals successfully updated");
 			}
-			logger.debug("Namprefix for animals successfully updated");
+			else
+			{
+				logger.error("Nameprefix not updated!!!!!!!! check why, this will cause trouble");
+				System.out.println("------ > Nameprefix not updated!!!!!!!! check why, this will cause trouble");
+			}
 
 		}
 		catch (Exception e)
@@ -469,11 +496,23 @@ public class AnimalImporter
 				startDate = newDateOnlyFormat.format(tmpStartDate);
 			}
 
-			// get the all the animals with this litterid
+			// get the all the animals with this litterid and the correct
+			// importTimestamp.
+			Query<ObservedValue> TimeStampQuery = db.query(ObservedValue.class);
+			TimeStampQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ImportTimestamp"));
+			TimeStampQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, this.importName));
+			List<ObservedValue> individualValueList = TimeStampQuery.find();
+			List<String> importedAnimals = new ArrayList<String>();
+			for (ObservedValue v : individualValueList)
+			{
+				importedAnimals.add(v.getTarget_Name());
+			}
 			Query<ObservedValue> OldLitterQuery = db.query(ObservedValue.class);
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldLitterId"));
 			OldLitterQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
-			List<ObservedValue> individualValueList = OldLitterQuery.find();
+			OldLitterQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, importedAnimals));
+			individualValueList = OldLitterQuery.find();
+
 			int FemaleCtr = 0;
 			int MaleCtr = 0;
 			int UnkSexCtr = 0;
@@ -481,7 +520,7 @@ public class AnimalImporter
 			String dobDate = null;
 			String lineName = null;
 			// Get breedingline from mother (FIXME this assumes that the mother
-			// has been imported alrady, is this really always true?)
+			// has been imported already, is this really always true?)
 			lineName = this.defaultBreedingLine;
 			for (ObservedValue v : individualValueList)
 			{
@@ -491,7 +530,6 @@ public class AnimalImporter
 					weanDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "WeanDate");
 					// Get birthDate from first sibling
 					dobDate = ct.getMostRecentValueAsString(v.getTarget_Name(), "DateOfBirth");
-					System.out.println(">>>>>>>>>>>> " + v.getTarget_Name() + " " + dobDate + " " + weanDate);
 				}
 				String sex = ct.getMostRecentValueAsXrefName(v.getTarget_Name(), "Sex");
 				if (sex.equalsIgnoreCase("Male"))
@@ -530,21 +568,18 @@ public class AnimalImporter
 				parentgroupNr = parentgroupNrMap.get(lineName) + 1;
 			}
 			parentgroupNrMap.put(lineName, parentgroupNr);
-			// System.out.println(">>>>    hpgnr" + this.highestPGNr);
+
 			String parentgroupNrPart = ct.prependZeros("" + (this.highestPGNr + parentgroupNr), 6);
 			String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-			// System.out.println("#########pgName: " + parentgroupName);
-			panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, parentgroupName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					parentgroupName, "Parentgroup", null));
 			// Link parents to parentgroup (if known)
-			// System.out.println("#########pgM: " + motherName);
 			if (motherName != null)
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), now, null,
 						"ParentgroupMother", parentgroupName, null, motherName));
 			}
-			// System.out.println("#########pgM: " + fatherName);
 			if (fatherName != null)
 			{
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), now, null,
@@ -582,11 +617,11 @@ public class AnimalImporter
 			litterNrMap.put(lineName, litterNr);
 			String litterNrPart = ct.prependZeros("" + (this.highestLTNr + litterNr), 6);
 			String litterName = "LT_" + lineName + "_" + litterNrPart;
-			panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, litterName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup",
 					litterName, "Litter", null));
 
-			// FIXME we always need a birthdate, calculate one if it is missing
+			// we always need a birthdate, calculate one if it is missing
 			if (dobDate == null || dobDate.equals(""))
 			{
 				if (weanDate != null && weanDate.equals(""))
@@ -676,14 +711,6 @@ public class AnimalImporter
 					// Get Active value from map; every animal has one
 
 					ObservedValue activeValue = activeMap.get(animalName);
-					// System.out.println("----> " +
-					// activeValue.getTarget_Name());
-					// if (activeValue.getTime() == null)
-					// {
-					// FIXME is this still necessary ???
-
-					// activeValue.setTime(dbFormat.parse(weanDate));
-					// }
 					activeMap.remove(animalName);
 					valuesToAddList.add(activeValue);
 
@@ -707,17 +734,20 @@ public class AnimalImporter
 
 	public void populateProtocolApplication() throws Exception
 	{
+
 		// lines
 		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetSource");
 		makeProtocolApplication("SetSpecies");
 
-		// animals makeProtocolApplication("SetOldAnimalId");
+		// animals
+		makeProtocolApplication("SetOldAnimalId");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetOldLitterId");
 		makeProtocolApplication("SetSex");
 		makeProtocolApplication("SetBackground");
 
+		makeProtocolApplication("SetImportTimestamp");
 		makeProtocolApplication("SetActive");
 		makeProtocolApplication("SetRemoval");
 		makeProtocolApplication("SetDateOfBirth");

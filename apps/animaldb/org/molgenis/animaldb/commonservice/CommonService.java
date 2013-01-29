@@ -442,7 +442,7 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public Individual createIndividual(int investigationId, String individualName, int userId)
+	public Individual createIndividualOwnedByUser(int investigationId, String individualName, int userId)
 			throws DatabaseException, ParseException, IOException
 	{
 		Individual newInd = new Individual();
@@ -452,36 +452,16 @@ public class CommonService
 		return newInd;
 	}
 
-	/**
-	 * Creates an Individual but does NOT add it to the database. Uses
-	 * Investigation and User Names so it can be used with lists.
-	 * 
-	 * @param investigationName
-	 * @param individualName
-	 * @param userName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws IOException
-	 */
-	public Individual createIndividual(String investigationName, String individualName, String userName)
-			throws DatabaseException, ParseException, IOException
+	public Individual createIndividual(String investigationName, String individualName) throws DatabaseException,
+			ParseException, IOException
 	{
 		Individual newInd = new Individual();
 		newInd.setInvestigation_Name(investigationName);
 		newInd.setName(individualName); // placeholder
-		newInd.setOwns_Name(userName);
+		// set default ownwer to be admin.
+		newInd.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
 		return newInd;
-	}
 
-	public Individual createIndividualByImporter(String investigationName, String individualName, MolgenisRole userName)
-			throws DatabaseException, ParseException, IOException
-	{
-		Individual newInd = new Individual();
-		newInd.setInvestigation_Name(investigationName);
-		newInd.setName(individualName); // placeholder
-		newInd.setOwns(userName);
-		return newInd;
 	}
 
 	/**
@@ -745,13 +725,26 @@ public class CommonService
 	/**
 	 * Creates a Panel and adds it to the database.
 	 */
-	public int makePanel(String investigationName, String panelName, String userName) throws DatabaseException,
+	public int createPanel(String investigationName, String panelName) throws DatabaseException, IOException,
+			ParseException
+	{
+		Panel newGroup = new Panel();
+		newGroup.setName(panelName);
+		newGroup.setInvestigation_Name(investigationName);
+		// make admin the default owner.
+		newGroup.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
+		db.add(newGroup);
+		return newGroup.getId();
+	}
+
+	public int createPanelOwnedByUser(String investigationName, String panelName, int userId) throws DatabaseException,
 			IOException, ParseException
 	{
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation_Name(investigationName);
-		newGroup.setOwns_Name(userName);
+		// make admin the default owner.
+		newGroup.setOwns(userId);
 		db.add(newGroup);
 		return newGroup.getId();
 	}
@@ -760,8 +753,8 @@ public class CommonService
 	 * Creates a Panel but does NOT add it to the database. Uses Investigation
 	 * and User Names so it can be used with lists.
 	 */
-	public Panel createPanel(String investigationName, String panelName, String userName) throws DatabaseException,
-			IOException, ParseException
+	public Panel preparePanel(String investigationName, String panelName) throws DatabaseException, IOException,
+			ParseException
 	{
 		if (panelName == null)
 		{
@@ -770,7 +763,7 @@ public class CommonService
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation_Name(investigationName);
-		newGroup.setOwns_Name(userName);
+		newGroup.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
 		return newGroup;
 	}
 
