@@ -8,18 +8,25 @@ package plugins.harmonization;
 
 import gcc.catalogue.MappingMeasurement;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jdom.IllegalNameException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,12 +42,15 @@ import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.io.csv.CsvReader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
+import org.molgenis.util.tuple.Tuple;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -57,6 +67,8 @@ import com.google.gson.Gson;
 public class Harmonization extends EasyPluginController<HarmonizationModel>
 {
 	private static final long serialVersionUID = 4255876428416189905L;
+
+	private static final String PREDICTIONMODEL = "Prediction Model";
 
 	public Harmonization(String name, ScreenController<?> parent)
 	{
@@ -100,7 +112,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					String nameOfModel = request.getString("name").trim();
 					ComputeProtocol cp = new ComputeProtocol();
 					cp.setName(nameOfModel);
-					cp.setInvestigation_Name("Prediction Model");
+					cp.setInvestigation_Name(PREDICTIONMODEL);
 					cp.setScriptTemplate("Not provided");
 					db.add(cp);
 					status.put("message",
@@ -120,7 +132,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 						for (Measurement m : db.find(Measurement.class,
 								new QueryRule(Measurement.NAME, Operator.IN, cp.getFeatures_Name())))
 						{
-							this.removePredictor(m.getLabel(), nameOfModel, db);
+							this.removePredictor(m.getId(), nameOfModel, db);
 						}
 					}
 
@@ -135,97 +147,18 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				{
 					JSONObject data = new JSONObject(request.getString("data"));
 
-					Measurement m = new Measurement();
+					Map<String, String> measurementInfo = new HashMap<String, String>();
 
-					StringBuilder stringBuilder = new StringBuilder();
+					Iterator<?> iteratorFields = data.keys();
 
-					String predictionModelName = data.getString("selected").trim();
-					String unitName = data.getString("unit").trim();
-					String categories = data.getString("category").trim();
-					String buildingBlockString = data.getString("buildingBlocks").trim();
-
-					m.setName(stringBuilder.append(data.getString("name").trim()).toString());
-					m.setLabel(data.getString("label").trim());
-					m.setDescription(data.getString("description"));
-					m.setDataType(data.getString("dataType").trim());
-					m.setUnit_Name(unitName);
-					m.setInvestigation_Name("Prediction Model");
-
-					// Handle unit since it has to be an ontology term
-					if (!unitName.equals("")
-							&& db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, unitName))
-									.size() == 0)
+					while (iteratorFields.hasNext())
 					{
-						OntologyTerm ot = new OntologyTerm();
-						ot.setName(unitName);
-						db.add(ot);
+						String fieldName = iteratorFields.next().toString();
+
+						measurementInfo.put(fieldName, data.getString(fieldName));
 					}
 
-					List<String> categoryRefs = new ArrayList<String>();
-
-					// Handle the categories
-					if (!categories.equals(""))
-					{
-						String categoryElements[] = categories.split(",");
-
-						List<Category> newCategories = new ArrayList<Category>();
-
-						for (String eachCategory : removeDuplicate(categoryElements))
-						{
-							String uniqueName = eachCategory.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
-
-							String codeAndString[] = eachCategory.split("=");
-
-							Category c = new Category();
-
-							stringBuilder = new StringBuilder();
-
-							c.setName(stringBuilder.append(uniqueName).append("_").append(predictionModelName)
-									.toString());
-							c.setCode_String(codeAndString[0].trim());
-							c.setDescription(codeAndString[1].trim());
-							c.setInvestigation_Name("Prediction Model");
-							newCategories.add(c);
-
-							categoryRefs.add(c.getName());
-						}
-
-						db.update(newCategories, DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME,
-								Category.INVESTIGATION_NAME);
-					}
-
-					m.setCategories_Name(categoryRefs);
-
-					db.add(m);
-
-					ComputeProtocol cp = db.find(ComputeProtocol.class,
-							new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModelName)).get(0);
-
-					List<Integer> listOfPredictors = cp.getFeatures_Id();
-					listOfPredictors.add(m.getId());
-					cp.setFeatures_Id(listOfPredictors);
-					db.update(cp);
-
-					// Deal with building blocks
-					if (db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "BuildingBlocks"))
-							.size() == 0)
-					{
-						Measurement buildingBlock = new Measurement();
-						buildingBlock.setName("BuildingBlocks");
-						buildingBlock.setLabel("Building blocks");
-						buildingBlock.setInvestigation_Name("Prediction Model");
-						db.add(buildingBlock);
-					}
-
-					if (buildingBlockString != null && !buildingBlockString.equals(""))
-					{
-						ObservedValue ov = new ObservedValue();
-						ov.setTarget_Name(m.getName());
-						ov.setFeature_Name("BuildingBlocks");
-						ov.setValue(buildingBlockString);
-						ov.setInvestigation_Name("Prediction Model");
-						db.add(ov);
-					}
+					Measurement m = addNewPredictorToDB(db, measurementInfo);
 
 					status.put("message", "You successfully added a new predictor!");
 
@@ -238,7 +171,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				{
 					String predictorName = request.getString("name");
 
-					String predictorID = request.getString("predictorID");
+					Integer predictorID = request.getInt("predictorID");
 
 					String predictionModel = request.getString("predictionModel");
 
@@ -662,45 +595,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	}
 
 	@Override
-	public void handleRequest(Database db, MolgenisRequest request)
-	{
-		try
-		{
-			if ("loadMapping".equals(request.getAction()))
-			{
-				if (this.getModel().getScheduler() == null || this.getModel().getScheduler().isShutdown())
-				{
-					String validationStudy = request.getString("listOfCohortStudies");
-
-					this.getModel().setSelectedValidationStudy(validationStudy);
-
-					System.out.println(validationStudy);
-
-					stringMatching(request, db);
-
-					this.getModel().setFreeMakerTemplate("HarmonizationStatus.ftl");
-				}
-			}
-			else if ("startNewSession".equals(request.getAction()))
-			{
-				this.getModel().setFreeMakerTemplate("Harmonization.ftl");
-
-				this.getModel().setRetrieveResult(false);
-			}
-			else if ("retrieveResult".equals(request.getAction()))
-			{
-				this.getModel().setFreeMakerTemplate("Harmonization.ftl");
-
-				this.getModel().setRetrieveResult(true);
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Override
 	public void reload(Database db)
 	{
 		try
@@ -713,11 +607,11 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			{
 				this.getModel().getReservedInv().add("catalogueCohortStudy");
 				this.getModel().getReservedInv().add("cataloguePredictionModel");
-				this.getModel().getReservedInv().add("Prediction Model");
+				this.getModel().getReservedInv().add(PREDICTIONMODEL);
 			}
 
 			for (ComputeProtocol cp : db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.INVESTIGATION_NAME,
-					Operator.EQUALS, "Prediction Model")))
+					Operator.EQUALS, PREDICTIONMODEL)))
 			{
 				this.getModel().getPredictionModels().add(cp.getName());
 			}
@@ -844,7 +738,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return table.toString();
 	}
 
-	public void stringMatching(MolgenisRequest request, Database db) throws Exception
+	private void stringMatching(MolgenisRequest request, Database db) throws Exception
 	{
 		collectExistingMapping(db, request);
 
@@ -1029,7 +923,265 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	public void removePredictor(String predictorID, String predictionModel, Database db) throws DatabaseException
+	private Measurement addNewPredictorToDB(Database db, Map<String, String> data) throws DatabaseException
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+
+		String predictionModelName = data.get("selected").trim();
+		String buildingBlockString = data.get("buildingBlocks").trim();
+		String unitName = data.get(Measurement.UNIT_NAME.toLowerCase()).trim();
+		String categories = data.get(Measurement.CATEGORIES_NAME.toLowerCase()).trim();
+		String dataType = data.get(Measurement.DATATYPE.toLowerCase()).trim();
+
+		Measurement m = new Measurement();
+
+		m.setName(stringBuilder.append(data.get(Measurement.NAME.toLowerCase()).trim()).toString());
+		m.setLabel(data.get(Measurement.LABEL.toLowerCase()).trim());
+		m.setDescription(data.get(Measurement.DESCRIPTION.toLowerCase()));
+		if (m.getDataTypeOptions().contains(dataType)) m.setDataType(dataType);
+		m.setUnit_Name(unitName);
+		m.setInvestigation_Name(PREDICTIONMODEL);
+
+		// Handle unit since it has to be an ontology term
+		if (!unitName.isEmpty()
+				&& db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, unitName)).size() == 0)
+		{
+			OntologyTerm ot = new OntologyTerm();
+			ot.setName(unitName);
+			db.add(ot);
+		}
+
+		List<String> categoryRefs = new ArrayList<String>();
+
+		// Handle the categories
+		if (!categories.isEmpty())
+		{
+			String categoryElements[] = categories.split(",");
+
+			List<Category> newCategories = new ArrayList<Category>();
+
+			for (String eachCategory : removeDuplicate(categoryElements))
+			{
+				String uniqueName = eachCategory.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+
+				String codeAndString[] = eachCategory.split("=");
+
+				Category c = new Category();
+
+				stringBuilder = new StringBuilder();
+
+				c.setName(stringBuilder.append(uniqueName).append("_").append(predictionModelName).toString());
+				c.setCode_String(codeAndString[0].trim());
+				c.setDescription(codeAndString[1].trim());
+				c.setInvestigation_Name(PREDICTIONMODEL);
+				newCategories.add(c);
+
+				categoryRefs.add(c.getName());
+			}
+
+			db.update(newCategories, DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
+		}
+
+		m.setCategories_Name(categoryRefs);
+
+		db.add(m);
+
+		ComputeProtocol cp = db.find(ComputeProtocol.class,
+				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModelName)).get(0);
+
+		List<Integer> listOfPredictors = cp.getFeatures_Id();
+		listOfPredictors.add(m.getId());
+		cp.setFeatures_Id(listOfPredictors);
+		db.update(cp);
+
+		// Deal with building blocks
+		if (db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "BuildingBlocks")).size() == 0)
+		{
+			Measurement buildingBlock = new Measurement();
+			buildingBlock.setName("BuildingBlocks");
+			buildingBlock.setLabel("Building blocks");
+			buildingBlock.setInvestigation_Name(PREDICTIONMODEL);
+			db.add(buildingBlock);
+		}
+
+		if (buildingBlockString != null && !buildingBlockString.equals(""))
+		{
+			ObservedValue ov = new ObservedValue();
+			ov.setTarget_Name(m.getName());
+			ov.setFeature_Name("BuildingBlocks");
+			ov.setValue(buildingBlockString);
+			ov.setInvestigation_Name(PREDICTIONMODEL);
+			db.add(ov);
+		}
+
+		return m;
+	}
+
+	@Override
+	public void handleRequest(Database db, MolgenisRequest request)
+	{
+		try
+		{
+			if ("loadMapping".equals(request.getAction()))
+			{
+				String validationStudy = request.getString("listOfCohortStudies");
+
+				this.getModel().setSelectedValidationStudy(validationStudy);
+
+				System.out.println(validationStudy);
+
+				stringMatching(request, db);
+
+				this.getModel().setFreeMakerTemplate("HarmonizationStatus.ftl");
+
+			}
+			else if ("batchUploadPredictors".equals(request.getAction()))
+			{
+				batchUploadPredictors(request, db);
+			}
+			else if ("startNewSession".equals(request.getAction()))
+			{
+				this.getModel().setFreeMakerTemplate("Harmonization.ftl");
+
+				this.getModel().setRetrieveResult(false);
+			}
+			else if ("retrieveResult".equals(request.getAction()))
+			{
+				this.getModel().setFreeMakerTemplate("Harmonization.ftl");
+
+				this.getModel().setRetrieveResult(true);
+			}
+		}
+		catch (Exception e)
+		{
+			this.setMessages(new ScreenMessage(e.getMessage(), false));
+
+			e.printStackTrace();
+		}
+	}
+
+	private void batchUploadPredictors(MolgenisRequest request, Database db) throws IOException
+	{
+		String selectedPredictionModel = request.getString("selectPredictionModel");
+
+		String batchUploadFilePath = request.getString("batchUploadPredictors");
+
+		this.getModel().setSelectedPredictionModel(selectedPredictionModel);
+
+		System.out.println("The selected prediction model is : " + selectedPredictionModel);
+
+		System.out.println("The uploaded file is called : " + batchUploadFilePath);
+
+		final String[] colNames =
+		{ "Name", "Label", "Description", "Definition" };
+
+		final List<String> listOfColNames = Arrays.asList(colNames);
+
+		CsvReader reader = null;
+
+		try
+		{
+			reader = new CsvReader(new File(batchUploadFilePath), ',');
+
+			Iterator<String> colNamesIterator = reader.colNamesIterator();
+
+			int counter = 0;
+
+			while (colNamesIterator.hasNext())
+			{
+				String colName = colNamesIterator.next();
+
+				if (!listOfColNames.contains(colName))
+				{
+					this.setMessages(new ScreenMessage("The column name " + colName + " is illegal", false));
+
+					throw new IllegalNameException("The column name " + colName + " is illegal");
+				}
+				else
+				{
+					System.out.println("The column is " + colName);
+				}
+
+				counter++;
+			}
+
+			if (counter != 4)
+			{
+				this.setMessages(new ScreenMessage("There are columns missing, please include all the columns "
+						+ listOfColNames.toArray(), false));
+				throw new IllegalNameException("There are columns missing, please include all the columns "
+						+ listOfColNames.toArray());
+			}
+
+			Iterator<Tuple> listOfRows = reader.iterator();
+
+			Map<String, String> measurementInfo = new HashMap<String, String>();
+
+			while (listOfRows.hasNext())
+			{
+				Tuple eachRow = listOfRows.next();
+
+				for (String eachColumn : eachRow.getColNames())
+				{
+					String value = null;
+
+					if (!eachRow.isNull(eachColumn))
+					{
+						value = eachRow.getString(eachColumn).toString();
+					}
+					else
+					{
+						value = StringUtils.EMPTY;
+					}
+
+					if (eachColumn.equalsIgnoreCase(Measurement.NAME)) value = value.replaceAll("[^(a-zA-Z0-9_)]", "_")
+							.trim();
+
+					measurementInfo.put(eachColumn.toLowerCase(), value);
+				}
+
+				for (Field field : Measurement.class.getFields())
+				{
+					String eachColumn = field.getName().toLowerCase();
+
+					String value = null;
+
+					if (!eachRow.isNull(eachColumn))
+					{
+						value = eachRow.getString(eachColumn).toString();
+					}
+					else
+					{
+						value = StringUtils.EMPTY;
+					}
+
+					if (!measurementInfo.containsKey(eachColumn))
+					{
+						measurementInfo.put(eachColumn, value);
+					}
+				}
+
+				measurementInfo.put("buildingBlocks",
+						eachRow.isNull("Definition") ? StringUtils.EMPTY : eachRow.get("Definition").toString());
+
+				measurementInfo.put("selected", selectedPredictionModel);
+
+				addNewPredictorToDB(db, measurementInfo);
+			}
+		}
+		catch (Exception e)
+		{
+			this.setMessages(new ScreenMessage(e.getMessage(), false));
+
+			e.printStackTrace();
+		}
+		finally
+		{
+			if (reader != null) reader.close();
+		}
+	}
+
+	private void removePredictor(Integer predictorID, String predictionModel, Database db) throws DatabaseException
 	{
 		Measurement m = db.find(Measurement.class, new QueryRule(Measurement.ID, Operator.EQUALS, predictorID)).get(0);
 
@@ -1124,7 +1276,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	public List<String> removeDuplicate(String... elements)
+	private List<String> removeDuplicate(String... elements)
 	{
 		List<String> uniqueList = new ArrayList<String>();
 
@@ -1147,7 +1299,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return freeMarkerView;
 	}
 
-	public static class JSONProtocol
+	private static class JSONProtocol
 	{
 		private final String name;
 		private final String formula;
@@ -1161,7 +1313,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	public static class JSONCategory
+	private static class JSONCategory
 	{
 		private final String name;
 		private final String codeString;
@@ -1177,7 +1329,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	public static class JSONFeature
+	private static class JSONFeature
 	{
 		private final String name;
 		private final String label;

@@ -444,8 +444,8 @@ function insertNewRow(url)
 		}
 		data["description"] = $('#descriptionOfPredictor').val();
 		data["dataType"] = $('#dataTypeOfPredictor').val();
-		data["unit"] = $('#unitOfPredictor').val();
-		data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
+		data["unit_name"] = $('#unitOfPredictor').val();
+		data["categories_name"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
 
 		buildingBlockString = uniqueElementToString($('#buildingBlocks').val().split(";"), ";");
 

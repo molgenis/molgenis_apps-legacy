@@ -17,7 +17,7 @@
 	td
 	{
 		vertical-align:middle;
-		font-size:12px;
+		font-size:13px;
 	}
 	button >span 
 	{
@@ -142,6 +142,11 @@
 			addMappingFromTree(URL);
 		});
 		
+		$('#submitBatchPredictors').click(function(){
+			$("input[name=\"__action\"]").val("batchUploadPredictors");
+			$("form[name=\"" + NAME + "\"]").submit();
+		});
+		
 		$('#startNewValidation').button().click(function(){
 			$('#selectCohortStudyPanel').hide();
 			$('#beforeMapping').show();
@@ -185,7 +190,11 @@
 		});
 		
 		$('#addPredictorButton').click(function(){
-			$('#defineVariablePanel').fadeIn().draggable();
+			//TODO: this is a quick-dirty-nasty way to position the element. It needs
+			//to be improved later on
+			$('#defineVariablePanel').fadeIn().draggable().css({
+				top : 300
+			});
 		});
 		
 		$('#addPredictor').click(function(){
@@ -362,7 +371,10 @@
 								</div>
 								<hr style="background:#0088CC;margin:10px;margin-top:15px;">
 								<div class="row">
-									<div class="span1 offset4">
+									<div class="span1">
+										<input type="button" id="addPredictorButton" class="btn btn-info" style="margin-left:12px;" value="add new predictor">
+									</div>
+									<div class="span1 offset3">
 										<input type="button" id="defineFormula" value="formula" class="btn btn-info" style="font-size:12px;" />
 									</div>
 									<div class="span1">
@@ -401,13 +413,13 @@
 								WARN: All data for this prediction model will be deleted! It is not repairable!
 							</p>
 						</div>
-						<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:40%;width:50%;float:left;margin:5px;z-index:1500;">
+						<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:42%;width:50%;float:left;margin:5px;z-index:1500;">
 							<div class="btn-info ui-corner-all" style="padding-top:3%;height:10%;width:100%;cursor:pointer;">
 								<span style="margin-left:10px;font-size:20px;font-style:italic;">Define a predictor</span>
 							</div>
-							<table style="margin-top:10px;margin-left:2px;width:100%;font-size:12px;">
+							<table style="margin-top:10px;margin-left:2px;width:100%;">
 								<tr>
-									<td style="margin-right:10px;">
+									<td style="margin-right:5px;">
 										<span style="display:block;margin:5px;">Name: </span>
 									</td>
 									<td>
@@ -415,7 +427,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td style="margin-right:10px;">
+									<td style="margin-right:5px;">
 										<span style="display:block;margin:5px;">Label: </span>
 									</td>
 									<td>
@@ -423,7 +435,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td style="margin-right:10px;">
+									<td style="margin-right:5px;">
 										<span style="display:block;margin:5px;">Description: </span>
 									</td>
 									<td>
@@ -468,17 +480,15 @@
 								</tr>
 							</table>
 							<hr>
-							<div style="margin:5px">
+							<div style="margin:3px">
+								<input name="batchUploadPredictors" class="ui-corner-all" type="file" style="font-size:10px;"/>
+								<input id="submitBatchPredictors" class="btn btn-info" style="margin-left:-5px;" type="button" value="submit batch"/>
 								<input id="cancelPredictor" type="button" value="cancel" class="btn btn-info" style="float:right;"/>
 								<input id="addPredictor" type="button" value="add" class="btn btn-info" style="float:right;"/>
 							</div>
 						</div>
 						<div id="showPredictorPanel" style="height:100%;width:100%;">
-							<div class="btn-primary ui-corner-all" style="padding:10px;height:10%;width:40%;">
-								<div style="margin-bottom:10px;"><span style="font-size:24px;font-style:italic;">Overview of prediction model</span></div>
-								<input type="button" id="addPredictorButton"  class="btn btn-info btn-small" value="add new predictor">
-							</div>
-							<div style="height:90%;overflow:auto;float:left;margin-top:10px;margin-right:10px;">
+							<div style="width:100%;height:90%;overflow:auto;float:left;margin-top:10px;margin-right:10px;">
 								<table id="overviewTable" class="ui-corner-all table table-striped table-bordered">
 									<tr>
 										<th style="width:30%;">Name</th>
