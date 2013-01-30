@@ -38,7 +38,7 @@ public class TermExpansionJob implements Job
 
 				int count = 0;
 
-				OntologyService os = new BioportalOntologyService();
+				BioportalOntologyService os = new BioportalOntologyService();
 
 				for (PredictorInfo predictor : predictors)
 				{
@@ -125,7 +125,7 @@ public class TermExpansionJob implements Job
 	}
 
 	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, Set<String> stopWords,
-			HarmonizationModel model, OntologyService os) throws OntologyServiceException
+			HarmonizationModel model, BioportalOntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -181,7 +181,7 @@ public class TermExpansionJob implements Job
 	}
 
 	public List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, Set<String> stopWords,
-			HarmonizationModel model, OntologyService os) throws OntologyServiceException
+			HarmonizationModel model, BioportalOntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -224,8 +224,8 @@ public class TermExpansionJob implements Job
 		return uniqueList(expandedQueries);
 	}
 
-	public List<String> collectInfoFromOntology(String queryToExpand, HarmonizationModel model, OntologyService os)
-			throws OntologyServiceException
+	public List<String> collectInfoFromOntology(String queryToExpand, HarmonizationModel model,
+			BioportalOntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -243,14 +243,17 @@ public class TermExpansionJob implements Job
 					{
 						expandedQueries.add(synonym);
 					}
+
 					try
 					{
-						if (os.getChildren(ot) != null && os.getChildren(ot).size() > 0)
+						if (os.getChildren(ot) != null)
 						{
-							for (uk.ac.ebi.ontocat.OntologyTerm childOt : os.getChildren(ot))
-							{
-								expandedQueries.add(childOt.getLabel());
-							}
+							recursiveAddTerms(ot, expandedQueries, os);
+							// for (uk.ac.ebi.ontocat.OntologyTerm childOt :
+							// os.getChildren(ot))
+							// {
+							// expandedQueries.add(childOt.getLabel());
+							// }
 						}
 					}
 					catch (Exception e)
@@ -262,6 +265,46 @@ public class TermExpansionJob implements Job
 		}
 
 		return uniqueList(expandedQueries);
+	}
+
+	private void recursiveAddTerms(uk.ac.ebi.ontocat.OntologyTerm ot, List<String> expandedQueries, OntologyService os)
+			throws OntologyServiceException
+	{
+		for (uk.ac.ebi.ontocat.OntologyTerm childOt : os.getChildren(ot))
+		{
+			if (childOt.getLabel() != null)
+			{
+				if (!expandedQueries.contains(childOt.getLabel()))
+				{
+					System.out.println("The term + " + childOt.getLabel() + " has been added to the list!");
+					expandedQueries.add(childOt.getLabel());
+				}
+			}
+
+			if (os.getSynonyms(ot) != null)
+			{
+				for (String synonym : os.getSynonyms(ot))
+				{
+					if (!expandedQueries.contains(synonym))
+					{
+						expandedQueries.add(synonym);
+					}
+				}
+			}
+
+			try
+			{
+				if (os.getChildren(childOt) != null)
+				{
+					recursiveAddTerms(childOt, expandedQueries, os);
+				}
+
+			}
+			catch (Exception e)
+			{
+
+			}
+		}
 	}
 
 	public List<String> uniqueList(List<String> uncleanedList)
