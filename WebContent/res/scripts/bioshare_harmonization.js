@@ -54,10 +54,6 @@ function retrieveResult(url)
 
 		$('#details').empty();
 
-		$('#browser').empty();
-
-		$('#existingMappings').empty();
-
 		$('#mappingResult').empty();
 
 		$('#validatePredictors').empty();
@@ -93,21 +89,6 @@ function retrieveResult(url)
 			}
 		});
 		
-		if($('#mappingResult table').size() == 0)
-		{
-			$('#candidateMapping').hide();
-			
-			$('#matchedMapping').fadeIn();
-			
-			$('#showCandidateMapping').hide();
-		}else{
-			$('#candidateMapping').fadeIn();
-			
-			$('#matchedMapping').hide();
-			
-			$('#showCandidateMapping').show();
-		}
-		
 		$('#validatePredictors option').each(function()
 		{
 			$(this).hover(
@@ -136,27 +117,8 @@ function retrieveResult(url)
 			$('#' + identifier).click(function()
 			{
 				predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
-				retrieveExpandedQueries(predictor, identifier.replace("_details", ""), url);
+				retrieveExpandedQueries(predictor, $(this).attr('id').replace("_details", ""), url);
 			});	
-
-			$(this).hover(
-				function () {
-					$(this).css("font-weight", "bolder");
-					identifier = $(this).parent().attr('id');
-					identifier = identifier.replace("_row", "_details");
-					$('#' + identifier).show();
-				},
-				function () {
-					$(this).css("font-weight", "normal");
-				}
-			);
-
-			$(this).children('span').click(function()
-			{
-				measurementName = $(this).text();
-
-				trackInTree(measurementName, url);
-			});
 		});
 
 		$('#validatePredictors').click(function()
@@ -195,7 +157,7 @@ function retrieveResult(url)
 			});
 		});
 		
-		initializeTree(url);
+//		initializeTree(url);
 
 		$('#validatePredictors option:first-child').attr('selected', true).click();
 
@@ -407,18 +369,20 @@ function retrieveExpandedQueries(predictor, matchedVariable, url)
 
 		$('#afterMapping').append(table);
 
-		$('#' + matchedVariable).dialog({
-			title : "Expanded queries",
-			height: 300,
-			width: 600,
-			modal: true,
-			buttons: {
-				Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			},
-		});
-		$('#' + matchedVariable).show();
+//		$('#' + matchedVariable).dialog({
+//			title : "Expanded queries",
+//			height: 300,
+//			width: 600,
+//			modal: true,
+//			buttons: {
+//				Cancel: function() {
+//					$( this ).dialog( "close" );
+//				}
+//			},
+//		});
+//		$('#' + matchedVariable).show();
+		
+		$('#' + matchedVariable).modal('show');
 	});
 }
 

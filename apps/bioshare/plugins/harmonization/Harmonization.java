@@ -634,10 +634,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	{
 		StringBuilder table = new StringBuilder();
 
-		table.append("<div id=\"").append(matchedVariable.replaceAll(" ", "_"))
-				.append("\" style=\"display:none;with:300px;height:400px;overflow:auto;\">")
-				.append("<table style=\"width:100%;overflow:auto;\">")
-				.append("<tr style=\"font-size:16px;\"><th>Expanded queries</th>")
+		table.append("<div id=\"").append(matchedVariable.replaceAll(" ", "_")).append("\" class=\"modal hide fade\">")
+				.append("<div class=\"modal-header\">Expanded query</div>").append("<div class=\"modal-body\">")
+				.append("<table class=\"table table-striped\" style=\"width:100%;overflow:auto;\">")
+				.append("<tr style=\"font-size:12px;\"><th>Expanded queries</th>")
 				.append("<th>Matched variable</th><th>Similarity score</th></tr>");
 
 		matchedVariable = matchedVariable.replaceAll(predictorInfo.getIdentifier() + "_", "");
@@ -654,7 +654,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					.append(matchedVariable).append("</td><td>")
 					.append(predictorInfo.getSimilarity(expandedQueryIdentifier.toString())).append("</td></tr>");
 		}
-		table.append("</table></div>");
+		table.append("</table></div>").append("<div class=\"modal-footer\">")
+				.append("<button class=\"btn\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</button><div>");
 
 		return table.toString();
 	}
@@ -665,11 +666,12 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		if (predictor.getMappedVariables().size() > 0)
 		{
-			table.append("<table id=\"mapping_").append(predictor.getName().replaceAll(" ", "_"))
+			table.append("<table id=\"mapping_")
+					.append(predictor.getName().replaceAll(" ", "_"))
 					.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
-					.append(" class=\"ui-widget-content ui-corner-all\">")
-					.append("<tr class=\"ui-widget-header ui-corner-all\"><th>Mapped varaibles")
-					.append("</th><th>Description</th><th>Select the mapping</th></tr>");
+					.append(" class=\"table table-striped table-hover\">")
+					.append("<tr style=\"font-size:12px;\"><th style=\"width:30%;text-align:center\">Mapped varaibles")
+					.append("</th><th style=\"width:50%;text-align:center\">Description</th><th style=\"width:20%;text-align:center\">Select mapping</th></tr>");
 
 			String predictorName = predictor.getName();
 
@@ -682,7 +684,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				identifier.append(predictorName).append("_").append(measurementName);
 
 				table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
-						.append("_row\"><td style=\"text-align:center;cursor:pointer;\"><span>")
+						.append("_row\" style=\"font-size:12px;\"><td style=\"text-align:center;\"><span>")
 						.append(measurementName)
 						.append("</span><div id=\"")
 						.append(identifier.toString().replaceAll(" ", "_"))
@@ -1138,7 +1140,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					{
 						StringBuilder builder = new StringBuilder();
 
-						builder.append(value.replaceAll("[^(a-zA-Z0-9_)]", "_").trim()).append('_')
+						builder.append(value.replaceAll("[^(a-zA-Z0-9_)]", " ").trim()).append('_')
 								.append(selectedPredictionModel);
 
 						value = builder.toString();

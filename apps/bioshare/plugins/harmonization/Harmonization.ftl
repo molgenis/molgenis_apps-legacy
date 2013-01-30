@@ -17,7 +17,7 @@
 	td
 	{
 		vertical-align:middle;
-		font-size:13px;
+		font-size:14px;
 	}
 	button >span 
 	{
@@ -118,20 +118,6 @@
 			showExistingMapping(URL);
 		});
 		
-		$('#showMatchedMapping').button().click(function(){
-			$('#candidateMapping').hide();
-			$('#matchedMapping').fadeIn();
-		});
-		
-		$('#showCandidateMapping').button().click(function(){
-			$('#matchedMapping').hide();
-			$('#candidateMapping').fadeIn();
-		});
-		
-		$('#addMappingFromTree').button().click(function(){
-			addMappingFromTree(URL);
-		});
-		
 		$('#submitBatchPredictors').click(function(){
 			$("input[name=\"__action\"]").val("batchUploadPredictors");
 			$("form[name=\"" + NAME + "\"]").submit();
@@ -145,34 +131,6 @@
 		
 		$('#saveMapping').button().click(function(){
 			collectMappingFromCandidate(URL);
-		});
-		
-		$('#openMapping').button().click(function(){
-			
-			if($('#mappingResult table').length > 0)
-			{	
-				$('#mappingResultDialog').append($('#mappingResult table:visible'));
-				
-				$('#mappingResultDialog').dialog({
-				
-					title : "Mapping result",
-					height: 600,
-	            	width: 700,
-	            	modal: true,
-	            	close: function() {
-			        	$('#mappingResult').append($(this).find('table'));
-			        },
-	            	buttons: {
-		                Save : function(){
-		                	$( this ).dialog( "close" );
-		                	collectMappingFromCandidate(URL);
-		                },
-		                Cancel : function() {
-		                    $( this ).dialog( "close" );
-		                },
-	            	},
-				});
-			}
 		});
 		
 		$('#addOnePredictorButton').click(function(){
@@ -238,10 +196,10 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 				<div id="messagePanel"></div>
-				<div id="afterMapping" style="display:none;height:800px;width:100%;">
+				<div id="afterMapping" style="display:none;height:600px;width:100%;">
 					<div style="width:100%;height:140px;">
 						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:130px;margin:2px;float:left">
-							<div class="ui-widget-header ui-corner-all" style="height:30px;padding-top:5px;">
+							<div class="btn-primary ui-corner-all" style="height:30px;padding-top:5px;">
 								<div style="margin:3px;float:left;">Matching result</div>
 								<input type="button" id="startNewValidation" value="Validate a new model" 
 									style="font-size:9px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
@@ -257,79 +215,29 @@
 							</div>
 						</div>
 					</div>
-					<div style="height:40%;width:100%;float:left;">
+					<div style="height:75%;width:100%;float:left;margin-top:10px;">
 						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:30%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:14%;">
 								<span style="display:block;margin:12px;text-align:center;">Predictors</span>
 							</div>
 							<div style="float:left;width:100%;height:80%;">
 								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:16px;width:100%;height:95%;">
 								</select>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
 							</div>
 						</div>
 						<div id="candidateMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:69%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:14%;">
 								<span style="display:block;margin:12px;float:left;">Candidate variables</span>
 								<input type="button" id="showMatchedMapping" style="font-size:12px;float:right;margin-top:12px;margin-right:4px" 
 									value="Matched variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 								<input type="button" id="saveMapping" value="Save the mappings" style="font-size:12px;margin-top:12px;margin-right:4px;float:right;" 
 									class="ui-button ui-widget ui-state-default ui-corner-all"/>
-								<input type="button" id="openMapping" value="open mappings" style="font-size:12px;margin-top:12px;margin-right:4px;float:right;" 
-									class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
 							<div style="float:left;width:100%;height:80%;">
 								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
 								</div>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
-								<div id="mappingResultDialog">
-								</div>
 							</div>
 						</div>
-						<div id="matchedMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="display:none;height:100%;width:69%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:12px;float:left;">Matched variables</span>
-								<input type="button" id="showCandidateMapping" style="font-size:12px;float:right;margin:12px;" 
-									value="Candidate variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-								<input type="button" id="addMappingFromTree" style="font-size:12px;float:right;margin:12px;" 
-									value="Add variable from tree" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-							</div>
-							<div style="float:left;width:100%;height:80%;">
-								<div id="existingMappings" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
-								</div>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div id="treePanel" style="display:none;float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
-						<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
-							<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
-							<div id="treeSearchPanel" style="float:left;margin:7px;">
-								<input type="text" id="searchField" style="font-size:12px;"
-									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){;return whetherReload('${screen.getUrl()}');}"/>
-								<input type="button" id="search" style="font-size:12px;" value="search"/>
-								<input type="button" id="clearButton" style="font-size:12px;" value="clear"/>
-							</div>
-						</div>
-						<table style="width:100%">
-							<tr>
-								<td style="width:50%">
-									<div id="treePanel">
-										<div id="treeView" style="height:250px;overflow:auto;">
-											<ul id="browser" class="pointtree">  
-											</ul>
-										</div>
-									</div>
-								</td>
-								<td style="width:50%">
-									<div id="details" style="height:250px;overflow:auto;">
-									</div>
-								</td>
-							</tr>
-						</table>
 					</div>
 				</div>
 				<div id="beforeMapping" style="height:900px;width:100%;">
