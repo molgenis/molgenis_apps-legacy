@@ -215,7 +215,7 @@
 							</div>
 						</div>
 					</div>
-					<div style="height:75%;width:100%;float:left;margin-top:10px;">
+					<div style="height:70%;width:100%;float:left;margin-top:10px;">
 						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:30%;float:left;">
 							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:14%;">
 								<span style="display:block;margin:12px;text-align:center;">Predictors</span>
