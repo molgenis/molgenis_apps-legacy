@@ -13,6 +13,7 @@ import plugins.HarmonizationComponent.MappingList;
 
 public class PredictorInfo
 {
+	private Integer id = null;
 	private String name = null;
 	private String label = null;
 	private String identifier = null;
@@ -24,20 +25,6 @@ public class PredictorInfo
 	private Map<String, Double> similarity = new HashMap<String, Double>();
 	private Map<String, List<String>> expandedQueryPerMapping = new LinkedHashMap<String, List<String>>();
 	private MappingList mappings = new MappingList();
-
-	public PredictorInfo(String name)
-	{
-		this.name = name;
-	}
-
-	public PredictorInfo(String name, List<String> buildingBlocks)
-	{
-		this.name = name;
-		if (buildingBlocks != null)
-		{
-			this.buildingBlocks = buildingBlocks;
-		}
-	}
 
 	public void setName(String name)
 	{
@@ -210,5 +197,15 @@ public class PredictorInfo
 	public String getIdentifier()
 	{
 		return identifier;
+	}
+
+	public Integer getId()
+	{
+		return id;
+	}
+
+	public void setId(Integer id)
+	{
+		this.id = id;
 	}
 }

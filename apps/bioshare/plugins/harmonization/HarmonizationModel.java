@@ -51,7 +51,7 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private List<String> reservedInv = new ArrayList<String>();
 
-	private Map<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+	private Map<Integer, PredictorInfo> predictors = new HashMap<Integer, PredictorInfo>();
 
 	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
 	private String[] ontologies =
@@ -174,12 +174,12 @@ public class HarmonizationModel extends EasyPluginModel
 		return reservedInv;
 	}
 
-	public Map<String, PredictorInfo> getPredictors()
+	public Map<Integer, PredictorInfo> getPredictors()
 	{
 		return predictors;
 	}
 
-	public void setPredictors(HashMap<String, PredictorInfo> predictors)
+	public void setPredictors(HashMap<Integer, PredictorInfo> predictors)
 	{
 		this.predictors = predictors;
 	}
