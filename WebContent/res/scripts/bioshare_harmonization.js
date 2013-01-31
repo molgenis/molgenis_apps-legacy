@@ -68,12 +68,11 @@ function retrieveResult(url)
 
 		$.each(status, function(key, Info)
 		{
-			if(key == "treeView")
-			{
-				$('#browser').empty().append(status["treeView"]);
-				
-			}else{
-				
+//			if(key == "treeView")
+//			{
+//				$('#browser').empty().append(status["treeView"]);
+//				
+//			}else{
 				label = Info["label"];
 
 				table = Info["mappingResult"];
@@ -84,9 +83,9 @@ function retrieveResult(url)
 
 				$('#existingMappings').append(existingMapping);
 
-				$('#validatePredictors').append("<option id=\"" + Info["identifier"].replace(/\s/g,"_")
-						+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
-			}
+				$('#validatePredictors').append("<option id=\"" + Info["identifier"]
+					+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+//			}
 		});
 		
 		$('#validatePredictors option').each(function()
@@ -117,7 +116,8 @@ function retrieveResult(url)
 			$('#' + identifier).click(function()
 			{
 				predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
-				retrieveExpandedQueries(predictor, $(this).attr('id').replace("_details", ""), url);
+				
+				retrieveExpandedQueries(predictor, $(this).parents('td').eq(0).children('span:first-child').text(), url);
 			});	
 		});
 
@@ -259,7 +259,7 @@ function removeSingleMapping(element, url)
 
 	$.ajax({
 		url : url + "&__action=download_json_removeMapping&predictor=" 
-		+ $('#validatePredictors').val(),
+		+ $('#validatePredictors').attr('id'),
 		async : false,
 		data : data,
 	}).done(function(status){
@@ -367,6 +367,8 @@ function retrieveExpandedQueries(predictor, matchedVariable, url)
 
 		table = status["table"];
 
+		$('#expandedQueryTable').remove();
+		
 		$('#afterMapping').append(table);
 
 //		$('#' + matchedVariable).dialog({
@@ -382,7 +384,7 @@ function retrieveExpandedQueries(predictor, matchedVariable, url)
 //		});
 //		$('#' + matchedVariable).show();
 		
-		$('#' + matchedVariable).modal('show');
+		$('#expandedQueryTable').modal('show');
 	});
 }
 
@@ -451,7 +453,6 @@ function populateRowInTable(data, url)
 
 	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
 	newRow += "<td name=\"variableName\" class=\"ui-corner-all\"><span style=\"float:left;cursor:pointer;\">" + name + "</span>";
-	newRow += "<input id=\"" + name + "_name\" type=\"hidden\" value=\"" + name + "\"/>";
 	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:2px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
@@ -648,7 +649,7 @@ function addPredictor(url)
 
 function removePredictor(element, url)
 {	
-	predictorName = $(element).parents('td').children('input:hidden').eq(0).val();
+	predictorName = $(element).parents('td').eq(0).children('span:first-child').text();
 	
 	predictorID = $(element).parents('tr').eq(0).attr('id');
 	
