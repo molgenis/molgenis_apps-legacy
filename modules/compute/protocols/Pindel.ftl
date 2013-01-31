@@ -50,7 +50,7 @@ ${pindelOutput}_TD \
 DATE=`date | awk '{print $6,$2,$3}' OFS="_"`
 
 #Convert pindel output to VCF and use GATK annotation as output
-${pindelBin} \
+${pindel2VcfBin} \
 -p ${pindelOutput}_MERGED \
 -r ${indexfile} \
 -R ${indexfileIDtest} \

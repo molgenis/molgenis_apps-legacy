@@ -18,7 +18,7 @@ alloutputsexist \
 "${ugindelsvcf}" \
 "${ugindelsmetrics}"
 
-java Xmx8g -jar ${genomeAnalysisTKjar1324} \
+java -Xmx8g -jar ${genomeAnalysisTKjar1324} \
 -T UnifiedGenotyper \
 -R ${indexfile} \
 -I ${mergedbam} \
