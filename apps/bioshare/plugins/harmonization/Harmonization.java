@@ -232,12 +232,20 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 				else if ("download_json_retrieveExpandedQuery".equals(request.getAction()))
 				{
-					String predictor = request.getString("predictor");
+					String predictorID = request.getString("predictor");
+
+					String investigationName = request.getString("investigationName");
+
+					Investigation inv = db.find(Investigation.class,
+							new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
+
+					predictorID = predictorID.replaceAll(inv.getId() + "_", "");
 
 					String matchedVariable = request.getString("matchedVariable");
 
 					String table = retrieveExpandedQuery(
-							this.getModel().getPredictors().get(Integer.parseInt(predictor)), matchedVariable);
+							this.getModel().getPredictors().get(Integer.parseInt(predictorID)), matchedVariable,
+							investigationName);
 
 					status.put("table", table);
 				}
@@ -401,7 +409,8 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.EQUALS,
 							predictorName.toString()));
 
-					Measurement m = this.getModel().getMeasurements().get(measurementName);
+					Measurement m = db.find(Measurement.class,
+							new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
 
 					this.getModel().getPredictors().get(predictorName.toString().replaceAll(" ", "_"))
 							.getFinalMappings().remove(m.getName());
@@ -506,14 +515,24 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 				else if ("download_json_retrieveResult".equals(request.getAction()))
 				{
+					String investigationName = request.getString("matchingValidationStudy");
+
+					Investigation inv = db.find(Investigation.class,
+							new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
+
 					for (PredictorInfo predictor : new ArrayList<PredictorInfo>(this.getModel().getPredictors()
 							.values()))
 					{
 						JSONObject eachPredictor = new JSONObject();
 
-						String mappingResult = makeMappingTable(predictor);
+						String mappingResult = makeMappingTable(predictor, inv);
 
 						String existingMapping = makeExistingMappingTable(predictor);
+
+						StringBuilder tableIdentifier = new StringBuilder();
+
+						eachPredictor.put("table_ID",
+								tableIdentifier.append(inv.getId()).append('_').append(predictor.getId()).toString());
 
 						eachPredictor.put("label", predictor.getLabel());
 
@@ -627,27 +646,25 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	private String retrieveExpandedQuery(PredictorInfo predictorInfo, String matchedVariable)
+	private String retrieveExpandedQuery(PredictorInfo predictorInfo, String matchedVariable, String investigationName)
 	{
 		StringBuilder table = new StringBuilder();
 
 		table.append("<div id=\"expandedQueryTable\" class=\"modal hide fade\">")
-				.append("<div class=\"modal-header\">Expanded query</div>").append("<div class=\"modal-body\">")
+				.append("<div class=\"modal-header\">Expanded query for ")
+				.append(predictorInfo.getLabel())
+				.append("</div>")
+				.append("<div class=\"modal-body\">")
 				.append("<table class=\"table table-striped\" style=\"width:100%;overflow:auto;\">")
-				.append("<tr style=\"font-size:12px;\"><th>Expanded queries</th>")
-				.append("<th>Matched variable</th><th>Similarity score</th></tr>");
+				.append("<tr style=\"font-size:12px;\"><th style=\"width:40%\">Expanded queries</th>")
+				.append("<th style=\"width:30%\">Matched variable</th><th style=\"width:30%\">Similarity score</th></tr>");
 
-		StringBuilder expandedQueryIdentifier = new StringBuilder();
-
-		for (String query : predictorInfo.getExpandedQueryForOneMapping(matchedVariable))
+		for (String query : predictorInfo.getExpandedQueryForOneMapping(matchedVariable, investigationName))
 		{
-			expandedQueryIdentifier.delete(0, expandedQueryIdentifier.length());
-
-			expandedQueryIdentifier.append(query).append("_").append(matchedVariable);
-
 			table.append("<tr style=\"font-size:12px;text-align:center;\"><td>").append(query).append("</td><td>")
 					.append(matchedVariable).append("</td><td>")
-					.append(predictorInfo.getSimilarity(expandedQueryIdentifier.toString())).append("</td></tr>");
+					.append(predictorInfo.getSimilarity(matchedVariable, query, investigationName))
+					.append("</td></tr>");
 		}
 		table.append("</table></div>").append("<div class=\"modal-footer\">")
 				.append("<button class=\"btn\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</button><div>");
@@ -655,32 +672,34 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return table.toString();
 	}
 
-	private String makeMappingTable(PredictorInfo predictor)
+	private String makeMappingTable(PredictorInfo predictor, Investigation inv) throws DatabaseException
 	{
 		StringBuilder table = new StringBuilder();
 
-		if (predictor.getMappedVariables().size() > 0)
+		if (predictor.hasMappingResult())
 		{
-			table.append("<table id=\"mapping_")
+			Integer predictorID = predictor.getId();
+
+			table.append("<table id=\"")
+					.append(inv.getId())
+					.append("_")
 					.append(predictor.getId())
 					.append("\" style=\"display:none;position:relative;top:5px;width:100%;overflow:auto;\"")
 					.append(" class=\"table table-striped table-hover\">")
 					.append("<tr style=\"font-size:12px;\"><th style=\"width:30%;text-align:center\">Mapped varaibles")
 					.append("</th><th style=\"width:50%;text-align:center\">Description</th><th style=\"width:20%;text-align:center\">Select mapping</th></tr>");
 
-			Integer predictorID = predictor.getId();
-
-			for (String measurementName : predictor.getMappedVariables())
+			for (Measurement measurement : predictor.getMappedVariables().get(inv.getName()))
 			{
-				String description = predictor.getDescription(measurementName);
+				String description = measurement.getDescription();
 
 				StringBuilder identifier = new StringBuilder();
 
-				identifier.append(predictorID).append("_").append(measurementName);
+				identifier.append(predictorID).append("_").append(measurement.getId());
 
 				table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
 						.append("_row\" style=\"font-size:12px;\"><td style=\"text-align:center;\"><span>")
-						.append(measurementName)
+						.append(measurement.getName())
 						.append("</span><div id=\"")
 						.append(identifier.toString().replaceAll(" ", "_"))
 						.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
@@ -692,6 +711,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 			}
 
 			table.append("</table>");
+
 		}
 		return table.toString();
 	}
@@ -822,8 +842,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 	{
 		String predictionModel = request.getString("selectPredictionModel");
 
-		String validationStudy = request.getString("listOfCohortStudies");
-
 		String selectedVariableName = request.getString("selectedVariableID");
 
 		this.getModel().setCatalogue(null);
@@ -833,8 +851,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		this.getModel().getPredictors().clear();
 
 		this.getModel().setSelectedPredictionModel(predictionModel);
-
-		this.getModel().setSelectedValidationStudy(validationStudy);
 
 		ComputeProtocol cp = db.find(ComputeProtocol.class,
 				new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, predictionModel)).get(0);
@@ -865,18 +881,20 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 				predictor.setLabel(m.getLabel());
 
-				HashMap<String, String> categories = new HashMap<String, String>();
+				// HashMap<String, String> categories = new HashMap<String,
+				// String>();
 
-				if (m.getCategories_Name().size() > 0)
-				{
-					for (Category c : db.find(Category.class,
-							new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name())))
-					{
-						categories.put(c.getCode_String(), c.getDescription());
-					}
-				}
+				// if (m.getCategories_Name().size() > 0)
+				// {
+				// for (Category c : db.find(Category.class,
+				// new QueryRule(Category.NAME, Operator.IN,
+				// m.getCategories_Name())))
+				// {
+				// categories.put(c.getCode_String(), c.getDescription());
+				// }
+				// }
 
-				predictor.setCategory(categories);
+				// predictor.setCategory(categories);
 
 				predictor.setIdentifier(m.getName().replaceAll(" ", "_"));
 
@@ -891,29 +909,51 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				if (query.find().size() > 0) this.getModel().getPredictors().get(m.getId())
 						.setBuildingBlocks(query.find().get(0).getValue().split(";"));
 
-				Query<MappingMeasurement> queryForMappings = db.query(MappingMeasurement.class);
-
-				queryForMappings.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN,
-						listOfFeatureNames));
-
-				queryForMappings.addRules(new QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.EQUALS,
-						validationStudy));
-
-				if (queryForMappings.find().size() > 0)
-				{
-					List<Measurement> listOfFeatures = db.find(Measurement.class, new QueryRule(Measurement.NAME,
-							Operator.IN, queryForMappings.find().get(0).getFeature_Name()));
-
-					this.getModel().getPredictors().get(m.getId()).addFinalMappings(listOfFeatures);
-				}
+				// Query<MappingMeasurement> queryForMappings =
+				// db.query(MappingMeasurement.class);
+				//
+				// queryForMappings.addRules(new
+				// QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN,
+				// listOfFeatureNames));
+				//
+				// queryForMappings.addRules(new
+				// QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.IN,
+				// this
+				// .getModel().getValidationStudies()));
+				//
+				// if (queryForMappings.find().size() > 0)
+				// {
+				// List<Measurement> listOfFeatures = db.find(Measurement.class,
+				// new QueryRule(Measurement.NAME,
+				// Operator.IN,
+				// queryForMappings.find().get(0).getFeature_Name()));
+				//
+				// String investigationName =
+				// listOfFeatures.get(0).getInvestigation_Name();
+				//
+				// this.getModel().getPredictors().get(m.getId()).addFinalMappings(listOfFeatures);
+				// }
 			}
 
-			this.getModel().setMeasurements(new HashMap<String, Measurement>());
+			this.getModel().setMeasurements(new HashMap<String, List<Measurement>>());
 
-			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
-					Operator.EQUALS, validationStudy)))
+			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN,
+					this.getModel().getValidationStudies())))
 			{
-				this.getModel().getMeasurements().put(m.getName(), m);
+				List<Measurement> measurements = null;
+
+				if (this.getModel().getMeasurements().containsKey(m.getInvestigation_Name()))
+				{
+					measurements = this.getModel().getMeasurements().get(m.getInvestigation_Name());
+				}
+				else
+				{
+					measurements = new ArrayList<Measurement>();
+				}
+
+				measurements.add(m);
+
+				this.getModel().getMeasurements().put(m.getInvestigation_Name(), measurements);
 			}
 		}
 	}
@@ -1019,14 +1059,27 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		{
 			if ("loadMapping".equals(request.getAction()))
 			{
-				String validationStudy = request.getString("listOfCohortStudies");
+				// String validationStudy =
+				// request.getString("listOfCohortStudies");
+				JSONObject selectedStudiesInJson = new JSONObject(request.getString("selectedStudiesToMatch"));
 
-				this.getModel().setSelectedValidationStudy(validationStudy);
+				Iterator<?> iterator = selectedStudiesInJson.keys();
 
-				System.out.println(validationStudy);
+				List<String> selectedStudiesInList = new ArrayList<String>();
 
+				while (iterator.hasNext())
+				{
+					String studyName = iterator.next().toString();
+
+					selectedStudiesInList.add(studyName);
+				}
+
+				this.getModel().setSelectedValidationStudy(selectedStudiesInList);
+				//
+				// System.out.println(validationStudy);
+				//
 				stringMatching(request, db);
-
+				//
 				this.getModel().setFreeMakerTemplate("HarmonizationStatus.ftl");
 
 			}

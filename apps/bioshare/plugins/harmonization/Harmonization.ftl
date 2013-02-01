@@ -35,14 +35,39 @@
 	
 	$(document).ready(function()
 	{	
+		var allStudies = [<#if screen.getValidationStudies()??><#list screen.getValidationStudies() as study>"${study}",</#list></#if>];
+		
+		var selectedStudies = [<#if screen.getSelectedValidationStudy()??><#list screen.getSelectedValidationStudy() as study>"${study}",</#list></#if>];
+		
+		for(var i = 0; i < allStudies.length; i++){
+			
+			element = allStudies[i];
+			
+			if($.inArray(element, selectedStudies) == -1){	
+				$('#listOfCohortStudies').append("<option>" + element + "</option>");
+			}else{
+				addSelectedStudy(element, $('#addValidationStudyAsCandidate').siblings('table'));
+			}
+		}
+	
 		if("${screen.isRetrieveResult()}" == "true")
 		{
+			for(var i = 0; i < selectedStudies.length; i++)
+			{
+				$('#matchingValidationStudy').append("<option>" + selectedStudies[i] + "</option>");
+			}
+			
+			$('#matchingValidationStudy').change(function(){
+				retrieveResult(URL);
+			});
+			
 			$('#beforeMapping').hide();
 			
 			$('#afterMapping').show();
 			
 			retrieveResult(URL);
 		}
+		
 		//Styling for the dropDown box
 		$('#selectPredictionModel').change(function(){
 			
@@ -52,6 +77,7 @@
 			
 			showPredictors(selected, URL);
 		});
+		
 		
 		for(var i = 0; i < listOfDataTypes.length; i++){
 			
@@ -107,7 +133,9 @@
 		});
 		
 		$('#showCohortStudy').click(function(){
-			$('#selectCohortStudyPanel').fadeIn();
+			$("input[name=\"selectedVariableID\"]").val(null);
+			$('#whetherWholeSet').text('All variables');
+			$('#selectCohortStudyPanel').modal('show');
 		});
 		
 		$('#validatePredictionModel').click(function(){
@@ -124,9 +152,21 @@
 		});
 		
 		$('#startNewValidation').button().click(function(){
-			$('#selectCohortStudyPanel').hide();
-			$('#beforeMapping').show();
-			$('#afterMapping').hide();
+			$('#selectCohortStudyPanel').modal('hide');
+			//$('#beforeMapping').show();
+			//$('#afterMapping').hide();
+			$('input[name="__action"]').val("startNewSession");
+			$("form[name=\"" + NAME + "\"]").submit();
+		});
+		
+		$('#addValidationStudyAsCandidate').click(function(){
+			
+			if($('#listOfCohortStudies option').length > 0){
+				
+				addSelectedStudy($('#listOfCohortStudies option:selected').val(), $(this).siblings('table'));
+				
+				$('#listOfCohortStudies option:selected').remove();
+			}
 		});
 		
 		$('#saveMapping').button().click(function(){
@@ -152,7 +192,7 @@
 		});
 		
 		$('#cancelSelectCohortStudy').click(function(){
-			$('#selectCohortStudyPanel').fadeOut();
+			$('#selectCohortStudyPanel').modal('hide');
 		});
 		
 		$('#addPredictor').click(function(){
@@ -177,6 +217,23 @@
 			$('#confirmWindow').modal('hide');
 		});
 	});
+	
+	function addSelectedStudy(studyName, tableObject){
+		
+		newRow = "<tr><td>" + studyName 
+			   + "</td><td><i class=\"icon-remove\" title=\"remove\" style=\"cursor:pointer;\"></i></td></tr>";
+		
+		$(tableObject).append(newRow);
+			
+		$(tableObject).find('tr:last-child >td:eq(1) >i.icon-remove').click(function(){
+			
+			element = $(this).parents('tr:eq(0)').children('td:eq(0)');
+			
+			$('#listOfCohortStudies').append("<option selected=\"selected\">" + element.text() + "</option>");
+			
+			element.parents('tr:eq(0)').remove();
+		});
+	}
 </script>
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 <!--needed in every form: to redirect the request to the right screen-->
@@ -197,43 +254,43 @@
 			<div class="screenpadding">
 				<div id="messagePanel"></div>
 				<div id="afterMapping" style="display:none;height:600px;width:100%;">
-					<div style="width:100%;height:140px;">
-						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:130px;margin:2px;float:left">
+					<div style="width:100%;">
+						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:150px;margin:2px;float:left">
 							<div class="btn-primary ui-corner-all" style="height:30px;padding-top:5px;">
 								<div style="margin:3px;float:left;">Matching result</div>
 								<input type="button" id="startNewValidation" value="Validate a new model" 
 									style="font-size:9px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
-							<div style="margin:5px;">
+							<div style="margin:16px;margin-top:10px;">
 								Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;"></span>
 							</div>
-							<div style="margin:5px;">
-								Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;"></span>
+							<div style="margin:16px;">
+								Validation study: <select id="matchingValidationStudy" style="float:right;margin-right:20px;"></select>
 							</div>
-							<div style="margin:5px;">
+							<div style="margin:16px;margin-top:20px;">
 								Selected predictor: <span id="matchingSelectedPredictor" style="float:right;margin-right:20px;"></span>
 							</div>
 						</div>
 					</div>
 					<div style="height:70%;width:100%;float:left;margin-top:10px;">
 						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:30%;float:left;">
-							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:14%;">
+							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:12%;">
 								<span style="display:block;margin:12px;text-align:center;">Predictors</span>
 							</div>
-							<div style="float:left;width:100%;height:80%;">
+							<div style="float:left;width:100%;height:85%;">
 								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:16px;width:100%;height:95%;">
 								</select>
 							</div>
 						</div>
 						<div id="candidateMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:69%;float:left;">
-							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:14%;">
+							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:12%;">
 								<span style="display:block;margin:12px;float:left;">Candidate variables</span>
 								<input type="button" id="showMatchedMapping" style="font-size:12px;float:right;margin-top:12px;margin-right:4px" 
 									value="Matched variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 								<input type="button" id="saveMapping" value="Save the mappings" style="font-size:12px;margin-top:12px;margin-right:4px;float:right;" 
 									class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
-							<div style="float:left;width:100%;height:80%;">
+							<div style="float:left;width:100%;height:85%;">
 								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
 								</div>
 							</div>
@@ -288,23 +345,28 @@
 								</div>
 							</div>
 						</div>
-						<div id="selectCohortStudyPanel" style="display:none;height:180px;width:35%;margin-top:10px;" class="ui-widget-content ui-corner-all span3">
-							<div class="btn-primary" style="height:14%;width:100%;">
-								<span style="margin:10px;font-size:16px;font-style:italic;">Select a cohort study</span>
+						<div id="selectCohortStudyPanel" class="modal hide fade in span3" tabindex="-1" role="dialog" 
+							aria-hidden="true">
+							<div class="modal-header">
+								<strong>Select validation study(ies) to match</strong></br>
+								Match variable(s): <span id="whetherWholeSet"></span>
 							</div>
-							<div style="margin-top:20px;margin-left:10px;height:70%;">
+							<div class="modal-body"  style="height:200px;">
 								<select id="listOfCohortStudies" name = "listOfCohortStudies" style="width:185px;">
-									<#if screen.getValidationStudies()??>
-										<#list screen.getValidationStudies() as study>
-											<option <#if screen.getSelectedValidationStudy()?? && screen.getSelectedValidationStudy() == study>selected="selected"</#if>>${study}</option>
-										</#list>
-									</#if>
 								</select>
-								<div style="margin-top:20%;margin-left:19%;">
-									<input type="button" id="viewMappingForPredictionModel" style="font-size:12px;" value="view mapping" class="btn btn-primary"/>
-									<input type="button" id="validatePredictionModel" style="font-size:12px;" value="validate" class="btn btn-primary"/>
-									<input type="button" id="cancelSelectCohortStudy" style="font-size:12px;" value="cancel" class="btn btn-primary"/>
-								</div>
+								<input name="selectedStudiesToMatch" type="hidden"/>
+								<i id="addValidationStudyAsCandidate" class="icon-plus" style="cursor:pointer;margin-left:2px;" title="add studies"></i>
+								<table class="table table-striped table-bordered">
+									<tr>
+										<th style="width:60%;">Selected studies</th>
+										<th style="width:40%;">Remove</th>
+									</tr>
+								</table>
+							</div>
+							<div class="modal-footer">
+								<input type="button" id="viewMappingForPredictionModel" value="view mapping" class="btn btn-primary"/>
+								<input type="button" id="validatePredictionModel" value="Match" class="btn btn-primary"/>
+								<button id="cancelSelectCohortStudy" class="btn btn-primary" data-dismiss="modal"/>Cancel</button>
 							</div>
 						</div>
 					</div>

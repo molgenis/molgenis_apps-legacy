@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -82,46 +83,58 @@ public class TermExpansionJob implements Job
 
 	private void createNGramMeasurements(HarmonizationModel model)
 	{
-		Map<Measurement, List<Set<String>>> nGramsMap = new HashMap<Measurement, List<Set<String>>>();
+		Map<String, Map<Measurement, List<Set<String>>>> nGramsMapForMeasurements = new HashMap<String, Map<Measurement, List<Set<String>>>>();
 
-		for (Measurement m : model.getMeasurements().values())
+		for (Entry<String, List<Measurement>> measurementsFromStudy : model.getMeasurements().entrySet())
 		{
-			List<String> fields = new ArrayList<String>();
+			Map<Measurement, List<Set<String>>> nGramsMap = new HashMap<Measurement, List<Set<String>>>();
 
-			if (!StringUtils.isEmpty(m.getDescription()))
+			String investigationName = measurementsFromStudy.getKey();
+
+			List<Measurement> measurements = measurementsFromStudy.getValue();
+
+			for (Measurement m : measurements)
 			{
-				fields.add(m.getDescription());
 
-				StringBuilder combinedString = new StringBuilder();
+				List<String> fields = new ArrayList<String>();
 
-				if (!m.getCategories_Name().isEmpty())
+				if (!StringUtils.isEmpty(m.getDescription()))
 				{
-					for (String categoryName : m.getCategories_Name())
+					fields.add(m.getDescription());
+
+					StringBuilder combinedString = new StringBuilder();
+
+					if (!m.getCategories_Name().isEmpty())
 					{
-						combinedString.delete(0, combinedString.length());
+						for (String categoryName : m.getCategories_Name())
+						{
+							combinedString.delete(0, combinedString.length());
 
-						combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(' ')
-								.append(m.getDescription());
+							combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(' ')
+									.append(m.getDescription());
 
-						fields.add(combinedString.toString().replace('_', ' '));
+							fields.add(combinedString.toString().replace('_', ' '));
+						}
 					}
 				}
+
+				List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
+
+				for (String eachEntry : fields)
+				{
+					Set<String> dataItemTokens = model.getMatchingModel().createNGrams(eachEntry.toLowerCase().trim(),
+							true);
+
+					listOfNGrams.add(dataItemTokens);
+				}
+
+				nGramsMap.put(m, listOfNGrams);
 			}
 
-			List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
-
-			for (String eachEntry : fields)
-			{
-				Set<String> dataItemTokens = model.getMatchingModel()
-						.createNGrams(eachEntry.toLowerCase().trim(), true);
-
-				listOfNGrams.add(dataItemTokens);
-			}
-
-			nGramsMap.put(m, listOfNGrams);
+			nGramsMapForMeasurements.put(investigationName, nGramsMap);
 		}
 
-		model.setNGramsMapForMeasurements(nGramsMap);
+		model.setNGramsMapForMeasurements(nGramsMapForMeasurements);
 	}
 
 	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, Set<String> stopWords,
