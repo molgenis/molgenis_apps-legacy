@@ -6,7 +6,7 @@
 		<plugin label="Dataset Viewer" name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
 		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
 		<menu name="ImportData" label="Import Data" position="left">
-				<plugin label="Import xml data" name="ImportXmlData" type="plugin.ImportCbmData" />
+				<plugin label="Import xml data" name="ImportXmlData" type="plugin.ImportCbmData_omx" />
 			</menu>
 		
 		
