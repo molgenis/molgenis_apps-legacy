@@ -5,8 +5,8 @@
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
 		<plugin label="Dataset Viewer" name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
 		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
-		<menu name="ImportData" label="Import Data" position="left">
-				<plugin label="Import xml data" name="ImportXmlData" type="plugin.ImportCbmData_omx" />
+		<menu name="ConvertXMLtoOMX" label="ConvertXMLtoOMX" position="left">
+				<plugin label="Convert xml data" name="ConvertXmlData" type="plugin.ConvertCbmData_omx" />
 			</menu>
 		
 		
