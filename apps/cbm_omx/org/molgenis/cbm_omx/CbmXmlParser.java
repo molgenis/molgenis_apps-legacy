@@ -4,7 +4,6 @@ import gme.cacore_cacore._3_2.gov_nih_nci_cbm_domain.CbmNode;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -16,11 +15,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.molgenis.observ.ObservableFeature;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import com.sun.xml.internal.ws.wsdl.writer.document.http.Address;
 
 public class CbmXmlParser
 {
@@ -53,14 +49,6 @@ public class CbmXmlParser
 
 		// Print out the contents of the JavaObject we just unmarshalled from
 		// the XML
-		System.out.println(result.toString());
-
-		for (Field field : Address.class.getFields())
-		{
-			String featureName = field.getName();
-
-			ObservableFeature newFeatureObject = new ObservableFeature();
-		}
 
 		return result.getValue();
 	}
