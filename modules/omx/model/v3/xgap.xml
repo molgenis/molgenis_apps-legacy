@@ -1,5 +1,5 @@
-<molgenis name="org.molgenis">
-	<module name="xgap">
+<molgenis name="org.molgenis.omx">
+	<module name="xgap" label="XGAP module">
 		<description>XGAP</description>
 		<entity name="Locus" abstract="true">
 			<description> position. Typical examples of such traits are genes,
@@ -24,7 +24,7 @@
 			<field name="orderNr" type="int" />
 			<field name="isAutosomal" type="bool" description="Is 'yes' when number of chromosomes is equal in male and female individuals, i.e., if not a sex chromosome."/>
 			<field name="bpLength" type="int" nillable="true" description="Lenght of the chromsome in base pairs."/>
-			<field name="Species" label="Species" type="xref" xref_entity="OntologyTerm"
+			<field name="Species" label="Species" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true"
 				description="Reference to the species this
 				chromosome belongs to." />
@@ -165,15 +165,12 @@
 			<field name="RetentionTime" type="decimal" nillable="true"
 				description="The retention-time of this peak in minutes." />
 		</entity>
-		<entity name="Tissue" extends="OntologyTerm" description="Ontology of tissue. E.g. spleen" />
-		<entity name="SampleLabel" extends="OntologyTerm"
-			description="Ontology of sample labels. E.g. cy3, cy5" />
 		<entity name="Sample" extends="Target">
 			<description></description>
 			<field name="Individual" type="xref" xref_entity="Individual"
 				nillable="true"
 				description="The individual from which this sample was taken." />
-			<field name="Tissue" type="xref" xref_entity="Tissue"
+			<field name="Tissue" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true"
 				description="The tissue from which this sample was taken." />
 		</entity>
@@ -187,12 +184,12 @@
 				experiment.</description>
 			<field name="Subject1" type="xref" xref_entity="Individual"
 				description="The first subject" />
-			<field name="Label1" type="xref" xref_entity="SampleLabel"
+			<field name="Label1" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true"
 				description="Which channel or Fluorescent labeling is associated with the first subject" />
 			<field name="Subject2" type="xref" xref_entity="Individual"
 				description="The second sample" />
-			<field name="Label2" type="xref" xref_entity="SampleLabel"
+			<field name="Label2" type="xref" xref_entity="AlternativeIdentifier"
 				nillable="true"
 				description="Which channel or Fluorescent labeling is associated with the second subject" />
 		</entity>

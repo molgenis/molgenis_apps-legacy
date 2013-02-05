@@ -7,11 +7,11 @@ import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.io.TupleReader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * This listener creates Measurement for each field and Protocol for each table

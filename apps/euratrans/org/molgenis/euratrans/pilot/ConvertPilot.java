@@ -24,7 +24,7 @@ import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Gene;
 import org.molgenis.xgap.InvestigationFile;

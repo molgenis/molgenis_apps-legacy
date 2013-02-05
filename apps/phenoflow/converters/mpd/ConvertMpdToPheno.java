@@ -15,7 +15,7 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
 
-import app.CsvExport;
+import app.CsvEntityExporter;
 
 /**
  * Convertor to convert standard MPD (mouse phenotype database) downloads to
@@ -40,12 +40,8 @@ public class ConvertMpdToPheno
 		conv.loadMeasurements();
 		conv.loadAnimalDataPoints();
 
-		CsvExport export = new CsvExport();
+		CsvEntityExporter export = new CsvEntityExporter();
 		export.exportAll(new File(outputDir), projects, strains, animals, measurements, values);
-
-		// CsvImport importer = new CsvImport();
-		// Database db = null;
-		// importer.importAll(db,projects, strains);
 	}
 
 	// containers for the mpd data

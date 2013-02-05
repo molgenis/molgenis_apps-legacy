@@ -9,6 +9,7 @@
 	<path id="app.class.path">
 		<pathelement location="apps/wormqtl" />
 		<pathelement location="apps/xqtl" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />

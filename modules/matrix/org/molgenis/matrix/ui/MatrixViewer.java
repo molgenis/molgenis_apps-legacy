@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.NameNotUniqueException;
 import org.molgenis.framework.ui.ScreenController;
@@ -21,7 +21,6 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.Label;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.util.Tuple;
 
 /**
  * Wrapper of jQuery DataTable to view MOLGENIS matrices. The setCols and
@@ -79,7 +78,7 @@ public class MatrixViewer extends HtmlInput<Matrix>
 		this.setValue(values);
 	}
 
-	public Show handleRequest(Database db, Tuple request, PrintWriter outputStream) throws ParseException,
+	public Show handleRequest(Database db, MolgenisRequest request, PrintWriter outputStream) throws ParseException,
 			DatabaseException, IOException
 	{
 		// write result to outputStream

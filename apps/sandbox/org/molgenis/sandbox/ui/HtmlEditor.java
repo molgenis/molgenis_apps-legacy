@@ -1,6 +1,7 @@
 package org.molgenis.sandbox.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -9,7 +10,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 /**
  * HtmlEditorController takes care of all user requests and application logic.
@@ -47,7 +48,7 @@ public class HtmlEditor extends EasyPluginController<HtmlEditorModel>
 	{
 	}
 
-	public void update(Database db, Tuple request)
+	public void update(Database db, MolgenisRequest request)
 	{
 		this.value = request.getString("htmleditor");
 	}

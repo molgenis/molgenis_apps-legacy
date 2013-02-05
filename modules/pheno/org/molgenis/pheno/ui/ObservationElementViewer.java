@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
@@ -29,7 +30,6 @@ import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.pheno.ui.form.ApplyProtocolForm;
 import org.molgenis.pheno.ui.form.ObservationTargetForm;
 import org.molgenis.pheno.ui.form.SelectProtocolForm;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public class ObservationElementViewer extends EasyPluginController<ObservationElementViewerModel>
@@ -52,13 +52,14 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 		this.view = view;
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		return view;
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		// if (StringUtils.isNotEmpty(request.getAction()))
 		// this.getModel().setAction(request.getAction());
@@ -105,7 +106,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param request
 	 * @throws HtmlInputException
 	 */
-	private void handleSelect(Database db, Tuple request) throws HtmlInputException
+	private void handleSelect(Database db, MolgenisRequest request) throws HtmlInputException
 	{
 		this.setView(new FreemarkerView("select.ftl", getModel()));
 
@@ -123,7 +124,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param request
 	 * @throws HtmlInputException
 	 */
-	private void handleAdd(Database db, Tuple request) throws HtmlInputException
+	private void handleAdd(Database db, MolgenisRequest request) throws HtmlInputException
 	{
 		try
 		{
@@ -182,14 +183,14 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param request
 	 * @throws ParseException
 	 */
-	private void handleInsert(Database db, Tuple request) throws ParseException
+	private void handleInsert(Database db, MolgenisRequest request) throws ParseException
 	{
 		this.setView(new FreemarkerView("show.ftl", getModel()));
 
 		this.loadObservationElementDTO(db);
 
 		List<ObservedValueDTO> insertList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList = request.getFieldNames();
+		Iterable<String> parameterNameList = request.getColNames();
 
 		PhenoService phenoService = new PhenoService(db);
 
@@ -198,7 +199,7 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 		paDTO.setTime(request.getDate("paTime"));
 		paDTO.setProtocolId(this.getModel().getProtocolDTO().getProtocolId());
 		List<Integer> performerIdList = new ArrayList<Integer>();
-		for (String s : request.getStringList("paPerformer"))
+		for (String s : request.getList("paPerformer"))
 		{
 			performerIdList.add(Integer.parseInt(s));
 		}
@@ -240,18 +241,17 @@ public class ObservationElementViewer extends EasyPluginController<ObservationEl
 	 * @param db
 	 * @param request
 	 */
-	private void handleUpdate(Database db, Tuple request)
+	private void handleUpdate(Database db, MolgenisRequest request)
 	{
 		this.setView(new FreemarkerView("edit.ftl", getModel()));
 
 		this.loadObservationElementDTO(db);
 
 		List<ObservedValueDTO> updateList = new ArrayList<ObservedValueDTO>();
-		List<String> parameterNameList = request.getFieldNames();
 
 		PhenoService phenoService = new PhenoService(db);
 
-		for (String parameterName : parameterNameList)
+		for (String parameterName : request.getColNames())
 		{
 			if (parameterName.startsWith("ObservedValue"))
 			{

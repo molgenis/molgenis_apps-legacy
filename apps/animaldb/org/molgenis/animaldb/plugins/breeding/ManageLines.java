@@ -19,13 +19,13 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class ManageLines extends PluginModel<Entity>
 {
@@ -144,7 +144,7 @@ public class ManageLines extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		cs.setDatabase(db);
 		try
@@ -188,7 +188,7 @@ public class ManageLines extends PluginModel<Entity>
 				// Make or get group
 				if (lineId == -1)
 				{
-					lineId = cs.makePanel(invName, lineName, this.getLogin().getUserName());
+					lineId = cs.createPanel(invName, lineName);
 					message = "Line successfully added";
 				}
 				else

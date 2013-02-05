@@ -2,26 +2,24 @@ package org.molgenis.omx.plugins;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.io.excel.ExcelReader;
+import org.molgenis.io.excel.ExcelSheetReader;
+import org.molgenis.io.processor.LowerCaseProcessor;
 import org.molgenis.observ.DataSet;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.ImportWizardExcelPrognosis;
 
@@ -33,7 +31,7 @@ public class UploadWizardPage extends WizardPage
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		File file = request.getFile("upload");
 
@@ -119,77 +117,48 @@ public class UploadWizardPage extends WizardPage
 		getWizard().setFieldsUnknown(xlsValidator.getFieldsUnknown());
 	}
 
-	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws IOException,
-			DatabaseException, InvalidFormatException
+	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws IOException, DatabaseException
 	{
 		Map<String, Boolean> dataSetValidationMap = new LinkedHashMap<String, Boolean>();
 
-		Workbook workbook = WorkbookFactory.create(file);
-
-		// Get the dataset identifiers from the 'Dataset' sheet
-		Sheet datasetSheet = workbook.getSheet("dataset");
-		int datasetSheetRows = datasetSheet == null ? 0 : datasetSheet.getPhysicalNumberOfRows();
-
-		List<String> datasetIdentifiers = new ArrayList<String>();
-		if (datasetSheetRows > 1)
+		ExcelReader excelReader = new ExcelReader(file);
+		excelReader.addCellProcessor(new LowerCaseProcessor(true, false));
+		try
 		{
-			Row row = datasetSheet.getRow(0);
-			if (row != null)
+			ExcelSheetReader dataSetReader = excelReader.getSheet("dataset");
+			if (dataSetReader != null)
 			{
-				for (int col = 0; col < row.getPhysicalNumberOfCells(); col++)
+				// get dataset identifiers
+				Set<String> datasetIdentifiers = new HashSet<String>();
+				for (Tuple tuple : dataSetReader)
 				{
-					Cell cell = row.getCell(col);
-					if (cell != null)
+					String identifier = tuple.getString("identifier");
+					if (identifier != null) datasetIdentifiers.add(identifier);
+				}
+
+				// check the matrix sheets
+				final int nrSheets = excelReader.getNumberOfSheets();
+				for (int i = 0; i < nrSheets; i++)
+				{
+					String sheetName = excelReader.getSheetName(i);
+					if (sheetName.toLowerCase().startsWith("dataset_"))
 					{
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-
-						if ((cell.getStringCellValue() != null)
-								&& cell.getStringCellValue().trim().equalsIgnoreCase("identifier"))
-						{
-							for (int rowNum = 1; rowNum < datasetSheetRows; rowNum++)
-							{
-								Row r = datasetSheet.getRow(rowNum);
-								if (r != null)
-								{
-									cell = r.getCell(col);
-									if (cell != null)
-									{
-										cell.setCellType(Cell.CELL_TYPE_STRING);
-										if (cell.getStringCellValue() != null)
-										{
-											datasetIdentifiers.add(cell.getStringCellValue().toLowerCase());
-										}
-									}
-								}
-
-							}
-						}
+						String identifier = sheetName.substring("dataset_".length());
+						boolean canImport;
+						if (datasetIdentifiers.contains(identifier)) canImport = true;
+						else if (!db
+								.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, identifier))
+								.isEmpty()) canImport = true;
+						else
+							canImport = false;
+						dataSetValidationMap.put(identifier, canImport);
 					}
 				}
 			}
 		}
-
-		// Check the matrix sheets
-		for (int i = 0; i < workbook.getNumberOfSheets(); i++)
+		finally
 		{
-			String sheetName = workbook.getSheetName(i);
-
-			if (sheetName.toLowerCase().startsWith("dataset_"))
-			{
-				String identifier = sheetName.substring("dataset_".length());
-
-				if (!db.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, identifier)).isEmpty())
-				{
-					// Dataset exists in database, so can be imported
-					dataSetValidationMap.put(identifier, true);
-				}
-				else
-				{
-					// Dataset does not exist in db, check if the identifier is
-					// in the 'Dataset' sheet
-					dataSetValidationMap.put(identifier, datasetIdentifiers.contains(identifier));
-				}
-			}
+			excelReader.close();
 		}
 
 		return dataSetValidationMap;

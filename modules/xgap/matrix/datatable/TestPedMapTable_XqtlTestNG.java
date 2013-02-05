@@ -3,11 +3,9 @@ package matrix.datatable;
 import java.io.File;
 import java.util.Iterator;
 
-import matrix.datatable.PedMapTupleTable;
-
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -19,8 +17,8 @@ public class TestPedMapTable_XqtlTestNG
 	@BeforeMethod
 	public void setup() throws Exception
 	{
-		table = new PedMapTupleTable(new File(TestPedMapTable_XqtlTestNG.class.getResource("test.ped").getFile()), new File(
-				TestPedMapTable_XqtlTestNG.class.getResource("test.map").getFile()));
+		table = new PedMapTupleTable(new File(TestPedMapTable_XqtlTestNG.class.getResource("test.ped").getFile()),
+				new File(TestPedMapTable_XqtlTestNG.class.getResource("test.map").getFile()));
 	}
 
 	@Test
@@ -46,34 +44,32 @@ public class TestPedMapTable_XqtlTestNG
 			count++;
 			Tuple tuple = iter.next();
 
-			Assert.assertEquals(tuple.getNrColumns(), 8);
-			Assert.assertEquals(tuple.getColName(1), "FamilyID");
-			Assert.assertEquals(tuple.getInt(1).intValue(), count);
+			Assert.assertEquals(tuple.getNrCols(), 8);
+			Assert.assertEquals(tuple.getInt("FamilyID").intValue(), count);
 
-			Assert.assertEquals(tuple.getColName(7), "snp2");
 			if (count == 1)
 			{
-				Assert.assertEquals(tuple.getString(7), "G T");
+				Assert.assertEquals(tuple.getString("snp2"), "G T");
 			}
 			else if (count == 2)
 			{
-				Assert.assertEquals(tuple.getString(7), "T G");
+				Assert.assertEquals(tuple.getString("snp2"), "T G");
 			}
 			else if (count == 3)
 			{
-				Assert.assertEquals(tuple.getString(7), "G G");
+				Assert.assertEquals(tuple.getString("snp2"), "G G");
 			}
 			else if (count == 4)
 			{
-				Assert.assertEquals(tuple.getString(7), "T T");
+				Assert.assertEquals(tuple.getString("snp2"), "T T");
 			}
 			else if (count == 2)
 			{
-				Assert.assertEquals(tuple.getString(7), "G T");
+				Assert.assertEquals(tuple.getString("snp2"), "G T");
 			}
 			else if (count == 2)
 			{
-				Assert.assertEquals(tuple.getString(7), "T T");
+				Assert.assertEquals(tuple.getString("snp2"), "T T");
 			}
 		}
 
@@ -104,7 +100,7 @@ public class TestPedMapTable_XqtlTestNG
 		table.setColLimit(2);
 		Iterator<Tuple> iter = table.iterator();
 		Tuple tuple = iter.next();
-		Assert.assertEquals(tuple.getNrColumns(), 2);
+		Assert.assertEquals(tuple.getNrCols(), 2);
 	}
 
 	@Test
@@ -113,8 +109,8 @@ public class TestPedMapTable_XqtlTestNG
 		table.setColOffset(2);
 		Iterator<Tuple> iter = table.iterator();
 		Tuple tuple = iter.next();
-		Assert.assertEquals(tuple.getNrColumns(), 6);
-		Assert.assertEquals(tuple.getColName(0), "FatherID");
+		Assert.assertEquals(tuple.getNrCols(), 6);
+		Assert.assertEquals(tuple.getColNames().iterator().next(), "FatherID");
 	}
 
 	@Test
@@ -124,9 +120,8 @@ public class TestPedMapTable_XqtlTestNG
 		table.setColLimit(4);
 		Iterator<Tuple> iter = table.iterator();
 		Tuple tuple = iter.next();
-		Assert.assertEquals(tuple.getNrColumns(), 4);
-		Assert.assertEquals(tuple.getColName(0), "FamilyID");
-		Assert.assertEquals(tuple.getColName(3), "Sex");
+		Assert.assertEquals(tuple.getNrCols(), 4);
+		Assert.assertEquals(tuple.getColNames().iterator().next(), "FamilyID");
 	}
 
 }

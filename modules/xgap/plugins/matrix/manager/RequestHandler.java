@@ -6,14 +6,14 @@ import matrix.DataMatrixInstance;
 import matrix.implementations.database.DatabaseDataMatrixInstance;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.server.MolgenisRequest;
 
 import plugins.rplot.MakeRPlot;
 
 public class RequestHandler
 {
 
-	public static void handle(MatrixManagerModel screenModel, Tuple request, Database db) throws Exception
+	public static void handle(MatrixManagerModel screenModel, MolgenisRequest request, Database db) throws Exception
 	{
 
 		if (screenModel.getBrowser().getModel().getInstance() instanceof DatabaseDataMatrixInstance)

@@ -12,9 +12,9 @@ import jxl.write.WritableWorkbook;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 
-import app.ExcelExport;
+import app.ExcelEntityExporter;
 
-public class ExcelWriterNoExportDataElement extends ExcelExport
+public class ExcelWriterNoExportDataElement extends ExcelEntityExporter
 {
 	/**
 	 * Override to not export DataElements

@@ -4,13 +4,13 @@ import java.io.OutputStream;
 
 import org.molgenis.datatable.model.AnimalDBTable;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 public class JQGridPluginAnimal extends EasyPluginController<JQGridPluginAnimal>
 {
@@ -33,7 +33,7 @@ public class JQGridPluginAnimal extends EasyPluginController<JQGridPluginAnimal>
 
 	}
 
-	public void download_json_test(Database db, Tuple request, OutputStream out)
+	public void download_json_test(Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// handle requests for the table named 'test'
@@ -43,6 +43,7 @@ public class JQGridPluginAnimal extends EasyPluginController<JQGridPluginAnimal>
 	}
 
 	// what is shown to the user
+	@Override
 	public ScreenView getView()
 	{
 		MolgenisForm view = new MolgenisForm(this);

@@ -4,9 +4,9 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.fileupload.FileUploadException;
-import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 
@@ -41,10 +41,8 @@ public class VerifyCsv
 	{
 		int[] rowAndColLength = new int[2];
 
-		// final IntegerWrapper elementLength = new IntegerWrapper(0);
-
-		final IntegerWrapper nrOfCols = new IntegerWrapper(-1);
-		final IntegerWrapper nrOfRows = new IntegerWrapper(0);
+		final AtomicInteger nrOfCols = new AtomicInteger(-1);
+		final AtomicInteger nrOfRows = new AtomicInteger(0);
 
 		int line_number = 0;
 		for (Tuple line : new CsvFileReader(inputFile))

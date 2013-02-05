@@ -12,9 +12,7 @@ import matrix.implementations.binary.etc.ElementLengthException;
 
 import org.molgenis.data.Data;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.Tuple;
-
-import app.CsvImport.IntegerWrapper;
+import org.molgenis.util.tuple.Tuple;
 
 public class MakeBinary
 {
@@ -291,7 +289,7 @@ public class MakeBinary
 	 */
 	private int elementLength(File inputFile) throws FileNotFoundException, ParseException
 	{
-		final IntegerWrapper elementLength = new IntegerWrapper(0);
+		final AtomicInteger elementLength = new AtomicInteger(0);
 
 		try
 		{

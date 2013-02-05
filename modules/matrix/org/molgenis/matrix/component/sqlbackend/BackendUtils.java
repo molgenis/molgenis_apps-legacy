@@ -4,6 +4,7 @@
  */
 package org.molgenis.matrix.component.sqlbackend;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,8 +26,6 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
-
-import java.text.SimpleDateFormat;
 
 /**
  * 

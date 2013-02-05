@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.molgenis.compute.commandline.ComputeBundle;
+import org.molgenis.compute.commandline.ComputeBundleValidator;
+import org.molgenis.compute.commandline.ComputeCommandLine;
+import org.molgenis.compute.commandline.WorksheetHelper;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.WorkflowElement;
@@ -16,6 +20,7 @@ import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
@@ -261,7 +266,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		for (Tuple tuple : reader)
 		{
 			E entity = klazz.newInstance();
-			entity.set(tuple);
+			entity.set(new DeprecatedTupleTuple(tuple));
 			result.add(entity);
 
 		}

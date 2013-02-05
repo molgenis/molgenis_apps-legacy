@@ -27,7 +27,7 @@
 			<field name="genomeBuild" type="xref" xref_entity="GenomeBuild" />
 			<field name="orderNr" type="int"
 				description="Sorting order of chromosomes within the species." />
-			<field name="isAutosomal" type="bool"
+			<field name="isAutosomal" type="bool" nillable="true"
 				description="If true there is an equal number of chromosomes in male/females. If false, it's a sex chromosome." />
 			<field name="bpLength" type="int" nillable="true"
 				description="Length of the chromosome in the genome build." />

@@ -15,6 +15,7 @@ import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.animaldb.plugins.animal.AnimalRemover;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -31,7 +32,6 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Tuple;
 //FIXME temporarily commented out (ate 2012-12-14) until functionality is ready and does not break the build
 //import org.molgenis.animaldb.plugins.animal.AnimalRemover;
 
@@ -56,7 +56,7 @@ public class ListPluginMatrix extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		if (targetMatrixViewer != null)
 		{
@@ -102,7 +102,7 @@ public class ListPluginMatrix extends EasyPluginController
 				int rowCnt = 0;
 				for (ObservationElement row : rows)
 				{
-					if (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null)
+					if (request.getBoolean(TARGETMATRIX + "_selected_" + rowCnt) != null)
 					{
 						targetList.add(row.getId());
 					}

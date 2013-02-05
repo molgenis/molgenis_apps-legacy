@@ -3,12 +3,13 @@ package regressiontest.excel;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Panel;
 import org.molgenis.pheno.Species;
 
 import app.DatabaseFactory;
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 
 public class TestExcelImport
 {
@@ -24,7 +25,7 @@ public class TestExcelImport
 
 		File file = new File(new File("").getAbsolutePath() + "/handwritten/java/regressiontest/excel/tomato.xls");
 
-		ExcelImport.importAll(file, db, null);
+		new EntitiesImporterImpl(db).importEntities(file, DatabaseAction.ADD);
 
 	}
 
