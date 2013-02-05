@@ -1,41 +1,25 @@
-<!-- compute means generating as described, than compile the apps we depend on -->
 <project name="gids">
 	<!-- this name is used to name the war file -->
-	<property name="app_name" value="gids"/>
-	
+	<property name="app_name" value="gids" />
+
 	<!-- this holds all the settings for the generator -->
-	<property name="app_properties" value="apps/gids/org/molgenis/gids/gids.properties" />
-	
+	<property name="app_properties" value="apps/${app_name}/org/molgenis/${app_name}/${app_name}.properties"/>
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
-		<pathelement location="apps/gids" />
-		<pathelement location="modules/auth" />
-		<pathelement location="modules/pheno" />
-		<pathelement location="modules/datamodel" />
-		<pathelement location="modules/settings" />
-		<pathelement location="modules/file" />
-		<pathelement location="modules/webserver" />
-		<pathelement location="modules/import" />
-		<pathelement location="modules/decorators/core" />
-		<pathelement location="modules/decorators/auth" />
-		<pathelement location="modules/decorators/pheno" />
-		<!-- TODO: just playing with sandbox I suppose? Otherwise stuff should move to a module-->
-		
+		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/omx" />
+		<pathelement location="modules/omx-dataviewer" />
+		<pathelement location="modules/omx-importer" />
+		<pathelement location="modules/omx-protocolviewer" />
+	    <pathelement location="modules/minigui" />
+	    <pathelement location="modules/webserver" />
+	    <!--<pathelement location="test/modules/omx" />  -->
+	    <pathelement location="test/modules/omx-dataviewer" />
+	    <pathelement location="test/modules/omx-importer" />
+		<pathelement location="test/modules/omx-protocolviewer" />
 	</path>
-	
-	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
-	<import file="build_common.xml"/>
 
-	
-	<target name="runOn" description="Start the application">
-	        <java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
-	            <arg value="${port}"/>
-	            <classpath>
-	                <path refid="molgenis.classpath" />
-	                <path location="${build.molgenis_apps.dir}" />
-	            </classpath>
-	        </java>
-	    </target>
-	
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml" as="common" />
 	
 </project>
