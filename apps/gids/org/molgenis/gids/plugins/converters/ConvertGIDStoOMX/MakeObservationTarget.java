@@ -1,4 +1,4 @@
-package org.molgenis.gids.plugins.ConvertGIDStoOMX;
+package org.molgenis.gids.plugins.converters.ConvertGIDStoOMX;
 
 public class MakeObservationTarget
 {

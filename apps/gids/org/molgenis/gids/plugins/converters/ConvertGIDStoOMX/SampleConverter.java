@@ -1,4 +1,4 @@
-package org.molgenis.gids.plugins.ConvertGIDStoOMX;
+package org.molgenis.gids.plugins.converters.ConvertGIDStoOMX;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -106,7 +106,7 @@ public class SampleConverter
 							}
 							else
 							{
-								tup.set(featureColName, row.getString(featureColName));
+								tup.set(featureColName, "'" + row.getString(featureColName));
 							}
 
 						}

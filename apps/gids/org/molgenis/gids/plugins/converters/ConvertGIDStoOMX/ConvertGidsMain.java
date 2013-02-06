@@ -1,4 +1,4 @@
-package org.molgenis.gids.plugins.ConvertGIDStoOMX;
+package org.molgenis.gids.plugins.converters.ConvertGIDStoOMX;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +11,7 @@ public class ConvertGidsMain
 {
 	private static final String DIRECTORY = "/Users/Roan/Work/NewGIDS/Export GIDS/Cohorts/";
 	private final static String OUTPUTDIR = DIRECTORY + "Converted/";
-	private final static String PROJECTNAME = "SLE";
+	private final static String PROJECTNAME = "Celiac Sprue";
 
 	public static void main(String[] args) throws IOException
 	{
