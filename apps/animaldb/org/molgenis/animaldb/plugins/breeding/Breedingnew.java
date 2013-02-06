@@ -2151,7 +2151,6 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 				this.setBackgroundList(bckgrlist);
 
-				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
 				// Populate gene name list
@@ -3075,20 +3074,24 @@ public class Breedingnew extends PluginModel<Entity>
 				db.update(value);
 			}
 			// Set background
-			String backgroundName = request.getString("4_" + animalCount);
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
-					.get(0);
-			value.setRelation(ct.getObservationTargetByName(backgroundName).getId());
+			// check for null
 
-			if (value.getProtocolApplication_Id() == null)
+			String backgroundName = request.getString("4_" + animalCount);
+			if (backgroundName != null && !backgroundName.equals(""))
 			{
-				String paName = ct.makeProtocolApplication(invName, "SetBackground");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
-			}
-			else
-			{
-				db.update(value);
+				value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames,
+						invName).get(0);
+				value.setRelation(ct.getObservationTargetByName(backgroundName).getId());
+				if (value.getProtocolApplication_Id() == null)
+				{
+					String paName = ct.makeProtocolApplication(invName, "SetBackground");
+					value.setProtocolApplication_Name(paName);
+					db.add(value);
+				}
+				else
+				{
+					db.update(value);
+				}
 			}
 
 			// Set genotype(s)
