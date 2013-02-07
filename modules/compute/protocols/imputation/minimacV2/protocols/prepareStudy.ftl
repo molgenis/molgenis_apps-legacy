@@ -69,7 +69,7 @@ do
 	plink \
 	--noweb \
 	--recode \
-	--ped ${studyInputPedMapChr}.ped\
+	--ped ${studyInputPedMapChr}.ped \
 	--map ${studyInputPedMapChr}.map \
 	--out ${studyPedMapChrDir}/~chr${chr}_sampleChunk$S \
 	--keep ${studyPedMapChrDir}/to_keep_$S\chr${chr}.txt
