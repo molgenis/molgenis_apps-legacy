@@ -1,6 +1,7 @@
 package org.molgenis.compute.db.pilot;
 
 import org.apache.commons.io.FileUtils;
+import org.molgenis.compute.runtime.ComputeServer;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
@@ -30,15 +31,6 @@ public class PilotService implements MolgenisService
 		System.out.println(">> In handleRequest!");
 		System.out.println(request);
 
-//        Connection connection = request.getDatabase().getConnection();
-//        while(connection == null)
-//        {
-//            connection = request.getDatabase().getConnection();
-//        }
-//
-//        System.out.println("connection " + connection.toString());
-
-
 		if ("started".equals(request.getString("status")))
 		{
             String backend = request.getString("backend");
@@ -46,6 +38,13 @@ public class PilotService implements MolgenisService
 
 //            ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.STATUSCODE, "ready")
 //         					.limit(1).find().get(0);
+
+            //TODO it would be nice to move this query to the constructor, since it should happen once
+            ComputeServer server = request.getDatabase().query(ComputeServer.class).eq(ComputeServer.NAME, "default").limit(1).find().get(0);
+
+            //curl call back statement in the end of the analysis script
+            //pulse calls are present in the pilot job, final call back in actual analysis script
+            String CURL_DONE = "\ncp log.log done.log\ncurl -F status=done -F log_file=@done.log http://" + server.getIp() + ":" + server.getPort() + "/compute/api/pilot\n";
 
             List<ComputeTask> tasks = request.getDatabase().query(ComputeTask.class)
                                             .equals(ComputeTask.STATUSCODE, "ready")
@@ -63,7 +62,7 @@ public class PilotService implements MolgenisService
 
                     // we add task id to the run listing to identify task when it is
                     // done
-                    taskScript = "echo TASKID:" + taskName + "\n" + taskScript;
+                    taskScript = "echo TASKID:" + taskName + "\n" + taskScript + CURL_DONE;
                     // change status to running
                     System.out.println("script " + taskScript);
                     request.getDatabase().beginTx();
@@ -76,7 +75,7 @@ public class PilotService implements MolgenisService
                 }
             }
 		}
-		else if ("done".equals(request.getString("status")))
+		else
 		{
 			String results = FileUtils.readFileToString(request.getFile("log_file"));
 			// parsing for TaskID
@@ -84,32 +83,56 @@ public class PilotService implements MolgenisService
 			int endPos = results.indexOf("\n");
 
 			String taskID = results.substring(idPos, endPos).trim();
-			System.out.println(">>> task " + taskID + " is finished");
 
-			ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.NAME, taskID).limit(1)
-					.find().get(0);
+			ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.NAME, taskID).limit(1).find().get(0);
 
-			if (task != null && task.getStatusCode().equalsIgnoreCase("running"))
-			{
-                request.getDatabase().beginTx();
-				task.setStatusCode("done");
-				task.setRunLog(results);
-				request.getDatabase().update(task);
-                request.getDatabase().commitTx();
-			}
-            else
+            if(task == null)
             {
-                System.out.println("something is wrong");
+                System.out.println("TASK null pointer exception");
             }
-		}
 
-//        try
-//        {
-//            connection.close();
-//        }
-//        catch (SQLException e)
-//        {
-//            e.printStackTrace();
-//        }
+
+            if ("done".equals(request.getString("status")))
+            {
+                System.out.println(">>> task " + taskID + " is finished");
+                if (task.getStatusCode().equalsIgnoreCase("running"))
+                {
+                    request.getDatabase().beginTx();
+                    task.setStatusCode("done");
+                    task.setRunLog(results);
+                }
+                else
+                {
+                    System.out.println("from done: something is wrong with " + taskID);
+                }
+		    }
+            else if ("pulse".equals(request.getString("status")))
+            {
+                if (task.getStatusCode().equalsIgnoreCase("running"))
+                {
+                    System.out.println(">>> pulse from " + taskID);
+                    request.getDatabase().beginTx();
+                    task.setRunLog(results);
+
+                }
+            }
+            else if ("nopulse".equals(request.getString("status")))
+            {
+                if (task.getStatusCode().equalsIgnoreCase("running"))
+                 {
+                     System.out.println(">>> no pulse from " + taskID);
+                     request.getDatabase().beginTx();
+                     task.setRunLog(results);
+                     task.setStatusCode("failed");
+                 }
+                else if(task != null && task.getStatusCode().equalsIgnoreCase("done"))
+                {
+                    System.out.println("double check: job is finished & no pulse from it");
+                }
+            }
+
+            request.getDatabase().update(task);
+            request.getDatabase().commitTx();
+        }
     }
 }
