@@ -1,5 +1,21 @@
 Name, defaultValue, description, dataType, hasOne_name
+constant,constant,,,
+clusterbasedir,~/test/compute/helloWorld,,,
+resultsdir,${clusterbasedir}/results,,,clusterbasedir
+expectedresultsdir,${clusterbasedir}/expected_results,,,clusterbasedir
+root,/target/gpfs2/gcc,the root to your tools and data,string,
+defaultInterpreter,#!/bin/bash,,,
+tooldir,${root}/tools,root dir for tools,string,
+scriptdir,${tooldir}/scripts,,,
+importscript,${scriptdir}/import.sh,,,
+scheduler, PBS, , ,
+clusterQueue,gaf,,,
+cores, , , ,
+walltime, , , ,
+mem, , , ,
 guest, , , ,
 party, wedding, , ,
 organizer, , , ,
-group, , , , organizer
+group, , , , "organizer,resultsdir"
+guestfile,${resultsdir}/${guest}.txt,,,
+groupfile,${resultsdir}/${group}.txt,,,

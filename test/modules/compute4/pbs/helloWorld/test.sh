@@ -1,84 +1,87 @@
 #!/bin/bash
 
+printf "\nStarting HelloWorld test.\n\n"
+
+# Initialize constant testResults and load function isEmpty
+workdir=$( cd -P "$( dirname "$0" )" && pwd )
+. $workdir/initialize.sh
+
 # Define constants
-root="~/test/compute"
+clusterPath="~/test/compute"
 cluster="cluster.gcc.rug.nl"
+originalDistroDir="$workdir/../../../../../dist/"
+testResults="$workdir/../../../../../test-output/compute4/pbs/helloWorld"
+generatedScriptsDir=$testResults/generatedScripts
+gitVersion=$(git rev-parse --short HEAD)
+distro=molgenis_compute-$gitVersion.zip
+unzippedDistroDirName=molgenis_compute-$gitVersion
 
-# Define function that fails if file (first argument) does not exist or is non-empty.
-function isEmpty(){
-    # check whether file exists
-    if [ -f "$1" ]
-    then
-        # check whether file is empty
-        if [ -s "$1" ]
-        then
-            echo "   Error: comparison failed. Please check file '$1'."
-            exit 1
-        else
-            echo "   Successful; they are equal."
-        fi
-    else
-        echo "Error: file $1 not found."
-	exit 1
-    fi
-}
+echo ">> Your test results will be written in: $testResults."
 
-echo "\nStarting HelloWorld test.\n"
-echo ">> Remove previous results..."
-sh removeResults.sh
+echo ">> Remove previous results and recreate this directory..."
+rm -rf $testResults
+mkdir -p $testResults
 
-echo ">> Run makedistro.sh and copy distro to $testdir directory... Output in makedistro.log."
-sh makedistro.sh > makedistro.log
+echo ">> Create an empty directory $clusterPath/ on the cluster where your remote results will be stored..."
+ssh $cluster "rm -rf $clusterPath/; mkdir -p $clusterPath"
 
-echo ">> Check whether we successfully made a new distro..."
-newdistro=`find ../../../../../dist/ -type f -exec stat -f "%m %N" {} \; | sort -n | tail -1 | cut -f2- -d" "`
+echo ">> Copy helloWorld example to the cluster... Output in copyHelloWorld.log."
+scp -r $workdir/helloWorld/ $cluster:$clusterPath/ > $testResults/copyHelloWorld.log
 
-if test `find "$newdistro" -mmin +2`
+echo ">> Run makedistro.sh... Output in makedistro.log."
+#sh $workdir/makedistro.sh > $testResults/makedistro.log
+
+# check whether a new distro was made
+if [ -f "$originalDistroDir/$distro" ]
 then
-    echo "\nERROR: newest distro older than 2 minutes.\n"
-    echo "Probably no new distro was build."
-    echo "Potential distro:"
-    ls -l $newdistro
-    exit 1
+    # check whether file is not older than a minute
+    if test `find "$originalDistroDir/$distro" -mmin +999`
+    then
+        echo "\nERROR: newest distro older than 1 minute.\n"
+        echo "Probably no new distro was build."
+        echo "Potential distro:"
+        ls -l $originalDistroDir/$distro
+	echo ""
+	echo "Please check: $testResults/makedistro.log"
+	exit 1
+    else
+        echo "   Successfully created new distro: $distro."
+    fi
 else
-    echo "   Successfully created new distro: $newdistro."
+    echo "Error: file $originalDistroDir/$distro not found."
+    echo ""
+    echo "Please check: $testResults/makedistro.log"
+    exit 1
 fi
 
-echo ">> Copy the new distro to here..."
-cp $newdistro .
+echo ">> Copy the new distro to testResults..."
+cp $originalDistroDir/$distro $testResults/
 
-# assign current file to $newdistro
-newdistro=`find . -type f -exec stat -f "%m %N" {} \; | sort -n | tail -1 | cut -f2- -d" "`
-distrodirname=${newdistro:2:${#newdistro}-6}
-
-echo ">> Create an empty directory $root/ on the cluster..."
-ssh $cluster "mkdir -p $root/; rm -r $root/; mkdir $root"
-
-echo ">> Copy distro to $root/ on the cluster..."
-scp $newdistro $cluster:$root/
+echo ">> Copy distro to $clusterPath/ on the cluster..."
+scp $testResults/$distro $cluster:$clusterPath/
 
 echo ">> Unzip the distro on the cluster. Output in unzipdistro.log."
-echo "cd $root; ls -al; unzip ${newdistro}" | ssh $cluster 'bash -s' > unzipdistro.log
-
-echo ">> Copy helloWorld example to the cluster. Output in copyHelloWorld.log."
-scp -r helloWorld/ $cluster:$root/ > copyHelloWorld.log
+echo "cd $clusterPath; ls -al; unzip $clusterPath/${distro}" | ssh $cluster 'bash -s' > $testResults/unzipdistro.log
 
 echo ">> Generate scripts. Output in generate.log."
-echo "source /target/gpfs2/gcc/gcc.bashrc; module load jdk/1.6.0_33; cd $root; sh $distrodirname/molgenis_compute.sh -inputdir=helloWorld" \
-| ssh $cluster 'bash -s' > generate.log
+echo "source /target/gpfs2/gcc/gcc.bashrc; module load jdk/1.6.0_33; cd $clusterPath; sh $unzippedDistroDirName/molgenis_compute.sh -inputdir=helloWorld" \
+| ssh $cluster 'bash -s' > $testResults/generate.log
 
 echo ">> Compare generated and expected pipeline..."
-echo "diff -rq $root/helloWorld/output $root/helloWorld/expected_scripts" | ssh $cluster 'bash -s' > diff_generated_vs_expected_pipeline.log
-isEmpty diff_generated_vs_expected_pipeline.log
+echo "diff -rq $clusterPath/helloWorld/output $clusterPath/helloWorld/expected_scripts" | ssh $cluster 'bash -s' > $testResults/diff_generated_vs_expected_pipeline.log
+isEmpty $testResults/diff_generated_vs_expected_pipeline.log
 
 echo ">> Sleep 60 seconds. The cluster does not allow more than a certain number of ssh-connections in a minute..."
 sleep 60
 
 echo ">> Execute pipeline and produce results..."
-echo "cd $root/helloWorld/output; sh runlocal.sh > $root/helloWorld/produced_results.log" | ssh $cluster 'bash -s'
+echo "cd $clusterPath/helloWorld/output; sh runlocal.sh > $clusterPath/helloWorld/produced_results.log" | ssh $cluster 'bash -s'
 
-echo ">> Compare produced and expected results..."
-echo "diff $root/helloWorld/produced_results.log $root/helloWorld/expected_results.log" | ssh $cluster 'bash -s' > diff_generated_vs_expected_results.log
-isEmpty diff_generated_vs_expected_results.log
+echo ">> Compare produced and expected results (Command 'ls -l *F *S': you should see SUCCESS and no FAILURE)"
+echo "cd $clusterPath/helloWorld/; ls -l *F *S" | ssh $cluster 'bash -s'
+#echo "diff $clusterPath/helloWorld/produced_results.log $clusterPath/helloWorld/expected_results.log" | ssh $cluster 'bash -s' > $testResults/diff_generated_vs_expected_results.log
+#isEmpty $testResults/diff_generated_vs_expected_results.log
 
-echo "\nTest terminated successfully!\n"
+printf "\nTest terminated successfully!\n\n"
+
+exit 0
