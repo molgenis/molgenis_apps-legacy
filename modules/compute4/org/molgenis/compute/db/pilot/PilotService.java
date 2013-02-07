@@ -1,6 +1,7 @@
 package org.molgenis.compute.db.pilot;
 
 import org.apache.commons.io.FileUtils;
+import org.molgenis.compute.runtime.ComputeServer;
 import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
@@ -18,7 +19,6 @@ import java.util.List;
  */
 public class PilotService implements MolgenisService
 {
-    private static final String CURL_DONE = "\ncp log.log done.log\ncurl -F status=done -F log_file=@done.log http://129.125.141.171:8080/compute/api/pilot\n";
 
 	public PilotService(MolgenisContext mc)
 	{
@@ -38,6 +38,13 @@ public class PilotService implements MolgenisService
 
 //            ComputeTask task = request.getDatabase().query(ComputeTask.class).eq(ComputeTask.STATUSCODE, "ready")
 //         					.limit(1).find().get(0);
+
+            //TODO it would be nice to move this query to the constructor, since it should happen once
+            ComputeServer server = request.getDatabase().query(ComputeServer.class).eq(ComputeServer.NAME, "default").limit(1).find().get(0);
+
+            //curl call back statement in the end of the analysis script
+            //pulse calls are present in the pilot job, final call back in actual analysis script
+            String CURL_DONE = "\ncp log.log done.log\ncurl -F status=done -F log_file=@done.log http://" + server.getIp() + ":" + server.getPort() + "/compute/api/pilot\n";
 
             List<ComputeTask> tasks = request.getDatabase().query(ComputeTask.class)
                                             .equals(ComputeTask.STATUSCODE, "ready")
