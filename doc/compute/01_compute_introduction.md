@@ -447,8 +447,9 @@ There are following statuses of *ComputeTasks* in the compute database:
 * `ready`: means that the task is ready for execution (all previous *ComputeTasks* are finished)
 * `running`: means that the task is running in the current moment
 * `done`: means that the task is finished
+* `error` means that the task is finished with the error (hart-beat is not received in time)
 
-After execution, the (output/error) logs of the *ComputeTasks* will be placed back in the compute database and their statuses should be `done`.
+During execution, the (output/error) logs of the *ComputeTasks* will be placed back in the compute database and job statuses should be `done` or `error`. The frequency of the database update can be changed in the `maverick.sh` file.  
 
 *Try it out!*
 

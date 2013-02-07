@@ -48,5 +48,7 @@ while [ 1 ] ; do
                 cp log.log inter.log
                 curl -F status=pulse -F log_file=@inter.log http://<ip>:<port>/compute/api/pilot
         fi
+        #this sleep can be modified depending on how often, you like to receive the job status
+        #it also depends on the number of running jobs, more jobs -> bigger interval
         sleep 20
 done
