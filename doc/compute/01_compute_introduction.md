@@ -415,14 +415,6 @@ The files can be found at:
  
 The `maverick.sh` should be edited accordingly to your execution setting. You need to specify `back_end`, where you like to submit you ComputeTask for execution. `back_end` can have a value e.g. `ui.grid.sara.nl`. Also, you need to specify `your_ip` and `your_port` of your web-server, where Molgenis/compute is running.
 
-> export WORKDIR=\$TMPDIR  
-> source dataTransferSRM.sh
->curl  -F status=started -F backend={back_end} \  
->{your_ip}:{your_port}/compute/api/pilot > script.sh  
->bash -l script.sh 2>\&1 | tee -a log.log  
->  
->curl -F status=done -F log_file=@log.log {your_ip}:{your_port}/compute/api/pilot  
-
 Also, you may edit the `maverick.jdl` to specify the *walltime* and computational sites where you like to run you analysis. The example jdl requirements look like:
 
 >Requirements = (  
@@ -431,7 +423,13 @@ Also, you may edit the `maverick.jdl` to specify the *walltime* and computationa
 >\&\& other.GlueCEPolicyMaxCPUTime >= 1440);  
 
 You Read jdl (job description language) manual for more information.
-After putting these files in the UI node, \emph{ComputeTasks} can be submitted with the command-line with the `sh runPilots.sh`:
+Besides this, the ip address and port on which Molgenis/compute is running should be specified in the database. You can use importComputeServer.sh for this or manually add the server into the ComputeServer table of the database, where the ComputeServer.name should be specified as "default". The script can used with two parameters:  
+
+>sh importComputeServer.sh \  
+>\<ip_address> \  
+>\<port> \  
+
+After putting these files in the UI node and adding ComputeServer to the database, \emph{ComputeTasks} can be submitted with the command-line with the `sh runPilots.sh`:
 
 >sh 5\_runPilots.sh \  
 >\<backend> \  
