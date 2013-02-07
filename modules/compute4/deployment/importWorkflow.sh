@@ -77,7 +77,7 @@ molgenis/lib/spring-test-3.1.2.RELEASE.jar:\
 molgenis/lib/stax-utils-20060502.jar:\
 molgenis/lib/tar.jar:\
 molgenis/lib/testng-5.14.10.jar:\
-molgenis/lib/tjws-1.99.jar:\
+molgenis/lib/tjws-1.98.jar:\
 molgenis/lib/validation-api-1.0.0.GA.jar:\
 molgenis/lib/velocity-1.6.4.jar:\
 molgenis/lib/wsdl4j-1.6.2.jar:\

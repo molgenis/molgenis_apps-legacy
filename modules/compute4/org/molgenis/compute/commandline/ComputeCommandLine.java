@@ -21,7 +21,7 @@ import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.compute.runtime.ComputeTask;
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
 import freemarker.cache.ClassTemplateLoader;
@@ -473,11 +473,14 @@ public class ComputeCommandLine
 		// Parse command line arguments
 		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args, new Exiter()
 		{
+
 			@Override
 			public void exit()
 			{
 				System.exit(1);
+
 			}
+
 		});
 
 		ComputeCommandLine ccl = new ComputeCommandLine();
@@ -625,14 +628,9 @@ public class ComputeCommandLine
 		params.put("workflowfilename", (new File(this.getworkflowfilename())).getName());
 		params.put("scheduler", currentScheduler);
 
-		Tuple work = new SimpleTuple(params);
-
 		try
 		{
-			String result = filledtemplate(findProtocol("Submit.sh", this.computeBundle.getComputeProtocols())
-					.getScriptTemplate(), work, "Submit.sh.ftl");
-			// String result = new FreemarkerView(this.protocoldir +
-			// File.separator + "Submit.sh.ftl", params).render();
+			String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
 			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
 
 			// and produce submit.sh
@@ -709,11 +707,6 @@ public class ComputeCommandLine
 			e.printStackTrace();
 		}
 		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (TemplateException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();

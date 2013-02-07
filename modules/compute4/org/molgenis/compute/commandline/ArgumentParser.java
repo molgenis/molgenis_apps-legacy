@@ -58,7 +58,7 @@ public class ArgumentParser
 	 */
 	private static void fillParamMap(String set)
 	{
-		String inputdir = "."; // is reused below
+		String inputdir = "input"; // is reused below
 
 		// set default for inputdir
 		paramMap.put("inputdir", inputdir);
@@ -150,15 +150,13 @@ public class ArgumentParser
 			System.err.println("Valid command line arguments are:\n");
 
 			System.err
-					.println("  -inputdir=<.>                         # Directory with default inputs: workflow.cvs, protocols, parameters.csv, worksheet.csv.");
+					.println("  -inputdir=<input>                     # Directory with default inputs: workflow.cvs, protocols, parameters.csv, worksheet.csv.");
 			System.err
 					.println("  -outputdir=<inputdir/id>              # Directory where the generated scripts will be stored.");
 			System.err
 					.println("  -workflow=<inputdir/workflow.csv>     # A file describing the workflowsteps and their interdependencies.");
 			System.err
-					.println("  -system=<inputdir/system>             # A directory containing the system *.ftl template files (Submit.sh.ftl, Header.ftl, Footer.ftl).");
-			System.err
-					.println("  -protocols=<inputdir/protocols>       # A directory containing your *.ftl protocol files. These will overwrite the system *.ftl's.");
+					.println("  -protocols=<inputdir/protocols>       # A directory containing the *.ftl protocol files.");
 			System.err
 					.println("  -parameters=<inputdir/parameters.csv> # A file that describes the parameters that are used in the protocols.");
 			System.err.println("  -worksheet=<inputdir/worksheet.csv>   # A file that describes the work to be doen.");

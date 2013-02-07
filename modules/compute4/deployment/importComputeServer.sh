@@ -1,3 +1,7 @@
+#importing of ComputeServer, where jobs should report status
+#1st parameter is ip
+#2nd parameter is port
+
 java -cp molgenis_apps/build/classes:molgenis/bin:\
 molgenis/lib/ant-1.8.1.jar:\
 molgenis/lib/ant-apache-log4j.jar:\
@@ -118,4 +122,4 @@ molgenis/lib/hibernate-validator-4.1.0.Final/log4j-1.2.14.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-api-1.5.6.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/slf4j-log4j12-1.5.6.jar:\
 molgenis/lib/hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar \
-org.molgenis.compute.test.RunPilotsOnBackEnd $1 $2 $3 $4 
+org.molgenis.compute.db.util.ComputeServerImporterJPA default $1 $2
