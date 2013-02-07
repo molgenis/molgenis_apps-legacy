@@ -1,18 +1,22 @@
 package org.molgenis.compute.commandline;
 
-import org.apache.log4j.Logger;
-import org.molgenis.compute.design.ComputeParameter;
-import org.molgenis.compute.design.ComputeProtocol;
-import org.molgenis.compute.design.WorkflowElement;
-import org.molgenis.util.*;
-import org.molgenis.util.tuple.DeprecatedTupleTuple;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.molgenis.compute.design.ComputeParameter;
+import org.molgenis.compute.design.ComputeProtocol;
+import org.molgenis.compute.design.WorkflowElement;
+import org.molgenis.util.CsvFileReader;
+import org.molgenis.util.CsvReader;
+import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.DeprecatedTupleTuple;
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
@@ -29,7 +33,19 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 		// load files
 		this.setWorkflowElements(options.workflowfile);
-		this.setComputeProtocols(options.protocoldir);
+
+		// first load protocolsdir
+		this.addComputeProtocols(options.protocoldir);
+
+		// load the templates (Submit.sh.ftl, Header/Footer.ftl) in the default
+		// system directory:
+		if (options.templatedir.exists()) this.addComputeProtocols(options.templatedir);
+
+		// We now loaded first the 'custom protocols' made by the user, and then
+		// the system protocols
+		// If a protocol is loaded twice, then only keep first one
+		// only use system protocols if they are not in protocols folder
+		this.keepFirstProtocol();
 		this.setComputeParameters(options.parametersfile);
 		this.setWorksheet(options.worksheetfile);
 
@@ -68,10 +84,10 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		this.setComputeParameters(parametersfile);
 		this.setWorkflowElements(workflowfile);
 		this.setWorksheet(worksheetfile);
-		this.setComputeProtocols(protocoldir);
+		this.addComputeProtocols(protocoldir);
 	}
 
-	public void setComputeProtocols(File templateFolder) throws IOException
+	public void addComputeProtocols(File templateFolder) throws IOException
 	{
 		// assume each file.ftl in the 'protocols' folder to be a protocol
 		List<ComputeProtocol> protocols = new ArrayList<ComputeProtocol>();
