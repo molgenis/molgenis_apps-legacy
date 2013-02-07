@@ -133,8 +133,68 @@ ${figures(sampleinsertsizemetricspdf)}
 \input{${qcdedupmetricsout}}
 
 \clearpage
-\section*{Appendix 1: Genome Analysis Facility Pipeline}
-\addcontentsline{toc}{section}{Appendix 1: Genome Analysis Facility Pipeline}
+\section*{Appendix 1: SNP-list}
+\addcontentsline{toc}{section}{Appendix 1: SNP-list}
+*snpEff: http://snpeff.sourceforge.net/faq.html\#What effects are predicted? **phred: http://en.wikipedia.org/wiki/Phred quality score
+
+\begin{center}
+	\begin{longtable}{p{5cm} p{8cm}}
+	\caption[SNP-description]{SNP description.}\label{grid_mlmmh} \\\\
+
+	\hline \multicolumn{1}{l}{\textbf{Name}} & \multicolumn{1}{l}{\textbf{Description}} \\\\
+	\endfirsthead
+
+	\multicolumn{2}{c}%
+	{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\\\
+	\hline \textbf{Name} & \textbf{Description} \\\\
+	\endhead
+
+	\hline \multicolumn{2}{|r|}{{Continued on next page}} \\\\ \hline
+	\endfoot
+
+	\hline \hline
+	\endlastfoot
+
+	\tt{Chromosome} & Chromosome number \\\\
+	\tt{Position} & Position on reference genome \\\\
+	\tt{dbSNPid} & dbSNP ID, rs-number \\\\
+	\tt{Reference allele} & Reference allele \\\\
+	\tt{Alternative allele} & Alternative allele \\\\
+	\tt{Quality} & Quality score, phred** scaled \\\\
+	\tt{Filter} & Passed filter when value is PASS \\\\
+	\tt{Allele balance} & Allele balance for hets (ref/(ref+alt)) \\\\
+	\tt{Allele count} & Allele count in genotypes, for each alternative (ALT) allele \\\\
+	\tt{Allele number} & Total number of alleles in called genotypes \\\\
+	\tt{BaseCounts A C G T} & Number of called bases in the order of A,C,G,T \\\\
+	\tt{Depth} & The number of bases covering this site, also known as coverage \\\\
+	\tt{GC content} & GC content within 20 bp +/- the variant site \\\\
+	\tt{Mapping quality} & Mapping quality, phred scaled \\\\
+	\tt{Quality by depth} & Variant confidence/quality by depth \\\\
+	\tt{Strand bias} & Strand bias \\\\
+	\tt{snpEff amino acid change*} & Amino acid change \\\\
+	\tt{snpEff codon change*} & Codon change: old codon/new codon \\\\
+	\tt{snpEff effect*} & Predicted effect of the variant, for a list of all effects see * \\\\
+	\tt{snpEff exon ID*} & Chromosomal position depicted as: exon chromosomenumber start end \\\\
+	\tt{snpEff functional class*} & Functional class, has one of these values; NONE, SILENT, MISSENSE, NONSENSE \\\\
+	\tt{snpEff gene biotype*} & Biotype, as reported by ENSEMBL \\\\
+	\tt{snpEff gene name*} & Gene name \\\\
+	\tt{snpEff impact*} & Effect impact, can be one of these values; High, Moderate, Low, Modifier \\\\
+	\tt{snpEff transcript ID*} & Transcript ID, as reported by ENSEMBL \\\\
+	\tt{Sample} & Sample ID \\\\
+	\tt{dbSNP132 allele frequency} & Allele frequency of the variant as known in dbSNP \\\\
+	\tt{1KG $>5~\%$ MAF in >1 populations} & $>5$\% Minor Allele Frequency in one of the 1000 genomes populations (1=true, 0=false) \\\\
+	\tt{1KG $>5~\%$ MAF in each and all populations} & $>5$\% Minor Allele Frequency in all 1000 genomes populations (1=true, 0=false) \\\\
+	\tt{Discovered in 1KG production phase} & Variant is discovered in 1000 genomes production phase (1=true, 0=false) \\\\
+	\tt{Discovered in 1KG pilot1} & Variant is discovered in 1000 genomes pilot phase (1=true, 0=false) \\\\
+	\tt{Discovered in 1KG all pilots} & Variant is discovered in all 1000 genomes pilots (phase 1,2,3) (1=true, 0=false) \\\\
+	\tt{Discovered in 1KG and validated by second method} & Variant is discovered in 1000 genomes and validated using a secondary method (1=true, 0=false) \\\\
+	\tt{First included in dbSNP release} & dbSNP version in which this variant was reported for the first time \\\\
+	\tt{Genotype} & Genotype for the variant, where 0=reference and 1=alternative \\\\	\end{longtable}
+\end{center}
+
+\clearpage
+\section*{Appendix 2: Genome Analysis Facility Pipeline}
+\addcontentsline{toc}{section}{Appendix 2: Genome Analysis Facility Pipeline}
 \subsection*{Exome sequencing}
 \addcontentsline{toc}{subsection}{Exome sequencing}
 \begin{wrapfigure}{r}{0.5\textwidth}
@@ -149,8 +209,8 @@ Figure \ref{fig:wet} illustrated the basic experimental process of exome capture
 The quality of the product was verified on the BioRad Experion instrument. If the quality of the product meets the criteria, the product is multiplexed in an equimolar pool of 4 simular products. This pool is hybridized to the Agilent SureSelect All exon V2, according the provided protocol. After amplification of the enriched products with PCR the quality of the products is verified on the BioRad Experion instrument and Paired End sequenced on the HiSeq2000 with 100 bp reads. Image Files were processed using standard Illumina basecalling software and the generated reads are ready for downstream processing after demultiplexing.
 
 \clearpage
-\section*{Appendix 2: Bioinformatics pipeline}
-\addcontentsline{toc}{section}{Appendix 2: Bioinformatics pipeline}
+\section*{Appendix 3: Bioinformatics pipeline}
+\addcontentsline{toc}{section}{Appendix 3: Bioinformatics pipeline}
 Your samples have been anlayzed with bioinformatics pipeline shown in Figure \ref{fig:dry}.
 \begin{figure}[h]
 	\caption{Bioinformatics pipeline. The ovals describe the steps in the pipeline. The arrows indicate the work flow of data between the steps.}
