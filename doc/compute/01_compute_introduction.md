@@ -423,6 +423,7 @@ Also, you may edit the `maverick.jdl` to specify the *walltime* and computationa
 >\&\& other.GlueCEPolicyMaxCPUTime >= 1440);  
 
 You Read jdl (job description language) manual for more information.
+
 Besides this, the ip address and port on which Molgenis/compute is running should be specified in the database. You can use importComputeServer.sh for this or manually add the server into the ComputeServer table of the database, where the ComputeServer.name should be specified as "default". The script can used with two parameters:  
 
 >sh importComputeServer.sh \  
