@@ -1,3 +1,6 @@
+#<ip>:<port> of ComputeServer should be filled for usage
+#maverick files should be placed in $HOME/maverick/ directory
+
 export WORKDIR=$TMPDIR
 source dataTransferSRM.sh
 
@@ -18,10 +21,10 @@ check_process(){
         fi
 }
 
-curl  -F status=started -F backend=ui.grid.sara.nl http://129.125.141.171:8080/compute/api/pilot > script.sh
+curl  -F status=started -F backend=ui.grid.sara.nl http://<ip>:<port>/compute/api/pilot > script.sh
 bash -l script.sh 2>&1 | tee -a log.log &
 #now, done is moved to the actual job
-#curl -F status=done -F log_file=@log.log http://129.125.141.171:8080/compute/api/pilot
+#curl -F status=done -F log_file=@log.log http://<ip>:<port>/compute/api/pilot
 
 #to give some time to start the process
 sleep 10
@@ -37,13 +40,13 @@ while [ 1 ] ; do
                 #time to make sure that job reported back to db
                 sleep 20
                 cp log.log inter.log
-                curl -F status=nopulse -F log_file=@inter.log http://129.125.141.171:8080/compute/api/pilot
+                curl -F status=nopulse -F log_file=@inter.log http://<ip>:<port>/compute/api/pilot
                 exit 0
         elif [ $CHECK_RET -eq 1 ];
         then
                 echo 'RUNNING'
                 cp log.log inter.log
-                curl -F status=pulse -F log_file=@inter.log http://129.125.141.171:8080/compute/api/pilot
+                curl -F status=pulse -F log_file=@inter.log http://<ip>:<port>/compute/api/pilot
         fi
         sleep 20
 done
