@@ -1,14 +1,16 @@
 package org.molgenis.load.ui;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
 
-import app.CsvImport;
+import app.EntitiesImporterImpl;
 
 /**
  * LoadFromDirectoryController takes care of all user requests and application
@@ -34,18 +36,17 @@ public class LoadFromDirectory extends EasyPluginController<LoadFromDirectoryMod
 		// flavor="freemarker"
 	}
 
-	public void loadDirectory(Database db, Tuple request) throws Exception
+	public void loadDirectory(Database db, MolgenisRequest request) throws Exception
 	{
 		File directory = new File(request.getString("directory"));
-
-		CsvImport.importAll(directory, db, null);
+		new EntitiesImporterImpl(db).importEntities(Arrays.asList(directory.listFiles()),
+				DatabaseAction.ADD_IGNORE_EXISTING);
 	}
 
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		// TODO Auto-generated method stub
-
+		// noop
 	}
 
 	@Override

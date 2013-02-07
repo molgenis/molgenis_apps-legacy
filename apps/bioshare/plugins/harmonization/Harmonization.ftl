@@ -17,7 +17,7 @@
 	td
 	{
 		vertical-align:middle;
-		font-size:16px;
+		font-size:12px;
 	}
 	button >span 
 	{
@@ -50,8 +50,6 @@
 			$('#selectedPrediction >span').empty().text(selected);
 			
 			showPredictors(selected, URL);
-			//Fill out summary panel
-			$('#summaryPanel').fadeIn().draggable();
 		});
 		
 		if($('#selectPredictionModel option').length == 0){
@@ -198,14 +196,6 @@
 			cancelAddPredictorPanel();
 		});
 		
-		$('#closeSummary').click(function(){
-			$('#summaryPanel').fadeOut();
-		});
-		
-		$('#addShowSummary').click(function(){
-			$('#summaryPanel').fadeIn().draggable();
-		});
-		
 		//Add a new prediction model in the dropdown menu
 		$('#addModelButton').click(function(){
 			addNewPredictionModel(URL);
@@ -233,6 +223,8 @@
 <input type="hidden" name="__action">
 <!-- remember the clicked variable -->
 <input type="hidden" id="clickedVariable"/>
+<input type="hidden" name="selectedVariableID"/>
+
 
 	<#--optional: mechanism to show messages-->
 	<div class="formscreen">
@@ -308,7 +300,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="treePanel" style="float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
+					<div id="treePanel" style="display:none;float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
 						<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
 							<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
 							<div id="treeSearchPanel" style="float:left;margin:7px;">
@@ -354,7 +346,7 @@
 										<div style="float:left;">
 											<select id="selectPredictionModel" name="selectPredictionModel" style="width:185px;" data-placeholder="Choose a prediction model">
 												<#list screen.getPredictionModels() as predictionModel>
-													<option <#if screen.getSelectedPredictionModel() == predictionModel>selected="selected"</#if>>
+													<option <#if screen.getSelectedPredictionModel()?? && screen.getSelectedPredictionModel() == predictionModel>selected="selected"</#if>>
 														${predictionModel}
 													</option>	
 												</#list>
@@ -387,7 +379,7 @@
 								<select id="listOfCohortStudies" name = "listOfCohortStudies" style="width:185px;">
 									<#if screen.getValidationStudies()??>
 										<#list screen.getValidationStudies() as study>
-											<option>${study}</option>
+											<option <#if screen.getSelectedValidationStudy()?? && screen.getSelectedValidationStudy() == study>selected="selected"</#if>>${study}</option>
 										</#list>
 									</#if>
 								</select>
@@ -411,15 +403,23 @@
 						</div>
 						<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:40%;width:50%;float:left;margin:5px;z-index:1500;">
 							<div class="btn-info ui-corner-all" style="padding-top:3%;height:10%;width:100%;cursor:pointer;">
-								<span style="margin-left:10px;font-size:28px;font-style:italic;">Define a predictor</span>
+								<span style="margin-left:10px;font-size:20px;font-style:italic;">Define a predictor</span>
 							</div>
-							<table style="margin-top:10px;margin-left:2px;width:100%;">
+							<table style="margin-top:10px;margin-left:2px;width:100%;font-size:12px;">
 								<tr>
 									<td style="margin-right:10px;">
 										<span style="display:block;margin:5px;">Name: </span>
 									</td>
 									<td>
 										<input id="nameOfPredictor" class="predictorInput" type="text"/>
+									</td>
+								</tr>
+								<tr>
+									<td style="margin-right:10px;">
+										<span style="display:block;margin:5px;">Label: </span>
+									</td>
+									<td>
+										<input id="labelOfPredictor" class="predictorInput" type="text"/>
 									</td>
 								</tr>
 								<tr>
@@ -473,66 +473,23 @@
 								<input id="addPredictor" type="button" value="add" class="btn btn-info" style="float:right;"/>
 							</div>
 						</div>
-						<div id="summaryPanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;left:20px;height:25%;width:50%;margin:5px;margin-top:120px;z-index:2000;">
-							<div class="btn-info ui-corner-all" style="cursor:pointer;height:16%;width:100%;padding-top:3%;">
-								<span style="margin-left:10px;font-size:28px;font-style:italic;">Summary</span>
-								<i id="closeSummary" style="cursor:pointer;float:right;margin-right:20px;" class="icon-remove"></i>
-							</div>
-							<table id="summaryPredictorTable" style="margin-top:10px;margin-left:2px;width:100%;">
-								<tr>
-									<td style="margin-right:10px;">
-										<span style="display:block;margin:5px;">Selected prediction model</span>
-									</td>
-									<td>
-										<input id="selectedPredictionModelName" type="text" disabled="disabled" style="display:block;" value="None"/>
-									</td>
-								</tr>
-								<tr>
-									<td style="margin-right:10px;">
-										<span style="display:block;margin:5px;">Number of predictors</span>
-									</td>
-									<td>
-										<input id="numberOfPredictors" type="text" disabled="disabled" style="display:block;" value="0"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<span style="display:block;margin:5px;">Building blocks defined</span>
-									</td>
-									<td>
-										<input id="buildingBlocksDefined" type="text" disabled="disabled" style="display:block;" value="0"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<span style="display:block;margin:5px;">Formula</span>
-									</td>
-									<td>
-										<input id="formula" type="text" disabled="disabled" style="display:block;" value="No"/>
-									</td>
-								</tr>
-							</table>
-						</div>
 						<div id="showPredictorPanel" style="height:100%;width:100%;">
 							<div class="btn-primary ui-corner-all" style="padding:10px;height:10%;width:40%;">
 								<div style="margin-bottom:10px;"><span style="font-size:24px;font-style:italic;">Overview of prediction model</span></div>
 								<input type="button" id="addPredictorButton"  class="btn btn-info btn-small" value="add new predictor">
-								<input type="button" id="addShowSummary" class="btn btn-info btn-small" value="show summary">
 							</div>
-							<table class="ui-corner-all ui-widget-header" style="width:100%;background:#F5F5F5;">
-								<tr style="width:100%;height:50px;font-size:14px;font-style:italic;">
-									<th style="width:12%;">name</th>
-									<th style="width:20%;">description</th>
-									<th style="width:8%;">data type</th>
-									<th style="width:10%;">unit</th>
-									<th style="width:20%;">category</th>
-									<th style="width:40%;">building blocks</th>
-								</tr>
-							</table>
-							<div class="ui-tabs-nav ui-widget-content ui-corner-all" style="height:80%;width:100%;overflow:auto;">
-								<table id="overviewTable" class="ui-corner-all table table-striped table-bordered" style="width:100%;">
+							<div style="height:90%;overflow:auto;float:left;margin-top:10px;margin-right:10px;">
+								<table id="overviewTable" class="ui-corner-all table table-striped table-bordered">
+									<tr>
+										<th style="width:30%;">Name</th>
+										<th style="width:30%;">Label</th>
+										<th style="width:40%;">Description</th>
+									</tr>
 								</table>
 							</div>
+							<table id="variableDetail" class="ui-corner-all table table-striped table-bordered" 
+								style="width:65%;float:left;margin-top:10px;margin-left:10px;">
+							</table>
 						</div>
 					</div>
 				</div>

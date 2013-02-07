@@ -28,7 +28,7 @@ import com.thoughtworks.selenium.Selenium;
 public class AnimaldbSeleniumTest
 {
 	private final Integer TIME_OUT = 1000;
-	private final String PAGE_LOAD_TIME_OUT = "60000";
+	private final String PAGE_LOAD_TIME_OUT = "10000";
 
 	private Selenium selenium;
 
@@ -78,6 +78,7 @@ public class AnimaldbSeleniumTest
 		{
 			// To be sure, empty db and don't add MolgenisUsers etc.
 			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+
 		}
 		if (!this.tomcat) new RunStandalone(webserverPort);
 	}
@@ -113,41 +114,13 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
 		// Since Ate hates waiting, first see if we are on his laptop ;)
-		selenium.type("id=zip", "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_2012-05-16.zip");
+		selenium.type("id=zip", new File(
+				"apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip").getAbsolutePath());
 		selenium.click("id=source1");
 		selenium.click("id=load");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		// Then try and see if we're on Roan's laptop
-		if (!selenium.isTextPresent("Pre-filling AnimalDB successful"))
-		{
-			// If not, let's assume we're on the Hudson server
-			selenium.type("id=zip", "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB_2012-05-16.zip");
-			selenium.click("id=source1");
-			selenium.click("id=load");
-			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		}
-		if (!selenium.isTextPresent("Pre-filling AnimalDB successful"))
-		{
-			// If not, let's assume we're on the Hudson server
-			// selenium.type("id=zip",
-			// "/data/home/erikroos/PrefillAnimalDB_2012-05-16.zip");
-			selenium.type(
-					"id=zip",
-					"/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip");
-			selenium.click("id=source1");
-			selenium.click("id=load");
-			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		}
-		if (!selenium.isTextPresent("Pre-filling AnimalDB successful"))
-		{
-			// If not, maybe we're on Joeri's Mac? :P
-			selenium.type("id=zip",
-					"/Users/joerivandervelde/Dropbox/GCC/AnimalDB/Data/legacy/PrefillAnimalDB_2012-05-16.zip");
-			selenium.click("id=source1");
-			selenium.click("id=load");
-			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		}
-
+		Assert.assertTrue(selenium.isTextPresent("Pre-filling AnimalDB successful"));
 		sleepHelper("loginAdmin");
 	}
 
@@ -285,7 +258,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Breeding lines"));
 		// Add a breeding line
-		selenium.type("id=linename", "MyLine");
+		selenium.type("id=lineName", "MyLine");
 		selenium.select("id=species", "label=House mouse");
 		selenium.click("id=add");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -305,7 +278,7 @@ public class AnimaldbSeleniumTest
 
 		selenium.click("id=selectt");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=showHideSettingsButton");
+		selenium.click("id=showHideFilterButton");
 		Thread.sleep(1000);
 		selenium.click("id=mothermatrix_removeFilter_2");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -336,7 +309,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=from2to3");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("successfully created"));
 
 		// selenium.click("id=createParentgroup");
 		// selenium.waitForPageToLoad(pageLoadTimeout);
@@ -362,11 +335,11 @@ public class AnimaldbSeleniumTest
 		// Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Add a litter
 		selenium.click("id=pgmatrix_selected_0");
-		selenium.click("id=createlitter");
+		selenium.click("id=createLitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=littersize", "5");
 		selenium.click("id=birthdate");
-		selenium.type("id=birthdate", "2012-01-01");
+		selenium.type("id=birthdate", "2013-01-01");
 
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -376,16 +349,17 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=weanlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=weandate");
-		selenium.type("id=weandate", "2012-01-02");
+		selenium.type("id=weandate", "2013-01-02");
 		selenium.type("id=weansizefemale", "2");
 		selenium.type("id=weansizemale", "3");
 		selenium.click("id=wean");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=label");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
@@ -396,7 +370,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=genotypelitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=genodate");
-		selenium.type("id=genodate", "2012-01-03");
+		selenium.type("id=genodate", "2013-01-03");
 		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_000001"));
 		Assert.assertTrue(selenium.isTextPresent("Line: MyLine"));
 		selenium.click("id=save");
@@ -404,13 +378,47 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=label");
+		selenium.click("id=printcagelabels");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 
 		sleepHelper("breedingWorkflow");
+	}
+
+	// TODO add test for edit litter functionality
+	@Test(dependsOnMethods =
+	{ "breedingWorkflow" })
+	public void editLitters() throws Exception
+	{
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=Breeding_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=menuLitters");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=editlitter");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.type("id=DateOfBirth", "2012-01-03");
+		selenium.click("saveEdit");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertTrue(selenium.isTextPresent("2012-01-03"));
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=editlitter");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=editIndividual");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=addIndividualToWeanGroup");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=save");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=go_back");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertEquals(selenium.getText("//div[@id='EditTable_wrapper']/table/tbody/tr[9]/td[1]"), "6");
+		sleepHelper("editLitters");
+
 	}
 
 	@Test(dependsOnMethods =
@@ -432,7 +440,11 @@ public class AnimaldbSeleniumTest
 		boolean keepTrying = true;
 		int test = 0; // Check if we are on ate's laptop";
 		// for now just assume we are running on hudson.
-		String pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
+		// String pdfFileName =
+		// "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
+		String pdfFileName = new File("apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip")
+				.getAbsolutePath();
+
 		// String pdfFileName =
 		// "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_default.zip";
 
@@ -449,10 +461,8 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=decbudget", "20");
 		selenium.click("id=addproject");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-
 		Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
 		Assert.assertTrue(selenium.isTextPresent("MyDEC"));
-
 		// Go to DEC subproject plugin
 		selenium.click("id=AddSubproject_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -462,7 +472,10 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=experimenttitle", "MyProject");
 		selenium.type("id=expnumber", "A");
-		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
+		// pretend like these are PDFs...
+		selenium.type("id=decsubprojectapplicationpdf", pdfFileName);
+		selenium.type("id=decsubprojectapprovalpdf", pdfFileName);
+		// selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		// int thisMonth = calendar.get(Calendar.MONTH);
 		// int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
@@ -502,7 +515,7 @@ public class AnimaldbSeleniumTest
 		// Check portal
 		selenium.click("DecStatus_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("DEC status portal"));
+		// Assert.assertTrue(selenium.isTextPresent("DEC status portal"));
 		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[1]/td[1]"), "12345");
 		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[4]"), "A");
 		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[7]"), "3");
@@ -538,7 +551,7 @@ public class AnimaldbSeleniumTest
 		// Go to animals in locations plugin
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=LocationPlugin_tab_button");
+		selenium.click("id=LocationManagementPlugin_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Animals in locations"));
 		// Add five animals to Room 101
@@ -605,7 +618,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Muizen");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "5");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "6");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "10");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]/strong"), "0");
@@ -620,7 +633,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "13");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "14");
 		// Report 5
 		selenium.select("id=form", "value=5");
 		selenium.click("id=generate");
@@ -755,6 +768,8 @@ public class AnimaldbSeleniumTest
 		}
 		else
 		{
+			// new
+			// Molgenis("apps/animaldb/org/molgenis/animaldb/animaldb.properties").updateDb(true);
 			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
 		}
 		// Helper.deleteStorage();

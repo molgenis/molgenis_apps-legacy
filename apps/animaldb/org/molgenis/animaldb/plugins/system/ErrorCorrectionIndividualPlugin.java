@@ -20,6 +20,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.matrix.MatrixException;
@@ -32,7 +33,6 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 {
@@ -70,7 +70,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 		if (indMatrixViewer != null)
@@ -120,7 +120,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 		}
 	}
 
-	private void undeleteIndividuals(Database db, Tuple request) throws DatabaseException, MatrixException
+	private void undeleteIndividuals(Database db, MolgenisRequest request) throws DatabaseException, MatrixException
 	{
 		List<DeletedObservationTarget> removalList = new ArrayList<DeletedObservationTarget>();
 		List<ObservationTarget> addList = new ArrayList<ObservationTarget>();
@@ -133,7 +133,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 		int rowCnt = 0;
 		for (ObservationElement row : rows)
 		{
-			if (request.getBool(DELINDMATRIX + "_selected_" + rowCnt) != null)
+			if (request.getBoolean(DELINDMATRIX + "_selected_" + rowCnt) != null)
 			{
 				delIndividualList.add(row.getId());
 			}
@@ -202,7 +202,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 		db.add(valAddList);
 	}
 
-	private void deleteIndividuals(Database db, Tuple request) throws MatrixException, DatabaseException
+	private void deleteIndividuals(Database db, MolgenisRequest request) throws MatrixException, DatabaseException
 	{
 		Date deletionTime = new Date();
 		List<Individual> removalList = new ArrayList<Individual>();
@@ -216,7 +216,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 		int rowCnt = 0;
 		for (ObservationElement row : rows)
 		{
-			if (request.getBool(INDMATRIX + "_selected_" + rowCnt) != null)
+			if (request.getBoolean(INDMATRIX + "_selected_" + rowCnt) != null)
 			{
 				individualList.add(row.getId());
 			}

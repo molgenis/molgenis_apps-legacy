@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.matrix.FilterableMatrix;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Tuple;
 
 public class Browser
 {
@@ -262,7 +262,7 @@ public class Browser
 	 * @param request
 	 * @throws Exception
 	 */
-	public void applyFilters(Tuple request) throws Exception
+	public void applyFilters(MolgenisRequest request) throws Exception
 	{
 		if (!(this.getModel().getInstance() instanceof FilterableMatrix))
 		{
@@ -290,7 +290,7 @@ public class Browser
 		for (ObservableFeature col : cols)
 		{
 			String colName = col.getName();
-			Object filterValue = request.getObject("FILTER_VALUE_COL_" + colName);
+			Object filterValue = request.get("FILTER_VALUE_COL_" + colName);
 			if (filterValue != null)
 			{
 				System.out.println("value for colName " + colName + ": " + filterValue);
@@ -306,7 +306,7 @@ public class Browser
 		for (ObservationTarget row : rows)
 		{
 			String rowName = row.getName();
-			Object filterValue = request.getObject("FILTER_VALUE_ROW_" + rowName);
+			Object filterValue = request.get("FILTER_VALUE_ROW_" + rowName);
 			if (filterValue != null)
 			{
 				System.out.println("value for rowName " + rowName + ": " + filterValue);

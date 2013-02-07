@@ -3,11 +3,11 @@ package org.molgenis.designgg;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.Tuple;
 
 /**
  * This screen aims to ask parameters. If valid, the parameters are saved.
@@ -32,7 +32,7 @@ public class AskParametersScreen extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		logger.debug(">handling request: " + request);
 		try

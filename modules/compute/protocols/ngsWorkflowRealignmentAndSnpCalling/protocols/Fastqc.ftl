@@ -1,0 +1,52 @@
+#
+# =====================================================
+# $Id$
+# $URL$
+# $LastChangedDate$
+# $LastChangedRevision$
+# $LastChangedBy$
+# =====================================================
+#
+
+#MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
+#FOREACH
+
+module load fastqc/${fastqcVersion}
+
+<#if seqType == "SR">
+     getFile ${srbarcodefqgz}
+<#else>
+    getFile "${leftbarcodefqgz}"
+    getFile "${rightbarcodefqgz}"
+</#if>
+
+# first make logdir...
+mkdir -p "${intermediatedir}"
+mkdir -p "${tempdir}"
+
+# pair1
+fastqc ${leftbarcodefqgz} \
+-Djava.io.tmpdir=${tempdir} \
+-Dfastqc.output_dir=${intermediatedir} \
+-Dfastqc.unzip=false
+
+<#if seqType == "PE">
+# pair2
+fastqc ${rightbarcodefqgz} \
+-Djava.io.tmpdir=${tempdir} \
+-Dfastqc.output_dir=${intermediatedir} \
+-Dfastqc.unzip=false
+</#if>
+
+<#if seqType == "SR">
+      putFile ${leftfastqczip}
+      putFile ${leftfastqcsummarytxt}
+      putFile ${leftfastqcsummarylog}
+<#else>
+      putFile ${leftfastqczip}
+      putFile ${leftfastqcsummarytxt}
+      putFile ${leftfastqcsummarylog}
+      putFile ${rightfastqczip}
+      putFile ${rightfastqcsummarytxt}
+      putFile ${rightfastqcsummarylog}
+</#if>

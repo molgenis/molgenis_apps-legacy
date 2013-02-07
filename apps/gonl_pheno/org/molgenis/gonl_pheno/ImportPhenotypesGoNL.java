@@ -7,8 +7,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.ExcelReader;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleReader;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.io.TupleReader;
 
 import app.DatabaseFactory;
 

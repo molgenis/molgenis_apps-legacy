@@ -13,16 +13,15 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.List;
 
-import org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewerModel;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import decorators.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
@@ -59,7 +58,7 @@ public class AnimalDbFileViewer extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

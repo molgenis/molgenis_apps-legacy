@@ -26,7 +26,7 @@ then
 fi
 
 
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 mkdir -p ${studyTriTyperChrTempDir}
 

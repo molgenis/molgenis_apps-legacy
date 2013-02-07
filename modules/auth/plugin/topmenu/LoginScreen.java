@@ -10,6 +10,7 @@ package plugin.topmenu;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -20,7 +21,6 @@ import org.molgenis.framework.ui.html.PasswordInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 //import plugin.login.DatabaseLogin;
 
@@ -54,7 +54,7 @@ public class LoginScreen extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws HandleRequestDelegationException, Exception
 	{
 		// reset messages
 		this.setMessages();
@@ -110,13 +110,13 @@ public class LoginScreen extends PluginModel<Entity>
 		// todo add password change options
 	}
 
-	private void doActivate(Database db, Tuple request)
+	private void doActivate(Database db, MolgenisRequest request)
 	{
 		this.setMessages(new ScreenMessage("TODO", false));
 
 	}
 
-	private void doSaveProfile(Database db, Tuple request)
+	private void doSaveProfile(Database db, MolgenisRequest request)
 	{
 		// TODO: Where is MolgenisUser?
 		/*
@@ -132,7 +132,7 @@ public class LoginScreen extends PluginModel<Entity>
 		 */
 	}
 
-	private void doRegister(Database db, Tuple request)
+	private void doRegister(Database db, MolgenisRequest request)
 	{
 		// TODO: Where is MolgenisUser?
 		/*
@@ -182,7 +182,7 @@ public class LoginScreen extends PluginModel<Entity>
 		 */
 	}
 
-	private void doEmailPassword(Database db, Tuple request)
+	private void doEmailPassword(Database db, MolgenisRequest request)
 	{
 		try
 		{
@@ -196,13 +196,13 @@ public class LoginScreen extends PluginModel<Entity>
 		}
 	}
 
-	private void doLogout(Database db, Tuple request) throws Exception
+	private void doLogout(Database db, MolgenisRequest request) throws Exception
 	{
 		getLogin().logout(db);
 		this.state = State.Login;
 	}
 
-	private void doLogin(Database db, Tuple request) throws HandleRequestDelegationException, Exception
+	private void doLogin(Database db, MolgenisRequest request) throws HandleRequestDelegationException, Exception
 	{
 		if (!getLogin().login(db, request.getString("name"), request.getString("password")))
 		{

@@ -28,8 +28,8 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.DatabaseFactory;
 
@@ -73,7 +73,7 @@ public class TableController
 
 	public void addField(String classType, String fieldName, String multipleValues, int[] columnList, Boolean Vertical)
 	{
-		this.addField(classType, fieldName, multipleValues, columnList, Vertical, new SimpleTuple());
+		this.addField(classType, fieldName, multipleValues, columnList, Vertical, new KeyValueTuple());
 	}
 
 	public void addField(String ClassType, String fieldName, String multipleValues, int[] columnList, Boolean Vertical,
@@ -104,7 +104,7 @@ public class TableController
 			else
 			{
 
-				this.addField(ClassType, fieldName, multipleValues, columnIndexes[i], Vertical, new SimpleTuple(),
+				this.addField(ClassType, fieldName, multipleValues, columnIndexes[i], Vertical, new KeyValueTuple(),
 						dependedIndex);
 				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
 			}
@@ -115,14 +115,14 @@ public class TableController
 
 	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex, Boolean Vertical)
 	{
-		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new SimpleTuple(), -1);
+		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new KeyValueTuple(), -1);
 	}
 
 	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex, boolean Vertical,
 			int... dependentColumnIndex)
 	{
 
-		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new SimpleTuple(),
+		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new KeyValueTuple(),
 				dependentColumnIndex);
 
 	}
@@ -138,7 +138,7 @@ public class TableController
 			boolean Vertical)
 	{
 		observationTarget = targetIndex;
-		this.addField(ClassType, fieldName, multipleValues, coHeaders, Vertical, new SimpleTuple());
+		this.addField(ClassType, fieldName, multipleValues, coHeaders, Vertical, new KeyValueTuple());
 		observationTarget = -1;
 	}
 
@@ -190,6 +190,7 @@ public class TableController
 		List<InvestigationElement> measurementList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
+		List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> panelList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
@@ -208,6 +209,7 @@ public class TableController
 
 		referenceFields.add(Protocol.NAME);
 		referenceFields.add(Protocol.FEATURES_NAME);
+		referenceFields.add(ComputeProtocol.SUBPROTOCOLS_NAME);
 		referenceFields.add(Protocol.SUBPROTOCOLS_NAME);
 		referenceFields.add(Measurement.CATEGORIES_NAME);
 		referenceFields.add(Measurement.UNIT_NAME);
@@ -822,9 +824,14 @@ public class TableController
 						{
 							categoryList.addAll(list);
 						}
-						if (columnIndexToTableField.get(colIndex).getClassType().equals("Protocol"))
+						if (columnIndexToTableField.get(colIndex).getClassType().equals("Protocol")
+								|| columnIndexToTableField.get(colIndex).getClassType().equals("ComputeProtocol"))
 						{
 							protocolList.addAll(list);
+						}
+						if (columnIndexToTableField.get(colIndex).getClassType().equals("ComputeProtocol"))
+						{
+							computeProtocolList.addAll(list);
 						}
 						if (columnIndexToTableField.get(colIndex).getClassType().equals("ObservationTarget"))
 						{
@@ -1013,7 +1020,6 @@ public class TableController
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME,
 					Measurement.INVESTIGATION_NAME);
 
-			// Try to update measurements
 			HashMap<String, InvestigationElement> hashMapProtocol = removeDuplicates(protocolList);
 
 			checkExistenceInDB(hashMapProtocol, Protocol.class.getSimpleName());
@@ -1157,18 +1163,8 @@ public class TableController
 
 			List<ObservedValue> subList = observedValueList.subList((iteration - 1) * 5000, observedValueList.size());
 
-			// for(ObservedValue ov : subList){
-			// System.out.println(ov);
-			// db.add(ov);
-			// }
-
 			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME,
 					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
-
-			// for(ObservedValue ov : observedValueList){
-			// System.out.println(ov);
-			// db.add(ov);
-			// }
 
 			db.commitTx();
 

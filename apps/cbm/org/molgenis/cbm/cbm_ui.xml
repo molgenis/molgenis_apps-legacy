@@ -1,0 +1,44 @@
+<molgenis name="org.molgenis.cbm" label="CBM browser">
+	<menu name="main">
+		<form name="CollectionProtocol " entity="collection_protocol">
+			<menu name="CollectionProtocolMenu">
+				<form name="AnnotationAvailabilityProfile" entity="annotation_availability_profile" />
+				<form name="SpecimenCollectionContact" entity="specimen_collection_contact">
+
+				</form>
+				<form name="SpecimenAvailabilitySummaryProfile" entity="specimen_availability_summary_profile" />
+			</menu>
+
+		</form>
+		<menu name="ImportData" label="Import Data" position="left">
+			<plugin label="Import xml data" name="ImportXmlData" type="plugins.xml.ImportCbmData" />
+		</menu>
+		<menu name="DataTables" position="left">
+			<form name="address" entity="address" />
+			<form name="anatomic_source" entity="anatomic_source" />
+			<form name="annotation_availability_profile" entity="annotation_availability_profile" />
+			<form name="collection_protocol" entity="collection_protocol" />
+			<form name="diagnosis" entity="diagnosis" />
+			<form name="ethnicity" entity="ethnicity" />
+			<form name="gender" entity="gender" />
+			<form name="institution" entity="institution" />
+			<form name="organization" entity="organization" />
+			<form name="participant_collection_summary" entity="participant_collection_summary" />
+
+			<form name="patient_age_group_at_collection" entity="patient_age_group_at_collection" />
+			<form name="person" entity="person" />
+			<form name="preservation" entity="preservation" />
+			<form name="preservation_type" entity="preservation_type" />
+			<form name="race" entity="race" />
+			<form name="specimen_availability_summary_profile" entity="specimen_availability_summary_profile" />
+			<form name="specimen_collection_contact" entity="specimen_collection_contact" />
+
+			<form name="specimen_collection_summary" entity="specimen_collection_summary" />
+			<form name="specimen_type" entity="specimen_type" />
+			<form name="join_participant_collection_summary_to_race" entity="join_participant_collection_summary_to_race" />
+			<form name="join_participant_collection_summary_todiagnosis"
+				entity="join_participant_collection_summary_todiagnosis" />
+			<form name="join_collection_protocol_to_institution" entity="join_collection_protocol_to_institution" />
+		</menu>
+	</menu>
+</molgenis>

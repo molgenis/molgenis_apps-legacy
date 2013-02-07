@@ -112,7 +112,7 @@ public class DatabaseSearch_XqtlTestNG
 
 		// Also test the requerying of entities using load() where subclass
 		// attributes are added
-		Assert.assertEquals(observationElements2.get(0).get(Metabolite.FORMULA), "");
+		Assert.assertEquals(observationElements2.get(0).get(Metabolite.FORMULA), null);
 		List<Metabolite> refinedEntities = (List<Metabolite>) db.load(ObservationElement.class, observationElements2);
 		Assert.assertEquals(refinedEntities.get(0).get(Metabolite.FORMULA), "CH2CH(OH)CH3");
 

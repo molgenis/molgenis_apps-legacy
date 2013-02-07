@@ -13,18 +13,19 @@ import java.util.Date;
 import java.util.List;
 
 import org.molgenis.animaldb.commonservice.CommonService;
+import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class ManageLines extends PluginModel<Entity>
 {
@@ -50,14 +51,15 @@ public class ManageLines extends PluginModel<Entity>
 
 	public String getCustomHtmlHeaders()
 	{
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
-				+ "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
+		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
 				+ "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		// "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+		// +
+		// "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 	}
 
 	@Override
@@ -142,7 +144,7 @@ public class ManageLines extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		cs.setDatabase(db);
 		try
@@ -170,6 +172,11 @@ public class ManageLines extends PluginModel<Entity>
 				this.setSuccess("Line successfully removed");
 				// Reset so form is empty again
 				lineId = -1;
+				// FIXME? if a line is removed, Ssould also revoke all the
+				// iswritableBy panel_LineId on existing animals? Or is this a
+				// theoretical problem, since it is probably hard to remove a
+				// line which has animals anyway.
+
 			}
 
 			if (action.equals("addLine"))
@@ -181,7 +188,7 @@ public class ManageLines extends PluginModel<Entity>
 				// Make or get group
 				if (lineId == -1)
 				{
-					lineId = cs.makePanel(invName, lineName, this.getLogin().getUserName());
+					lineId = cs.createPanel(invName, lineName);
 					message = "Line successfully added";
 				}
 				else
@@ -216,6 +223,11 @@ public class ManageLines extends PluginModel<Entity>
 					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark",
 							lineName, remarks, null));
 				}
+				// create new panel user group so users that are member of this
+				// group have access to all animals in this line(use id as name
+				MolgenisGroup mg = new MolgenisGroup();
+				mg.setName("panel_" + lineId);
+				db.add(mg);
 				this.setSuccess(message);
 				// Reset everything so form is empty again
 				lineId = -1;

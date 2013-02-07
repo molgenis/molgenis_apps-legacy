@@ -1,0 +1,36 @@
+# Installing WormQTL, the (mostly) automated way, for Linux:
+
+# git checkouts in new dir
+mkdir wormqtl
+cd wormqtl
+git clone git://github.com/joerivandervelde/molgenis.git
+git clone git://github.com/joerivandervelde/molgenis_apps.git
+
+# download data
+
+# download and extract data
+mkdir data
+cd data
+wget http://molgenis26.target.rug.nl/downloads/wormqtl_jan2012.tar.gz
+tar xzfv wormqtl_jan2012.tar.gz
+
+# your storage path (important)
+pwd
+
+# build and start app
+cd molgenis_apps
+ant -f build_wormqtl.xml clean-generate-compile
+ant -f build_wormqtl.xml runOn -Dport=8080
+
+# from this point on it's point & click..
+# 1. go to the web address you see in your terminal, it should say 'Database setup success!'
+# 2. go to the address myserver:myport/xqtl_panacea/autohideloginswitch and login with admin/admin
+# 3. fill in your storage path and click 'Load', the message 'WormQTL specific annotation import and data relink succeeded' should appear
+# 4. you're now basically done, but: change the investigation name from 'Panacea' into 'Public', and change the user passwords
+
+# recommended: start/stop scripts
+# -> start.sh
+cd molgenis_apps
+nohup ant -f build_wormqtl.xml runOn -Dport=8080 &
+# -> stop.sh
+kill -9 `lsof -i :8080 -t`

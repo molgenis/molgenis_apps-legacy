@@ -8,11 +8,10 @@
 package org.molgenis.minigui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import app.servlet.UsedMolgenisOptions;
 
@@ -57,58 +56,14 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
-		if (request.getString("__action") != null)
-		{
-			String action = request.getString("__action");
-
-			try
-			{
-				// if (action.equals("goto"))
-				// {
-				// String screen = request.getString("__selectScreen");
-				// System.out.println("SCREEN SELECT: " + screen);
-				// this.getParent().setSelected(screen);
-				// }
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			}
-		}
 	}
 
 	@Override
 	public void reload(Database db)
 	{
 		this.model.setUiTree(this.getParent().getChildren());
-		// System.out.println("selected: " +
-		// this.getParent().getSelected().getName());
-		// for (ScreenController sc : this.getParent().getAllChildren())
-		// {
-		// if (sc instanceof FormController)
-		// {
-		// System.out.println("FormController: " + sc.getName());
-		// }
-		// else if (sc instanceof MenuController)
-		// {
-		// System.out.println("MenuController: " + sc.getName());
-		// }
-		// else if (sc instanceof PluginModel)
-		// {
-		// System.out.println("PluginModel: " + sc.getName());
-		// }
-		// else if (sc instanceof EasyPluginController)
-		// {
-		// System.out.println("EasyPluginController: " + sc.getName());
-		// }
-		// else
-		// {
-		// System.out.println("UNKNOWN: " + sc.getName());
-		// }
-		// }
 	}
 
 	@Override
@@ -131,7 +86,6 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 
 		// search box
 		style += "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/qtlfinder.css\">\n";
-		style += "<script type=\"text/javascript\" src=\"etc/js/clear-default-text.js\"></script>\n";
 
 		// plain style
 		style += "<link rel=\"stylesheet\" style=\"text/css\" href=\"jquery/superfish/colors.css\">\n";

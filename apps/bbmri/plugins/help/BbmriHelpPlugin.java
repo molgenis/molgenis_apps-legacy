@@ -8,9 +8,9 @@
 package plugins.help;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.ui.ScreenController;
 
 public class BbmriHelpPlugin extends PluginModel
 {
@@ -37,7 +37,7 @@ public class BbmriHelpPlugin extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// replace example below with yours
 		// try

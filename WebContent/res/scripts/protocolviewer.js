@@ -49,18 +49,18 @@ function updateProtocolView(protocol) {
 	function buildTree(protocol) {
 		// add protocol
 		var item = $('<li class="folder"/>').attr('data', 'key: "' + protocol.id + '", title:"' + protocol.name + '"');
-		// add protocol: features
 		var list = $('<ul />');
-		if(protocol.features) {
-			$.each(protocol.features, function(i, feature) {
-				var item = $('<li />').attr('data', 'key: "' + feature.id + '", title:"' + feature.name + '"');
-				item.appendTo(list);
-			});
-		}
 		// add protocol: subprotocols
 		if(protocol.subProtocols) {
 			$.each(protocol.subProtocols, function(i, subProtocol) {
 				list.append(buildTree(subProtocol));
+			});
+		}
+		// add protocol: features
+		if(protocol.features) {
+			$.each(protocol.features, function(i, feature) {
+				var item = $('<li />').attr('data', 'key: "' + feature.id + '", title:"' + feature.name + '"');
+				item.appendTo(list);
 			});
 		}
 		list.appendTo(item);
@@ -104,8 +104,10 @@ function setFeatureDetails(feature) {
 	
 	var table = $('<table />');
 	table.append('<tr><td>' + "Name:" + '</td><td>' + feature.name + '</td></tr>');
-	table.append('<tr><td>' + "Description:" + '</td><td>' + feature.description + '</td></tr>');
-	table.append('<tr><td>' + "Data type:" + '</td><td>' + feature.dataType + '</td></tr>');
+	table.append('<tr><td>' + "Description:" + '</td><td>' + (feature.description ? feature.description : '') + '</td></tr>');
+	table.append('<tr><td>' + "Data type:" + '</td><td>' + (feature.dataType ? feature.dataType : '') + '</td></tr>');
+	if(feature.unit)
+		table.append('<tr><td>' + "Unit:" + '</td><td>' + feature.unit.name + '</td></tr>');
 	
 	table.addClass('listtable feature-table');
 	table.find('td:first-child').addClass('feature-table-col1');
@@ -186,7 +188,7 @@ function processSearch(query) {
 	}
 }
 
-function clearSearch() {console.log("clear");
+function clearSearch() {
 	var root = $("#dataset-browser").dynatree("getRoot");
 	
 	// reset to initial display

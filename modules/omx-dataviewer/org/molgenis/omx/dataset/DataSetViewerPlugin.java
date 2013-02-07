@@ -1,16 +1,25 @@
 package org.molgenis.omx.dataset;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.tupletable.DatabaseTupleTable;
 import org.molgenis.framework.tupletable.TableException;
+import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.framework.tupletable.view.JQGridView;
+import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridSearchOptions;
+import org.molgenis.framework.tupletable.view.renderers.ExcelExporter;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -19,8 +28,8 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.omx.view.DataSetChooser;
+import org.molgenis.omx.view.DataSetDownloader;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -31,7 +40,9 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(DataSetViewerPlugin.class);
 	private JQGridView tableView;
+	private TupleTable tupleTable;
 	private DataSetChooser dataSetChooser;
+	private DataSetDownloader dataSetDownloader;
 
 	public DataSetViewerPlugin(String name, ScreenController<?> parent)
 	{
@@ -46,21 +57,58 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 		{
 			createViews(db, null, null);
 		}
+		else
+		{
+			// DataSet could be added or could be deleted
+			try
+			{
+				List<DataSet> dataSets = db.find(DataSet.class);
+				dataSetChooser.setDataSets(dataSets);
+
+				// Check if selected dataset still exists
+				if (dataSetChooser.getSelectedDataSetId() != null)
+				{
+					DataSet dataSet = db.findById(DataSet.class, dataSetChooser.getSelectedDataSetId());
+					if (dataSet == null)
+					{
+						createViews(db, null, null);
+					}
+				}
+
+			}
+			catch (DatabaseException e)
+			{
+				logger.error("TableException creating DataSetViewer", e);
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json_dataset(Database db, Tuple request, OutputStream out)
+	public void download_json_dataset(Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// handle requests for the table named 'dataset'
 		tableView.handleRequest(db, request, out);
 	}
 
-	public void selectDataSet(Database db, Tuple request) throws HandleRequestDelegationException
+	public void download_xls(Database db, MolgenisRequest request) throws TableException, IOException
+	{
+		if (tupleTable instanceof DatabaseTupleTable) ((DatabaseTupleTable) tupleTable).setDb(db);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+		HttpServletResponse response = request.getResponse();
+		response.setContentType("application/ms-excel");
+		response.addHeader("Content-Disposition",
+				"attachment; filename=" + tableView.getName() + "_" + dateFormat.format(new Date()) + ".xls");
+		new ExcelExporter(tupleTable).export(response.getOutputStream());
+	}
+
+	public void selectDataSet(Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		Integer selectedDataSetId = request.getInt("dataSetId");
-		HttpSession session = ((MolgenisRequest) request).getRequest().getSession();
+		HttpSession session = request.getRequest().getSession();
 
 		if (selectedDataSetId != null)
 		{
@@ -123,18 +171,27 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 					}
 				}
 
-				tableView = new JQGridView("dataset", this, table);
+				// construct the gridview
+				JQGridSearchOptions searchOptions = new JQGridSearchOptions();
+				searchOptions.setMultipleGroup(false);
+				searchOptions.setMultipleSearch(false);
+				searchOptions.setShowQuery(false);
+
+				tupleTable = table;
+				tableView = new JQGridView(dataSet.getName(), this, table, searchOptions);
+
 				dataSetChooser = new DataSetChooser(dataSets, selectedDataSetId);
+				dataSetDownloader = new DataSetDownloader();
 			}
 		}
 		catch (TableException e)
 		{
-			logger.error("TableException creating views");
+			logger.error("TableException creating views", e);
 			throw new RuntimeException(e);
 		}
 		catch (DatabaseException e)
 		{
-			logger.error("TableException creating views");
+			logger.error("TableException creating views", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -153,6 +210,7 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 	}
 
 	// what is shown to the user
+	@Override
 	public ScreenView getView()
 	{
 		MolgenisForm view = new MolgenisForm(this);
@@ -165,6 +223,11 @@ public class DataSetViewerPlugin extends EasyPluginController<DataSetViewerPlugi
 		if (tableView != null)
 		{
 			view.add(tableView);
+		}
+
+		if (dataSetDownloader != null)
+		{
+			view.add(dataSetDownloader);
 		}
 
 		return view;

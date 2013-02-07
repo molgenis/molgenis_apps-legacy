@@ -33,19 +33,25 @@
 	<input type="file" name="zip" id="zip" class="textbox" />
 </div>
 <div class="row" style="height:5em">
-	<label for="source" style="height:5em">Type of import:</label>
-	<input type="radio" name="source" id="source1" value="prefill" />AnimalDB pre-fill
-	<br />
-	<input type="radio" name="source" id="source2" value="ulidb" />Molecular Neurobiology (Uli Eisel group)
-	<br />
-	<input type="radio" name="source" id="source3" value="oldadb" />Old AnimalDB (Ate Boerema)
-	<br />
-	<input type="radio" name="source" id="source4" value="rhutdb" />Roelof Hut
-	<br />
+Type of import:
+<ul>
+	<li><input type="radio" name="source" id="source1" value="prefill" />AnimalDB pre-fill</li>
+	<li><input type="radio" name="source" id="source2" value="ulidb" />Molecular Neurobiology (Uli Eisel group)</li>
+	<li><input type="radio" name="source" id="source3" value="oldadb" />Old AnimalDB (Ate Boerema)</li>
+	<li><input type="radio" name="source" id="source4" value="rhutdb" />Roelof Hut</li>
+	<li><input type="radio" name="source" id="source5" value="generic" />Standard non GMO breeding import</li>
+</ul>
+<br><br>
 </div>
 <div class="row">
+<br>
+<br>
 	<input id='load' type='submit' class='addbutton' value='Load' onclick="__action.value='load'" />
 </div>
+<div>
+<p> </p>
+</div>
+
 
 <!--
 <div>

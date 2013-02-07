@@ -8,10 +8,10 @@
 package org.molgenis.gonl.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class GonlHeader extends PluginModel<Entity>
 {
@@ -51,7 +51,7 @@ public class GonlHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// replace example below with yours
 		// try

@@ -42,7 +42,6 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
 import plugins.cluster.helper.Command;
@@ -112,7 +111,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{
@@ -186,7 +185,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		}
 	}
 
-	private void resubmitSubjob(Database db, Tuple request) throws Exception
+	private void resubmitSubjob(Database db, MolgenisRequest request) throws Exception
 	{
 		int sjId = request.getInt("resubmitSubjob");
 
@@ -229,7 +228,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		cr.executeCommand(command);
 	}
 
-	private void setServerSettings(Tuple request, Database db)
+	private void setServerSettings(MolgenisRequest request, Database db)
 	{
 		LoginSettings ls = new LoginSettings();
 		ls.host = request.getString("serverAdress");
@@ -239,7 +238,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		model.setLs(ls);
 	}
 
-	private void makeCandidateJob(Database db, Tuple request) throws DatabaseException
+	private void makeCandidateJob(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		// DatabaseJob job = new DatabaseJob();
 		Job job = new Job();
@@ -263,7 +262,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		model.setCandidateJob(job);
 	}
 
-	private void deleteJob(Database db, Tuple request) throws Exception
+	private void deleteJob(Database db, MolgenisRequest request) throws Exception
 	{
 
 		int jobID = Integer.parseInt(request.getString("jobToDelete"));
@@ -276,7 +275,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	// TODO: dont use Tuple but list of parameters
 	// then use function inbetween to map tuple-to-params
 	// so the function is usable in regression tests :)
-	private void clusterJob(Database db, Tuple request) throws Exception
+	private void clusterJob(Database db, MolgenisRequest request) throws Exception
 	{
 
 		boolean dbSucces = false;

@@ -138,7 +138,7 @@ recalbam,${fileWithIndexID}.recal.bam,(samsortrecal),,
 sortedrecalbam,${fileWithIndexID}.recal.sorted.bam,(samsortrecal),,
 sortedrecalbamindex,${sortedrecalbam}.bai,(samsortrecal),,
 mergesamfilesjar,${picard}/MergeSamFiles.jar,(MergeBam),,
-externalSampleID,,(MergeBam),,"project,capturingKit,arrayFile,arrayID"
+externalSampleID,,(MergeBam),,"project,capturingKit,arrayFile,arrayID,seqType"
 mergedbam,${intermediatedir}/${externalSampleID}.${indexfileID}.merged.bam,(MergeBam),,externalSampleID
 mergedbamindex,${mergedbam}.bai,(MergeBam),,mergedbam
 sortedrecalcovariatecsv,${fileWithIndexID}.recal.covariate.table.csv,,,
@@ -202,7 +202,7 @@ familylist,${sample}.familylist.txt,(ConcordanceCheck),,
 arraytmpmap,${sample}.concordance.tmp.map,(ConcordanceCheck),,
 arraymapfile,${sample}.concordance.map,(ConcordanceCheck),,
 sampleconcordancefile,${sample}.concordance.ngsVSarray.txt,(ConcordanceCheck),,
-getstatisticsscriptpath,${tooldir}/getStatistics_23jan2012,QCStatistics,,
+getstatisticsscriptpath,${tooldir}/getStatistics_20121127,QCStatistics,,
 getStatisticsScript,${getstatisticsscriptpath}/getStatistics.R,QCStatistics,,
 qcstatisticscolnames,${getstatisticsscriptpath}/NiceColumnNames.csv,QCStatistics,,
 gaffig,${getstatisticsscriptpath}/GAFpipeline.png,QCStatistics,,

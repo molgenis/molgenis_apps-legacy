@@ -74,7 +74,7 @@ public class ComputeBundleValidator
 		// VALIDATE WORKFLOW
 		List<WorkflowElement> wfelements = cb.getWorkflowElements();
 
-		// Validate whether all wfe step names are different
+		// Validate that all wfe step names are different
 		List<String> wfeNamesList = new ArrayList<String>();
 		Set<String> wfeNamesSet = new HashSet();
 		for (WorkflowElement wfe : wfelements)
@@ -87,7 +87,7 @@ public class ComputeBundleValidator
 			printError("In your workflow file, you have duplicate workflow step names. All values in the column 'name' should be different. Please fix this.");
 		}
 
-		// Validate whether PreviousSteps_name's all refer to workflow steps.
+		// Validate that PreviousSteps_name's all refer to workflow steps.
 		for (WorkflowElement wfe : wfelements)
 		{
 			for (String ps : wfe.getPreviousSteps_Name())
@@ -98,7 +98,7 @@ public class ComputeBundleValidator
 			}
 		}
 
-		// Validate whether all protocols referred to, exist.
+		// Validate that all protocols referred to, exist.
 
 		// First put protocol names in a list
 		List<String> protocolNames = new ArrayList<String>();
@@ -117,6 +117,25 @@ public class ComputeBundleValidator
 						+ "' in the 'protocol_name' column, does not refer to an known protocol.\nPlease upload a protocol with the name '"
 						+ pn + ".ftl' or change '" + pn + "' to the name of an known protocol.");
 			}
+		}
+
+		// Validate that a file called 'Submit.sh.ftl' exists.
+		if (!protocolNames.contains("Submit.sh"))
+		{
+			printError("You should have a protocol 'Submit.sh.ftl' in which you define how to submit the generated scripts.\n"
+					+ "You may use the following code that is compatible with a PBS-scheduler.\n\n"
+					+ "DIR=\"$( cd \"$( dirname \"<#noparse>${BASH_SOURCE[0]}</#noparse>\" )\" && pwd )\""
+					+ "\n"
+					+ "touch $DIR/${workflowfilename}.started\n"
+					+ "\n"
+					+ "<#foreach j in jobs>\n"
+					+ "#${j.name}\n"
+					+ "${j.name}=$(qsub -N ${j.name}<#if j.prevSteps_Name?size &gt; 0> -W depend=afterok<#foreach d in j.prevSteps_Name>:$${d}</#foreach></#if> ${j.name}.sh)\n"
+					+ "echo $${j.name}\n"
+					+ "sleep 0\n"
+					+ "</#foreach>\n"
+					+ "\n"
+					+ "touch $DIR/${workflowfilename}.finished");
 		}
 
 		// VALIDATE PARAMETERS

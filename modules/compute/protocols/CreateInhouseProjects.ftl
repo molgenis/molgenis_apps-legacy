@@ -39,6 +39,9 @@ mkdir -p ${qcdir}
 		<#if barcode[sample_index] == "None">
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenameSR[sample_index]} ${projectrawdatadir}/${compressedFastqFilenameNoBarcodeSR[sample_index]}
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${fastqChecksumFilenameSR[sample_index]} ${projectrawdatadir}/${fastqChecksumFilenameNoBarcodeSR[sample_index]}
+			
+			# Also add a symlink for the alignment step:
+			# ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE1[sample_index]} ${projectrawdatadir}/${compressedFastqFilenameNoBarcodePE1[sample_index]}
 		<#else>
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenameSR[sample_index]} ${projectrawdatadir}/
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${demultiplexedSampleFastqChecksumFilenameSR} ${projectrawdatadir}/
@@ -83,6 +86,6 @@ sh ${McDir}/molgenis_compute.sh \
 -parameters=${McParameters} \
 -workflow=${workflowFile} \
 -protocols=${McProtocols}/ \
--templates=${McTemplates}/ \
--scripts=${projectJobsDir}/ \
+-system=${McProtocols}/ \
+-outputdir=${projectJobsDir}/ \
 -id=${McId}

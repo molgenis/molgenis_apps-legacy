@@ -12,12 +12,12 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Tuple;
 
 public class catalogueTreeComponent
 {
@@ -38,7 +38,7 @@ public class catalogueTreeComponent
 		initializeTree();
 	}
 
-	public JSONObject requestHandle(Tuple request, Database db, OutputStream out) throws JSONException,
+	public JSONObject requestHandle(MolgenisRequest request, Database db, OutputStream out) throws JSONException,
 			DatabaseException
 	{
 		JSONObject json = new JSONObject();
@@ -55,6 +55,13 @@ public class catalogueTreeComponent
 
 			int upperLimit = topProtocols.size() < (loadingProcess + 1) * increment ? topProtocols.size()
 					: (loadingProcess + 1) * increment;
+
+			if (increment == 0)
+			{
+				increment = 1;
+
+				upperLimit = topProtocols.size();
+			}
 
 			for (int i = loadingProcess * increment; i < upperLimit; i++)
 			{

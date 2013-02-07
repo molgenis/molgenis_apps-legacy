@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.pheno.Measurement;
 import org.quartz.Scheduler;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.catalogueTreeNewVersion.catalogueTreeComponent;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 
@@ -20,9 +23,11 @@ public class HarmonizationModel extends EasyPluginModel
 	 */
 	private static final long serialVersionUID = 4404912460247332113L;
 
-	private int totalNumber = 0;
+	private final AtomicInteger countForFinishedQueries = new AtomicInteger(0);
 
-	private int finishedNumber = 0;
+	private final AtomicInteger countForFinishedJobs = new AtomicInteger(0);
+
+	private int totalNumber = 0;
 
 	private String retrieveResult = Boolean.FALSE.toString();
 
@@ -34,11 +39,11 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private BioportalOntologyService os = null;
 
-	private LevenshteinDistanceModel model = null;
+	private NGramMatchingModel model = null;
 
 	private catalogueTreeComponent catalogue = null;
 
-	private HashMap<String, Measurement> measurements = null;
+	private Map<String, Measurement> measurements = null;
 
 	private List<String> predictionModels = new ArrayList<String>();
 
@@ -46,17 +51,15 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private List<String> reservedInv = new ArrayList<String>();
 
-	private HashMap<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+	private Map<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
 
 	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
 	private String[] ontologies =
-	{ "1032" };
+	{ "1032", "1136", "1353" };
 
 	private List<String> ontologyAccessions = Arrays.asList(ontologies);
 
 	private String freeMakerTemplate = "Harmonization.ftl";
-
-	private int finishedJobs = 0;
 
 	private int totalJobs = 0;
 
@@ -65,6 +68,10 @@ public class HarmonizationModel extends EasyPluginModel
 	private String estimatedTime = "";
 
 	private String processedTime = "";
+
+	private boolean isStringMatching = false;
+
+	private Map<Measurement, List<Set<String>>> nGramsMapForMeasurements;
 
 	public HarmonizationModel(Harmonization controller)
 	{
@@ -122,12 +129,12 @@ public class HarmonizationModel extends EasyPluginModel
 		this.os = os;
 	}
 
-	public LevenshteinDistanceModel getMatchingModel()
+	public NGramMatchingModel getMatchingModel()
 	{
 		return model;
 	}
 
-	public void setMatchingModel(LevenshteinDistanceModel model)
+	public void setMatchingModel(NGramMatchingModel model)
 	{
 		this.model = model;
 	}
@@ -142,7 +149,7 @@ public class HarmonizationModel extends EasyPluginModel
 		this.catalogue = catalogue;
 	}
 
-	public HashMap<String, Measurement> getMeasurements()
+	public Map<String, Measurement> getMeasurements()
 	{
 		return measurements;
 	}
@@ -167,7 +174,7 @@ public class HarmonizationModel extends EasyPluginModel
 		return reservedInv;
 	}
 
-	public HashMap<String, PredictorInfo> getPredictors()
+	public Map<String, PredictorInfo> getPredictors()
 	{
 		return predictors;
 	}
@@ -194,22 +201,12 @@ public class HarmonizationModel extends EasyPluginModel
 
 	public int getFinishedNumber()
 	{
-		return finishedNumber;
-	}
-
-	public void setFinishedNumber(int finishedNumber)
-	{
-		this.finishedNumber = finishedNumber;
-	}
-
-	public void setFinishedJobs(int finishedJobs)
-	{
-		this.finishedJobs = finishedJobs;
+		return countForFinishedQueries.get();
 	}
 
 	public int getFinishedJobs()
 	{
-		return finishedJobs;
+		return countForFinishedJobs.get();
 	}
 
 	public void setTotalJobs(int totalJobs)
@@ -287,5 +284,45 @@ public class HarmonizationModel extends EasyPluginModel
 		{
 			this.retrieveResult = Boolean.FALSE.toString();
 		}
+	}
+
+	public boolean isStringMatching()
+	{
+		return isStringMatching;
+	}
+
+	public void setIsStringMatching(boolean isStringMatching)
+	{
+		this.isStringMatching = isStringMatching;
+	}
+
+	public void setNGramsMapForMeasurements(Map<Measurement, List<Set<String>>> maps)
+	{
+		this.nGramsMapForMeasurements = maps;
+	}
+
+	public Map<Measurement, List<Set<String>>> getnGramsMapForMeasurements()
+	{
+		return nGramsMapForMeasurements;
+	}
+
+	public int incrementFinishedQueries()
+	{
+		return countForFinishedQueries.incrementAndGet();
+	}
+
+	public void setInitialFinishedQueries(int value)
+	{
+		countForFinishedQueries.set(value);
+	}
+
+	public int incrementFinishedJob()
+	{
+		return countForFinishedJobs.incrementAndGet();
+	}
+
+	public void setInitialFinishedJob(int value)
+	{
+		countForFinishedJobs.set(value);
 	}
 }

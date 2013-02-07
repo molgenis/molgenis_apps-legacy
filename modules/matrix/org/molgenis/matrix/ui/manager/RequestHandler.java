@@ -2,12 +2,13 @@ package org.molgenis.matrix.ui.manager;
 
 import java.io.PrintWriter;
 
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.server.MolgenisRequest;
 
 public class RequestHandler
 {
 
-	public static void handle(MatrixManagerModel screenModel, Tuple request, PrintWriter out) throws Exception
+	public static void handle(MatrixManagerModel screenModel, MolgenisRequest request, PrintWriter out)
+			throws Exception
 	{
 		String action = request.getString("__action");
 		if (action.equals("download_visible"))

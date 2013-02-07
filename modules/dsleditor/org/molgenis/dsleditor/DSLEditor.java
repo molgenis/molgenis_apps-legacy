@@ -13,6 +13,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -20,7 +21,7 @@ import org.molgenis.model.jaxb.Field;
 import org.molgenis.model.jaxb.Field.Type;
 import org.molgenis.model.jaxb.Model;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class DSLEditor<E extends Entity> extends PluginModel<E>
 {
@@ -67,7 +68,7 @@ public class DSLEditor<E extends Entity> extends PluginModel<E>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

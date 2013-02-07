@@ -21,6 +21,8 @@
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
 		<pathelement location="modules/webserver" />
+		<!--pathelement location="modules/load" /-->
+
 	</path>
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

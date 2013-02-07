@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -28,11 +30,11 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.LinkedInformation;
 import plugins.HarmonizationComponent.MappingList;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.HarmonizationComponent.OWLFunction;
 import plugins.developingAlgorithm.RScriptGenerator;
 import plugins.developingAlgorithm.testModel;
@@ -66,7 +68,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
-	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
+	private NGramMatchingModel model = new NGramMatchingModel();
 	private HashMap<String, JSONObject> parameterWithHtmlTable = new HashMap<String, JSONObject>();
 	private List<String> manualMappingResultTable = new ArrayList<String>();
 	// private HashMap<String, Measurement> questionsAndIdentifier = new
@@ -108,7 +110,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 		return "plugins/harmonizationPlugin/harmonizationPlugin.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 		try
@@ -390,12 +392,12 @@ public class harmonizationPlugin extends PluginModel<Entity>
 						for (LinkedInformation eachMatching : listOfMatchedResult)
 						{
 
-							String identifier = eachMatching.measurementName + "_" + entry.getKey();
+							String identifier = eachMatching.getMeasurementName() + "_" + entry.getKey();
 
-							if (request.getBool(identifier.replaceAll(" ", "_")) != null)
+							if (request.getBoolean(identifier.replaceAll(" ", "_")) != null)
 							{
 
-								String dataItemName = eachMatching.measurementName;
+								String dataItemName = eachMatching.getMeasurementName();
 
 								listOFMatchedItem.add(dataItemName);
 							}
@@ -559,7 +561,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 						String description = m.getDescription();
 
-						List<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
+						Set<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
 
 						double maxSimilarity = 0;
 
@@ -575,7 +577,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 							for (String eachMatchingString : synonyms)
 							{
 
-								List<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString
+								Set<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString
 										.toLowerCase().trim(), false);
 
 								double similarity = model.calculateScore(tokensForBuildingBlock, tokensForDataItem);
@@ -756,7 +758,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 				finalQuery.add(eachQuery.replaceAll(separator, " "));
 
-				if (request.getBool("baseline") != null)
+				if (request.getBoolean("baseline") != null)
 				{
 					finalQuery.add(eachQuery.replaceAll(separator, " ") + " baseline");
 				}
@@ -769,7 +771,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 					if (!finalQuery.contains(blocks[i].toLowerCase())) finalQuery.add(blocks[i].toLowerCase());
 
-					if (request.getBool("baseline") != null)
+					if (request.getBoolean("baseline") != null)
 					{
 						if (!finalQuery.contains(blocks[i].toLowerCase() + " baseline")) finalQuery.add(blocks[i]
 								.toLowerCase() + " baseline");
@@ -792,7 +794,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 
 				String measurementName = "";
 
-				List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
+				Set<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
 
 				for (Measurement m : measurementsInStudy)
 				{
@@ -818,7 +820,7 @@ public class harmonizationPlugin extends PluginModel<Entity>
 					for (String question : fields)
 					{
 
-						List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
+						Set<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
 
 						double similarity = model.calculateScore(dataItemTokens, tokens);
 
@@ -917,10 +919,10 @@ public class harmonizationPlugin extends PluginModel<Entity>
 			{
 
 				LinkedInformation eachRow = links.get(i - 1);
-				String expandedQuery = eachRow.expandedQuery;
-				String matchedItem = eachRow.matchedItem;
-				Double similarity = eachRow.similarity;
-				String measurementName = eachRow.measurementName;
+				String expandedQuery = eachRow.getExpandedQuery();
+				String matchedItem = eachRow.getMatchedItem();
+				Double similarity = eachRow.getSimilarity();
+				String measurementName = eachRow.getMeasurementName();
 				String identifier = measurementName + "_" + eachOriginalQuery;
 
 				if (!uniqueMapping.containsKey(identifier))
