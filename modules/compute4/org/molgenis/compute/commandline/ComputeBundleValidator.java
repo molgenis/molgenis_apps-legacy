@@ -35,7 +35,8 @@ public class ComputeBundleValidator
 		if (!options.worksheetfile.exists()) fileNotExistsError(options.worksheetfile.toString());
 		if (!options.workflowfile.exists()) fileNotExistsError(options.workflowfile.toString());
 		if (!options.protocoldir.exists()) fileNotExistsError(options.protocoldir.toString());
-		if (!options.systemdir.exists()) fileNotExistsError(options.systemdir.toString());
+		// if (!options.templatedir.exists())
+		// fileNotExistsError(options.templatedir.toString());
 	}
 
 	private void fileNotExistsError(String f)

@@ -23,7 +23,7 @@ public class ArgumentParser
 	/*
 	 * All command line parameters
 	 */
-	static List<String> parameters = Arrays.asList("inputdir", "outputdir", "workflow", "system", "protocols",
+	static List<String> parameters = Arrays.asList("inputdir", "outputdir", "workflow", "templates", "protocols",
 			"parameters", "worksheet", "mcdir", "id");
 
 	/*
@@ -77,7 +77,7 @@ public class ArgumentParser
 		inputdir = paramMap.get("inputdir") + File.separator;
 
 		if (getValue(set, "workflow") == null) paramMap.put("workflow", inputdir + "workflow.csv");
-		if (getValue(set, "system") == null) paramMap.put("system", inputdir + "system");
+		if (getValue(set, "templates") == null) paramMap.put("templates", inputdir + "templates");
 		if (getValue(set, "protocols") == null) paramMap.put("protocols", inputdir + "protocols");
 		if (getValue(set, "parameters") == null) paramMap.put("parameters", inputdir + "parameters.csv");
 		if (getValue(set, "worksheet") == null) paramMap.put("worksheet", inputdir + "worksheet.csv");
