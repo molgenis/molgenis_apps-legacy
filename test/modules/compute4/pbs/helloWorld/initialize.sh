@@ -1,7 +1,3 @@
-# Define constants  
-testResults="$workdir/../../../../../test-output/compute4/local/helloWorld"
-generatedScriptsDir=$testResults/generatedScripts
-
 # Define function that fails if file (first argument) does not exist or is non-empty.
 isEmpty(){
     # check whether file exists
