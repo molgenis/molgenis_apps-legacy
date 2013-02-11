@@ -1,28 +1,50 @@
 package plugins.HarmonizationComponent;
 
+import org.molgenis.pheno.Measurement;
+
 public class LinkedInformation implements Comparable<LinkedInformation>
 {
-	private final String measurementName;
+	// private final String measurementName;
+
+	private final Measurement measurement;
 
 	private final String expandedQuery;
 
-	private final String matchedItem;
+	// private final String matchedItem;
 
 	private double similarity;
 
-	public LinkedInformation(String expandedQuery, String matchedItem, double similarity, String measurementName)
+	// public LinkedInformation(String expandedQuery, String matchedItem, double
+	// similarity, String measurementName)
+	// {
+	//
+	// if (expandedQuery == null || matchedItem == null) throw new
+	// IllegalArgumentException(
+	// "Parameters have to be not null!");
+	//
+	// if (expandedQuery.isEmpty() || matchedItem.isEmpty()) throw new
+	// IllegalArgumentException(
+	// "Parameters have to be not empty");
+	//
+	// this.expandedQuery = expandedQuery;
+	// this.matchedItem = matchedItem;
+	// this.setSimilarity(similarity);
+	// this.measurementName = measurementName;
+	// }
+
+	public LinkedInformation(String expandedQuery, Measurement measurement, double similarity)
 	{
 
-		if (expandedQuery == null || matchedItem == null) throw new IllegalArgumentException(
+		if (expandedQuery == null || measurement == null) throw new IllegalArgumentException(
 				"Parameters have to be not null!");
 
-		if (expandedQuery.isEmpty() || matchedItem.isEmpty()) throw new IllegalArgumentException(
-				"Parameters have to be not empty");
+		if (expandedQuery.isEmpty()) throw new IllegalArgumentException("Parameters have to be not empty");
 
 		this.expandedQuery = expandedQuery;
-		this.matchedItem = matchedItem;
+		this.measurement = measurement;
+		// this.matchedItem = matchedItem;
 		this.setSimilarity(similarity);
-		this.measurementName = measurementName;
+		// this.measurementName = measurementName;
 	}
 
 	@Override
@@ -31,25 +53,25 @@ public class LinkedInformation implements Comparable<LinkedInformation>
 		return Double.compare(this.getSimilarity(), o.getSimilarity());
 	}
 
-	public String getMeasurementName()
-	{
-		return measurementName;
-	}
-
-	public String getName()
-	{
-		return expandedQuery + matchedItem;
-	}
+	// public String getMeasurementName()
+	// {
+	// return measurementName;
+	// }
+	//
+	// public String getName()
+	// {
+	// return expandedQuery + matchedItem;
+	// }
 
 	public String getExpandedQuery()
 	{
 		return expandedQuery;
 	}
 
-	public String getMatchedItem()
-	{
-		return matchedItem;
-	}
+	// public String getMatchedItem()
+	// {
+	// return matchedItem;
+	// }
 
 	public Double getSimilarity()
 	{
@@ -61,4 +83,8 @@ public class LinkedInformation implements Comparable<LinkedInformation>
 		this.similarity = similarity;
 	}
 
+	public Measurement getMeasurement()
+	{
+		return measurement;
+	}
 }
