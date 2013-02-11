@@ -1,6 +1,8 @@
 package plugins.harmonization;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -26,11 +28,13 @@ public class StringMatchingJob implements StatefulJob
 			NGramMatchingModel matchingModel = (NGramMatchingModel) context.getJobDetail().getJobDataMap()
 					.get("matchingModel");
 
-			MappingList mappings = new MappingList();
+			// MappingList mappings = new MappingList();
+
+			Map<String, MappingList> mappingsForStudies = new HashMap<String, MappingList>();
 
 			for (String eachQuery : predictor.getExpandedQuery())
 			{
-				executeMapping(matchingModel, eachQuery, mappings, dataModel);
+				executeMapping(matchingModel, eachQuery, mappingsForStudies, dataModel);
 
 				// dataModel.setFinishedNumber(dataModel.getFinishedNumber() +
 				// 1);
@@ -39,7 +43,7 @@ public class StringMatchingJob implements StatefulJob
 
 			dataModel.incrementFinishedJob();
 
-			predictor.setMappings(mappings);
+			predictor.setMappings(mappingsForStudies);
 		}
 		catch (Exception e)
 		{
@@ -47,22 +51,40 @@ public class StringMatchingJob implements StatefulJob
 		}
 	}
 
-	private void executeMapping(NGramMatchingModel matchingModel, String eachQuery, MappingList mappings,
-			HarmonizationModel dataModel) throws Exception
+	private void executeMapping(NGramMatchingModel matchingModel, String eachQuery,
+			Map<String, MappingList> mappingsForStudies, HarmonizationModel dataModel) throws Exception
 	{
 		Set<String> tokens = matchingModel.createNGrams(eachQuery.toLowerCase().trim(), true);
 
-		for (Entry<Measurement, List<Set<String>>> entry : dataModel.getnGramsMapForMeasurements().entrySet())
+		for (Entry<String, Map<Measurement, List<Set<String>>>> entry : dataModel.getnGramsMapForMeasurements()
+				.entrySet())
 		{
-			Measurement m = entry.getKey();
+			String invesigationName = entry.getKey();
 
-			for (Set<String> eachNGrams : entry.getValue())
+			Map<Measurement, List<Set<String>>> measurementMap = entry.getValue();
+
+			MappingList mappings = null;
+
+			if (mappingsForStudies.containsKey(invesigationName))
 			{
-				double similarity = matchingModel.calculateScore(eachNGrams, tokens);
-
-				mappings.add(eachQuery, (m.getDescription() == null ? m.getName() : m.getDescription()), similarity,
-						m.getName());
+				mappings = mappingsForStudies.get(invesigationName);
 			}
+			else
+			{
+				mappings = new MappingList();
+			}
+
+			for (Measurement m : measurementMap.keySet())
+			{
+				for (Set<String> eachNGrams : measurementMap.get(m))
+				{
+					double similarity = matchingModel.calculateScore(eachNGrams, tokens);
+
+					mappings.add(eachQuery, m, similarity);
+				}
+			}
+
+			mappingsForStudies.put(invesigationName, mappings);
 		}
 	}
 }

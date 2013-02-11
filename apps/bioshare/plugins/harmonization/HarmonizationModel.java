@@ -31,8 +31,6 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private String retrieveResult = Boolean.FALSE.toString();
 
-	private String selectedValidationStudy = null;
-
 	private String selectedPredictionModel = null;
 
 	private Scheduler scheduler = null;
@@ -43,7 +41,9 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private catalogueTreeComponent catalogue = null;
 
-	private Map<String, Measurement> measurements = null;
+	private Map<String, List<Measurement>> measurements = null;
+
+	private List<String> selectedValidationStudy = null;
 
 	private List<String> predictionModels = new ArrayList<String>();
 
@@ -51,11 +51,11 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private List<String> reservedInv = new ArrayList<String>();
 
-	private Map<String, PredictorInfo> predictors = new HashMap<String, PredictorInfo>();
+	private Map<Integer, PredictorInfo> predictors = new HashMap<Integer, PredictorInfo>();
 
 	// private String[] ontologies = { "1351", "1136", "1353", "2018", "1032" };
 	private String[] ontologies =
-	{ "1032", "1136", "1353" };
+	{ "1032", "1427", "1353" };
 
 	private List<String> ontologyAccessions = Arrays.asList(ontologies);
 
@@ -71,7 +71,7 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private boolean isStringMatching = false;
 
-	private Map<Measurement, List<Set<String>>> nGramsMapForMeasurements;
+	private Map<String, Map<Measurement, List<Set<String>>>> nGramsMapForMeasurements;
 
 	public HarmonizationModel(Harmonization controller)
 	{
@@ -149,12 +149,12 @@ public class HarmonizationModel extends EasyPluginModel
 		this.catalogue = catalogue;
 	}
 
-	public Map<String, Measurement> getMeasurements()
+	public Map<String, List<Measurement>> getMeasurements()
 	{
 		return measurements;
 	}
 
-	public void setMeasurements(HashMap<String, Measurement> measurements)
+	public void setMeasurements(HashMap<String, List<Measurement>> measurements)
 	{
 		this.measurements = measurements;
 	}
@@ -174,12 +174,12 @@ public class HarmonizationModel extends EasyPluginModel
 		return reservedInv;
 	}
 
-	public Map<String, PredictorInfo> getPredictors()
+	public Map<Integer, PredictorInfo> getPredictors()
 	{
 		return predictors;
 	}
 
-	public void setPredictors(HashMap<String, PredictorInfo> predictors)
+	public void setPredictors(HashMap<Integer, PredictorInfo> predictors)
 	{
 		this.predictors = predictors;
 	}
@@ -229,12 +229,12 @@ public class HarmonizationModel extends EasyPluginModel
 		return startTime;
 	}
 
-	public String getSelectedValidationStudy()
+	public List<String> getSelectedValidationStudy()
 	{
 		return selectedValidationStudy;
 	}
 
-	public void setSelectedValidationStudy(String selectedValidationStudy)
+	public void setSelectedValidationStudy(List<String> selectedValidationStudy)
 	{
 		this.selectedValidationStudy = selectedValidationStudy;
 	}
@@ -296,12 +296,12 @@ public class HarmonizationModel extends EasyPluginModel
 		this.isStringMatching = isStringMatching;
 	}
 
-	public void setNGramsMapForMeasurements(Map<Measurement, List<Set<String>>> maps)
+	public void setNGramsMapForMeasurements(Map<String, Map<Measurement, List<Set<String>>>> maps)
 	{
 		this.nGramsMapForMeasurements = maps;
 	}
 
-	public Map<Measurement, List<Set<String>>> getnGramsMapForMeasurements()
+	public Map<String, Map<Measurement, List<Set<String>>>> getnGramsMapForMeasurements()
 	{
 		return nGramsMapForMeasurements;
 	}
