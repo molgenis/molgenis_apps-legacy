@@ -1,6 +1,6 @@
-<project name="gids">
+<project name="cbm_omx">
 	<!-- this name is used to name the war file -->
-	<property name="app_name" value="gids" />
+	<property name="app_name" value="cbm_omx" />
 
 	<!-- this holds all the settings for the generator -->
 	<property name="app_properties" value="apps/${app_name}/org/molgenis/${app_name}/${app_name}.properties"/>
