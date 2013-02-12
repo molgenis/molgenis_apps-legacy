@@ -71,7 +71,7 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private boolean isStringMatching = false;
 
-	private Map<String, Map<Measurement, List<Set<String>>>> nGramsMapForMeasurements;
+	private Map<String, Map<Integer, List<Set<String>>>> nGramsMapForMeasurements;
 
 	public HarmonizationModel(Harmonization controller)
 	{
@@ -296,12 +296,12 @@ public class HarmonizationModel extends EasyPluginModel
 		this.isStringMatching = isStringMatching;
 	}
 
-	public void setNGramsMapForMeasurements(Map<String, Map<Measurement, List<Set<String>>>> maps)
+	public void setNGramsMapForMeasurements(Map<String, Map<Integer, List<Set<String>>>> maps)
 	{
 		this.nGramsMapForMeasurements = maps;
 	}
 
-	public Map<String, Map<Measurement, List<Set<String>>>> getnGramsMapForMeasurements()
+	public Map<String, Map<Integer, List<Set<String>>>> getnGramsMapForMeasurements()
 	{
 		return nGramsMapForMeasurements;
 	}

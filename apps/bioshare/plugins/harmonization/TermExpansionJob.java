@@ -35,7 +35,7 @@ public class TermExpansionJob implements Job
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
 
-				Set<String> stopWords = (HashSet<String>) context.getJobDetail().getJobDataMap().get("stopWords");
+				Set<String> stopWords = model.getMatchingModel().getStopWords();
 
 				int count = 0;
 
@@ -58,6 +58,12 @@ public class TermExpansionJob implements Job
 						predictor.getExpandedQuery().addAll(
 								expandByPotentialBuildingBlocks(predictor.getLabel(), stopWords, model, os));
 					}
+
+					// for (int i = 0; i < 2000; i++)
+					// {
+					// predictor.getExpandedQuery().add(predictor.getLabel() +
+					// "_" + i);
+					// }
 
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
 
@@ -83,11 +89,11 @@ public class TermExpansionJob implements Job
 
 	private void createNGramMeasurements(HarmonizationModel model)
 	{
-		Map<String, Map<Measurement, List<Set<String>>>> nGramsMapForMeasurements = new HashMap<String, Map<Measurement, List<Set<String>>>>();
+		Map<String, Map<Integer, List<Set<String>>>> nGramsMapForMeasurements = new HashMap<String, Map<Integer, List<Set<String>>>>();
 
 		for (Entry<String, List<Measurement>> measurementsFromStudy : model.getMeasurements().entrySet())
 		{
-			Map<Measurement, List<Set<String>>> nGramsMap = new HashMap<Measurement, List<Set<String>>>();
+			Map<Integer, List<Set<String>>> nGramsMap = new HashMap<Integer, List<Set<String>>>();
 
 			String investigationName = measurementsFromStudy.getKey();
 
@@ -95,7 +101,6 @@ public class TermExpansionJob implements Job
 
 			for (Measurement m : measurements)
 			{
-
 				List<String> fields = new ArrayList<String>();
 
 				if (!StringUtils.isEmpty(m.getDescription()))
@@ -128,7 +133,7 @@ public class TermExpansionJob implements Job
 					listOfNGrams.add(dataItemTokens);
 				}
 
-				nGramsMap.put(m, listOfNGrams);
+				nGramsMap.put(m.getId(), listOfNGrams);
 			}
 
 			nGramsMapForMeasurements.put(investigationName, nGramsMap);

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.molgenis.pheno.Measurement;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
@@ -32,17 +31,22 @@ public class StringMatchingJob implements StatefulJob
 
 			Map<String, MappingList> mappingsForStudies = new HashMap<String, MappingList>();
 
-			for (String eachQuery : predictor.getExpandedQuery())
+			for (Entry<String, Map<Integer, List<Set<String>>>> entry : dataModel.getnGramsMapForMeasurements()
+					.entrySet())
 			{
-				executeMapping(matchingModel, eachQuery, mappingsForStudies, dataModel);
+				String investigationName = entry.getKey();
+				MappingList mappingList = new MappingList();
 
-				// dataModel.setFinishedNumber(dataModel.getFinishedNumber() +
-				// 1);
-				dataModel.incrementFinishedQueries();
+				for (String eachQuery : predictor.getExpandedQuery())
+				{
+					executeMapping(matchingModel, eachQuery, mappingList, entry.getValue());
+					dataModel.incrementFinishedQueries();
+				}
+
+				mappingsForStudies.put(investigationName, mappingList);
 			}
 
 			dataModel.incrementFinishedJob();
-
 			predictor.setMappings(mappingsForStudies);
 		}
 		catch (Exception e)
@@ -51,40 +55,23 @@ public class StringMatchingJob implements StatefulJob
 		}
 	}
 
-	private void executeMapping(NGramMatchingModel matchingModel, String eachQuery,
-			Map<String, MappingList> mappingsForStudies, HarmonizationModel dataModel) throws Exception
+	private void executeMapping(NGramMatchingModel matchingModel, String eachQuery, MappingList mappingList,
+			Map<Integer, List<Set<String>>> measurementMap) throws Exception
 	{
 		Set<String> tokens = matchingModel.createNGrams(eachQuery.toLowerCase().trim(), true);
 
-		for (Entry<String, Map<Measurement, List<Set<String>>>> entry : dataModel.getnGramsMapForMeasurements()
-				.entrySet())
+		for (Integer featureID : measurementMap.keySet())
 		{
-			String invesigationName = entry.getKey();
+			double highScore = 0;
 
-			Map<Measurement, List<Set<String>>> measurementMap = entry.getValue();
-
-			MappingList mappings = null;
-
-			if (mappingsForStudies.containsKey(invesigationName))
+			for (Set<String> eachNGrams : measurementMap.get(featureID))
 			{
-				mappings = mappingsForStudies.get(invesigationName);
-			}
-			else
-			{
-				mappings = new MappingList();
+				double similarity = matchingModel.calculateScore(eachNGrams, tokens);
+
+				if (highScore < similarity) highScore = similarity;
 			}
 
-			for (Measurement m : measurementMap.keySet())
-			{
-				for (Set<String> eachNGrams : measurementMap.get(m))
-				{
-					double similarity = matchingModel.calculateScore(eachNGrams, tokens);
-
-					mappings.add(eachQuery, m, similarity);
-				}
-			}
-
-			mappingsForStudies.put(invesigationName, mappings);
+			mappingList.add(eachQuery, featureID, highScore);
 		}
 	}
 }
