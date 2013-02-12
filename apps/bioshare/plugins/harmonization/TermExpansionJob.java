@@ -5,12 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.molgenis.pheno.Measurement;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -34,11 +30,8 @@ public class TermExpansionJob implements Job
 						.get("predictors");
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
-
 				Set<String> stopWords = model.getMatchingModel().getStopWords();
-
 				int count = 0;
-
 				BioportalOntologyService os = new BioportalOntologyService();
 
 				for (PredictorInfo predictor : predictors)
@@ -64,82 +57,21 @@ public class TermExpansionJob implements Job
 					// predictor.getExpandedQuery().add(predictor.getLabel() +
 					// "_" + i);
 					// }
-
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
-
-					model.setTotalNumber(model.getTotalNumber() + predictor.getExpandedQuery().size());
-
+					model.setTotalNumber((model.getTotalNumber() + predictor.getExpandedQuery().size())
+							* model.getSelectedValidationStudy().size());
 					count++;
-
 					model.incrementFinishedJob();
-
 					System.out.println("Finished: " + count + " out of " + predictors.size() + ". The predictor "
 							+ predictor.getLabel() + " has " + predictor.getExpandedQuery().size()
 							+ " expanded queries!");
 				}
-
-				createNGramMeasurements(model);
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-	}
-
-	private void createNGramMeasurements(HarmonizationModel model)
-	{
-		Map<String, Map<Integer, List<Set<String>>>> nGramsMapForMeasurements = new HashMap<String, Map<Integer, List<Set<String>>>>();
-
-		for (Entry<String, List<Measurement>> measurementsFromStudy : model.getMeasurements().entrySet())
-		{
-			Map<Integer, List<Set<String>>> nGramsMap = new HashMap<Integer, List<Set<String>>>();
-
-			String investigationName = measurementsFromStudy.getKey();
-
-			List<Measurement> measurements = measurementsFromStudy.getValue();
-
-			for (Measurement m : measurements)
-			{
-				List<String> fields = new ArrayList<String>();
-
-				if (!StringUtils.isEmpty(m.getDescription()))
-				{
-					fields.add(m.getDescription());
-
-					StringBuilder combinedString = new StringBuilder();
-
-					if (!m.getCategories_Name().isEmpty())
-					{
-						for (String categoryName : m.getCategories_Name())
-						{
-							combinedString.delete(0, combinedString.length());
-
-							combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(' ')
-									.append(m.getDescription());
-
-							fields.add(combinedString.toString().replace('_', ' '));
-						}
-					}
-				}
-
-				List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
-
-				for (String eachEntry : fields)
-				{
-					Set<String> dataItemTokens = model.getMatchingModel().createNGrams(eachEntry.toLowerCase().trim(),
-							true);
-
-					listOfNGrams.add(dataItemTokens);
-				}
-
-				nGramsMap.put(m.getId(), listOfNGrams);
-			}
-
-			nGramsMapForMeasurements.put(investigationName, nGramsMap);
-		}
-
-		model.setNGramsMapForMeasurements(nGramsMapForMeasurements);
 	}
 
 	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, Set<String> stopWords,

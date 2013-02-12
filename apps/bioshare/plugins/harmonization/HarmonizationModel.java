@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.pheno.Measurement;
 import org.quartz.Scheduler;
 
 import plugins.HarmonizationComponent.NGramMatchingModel;
@@ -40,8 +39,6 @@ public class HarmonizationModel extends EasyPluginModel
 	private NGramMatchingModel model = null;
 
 	private catalogueTreeComponent catalogue = null;
-
-	private Map<String, List<Measurement>> measurements = null;
 
 	private List<String> selectedValidationStudy = null;
 
@@ -147,16 +144,6 @@ public class HarmonizationModel extends EasyPluginModel
 	public void setCatalogue(catalogueTreeComponent catalogue)
 	{
 		this.catalogue = catalogue;
-	}
-
-	public Map<String, List<Measurement>> getMeasurements()
-	{
-		return measurements;
-	}
-
-	public void setMeasurements(HashMap<String, List<Measurement>> measurements)
-	{
-		this.measurements = measurements;
 	}
 
 	public List<String> getValidationStudies()
