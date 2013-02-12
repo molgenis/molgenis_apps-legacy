@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
-<molgenis name="gids">
-<plugin name="oc_header" type="org.molgenis.gids.plugins.header.Header" />
+<molgenis name="cbm_omx">
 	<menu name="main">	
 		<plugin label="Catalogue" name="ProtocolViewer" type="org.molgenis.omx.plugins.ProtocolViewerController" />
 		<plugin label="Dataset Viewer" name="DataSetViewerPlugin" type="org.molgenis.omx.dataset.DataSetViewerPlugin"/>
 		<plugin label="Upload" name="UploadWizard" type="org.molgenis.omx.plugins.ImportWizardController" />
+		<menu name="ConvertXMLtoOMX" label="ConvertXMLtoOMX" position="left">
+				<plugin label="Convert xml data" name="ConvertXmlData" type="plugin.ConvertCbmData_omx" />
+			</menu>
+		
+		
 		<menu name="Admin">
 			<menu name ="Characteristics">
 				<form name="Characteristic" entity="Characteristic" />
+			</menu>
+			<menu name ="Panels">
+				<form name="Panel" entity="Panel" />
+			</menu>
+			<menu name ="Citations">
+				<form name="Citation" entity="Citation" />
 			</menu>
 			<menu name ="Individuals">	
 				<form name="Individual" entity="Individual" />
@@ -22,6 +32,20 @@
 				<form name="Protocol" entity="Protocol">
 					<form name="Values" entity="DataSet" />
 				</form>
+			</menu>
+			<menu name="Lookups">
+				<form name="Ontologies" entity="Ontology">
+					<form name="OntologyTerms" entity="OntologyTerm" />
+				</form>
+				<form name="Species" entity="Species" />
+			</menu>
+			<menu name="Genomics">
+				<form name="Genomes" entity="Genome">
+					<form name="Chromosomes" entity="Chromosome" />
+				</form>
+				<form name="Genes" entity="Gene"/>
+				<form name="Proteins" entity="Protein"/>
+				<form name="Variants" entity="Variant"/>
 			</menu>
 			<menu name="Investigation">
 				<form name="InvestigationInfo" label="Investigation" entity="Investigation"
