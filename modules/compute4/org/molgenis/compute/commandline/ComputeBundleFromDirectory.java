@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.compute.commandline.ComputeBundle;
-import org.molgenis.compute.commandline.ComputeBundleValidator;
-import org.molgenis.compute.commandline.ComputeCommandLine;
-import org.molgenis.compute.commandline.WorksheetHelper;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.WorkflowElement;
@@ -33,7 +29,6 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	{
 		// validate headers
 		ComputeBundleValidator cbv = new ComputeBundleValidator(this);
-		cbv.validateReferedFilesAndPathsExists(options);
 		cbv.validateFileHeaders(options);
 
 		// load files
@@ -44,14 +39,13 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 		// load the templates (Submit.sh.ftl, Header/Footer.ftl) in the default
 		// system directory:
-		if (options.systemdir.exists()) this.addComputeProtocols(options.systemdir);
+		if (options.templatedir.exists()) this.addComputeProtocols(options.templatedir);
 
 		// We now loaded first the 'custom protocols' made by the user, and then
 		// the system protocols
 		// If a protocol is loaded twice, then only keep first one
 		// only use system protocols if they are not in protocols folder
 		this.keepFirstProtocol();
-
 		this.setComputeParameters(options.parametersfile);
 		this.setWorksheet(options.worksheetfile);
 
@@ -236,8 +230,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				protocols.add(p);
 			}
 		}
-
-		this.appendComputeProtocols(protocols);
+		this.setComputeProtocols(protocols);
 	}
 
 	public void setComputeParameters(File file) throws Exception

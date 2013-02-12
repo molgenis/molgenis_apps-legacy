@@ -30,3 +30,7 @@ echo Starting with s01_OrganizerInvitationStep_adult...
 sh s01_OrganizerInvitationStep_adult.sh
 #Dependencies: 
 
+echo Starting with s02_CheckResults_constant...
+sh s02_CheckResults_constant.sh
+#Dependencies: 
+

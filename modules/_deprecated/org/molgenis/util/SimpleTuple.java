@@ -1,24 +1,15 @@
 package org.molgenis.util;
 
+import org.molgenis.model.elements.Field;
+
 import java.io.File;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.Vector;
-
-import org.molgenis.model.elements.Field;
 
 /**
  * Simple Map based implementation of Tuple. By default the values are added by
