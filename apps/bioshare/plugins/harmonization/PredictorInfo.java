@@ -23,8 +23,8 @@ public class PredictorInfo
 	private Map<String, Measurement> finalMappings = new HashMap<String, Measurement>();
 	// private Map<String, String> category = new HashMap<String, String>();
 	// private Map<String, String> description = new HashMap<String, String>();
-	private Map<SimilarityScore, MeasurementSimilarity> similarity = new HashMap<SimilarityScore, MeasurementSimilarity>();
-	private Map<MeasurementPerStudy, MeasurementExpandedQuery> expandedQueryPerMapping = new LinkedHashMap<MeasurementPerStudy, MeasurementExpandedQuery>();
+	private Map<SimilarityScore, Double> similarity = new LinkedHashMap<SimilarityScore, Double>();
+	private Map<Integer, List<String>> expandedQueryPerMapping = new LinkedHashMap<Integer, List<String>>();
 	private Map<String, MappingList> mappingsForStudies = new HashMap<String, MappingList>();
 
 	public void setName(String name)
@@ -97,7 +97,7 @@ public class PredictorInfo
 
 		for (Entry<String, MappingList> entry : mappingsForStudies.entrySet())
 		{
-			String investigationName = entry.getKey();
+			// String investigationName = entry.getKey();
 
 			MappingList mappings = entry.getValue();
 
@@ -109,39 +109,38 @@ public class PredictorInfo
 
 				String expandedQuery = eachRow.getExpandedQuery();
 
-				Measurement measurement = eachRow.getMeasurement();
+				Integer featureID = eachRow.getFeatureID();
 
 				double similarity = eachRow.getSimilarity();
 
-				StringBuilder expandedQueryIdentifier = new StringBuilder();
+				// StringBuilder expandedQueryIdentifier = new StringBuilder();
+				//
+				// expandedQueryIdentifier.append(investigationName).append(expandedQuery).append("_").append(featureID);
 
-				expandedQueryIdentifier.append(investigationName).append(expandedQuery).append("_")
-						.append(measurement.getName());
-
-				SimilarityScore similarityScore = new SimilarityScore(measurement.getName(),
-						measurement.getInvestigation_Name(), expandedQuery);
+				SimilarityScore similarityScore = new SimilarityScore(featureID, expandedQuery);
 
 				if (!this.similarity.containsKey(similarityScore))
 				{
-					this.similarity.put(similarityScore, new MeasurementSimilarity(measurement, similarity));
+					this.similarity.put(similarityScore, similarity);
 				}
 
-				MeasurementPerStudy measurementStudy = new MeasurementPerStudy(measurement.getName(), investigationName);
+				// MeasurementPerStudy measurementStudy = new
+				// MeasurementPerStudy(featureID, investigationName);
 
-				MeasurementExpandedQuery temp = null;
+				List<String> temp = null;
 
-				if (this.expandedQueryPerMapping.containsKey(measurementStudy))
+				if (this.expandedQueryPerMapping.containsKey(featureID))
 				{
-					temp = this.expandedQueryPerMapping.get(measurementStudy);
+					temp = this.expandedQueryPerMapping.get(featureID);
 				}
 				else
 				{
-					temp = new MeasurementExpandedQuery(measurement);
+					temp = new ArrayList<String>();
 				}
 
-				temp.addExpandeQueries(expandedQuery);
+				if (!temp.contains(expandedQuery)) temp.add(expandedQuery);
 
-				this.expandedQueryPerMapping.put(measurementStudy, temp);
+				this.expandedQueryPerMapping.put(featureID, temp);
 			}
 		}
 	}
@@ -190,42 +189,23 @@ public class PredictorInfo
 
 	}
 
-	public Map<String, List<Measurement>> getMappedVariables()
+	public List<Integer> getMappedVariableIDs()
 	{
-		Map<String, List<Measurement>> variablesOfStudies = new HashMap<String, List<Measurement>>();
+		List<Integer> listOfVariableIDs = new ArrayList<Integer>();
 
-		for (MeasurementExpandedQuery measurementQuery : expandedQueryPerMapping.values())
+		for (Integer featureID : expandedQueryPerMapping.keySet())
 		{
-			Measurement m = measurementQuery.getMeasurement();
-
-			List<Measurement> listOfVariables = null;
-
-			if (variablesOfStudies.containsKey(m.getInvestigation_Name()))
-			{
-				listOfVariables = variablesOfStudies.get(m.getInvestigation_Name());
-			}
-			else
-			{
-				listOfVariables = new ArrayList<Measurement>();
-			}
-
-			listOfVariables.add(m);
-
-			variablesOfStudies.put(m.getInvestigation_Name(), listOfVariables);
+			listOfVariableIDs.add(featureID);
 		}
 
-		return variablesOfStudies;
+		return listOfVariableIDs;
 	}
 
-	public List<String> getExpandedQueryForOneMapping(String measurementName, String investigationName)
+	public List<String> getExpandedQueryForOneMapping(Integer featureID)
 	{
-
-		MeasurementPerStudy measurement = new MeasurementPerStudy(measurementName, investigationName);
-
-		if (expandedQueryPerMapping.containsKey(measurement))
+		if (expandedQueryPerMapping.containsKey(featureID))
 		{
-			System.out.println(measurementName);
-			return expandedQueryPerMapping.get(measurement).getExpandeQueries();
+			return expandedQueryPerMapping.get(featureID);
 		}
 		else
 			return null;
@@ -239,11 +219,11 @@ public class PredictorInfo
 	// return null;
 	// }
 	//
-	public Double getSimilarity(String measurementName, String expandedQuery, String investigationName)
+	public Double getSimilarity(Integer featureID, String expandedQuery)
 	{
-		SimilarityScore mea = new SimilarityScore(measurementName, investigationName, expandedQuery);
+		SimilarityScore mea = new SimilarityScore(featureID, expandedQuery);
 
-		if (similarity.containsKey(mea)) return similarity.get(mea).getSimilarity();
+		if (similarity.containsKey(mea)) return similarity.get(mea);
 		else
 			return null;
 	}
@@ -263,66 +243,66 @@ public class PredictorInfo
 		this.id = id;
 	}
 
-	private static class MeasurementSimilarity
-	{
-		private final Measurement measurement;
-		private final Double similarity;
+	// private static class MeasurementSimilarity
+	// {
+	// private final Measurement measurement;
+	// private final Double similarity;
+	//
+	// public MeasurementSimilarity(Measurement measurement, Double similarity)
+	// {
+	// this.measurement = measurement;
+	// this.similarity = similarity;
+	// }
+	//
+	// public Measurement getMeasurement()
+	// {
+	// return measurement;
+	// }
+	//
+	// public Double getSimilarity()
+	// {
+	// return similarity;
+	// }
+	// }
 
-		public MeasurementSimilarity(Measurement measurement, Double similarity)
-		{
-			this.measurement = measurement;
-			this.similarity = similarity;
-		}
-
-		public Measurement getMeasurement()
-		{
-			return measurement;
-		}
-
-		public Double getSimilarity()
-		{
-			return similarity;
-		}
-	}
-
-	private static class MeasurementExpandedQuery
-	{
-
-		private final Measurement measurement;
-		private List<String> expandeQueries;
-
-		public MeasurementExpandedQuery(Measurement measurement)
-		{
-			this.measurement = measurement;
-			expandeQueries = new ArrayList<String>();
-		}
-
-		public List<String> getExpandeQueries()
-		{
-			return expandeQueries;
-		}
-
-		public void addExpandeQueries(String query)
-		{
-			this.expandeQueries.add(query);
-		}
-
-		public Measurement getMeasurement()
-		{
-			return measurement;
-		}
-
-	}
+	// private static class MeasurementExpandedQuery
+	// {
+	//
+	// private final Measurement measurement;
+	// private List<String> expandeQueries;
+	//
+	// public MeasurementExpandedQuery(Measurement measurement)
+	// {
+	// this.measurement = measurement;
+	// expandeQueries = new ArrayList<String>();
+	// }
+	//
+	// public List<String> getExpandeQueries()
+	// {
+	// return expandeQueries;
+	// }
+	//
+	// public void addExpandeQueries(String query)
+	// {
+	// this.expandeQueries.add(query);
+	// }
+	//
+	// public Measurement getMeasurement()
+	// {
+	// return measurement;
+	// }
+	//
+	// }
 
 	public static class MeasurementPerStudy
 	{
 		private final String investigationName;
-		private final String measurementName;
+		private final Integer featureID;
 
-		public MeasurementPerStudy(String measurementName, String investigationName)
+		public MeasurementPerStudy(Integer featureID, String investigationName)
 		{
 			this.investigationName = investigationName;
-			this.measurementName = measurementName;
+			this.featureID = featureID;
 		}
 
 		@Override
@@ -330,8 +310,8 @@ public class PredictorInfo
 		{
 			final int prime = 31;
 			int result = 1;
+			result = prime * result + ((featureID == null) ? 0 : featureID.hashCode());
 			result = prime * result + ((investigationName == null) ? 0 : investigationName.hashCode());
-			result = prime * result + ((measurementName == null) ? 0 : measurementName.hashCode());
 			return result;
 		}
 
@@ -342,31 +322,29 @@ public class PredictorInfo
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
 			MeasurementPerStudy other = (MeasurementPerStudy) obj;
+			if (featureID == null)
+			{
+				if (other.featureID != null) return false;
+			}
+			else if (!featureID.equals(other.featureID)) return false;
 			if (investigationName == null)
 			{
 				if (other.investigationName != null) return false;
 			}
 			else if (!investigationName.equals(other.investigationName)) return false;
-			if (measurementName == null)
-			{
-				if (other.measurementName != null) return false;
-			}
-			else if (!measurementName.equals(other.measurementName)) return false;
 			return true;
 		}
 	}
 
 	public static class SimilarityScore
 	{
-		private final String investigationName;
-		private final String measurementName;
+		private final Integer featureID;
 		private final String expandedQuery;
 
-		public SimilarityScore(String measurementName, String investigationName, String expandedQuery)
+		public SimilarityScore(Integer featureID, String expandedQuery)
 		{
 			this.expandedQuery = expandedQuery;
-			this.investigationName = investigationName;
-			this.measurementName = measurementName;
+			this.featureID = featureID;
 		}
 
 		@Override
@@ -375,8 +353,7 @@ public class PredictorInfo
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + ((expandedQuery == null) ? 0 : expandedQuery.hashCode());
-			result = prime * result + ((investigationName == null) ? 0 : investigationName.hashCode());
-			result = prime * result + ((measurementName == null) ? 0 : measurementName.hashCode());
+			result = prime * result + ((featureID == null) ? 0 : featureID.hashCode());
 			return result;
 		}
 
@@ -392,17 +369,13 @@ public class PredictorInfo
 				if (other.expandedQuery != null) return false;
 			}
 			else if (!expandedQuery.equals(other.expandedQuery)) return false;
-			if (investigationName == null)
+			if (featureID == null)
 			{
-				if (other.investigationName != null) return false;
+				if (other.featureID != null) return false;
 			}
-			else if (!investigationName.equals(other.investigationName)) return false;
-			if (measurementName == null)
-			{
-				if (other.measurementName != null) return false;
-			}
-			else if (!measurementName.equals(other.measurementName)) return false;
+			else if (!featureID.equals(other.featureID)) return false;
 			return true;
 		}
+
 	}
 }

@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.pheno.Measurement;
 import org.quartz.Scheduler;
 
 import plugins.HarmonizationComponent.NGramMatchingModel;
@@ -41,8 +40,6 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private catalogueTreeComponent catalogue = null;
 
-	private Map<String, List<Measurement>> measurements = null;
-
 	private List<String> selectedValidationStudy = null;
 
 	private List<String> predictionModels = new ArrayList<String>();
@@ -71,7 +68,7 @@ public class HarmonizationModel extends EasyPluginModel
 
 	private boolean isStringMatching = false;
 
-	private Map<String, Map<Measurement, List<Set<String>>>> nGramsMapForMeasurements;
+	private Map<String, Map<Integer, List<Set<String>>>> nGramsMapForMeasurements;
 
 	public HarmonizationModel(Harmonization controller)
 	{
@@ -147,16 +144,6 @@ public class HarmonizationModel extends EasyPluginModel
 	public void setCatalogue(catalogueTreeComponent catalogue)
 	{
 		this.catalogue = catalogue;
-	}
-
-	public Map<String, List<Measurement>> getMeasurements()
-	{
-		return measurements;
-	}
-
-	public void setMeasurements(HashMap<String, List<Measurement>> measurements)
-	{
-		this.measurements = measurements;
 	}
 
 	public List<String> getValidationStudies()
@@ -296,12 +283,12 @@ public class HarmonizationModel extends EasyPluginModel
 		this.isStringMatching = isStringMatching;
 	}
 
-	public void setNGramsMapForMeasurements(Map<String, Map<Measurement, List<Set<String>>>> maps)
+	public void setNGramsMapForMeasurements(Map<String, Map<Integer, List<Set<String>>>> maps)
 	{
 		this.nGramsMapForMeasurements = maps;
 	}
 
-	public Map<String, Map<Measurement, List<Set<String>>>> getnGramsMapForMeasurements()
+	public Map<String, Map<Integer, List<Set<String>>>> getnGramsMapForMeasurements()
 	{
 		return nGramsMapForMeasurements;
 	}

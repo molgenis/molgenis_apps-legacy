@@ -255,7 +255,7 @@
 				<div id="messagePanel"></div>
 				<div id="afterMapping" style="display:none;height:600px;width:100%;">
 					<div style="width:100%;">
-						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:150px;margin:2px;float:left">
+						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:70%;height:150px;margin:2px;float:left">
 							<div class="btn-primary ui-corner-all" style="height:30px;padding-top:5px;">
 								<div style="margin:3px;float:left;">Matching result</div>
 								<input type="button" id="startNewValidation" value="Validate a new model" 

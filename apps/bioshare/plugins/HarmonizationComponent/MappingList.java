@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.molgenis.pheno.Measurement;
-
 public class MappingList
 {
 	private Map<ExpandedQueryObject, Double> uniqueElements = new HashMap<ExpandedQueryObject, Double>();
@@ -15,13 +13,13 @@ public class MappingList
 	// private Map<ExpandedQueryObject, LinkedInformation> uniqueElements = new
 	// HashMap<ExpandedQueryObject, LinkedInformation>();
 
-	public void add(String expandedQuery, Measurement measurement, double similarity) throws Exception
+	public void add(String expandedQuery, Integer featureID, double similarity) throws Exception
 	{
-		if (expandedQuery == null || measurement == null) throw new Exception("Parameters have to be not null!");
+		if (expandedQuery == null || featureID == null) throw new Exception("Parameters have to be not null!");
 
 		if (expandedQuery.isEmpty()) throw new Exception("Parameters have to be not empty");
 
-		ExpandedQueryObject uniqueName = new ExpandedQueryObject(expandedQuery, measurement);
+		ExpandedQueryObject uniqueName = new ExpandedQueryObject(expandedQuery, featureID);
 
 		if (uniqueElements.containsKey(uniqueName))
 		{
@@ -45,7 +43,7 @@ public class MappingList
 
 		for (Map.Entry<ExpandedQueryObject, Double> entry : uniqueElements.entrySet())
 		{
-			sortedLinks.add(new LinkedInformation(entry.getKey().getExpandedQuery(), entry.getKey().getMeasurement(),
+			sortedLinks.add(new LinkedInformation(entry.getKey().getExpandedQuery(), entry.getKey().getFeatureID(),
 					entry.getValue()));
 		}
 
@@ -80,12 +78,12 @@ public class MappingList
 	private static class ExpandedQueryObject
 	{
 		private final String expandedQuery;
-		private final Measurement measurement;
+		private final Integer featureID;
 
-		public ExpandedQueryObject(String expandedQuery, Measurement measurement)
+		public ExpandedQueryObject(String expandedQuery, Integer featureID)
 		{
 			this.expandedQuery = expandedQuery;
-			this.measurement = measurement;
+			this.featureID = featureID;
 		}
 
 		@Override
@@ -94,7 +92,7 @@ public class MappingList
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + ((expandedQuery == null) ? 0 : expandedQuery.hashCode());
-			result = prime * result + ((measurement == null) ? 0 : measurement.hashCode());
+			result = prime * result + ((featureID == null) ? 0 : featureID.hashCode());
 			return result;
 		}
 
@@ -110,11 +108,11 @@ public class MappingList
 				if (other.expandedQuery != null) return false;
 			}
 			else if (!expandedQuery.equals(other.expandedQuery)) return false;
-			if (measurement == null)
+			if (featureID == null)
 			{
-				if (other.measurement != null) return false;
+				if (other.featureID != null) return false;
 			}
-			else if (!measurement.equals(other.measurement)) return false;
+			else if (!featureID.equals(other.featureID)) return false;
 			return true;
 		}
 
@@ -123,9 +121,9 @@ public class MappingList
 			return expandedQuery;
 		}
 
-		public Measurement getMeasurement()
+		public Integer getFeatureID()
 		{
-			return measurement;
+			return featureID;
 		}
 	}
 }

@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom.IllegalNameException;
@@ -240,12 +241,12 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 							new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
 
 					predictorID = predictorID.replaceAll(inv.getId() + "_", "");
-
 					String matchedVariable = request.getString("matchedVariable");
+					String identifier = request.getString("identifier").replaceAll(predictorID + "_", "");
 
 					String table = retrieveExpandedQuery(
-							this.getModel().getPredictors().get(Integer.parseInt(predictorID)), matchedVariable,
-							investigationName);
+							this.getModel().getPredictors().get(Integer.parseInt(predictorID)),
+							Integer.parseInt(identifier), matchedVariable);
 
 					status.put("table", table);
 				}
@@ -525,9 +526,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					{
 						JSONObject eachPredictor = new JSONObject();
 
-						String mappingResult = makeMappingTable(predictor, inv);
+						String mappingResult = makeMappingTable(predictor, inv, db);
 
-						String existingMapping = makeExistingMappingTable(predictor);
+						// String existingMapping =
+						// makeExistingMappingTable(predictor);
 
 						StringBuilder tableIdentifier = new StringBuilder();
 
@@ -540,7 +542,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 						eachPredictor.put("identifier", predictor.getId());
 
-						eachPredictor.put("existingMapping", existingMapping);
+						eachPredictor.put("existingMapping", "");
 
 						status.put(predictor.getId().toString(), eachPredictor);
 					}
@@ -646,7 +648,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		}
 	}
 
-	private String retrieveExpandedQuery(PredictorInfo predictorInfo, String matchedVariable, String investigationName)
+	private String retrieveExpandedQuery(PredictorInfo predictorInfo, Integer featureID, String matchedVariable)
 	{
 		StringBuilder table = new StringBuilder();
 
@@ -659,11 +661,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				.append("<tr style=\"font-size:12px;\"><th style=\"width:40%\">Expanded queries</th>")
 				.append("<th style=\"width:30%\">Matched variable</th><th style=\"width:30%\">Similarity score</th></tr>");
 
-		for (String query : predictorInfo.getExpandedQueryForOneMapping(matchedVariable, investigationName))
+		for (String query : predictorInfo.getExpandedQueryForOneMapping(featureID))
 		{
 			table.append("<tr style=\"font-size:12px;text-align:center;\"><td>").append(query).append("</td><td>")
-					.append(matchedVariable).append("</td><td>")
-					.append(predictorInfo.getSimilarity(matchedVariable, query, investigationName))
+					.append(matchedVariable).append("</td><td>").append(predictorInfo.getSimilarity(featureID, query))
 					.append("</td></tr>");
 		}
 		table.append("</table></div>").append("<div class=\"modal-footer\">")
@@ -672,7 +673,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 		return table.toString();
 	}
 
-	private String makeMappingTable(PredictorInfo predictor, Investigation inv) throws DatabaseException
+	private String makeMappingTable(PredictorInfo predictor, Investigation inv, Database db) throws DatabaseException
 	{
 		StringBuilder table = new StringBuilder();
 
@@ -689,25 +690,42 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 					.append("<tr style=\"font-size:12px;\"><th style=\"width:30%;text-align:center\">Mapped varaibles")
 					.append("</th><th style=\"width:50%;text-align:center\">Description</th><th style=\"width:20%;text-align:center\">Select mapping</th></tr>");
 
-			for (Measurement measurement : predictor.getMappedVariables().get(inv.getName()))
+			List<Measurement> mappedMeasurements = db.find(Measurement.class, new QueryRule(Measurement.ID,
+					Operator.IN, predictor.getMappedVariableIDs()));
+
+			Map<Integer, String> sortingMap = new HashMap<Integer, String>();
+
+			for (Measurement measurement : mappedMeasurements)
 			{
-				String description = measurement.getDescription();
+				if (measurement.getInvestigation_Name().equals(inv.getName()))
+				{
+					StringBuilder eachRow = new StringBuilder();
 
-				StringBuilder identifier = new StringBuilder();
+					String description = measurement.getDescription();
 
-				identifier.append(predictorID).append("_").append(measurement.getId());
+					StringBuilder identifier = new StringBuilder();
 
-				table.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
-						.append("_row\" style=\"font-size:12px;\"><td style=\"text-align:center;\"><span>")
-						.append(measurement.getName())
-						.append("</span><div id=\"")
-						.append(identifier.toString().replaceAll(" ", "_"))
-						.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
-						.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
-						.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
-						.append(description)
-						.append("</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"")
-						.append(identifier).append("_checkBox\" /></td></tr>");
+					identifier.append(predictorID).append("_").append(measurement.getId());
+
+					eachRow.append("<tr id=\"" + identifier.toString().replaceAll(" ", "_"))
+							.append("_row\" style=\"font-size:12px;\"><td style=\"text-align:center;\"><span>")
+							.append(measurement.getName())
+							.append("</span><div id=\"")
+							.append(identifier.toString().replaceAll(" ", "_"))
+							.append("_details\" style=\"cursor:pointer;height:18px;width:18px;float:right;margin-right:10px;\" ")
+							.append("class=\"ui-state-default ui-corner-all\" title=\"Check expanded queries\">")
+							.append("<span class=\"ui-icon ui-icon-plus\"></span></div></td><td style=\"text-align:center;\">")
+							.append(description)
+							.append("</td><td style=\"text-align:center;\"><input type=\"checkbox\" id=\"")
+							.append(identifier).append("_checkBox\" /></td></tr>");
+
+					sortingMap.put(measurement.getId(), eachRow.toString());
+				}
+			}
+
+			for (Integer featureID : predictor.getMappedVariableIDs())
+			{
+				table.append(sortingMap.containsKey(featureID) ? sortingMap.get(featureID) : StringUtils.EMPTY);
 			}
 
 			table.append("</table>");
@@ -757,13 +775,13 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 	private void stringMatching(MolgenisRequest request, Database db) throws Exception
 	{
-		collectExistingMapping(db, request);
-
-		if (this.getModel().getMeasurements().size() > 0)
+		if (this.getModel().getValidationStudies().size() > 0)
 		{
 			this.getModel().setOs(new BioportalOntologyService());
 
 			this.getModel().setMatchingModel(new NGramMatchingModel(3));
+
+			this.collectExistingMapping(db, request);
 
 			this.getModel().setIsStringMatching(false);
 
@@ -818,8 +836,6 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		JobDetail termExpansion = new JobDetail("term_expansion_job", Scheduler.DEFAULT_GROUP, TermExpansionJob.class);
 
-		termExpansion.getJobDataMap().put("stopWords", this.getModel().getMatchingModel().getStopWords());
-
 		termExpansion.getJobDataMap().put("predictors", predictors);
 
 		termExpansion.getJobDataMap().put("jobs", listOfJobs);
@@ -846,7 +862,7 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 
 		this.getModel().setCatalogue(null);
 
-		this.getModel().setMeasurements(null);
+		// this.getModel().setMeasurements(null);
 
 		this.getModel().getPredictors().clear();
 
@@ -935,26 +951,10 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				// }
 			}
 
-			this.getModel().setMeasurements(new HashMap<String, List<Measurement>>());
+			// this.getModel().setMeasurements(new HashMap<String,
+			// List<Measurement>>());
 
-			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN,
-					this.getModel().getValidationStudies())))
-			{
-				List<Measurement> measurements = null;
-
-				if (this.getModel().getMeasurements().containsKey(m.getInvestigation_Name()))
-				{
-					measurements = this.getModel().getMeasurements().get(m.getInvestigation_Name());
-				}
-				else
-				{
-					measurements = new ArrayList<Measurement>();
-				}
-
-				measurements.add(m);
-
-				this.getModel().getMeasurements().put(m.getInvestigation_Name(), measurements);
-			}
+			this.createNGramMeasurements(db);
 		}
 	}
 
@@ -1329,6 +1329,134 @@ public class Harmonization extends EasyPluginController<HarmonizationModel>
 				}
 			}
 		}
+	}
+
+	private void createNGramMeasurements(Database db) throws DatabaseException
+	{
+		Map<String, Map<Integer, List<Set<String>>>> nGramsMapForMeasurements = new HashMap<String, Map<Integer, List<Set<String>>>>();
+
+		for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN, this
+				.getModel().getSelectedValidationStudy())))
+		{
+			String invesigationName = m.getInvestigation_Name();
+
+			List<String> fields = new ArrayList<String>();
+
+			if (!StringUtils.isEmpty(m.getDescription()))
+			{
+				fields.add(m.getDescription());
+
+				StringBuilder combinedString = new StringBuilder();
+
+				if (!m.getCategories_Name().isEmpty())
+				{
+					for (String categoryName : m.getCategories_Name())
+					{
+						combinedString.delete(0, combinedString.length());
+
+						combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(' ')
+								.append(m.getDescription());
+
+						fields.add(combinedString.toString().replace('_', ' '));
+					}
+				}
+			}
+
+			List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
+
+			for (String eachEntry : fields)
+			{
+				Set<String> dataItemTokens = this.getModel().getMatchingModel()
+						.createNGrams(eachEntry.toLowerCase().trim(), true);
+
+				listOfNGrams.add(dataItemTokens);
+			}
+
+			Map<Integer, List<Set<String>>> nGramsMap = null;
+
+			if (nGramsMapForMeasurements.containsKey(invesigationName))
+			{
+				nGramsMap = nGramsMapForMeasurements.get(invesigationName);
+			}
+			else
+			{
+				nGramsMap = new HashMap<Integer, List<Set<String>>>();
+			}
+
+			nGramsMap.put(m.getId(), listOfNGrams);
+
+			nGramsMapForMeasurements.put(invesigationName, nGramsMap);
+			// List<Measurement> measurements = null;
+			//
+			// if
+			// (this.getModel().getMeasurements().containsKey(m.getInvestigation_Name()))
+			// {
+			// measurements =
+			// this.getModel().getMeasurements().get(m.getInvestigation_Name());
+			// }
+			// else
+			// {
+			// measurements = new ArrayList<Measurement>();
+			// }
+			//
+			// measurements.add(m);
+			//
+			// this.getModel().getMeasurements().put(m.getInvestigation_Name(),
+			// measurements);
+		}
+
+		this.getModel().setNGramsMapForMeasurements(nGramsMapForMeasurements);
+		// for (Entry<String, List<Measurement>> measurementsFromStudy :
+		// model.getMeasurements().entrySet())
+		// {
+		// Map<Integer, List<Set<String>>> nGramsMap = new HashMap<Integer,
+		// List<Set<String>>>();
+		//
+		// String investigationName = measurementsFromStudy.getKey();
+		//
+		// List<Measurement> measurements = measurementsFromStudy.getValue();
+		//
+		// for (Measurement m : measurements)
+		// {
+		// List<String> fields = new ArrayList<String>();
+		//
+		// if (!StringUtils.isEmpty(m.getDescription()))
+		// {
+		// fields.add(m.getDescription());
+		//
+		// StringBuilder combinedString = new StringBuilder();
+		//
+		// if (!m.getCategories_Name().isEmpty())
+		// {
+		// for (String categoryName : m.getCategories_Name())
+		// {
+		// combinedString.delete(0, combinedString.length());
+		//
+		// combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(),
+		// "")).append(' ')
+		// .append(m.getDescription());
+		//
+		// fields.add(combinedString.toString().replace('_', ' '));
+		// }
+		// }
+		// }
+		//
+		// List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
+		//
+		// for (String eachEntry : fields)
+		// {
+		// Set<String> dataItemTokens =
+		// model.getMatchingModel().createNGrams(eachEntry.toLowerCase().trim(),
+		// true);
+		//
+		// listOfNGrams.add(dataItemTokens);
+		// }
+		//
+		// nGramsMap.put(m.getId(), listOfNGrams);
+		// }
+		//
+		// nGramsMapForMeasurements.put(investigationName, nGramsMap);
+		// }
 	}
 
 	private List<String> removeDuplicate(String... elements)
