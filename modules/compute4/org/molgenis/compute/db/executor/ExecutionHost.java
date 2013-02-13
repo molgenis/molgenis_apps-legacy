@@ -34,8 +34,6 @@ public class ExecutionHost extends Ssh
 
 		String sOut = result.getStdOut();
 		System.out.println(sOut);
-
-		// here we can log our grid pilot job ID
 	}
 
 	public void submitPilotCluster() throws IOException

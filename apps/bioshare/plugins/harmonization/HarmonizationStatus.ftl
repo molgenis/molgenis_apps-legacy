@@ -56,8 +56,10 @@
 						<div id="information" style="margin:10px;width:90%;">
 							<div>Prediction model: <span id="predictionModel" style="float:right;">
 								${screen.getSelectedPredictionModel()}</span></div>
-							<div>Validation study: <span id="validationStudy" style="float:right;">
-								${screen.getSelectedValidationStudy()}</span></div>
+							<div>Validation study(ies): <span id="validationStudy" style="float:right;">
+								<#list screen.getSelectedValidationStudy() as study>${study}, </#list></span></div>
+								
+								
 						</div>
 						<hr>
 						<div style="margin-left:10px;margin-top:20px;font-style:italic;">Finished:<span id="progressBarMessage"></span></div>

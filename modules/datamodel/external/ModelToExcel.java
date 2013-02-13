@@ -1,20 +1,19 @@
 package external;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Arrays;
-
+import app.JDBCMetaDatabase;
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
+import org.molgenis.io.csv.CsvWriter;
 import org.molgenis.util.tuple.KeyValueTuple;
 
-import app.JDBCMetaDatabase;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Arrays;
 
 public class ModelToExcel
 {

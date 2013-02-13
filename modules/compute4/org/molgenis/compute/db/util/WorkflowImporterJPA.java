@@ -1,7 +1,21 @@
 package org.molgenis.compute.db.util;
 
-import app.DatabaseFactory;
-import org.molgenis.compute.design.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.molgenis.compute.design.ComputeParameter;
+import org.molgenis.compute.design.ComputeProtocol;
+import org.molgenis.compute.design.ComputeRequirement;
+import org.molgenis.compute.design.Workflow;
+import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.compute.runtime.ComputeParameterDefaultValue;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -10,11 +24,7 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.*;
+import app.DatabaseFactory;
 
 /**
  * Created with IntelliJ IDEA. User: georgebyelas Date: 15/08/2012 Time: 13:15
@@ -206,13 +216,12 @@ public class WorkflowImporterJPA
 					String protocolName = fName;
 
 					int workflowNumber = db.query(Workflow.class).find().size();
-					if (workflowNumber > 1)
-                        if (shared.contains(fName)) continue;
+					if (workflowNumber > 1) if (shared.contains(fName)) continue;
 					else
 					{
-                        System.out.println("Protocol -> " + fName);
-						List<ComputeProtocol> ps = db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, fName));
-						if (ps.size() > 0)
+						ComputeProtocol protocol = db.find(ComputeProtocol.class,
+								new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, fName)).get(0);
+						if (protocol != null)
 						{
 							System.out.println("DOUBLE PROTOCOL: " + fName + "is skipped");
 							continue;
@@ -269,7 +278,7 @@ public class WorkflowImporterJPA
 							System.exit(1);
 						}
 
-						targetList.add(findParameterDB(db, name));
+						targetList.add(findParameter(parameters, name));
 					}
 
 					// Why do we have requirements here if we have xref to
@@ -289,7 +298,6 @@ public class WorkflowImporterJPA
 
 					protocols.add(protocol);
 					db.add(protocol);
-
 				}
 			}
 
@@ -343,26 +351,7 @@ public class WorkflowImporterJPA
 
 	}
 
-    private ComputeParameter findParameterDB(Database db, String name)
-    {
-        ComputeParameter dbParameter = null;
-
-        try
-        {
-            dbParameter = db.find(ComputeParameter.class,
-                                      new QueryRule(ComputeParameter.NAME, QueryRule.Operator.EQUALS, name))
-                                      .get(0);
-        }
-        catch (DatabaseException e)
-        {
-            System.out.println(name + " parameter is missed in the database");
-            e.printStackTrace();
-        }
-
-        return dbParameter;
-    }
-
-    private boolean checkHasOneNotCorrectness(Database db, ComputeParameter parameter,
+	private boolean checkHasOneNotCorrectness(Database db, ComputeParameter parameter,
 			Vector<ComputeParameter> vecParameters) throws DatabaseException
 	{
 		ComputeParameter dbParameter = db.find(ComputeParameter.class,
