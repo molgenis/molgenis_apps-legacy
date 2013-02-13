@@ -415,14 +415,6 @@ The files can be found at:
  
 The `maverick.sh` should be edited accordingly to your execution setting. You need to specify `back_end`, where you like to submit you ComputeTask for execution. `back_end` can have a value e.g. `ui.grid.sara.nl`. Also, you need to specify `your_ip` and `your_port` of your web-server, where Molgenis/compute is running.
 
-> export WORKDIR=\$TMPDIR  
-> source dataTransferSRM.sh
->curl  -F status=started -F backend={back_end} \  
->{your_ip}:{your_port}/compute/api/pilot > script.sh  
->bash -l script.sh 2>\&1 | tee -a log.log  
->  
->curl -F status=done -F log_file=@log.log {your_ip}:{your_port}/compute/api/pilot  
-
 Also, you may edit the `maverick.jdl` to specify the *walltime* and computational sites where you like to run you analysis. The example jdl requirements look like:
 
 >Requirements = (  
@@ -431,7 +423,14 @@ Also, you may edit the `maverick.jdl` to specify the *walltime* and computationa
 >\&\& other.GlueCEPolicyMaxCPUTime >= 1440);  
 
 You Read jdl (job description language) manual for more information.
-After putting these files in the UI node, \emph{ComputeTasks} can be submitted with the command-line with the `sh runPilots.sh`:
+
+Besides this, the ip address and port on which Molgenis/compute is running should be specified in the database. You can use importComputeServer.sh for this or manually add the server into the ComputeServer table of the database, where the ComputeServer.name should be specified as "default". The script can used with two parameters:  
+
+>sh importComputeServer.sh \  
+>\<ip_address> \  
+>\<port> \  
+
+After putting these files in the UI node and adding ComputeServer to the database, \emph{ComputeTasks} can be submitted with the command-line with the `sh runPilots.sh`:
 
 >sh 5\_runPilots.sh \  
 >\<backend> \  
@@ -448,8 +447,9 @@ There are following statuses of *ComputeTasks* in the compute database:
 * `ready`: means that the task is ready for execution (all previous *ComputeTasks* are finished)
 * `running`: means that the task is running in the current moment
 * `done`: means that the task is finished
+* `error` means that the task is finished with the error (hart-beat is not received in time)
 
-After execution, the (output/error) logs of the *ComputeTasks* will be placed back in the compute database and their statuses should be `done`.
+During execution, the (output/error) logs of the *ComputeTasks* will be placed back in the compute database and job statuses should be `done` or `error`. The frequency of the database update can be changed in the `maverick.sh` file.  
 
 *Try it out!*
 

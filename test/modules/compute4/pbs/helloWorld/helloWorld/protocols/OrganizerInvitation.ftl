@@ -1,9 +1,11 @@
 #FOREACH group
 
-echo "Dear ${organizer},"
-echo "Please organize activities for the ${group} group."
-echo "List of guests:"
+mkdir -p ${resultsdir}
+
+echo "Dear ${organizer}," > ${groupfile}
+echo "Please organize activities for the ${group} group." >> ${groupfile}
+echo "List of guests:" >> ${groupfile}
 <#list guest as g>
-	echo "${g}"
+	echo "${g}" >> ${groupfile}
 </#list>
 

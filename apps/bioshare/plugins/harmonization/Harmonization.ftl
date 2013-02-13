@@ -17,7 +17,7 @@
 	td
 	{
 		vertical-align:middle;
-		font-size:12px;
+		font-size:14px;
 	}
 	button >span 
 	{
@@ -31,17 +31,43 @@
 	var CLASSES = $.treeview.classes;
 	var settings = {};
 	var searchNode = new Array();
-
+	var listOfDataTypes=[<#list screen.getDataTypes() as dataType>"${dataType}",</#list>];
+	
 	$(document).ready(function()
 	{	
+		var allStudies = [<#if screen.getValidationStudies()??><#list screen.getValidationStudies() as study>"${study}",</#list></#if>];
+		
+		var selectedStudies = [<#if screen.getSelectedValidationStudy()??><#list screen.getSelectedValidationStudy() as study>"${study}",</#list></#if>];
+		
+		for(var i = 0; i < allStudies.length; i++){
+			
+			element = allStudies[i];
+			
+			if($.inArray(element, selectedStudies) == -1){	
+				$('#listOfCohortStudies').append("<option>" + element + "</option>");
+			}else{
+				addSelectedStudy(element, $('#addValidationStudyAsCandidate').siblings('table'));
+			}
+		}
+	
 		if("${screen.isRetrieveResult()}" == "true")
 		{
+			for(var i = 0; i < selectedStudies.length; i++)
+			{
+				$('#matchingValidationStudy').append("<option>" + selectedStudies[i] + "</option>");
+			}
+			
+			$('#matchingValidationStudy').change(function(){
+				retrieveResult(URL);
+			});
+			
 			$('#beforeMapping').hide();
 			
 			$('#afterMapping').show();
 			
 			retrieveResult(URL);
 		}
+		
 		//Styling for the dropDown box
 		$('#selectPredictionModel').change(function(){
 			
@@ -51,6 +77,12 @@
 			
 			showPredictors(selected, URL);
 		});
+		
+		
+		for(var i = 0; i < listOfDataTypes.length; i++){
+			
+			$('#dataTypeOfPredictor').append("<option>" + listOfDataTypes[i] + "</option>");
+		}
 		
 		if($('#selectPredictionModel option').length == 0){
 			message = "There are no prediction models in database, add one first";
@@ -86,22 +118,6 @@
         	},
 		});
 		
-		$('#confirmWindow').dialog({
-			autoOpen : false,
-			title : "Warning",
-			height: 300,
-        	width: 500,
-        	modal: true,
-        	buttons: {
-                Confirm: function() {
-                	removePredictionModel(URL);
-                },
-                Cancel: function() {
-                    $( this ).dialog( "close" );
-                }
-        	},
-		});
-		
 		$('#defineFormula').click(function(){
 			try
 			{
@@ -117,7 +133,9 @@
 		});
 		
 		$('#showCohortStudy').click(function(){
-			$('#selectCohortStudyPanel').fadeIn();
+			$("input[name=\"selectedVariableID\"]").val(null);
+			$('#whetherWholeSet').text('All variables');
+			$('#selectCohortStudyPanel').modal('show');
 		});
 		
 		$('#validatePredictionModel').click(function(){
@@ -128,64 +146,53 @@
 			showExistingMapping(URL);
 		});
 		
-		$('#showMatchedMapping').button().click(function(){
-			$('#candidateMapping').hide();
-			$('#matchedMapping').fadeIn();
-		});
-		
-		$('#showCandidateMapping').button().click(function(){
-			$('#matchedMapping').hide();
-			$('#candidateMapping').fadeIn();
-		});
-		
-		$('#addMappingFromTree').button().click(function(){
-			addMappingFromTree(URL);
+		$('#submitBatchPredictors').click(function(){
+			$("input[name=\"__action\"]").val("batchUploadPredictors");
+			$("form[name=\"" + NAME + "\"]").submit();
 		});
 		
 		$('#startNewValidation').button().click(function(){
-			$('#selectCohortStudyPanel').hide();
-			$('#beforeMapping').show();
-			$('#afterMapping').hide();
+			$('#selectCohortStudyPanel').modal('hide');
+			//$('#beforeMapping').show();
+			//$('#afterMapping').hide();
+			$('input[name="__action"]').val("startNewSession");
+			$("form[name=\"" + NAME + "\"]").submit();
+		});
+		
+		$('#addValidationStudyAsCandidate').click(function(){
+			
+			if($('#listOfCohortStudies option').length > 0){
+				
+				addSelectedStudy($('#listOfCohortStudies option:selected').val(), $(this).siblings('table'));
+				
+				$('#listOfCohortStudies option:selected').remove();
+			}
 		});
 		
 		$('#saveMapping').button().click(function(){
 			collectMappingFromCandidate(URL);
 		});
 		
-		$('#openMapping').button().click(function(){
-			
-			if($('#mappingResult table').length > 0)
-			{	
-				$('#mappingResultDialog').append($('#mappingResult table:visible'));
-				
-				$('#mappingResultDialog').dialog({
-				
-					title : "Mapping result",
-					height: 600,
-	            	width: 700,
-	            	modal: true,
-	            	close: function() {
-			        	$('#mappingResult').append($(this).find('table'));
-			        },
-	            	buttons: {
-		                Save : function(){
-		                	$( this ).dialog( "close" );
-		                	collectMappingFromCandidate(URL);
-		                },
-		                Cancel : function() {
-		                    $( this ).dialog( "close" );
-		                },
-	            	},
-				});
-			}
+		$('#addOnePredictorButton').click(function(){
+			$('#batchUploadPredictorsModal').hide();
+			$('#addOnePredictorModal').show();
+			$('#submitBatchPredictors').hide();
+			$('#addPredictor').show();
+			$(this).addClass('active');
+			$('#batchUploadPredictorsButton').removeClass('active');
+		});
+		
+		$('#batchUploadPredictorsButton').click(function(){
+			$('#addOnePredictorModal').hide();
+			$('#batchUploadPredictorsModal').show();
+			$('#submitBatchPredictors').show();
+			$('#addPredictor').hide();
+			$(this).addClass('active');
+			$('#addOnePredictorButton').removeClass('active');
 		});
 		
 		$('#cancelSelectCohortStudy').click(function(){
-			$('#selectCohortStudyPanel').fadeOut();
-		});
-		
-		$('#addPredictorButton').click(function(){
-			$('#defineVariablePanel').fadeIn().draggable();
+			$('#selectCohortStudyPanel').modal('hide');
 		});
 		
 		$('#addPredictor').click(function(){
@@ -201,20 +208,32 @@
 			addNewPredictionModel(URL);
 		});
 		//Remove a prediction model in the dropdown menu
-		$('#removeModelButton').click(function(){
-			try
-			{
-				$('#confirmWindow').dialog('open');
-			}
-			catch(err)
-			{
-				$('#confirmWindow').parent().css({
-					left : 300,
-					top : 200
-				});
-			}
+		$('#confirmRemoveModel').click(function(){
+			removePredictionModel(URL);
+			$('#confirmWindow').modal('hide');
+		});
+		
+		$('#closeConfirmWinodw').click(function(){
+			$('#confirmWindow').modal('hide');
 		});
 	});
+	
+	function addSelectedStudy(studyName, tableObject){
+		
+		newRow = "<tr><td>" + studyName 
+			   + "</td><td><i class=\"icon-remove\" title=\"remove\" style=\"cursor:pointer;\"></i></td></tr>";
+		
+		$(tableObject).append(newRow);
+			
+		$(tableObject).find('tr:last-child >td:eq(1) >i.icon-remove').click(function(){
+			
+			element = $(this).parents('tr:eq(0)').children('td:eq(0)');
+			
+			$('#listOfCohortStudies').append("<option selected=\"selected\">" + element.text() + "</option>");
+			
+			element.parents('tr:eq(0)').remove();
+		});
+	}
 </script>
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 <!--needed in every form: to redirect the request to the right screen-->
@@ -234,98 +253,48 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 				<div id="messagePanel"></div>
-				<div id="afterMapping" style="display:none;height:800px;width:100%;">
-					<div style="width:100%;height:140px;">
-						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:130px;margin:2px;float:left">
-							<div class="ui-widget-header ui-corner-all" style="height:30px;padding-top:5px;">
+				<div id="afterMapping" style="display:none;height:600px;width:100%;">
+					<div style="width:100%;">
+						<div class="ui-tabs-nav ui-corner-all ui-widget-content" style="width:60%;height:150px;margin:2px;float:left">
+							<div class="btn-primary ui-corner-all" style="height:30px;padding-top:5px;">
 								<div style="margin:3px;float:left;">Matching result</div>
 								<input type="button" id="startNewValidation" value="Validate a new model" 
 									style="font-size:9px;float:right;" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
-							<div style="margin:5px;">
+							<div style="margin:16px;margin-top:10px;">
 								Prediction model: <span id="matchingPredictionModel" style="float:right;margin-right:20px;"></span>
 							</div>
-							<div style="margin:5px;">
-								Validation study: <span id="matchingValidationStudy" style="float:right;margin-right:20px;"></span>
+							<div style="margin:16px;">
+								Validation study: <select id="matchingValidationStudy" style="float:right;margin-right:20px;"></select>
 							</div>
-							<div style="margin:5px;">
+							<div style="margin:16px;margin-top:20px;">
 								Selected predictor: <span id="matchingSelectedPredictor" style="float:right;margin-right:20px;"></span>
 							</div>
 						</div>
 					</div>
-					<div style="height:40%;width:100%;float:left;">
+					<div style="height:70%;width:100%;float:left;margin-top:10px;">
 						<div class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:30%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:12%;">
 								<span style="display:block;margin:12px;text-align:center;">Predictors</span>
 							</div>
-							<div style="float:left;width:100%;height:80%;">
+							<div style="float:left;width:100%;height:85%;">
 								<select id="validatePredictors" multiple="multiple" style="margin-top:2px;font-size:16px;width:100%;height:95%;">
 								</select>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
 							</div>
 						</div>
 						<div id="candidateMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="height:100%;width:69%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
+							<div class="btn-primary ui-corner-all" style="float:left;width:100%;height:12%;">
 								<span style="display:block;margin:12px;float:left;">Candidate variables</span>
 								<input type="button" id="showMatchedMapping" style="font-size:12px;float:right;margin-top:12px;margin-right:4px" 
 									value="Matched variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
 								<input type="button" id="saveMapping" value="Save the mappings" style="font-size:12px;margin-top:12px;margin-right:4px;float:right;" 
 									class="ui-button ui-widget ui-state-default ui-corner-all"/>
-								<input type="button" id="openMapping" value="open mappings" style="font-size:12px;margin-top:12px;margin-right:4px;float:right;" 
-									class="ui-button ui-widget ui-state-default ui-corner-all"/>
 							</div>
-							<div style="float:left;width:100%;height:80%;">
+							<div style="float:left;width:100%;height:85%;">
 								<div id="mappingResult" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
 								</div>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
-								<div id="mappingResultDialog">
-								</div>
 							</div>
 						</div>
-						<div id="matchedMapping" class="ui-corner-all ui-tabs-nav ui-widget-content" style="display:none;height:100%;width:69%;float:left;">
-							<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:16%;">
-								<span style="display:block;margin:12px;float:left;">Matched variables</span>
-								<input type="button" id="showCandidateMapping" style="font-size:12px;float:right;margin:12px;" 
-									value="Candidate variables" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-								<input type="button" id="addMappingFromTree" style="font-size:12px;float:right;margin:12px;" 
-									value="Add variable from tree" class="ui-button ui-widget ui-state-default ui-corner-all"/>
-							</div>
-							<div style="float:left;width:100%;height:80%;">
-								<div id="existingMappings" style="margin-top:2px;font-size:20px;width:100%;height:95%;overflow:auto;">
-								</div>
-								<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:8%;">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div id="treePanel" style="display:none;float:left;width:99%;margin-top:10px;height:40%;" class="ui-corner-all ui-tabs-nav ui-widget-content">
-						<div class="ui-tabs-nav ui-widget-header ui-corner-all" style="float:left;width:100%;height:14%;">
-							<span style="display:block;float:left;margin:7px;text-align:center;">Search variables</span>
-							<div id="treeSearchPanel" style="float:left;margin:7px;">
-								<input type="text" id="searchField" style="font-size:12px;"
-									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){;return whetherReload('${screen.getUrl()}');}"/>
-								<input type="button" id="search" style="font-size:12px;" value="search"/>
-								<input type="button" id="clearButton" style="font-size:12px;" value="clear"/>
-							</div>
-						</div>
-						<table style="width:100%">
-							<tr>
-								<td style="width:50%">
-									<div id="treePanel">
-										<div id="treeView" style="height:250px;overflow:auto;">
-											<ul id="browser" class="pointtree">  
-											</ul>
-										</div>
-									</div>
-								</td>
-								<td style="width:50%">
-									<div id="details" style="height:250px;overflow:auto;">
-									</div>
-								</td>
-							</tr>
-						</table>
 					</div>
 				</div>
 				<div id="beforeMapping" style="height:900px;width:100%;">
@@ -352,17 +321,22 @@
 												</#list>
 											</select>
 										</div>
-										<i id="removeModelButton" class="icon-trash" style="cursor:pointer;margin-left:10px;"  title="remove a model"></i>
+										<i href="#confirmWindow" id="removeModelButton" class="icon-trash" style="cursor:pointer;margin-left:10px;" 
+											title="remove a model" data-toggle="modal"></i>
 									</div>
 									<div class="span3">
 										<span style="display:block;margin-bottom:5px;" class="text-info">Add a prediction model:</span>
 										<input type="text" id="addPredictionModel" name="addPredictionModel" class="ui-corner-all" style="height:20px;width:180px;float:left;"/>
-										<i id="addModelButton" class="icon-plus" style="cursor:pointer;margin-left:10px;" title="add a model"></i>
+										<i id="addModelButton" class="icon-plus" style="cursor:pointer;margin-left:10px;" title="add a model" ></i>
 									</div>
 								</div>
 								<hr style="background:#0088CC;margin:10px;margin-top:15px;">
 								<div class="row">
-									<div class="span1 offset4">
+									<div class="span1">
+										<input href="#defineVariablePanel" type="button" id="addPredictorButton" 
+											class="btn btn-info" style="margin-left:12px;" data-toggle="modal" value="add new predictor">
+									</div>
+									<div class="span1 offset3">
 										<input type="button" id="defineFormula" value="formula" class="btn btn-info" style="font-size:12px;" />
 									</div>
 									<div class="span1">
@@ -371,23 +345,28 @@
 								</div>
 							</div>
 						</div>
-						<div id="selectCohortStudyPanel" style="display:none;height:180px;width:35%;margin-top:10px;" class="ui-widget-content ui-corner-all span3">
-							<div class="btn-primary" style="height:14%;width:100%;">
-								<span style="margin:10px;font-size:16px;font-style:italic;">Select a cohort study</span>
+						<div id="selectCohortStudyPanel" class="modal hide fade in span3" tabindex="-1" role="dialog" 
+							aria-hidden="true">
+							<div class="modal-header">
+								<strong>Select validation study(ies) to match</strong></br>
+								Match variable(s): <span id="whetherWholeSet"></span>
 							</div>
-							<div style="margin-top:20px;margin-left:10px;height:70%;">
+							<div class="modal-body"  style="height:200px;">
 								<select id="listOfCohortStudies" name = "listOfCohortStudies" style="width:185px;">
-									<#if screen.getValidationStudies()??>
-										<#list screen.getValidationStudies() as study>
-											<option <#if screen.getSelectedValidationStudy()?? && screen.getSelectedValidationStudy() == study>selected="selected"</#if>>${study}</option>
-										</#list>
-									</#if>
 								</select>
-								<div style="margin-top:20%;margin-left:19%;">
-									<input type="button" id="viewMappingForPredictionModel" style="font-size:12px;" value="view mapping" class="btn btn-primary"/>
-									<input type="button" id="validatePredictionModel" style="font-size:12px;" value="validate" class="btn btn-primary"/>
-									<input type="button" id="cancelSelectCohortStudy" style="font-size:12px;" value="cancel" class="btn btn-primary"/>
-								</div>
+								<input name="selectedStudiesToMatch" type="hidden"/>
+								<i id="addValidationStudyAsCandidate" class="icon-plus" style="cursor:pointer;margin-left:2px;" title="add studies"></i>
+								<table class="table table-striped table-bordered">
+									<tr>
+										<th style="width:60%;">Selected studies</th>
+										<th style="width:40%;">Remove</th>
+									</tr>
+								</table>
+							</div>
+							<div class="modal-footer">
+								<input type="button" id="viewMappingForPredictionModel" value="view mapping" class="btn btn-primary"/>
+								<input type="button" id="validatePredictionModel" value="Match" class="btn btn-primary"/>
+								<button id="cancelSelectCohortStudy" class="btn btn-primary" data-dismiss="modal"/>Cancel</button>
 							</div>
 						</div>
 					</div>
@@ -396,89 +375,87 @@
 							<textarea id="showFormula" style="width:90%;height:90%;font-size:12px;">
 							</textarea>
 						</div>
-						<div id="confirmWindow" style="display:none;">
-							<p>
-								WARN: All data for this prediction model will be deleted! It is not repairable!
-							</p>
-						</div>
-						<div id="defineVariablePanel" class="ui-corner-all ui-widget-content" style="display:none;position:absolute;height:40%;width:50%;float:left;margin:5px;z-index:1500;">
-							<div class="btn-info ui-corner-all" style="padding-top:3%;height:10%;width:100%;cursor:pointer;">
-								<span style="margin-left:10px;font-size:20px;font-style:italic;">Define a predictor</span>
-							</div>
-							<table style="margin-top:10px;margin-left:2px;width:100%;font-size:12px;">
-								<tr>
-									<td style="margin-right:10px;">
+					    <div id="confirmWindow" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-header">
+						    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						   		<h3 id="myModalLabel">Confirmation</h3>
+						    </div>
+						    <div class="modal-body">
+						    	<p>WARN: All data for this prediction model will be deleted! It is not repairable!</p>
+						    </div>
+						    <div class="modal-footer">
+						    	<input type="button" id="confirmRemoveModel" class="btn btn-primary" value="Confirm">
+							    <input type="button" id="closeConfirmWinodw" class="btn btn-primary" value="Close">
+						    </div>
+					    </div>
+						<div id="defineVariablePanel" class="modal hide fade in" tabindex="-1" role="dialog" 
+							aria-hidden="true" style="width:600px;">
+							<div class="modal-header">
+							    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							    <div class="btn-group" data-toggle="buttons-radio">
+									<input type="button" id="addOnePredictorButton" class="btn btn-primary active" value="Add a predictor" />
+									<input type="button" id="batchUploadPredictorsButton" class="btn btn-primary" value="Batch upload predictors" />
+								</div>
+						  	</div>
+							<div class="modal-body">
+								<div id="addOnePredictorModal" class="row">
+									<div class="span2">
 										<span style="display:block;margin:5px;">Name: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="nameOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td style="margin-right:10px;">
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Label: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="labelOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td style="margin-right:10px;">
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Description: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="descriptionOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Data type: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<select id="dataTypeOfPredictor" class="predictorInput" style="width:215px">
-											<#list screen.getDataTypes() as dataType>
-												<option>${dataType}</option>
-											</#list>
 										</select>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Categories: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="categoryOfPredictor" class="predictorInput" type="text" disabled="disabled"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Unit: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="unitOfPredictor" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-								<tr>
-									<td>
+									</div>
+									<div class="span2">
 										<span style="display:block;margin:5px;">Building blocks: </span>
-									</td>
-									<td>
+									</div>
+									<div class="span2 offset3">
 										<input id="buildingBlocks" class="predictorInput" type="text"/>
-									</td>
-								</tr>
-							</table>
-							<hr>
-							<div style="margin:5px">
-								<input id="cancelPredictor" type="button" value="cancel" class="btn btn-info" style="float:right;"/>
-								<input id="addPredictor" type="button" value="add" class="btn btn-info" style="float:right;"/>
+									</div>
+								</div>
+								<div id="batchUploadPredictorsModal" style="display:none;">
+									Please upload the variable definition in <strong>CSV format</strong></br></br>
+									<input name="batchUploadPredictors" class="ui-corner-all" type="file" style="Border-radius:4px 4px 4px 4px"/></br></br>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="float:right;">Close</button>
+								<button id="addPredictor" type="button" class="btn btn-info" style="float:right;"/>Add</button>
+								<button id="submitBatchPredictors" class="btn btn-info" style="float:right;display:none;" type="button"/>Upload file</button>
 							</div>
 						</div>
 						<div id="showPredictorPanel" style="height:100%;width:100%;">
-							<div class="btn-primary ui-corner-all" style="padding:10px;height:10%;width:40%;">
-								<div style="margin-bottom:10px;"><span style="font-size:24px;font-style:italic;">Overview of prediction model</span></div>
-								<input type="button" id="addPredictorButton"  class="btn btn-info btn-small" value="add new predictor">
-							</div>
-							<div style="height:90%;overflow:auto;float:left;margin-top:10px;margin-right:10px;">
+							<div style="width:100%;height:90%;overflow:auto;float:left;margin-top:10px;margin-right:10px;">
 								<table id="overviewTable" class="ui-corner-all table table-striped table-bordered">
 									<tr>
 										<th style="width:30%;">Name</th>
@@ -488,7 +465,7 @@
 								</table>
 							</div>
 							<table id="variableDetail" class="ui-corner-all table table-striped table-bordered" 
-								style="width:65%;float:left;margin-top:10px;margin-left:10px;">
+								style="width:60%;float:left;margin-top:10px;margin-left:10px;">
 							</table>
 						</div>
 					</div>
