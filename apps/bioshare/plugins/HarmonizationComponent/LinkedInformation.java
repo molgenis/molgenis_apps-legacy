@@ -1,12 +1,11 @@
 package plugins.HarmonizationComponent;
 
-import org.molgenis.pheno.Measurement;
 
 public class LinkedInformation implements Comparable<LinkedInformation>
 {
 	// private final String measurementName;
 
-	private final Measurement measurement;
+	private final Integer featureID;
 
 	private final String expandedQuery;
 
@@ -32,16 +31,16 @@ public class LinkedInformation implements Comparable<LinkedInformation>
 	// this.measurementName = measurementName;
 	// }
 
-	public LinkedInformation(String expandedQuery, Measurement measurement, double similarity)
+	public LinkedInformation(String expandedQuery, Integer featureID, double similarity)
 	{
 
-		if (expandedQuery == null || measurement == null) throw new IllegalArgumentException(
+		if (expandedQuery == null || featureID == null) throw new IllegalArgumentException(
 				"Parameters have to be not null!");
 
 		if (expandedQuery.isEmpty()) throw new IllegalArgumentException("Parameters have to be not empty");
 
 		this.expandedQuery = expandedQuery;
-		this.measurement = measurement;
+		this.featureID = featureID;
 		// this.matchedItem = matchedItem;
 		this.setSimilarity(similarity);
 		// this.measurementName = measurementName;
@@ -83,8 +82,8 @@ public class LinkedInformation implements Comparable<LinkedInformation>
 		this.similarity = similarity;
 	}
 
-	public Measurement getMeasurement()
+	public Integer getFeatureID()
 	{
-		return measurement;
+		return featureID;
 	}
 }

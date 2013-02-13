@@ -108,17 +108,13 @@ function retrieveResult(url)
 		
 		$('#mappingResult tr td:first-child').each(function(){
 
-			identifier = $(this).parent().attr('id');
-			
-			identifier = identifier.replace("_row", "_details");
-			
-			$('#' + identifier).show();
+			identifier = $(this).parent().attr('id').replace("_row", "_details");
 			
 			$('#' + identifier).click(function()
 			{
 				predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
 				
-				retrieveExpandedQueries(predictor, $(this).parents('td').eq(0).children('span:first-child').text(), url);
+				retrieveExpandedQueries(predictor, $(this), url);
 			});	
 		});
 
@@ -363,11 +359,14 @@ function saveMapping(mappings, url)
 function retrieveExpandedQueries(predictor, matchedVariable, url)
 {	
 	$.ajax({
-		url : url + "&__action=download_json_retrieveExpandedQuery&predictor="
-		+ predictor + "&matchedVariable=" + matchedVariable + "&investigationName=" 
-		+ $('#matchingValidationStudy').val(),
-		async: false,
-
+		url : url + "&__action=download_json_retrieveExpandedQuery",
+		data : {
+			"predictor" : predictor,
+			"identifier" : $(matchedVariable).parents('tr').eq(0).attr('id').replace('_row', ''),
+			"matchedVariable" : $(matchedVariable).parents('td').eq(0).children('span:first-child').text(),
+			"investigationName" : $('#matchingValidationStudy').val(),
+		},
+		async : false,
 	}).done(function(status){
 
 		table = status["table"];
