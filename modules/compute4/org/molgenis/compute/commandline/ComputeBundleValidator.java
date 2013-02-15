@@ -133,8 +133,8 @@ public class ComputeBundleValidator
 			{
 				printError("In your workflow file, the protocol name '"
 						+ pn
-						+ "' in the 'protocol_name' column, does not refer to an known protocol.\nPlease upload a protocol with the name '"
-						+ pn + ".ftl' or change '" + pn + "' to the name of an known protocol.");
+						+ "' in the 'protocol_name' column, does not refer to a known protocol.\nPlease upload a protocol with the name '"
+						+ pn + ".ftl' or change '" + pn + "' to the name of a known protocol.");
 			}
 		}
 
