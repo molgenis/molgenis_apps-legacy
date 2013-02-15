@@ -157,6 +157,38 @@ public class ComputeBundleValidator
 					+ "touch $DIR/${workflowfilename}.finished");
 		}
 
+		// Validate that a file called 'DataTransfer.sh.ftl' exists.
+		if (!protocolNames.contains("DataTransfer.sh"))
+		{
+			printError("You should have a protocol 'DataTransfer.sh.ftl' in which you define how to submit the generated scripts.\n"
+					+ "You may use the following code that is compatible with a PBS-scheduler.\n\n"
+					+ "#!/bin/bash\n"
+					+ "getFile()\n"
+					+ "{\n"
+					+ "    ARGS=($@)\n"
+					+ "    NUMBER=\"${#ARGS[@]}\";\n"
+					+ "if [ \"$NUMBER\" -eq \"1\" ]\n"
+					+ "    then\n"
+					+ "    myFile=${ARGS[0]}\n"
+					+ "    \n"
+					+ "    if test ! -e $myFile;\n"
+					+ "	then\n"
+					+ "	echo \"WARNING in getFile/putFile: $myFile is missing\" 1>&2\n"
+					+ "	fi\n"
+					+ "	\n"
+					+ "    else\n"
+					+ "    echo \"Example usage: getData \"\\$TMPDIR/datadir/myfile.txt\"\"\n"
+					+ "    fi\n"
+					+ "}\n"
+					+ "\n"
+					+ "putFile()\n"
+					+ "{\n"
+					+ "`getFile $@`\n"
+					+ "}\n"
+					+ "\n"
+					+ "export -f getFile\n" + "export -f putFile\n");
+		}
+
 		// VALIDATE PARAMETERS
 		// Validate that all hasOne_name's refer to parameter names
 		// Moreover, only allow one instance of each parameter
