@@ -117,8 +117,6 @@ public class ComputeBundleValidator
 			}
 		}
 
-		// Validate that all protocols referred to, exist.
-
 		// First put protocol names in a list
 		List<String> protocolNames = new ArrayList<String>();
 		for (ComputeProtocol cp : cb.getComputeProtocols())
@@ -126,6 +124,24 @@ public class ComputeBundleValidator
 			protocolNames.add(cp.getName());
 		}
 
+		// Validate that there are no two files with the same name in protocols
+		// + templates dir
+		Set<String> ftlFiles = new HashSet<String>();
+		for (String p : protocolNames)
+		{
+			if (ftlFiles.contains(p))
+			{
+				printError("The following file is present in both your protocols directory and your templates directory: "
+						+ p + ".\nPlease remove one of the two.");
+			}
+			else
+			{
+				ftlFiles.add(p);
+			}
+		}
+
+		// Validate that each protocol that is referred to in the workflow
+		// actually exists
 		for (WorkflowElement wfe : wfelements)
 		{
 			String pn = wfe.getProtocol_Name();
@@ -155,6 +171,38 @@ public class ComputeBundleValidator
 					+ "</#foreach>\n"
 					+ "\n"
 					+ "touch $DIR/${workflowfilename}.finished");
+		}
+
+		// Validate that a file called 'DataTransfer.sh.ftl' exists.
+		if (!protocolNames.contains("DataTransfer.sh"))
+		{
+			printError("You should have a protocol 'DataTransfer.sh.ftl' in which you define how to submit the generated scripts.\n"
+					+ "You may use the following code that is compatible with a PBS-scheduler.\n\n"
+					+ "#!/bin/bash\n"
+					+ "getFile()\n"
+					+ "{\n"
+					+ "    ARGS=($@)\n"
+					+ "    NUMBER=\"${#ARGS[@]}\";\n"
+					+ "if [ \"$NUMBER\" -eq \"1\" ]\n"
+					+ "    then\n"
+					+ "    myFile=${ARGS[0]}\n"
+					+ "    \n"
+					+ "    if test ! -e $myFile;\n"
+					+ "	then\n"
+					+ "	echo \"WARNING in getFile/putFile: $myFile is missing\" 1>&2\n"
+					+ "	fi\n"
+					+ "	\n"
+					+ "    else\n"
+					+ "    echo \"Example usage: getData \"\\$TMPDIR/datadir/myfile.txt\"\"\n"
+					+ "    fi\n"
+					+ "}\n"
+					+ "\n"
+					+ "putFile()\n"
+					+ "{\n"
+					+ "`getFile $@`\n"
+					+ "}\n"
+					+ "\n"
+					+ "export -f getFile\n" + "export -f putFile\n");
 		}
 
 		// VALIDATE PARAMETERS

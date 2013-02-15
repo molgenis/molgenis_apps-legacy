@@ -33,6 +33,8 @@
 
 </#if>
 
+# Source functions for data transfer to cluster
+. dataTransfer.sh
 
 <#if scheduler != "GRID">
 # Configures the GCC bash environment
