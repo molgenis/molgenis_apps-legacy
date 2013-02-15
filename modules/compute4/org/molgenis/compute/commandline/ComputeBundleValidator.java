@@ -117,8 +117,6 @@ public class ComputeBundleValidator
 			}
 		}
 
-		// Validate that all protocols referred to, exist.
-
 		// First put protocol names in a list
 		List<String> protocolNames = new ArrayList<String>();
 		for (ComputeProtocol cp : cb.getComputeProtocols())
@@ -126,6 +124,24 @@ public class ComputeBundleValidator
 			protocolNames.add(cp.getName());
 		}
 
+		// Validate that there are no two files with the same name in protocols
+		// + templates dir
+		Set<String> ftlFiles = new HashSet<String>();
+		for (String p : protocolNames)
+		{
+			if (ftlFiles.contains(p))
+			{
+				printError("The following file is present in both your protocols directory and your templates directory: "
+						+ p + ".\nPlease remove one of the two.");
+			}
+			else
+			{
+				ftlFiles.add(p);
+			}
+		}
+
+		// Validate that each protocol that is referred to in the workflow
+		// actually exists
 		for (WorkflowElement wfe : wfelements)
 		{
 			String pn = wfe.getProtocol_Name();
