@@ -617,7 +617,7 @@ public class ComputeCommandLine
 	 */
 	/* } */
 
-	/** Convert all compute jobs into scripts + submit.sh */
+	/** Convert all compute jobs into scripts + submit.sh + dataTransfer.sh */
 	private void generateScripts()
 	{
 		new File(outputdir).mkdirs();
@@ -630,12 +630,23 @@ public class ComputeCommandLine
 
 		try
 		{
-			String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
+			// submit.sh, from template dir or else protocol dir
+			String protocol = this.templatedir + File.separator + "Submit.sh.ftl";
+			if (!(new File(protocol).isFile()))
+			{
+				protocol = this.protocoldir + File.separator + "Submit.sh.ftl";
+			}
+			String result = new FreemarkerView(protocol, params).render();
 			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
 
-			// and produce submit.sh
-			// PrintWriter submitWriter = new PrintWriter(new File(outputdir +
-			// File.separator + "submit.sh"));
+			// dataTransfer.sh, from template dir or else protocol dir
+			protocol = this.templatedir + File.separator + "DataTransfer.sh.ftl";
+			if (!(new File(protocol).isFile()))
+			{
+				protocol = this.protocoldir + File.separator + "DataTransfer.sh.ftl";
+			}
+			result = new FreemarkerView(protocol, params).render();
+			FileUtils.write(new File(outputdir + File.separator + "dataTransfer.sh"), result);
 
 			// also produce a runlocal.sh
 			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "runlocal.sh"));
