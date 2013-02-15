@@ -1,5 +1,5 @@
-<molgenis name="org.molgenis">
-	<module name="observ_omx.auth">
+<molgenis name="org.molgenis.omx">
+	<module name="auth" label="Auth module">
 	<description>
 	DEPENDS ON: core, organization
 	</description>
@@ -17,6 +17,7 @@
 
 		<entity name="MolgenisGroup" extends="MolgenisRole">
 		</entity>
+		
 		<entity name="MolgenisUser" extends="Person">
 			<description>Anyone who can login</description>
 

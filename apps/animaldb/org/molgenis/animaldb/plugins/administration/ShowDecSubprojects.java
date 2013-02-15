@@ -641,7 +641,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					// subprojectnr
 					name = name + expnumber;
 					// Make new DEC subproject (experiment)
-					ct.makePanel(investigationName, name, this.getLogin().getUserName());
+					ct.createPanelOwnedByUser(investigationName, name, this.getLogin().getUserId());
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null,
 							"SetTypeOfGroup", "TypeOfGroup", name, "Experiment", null));
 				}

@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisRequest;
@@ -139,6 +138,7 @@ public class CalculateDesignScreen extends PluginModel
 		// no job running, start the job
 		if (cmd == null)
 		{
+			System.out.println("CMD IS NULL");
 			cmd = new LocalComputationResource();
 			startProcess();
 
@@ -146,6 +146,8 @@ public class CalculateDesignScreen extends PluginModel
 		// if job is running, monitor progress
 		else
 		{
+			System.out.println("CMD IS NOT NULL");
+
 			File progressFile = new File(this.workingDir.getAbsolutePath() + File.separator + "processing.txt");
 			System.out.println("Current DIR" + this.workingDir.getAbsolutePath());
 			int progress = -1;
@@ -375,7 +377,10 @@ public class CalculateDesignScreen extends PluginModel
 		// 1.6 set weights
 		if (p.getWeight() != null && p.getWeight().size() > 1)
 		{
-			List<?> weights = p.getWeight();
+			List<String> weights = (List<String>) p.getWeight();
+			
+			//hotfix: request parsing is now different, first element of list gets '[' attached..
+			weights.set(0, weights.get(0).toString().replace("[", ""));
 
 			// source order from web
 			// Q
@@ -472,20 +477,27 @@ public class CalculateDesignScreen extends PluginModel
 		{
 
 			// create a working dir
-			FileLink workingDir = this.getTempFile();
-			File workingFile = workingDir.getLocalpath();
+			// FileLink workingDir = this.getTempFile();
+			// File workingFile = workingDir.getLocalpath();
+			//
+			// FileUtils.deleteDirectory(workingFile);
+			//
+			// workingFile.delete();
+			// workingFile.mkdirs();
 
-			FileUtils.deleteDirectory(workingFile);
+			this.workingDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "workingdir"
+					+ System.nanoTime());
+			if (!this.workingDir.mkdir())
+			{
+				throw new Exception("could not create working dir " + this.workingDir);
+			}
 
-			workingFile.delete();
-			workingFile.mkdirs();
-
-			this.workingDir = workingFile;
+			System.out.println("created working dir : " + this.workingDir);
 
 			// copy input files
 			for (String fileName : inputAttachements.keySet())
 			{
-				File dataFile = new File(workingFile.getAbsoluteFile() + "/" + fileName);
+				File dataFile = new File(this.workingDir, fileName);
 				FileOutputStream fos = new FileOutputStream(dataFile);
 				FileChannel fc = fos.getChannel();
 				ByteBuffer bb = ByteBuffer.wrap(inputAttachements.get(fileName));
@@ -494,7 +506,7 @@ public class CalculateDesignScreen extends PluginModel
 			}
 
 			// create the script
-			File scriptFile = new File(workingFile.getAbsoluteFile() + "/script.R");
+			File scriptFile = new File(this.workingDir, "script.R");
 			FileWriter fw = new FileWriter(scriptFile);
 			for (String line : commands)
 			{
@@ -502,11 +514,12 @@ public class CalculateDesignScreen extends PluginModel
 			}
 			fw.close();
 
-			System.out.println("*** " + workingFile.getAbsolutePath() + " ***");
+			System.out.println("*** " + this.workingDir.getAbsolutePath() + " ***");
 			;
 			// run script
-			cmd.executeOSDependantCommand(new Command("cd " + workingFile.getAbsolutePath() + " && nohup R CMD BATCH "
-					+ scriptFile.getAbsolutePath() + " outputR.log &", true, false, false), DetectOS.getOS());
+			cmd.executeOSDependantCommand(new Command("cd " + this.workingDir.getAbsolutePath()
+					+ " && nohup R CMD BATCH " + scriptFile.getAbsolutePath() + " outputR.log &", true, false, false),
+					DetectOS.getOS());
 
 		}
 		catch (Exception e)

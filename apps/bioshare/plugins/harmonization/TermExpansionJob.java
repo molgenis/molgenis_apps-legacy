@@ -5,11 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.molgenis.pheno.Measurement;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -33,12 +30,9 @@ public class TermExpansionJob implements Job
 						.get("predictors");
 
 				HarmonizationModel model = (HarmonizationModel) context.getJobDetail().getJobDataMap().get("model");
-
-				Set<String> stopWords = (HashSet<String>) context.getJobDetail().getJobDataMap().get("stopWords");
-
+				Set<String> stopWords = model.getMatchingModel().getStopWords();
 				int count = 0;
-
-				OntologyService os = new BioportalOntologyService();
+				BioportalOntologyService os = new BioportalOntologyService();
 
 				for (PredictorInfo predictor : predictors)
 				{
@@ -58,18 +52,20 @@ public class TermExpansionJob implements Job
 								expandByPotentialBuildingBlocks(predictor.getLabel(), stopWords, model, os));
 					}
 
+					// for (int i = 0; i < 2000; i++)
+					// {
+					// predictor.getExpandedQuery().add(predictor.getLabel() +
+					// "_" + i);
+					// }
 					predictor.setExpandedQuery(uniqueList(predictor.getExpandedQuery()));
-
-					model.setTotalNumber(model.getTotalNumber() + predictor.getExpandedQuery().size());
-
+					model.setTotalNumber((model.getTotalNumber() + predictor.getExpandedQuery().size())
+							* model.getSelectedValidationStudy().size());
 					count++;
-
 					model.incrementFinishedJob();
-
-					System.out.println("Finished: " + count + " out of " + predictors.size());
+					System.out.println("Finished: " + count + " out of " + predictors.size() + ". The predictor "
+							+ predictor.getLabel() + " has " + predictor.getExpandedQuery().size()
+							+ " expanded queries!");
 				}
-
-				createNGramMeasurements(model);
 			}
 		}
 		catch (Exception e)
@@ -78,52 +74,8 @@ public class TermExpansionJob implements Job
 		}
 	}
 
-	private void createNGramMeasurements(HarmonizationModel model)
-	{
-		Map<Measurement, List<Set<String>>> nGramsMap = new HashMap<Measurement, List<Set<String>>>();
-
-		for (Measurement m : model.getMeasurements().values())
-		{
-			List<String> fields = new ArrayList<String>();
-
-			if (!StringUtils.isEmpty(m.getDescription()))
-			{
-				fields.add(m.getDescription());
-
-				StringBuilder combinedString = new StringBuilder();
-
-				if (!m.getCategories_Name().isEmpty())
-				{
-					for (String categoryName : m.getCategories_Name())
-					{
-						combinedString.delete(0, combinedString.length());
-
-						combinedString.append(categoryName.replaceAll(m.getInvestigation_Name(), "")).append(' ')
-								.append(m.getDescription());
-
-						fields.add(combinedString.toString().replace('_', ' '));
-					}
-				}
-			}
-
-			List<Set<String>> listOfNGrams = new ArrayList<Set<String>>();
-
-			for (String eachEntry : fields)
-			{
-				Set<String> dataItemTokens = model.getMatchingModel()
-						.createNGrams(eachEntry.toLowerCase().trim(), true);
-
-				listOfNGrams.add(dataItemTokens);
-			}
-
-			nGramsMap.put(m, listOfNGrams);
-		}
-
-		model.setNGramsMapForMeasurements(nGramsMap);
-	}
-
 	public List<String> expandByPotentialBuildingBlocks(String predictorLabel, Set<String> stopWords,
-			HarmonizationModel model, OntologyService os) throws OntologyServiceException
+			HarmonizationModel model, BioportalOntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -179,7 +131,7 @@ public class TermExpansionJob implements Job
 	}
 
 	public List<String> expandQueryByDefinedBlocks(String[] buildingBlocksArray, Set<String> stopWords,
-			HarmonizationModel model, OntologyService os) throws OntologyServiceException
+			HarmonizationModel model, BioportalOntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -222,8 +174,8 @@ public class TermExpansionJob implements Job
 		return uniqueList(expandedQueries);
 	}
 
-	public List<String> collectInfoFromOntology(String queryToExpand, HarmonizationModel model, OntologyService os)
-			throws OntologyServiceException
+	public List<String> collectInfoFromOntology(String queryToExpand, HarmonizationModel model,
+			BioportalOntologyService os) throws OntologyServiceException
 	{
 		List<String> expandedQueries = new ArrayList<String>();
 
@@ -235,18 +187,23 @@ public class TermExpansionJob implements Job
 				{
 					expandedQueries.add(ot.getLabel());
 
+					// expandedQueries.addAll(os.getDefinitions(ot));
+
 					for (String synonym : os.getSynonyms(ot))
 					{
 						expandedQueries.add(synonym);
 					}
+
 					try
 					{
-						if (os.getChildren(ot) != null && os.getChildren(ot).size() > 0)
+						if (os.getChildren(ot) != null)
 						{
-							for (uk.ac.ebi.ontocat.OntologyTerm childOt : os.getChildren(ot))
-							{
-								expandedQueries.add(childOt.getLabel());
-							}
+							recursiveAddTerms(ot, expandedQueries, os);
+							// for (uk.ac.ebi.ontocat.OntologyTerm childOt :
+							// os.getChildren(ot))
+							// {
+							// expandedQueries.add(childOt.getLabel());
+							// }
 						}
 					}
 					catch (Exception e)
@@ -258,6 +215,46 @@ public class TermExpansionJob implements Job
 		}
 
 		return uniqueList(expandedQueries);
+	}
+
+	private void recursiveAddTerms(uk.ac.ebi.ontocat.OntologyTerm ot, List<String> expandedQueries, OntologyService os)
+			throws OntologyServiceException
+	{
+		for (uk.ac.ebi.ontocat.OntologyTerm childOt : os.getChildren(ot))
+		{
+			if (childOt.getLabel() != null)
+			{
+				if (!expandedQueries.contains(childOt.getLabel()))
+				{
+					System.out.println("The term + " + childOt.getLabel() + " has been added to the list!");
+					expandedQueries.add(childOt.getLabel());
+				}
+			}
+
+			if (os.getSynonyms(ot) != null)
+			{
+				for (String synonym : os.getSynonyms(ot))
+				{
+					if (!expandedQueries.contains(synonym))
+					{
+						expandedQueries.add(synonym);
+					}
+				}
+			}
+
+			try
+			{
+				if (os.getChildren(childOt) != null)
+				{
+					recursiveAddTerms(childOt, expandedQueries, os);
+				}
+
+			}
+			catch (Exception e)
+			{
+
+			}
+		}
 	}
 
 	public List<String> uniqueList(List<String> uncleanedList)

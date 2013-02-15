@@ -227,6 +227,7 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 				ComputeTask task = new ComputeTask();
 				task.setName(taskName);
 				task.setComputeScript(script);
+                task.setBackEndName("grid");
                 task.setBackEndName(backend_name);
 				task.setInterpreter(workflowElement.getProtocol()
 						.getScriptInterpreter());

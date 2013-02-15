@@ -1,7 +1,6 @@
 package org.molgenis.omx.plugins;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;

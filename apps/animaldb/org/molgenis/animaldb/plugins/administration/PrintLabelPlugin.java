@@ -23,6 +23,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HorizontalRuler;
@@ -122,52 +123,190 @@ public class PrintLabelPlugin extends EasyPluginController
 		List<String> measurementList = getMeasurementsFromUi(request);
 		String ownInvName = cs.getOwnUserInvestigationName(userName);
 
-		for (ObservationTarget ind : individualList)
+		// PDF file stuff to start each different sex on a new page.
+		boolean first = true;
+		String lastSex = "";
+		int sexctr = 0;
+		List<String> elementLabelList;
+		List<String> elementList;
+		boolean defaultCheckBox = true;
+		if (request.get("printDefaultCageLabel") == null)
 		{
+			defaultCheckBox = false;
+		}
 
-			List<String> lineList = new ArrayList<String>();
-			List<String> lineLabelList = new ArrayList<String>();
-			lineLabelList.add("Name:");
-			lineList.add(ind.getName());
-			List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getName(), measurementList,
-					investigationNames, ownInvName);
-			for (ObservedValue value : valueList)
+		// if default label is selected
+
+		for (ObservationTarget animal : individualList)
+		{
+			String animalName = animal.getName();
+			elementList = new ArrayList<String>();
+			elementLabelList = new ArrayList<String>();
+			String sex = cs.getMostRecentValueAsXrefName(animalName, "Sex");
+			if (first)
 			{
-				String actualValue;
-				if (value.getValue() != null)
+				lastSex = sex;
+			}
+			sexctr += 1;
+			// Name / custom label
+			elementLabelList.add("Name:");
+			elementList.add(animalName);
+
+			if (defaultCheckBox)
+			{
+				// Species
+				elementLabelList.add("Species:");
+				elementList.add(cs.getMostRecentValueAsXrefName(animalName, "Species"));
+				// Sex
+				elementLabelList.add("Sex:");
+				elementList.add(sex);
+				// Earmark
+				elementLabelList.add("Earmark:");
+				elementList.add(cs.getMostRecentValueAsString(animalName, "Earmark"));
+				// Line
+				elementLabelList.add("Line:");
+				elementList.add(cs.getMostRecentValueAsXrefName(animalName, "Line"));
+				// Background + GeneModification + GeneState
+				elementLabelList.add("Background:");
+				elementList.add(cs.getMostRecentValueAsXrefName(animalName, "Background"));
+
+				// FIXME (can only show one gene modification....
+				elementLabelList.add("Genotype:");
+				String genotypeValue = "";
+				String geneMod = cs.getMostRecentValueAsString(animalName, "GeneModification");
+				String geneState = cs.getMostRecentValueAsString(animalName, "GeneState");
+				if (geneMod != null)
 				{
-					actualValue = value.getValue();
+					genotypeValue += (geneMod + ": " + geneState);
 				}
-				else
+				elementList.add(genotypeValue);
+
+				// Birthdate
+				elementLabelList.add("Birthdate:");
+				elementList.add(cs.getMostRecentValueAsString(animalName, "DateOfBirth"));
+				// Geno mother
+				elementLabelList.add("Father:\nMother:");
+				String fatherValue = cs.getMostRecentValueAsXrefName(animalName, "Father");
+				String motherValue = cs.getMostRecentValueAsXrefName(animalName, "Mother");
+				if (fatherValue == null)
 				{
-					actualValue = value.getRelation_Name();
+					fatherValue = "";
 				}
-				if (actualValue == null)
+				if (motherValue == null)
 				{
-					actualValue = "NA";
+					motherValue = "";
 				}
-				lineLabelList.add(value.getFeature_Name());
-				lineList.add(actualValue);
+				elementList.add(fatherValue + "\n" + motherValue);
+
+				// litter
+				elementLabelList.add("Litter:");
+				elementList.add(cs.getMostRecentValueAsXrefName(animalName, "Litter"));
+				// Add DEC nr, if present, or empty if not
+				elementLabelList.add("Researcher: ");
+				elementList.add(cs.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
+
+				elementLabelList.add("DEC:");
+				String decNr = cs.getMostRecentValueAsString(animalName, "DecNr");
+				String expNr = cs.getMostRecentValueAsString(animalName, "ExperimentNr");
+				String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
+				elementList.add(decInfo);
+				elementLabelList.add("Remarks");
+				elementList.add("\n\n\n\n\n");
+			}
+			else
+			{
+				// print the custom selected label...
+				List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(animalName, measurementList,
+						investigationNames, ownInvName);
+				for (ObservedValue value : valueList)
+				{
+					String actualValue;
+					if (value.getValue() != null)
+					{
+						actualValue = value.getValue();
+					}
+					else
+					{
+						actualValue = value.getRelation_Name();
+					}
+					if (actualValue == null)
+					{
+						actualValue = "NA";
+					}
+					elementLabelList.add(value.getFeature_Name());
+					elementList.add(actualValue);
+				}
+
 			}
 
-			labelGenerator.addLabelToDocument(lineLabelList, lineList);
+			if (sex.equals(lastSex))
+			{
+				System.out.println(sexctr + " equals: " + sex);
+				labelGenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+			else
+			{
+				System.out.println(sexctr + " not equals: " + sex);
+				// add empty label on odd labelnr.
+				if ((sexctr - 1) % 2 != 0)
+				{
+					labelGenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+				}
+				labelGenerator.finishPage();
+				labelGenerator.nextPage();
+				sexctr = 1; // reset the sexcounter to keep track of odd and
+							// even numbers.
+				labelGenerator.addLabelToDocument(elementLabelList, elementList);
+			}
+
+			lastSex = sex;
+
+			if (first)
+			{
+				first = false;
+			}
 		}
-		if (individualList.size() % 2 != 0)
+
+		if (sexctr % 2 != 0)
 		{
-			// In case of uneven number of animals, add empty label to make row
-			// full
-			List<String> lineLabelList = new ArrayList<String>();
-			List<String> lineList = new ArrayList<String>();
-			labelGenerator.addLabelToDocument(lineLabelList, lineList);
+			labelGenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
 		}
 
+		labelGenerator.finishPage();
 		labelGenerator.finishDocument();
-
 		text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename
 				+ "\" target=\"blank\">Download labels as pdf</a>");
 		text.setLabel("");
 		// text is added to panel on reload()
+		// if customlabel is to be made:
 	}
+
+	/*
+	 * else { for (ObservationTarget ind : individualList) {
+	 * 
+	 * 
+	 * List<String> lineList = new ArrayList<String>(); List<String>
+	 * lineLabelList = new ArrayList<String>(); lineLabelList.add("Name:");
+	 * lineList.add(ind.getName()); List<ObservedValue> valueList =
+	 * cs.getObservedValuesByTargetAndFeatures(ind.getName(), measurementList,
+	 * investigationNames, ownInvName); for (ObservedValue value : valueList) {
+	 * String actualValue; if (value.getValue() != null) { actualValue =
+	 * value.getValue(); } else { actualValue = value.getRelation_Name(); } if
+	 * (actualValue == null) { actualValue = "NA"; }
+	 * lineLabelList.add(value.getFeature_Name()); lineList.add(actualValue); }
+	 * 
+	 * labelGenerator.addLabelToDocument(lineLabelList, lineList); } if
+	 * (individualList.size() % 2 != 0) { // In case of uneven number of
+	 * animals, add empty label to make // row // full List<String>
+	 * lineLabelList = new ArrayList<String>(); List<String> lineList = new
+	 * ArrayList<String>(); labelGenerator.addLabelToDocument(lineLabelList,
+	 * lineList); }
+	 * 
+	 * labelGenerator.finishDocument(); text = new Paragraph("pdfFilename",
+	 * "<a href=\"tmpfile/" + filename +
+	 * "\" target=\"blank\">Download labels as pdf</a>"); text.setLabel(""); //
+	 * text is added to panel on reload() }
+	 */
 
 	/**
 	 * Get the animals (Individuals) selected by the user.
@@ -242,6 +381,7 @@ public class PrintLabelPlugin extends EasyPluginController
 				{
 					panel.remove(text);
 					panel.add(text);
+					text = null;
 				}
 			}
 		}
@@ -262,6 +402,16 @@ public class PrintLabelPlugin extends EasyPluginController
 		container = new Container();
 		panel = new DivPanel("PrintLabelPluginDivPanel", null);
 		makeTargetsSelect(db);
+		List<String> options = new ArrayList<String>();
+		options.add("default");
+		List<String> optionLabels = new ArrayList<String>();
+		optionLabels.add("print default cage label");
+		CheckboxInput defOrCustom = new CheckboxInput("printDefaultCageLabel", options, optionLabels, "", null, true,
+				false);
+		defOrCustom.setName("printDefaultCageLabel");
+		defOrCustom.setLabel("Use default cagelabel layout");
+
+		panel.add(defOrCustom);
 		makeFeaturesSelect(db);
 		makePrintButton();
 		container.add(panel);

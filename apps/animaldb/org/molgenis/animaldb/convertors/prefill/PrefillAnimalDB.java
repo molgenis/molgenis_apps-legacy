@@ -259,7 +259,7 @@ public class PrefillAnimalDB
 		for (Tuple tuple : reader)
 		{
 			String sexName = tuple.getString("name");
-			panelsToAddList.add(ct.createPanel(invName, sexName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, sexName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", sexName, "Sex", null));
 		}
@@ -272,7 +272,7 @@ public class PrefillAnimalDB
 		for (Tuple tuple : reader)
 		{
 			String specName = tuple.getString("name");
-			panelsToAddList.add(ct.createPanel(invName, specName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, specName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", specName, "Species", null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetVWASpecies"), new Date(), null,
@@ -292,7 +292,7 @@ public class PrefillAnimalDB
 		{
 			String bkgName = tuple.getString("name");
 			String speciesName = tuple.getString("species");
-			panelsToAddList.add(ct.createPanel(invName, bkgName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, bkgName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", bkgName, "Background", null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), new Date(), null, "Species",
@@ -307,7 +307,7 @@ public class PrefillAnimalDB
 		for (Tuple tuple : reader)
 		{
 			String sourceName = tuple.getString("name");
-			panelsToAddList.add(ct.createPanel(invName, sourceName, userName));
+			panelsToAddList.add(ct.preparePanel(invName, sourceName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", sourceName, "Source", null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSourceType"), new Date(), null,
