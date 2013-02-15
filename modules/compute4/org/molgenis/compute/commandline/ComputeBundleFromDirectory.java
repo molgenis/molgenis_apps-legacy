@@ -230,7 +230,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				protocols.add(p);
 			}
 		}
-		this.setComputeProtocols(protocols);
+
+		this.appendComputeProtocols(protocols);
 	}
 
 	public void setComputeParameters(File file) throws Exception
