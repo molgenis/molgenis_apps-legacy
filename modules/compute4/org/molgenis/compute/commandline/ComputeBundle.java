@@ -86,7 +86,7 @@ public class ComputeBundle
 
 		this.computeProtocols = lst;
 	}
-
+	
 	public List<WorkflowElement> getWorkflowElements()
 	{
 		return workflowElements;
