@@ -24,6 +24,7 @@ mkdir -p ${projectResultsDir}/rawdata
 mkdir -p ${projectResultsDir}/alignment
 mkdir -p ${projectResultsDir}/coverage
 mkdir -p ${projectResultsDir}/snps
+mkdir -p ${projectResultsDir}/structural_variants
 mkdir -p ${projectResultsDir}/qc/statistics
 
 
@@ -77,12 +78,14 @@ cp ${intermediatedir}/*.pdf ${projectResultsDir}/qc/statistics
 cp ${intermediatedir}/*.coverage* ${projectResultsDir}/coverage
 
 
-# Copy final vcf and vcf.table to results directory
+# Copy final SNP and SV vcf and vcf.table to results directory
 
 <#list sample as s>
 
-	cp ${s}.snps.final.vcf ${projectResultsDir}/snps
-	cp ${s}.snps.final.vcf.table ${projectResultsDir}/snps
+	cp ${s}.snps.final.vcf ${projectResultsDir}/snps/
+	cp ${s}.snps.final.vcf.table ${projectResultsDir}/snps/
+	cp ${s}.indels.final.vcf ${projectResultsDir}/structural_variants/
+	cp ${s}.indels.final.vcf.table ${projectResultsDir}/structural_variants/
 
 
 	# Copy genotype array vcf to results directory
@@ -113,6 +116,7 @@ cd ${projectResultsDir}
 
 zip -r ${projectResultsDir}/${project}.zip snps
 zip -gr ${projectResultsDir}/${project}.zip qc
+zip -gr ${projectResultsDir}/${project}.zip structural_variants
 zip -g ${projectResultsDir}/${project}.zip ${project}.csv
 zip -g ${projectResultsDir}/${project}.zip README.pdf
 zip -g ${projectResultsDir}/${project}.zip ${project}_QCReport.pdf

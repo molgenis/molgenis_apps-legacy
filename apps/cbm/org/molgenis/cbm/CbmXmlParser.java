@@ -20,11 +20,21 @@ import org.xml.sax.SAXException;
 
 public class CbmXmlParser
 {
+
 	public CbmNode load(File xmlFile, File xsdFile) throws JAXBException, SAXException, ParserConfigurationException,
 			IOException
 	{
+		// set up JAXB
+
+		// Create a JAXB context passing in the class of the object we want to
+		// marshal/unmarshal
 		JAXBContext jaxbContext = JAXBContext.newInstance(CbmNode.class.getPackage().getName());
+
+		// marshalling Object to XML
+		// Create the unmarshaller, this is the nifty little thing that will
+		// actually transform the XML back into an object
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
 		SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Schema schema = sf.newSchema(xsdFile);
 		unmarshaller.setSchema(schema);
@@ -34,7 +44,13 @@ public class CbmXmlParser
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(xmlFile);
 
+		// Unmarshal the XML in the stringWriter back into an object
 		JAXBElement<CbmNode> result = unmarshaller.unmarshal(doc.getFirstChild(), CbmNode.class);
+
+		// Print out the contents of the JavaObject we just unmarshalled from
+		// the XML
+		System.out.println(result.toString());
+
 		return result.getValue();
 	}
 }

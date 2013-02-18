@@ -20,12 +20,14 @@ PicardQCrecal,PicardQCrecal,MergeBam
 Coverage,Coverage,MergeBam
 CoverageGATK,CoverageGATK,MergeBam
 IndelGenotyper,IndelGenotyper,MergeBam
-FilterIndels,FilterIndels,IndelGenotyper
+Pindel,Pindel,MergeBam
+MergeIndelCalls,MergeIndelCalls,"IndelGenotyper,Pindel"
+StructuralVariantAnnotator,StructuralVariantAnnotator,MergeIndelCalls
+SvVcfToTable,SvVcfToTable,StructuralVariantAnnotator
 UnifiedGenotyper,UnifiedGenotyper,MergeBam
-MakeIndelMask,MakeIndelMask,FilterIndels
 GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
 VariantAnnotator,VariantAnnotator,GenomicAnnotator
 VcfToTable,VcfToTable,VariantAnnotator
 ConcordanceCheck,ConcordanceCheck,"MergeBam,UnifiedGenotyper"
 QCReport,QCReport,"PicardQCrecal,Markduplicates,ConcordanceCheck,Coverage,VcfToTable"
-CopyToResultsDir,CopyToResultsDir,"Fastqc,MergeBam,PicardQCrecal,VariantAnnotator,VcfToTable,ConcordanceCheck,QCReport"
+CopyToResultsDir,CopyToResultsDir,"Fastqc,MergeBam,PicardQCrecal,VariantAnnotator,VcfToTable,SvVcfToTable,ConcordanceCheck,QCReport"

@@ -8,22 +8,24 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=33:00:00 mem=8
+#MOLGENIS walltime=33:00:00 nodes=1 cores=4 mem=8
 #FOREACH externalSampleID
 
 inputs "${mergedbam}"
 inputs "${indexfile}"
+inputs "${dbsnpvcf}"
 alloutputsexist \
- "${indelsvcf}" \
- "${indelsbed}" \
- "${indelsverboseoutput}"
+"${ugindelsvcf}" \
+"${ugindelsmetrics}"
 
-java -Xmx8g -jar ${genomeAnalysisTKjar} \
--l INFO \
--T IndelGenotyperV2 \
--I ${mergedbam} \
--o ${indelsvcf} \
---bedOutput ${indelsbed} \
+java -Xmx8g -jar ${genomeAnalysisTKjar1324} \
+-T UnifiedGenotyper \
 -R ${indexfile} \
--verbose ${indelsverboseoutput} \
---window_size 300
+-I ${mergedbam} \
+-o ${ugindelsvcf} \
+-metrics ${ugindelsmetrics} \
+-D ${dbsnpvcf} \
+--genotype_likelihoods_model INDEL \
+--genotyping_mode DISCOVERY \
+--output_mode EMIT_VARIANTS_ONLY \
+-nt ${ugindelscores}

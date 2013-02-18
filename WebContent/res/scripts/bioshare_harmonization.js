@@ -46,17 +46,13 @@ function monitorJobs(url)
 function retrieveResult(url)
 {
 	$.ajax({
-		url : url + "&__action=download_json_retrieveResult",
+		url : url + "&__action=download_json_retrieveResult&matchingValidationStudy=" + $('#matchingValidationStudy').val(),
 		async: false,
 	}).done(function(status){
 
 		$('#beforeMapping').hide();
 
 		$('#details').empty();
-
-		$('#browser').empty();
-
-		$('#existingMappings').empty();
 
 		$('#mappingResult').empty();
 
@@ -68,16 +64,13 @@ function retrieveResult(url)
 
 		$('#matchingPredictionModel').text($('#selectPredictionModel').val());
 
-		$('#matchingValidationStudy').text($('#listOfCohortStudies').val());
-
 		$.each(status, function(key, Info)
 		{
-			if(key == "treeView")
-			{
-				$('#browser').empty().append(status["treeView"]);
-				
-			}else{
-				
+//			if(key == "treeView")
+//			{
+//				$('#browser').empty().append(status["treeView"]);
+//				
+//			}else{
 				label = Info["label"];
 
 				table = Info["mappingResult"];
@@ -88,96 +81,56 @@ function retrieveResult(url)
 
 				$('#existingMappings').append(existingMapping);
 
-				$('#validatePredictors').append("<option id=\"" + Info["identifier"].replace(/\s/g,"_")
-						+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
-			}
+				$('#validatePredictors').append("<option style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+				
+				$('#validatePredictors option:last-child').data('table_ID', Info["table_ID"]);
+//			}
 		});
 		
-		if($('#mappingResult table').size() == 0)
-		{
-			$('#candidateMapping').hide();
-			
-			$('#matchedMapping').fadeIn();
-			
-			$('#showCandidateMapping').hide();
-		}else{
-			$('#candidateMapping').fadeIn();
-			
-			$('#matchedMapping').hide();
-			
-			$('#showCandidateMapping').show();
-		}
+		$('#matchingSelectedPredictor').text($('#validatePredictors option:eq(0)').text());
 		
 		$('#validatePredictors option').each(function()
 		{
 			$(this).hover(
-					function(){
-						$(this).css({
-							"font-weight" : "bolder",
-							"color" : "grey"
-						});
-					},function(){
-						$(this).css({
-							"font-weight" : "normal",
-							"color" : "black"
-						});
-					}
+				function(){
+					$(this).css({
+						"font-weight" : "bolder",
+						"color" : "grey"
+					});
+				},function(){
+					$(this).css({
+						"font-weight" : "normal",
+						"color" : "black"
+					});
+				}
 			);
 		});
 		
 		$('#mappingResult tr td:first-child').each(function(){
 
-			identifier = $(this).parent().attr('id');
-			
-			identifier = identifier.replace("_row", "_details");
-			
-			$('#' + identifier).show();
+			identifier = $(this).parent().attr('id').replace("_row", "_details");
 			
 			$('#' + identifier).click(function()
 			{
 				predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
-				retrieveExpandedQueries(predictor, identifier.replace("_details", ""), url);
+				
+				retrieveExpandedQueries(predictor, $(this), url);
 			});	
-
-			$(this).hover(
-				function () {
-					$(this).css("font-weight", "bolder");
-					identifier = $(this).parent().attr('id');
-					identifier = identifier.replace("_row", "_details");
-					$('#' + identifier).show();
-				},
-				function () {
-					$(this).css("font-weight", "normal");
-				}
-			);
-
-			$(this).children('span').click(function()
-			{
-				measurementName = $(this).text();
-
-				trackInTree(measurementName, url);
-			});
 		});
 
-		$('#validatePredictors').click(function()
+		$('#validatePredictors').change(function()
 		{
-			predictorName = $(this).find('option:selected').eq(0).text();
-
-			$('#matchingSelectedPredictor').text(predictorName);
+			elementOption = $(this).find('option:selected');
+			
+			$('#matchingSelectedPredictor').text(elementOption.text());
 
 			$('#mappingResult table').hide();
 
 			$('#existingMappings table').hide();
 
-			id = $("#validatePredictors option:selected").attr('id');
+			tableID = elementOption.data('table_ID');
 
-			identifierForNew = "mapping_" + id;
-
-			$('#' + identifierForNew).show();
-
-			identifierForExisting = "matched_" + id;
-
-			$('#' + identifierForExisting).show();
+			$('#' + tableID).show();
 		});
 
 		$('#existingMappings tr td:last-child >div').each(function()
@@ -195,7 +148,7 @@ function retrieveResult(url)
 			});
 		});
 		
-		initializeTree(url);
+//		initializeTree(url);
 
 		$('#validatePredictors option:first-child').attr('selected', true).click();
 
@@ -234,7 +187,7 @@ function showExistingMapping(url)
 
 function validateStudy(formName)
 {
-	if($('#listOfCohortStudies option').length == 0){
+	if($('#listOfCohortStudies').siblings('table').find('tr:gt(0)').length == 0){
 
 		showMessage("There are no cohort studies to validate the prediction model", false);
 
@@ -244,13 +197,22 @@ function validateStudy(formName)
 
 	}else{
 
-		predictionModel = $('#selectPredictionModel').val();
-
-		validationStudy = $('#listOfCohortStudies').val();
+//		predictionModel = $('#selectPredictionModel').val();
+//
+//		validationStudy = $('#listOfCohortStudies').val();
 
 		$('#details').empty();
 
-		$('#browser').empty();
+//		$('#browser').empty();
+		
+		selectedStudies = {};
+		
+		$('#listOfCohortStudies').siblings('table').find('tr:gt(0)').each(function(){
+			
+			selectedStudies[$(this).children('td:eq(0)').text()] = $(this).children('td:eq(0)').text();
+		});
+		
+		$('input[name=\"selectedStudiesToMatch\"]').val(JSON.stringify(selectedStudies));
 
 		$('#existingMappings').empty();
 
@@ -297,7 +259,7 @@ function removeSingleMapping(element, url)
 
 	$.ajax({
 		url : url + "&__action=download_json_removeMapping&predictor=" 
-		+ $('#validatePredictors').val(),
+		+ $('#validatePredictors').attr('id'),
 		async : false,
 		data : data,
 	}).done(function(status){
@@ -397,28 +359,36 @@ function saveMapping(mappings, url)
 function retrieveExpandedQueries(predictor, matchedVariable, url)
 {	
 	$.ajax({
-		url : url + "&__action=download_json_retrieveExpandedQuery&predictor="
-		+ predictor + "&matchedVariable=" + matchedVariable,
-		async: false,
-
+		url : url + "&__action=download_json_retrieveExpandedQuery",
+		data : {
+			"predictor" : predictor,
+			"identifier" : $(matchedVariable).parents('tr').eq(0).attr('id').replace('_row', ''),
+			"matchedVariable" : $(matchedVariable).parents('td').eq(0).children('span:first-child').text(),
+			"investigationName" : $('#matchingValidationStudy').val(),
+		},
+		async : false,
 	}).done(function(status){
 
 		table = status["table"];
 
+		$('#expandedQueryTable').remove();
+		
 		$('#afterMapping').append(table);
 
-		$('#' + matchedVariable).dialog({
-			title : "Expanded queries",
-			height: 300,
-			width: 600,
-			modal: true,
-			buttons: {
-				Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			},
-		});
-		$('#' + matchedVariable).show();
+//		$('#' + matchedVariable).dialog({
+//			title : "Expanded queries",
+//			height: 300,
+//			width: 600,
+//			modal: true,
+//			buttons: {
+//				Cancel: function() {
+//					$( this ).dialog( "close" );
+//				}
+//			},
+//		});
+//		$('#' + matchedVariable).show();
+		
+		$('#expandedQueryTable').modal('show');
 	});
 }
 
@@ -444,8 +414,8 @@ function insertNewRow(url)
 		}
 		data["description"] = $('#descriptionOfPredictor').val();
 		data["dataType"] = $('#dataTypeOfPredictor').val();
-		data["unit"] = $('#unitOfPredictor').val();
-		data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
+		data["unit_name"] = $('#unitOfPredictor').val();
+		data["categories_name"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
 
 		buildingBlockString = uniqueElementToString($('#buildingBlocks').val().split(";"), ";");
 
@@ -487,7 +457,6 @@ function populateRowInTable(data, url)
 
 	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
 	newRow += "<td name=\"variableName\" class=\"ui-corner-all\"><span style=\"float:left;cursor:pointer;\">" + name + "</span>";
-	newRow += "<input id=\"" + name + "_name\" type=\"hidden\" value=\"" + name + "\"/>";
 	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:2px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
@@ -548,8 +517,8 @@ function populateRowInTable(data, url)
 				selectBlocks += createMultipleSelect(blocks);		
 			}
 			
-			row += "<tr><th class=\"ui-corner-all\">Building blocks:</td>";
-			row += "<td id=\"variableBuildingBlocks\" name=\"variableBuildingBlocks\" class=\"ui-corner-all\">" + selectBlocks + "</td></tr>";
+			row += "<tr><th class=\"ui-corner-all\">Building blocks:</td>"
+				+ "<td id=\"variableBuildingBlocks\" name=\"variableBuildingBlocks\" class=\"ui-corner-all\">" + selectBlocks + "</td></tr>";
 		}
 		
 		row += "<tr><td></td><td><input type=\"button\" id=\"matchSelectedVariable\"  style=\"margin-left:250px;\"" 
@@ -563,25 +532,39 @@ function populateRowInTable(data, url)
 		
 		$('#variableDetail tr:eq(0) div').click(function()
 		{
-			$('#variableDetail').empty();
-			$('#overviewTable td').show();
-			$('#overviewTable th').show();
-			$('#overviewTable').parents('div').eq(0).width("100%");
+			$('#overviewTable').parents('div').eq(0).width("100%").find('tr').children().show();
 			$("input[name=\"selectedVariableID\"]").val(null);
 		});
 		
-		$('#matchSelectedVariable').click(function()
-		{	
-			formName = $(this).parents('form').eq(0).attr('name');
+		$('#matchSelectedVariable').click(function(){
 			
-			selectedVariableID = $(document).data('selectedVariable');
+			$("input[name=\"selectedVariableID\"]").val($(document).data('selectedVariable'));
 			
-			$("input[name=\"selectedVariableID\"]").val(selectedVariableID);
+			$('#whetherWholeSet').text($(this).parents('table:eq(0)').find('tr:eq(2) td').text());
 			
-			$("input[name=\"__action\"]").val("loadMapping");
+			$('#selectCohortStudyPanel').modal('show');
 			
-			$("form[name=\"" + formName + "\"]").submit();
+//			selectPredictionModelModal = "<div id=\"\" class=\"modal hide fade\"><div class=\"modal-header\">Select validation study(ies) to match</div>"
+//									   + "<div class=\"modal-body\"></div><div class=\"modal-footer\">"
+//									   + "<input type=\"button\" id=\"matchSelectedVariable\""
+//									   +  "class=\"btn btn-info btn-small\" value=\"Match selected variable\">" 
+//									   +  "<button class=\"btn btn-info btn-small\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</button></div></div>";
+//			
+//			$('#beforeMapping').append(selectPredictionModelModal);
 		});
+		
+//		$('#matchSelectedVariable').click(function()
+//		{	
+//			formName = $(this).parents('form').eq(0).attr('name');
+//			
+//			selectedVariableID = $(document).data('selectedVariable');
+//			
+//			$("input[name=\"selectedVariableID\"]").val(selectedVariableID);
+//			
+//			$("input[name=\"__action\"]").val("loadMapping");
+//			
+//			$("form[name=\"" + formName + "\"]").submit();
+//		});
 		
 		$('#overviewTable tr').each(function(){
 			
@@ -598,7 +581,7 @@ function populateRowInTable(data, url)
 			});
 		});
 		
-		$('#overviewTable').parents('div').eq(0).css('width', '30%');
+		$('#overviewTable').parents('div').eq(0).css('width', '35%');
 	});
 
 	cancelAddPredictorPanel();
@@ -684,7 +667,7 @@ function addPredictor(url)
 
 function removePredictor(element, url)
 {	
-	predictorName = $(element).parents('td').children('input:hidden').eq(0).val();
+	predictorName = $(element).parents('td').eq(0).children('span:first-child').text();
 	
 	predictorID = $(element).parents('tr').eq(0).attr('id');
 	
@@ -715,6 +698,8 @@ function showPredictors(predictionModelName, url)
 		url : url + "&__action=download_json_showPredictors&name=" + predictionModelName,
 		async: false,
 	}).done(function(status){
+		
+		$('#overviewTable').parents('div').eq(0).width("100%").find('tr').children().show();
 		
 		$('#selectedPredictionModelName').val(status["name"]);
 		
@@ -763,7 +748,7 @@ function defineFormula(url)
 //Make the add predictor panel disappear
 function cancelAddPredictorPanel()
 {	
-	$('#defineVariablePanel').fadeOut();
+	$('#defineVariablePanel').modal('hide');
 	$('#defineVariablePanel input[type="text"]').val('');
 	$('#dataTypeOfPredictor option:first-child').attr('selected',true);
 	$('#categoryOfPredictor').attr('disabled', true);

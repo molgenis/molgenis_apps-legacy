@@ -8,26 +8,24 @@ import java.util.Map;
 
 public class MappingList
 {
-	private Map<ExpandedQueryObject, SimilarityRecord> uniqueElements = new HashMap<ExpandedQueryObject, SimilarityRecord>();
+	private Map<ExpandedQueryObject, Double> uniqueElements = new HashMap<ExpandedQueryObject, Double>();
 
 	// private Map<ExpandedQueryObject, LinkedInformation> uniqueElements = new
 	// HashMap<ExpandedQueryObject, LinkedInformation>();
 
-	public void add(String expandedQuery, String matchedItem, double similarity, String measurementName)
-			throws Exception
+	public void add(String expandedQuery, Integer featureID, double similarity) throws Exception
 	{
-		if (expandedQuery == null || matchedItem == null || measurementName == null) throw new Exception(
-				"Parameters have to be not null!");
+		if (expandedQuery == null || featureID == null) throw new Exception("Parameters have to be not null!");
 
-		if (expandedQuery.isEmpty() || matchedItem.isEmpty()) throw new Exception("Parameters have to be not empty");
+		if (expandedQuery.isEmpty()) throw new Exception("Parameters have to be not empty");
 
-		ExpandedQueryObject uniqueName = new ExpandedQueryObject(expandedQuery, measurementName);
+		ExpandedQueryObject uniqueName = new ExpandedQueryObject(expandedQuery, featureID);
 
 		if (uniqueElements.containsKey(uniqueName))
 		{
-			if (similarity > uniqueElements.get(uniqueName).getSimilarity())
+			if (similarity > uniqueElements.get(uniqueName))
 			{
-				uniqueElements.get(uniqueName).setSimilarity(similarity);
+				uniqueElements.put(uniqueName, similarity);
 			}
 		}
 		else
@@ -35,7 +33,7 @@ public class MappingList
 			// LinkedInformation inf = new LinkedInformation(expandedQuery,
 			// matchedItem, similarity, measurementName);
 
-			uniqueElements.put(uniqueName, new SimilarityRecord(matchedItem, similarity));
+			uniqueElements.put(uniqueName, similarity);
 		}
 	}
 
@@ -43,10 +41,10 @@ public class MappingList
 	{
 		List<LinkedInformation> sortedLinks = new ArrayList<LinkedInformation>(uniqueElements.size());
 
-		for (Map.Entry<ExpandedQueryObject, SimilarityRecord> entry : uniqueElements.entrySet())
+		for (Map.Entry<ExpandedQueryObject, Double> entry : uniqueElements.entrySet())
 		{
-			sortedLinks.add(new LinkedInformation(entry.getKey().getExpandedQuery(), entry.getValue().getMatchedItem(),
-					entry.getValue().getSimilarity(), entry.getKey().getMeasurementName()));
+			sortedLinks.add(new LinkedInformation(entry.getKey().getExpandedQuery(), entry.getKey().getFeatureID(),
+					entry.getValue()));
 		}
 
 		Collections.sort(sortedLinks);
@@ -55,42 +53,37 @@ public class MappingList
 				: sortedLinks);
 	}
 
-	private static class SimilarityRecord
-	{
-		private final String matchedItem;
-		private double similarity;
-
-		public SimilarityRecord(String matchedItem, double similarity)
-		{
-			this.matchedItem = matchedItem;
-			this.setSimilarity(similarity);
-		}
-
-		public double getSimilarity()
-		{
-			return similarity;
-		}
-
-		public void setSimilarity(double similarity)
-		{
-			this.similarity = similarity;
-		}
-
-		public String getMatchedItem()
-		{
-			return matchedItem;
-		}
-	}
+	// private static class SimilarityRecord
+	// {
+	// private final String matchedItem;
+	// private double similarity;
+	//
+	// public SimilarityRecord(String matchedItem, double similarity)
+	// {
+	// this.matchedItem = matchedItem;
+	// this.setSimilarity(similarity);
+	// }
+	//
+	// public double getSimilarity()
+	// {
+	// return similarity;
+	// }
+	//
+	// public void setSimilarity(double similarity)
+	// {
+	// this.similarity = similarity;
+	// }
+	// }
 
 	private static class ExpandedQueryObject
 	{
 		private final String expandedQuery;
-		private final String measurementName;
+		private final Integer featureID;
 
-		public ExpandedQueryObject(String expandedQuery, String measurementName)
+		public ExpandedQueryObject(String expandedQuery, Integer featureID)
 		{
 			this.expandedQuery = expandedQuery;
-			this.measurementName = measurementName;
+			this.featureID = featureID;
 		}
 
 		@Override
@@ -98,8 +91,8 @@ public class MappingList
 		{
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((getExpandedQuery() == null) ? 0 : getExpandedQuery().hashCode());
-			result = prime * result + ((getMeasurementName() == null) ? 0 : getMeasurementName().hashCode());
+			result = prime * result + ((expandedQuery == null) ? 0 : expandedQuery.hashCode());
+			result = prime * result + ((featureID == null) ? 0 : featureID.hashCode());
 			return result;
 		}
 
@@ -110,16 +103,16 @@ public class MappingList
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
 			ExpandedQueryObject other = (ExpandedQueryObject) obj;
-			if (getExpandedQuery() == null)
+			if (expandedQuery == null)
 			{
-				if (other.getExpandedQuery() != null) return false;
+				if (other.expandedQuery != null) return false;
 			}
-			else if (!getExpandedQuery().equals(other.getExpandedQuery())) return false;
-			if (getMeasurementName() == null)
+			else if (!expandedQuery.equals(other.expandedQuery)) return false;
+			if (featureID == null)
 			{
-				if (other.getMeasurementName() != null) return false;
+				if (other.featureID != null) return false;
 			}
-			else if (!getMeasurementName().equals(other.getMeasurementName())) return false;
+			else if (!featureID.equals(other.featureID)) return false;
 			return true;
 		}
 
@@ -128,9 +121,9 @@ public class MappingList
 			return expandedQuery;
 		}
 
-		public String getMeasurementName()
+		public Integer getFeatureID()
 		{
-			return measurementName;
+			return featureID;
 		}
 	}
 }
