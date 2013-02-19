@@ -6,7 +6,7 @@ getFile ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleCh
 getFile ${transpose_script}
 
 #Transpose the probs file
-{python_exec} ${transpose_script} ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob.transposed
+${python_exec} ${transpose_script} ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob.transposed
 
 #Get return code from last program call
 returnCode=$?
