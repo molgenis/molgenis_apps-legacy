@@ -50,6 +50,7 @@ referenceTriTyperDir,${referenceFolder}/${referencePanel}/TriTyper/Chr${chr}/,en
 pythonversion,2.7.3,,,
 pythonscripts,${tooldir}/python_scripts,,,
 transpose_script,${pythonscripts}/transpose_file.py,,,
+imputation_quality_metrics_script,${pythonscripts}/imputation_quality_metrics.py,,,
 python_exec,${tooldir}/Python-{pythonversion}/bin/python,,,
 transpose_script,,
 javaversion,1.6.0_33,,,
