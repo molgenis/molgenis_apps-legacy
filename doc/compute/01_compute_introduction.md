@@ -39,8 +39,8 @@ You can download a ready made binary as follows:
 
 >mkdir mycompute  
 >cd mycompute  
->wget #paste here url to binary zip  
->unzip molgenis_apps/dist/molgenis_compute-\<version>.zip   
+>wget http://www.molgenis.org/raw-attachment/wiki/ComputeStart/molgenis_compute-dc6ac9c.zip  
+>unzip molgenis_compute-\<version>.zip   
 >mv molgenis_compute-\<version>/* .  
 >  
 >\#test  
@@ -51,10 +51,10 @@ Alternatively to download you can checkout the latest code:
 
 >mkdir mycompute  
 >cd mycompute  
->git clone https://github.com/molgenis/molgenis_apps.git  
->git clone https://github.com/molgenis/molgenis.git  
->ant -f molgenis_apps/build_compute.xml clean-generate-compile-makedistro  
->unzip molgenis_apps/dist/molgenis_compute-*.zip  
+>git clone https://github.com/molgenis/molgenis_apps-legacy.git  
+>git clone https://github.com/molgenis/molgenis-legacy.git  
+>ant -f molgenis_apps-legacy/build_compute.xml clean-generate-compile-makedistro  
+>unzip molgenis_apps-legacy/dist/molgenis_compute-*.zip  
 >mv molgenis_compute-*/* .  
 >  
 >\#test  
