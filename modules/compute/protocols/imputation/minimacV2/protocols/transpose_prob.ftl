@@ -1,9 +1,9 @@
-
 #MOLGENIS walltime=96:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr,chrChunk,sampleChunk
 
 getFile ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob
+getFile ${transpose_script}
 
 #Transpose the probs file
 {python_exec} ${transpose_script} ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob ${imputationResultDir}/~chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.imputed.prob.transposed
