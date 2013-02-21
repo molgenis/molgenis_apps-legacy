@@ -21,11 +21,6 @@ ${plink} --file ${studyInputDir}/chr${chr} \
 	--recode --noweb \
 	--out ${resultDir}/~qc_1/chr${chr}
 
-
-#inputs "${referenceChrVcf}" 
-#inputs "${prePhasingChrResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.gz" 
-#inputs "${studyMerlinChrDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.dat.snps"
-
 #Get return code from last program call
 returnCode=$?
 
