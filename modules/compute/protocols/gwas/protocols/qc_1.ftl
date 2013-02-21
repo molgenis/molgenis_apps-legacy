@@ -5,7 +5,7 @@
 getFile ${studyInputDir}/chr${chr}.ped
 getFile ${studyInputDir}/chr${chr}.map
 
-mkdir -p {resultDir}/qc_1
+mkdir -p ${resultDir}/qc_1
 
 alloutputsexist \
 	${resultDir}/qc_1/chr${chr}.ped \
@@ -19,7 +19,7 @@ ${plink} --file ${studyInputDir}/chr${chr} \
 	--hwe ${plink_hwe} \
 	--me ${plink_me1} ${plink_me2} \
 	--recode --noweb \
-	--out {resultDir}/~qc_1/chr${chr}
+	--out ${resultDir}/~qc_1/chr${chr}
 
 
 #inputs "${referenceChrVcf}" 
