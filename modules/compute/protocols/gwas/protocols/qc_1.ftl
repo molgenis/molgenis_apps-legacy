@@ -13,11 +13,11 @@ alloutputsexist \
 
 # For explenation of these parameters see: http://pngu.mgh.harvard.edu/~purcell/plink/thresh.shtml
 ${plink} --file ${studyInputDir}/chr${chr} \
-	--mind N \
-	--geno N \
-	--maf N \
-	--hwe N \
-	--me N M \
+	--mind ${plink_mind} \
+	--geno ${plink_geno} \
+	--maf ${plink_maf} \
+	--hwe ${plink_hwe} \
+	--me ${plink_me1} ${plink_me2} \
 	--recode --noweb \
 	--out {resultDir}/~qc_1/chr${chr}
 
