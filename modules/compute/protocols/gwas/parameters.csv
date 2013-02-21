@@ -68,7 +68,7 @@ liftOverUcscBinversion,20120905,,,
 convertB36ChrHg18Bed,${convertB36ChrTempDir}/chr_${chr}Hg18.bed,,,
 liftoverDir,${resdir}/liftover/,,,
 hg19ToHg18chainfile,${liftoverDir}/hg19ToHg18.over.chain,,,
-project,,,,"imputationResultDir,studyInputDir,referencePanel,imputationPipeline,prePhasingResultDir"
+project,,,,"studyInputDir,resultDir"
 expandWorksheetJar,${tooldir}/ExpandWorksheetWithMergeWorksheet${expandWorksheetJarversion}/ExpandWorksheetWithMergeWorksheet${expandWorksheetJarversion}.jar,,,
 expandWorksheetJarversion,V1.1,,,
 concatWorksheetsJar,${tooldir}/ConcatWorksheets${concatWorksheetsJarversion}/ConcatWorksheets${concatWorksheetsJarversion}.jar
