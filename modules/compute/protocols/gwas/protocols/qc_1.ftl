@@ -1,8 +1,14 @@
 #MOLGENIS walltime=96:00:00 nodes=1 cores=1 mem=4
 
-#FOREACH project,chr,chrChunk,sampleChunk
+#FOREACH project,chr
 
-getFile ${minimacBin}
+getFile ${studyInputDir}/chr${chr}.ped
+getFile ${studyInputDir}/chr${chr}.map
+
+k k
+
+plink
+
 
 getFile ${referenceChrVcf}
 getFile ${prePhasingChrResultDir}/chunk${chrChunk}-chr${chr}_sampleChunk${sampleChunk}.gz
