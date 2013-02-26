@@ -1,15 +1,30 @@
+
+
 #MOLGENIS walltime=96:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr
 
-getFile ${studyInputDir}/chr${chr}.ped
-getFile ${studyInputDir}/chr${chr}.map
+getFile ${resultDir}/qc_1/chr${chr}.ped
+getFile ${resultDir}/qc_1/chr${chr}.map
 
-mkdir -p ${resultDir}/qc_1
+mkdir -p ${resultDir}/pca
+
+echo "
+genotypename:    ${resultDir}/qc_1/chr${chr}.ped
+snpname:         ${resultDir}/qc_1/chr${chr}.map
+indivname:       ${resultDir}/qc_1/chr${chr}.ped
+outputformat:    EIGENSTRAT
+genotypeoutname: combined.eigenstratgeno
+snpoutname:      combined.snp
+indivoutname:    combined.ind
+familynames:     NO
+"
+
+${convertf} -p param.txt
 
 alloutputsexist \
   ${resultDir}/qc_1/chr${chr}.ped \
-	${resultDir}/qc_1/chr${chr}.map
+  ${resultDir}/qc_1/chr${chr}.map
 
 # For explenation of these parameters see: http://pngu.mgh.harvard.edu/~purcell/plink/thresh.shtml
 ${plink} --file ${studyInputDir}/chr${chr} \
