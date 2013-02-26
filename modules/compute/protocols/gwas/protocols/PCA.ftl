@@ -1,26 +1,42 @@
 
-
 #MOLGENIS walltime=96:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr
 
-getFile ${resultDir}/qc_1/chr${chr}.ped
-getFile ${resultDir}/qc_1/chr${chr}.map
+getFile ${resultDir}/qc_1/qc.ped
+getFile ${resultDir}/qc_1/qc.map
 
 mkdir -p ${resultDir}/pca
 
+#Creating parameters file
 echo "
-genotypename:    ${resultDir}/qc_1/chr${chr}.ped
-snpname:         ${resultDir}/qc_1/chr${chr}.map
-indivname:       ${resultDir}/qc_1/chr${chr}.ped
+genotypename:    ${resultDir}/qc_1/qc.ped
+snpname:         ${resultDir}/qc_1/qc.map
+indivname:       ${resultDir}/qc_1/qc.ped
 outputformat:    EIGENSTRAT
-genotypeoutname: combined.eigenstratgeno
-snpoutname:      combined.snp
-indivoutname:    combined.ind
+genotypeoutname: ${resultDir}/pca/combined.eigenstratgeno
+snpoutname:      ${resultDir}/pca/combined.snp
+indivoutname:    ${resultDir}/pca/combined.ind
 familynames:     NO
-"
+" > ${resultDir}/pca/param.txt
 
-${convertf} -p param.txt
+#Convert from ped / map to eigen
+${convertf} -p ${resultDir}/pca/param.txt
+
+#Do the PCA
+${smartpca_perl} \
+    -i ${resultDir}/pca/combined.eigenstratgeno \
+    -a ${resultDir}/pca/combined.snp \
+    -b ${resultDir}/pca/combined.ind \
+    -k 10 \
+    -o ${resultDir}/pca/combinedPca.pca \
+    -p ${resultDir}/pca/combinedPca.plot \
+    -e ${resultDir}/pca/combinedPca.eval \
+    -l ${resultDir}/pca/combinedPca.log \
+    -m 0 \
+    -t 10 \
+    -s 6 \
+    -w ${resultDir}/pca/1000gGonlPopulation.txt
 
 alloutputsexist \
   ${resultDir}/qc_1/chr${chr}.ped \
