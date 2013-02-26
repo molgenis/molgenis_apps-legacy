@@ -1,4 +1,3 @@
-
 #MOLGENIS walltime=96:00:00 nodes=1 cores=1 mem=4
 
 #FOREACH project,chr
@@ -14,54 +13,56 @@ genotypename:    ${resultDir}/qc_1/qc.ped
 snpname:         ${resultDir}/qc_1/qc.map
 indivname:       ${resultDir}/qc_1/qc.ped
 outputformat:    EIGENSTRAT
-genotypeoutname: ${resultDir}/pca/combined.eigenstratgeno
-snpoutname:      ${resultDir}/pca/combined.snp
-indivoutname:    ${resultDir}/pca/combined.ind
+genotypeoutname: ${resultDir}/pca/~combined.eigenstratgeno
+snpoutname:      ${resultDir}/pca/~combined.snp
+indivoutname:    ${resultDir}/pca/~combined.ind
 familynames:     NO
 " > ${resultDir}/pca/param.txt
 
 #Convert from ped / map to eigen
 ${convertf} -p ${resultDir}/pca/param.txt
 
+alloutputsexist \
+  ${resultDir}/pca/combinedPca.pca \
+  ${resultDir}/pca/combinedPca.plot \
+  ${resultDir}/pca/combinedPca.eval \
+  ${resultDir}/pca/combinedPca.log
+
+
 #Do the PCA
 ${smartpca_perl} \
-    -i ${resultDir}/pca/combined.eigenstratgeno \
-    -a ${resultDir}/pca/combined.snp \
-    -b ${resultDir}/pca/combined.ind \
+    -i ${resultDir}/pca/~combined.eigenstratgeno \
+    -a ${resultDir}/pca/~combined.snp \
+    -b ${resultDir}/pca/~combined.ind \
     -k 10 \
-    -o ${resultDir}/pca/combinedPca.pca \
-    -p ${resultDir}/pca/combinedPca.plot \
-    -e ${resultDir}/pca/combinedPca.eval \
-    -l ${resultDir}/pca/combinedPca.log \
+    -o ${resultDir}/pca/~combinedPca.pca \
+    -p ${resultDir}/pca/~combinedPca.plot \
+    -e ${resultDir}/pca/~combinedPca.eval \
+    -l ${resultDir}/pca/~combinedPca.log \
     -m 0 \
     -t 10 \
-    -s 6 \
-    -w ${resultDir}/pca/1000gGonlPopulation.txt
-
-alloutputsexist \
-  ${resultDir}/qc_1/chr${chr}.ped \
-  ${resultDir}/qc_1/chr${chr}.map
-
-# For explenation of these parameters see: http://pngu.mgh.harvard.edu/~purcell/plink/thresh.shtml
-${plink} --file ${studyInputDir}/chr${chr} \
-	--mind ${plink_mind} \
-	--geno ${plink_geno} \
-	--maf ${plink_maf} \
-	--hwe ${plink_hwe} \
-	--me ${plink_me1} ${plink_me2} \
-	--recode --noweb \
-	--out ${resultDir}/~qc_1/chr${chr}
+    -s 6 
 
 #Get return code from last program call
 returnCode=$?
 
 if [ $returnCode -eq 0 ]
 then
-	mv ${resultDir}/~qc_1/chr${chr}.ped ${resultDir}/qc_1/chr${chr}.ped
-	mv ${resultDir}/~qc_1/chr${chr}.map ${resultDir}/qc_1/chr${chr}.map
+	mv ${resultDir}/pca/~combined.eigenstratgeno ${resultDir}/pca/combined.eigenstratgeno
+	mv ${resultDir}/pca/~combined.snp ${resultDir}/pca/combined.snp
+	mv ${resultDir}/pca/~combined.ind ${resultDir}/pca/combined.ind
+	mv ${resultDir}/pca/~combinedPca.pca ${resultDir}/pca/combinedPca.pca
+	mv ${resultDir}/pca/~combinedPca.plot ${resultDir}/pca/combinedPca.plot
+	mv ${resultDir}/pca/~combinedPca.eval ${resultDir}/pca/combinedPca.eval
+	mv ${resultDir}/pca/~combinedPca.log ${resultDir}/pca/combinedPca.log
 
-	putFile ${resultDir}/qc_1/chr${chr}.ped
-	putFile ${resultDir}/qc_1/chr${chr}.map
+	putFile ${resultDir}/pca/combined.eigenstratgeno
+	putFile ${resultDir}/pca/combined.snp
+	putFile ${resultDir}/pca/combined.ind
+	putFile ${resultDir}/pca/combinedPca.pca
+	putFile ${resultDir}/pca/combinedPca.plot
+	putFile ${resultDir}/pca/combinedPca.eval
+	putFile ${resultDir}/pca/combinedPca.log
 	
 else
   
