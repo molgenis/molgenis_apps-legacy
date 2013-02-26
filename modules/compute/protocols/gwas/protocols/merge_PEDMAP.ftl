@@ -2,34 +2,34 @@
 
 #FOREACH project
 
-touch ${resultDir}/qc_1/allfiles.txt
+touch ${resultDir}/prunning/allfiles.txt
 
-getFile ${resultDir}/qc_1/chr1.ped
-getFile ${resultDir}/qc_1/chr1.map
+getFile ${resultDir}/prunning/chr1.ped
+getFile ${resultDir}/prunning/chr1.map
 
 for $CHROMOSOME in {2..22}
 do
-   getFile ${resultDir}/qc_1/chr$CHROMOSOME.ped
-   getFile ${resultDir}/qc_1/chr$CHROMOSOME.map
-   echo "${resultDir}/qc_1/chr$CHROMOSOME.ped ${resultDir}/qc_1/chr$CHROMOSOME.map" >> ${resultDir}/qc_1/allfiles.txt
+   getFile ${resultDir}/prunning/chr$CHROMOSOME.ped
+   getFile ${resultDir}/prunning/chr$CHROMOSOME.map
+   echo "${resultDir}/prunning/chr$CHROMOSOME.ped ${resultDir}/qc_1/chr$CHROMOSOME.map" >> ${resultDir}/qc_1/allfiles.txt
 done
 
 alloutputsexist \
-   ${resultDir}/qc_1/qc.ped
-   ${resultDir}/qc_1/qc.map
+   ${resultDir}/prunning/merged.ped
+   ${resultDir}/prunning/merged.map
 
-${plink} --file ${resultDir}/qc_1/chr1 --merge-list ${resultDir}/qc_1/allfiles.txt --noweb --recode --out ${resultDir}/qc_1/~qc
+${plink} --file ${resultDir}/prunning/chr1 --merge-list ${resultDir}/prunning/allfiles.txt --noweb --recode --out ${resultDir}/prunning/merged
 
 #Get return code from last program call
 returnCode=$?
 
 if [ $returnCode -eq 0 ]
 then
-  mv ${resultDir}/qc_1/~qc.ped ${resultDir}/qc_1/qc.ped
-	mv ${resultDir}/qc_1/~qc.map ${resultDir}/qc_1/qc.map
+    mv ${resultDir}/prunning/~merged.ped ${resultDir}/prunning/merged.ped
+    mv ${resultDir}/prunning/~merged.map ${resultDir}/prunning/merged.map
 
-	putFile ${resultDir}/qc_1/qc.ped
-	putFile ${resultDir}/qc_1/qc.map
+    putFile ${resultDir}/prunning/merged.ped
+    putFile ${resultDir}/prunning/merged.map
 
 else
   
