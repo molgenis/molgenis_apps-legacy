@@ -2,16 +2,16 @@
 
 #FOREACH project,chr
 
-getFile ${resultDir}/qc_1/qc.ped
-getFile ${resultDir}/qc_1/qc.map
+getFile ${resultDir}/prunning/merged.ped
+getFile ${resultDir}/prunning/merged.map
 
 mkdir -p ${resultDir}/pca
 
 #Creating parameters file
 echo "
-genotypename:    ${resultDir}/qc_1/qc.ped
-snpname:         ${resultDir}/qc_1/qc.map
-indivname:       ${resultDir}/qc_1/qc.ped
+genotypename:    ${resultDir}/prunning/merged.ped
+snpname:         ${resultDir}/prunning/merged.map
+indivname:       ${resultDir}/prunning/merged.ped
 outputformat:    EIGENSTRAT
 genotypeoutname: ${resultDir}/pca/~combined.eigenstratgeno
 snpoutname:      ${resultDir}/pca/~combined.snp
