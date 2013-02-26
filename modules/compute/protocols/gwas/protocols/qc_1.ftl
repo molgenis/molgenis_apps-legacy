@@ -19,15 +19,15 @@ ${plink} --file ${studyInputDir}/chr${chr} \
 	--hwe ${plink_hwe} \
 	--me ${plink_me1} ${plink_me2} \
 	--recode --noweb \
-	--out ${resultDir}/~qc_1/chr${chr}
+	--out ${resultDir}/qc_1/~chr${chr}
 
 #Get return code from last program call
 returnCode=$?
 
 if [ $returnCode -eq 0 ]
 then
-	mv ${resultDir}/~qc_1/chr${chr}.ped ${resultDir}/qc_1/chr${chr}.ped
-	mv ${resultDir}/~qc_1/chr${chr}.map ${resultDir}/qc_1/chr${chr}.map
+	mv ${resultDir}/qc_1/~chr${chr}.ped ${resultDir}/qc_1/chr${chr}.ped
+	mv ${resultDir}/qc_1/~chr${chr}.map ${resultDir}/qc_1/chr${chr}.map
 
 	putFile ${resultDir}/qc_1/chr${chr}.ped
 	putFile ${resultDir}/qc_1/chr${chr}.map
