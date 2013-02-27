@@ -5,6 +5,8 @@
 getFile ${resultDir}/prunning/merged.ped
 getFile ${resultDir}/prunning/merged.map
 
+#PATH=$PATH:${tooldir}/EIG/
+
 mkdir -p ${resultDir}/pca
 
 #Creating parameters file
