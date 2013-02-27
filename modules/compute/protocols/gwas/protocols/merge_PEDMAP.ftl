@@ -11,11 +11,11 @@ for $CHROMOSOME in {2..22}
 do
    getFile ${resultDir}/prunning/chr$CHROMOSOME.ped
    getFile ${resultDir}/prunning/chr$CHROMOSOME.map
-   echo "${resultDir}/prunning/chr$CHROMOSOME.ped ${resultDir}/qc_1/chr$CHROMOSOME.map" >> ${resultDir}/qc_1/allfiles.txt
+   echo "${resultDir}/prunning/chr$CHROMOSOME.ped ${resultDir}/prunning/chr$CHROMOSOME.map" >> ${resultDir}/prunning/allfiles.txt
 done
 
 alloutputsexist \
-   ${resultDir}/prunning/merged.ped
+   ${resultDir}/prunning/merged.ped \
    ${resultDir}/prunning/merged.map
 
 ${plink} --file ${resultDir}/prunning/chr1 --merge-list ${resultDir}/prunning/allfiles.txt --noweb --recode --out ${resultDir}/prunning/merged
