@@ -18,7 +18,7 @@ alloutputsexist \
    ${resultDir}/prunning/merged.ped \
    ${resultDir}/prunning/merged.map
 
-${plink} --file ${resultDir}/prunning/chr1 --merge-list ${resultDir}/prunning/allfiles.txt --noweb --recode --out ${resultDir}/prunning/merged
+${plink} --file ${resultDir}/prunning/chr1 --merge-list ${resultDir}/prunning/allfiles.txt --noweb --recode --out ${resultDir}/prunning/~merged
 
 #Get return code from last program call
 returnCode=$?
