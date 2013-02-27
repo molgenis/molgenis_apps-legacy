@@ -11,7 +11,10 @@ alloutputsexist \
     ${resultDir}/prunning/chr${chr}.ped
     ${resultDir}/prunning/chr${chr}.map
 
+# http://pngu.mgh.harvard.edu/~purcell/plink/summary.shtml#prune
 ${plink} --file ${resultDir}/qc_1/chr${chr} --indep-pairwise 1000 5 0.2 --out ${resultDir}/prunning/~chr${chr} --noweb
+
+${plink} --file ${resultDir}/qc_1/chr${chr} --extract ${resultDir}/prunning/~chr${chr}.prune.in --noweb --recode --out ${resultDir}/prunning/~chr${chr}
 
 #Get return code from last program call
 returnCode=$?
