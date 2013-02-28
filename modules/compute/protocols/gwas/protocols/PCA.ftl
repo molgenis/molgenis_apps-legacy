@@ -41,7 +41,8 @@ alloutputsexist \
 
 
 #Do the PCA
-${smartpca_perl} \
+#We change the running directory because the pdf is exported at current dir
+cd ${resultDir}/pca; ${smartpca_perl} \
     -i ${resultDir}/pca/~combined.eigenstratgeno \
     -a ${resultDir}/pca/~combined.snp \
     -b ${resultDir}/pca/~combined.ind \
@@ -66,6 +67,7 @@ then
 	mv ${resultDir}/pca/~combinedPca.plot ${resultDir}/pca/combinedPca.plot
 	mv ${resultDir}/pca/~combinedPca.eval ${resultDir}/pca/combinedPca.eval
 	mv ${resultDir}/pca/~combinedPca.log ${resultDir}/pca/combinedPca.log
+	mv ${resultDir}/pca/~combinedPca.plot.pdf ${resultDir}/pca/combinedPca.plot.pdf
 
 	putFile ${resultDir}/pca/combined.eigenstratgeno
 	putFile ${resultDir}/pca/combined.snp
@@ -74,6 +76,7 @@ then
 	putFile ${resultDir}/pca/combinedPca.plot
 	putFile ${resultDir}/pca/combinedPca.eval
 	putFile ${resultDir}/pca/combinedPca.log
+	putFile ${resultDir}/pca/combinedPca.plot.pdf
 	
 else
   
