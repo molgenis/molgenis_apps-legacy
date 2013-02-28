@@ -5,7 +5,16 @@
 getFile ${resultDir}/prunning/merged.ped
 getFile ${resultDir}/prunning/merged.map
 
-#PATH=$PATH:${tooldir}/EIG/
+#Check if convertf is on path
+hash convertf || PATH=$PATH:${tooldir}/EIG/
+
+#Check if gnuplot is on path
+hash gnuplot || PATH=$PATH:${gnuplot_path}
+
+#Check if GNUPLOT_PS_DIR is defined
+if [ -z "$GNUPLOT_PS_DIR" ]; then
+    export GNUPLOT_PS_DIR=${gnuplot_path}/term/PostScript
+fi  
 
 mkdir -p ${resultDir}/pca
 
