@@ -30,6 +30,7 @@ plinkseqBin,${tooldir}/plink-${plinkseqversion}/plink108,,,
 plinkseqversion,1.08,,,
 convertf,${tooldir}/EIG/convertf,,,
 smartpca_perl,${tooldir}/EIG/smartpca.perl,,,
+gnuplot_path,${tooldir}/gnuplot/src
 projectPhasingJobsDir,${McScripts}/../phasing/,,,
 projectImputationJobsDir,${McScripts}/../imputation/,,,
 projectPhasingJobsDirTarGz,${McScripts}/../phasing.tar.gz,,,
