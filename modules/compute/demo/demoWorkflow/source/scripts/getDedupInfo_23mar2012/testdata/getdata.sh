@@ -1,0 +1,1 @@
+scp cluster.gcc.rug.nl:$1 .

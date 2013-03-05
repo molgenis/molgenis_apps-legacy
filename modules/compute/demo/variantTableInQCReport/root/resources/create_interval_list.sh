@@ -1,0 +1,2 @@
+cat simulatedReferenceGenome.dict simulated_targets.bed > simulated_targets.interval_list
+cat simulatedReferenceGenome.dict simulated_baits.bed > simulated_baits.interval_list

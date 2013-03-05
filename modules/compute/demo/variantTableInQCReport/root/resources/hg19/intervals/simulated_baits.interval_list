@@ -1,0 +1,5 @@
+@HD	VN:1.0	SO:coordinate
+@SQ	SN:1	LN:50	UR:file:/target/gpfs2/gcc/home/mdijkstra/development/refGenAndReads_simulation/simulatedReferenceGenome.fa	M5:5b6a89fc738bd2d48673a0604c5f306c
+@SQ	SN:2	LN:50	UR:file:/target/gpfs2/gcc/home/mdijkstra/development/refGenAndReads_simulation/simulatedReferenceGenome.fa	M5:729ab819d0301e49cf355f05b5b3c683
+1	1	50
+2	1	50

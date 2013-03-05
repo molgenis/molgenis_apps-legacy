@@ -1,0 +1,1 @@
+rm -fr autom4te.cache Makefile.in depcomp configure config.guess config.sub missing aclocal.m4 install-sh bwt_gen/Makefile.in

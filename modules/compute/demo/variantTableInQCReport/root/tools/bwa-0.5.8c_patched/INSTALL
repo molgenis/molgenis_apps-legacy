@@ -1,0 +1,9 @@
+Simply type `make' to compile and copy the resulting executable `bwa'
+anywhere you want. You may also like to copy `solid2fastq.pl' and
+`qualfa2fq.pl' for format conversion.
+
+On 32-bit system, you should compile bwa with `make CFLAGS=-O2'.
+
+The GNU building system is also supported, which is necessary for
+building Java binding. Nonetheless, directly runing `make' is
+recommended in most other cases.
