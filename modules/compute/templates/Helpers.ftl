@@ -31,6 +31,17 @@
 	<#return result>
 </#function>
 
+<#function ssv items>
+        <#local result = "">
+        <#list items as item>
+                <#if item_index != 0>
+                        <#local result =  result + " ">
+                </#if>
+                <#local result = result + item>
+        </#list>
+        <#return result>
+</#function>
+
 <#function figures figs>
 	<#local result = "">
 	<#assign maxnfigs=4 />
