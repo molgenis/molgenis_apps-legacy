@@ -1,7 +1,0 @@
-name,protocol_name,PreviousSteps_name
-1_RemoveBadSamples,1_RemoveBadSamples
-2_UpdateFamilyIDs,2_UpdateFamilyIDs,1_RemoveBadSamples
-3_UpdateParents,3_UpdateParents,2_UpdateFamilyIDs
-4_SexCheck,4_SexCheck,3_UpdateParents
-6_Missingness,6_Missingness,4_SexCheck
-7_Heterozygosity,7_Heterozygosity,6_Missingness
