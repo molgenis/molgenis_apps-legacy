@@ -39,7 +39,7 @@ You can download a ready made binary as follows:
 
 >mkdir mycompute  
 >cd mycompute  
->wget http://www.molgenis.org/raw-attachment/wiki/ComputeStart/molgenis_compute-dc6ac9c.zip  
+>wget http://www.molgenis.org/raw-attachment/wiki/ComputeStart/molgenis_compute-fb05467.zip
 >unzip molgenis_compute-\<version>.zip   
 >mv molgenis_compute-\<version>/* .  
 >  
@@ -291,7 +291,8 @@ The header of a protocol may contain the following line in which you specify the
 where `walltime` is the maximum execution time, `mem` is the memory (e.g. 512MB or 4GB), `nodes` is the number of nodes (default=1) and `cores` is the number of cores that you request for the execution of this analysis.
 
 ###Get input files
-A protocol may be executed in a distributed environment. As a result, the data may not be available on the node where the execution takes place. Therefore, one should first download the data to the execution node. In some distributed environments this may involve a series of statements that one actually does not want to care about. To make this process easier for our users, we come with the following solution. For every file that you want to use in the analysis protocol, you may include the following statement in the protocol before using it.
+A protocol may be executed in a distributed environment. As a result, the data may not be available on the node where the execution takes place. Therefore, one should first 
+the data to the execution node. In some distributed environments this may involve a series of statements that one actually does not want to care about. To make this process easier for our users, we come with the following solution. For every file that you want to use in the analysis protocol, you may include the following statement in the protocol before using it.
 
 >getFile "${myInputFile}"
 
