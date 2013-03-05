@@ -99,7 +99,7 @@
 		
 		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
 		<copy todir="${templates_dir}">
-		    <fileset dir="${app_module_dir}/org/molgenis/${app_name}/templates/"/>
+		    <fileset dir="${app_module_dir}/templates/"/> <!-- org/molgenis/${app_name}/ -->
 		</copy>
 		<copy todir="${protocols_dir}">
 		    <fileset dir="${app_module_dir}/protocols/"/>
