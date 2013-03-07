@@ -41,7 +41,7 @@
 		</path>
 
 		<!-- run the tests -->
-		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true"> 
 			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
 			<classfileset dir="${build.molgenis_apps.dir}" includes="**/AnimaldbSeleniumTest.class" />
 			<jvmarg value="-ea" />
