@@ -22,11 +22,18 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 {
 	Logger logger = Logger.getLogger(ComputeBundleFromDirectory.class);
 
+	private File protocolDir, templateDir;
+
 	/**
 	 * Load ComputeBundle
 	 */
 	public ComputeBundleFromDirectory(ComputeCommandLine options) throws Exception
 	{
+		// set path to protocol and template dir, so that validator can validate
+		// that Header.ftl and Footer.ftl are present
+		this.protocolDir = options.protocoldir;
+		this.templateDir = options.templatedir;
+
 		// validate headers
 		ComputeBundleValidator cbv = new ComputeBundleValidator(this);
 		cbv.validateFileHeaders(options);
@@ -45,7 +52,6 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// the system protocols
 		// If a protocol is loaded twice, then only keep first one
 		// only use system protocols if they are not in protocols folder
-		this.keepFirstProtocol();
 		this.setComputeParameters(options.parametersfile);
 		this.setWorksheet(options.worksheetfile);
 
@@ -230,7 +236,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				protocols.add(p);
 			}
 		}
-		this.setComputeProtocols(protocols);
+
+		this.appendComputeProtocols(protocols);
 	}
 
 	public void setComputeParameters(File file) throws Exception
@@ -281,6 +288,16 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		}
 		reader.close();
 		return fileData.toString();
+	}
+
+	public File getProtocolDir()
+	{
+		return protocolDir;
+	}
+
+	public File getTemplateDir()
+	{
+		return templateDir;
 	}
 
 	// public static void main(String[] args) throws Exception

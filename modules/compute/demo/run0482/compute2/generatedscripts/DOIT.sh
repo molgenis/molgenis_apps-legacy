@@ -1,1 +1,0 @@
-sh runlocal.sh > runlocal.log 2>&1 &
