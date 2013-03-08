@@ -1,20 +1,28 @@
 #MOLGENIS walltime=24:00:00 nodes=1 cores=1 mem=4
 
-known_haps_g=${known_haps_g}
-m=${m}
-h=${h}
-l=${l}
-additonalImpute2Param=${additonalImpute2Param}
-chr=${chr}
-fromChrPos=${fromChrPos}
-toChrPos=${toChrPos}
-imputationIntermediatesFolder=${imputationIntermediatesFolder}
-impute2Bin=${impute2Bin}
+known_haps_g="${known_haps_g}"
+m="${m}"
+h="${h}"
+l="${l}"
+additonalImpute2Param="${additonalImpute2Param}"
+chr="${chr}"
+fromChrPos="${fromChrPos}"
+toChrPos="${toChrPos}"
+imputationIntermediatesFolder="${imputationIntermediatesFolder}"
+impute2Bin="${impute2Bin}"
 
 <#noparse>
 
-tmpOuput="${imputationIntermediatesFolder}/~chr${chr}_${fromChrPos}-${toChrPos}"
+echo "known_haps_g: ${known_haps_g}";
+echo "chr: ${chr}"
+echo "fromChrPos: ${fromChrPos}"
+echo "toChrPos: ${toChrPos}"
+echo "interMediFolder: ${imputationIntermediatesFolder}"
+
+tmpOutput="${imputationIntermediatesFolder}/~chr${chr}_${fromChrPos}-${toChrPos}"
 finalOutput="${imputationIntermediatesFolder}/chr${chr}_${fromChrPos}-${toChrPos}"
+
+echo "tmpOutput: ${tmpOutput}"
 
 inputs $m
 inputs $h
@@ -36,26 +44,28 @@ $impute2Bin \
 	-l $l \
 	-k_hap $k_hap \
 	-int $fromChrPos $toChrPos \
-	-o $tmpOuput \
+	-o $tmpOutput \
 	$additonalImpute2Param
 		
 #Get return code from last program call
 returnCode=$?
 
+echo "returnCode impute2 ${returnCode}"
+
 if [ $returnCode -eq 0 ]
 then
 
 	#If there are no SNPs in this bin we will create empty files 
-	if [ ! -f ${tmpOuput}_info ]
+	if [ ! -f ${tmpOutput}_info ]
 	then
 	
-		echo "Touching file: ${tmpOuput}"
-		echo "Touching file: ${tmpOuput}_info"
-		echo "Touching file: ${tmpOuput}_info_by_sample"
+		echo "Touching file: ${tmpOutput}"
+		echo "Touching file: ${tmpOutput}_info"
+		echo "Touching file: ${tmpOutput}_info_by_sample"
 	
-		touch ${tmpOuput}
-		touch ${tmpOuput}_info
-		touch ${tmpOuput}_info_by_sample
+		touch ${tmpOutput}
+		touch ${tmpOutput}_info
+		touch ${tmpOutput}_info_by_sample
 	
 	fi
 	
@@ -63,7 +73,7 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-	for tempFile in ${tmpOuput}* ; do
+	for tempFile in ${tmpOutput}* ; do
 		finalFile=`echo $tempFile | sed -e "s/~//g"`
 		mv $tempFile $finalFile
 	done

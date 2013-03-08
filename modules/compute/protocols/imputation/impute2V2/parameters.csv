@@ -15,5 +15,5 @@ impute2Bin,/target/gpfs2/gcc/tools/impute_v2.3.0_x86_64_static/impute2,,string,
 imputationIntermediatesFolder,${outputFolder}/imputationChunks/,,string,
 impute2ChunkOutput,${imputationIntermediatesFolder}/chr${chr}_${fromChrPos}-${toChrPos},,string,
 impute2ChunkOutputInfo,${imputationIntermediatesFolder}/chr${chr}_${fromChrPos}-${toChrPos}_info,,string,
-chr,,,,
-known_haps_g,,,,chr
+outputFolder,,,,
+project,,,,outputFolder

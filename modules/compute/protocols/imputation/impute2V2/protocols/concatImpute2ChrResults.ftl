@@ -7,10 +7,10 @@
 declare -a impute2ChunkOutputs=(${ssvQuoted(impute2ChunkOutput)})
 declare -a impute2ChunkOutputInfos=(${ssvQuoted(impute2ChunkOutputInfo)})
 
-inputs "${ssvQuoted(impute2ResultChrBinInfoFile)}"
-inputs "${ssvQuoted(impute2ResultChrBinGenFile)}"
+inputs ${ssvQuoted(impute2ChunkOutput)}
+inputs ${ssvQuoted(impute2ChunkOutputInfo)}
 
-outputFolder=${outputFolder}
+outputFolder="${outputFolder}"
 
 <#noparse>
 
