@@ -42,7 +42,9 @@ You can download a ready made binary as follows:
 >\# Check www.molgenis.org/wiki/ComputeStart for the latest and greatest version!
 
 >wget http://www.molgenis.org/raw-attachment/wiki/ComputeStart/molgenis_compute-fb05467.zip
->unzip molgenis_compute-\<version>.zip   
+
+>unzip molgenis_compute-\<version>.zip
+
 >mv molgenis_compute-\<version>/* .  
 >  
 >\#test  
