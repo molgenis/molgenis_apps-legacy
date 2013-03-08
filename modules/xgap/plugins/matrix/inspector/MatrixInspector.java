@@ -11,6 +11,7 @@ import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
@@ -58,7 +59,7 @@ public class MatrixInspector extends PluginModel
 		return "plugins/matrix/inspector/MatrixInspector.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 
 	}

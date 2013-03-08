@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -64,7 +65,7 @@ public class ROnline<E extends Entity> extends PluginModel<E>
 		return "plugins/ronline/ROnline.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

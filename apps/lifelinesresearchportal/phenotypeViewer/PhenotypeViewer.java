@@ -45,9 +45,9 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -107,7 +107,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 		report = null;
 	}
 
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws Exception
 	{
 
 		if (out != null)
@@ -199,14 +199,14 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		if (request.getAction().equals("uploadFile"))
 		{
 
 			// If the checkbox is checked
-			if (request.getBool("createNewInvest") != null)
+			if (request.getBoolean("createNewInvest") != null)
 			{
 				projectName = request.getString("newInvestigation");
 				createInvestigation(projectName, db);
@@ -440,7 +440,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	}
 
-	private void importUploadFile(Database db, Tuple request) throws DatabaseException, TableException
+	private void importUploadFile(Database db, MolgenisRequest request) throws DatabaseException, TableException
 	{
 
 		try
@@ -535,7 +535,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 					String identifier = feat.replaceAll(" ", "_");
 					// Check if there the checkboxes are checked (if the new
 					// measurement should be added)
-					if (request.getBool(identifier + "_check") != null)
+					if (request.getBoolean(identifier + "_check") != null)
 					{
 
 						Measurement m = new Measurement();
@@ -573,7 +573,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 							List<String> categoryNameClean = new ArrayList<String>();
 
-							for (String eachCategory : request.getStringList(identifier + "_categoryString"))
+							for (String eachCategory : request.getList(identifier + "_categoryString"))
 							{
 
 								String standardName = eachCategory.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
@@ -824,7 +824,7 @@ public class PhenotypeViewer extends PluginModel<Entity> implements JQGridViewCa
 
 	}
 
-	public void checkHeaders(Database db, Tuple request, String filePath)
+	public void checkHeaders(Database db, MolgenisRequest request, String filePath)
 	{
 
 		File file = new File(filePath);

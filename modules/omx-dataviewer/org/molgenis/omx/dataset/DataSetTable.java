@@ -20,14 +20,14 @@ import org.molgenis.framework.tupletable.DatabaseTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.model.elements.Field;
-import org.molgenis.observ.Characteristic;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
 import org.molgenis.observ.ObservationSet;
-import org.molgenis.observ.ObservationTarget;
 import org.molgenis.observ.ObservedValue;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.observ.Protocol;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -89,27 +89,77 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 	{
 		try
 		{
-			// instead ask for protocol.features?
+			Integer protocolId = dataSet.getProtocolUsed_Id();
+			List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.ID, Operator.EQUALS, protocolId));
 
-			String sql = "SELECT DISTINCT Characteristic.identifier as name, Characteristic.name as label FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
-					+ dataSet.getId()
-					+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
-
-			columns = new ArrayList<Field>();
-			Field targetField = new Field("target");
-			targetField.setLabel("target");
-			columns.add(targetField);
-
-			for (Tuple t : getDb().sql(sql))
+			// if dataset has protocol-used, determine columns from protocol
+			if (protocols != null && !protocols.isEmpty())
 			{
-				Field f = new Field(t.getString("name"));
-				f.setLabel(t.getString("label"));
-				columns.add(f);
+				List<Integer> featureIds = getFeatureIds(protocols);
+				List<ObservableFeature> features = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.ID,
+						Operator.IN, featureIds));
+				if (features != null && !features.isEmpty())
+				{
+					columns = new ArrayList<Field>(features.size());
+					for (ObservableFeature feature : features)
+					{
+						Field field = new Field(feature.getIdentifier());
+						field.setLabel(feature.getName());
+						columns.add(field);
+					}
+				}
+				else
+				{
+					columns = Collections.emptyList();
+				}
+			}
+			else
+			{
+				// determine columns from ObservationSets
+				// TODO do not use hardcoded SQL query
+				String sql = "SELECT DISTINCT Characteristic.identifier as name, Characteristic.name as label FROM Characteristic, ObservedValue, ObservationSet WHERE ObservationSet.partOfDataSet="
+						+ dataSet.getId()
+						+ " AND ObservedValue.ObservationSet=ObservationSet.id AND Characteristic.id = ObservedValue.feature";
+
+				columns = new ArrayList<Field>();
+				for (Tuple t : getDb().sql(sql))
+				{
+					Field f = new Field(t.getString("name"));
+					f.setLabel(t.getString("label"));
+					columns.add(f);
+				}
 			}
 		}
 		catch (Exception e)
 		{
 			throw new TableException(e);
+		}
+	}
+
+	private List<Integer> getFeatureIds(List<Protocol> protocols) throws DatabaseException
+	{
+		List<Integer> protocolIds = new ArrayList<Integer>();
+		for (Protocol protocol : protocols)
+			getFeatureIdsRec(protocol, protocolIds);
+		return protocolIds;
+	}
+
+	private void getFeatureIdsRec(Protocol protocol, List<Integer> featureIds) throws DatabaseException
+	{
+		// store feature ids
+		featureIds.addAll(protocol.getFeatures_Id());
+
+		// recurse sub protocols
+		List<Integer> subProtocolIds = protocol.getSubprotocols_Id();
+		if (subProtocolIds != null && !subProtocolIds.isEmpty())
+		{
+			List<Protocol> subProtocols = db.find(Protocol.class, new QueryRule(Protocol.ID, Operator.IN,
+					subProtocolIds));
+			if (subProtocols != null)
+			{
+				for (Protocol subProtocol : subProtocols)
+					getFeatureIdsRec(subProtocol, featureIds);
+			}
 		}
 	}
 
@@ -155,17 +205,11 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 			for (ObservationSet os : query.find())
 			{
 
-				Tuple t = new SimpleTuple();
-				Characteristic c = db.findById(Characteristic.class, os.getTarget_Id());
-				t.set("target", c.getName());
+				WritableTuple tuple = new KeyValueTuple();
 
 				Query<ObservedValue> queryObservedValue = getDb().query(ObservedValue.class);
 
 				List<Field> columns = getColumns();
-				if (isFirstColumnFixed())
-				{
-					columns.remove(0);
-				}
 
 				// Only retrieve the visible columns
 				Collection<String> fieldNames = Collections2.transform(columns, new Function<Field, String>()
@@ -180,10 +224,10 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 				for (ObservedValue v : queryObservedValue.eq(ObservedValue.OBSERVATIONSET, os.getId())
 						.in(ObservedValue.FEATURE_IDENTIFIER, new ArrayList<String>(fieldNames)).find())
 				{
-					t.set(v.getFeature_Identifier(), v.getValue());
+					tuple.set(v.getFeature_Identifier(), v.getValue());
 				}
 
-				result.add(t);
+				result.add(tuple);
 			}
 
 			return result;
@@ -219,73 +263,47 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 		{
 			getDb().beginTx();
 
-			// verify columns to be feature identifiers
+			// validate features
 			Map<String, Integer> featureMap = new TreeMap<String, Integer>();
-
-			List<Field> cols = table.getAllColumns();
-			for (Field f : cols)
+			for (Field f : table.getAllColumns())
 			{
-				// first is always target, rest should be feature identifiers
-				if (!f.equals(cols.get(0)))
+				try
 				{
-					// slow
-					try
+					List<ObservableFeature> feature = getDb().query(ObservableFeature.class)
+							.eq(ObservableFeature.IDENTIFIER, f.getName()).find();
+					if (feature.size() != 1)
 					{
-						List<ObservableFeature> feature = getDb().query(ObservableFeature.class)
-								.eq(ObservableFeature.IDENTIFIER, f.getName()).find();
-						if (feature.size() != 1)
-						{
-							throw new TableException("add failed: " + f.getName() + " not known ObservableFeature");
-						}
-						else
-						{
-							featureMap.put(f.getName(), feature.get(0).getId());
-						}
+						throw new TableException("add failed: " + f.getName() + " not known ObservableFeature");
 					}
-					catch (DatabaseException e)
+					else
 					{
-						throw new TableException(e);
+						featureMap.put(f.getName(), feature.get(0).getId());
 					}
+				}
+				catch (DatabaseException e)
+				{
+					throw new TableException(e);
 				}
 			}
 
-			// load the rows
-			int count = 0;
-
+			// load values
 			for (Tuple t : table)
 			{
-				// slow, check if target exists
-				List<Characteristic> targets = getDb().query(Characteristic.class)
-						.eq(Characteristic.IDENTIFIER, t.getString(0)).find();
-				if (targets.size() == 1)
-				{
-					ObservationSet es = new ObservationSet();
-					es.setPartOfDataSet(dataSet.getId());
-					es.setTarget(targets.get(0).getId());
-					getDb().add(es);
+				ObservationSet es = new ObservationSet();
+				es.setPartOfDataSet(dataSet.getId());
+				getDb().add(es);
 
-					List<ObservedValue> values = new ArrayList<ObservedValue>();
-					for (String name : t.getFieldNames())
-					{
-						if (!name.equals(t.getColName(0)))
-						{
-							ObservedValue v = new ObservedValue();
-							v.setObservationSet(es.getId());
-							v.setFeature(featureMap.get(name));
-							v.setValue(t.getString(name));
-
-							values.add(v);
-						}
-					}
-					getDb().add(values);
-				}
-				else
+				List<ObservedValue> values = new ArrayList<ObservedValue>();
+				for (String name : t.getColNames())
 				{
-					throw new DatabaseException("import of row " + count + " failed: target " + t.getString(0)
-							+ " unknown");
+					ObservedValue v = new ObservedValue();
+					v.setObservationSet(es.getId());
+					v.setFeature(featureMap.get(name));
+					v.setValue(t.getString(name));
+					values.add(v);
 				}
+				getDb().add(values);
 			}
-			count++;
 
 			getDb().commitTx();
 
@@ -338,52 +356,8 @@ public class DataSetTable extends AbstractFilterableTupleTable implements Databa
 					filter.setValue(null);
 				}
 
-				if (filter.getField().equals("target"))
-				{
-
-					QueryRule rule = new QueryRule(ObservationTarget.NAME, filter.getOperator(), filter.getValue());
-					List<ObservationTarget> targets = getDb().find(ObservationTarget.class, rule);
-
-					// Create a collection of ObservationTarget ids
-					Collection<Integer> targetIds = Collections2.transform(targets,
-							new Function<ObservationTarget, Integer>()
-							{
-								@Override
-								public Integer apply(final ObservationTarget target)
-								{
-									return target.getId();
-								}
-							});
-
-					List<ObservationSet> observationSets = getDb().query(ObservationSet.class)
-							.in(ObservationSet.TARGET, new ArrayList<Integer>(targetIds)).find();
-
-					// No results
-					if (observationSets.isEmpty())
-					{
-						return null;
-					}
-
-					// Create a collection of ObservationSet ids
-					Collection<Integer> observationSetIds = Collections2.transform(observationSets,
-							new Function<ObservationSet, Integer>()
-							{
-								@Override
-								public Integer apply(final ObservationSet observationSet)
-								{
-									return observationSet.getId();
-								}
-							});
-
-					queryRules.add(new QueryRule(ObservedValue.OBSERVATIONSET_ID, Operator.IN, new ArrayList<Integer>(
-							observationSetIds)));
-				}
-				else
-				{
-					queryRules.add(new QueryRule(ObservedValue.FEATURE_IDENTIFIER, Operator.EQUALS, filter.getField()));
-					queryRules.add(new QueryRule(ObservedValue.VALUE, filter.getOperator(), filter.getValue()));
-				}
-
+				queryRules.add(new QueryRule(ObservedValue.FEATURE_IDENTIFIER, Operator.EQUALS, filter.getField()));
+				queryRules.add(new QueryRule(ObservedValue.VALUE, filter.getOperator(), filter.getValue()));
 			}
 
 			List<ObservedValue> observedValues = getDb().find(ObservedValue.class,

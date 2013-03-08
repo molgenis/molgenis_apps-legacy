@@ -10,8 +10,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ApplicationController;
-import org.molgenis.util.Tuple;
 
 public class Browser
 {
@@ -313,7 +313,7 @@ public class Browser
 	 * @param request
 	 * @throws Exception
 	 */
-	public String applyFilters(Tuple request, Database db, MatrixManagerModel screenModel) throws Exception
+	public String applyFilters(MolgenisRequest request, Database db, MatrixManagerModel screenModel) throws Exception
 	{
 		String filter = null;
 
@@ -343,7 +343,7 @@ public class Browser
 			screenModel.setSelectedFilterDiv("filter1");
 			field = request.getString("add_filter_by_indexFILTER_FIELD");
 			operator = request.getString("add_filter_by_indexFILTER_OPERATOR");
-			value = request.getObject("add_filter_by_indexFILTER_VALUE");
+			value = request.get("add_filter_by_indexFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByIndex(q);
 		}
@@ -352,7 +352,7 @@ public class Browser
 			screenModel.setSelectedFilterDiv("filter2");
 			field = request.getString("add_filter_by_col_valueFILTER_FIELD");
 			operator = request.getString("add_filter_by_col_valueFILTER_OPERATOR");
-			value = request.getObject("add_filter_by_col_valueFILTER_VALUE");
+			value = request.get("add_filter_by_col_valueFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
 		}
@@ -361,7 +361,7 @@ public class Browser
 			screenModel.setSelectedFilterDiv("filter3");
 			field = request.getString("add_filter_by_row_valueFILTER_FIELD");
 			operator = request.getString("add_filter_by_row_valueFILTER_OPERATOR");
-			value = request.getObject("add_filter_by_row_valueFILTER_VALUE");
+			value = request.get("add_filter_by_row_valueFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
 		}
@@ -370,7 +370,7 @@ public class Browser
 			screenModel.setSelectedFilterDiv("filter4");
 			field = request.getString("add_filter_by_col_attrbFILTER_FIELD");
 			operator = request.getString("add_filter_by_col_attrbFILTER_OPERATOR");
-			value = request.getObject("add_filter_by_col_attrbFILTER_VALUE");
+			value = request.get("add_filter_by_col_attrbFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByColEntityValues(db, q);
 		}
@@ -379,7 +379,7 @@ public class Browser
 			screenModel.setSelectedFilterDiv("filter5");
 			field = request.getString("add_filter_by_row_attrbFILTER_FIELD");
 			operator = request.getString("add_filter_by_row_attrbFILTER_OPERATOR");
-			value = request.getObject("add_filter_by_row_attrbFILTER_VALUE");
+			value = request.get("add_filter_by_row_attrbFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByRowEntityValues(db, q);
 		}
@@ -400,7 +400,7 @@ public class Browser
 	}
 
 	// kept seperate from regular filters for now - highly experimental stuff :)
-	public String apply2DFilter(Tuple request, Database db) throws Exception
+	public String apply2DFilter(MolgenisRequest request, Database db) throws Exception
 	{
 		String filter = null;
 
@@ -429,7 +429,7 @@ public class Browser
 		{
 			amount = request.getString("2d_filter_by_row_AMOUNT");
 			operator = request.getString("2d_filter_by_row_FILTER_OPERATOR");
-			value = request.getObject("2d_filter_by_row_FILTER_VALUE");
+			value = request.get("2d_filter_by_row_FILTER_VALUE");
 			QueryRule q = new QueryRule(amount, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrix2DFilterByRow(q);
 		}
@@ -437,7 +437,7 @@ public class Browser
 		{
 			amount = request.getString("2d_filter_by_col_AMOUNT");
 			operator = request.getString("2d_filter_by_col_FILTER_OPERATOR");
-			value = request.getObject("2d_filter_by_col_FILTER_VALUE");
+			value = request.get("2d_filter_by_col_FILTER_VALUE");
 			QueryRule q = new QueryRule(amount, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrix2DFilterByCol(q);
 		}
@@ -457,7 +457,7 @@ public class Browser
 		return filter;
 	}
 
-	public String applySelect(Tuple request, Database db, MatrixManagerModel screenModel) throws Exception
+	public String applySelect(MolgenisRequest request, Database db, MatrixManagerModel screenModel) throws Exception
 	{
 		String action = request.getString("__action");
 

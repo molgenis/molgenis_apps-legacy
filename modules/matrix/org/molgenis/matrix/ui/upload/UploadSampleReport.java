@@ -1,6 +1,7 @@
 package org.molgenis.matrix.ui.upload;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -13,7 +14,8 @@ import org.molgenis.matrix.StringCsvMemoryMatrix;
 import org.molgenis.matrix.ui.StringMatrixView;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvStringReader;
-import org.molgenis.util.Tuple;
+
+;
 
 /**
  * UploadSampleReportController takes care of all user requests and application
@@ -127,7 +129,7 @@ public class UploadSampleReport extends EasyPluginController<UploadSampleReportM
 
 	}
 
-	public void doUpload(Database db, Tuple request)
+	public void doUpload(Database db, MolgenisRequest request)
 	{
 		// try to upload the csv into a csv matrix
 		try
@@ -144,12 +146,12 @@ public class UploadSampleReport extends EasyPluginController<UploadSampleReportM
 		}
 	}
 
-	public void doReset(Database db, Tuple request)
+	public void doReset(Database db, MolgenisRequest request)
 	{
 		this.state = State.UPLOAD;
 	}
 
-	public void doSave(Database db, Tuple request)
+	public void doSave(Database db, MolgenisRequest request)
 	{
 		// copy the matrix into a pheno matrix and store
 		try

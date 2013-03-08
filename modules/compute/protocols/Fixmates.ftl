@@ -10,13 +10,14 @@
 
 #MOLGENIS walltime=35:59:00 mem=6
 
+module load picard-tools/${picardVersion}
+
 inputs "${realignedbam}"
 alloutputsexist \
  "${matefixedbam}" \
  "${matefixedbamindex}"
 
-java -jar -Xmx6g \
-${fixmateinformationjar} \
+java -jar -Xmx6g ${fixmateinformationjar} \
 INPUT=${realignedbam} \
 OUTPUT=${matefixedbam} \
 SORT_ORDER=coordinate \

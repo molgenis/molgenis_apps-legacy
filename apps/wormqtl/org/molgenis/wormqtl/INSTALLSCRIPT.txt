@@ -7,25 +7,14 @@ git clone git://github.com/joerivandervelde/molgenis.git
 git clone git://github.com/joerivandervelde/molgenis_apps.git
 
 # download data
-wget https://github.com/downloads/joerivandervelde/files/wormqtl_age_par_geneexrp_suppl1.zip
-wget https://github.com/downloads/joerivandervelde/files/wormqtl_datasets.zip
-wget https://github.com/downloads/joerivandervelde/files/wormqtl_set1_annotations_minusUSAprobes.xls
 
-# extract and move data to storage location
+# download and extract data
 mkdir data
-mkdir data/xqtl_panacea
-unzip wormqtl_datasets.zip
-unzip wormqtl_age_par_geneexrp_suppl1.zip
-mv binarydatamatrix/ data/xqtl_panacea/
-mv investigationfile/ data/xqtl_panacea/
-mv imports/ data/xqtl_panacea/
-mv wormqtl_set1_annotations_minusUSAprobes.xls data/xqtl_panacea/imports
-mv *.bin data/xqtl_panacea/binarydatamatrix/
-rm -rf __MACOSX/
-rm wormqtl_*.zip
+cd data
+wget http://molgenis26.target.rug.nl/downloads/wormqtl_jan2012.tar.gz
+tar xzfv wormqtl_jan2012.tar.gz
 
 # your storage path (important)
-cd data/
 pwd
 
 # build and start app

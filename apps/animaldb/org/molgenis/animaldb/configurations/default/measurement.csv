@@ -41,7 +41,8 @@ Litter;TargetLink;panel;Litter;false;xref;To link an animal to a litter.
 ExperimentNr;String;;;false;string;To set a (sub)experiment's number.
 ExperimentTitle;String;;;false;string;To set a (sub)experiment's title.
 DecSubprojectApplicationPdf;String;;;false;string;To set a link to a PDF file with the (sub)experiment's DEC application.
-DecApplicationPdf;String;;;false;string;To set a link to a PDF file with the DEC application.
+DecSubprojectApprovalPdf;String;;;false;string;To set a link to a PDF file with the (sub)experiment's DEC application.
+DecApplicationPdf;String;;;false;string;To set a link to a PDF file with the DEC the DEC sub project approval.
 DecApprovalPdf;String;;;false;string;To set a link to a PDF file with the DEC approval.
 DecApplication;TargetLink;panel;DecApplication;false;xref;To link a DEC subproject (experiment) to a DEC application.
 DecNr;String;;;false;string;To set a DEC application's DEC number.
@@ -73,6 +74,7 @@ DutchSpecies;String;;;false;string;To give a species its Dutch name.
 StartDate;Datetime;;;true;datetime;To set a (sub)project's start date.
 EndDate;Datetime;;;true;datetime;To set a (sub)project's end date.
 Removal;String;;;false;string;To register an animal's removal.
+RemovalDate;String;;;false;string;To register the date of an animal's removal from the facility if it did not die.
 Article;Number;;;false;int;To set an actor's Article status according to the Law, e.g. Article 9.
 MolgenisUserId;Number;;;false;int;To set an actor's corresponding MolgenisUser ID.
 TransponderId;String;;;false;string;To set the ID of an animal's transponder.
@@ -81,3 +83,4 @@ Earmark;String;;;false;string;To set an animal's earmark.
 ResponsibleResearcher;String;;;false;string;To set the researcher responsible for this animal.
 OldAnimalId;String;;;false;string;To store the AnimalId from the previous administration system on import into AnimalDB.
 OldLitterId;String;;;false;string;To store the LitterId from the previous administration system on import into AnimalDB.
+ImportTimestamp;TargetLink;panel;ImportTimestamp;false;xref;To mark and link animals that were imported in one batch via a timestamp.

@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.io.TupleWriter;
+import org.molgenis.io.excel.ExcelWriter;
 import org.molgenis.observ.Category;
 import org.molgenis.observ.DataSet;
 import org.molgenis.observ.ObservableFeature;
@@ -29,8 +32,7 @@ import org.molgenis.observ.target.OntologyTerm;
 import org.molgenis.omx.EMeasureFeatureWriter;
 import org.molgenis.omx.dataset.DataSetViewerPlugin;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.XlsWriter;
+import org.molgenis.util.tuple.KeyValueTuple;
 
 import com.google.gson.Gson;
 
@@ -80,7 +82,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out) throws Exception
 	{
 		if (out == null)
 		{
@@ -124,7 +126,7 @@ public class ProtocolViewerController extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 		MolgenisRequest req = (MolgenisRequest) request;
 		HttpServletResponse response = req.getResponse();
@@ -177,27 +179,28 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
+			// TODO output not consistent with eMeasure output
 			// write excel file
-			List<String> headers = Arrays.asList("Selected variables", "Descriptions", "Sector/Protocol");
-			XlsWriter xlsWriter = new XlsWriter(response.getOutputStream(), headers);
+			String protocolId = dataSet.getProtocolUsed_Identifier();
+			List<String> header = Arrays.asList("Selected variables", "Descriptions", "Sector/Protocol");
+			ExcelWriter excelWriter = new ExcelWriter(response.getOutputStream());
 			try
 			{
-				xlsWriter.writeHeader();
-
-				int row = 1;
+				TupleWriter sheetWriter = excelWriter.createTupleWriter("variables");
+				sheetWriter.writeColNames(header);
 
 				for (ObservableFeature feature : features)
 				{
-					xlsWriter.writeCell(0, row, feature.getName());
-					xlsWriter.writeCell(1, row, feature.getDescription());
-					// TODO not consistent with eMeasure output
-					xlsWriter.writeCell(2, row, dataSet.getProtocolUsed_Identifier());
-					row++;
+					KeyValueTuple tuple = new KeyValueTuple();
+					tuple.set(header.get(0), feature.getName());
+					tuple.set(header.get(1), feature.getDescription());
+					tuple.set(header.get(2), protocolId);
+					sheetWriter.write(tuple);
 				}
 			}
 			finally
 			{
-				xlsWriter.close();
+				excelWriter.close();
 			}
 		}
 		else if (request.getAction().equals("download_viewer"))
@@ -323,6 +326,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			jsFeatures = new ArrayList<JSFeature>(features.size());
 			for (ObservableFeature feature : features)
 				jsFeatures.add(toJSFeature(db, feature));
+
+			// sort alphabetically by name
+			Collections.sort(jsFeatures, new Comparator<JSFeature>()
+			{
+				@Override
+				public int compare(JSFeature o1, JSFeature o2)
+				{
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 		}
 
 		// get sub protocols (recursive)
@@ -333,6 +346,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			jsSubProtocols = new ArrayList<JSProtocol>(subProtocols.size());
 			for (Protocol subProtocol : subProtocols)
 				jsSubProtocols.add(toJSProtocol(db, subProtocol));
+
+			// sort alphabetically by name
+			Collections.sort(jsSubProtocols, new Comparator<JSProtocol>()
+			{
+				@Override
+				public int compare(JSProtocol o1, JSProtocol o2)
+				{
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 		}
 
 		return new JSProtocol(protocol, jsFeatures, jsSubProtocols);
@@ -348,6 +371,16 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			jsCategories = new ArrayList<JSCategory>(categories.size());
 			for (Category category : categories)
 				jsCategories.add(new JSCategory(category));
+
+			// sort alphabetically by name
+			Collections.sort(jsCategories, new Comparator<JSCategory>()
+			{
+				@Override
+				public int compare(JSCategory o1, JSCategory o2)
+				{
+					return o1.getCode().compareTo(o2.getCode());
+				}
+			});
 		}
 
 		OntologyTerm ontologyTerm = findOntologyTerm(db, feature);
@@ -398,6 +431,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.features = features;
 			this.subProtocols = subProtocols;
 		}
+
+		public String getName()
+		{
+			return name;
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -418,6 +456,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.dataType = feature.getDataType();
 			this.unit = unit;
 			this.categories = categories;
+		}
+
+		public String getName()
+		{
+			return name;
 		}
 	}
 
@@ -448,6 +491,11 @@ public class ProtocolViewerController extends PluginModel<Entity>
 			this.name = category.getName();
 			this.code = category.getValueCode();
 			this.description = category.getDescription();
+		}
+
+		public String getCode()
+		{
+			return code;
 		}
 	}
 }

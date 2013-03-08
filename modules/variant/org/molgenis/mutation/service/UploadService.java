@@ -376,7 +376,8 @@ public class UploadService extends MolgenisVariantService
 
 	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO) throws UploadServiceException
 	{
-		// logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + mutationUploadDTO.getCdnaNotation());
+		// logger.debug(">>> assignValuesFromNotation: cdnaNotation==" +
+		// mutationUploadDTO.getCdnaNotation());
 		if (mutationUploadDTO.getCdnaNotation() != null)
 		{
 			String cdnaNotation = mutationUploadDTO.getCdnaNotation();
@@ -508,7 +509,9 @@ public class UploadService extends MolgenisVariantService
 		mutationUploadDTO.setGdnaStart(SequenceUtils.getGDNAPosition(mutationUploadDTO.getMutationPosition(), exonDTO));
 
 		int mutationStart;
-		// System.out.println(">>> assignValuesFromPosition: mut.gdna==" + mutationUploadDTO.getGdnaStart() + ", gene.start==" + geneDTO.getBpStart());
+		// System.out.println(">>> assignValuesFromPosition: mut.gdna==" +
+		// mutationUploadDTO.getGdnaStart() + ", gene.start==" +
+		// geneDTO.getBpStart());
 		if ("F".equals(geneDTO.getOrientation())) mutationStart = mutationUploadDTO.getGdnaStart()
 				- geneDTO.getBpStart().intValue();
 		else

@@ -118,6 +118,13 @@
       			<field name="hostType" type="enum" enum_options="[pbs,glite,local]" description="type of the host" />
       			<field name="hostDir" description="working directory on the remote host. This is were the scripts will be put" />
       			<unique fields="name" />
+      	</entity>
+        <entity name="ComputeServer" implements="Identifiable,Nameable">
+      			<description>Compute server, where pilot jobs call back.
+      			</description>
+      			<field name="ip" type="text" />
+      			<field name="port" type="text" />
+      			<unique fields="name" />
       		</entity>
 	</module>
 </molgenis>

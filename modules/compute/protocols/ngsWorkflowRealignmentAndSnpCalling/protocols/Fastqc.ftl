@@ -22,6 +22,7 @@ module load fastqc/${fastqcVersion}
 
 # first make logdir...
 mkdir -p "${intermediatedir}"
+mkdir -p "${tempdir}"
 
 # pair1
 fastqc ${leftbarcodefqgz} \

@@ -1,18 +1,18 @@
 package org.molgenis.compute.ui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.molgenis.compute.host.Job;
 import org.molgenis.compute.host.Pbs;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
-import org.molgenis.util.Tuple;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Qstat plugin enables to run Qstat via the browser.
@@ -33,7 +33,7 @@ public class QstatPlugin extends EasyPluginController<QstatPluginModel>
 		this.setModel(new QstatPluginModel(this)); // the default model
 	}
 
-	public void refresh(Database db, Tuple request)
+	public void refresh(Database db, MolgenisRequest request)
 	{
 		// cache host, username, password
 		this.host = request.getString("host");

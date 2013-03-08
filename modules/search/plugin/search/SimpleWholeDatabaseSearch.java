@@ -9,17 +9,15 @@ package plugin.search;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import app.JDBCMetaDatabase;
 
@@ -59,7 +57,7 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{
@@ -118,7 +116,8 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 						// superclasses from results
 						// 3. Lowercased value matches the lowercased search
 						// string
-						if (e.get(field) != null && e.get(Field.TYPE_FIELD).toString().equals(name)
+						if (e.get(field) != null && e.get(Field.TYPE_FIELD) != null
+								&& e.get(Field.TYPE_FIELD).toString().equals(name)
 								&& e.get(field).toString().toLowerCase().contains(searchThis.toLowerCase()))
 						{
 							res.add(e);

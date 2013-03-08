@@ -9,8 +9,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
@@ -62,16 +60,14 @@ public class ProtocolViewerControllerTest
 		ProtocolViewerController controller = new ProtocolViewerController("test", mock(ScreenController.class));
 
 		// mock request
-		HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
-		when(httpServletRequest.getMethod()).thenReturn("GET");
-		MolgenisRequest request = new MolgenisRequest(httpServletRequest);
-		request.set("datasetid", "1");
-		request.set("__action", "download_json_getdataset");
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("GET", null);
+		httpServletRequest.setParameter("datasetid", "1");
+		httpServletRequest.setParameter("__action", "download_json_getdataset");
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try
 		{
-			controller.handleRequest(db, request, bos);
+			controller.handleRequest(db, new MolgenisRequest(httpServletRequest), bos);
 			String output = new String(bos.toByteArray(), Charset.forName("UTF-8"));
 
 			String expected = "{\"id\":1,\"name\":\"dataset\",\"protocol\":{\"id\":2,\"name\":\"protocol\",\"features\":[{\"id\":3,\"name\":\"feature1\",\"dataType\":\"string\"},{\"id\":4,\"name\":\"feature2\",\"dataType\":\"string\"}]}}";
@@ -99,16 +95,14 @@ public class ProtocolViewerControllerTest
 		ProtocolViewerController controller = new ProtocolViewerController("test", mock(ScreenController.class));
 
 		// mock request
-		HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
-		when(httpServletRequest.getMethod()).thenReturn("GET");
-		MolgenisRequest request = new MolgenisRequest(httpServletRequest);
-		request.set("datasetid", "1");
-		request.set("__action", "download_json_getdataset");
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("GET", null);
+		httpServletRequest.setParameter("datasetid", "1");
+		httpServletRequest.setParameter("__action", "download_json_getdataset");
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try
 		{
-			controller.handleRequest(db, request, bos);
+			controller.handleRequest(db, new MolgenisRequest(httpServletRequest), bos);
 			String output = new String(bos.toByteArray(), Charset.forName("UTF-8"));
 
 			String expected = "{\"id\":1,\"name\":\"dataset\"}";
@@ -152,16 +146,14 @@ public class ProtocolViewerControllerTest
 		ProtocolViewerController controller = new ProtocolViewerController("test", mock(ScreenController.class));
 
 		// mock request
-		HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
-		when(httpServletRequest.getMethod()).thenReturn("GET");
-		MolgenisRequest request = new MolgenisRequest(httpServletRequest);
-		request.set("featureid", "1");
-		request.set("__action", "download_json_getfeature");
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("GET", null);
+		httpServletRequest.setParameter("featureid", "1");
+		httpServletRequest.setParameter("__action", "download_json_getfeature");
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try
 		{
-			controller.handleRequest(db, request, bos);
+			controller.handleRequest(db, new MolgenisRequest(httpServletRequest), bos);
 			String output = new String(bos.toByteArray(), Charset.forName("UTF-8"));
 
 			String expected = "{\"id\":1,\"name\":\"feature\",\"dataType\":\"string\",\"categories\":[{\"id\":2,\"code\":\"code1\",\"label\":\"label1\",\"description\":\"description1\"},{\"id\":2,\"code\":\"code2\",\"label\":\"label2\",\"description\":\"description2\"}]}";
@@ -189,16 +181,14 @@ public class ProtocolViewerControllerTest
 		ProtocolViewerController controller = new ProtocolViewerController("test", mock(ScreenController.class));
 
 		// mock request
-		HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
-		when(httpServletRequest.getMethod()).thenReturn("GET");
-		MolgenisRequest request = new MolgenisRequest(httpServletRequest);
-		request.set("featureid", "1");
-		request.set("__action", "download_json_getfeature");
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("GET", null);
+		httpServletRequest.setParameter("featureid", "1");
+		httpServletRequest.setParameter("__action", "download_json_getfeature");
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try
 		{
-			controller.handleRequest(db, request, bos);
+			controller.handleRequest(db, new MolgenisRequest(httpServletRequest), bos);
 			String output = new String(bos.toByteArray(), Charset.forName("UTF-8"));
 
 			String expected = "{\"id\":1,\"name\":\"feature\",\"dataType\":\"string\"}";

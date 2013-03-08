@@ -51,15 +51,9 @@ public class uploadfile implements MolgenisService
 														// content only
 
 			HashMap<String, String> extraFields = new HashMap<String, String>();
-
-			for (int cIndex = 0; cIndex < request.size(); cIndex++)
+			for (String colName : request.getColNames())
 			{
-				String colName = request.getColName(cIndex);
-				if (colName.equals("name") || colName.equals("type") || colName.equals("file"))
-				{
-					// already handled
-				}
-				else
+				if (!colName.equals("name") && !colName.equals("type") && !colName.equals("file"))
 				{
 					extraFields.put(colName, request.getString(colName));
 				}

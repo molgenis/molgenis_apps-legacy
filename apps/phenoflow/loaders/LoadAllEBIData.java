@@ -2,16 +2,15 @@ package loaders;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.util.SimpleTuple;
 
-import app.CsvImport;
 import app.DatabaseFactory;
-import app.JDBCDatabase;
+import app.EntitiesImporterImpl;
 
 public class LoadAllEBIData
 {
@@ -30,8 +29,8 @@ public class LoadAllEBIData
 		// Europhenome
 		directory = "../pheno_data/Europhenome2";
 
-		CsvImport
-				.importAll(new File(directory), db, new SimpleTuple(), null, DatabaseAction.ADD_IGNORE_EXISTING, "N/A");
+		new EntitiesImporterImpl(db).importEntities(Arrays.asList(new File(directory).listFiles()),
+				DatabaseAction.ADD_IGNORE_EXISTING);
 
 		// MPD
 
@@ -44,10 +43,8 @@ public class LoadAllEBIData
 		list.add("ontologyterm");
 		list.add("measurement");
 		directory = "../pheno_data/MPD";
-		CsvImport
-				.importAll(new File(directory), db, new SimpleTuple(), list, DatabaseAction.ADD_IGNORE_EXISTING, "N/A");
-		CsvImport
-				.importAll(new File(directory), db, new SimpleTuple(), null, DatabaseAction.ADD_IGNORE_EXISTING, "N/A");
+		new EntitiesImporterImpl(db).importEntities(Arrays.asList(new File(directory).listFiles()),
+				DatabaseAction.ADD_IGNORE_EXISTING);
 
 		System.out.println("Done");
 	}

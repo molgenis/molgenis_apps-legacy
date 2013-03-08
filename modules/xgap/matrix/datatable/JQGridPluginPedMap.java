@@ -9,6 +9,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.tupletable.TupleTable;
 import org.molgenis.framework.tupletable.view.JQGridView;
 import org.molgenis.framework.tupletable.view.JQGridJSObjects.JQGridRule;
@@ -20,7 +21,6 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
 import decorators.MolgenisFileHandler;
@@ -103,7 +103,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json_pedmaptable(Database db, Tuple request, OutputStream out)
+	public void download_json_pedmaptable(Database db, MolgenisRequest request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// handle requests for the table named 'genotypes'
@@ -111,7 +111,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 	}
 
-	public void reloadTable(Database db, Tuple request)
+	public void reloadTable(Database db, MolgenisRequest request)
 	{
 		String pedFileName = request.getString("pedfile");
 		String mapFileName = request.getString("mapfile");

@@ -23,6 +23,7 @@ import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -41,8 +42,8 @@ import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.util.ValueLabel;
 
 public abstract class Upload extends PluginModel<Entity>
@@ -97,7 +98,7 @@ public abstract class Upload extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{
@@ -121,7 +122,7 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 
-	private void handleBatch(Database db, Tuple request) throws Exception
+	private void handleBatch(Database db, MolgenisRequest request) throws Exception
 	{
 		if (this.action.equals("newBatch"))
 		{
@@ -170,7 +171,7 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 
-	private void handlePatient(Database db, Tuple request) throws Exception
+	private void handlePatient(Database db, MolgenisRequest request) throws Exception
 	{
 		this.patientSummaryVO = this.toPatientSummaryVO(request);
 
@@ -197,7 +198,7 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 
-	private void handleMutation(Database db, Tuple request) throws Exception
+	private void handleMutation(Database db, MolgenisRequest request) throws Exception
 	{
 		this.toMutationUploadVO(request);
 

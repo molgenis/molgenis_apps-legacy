@@ -61,9 +61,15 @@ public class DataSetChooser extends HtmlWidget
 		}
 		sb.append("</div>");
 		sb.append("</div>");
+
 		sb.append("<script type='text/javascript'>");
-		sb.append("$('input[name=__action]').val('selectDataSet')");
+
+		sb.append("$('button[name=dataSetId]').click(function(){");
+		sb.append("$('input[name=__action]').val('selectDataSet');");
+		sb.append("$('DataSetViewerPlugin').submit();");
+		sb.append("});");
 		sb.append("</script>");
+		sb.append("</div>");
 
 		return sb.toString();
 	}

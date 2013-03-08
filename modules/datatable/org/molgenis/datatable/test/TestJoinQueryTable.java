@@ -16,7 +16,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -59,7 +59,7 @@ public class TestJoinQueryTable
 		// values should be equal in all join columns
 		for (final Tuple row : table)
 		{
-			assertEquals(row.getObject(leftJoinColumn.getName()), row.getObject(rightJoinColumn.getName()));
+			assertEquals(row.get(leftJoinColumn.getName()), row.get(rightJoinColumn.getName()));
 		}
 	}
 

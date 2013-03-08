@@ -29,7 +29,7 @@ package org.molgenis.ngs.plugins.project;
 //import org.molgenis.organization.Institute;
 //import org.molgenis.organization.Investigation;
 //import org.molgenis.util.Entity;
-//import org.molgenis.util.Tuple;
+//import org.molgenis.util.tuple.Tuple;
 //
 //import commonservice.CommonService;
 //
@@ -70,7 +70,7 @@ package org.molgenis.ngs.plugins.project;
 //    }
 //
 //    @Override
-//    public void handleRequest(Database db, Tuple request) {
+//    public void handleRequest(Database db, MolgenisRequest request) {
 //	ct.setDatabase(db);
 //	this.db = db;
 //

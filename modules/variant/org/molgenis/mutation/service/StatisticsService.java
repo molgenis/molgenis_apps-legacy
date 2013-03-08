@@ -8,7 +8,7 @@ import java.util.Map;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.Variant;
 import org.springframework.stereotype.Service;

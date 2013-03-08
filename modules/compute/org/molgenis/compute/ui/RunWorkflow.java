@@ -2,12 +2,13 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.compute.UserParameter;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.protocol.Workflow;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import java.util.List;
 
@@ -29,13 +30,13 @@ public class RunWorkflow extends EasyPluginController<RunWorkflowModel> implemen
 		return new RunWorkflowView(this.getModel());
 	}
 
-	public void buttonRun(Database db, Tuple request) throws Exception
+	public void buttonRun(Database db, MolgenisRequest request) throws Exception
 	{
 		System.out.println("...pushed!!!");
 		// TODO George: here run for selected samples
 	}
 
-	public void buttonGenerate(Database db, Tuple request) throws Exception
+	public void buttonGenerate(Database db, MolgenisRequest request) throws Exception
 	{
 		System.out.println(">>> generate");
 		List<String> sampleIds = (List<String>) request.getList("samples");

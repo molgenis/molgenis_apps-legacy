@@ -1,19 +1,19 @@
 package org.molgenis.omx.plugins;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.EntityImportReport;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.omx.dataset.DataSetImporter;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
 
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 
 public class ImportFileWizardPage extends WizardPage
 {
@@ -23,7 +23,7 @@ public class ImportFileWizardPage extends WizardPage
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		String entityImportOption = request.getString("entity_option");
 
@@ -37,6 +37,7 @@ public class ImportFileWizardPage extends WizardPage
 	{
 		ImportWizard importWizard = getWizard();
 
+		File file = importWizard.getFile();
 		try
 		{
 			db.beginTx();
@@ -46,9 +47,8 @@ public class ImportFileWizardPage extends WizardPage
 			if (entityDbAction == null) throw new IOException("unknown database action: " + entityAction);
 
 			// import entities
-			ImportResult importResult = ExcelImport.importAll(importWizard.getFile(), db, new SimpleTuple(), null,
-					entityDbAction, "", false);
-			getWizard().setImportResult(importResult);
+			EntityImportReport importReport = new EntitiesImporterImpl(db).importEntities(file, entityDbAction);
+			importWizard.setImportResult(importReport);
 
 			// import dataset instances
 			if (importWizard.getDataImportable() != null)
@@ -57,7 +57,7 @@ public class ImportFileWizardPage extends WizardPage
 				for (Entry<String, Boolean> entry : importWizard.getDataImportable().entrySet())
 					if (entry.getValue() == true) dataSetSheetNames.add("dataset_" + entry.getKey());
 
-				new DataSetImporter(db).importXLS(importWizard.getFile(), dataSetSheetNames);
+				new DataSetImporter(db).importDataSet(file, dataSetSheetNames);
 			}
 
 			importWizard.setSuccessMessage("File successfully imported.");
@@ -75,8 +75,7 @@ public class ImportFileWizardPage extends WizardPage
 				logger.error("Exception rolling back transaction", e1);
 			}
 
-			logger.warn("Import of file [" + importWizard.getFile().getName() + "] failed for action [" + entityAction
-					+ "]", e);
+			logger.warn("Import of file [" + file.getName() + "] failed for action [" + entityAction + "]", e);
 			importWizard.setValidationMessage("<b>Your import failed:</b><br />" + e.getMessage());
 		}
 	}

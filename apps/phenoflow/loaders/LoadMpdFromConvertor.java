@@ -1,15 +1,13 @@
 package loaders;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
 
-import app.CsvImport;
 import app.DatabaseFactory;
-import app.JDBCDatabase;
+import app.EntitiesImporterImpl;
 
 public class LoadMpdFromConvertor
 {
@@ -17,8 +15,6 @@ public class LoadMpdFromConvertor
 	{
 
 		Database db = DatabaseFactory.create("handwritten/apps/org/molgenis/pheno/pheno.properties");
-
-		Tuple defaults = new SimpleTuple();
 
 		// okay, this is wrong because multiple investigations!
 		// defaults.set("investigation_name","mouse phenome database");
@@ -34,8 +30,9 @@ public class LoadMpdFromConvertor
 		// MolgenisUpdateDatabase.main(null);
 
 		// full import
-		CsvImport.importAll(new File("../molgenis4phenotype/data/MPD/output"), db, defaults, null,
-				DatabaseAction.ADD_IGNORE_EXISTING, "");
+		new EntitiesImporterImpl(db).importEntities(
+				Arrays.asList(new File("../molgenis4phenotype/data/MPD/output").listFiles()),
+				DatabaseAction.ADD_IGNORE_EXISTING);
 		// CsvImport.importAll(new File("data/Europhenome"), db, defaults, null,
 		// DatabaseAction.ADD_IGNORE_EXISTING, "MISSINGVALUE?");
 	}

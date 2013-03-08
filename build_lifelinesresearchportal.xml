@@ -11,7 +11,7 @@
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="apps/lifelinesresearchportalimporter" />
-			
+		<pathelement location="modules/_deprecated" />	
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />

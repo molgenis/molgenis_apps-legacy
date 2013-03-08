@@ -1,6 +1,7 @@
 package org.molgenis.examples.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -16,7 +17,7 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.VerticalLayout;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class LookupInputsDemo extends EasyPluginController
 {
@@ -88,7 +89,7 @@ public class LookupInputsDemo extends EasyPluginController
 		return view;
 	}
 
-	public void submit(Database db, Tuple request)
+	public void submit(Database db, MolgenisRequest request)
 	{
 		this.requestString = request.toString();
 	}

@@ -19,15 +19,16 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
-public class ManageLines extends PluginModel<Entity> {
+public class ManageLines extends PluginModel<Entity>
+{
 	private static final long serialVersionUID = 3355794876439855835L;
 
 	private CommonService cs = CommonService.getInstance();
@@ -43,65 +44,83 @@ public class ManageLines extends PluginModel<Entity> {
 	private List<ObservationTarget> lineList;
 	private List<ObservationTarget> speciesList;
 
-	public ManageLines(String name, ScreenController<?> parent) {
+	public ManageLines(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
-	public String getCustomHtmlHeaders() {
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
-				+ "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
+	public String getCustomHtmlHeaders()
+	{
+		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
 				+ "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		// "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+		// +
+		// "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "org_molgenis_animaldb_plugins_breeding_ManageLines";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "org/molgenis/animaldb/plugins/breeding/ManageLines.ftl";
 	}
 
-	public String getFullName(String lineName) {
+	public String getFullName(String lineName)
+	{
 		String fullName = "";
-		try {
-			if (cs.getMostRecentValueAsString(lineName, "LineFullName") != null) {
-				fullName = cs.getMostRecentValueAsString(lineName,
-						"LineFullName");
+		try
+		{
+			if (cs.getMostRecentValueAsString(lineName, "LineFullName") != null)
+			{
+				fullName = cs.getMostRecentValueAsString(lineName, "LineFullName");
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			fullName = "Error when retrieving full name";
 		}
 		return fullName;
 	}
 
-	public String getSourceName(String lineName) {
+	public String getSourceName(String lineName)
+	{
 		String sourceName;
-		try {
+		try
+		{
 			sourceName = cs.getMostRecentValueAsXrefName(lineName, "Source");
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			sourceName = "Error when retrieving source";
 		}
 		return sourceName;
 	}
 
-	public String getSpeciesName(String lineName) {
+	public String getSpeciesName(String lineName)
+	{
 		String speciesName;
-		try {
+		try
+		{
 			speciesName = cs.getMostRecentValueAsXrefName(lineName, "Species");
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			speciesName = "Error when retrieving species";
 		}
 		return speciesName;
 	}
 
-	public String getRemarksString(String lineName) throws DatabaseException {
+	public String getRemarksString(String lineName) throws DatabaseException
+	{
 		// List<String> remarksList = cs.getRemarks(lineId);
 		String returnString = "";
 		// for (String remark : remarksList) {
@@ -110,24 +129,30 @@ public class ManageLines extends PluginModel<Entity> {
 		// if (returnString.length() > 0) {
 		// returnString = returnString.substring(0, returnString.length() - 4);
 		// }
-		try {
-			if (cs.getMostRecentValueAsString(lineName, "Remark") != null) {
-				returnString = cs
-						.getMostRecentValueAsString(lineName, "Remark");
+		try
+		{
+			if (cs.getMostRecentValueAsString(lineName, "Remark") != null)
+			{
+				returnString = cs.getMostRecentValueAsString(lineName, "Remark");
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			returnString = "Error when retrieving remarks";
 		}
 		return returnString;
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, MolgenisRequest request)
+	{
 		cs.setDatabase(db);
-		try {
+		try
+		{
 			String action = request.getString("__action");
 
-			if (action.equals("Edit")) {
+			if (action.equals("Edit"))
+			{
 				lineId = request.getInt("id");
 				lineName = this.getLine(lineId);
 				fullName = this.getFullName(lineName);
@@ -136,10 +161,10 @@ public class ManageLines extends PluginModel<Entity> {
 				remarks = this.getRemarksString(lineName);
 			}
 
-			if (action.equals("Delete")) {
+			if (action.equals("Delete"))
+			{
 				lineId = request.getInt("id");
-				List<ObservedValue> valList = db.query(ObservedValue.class)
-						.eq(ObservedValue.TARGET, lineId).or()
+				List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, lineId).or()
 						.eq(ObservedValue.RELATION, lineId).find();
 				db.remove(valList);
 				ObservationTarget line = cs.getObservationTargetById(lineId);
@@ -154,50 +179,48 @@ public class ManageLines extends PluginModel<Entity> {
 
 			}
 
-			if (action.equals("addLine")) {
+			if (action.equals("addLine"))
+			{
 				Date now = new Date();
 				lineName = request.getString("lineName");
-				String invName = cs.getOwnUserInvestigationName(this.getLogin()
-						.getUserName());
+				String invName = cs.getOwnUserInvestigationName(this.getLogin().getUserName());
 				String message = "";
 				// Make or get group
-				if (lineId == -1) {
-					lineId = cs.makePanel(invName, lineName, this.getLogin()
-							.getUserName());
+				if (lineId == -1)
+				{
+					lineId = cs.createPanel(invName, lineName);
 					message = "Line successfully added";
-				} else {
-					ObservationTarget line = cs
-							.getObservationTargetById(lineId);
+				}
+				else
+				{
+					ObservationTarget line = cs.getObservationTargetById(lineId);
 					line.setName(lineName); // maybe user has changed name
 					db.update(line);
 					message = "Line successfully updated";
 				}
 				// Mark group as Line using a special event
-				db.add(cs.createObservedValueWithProtocolApplication(invName,
-						now, null, "SetTypeOfGroup", "TypeOfGroup", lineName,
-						"Line", null));
+				db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetTypeOfGroup",
+						"TypeOfGroup", lineName, "Line", null));
 				// Set full name
-				if (request.getString("fullname") != null) {
+				if (request.getString("fullname") != null)
+				{
 					fullName = request.getString("fullname");
-					db.add(cs.createObservedValueWithProtocolApplication(
-							invName, now, null, "SetLineFullName",
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetLineFullName",
 							"LineFullName", lineName, fullName, null));
 				}
 				// Set species
 				speciesName = request.getString("species");
-				db.add(cs.createObservedValueWithProtocolApplication(invName,
-						now, null, "SetSpecies", "Species", lineName, null,
-						speciesName));
+				db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetSpecies", "Species",
+						lineName, null, speciesName));
 				// Set source
 				sourceName = request.getString("source");
-				db.add(cs.createObservedValueWithProtocolApplication(invName,
-						now, null, "SetSource", "Source", lineName, null,
-						sourceName));
+				db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetSource", "Source",
+						lineName, null, sourceName));
 				// Set remark
-				if (request.getString("remarks") != null) {
+				if (request.getString("remarks") != null)
+				{
 					remarks = request.getString("remarks");
-					db.add(cs.createObservedValueWithProtocolApplication(
-							invName, now, null, "SetRemark", "Remark",
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark",
 							lineName, remarks, null));
 				}
 				// create new panel user group so users that are member of this
@@ -215,48 +238,49 @@ public class ManageLines extends PluginModel<Entity> {
 				remarks = null;
 			}
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			this.getMessages().clear();
-			if (e.getMessage() != null) {
-				this.getMessages()
-						.add(new ScreenMessage(e.getMessage(), false));
+			if (e.getMessage() != null)
+			{
+				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			}
 			e.printStackTrace();
 		}
 	}
 
-	private String getLine(int lineId) throws DatabaseException, ParseException {
+	private String getLine(int lineId) throws DatabaseException, ParseException
+	{
 		return cs.getObservationTargetLabel(lineId);
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 
-		try {
-			List<String> investigationNames = cs
-					.getAllUserInvestigationNames(this.getLogin().getUserName());
+		try
+		{
+			List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 			// Populate source list
 			// All source types pertaining to
 			// "Eigen fok binnen uw organisatorische werkeenheid"
 			sourceList = new ArrayList<ObservationTarget>();
-			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels(
-					"Source", investigationNames);
-			for (ObservationTarget tmpSource : tmpSourceList) {
+			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels("Source", investigationNames);
+			for (ObservationTarget tmpSource : tmpSourceList)
+			{
 				int featid = cs.getMeasurementId("SourceType");
-				Query<ObservedValue> sourceTypeQuery = db
-						.query(ObservedValue.class);
-				sourceTypeQuery.addRules(new QueryRule(ObservedValue.TARGET,
-						Operator.EQUALS, tmpSource.getId()));
-				sourceTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE,
-						Operator.EQUALS, featid));
-				List<ObservedValue> sourceTypeValueList = sourceTypeQuery
-						.find();
-				if (sourceTypeValueList.size() > 0) {
+				Query<ObservedValue> sourceTypeQuery = db.query(ObservedValue.class);
+				sourceTypeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpSource.getId()));
+				sourceTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+				List<ObservedValue> sourceTypeValueList = sourceTypeQuery.find();
+				if (sourceTypeValueList.size() > 0)
+				{
 					String sourcetype = sourceTypeValueList.get(0).getValue();
-					if (sourcetype
-							.equals("Eigen fok binnen uw organisatorische werkeenheid")) {
+					if (sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid"))
+					{
 						sourceList.add(tmpSource);
 					}
 				}
@@ -266,10 +290,13 @@ public class ManageLines extends PluginModel<Entity> {
 			// Populate existing lines list
 			lineList = cs.getAllMarkedPanels("Line", investigationNames);
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";
-			if (e.getMessage() != null) {
+			if (e.getMessage() != null)
+			{
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
@@ -277,65 +304,81 @@ public class ManageLines extends PluginModel<Entity> {
 		}
 	}
 
-	public void setLineName(String lineName) {
+	public void setLineName(String lineName)
+	{
 		this.lineName = lineName;
 	}
 
-	public String getLineName() {
+	public String getLineName()
+	{
 		return lineName;
 	}
 
-	public String getFullName() {
+	public String getFullName()
+	{
 		return fullName;
 	}
 
-	public void setFullName(String fullName) {
+	public void setFullName(String fullName)
+	{
 		this.fullName = fullName;
 	}
 
-	public String getSource() {
-		if (sourceName == null) {
+	public String getSource()
+	{
+		if (sourceName == null)
+		{
 			return "";
 		}
 		return sourceName;
 	}
 
-	public String getSpecies() {
-		if (speciesName == null) {
+	public String getSpecies()
+	{
+		if (speciesName == null)
+		{
 			return "";
 		}
 		return speciesName;
 	}
 
-	public String getRemarks() {
+	public String getRemarks()
+	{
 		return remarks;
 	}
 
-	public void setRemarks(String remarks) {
+	public void setRemarks(String remarks)
+	{
 		this.remarks = remarks;
 	}
 
-	public void setSourceList(List<ObservationTarget> sourceList) {
+	public void setSourceList(List<ObservationTarget> sourceList)
+	{
 		this.sourceList = sourceList;
 	}
 
-	public List<ObservationTarget> getSourceList() {
+	public List<ObservationTarget> getSourceList()
+	{
 		return sourceList;
 	}
 
-	public void setSpeciesList(List<ObservationTarget> speciesList) {
+	public void setSpeciesList(List<ObservationTarget> speciesList)
+	{
 		this.speciesList = speciesList;
 	}
 
-	public List<ObservationTarget> getSpeciesList() {
+	public List<ObservationTarget> getSpeciesList()
+	{
 		return speciesList;
 	}
 
-	public List<ObservationTarget> getLineList() {
+	public List<ObservationTarget> getLineList()
+	{
 		return lineList;
 	}
 
-	public void setLineList(List<ObservationTarget> lineList) {
+	public void setLineList(List<ObservationTarget> lineList)
+	{
 		this.lineList = lineList;
 	}
 }

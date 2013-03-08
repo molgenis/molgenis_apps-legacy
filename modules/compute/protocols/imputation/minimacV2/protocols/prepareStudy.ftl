@@ -4,6 +4,10 @@
 
 getFile ${createRandomSubsetsJar}
 getFile ${expandWorksheetJar}
+getFile ${studyInputPedMapChr}.ped
+getFile ${studyInputPedMapChr}.map
+getFile ${chunkChromosomeBin}
+getFile ${remoteWorksheet}
 
 #Create study PEDMAP Chr dir
 mkdir -p ${studyPedMapChrDir}
@@ -18,6 +22,15 @@ ${stage} plink/${plinkversion}
 
 #Create fam file from PED file
 awk '{print $1,$2,"0","0","1","2"}' ${studyInputPedMapChr}.ped > ${studyPedMapChr}.fam
+
+echo -e '\n Testing java version\n'
+java -version
+
+echo -e '\n Available memory:\n'
+free -m
+
+echo -e '\n java -Xmx10G -version \n' 
+java -Xmx10G -version
 
 #Chunk study map file
 java -jar ${createRandomSubsetsJar} \
@@ -56,7 +69,7 @@ do
 	plink \
 	--noweb \
 	--recode \
-	--ped ${studyInputPedMapChr}.ped\
+	--ped ${studyInputPedMapChr}.ped \
 	--map ${studyInputPedMapChr}.map \
 	--out ${studyPedMapChrDir}/~chr${chr}_sampleChunk$S \
 	--keep ${studyPedMapChrDir}/to_keep_$S\chr${chr}.txt
@@ -102,7 +115,7 @@ do
 
 	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.map
 	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.dat
-	putFile ${studyPedMapChrDir}/chr${chr}_sampleChunk$S.ped
+#	putFile ${studyMerlinChrDir}/chr${chr}_sampleChunk$S.ped
 	
 	
 	###START ITERATION FOR CHROMOSOME CHUNKING###
@@ -143,7 +156,7 @@ done
 
 #Run Jar to create full worksheet
 
-java -jar ${expandWorksheetJar} ${McWorksheet} ${tmpFinalChunkChrWorksheet} ${chunkChrWorkSheet} project ${project} chr ${chr}
+java -jar ${expandWorksheetJar} ${remoteWorksheet} ${tmpFinalChunkChrWorksheet} ${chunkChrWorkSheet} project ${project} chr ${chr}
 
 #Get return code from last program call
 returnCode=$?

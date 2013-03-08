@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.animaldb.commonservice.CommonService;
+import org.molgenis.animaldb.plugins.animal.AnimalRemover;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -28,8 +30,10 @@ import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Tuple;
+//FIXME temporarily commented out (ate 2012-12-14) until functionality is ready and does not break the build
+//import org.molgenis.animaldb.plugins.animal.AnimalRemover;
 
 public class ListPluginMatrix extends EasyPluginController
 {
@@ -44,6 +48,7 @@ public class ListPluginMatrix extends EasyPluginController
 	private boolean reload = true;
 	private int userId = -1;
 	private Boolean inEditMode;
+	private List<Integer> targetList = null;
 
 	public ListPluginMatrix(String name, ScreenController<?> parent)
 	{
@@ -51,7 +56,7 @@ public class ListPluginMatrix extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		if (targetMatrixViewer != null)
 		{
@@ -82,6 +87,40 @@ public class ListPluginMatrix extends EasyPluginController
 					inEditMode = true;
 				}
 				reload = true;
+			}
+
+			// FIXME temporarily commented out (ate 2012-12-14) until
+			// functionality is ready and does not break the build
+
+			if (action.equals("SelectA"))
+			{
+				targetList = new ArrayList<Integer>(); // Get targets from
+														// matrix
+
+				@SuppressWarnings("unchecked")
+				List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
+				int rowCnt = 0;
+				for (ObservationElement row : rows)
+				{
+					if (request.getBoolean(TARGETMATRIX + "_selected_" + rowCnt) != null)
+					{
+						targetList.add(row.getId());
+					}
+					rowCnt++;
+				}
+
+				container = new Container();
+
+				for (Integer animalId : targetList)
+				{
+
+					String animalName = cs.getObservationTargetLabel(animalId);
+
+					AnimalRemover removeAnimal = new AnimalRemover(db);
+					removeAnimal.removeAnimal(animalId);
+
+				}
+
 			}
 
 		}
@@ -116,8 +155,7 @@ public class ListPluginMatrix extends EasyPluginController
 			{
 				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
-				// Some measurements that we think AnimalDB users like to see
-				// most:
+
 				measurementsToShow.add("Active");
 				measurementsToShow.add("DateOfBirth");
 				measurementsToShow.add("Experiment");
@@ -128,10 +166,7 @@ public class ListPluginMatrix extends EasyPluginController
 				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
-				// measurementsToShow.add("OldUliDbId");
-				// measurementsToShow.add("OldUliDbTiernummer");
-				// measurementsToShow.add("OldRhutDbAnimalId");
-				// measurementsToShow.add("Remark");
+
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
@@ -182,7 +217,7 @@ public class ListPluginMatrix extends EasyPluginController
 
 					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX,
 							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class),
-							true, 0, true, false, filterRules, measurements, false);
+							true, 2, true, false, filterRules, measurements, false);
 
 					// enable animalDB specific traits (sorting filtering etc)
 					targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
@@ -199,10 +234,16 @@ public class ListPluginMatrix extends EasyPluginController
 						editButton.setId(EDIT_BUTTON_ACTION);
 						div.add(editButton);
 					}
-				}
 
+				}
 				targetMatrixViewer.setDatabase(db);
+				// FIXME temporarily commented out (ate 2012-12-14) until
+				// functionality is ready and does not break the build
+				// ActionInput selectButton = new ActionInput("SelectA",
+				// "","Delete selected animal(s)");
+				// div.add(selectButton);
 				div.add(targetMatrixViewer);
+
 				container.add(div);
 			}
 			catch (Exception e)

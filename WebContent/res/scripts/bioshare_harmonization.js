@@ -46,17 +46,13 @@ function monitorJobs(url)
 function retrieveResult(url)
 {
 	$.ajax({
-		url : url + "&__action=download_json_retrieveResult",
+		url : url + "&__action=download_json_retrieveResult&matchingValidationStudy=" + $('#matchingValidationStudy').val(),
 		async: false,
 	}).done(function(status){
 
 		$('#beforeMapping').hide();
 
 		$('#details').empty();
-
-		$('#browser').empty();
-
-		$('#existingMappings').empty();
 
 		$('#mappingResult').empty();
 
@@ -68,16 +64,13 @@ function retrieveResult(url)
 
 		$('#matchingPredictionModel').text($('#selectPredictionModel').val());
 
-		$('#matchingValidationStudy').text($('#listOfCohortStudies').val());
-
 		$.each(status, function(key, Info)
 		{
-			if(key == "treeView")
-			{
-				$('#browser').empty().append(status["treeView"]);
-				
-			}else{
-				
+//			if(key == "treeView")
+//			{
+//				$('#browser').empty().append(status["treeView"]);
+//				
+//			}else{
 				label = Info["label"];
 
 				table = Info["mappingResult"];
@@ -88,96 +81,56 @@ function retrieveResult(url)
 
 				$('#existingMappings').append(existingMapping);
 
-				$('#validatePredictors').append("<option id=\"" + Info["identifier"].replace(/\s/g,"_")
-						+ "\" style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
-			}
+				$('#validatePredictors').append("<option style=\"cursor:pointer;font-family:Verdana,Arial,sans-serif;\">" + label + "</option>");
+				
+				$('#validatePredictors option:last-child').data('table_ID', Info["table_ID"]);
+//			}
 		});
 		
-		if($('#mappingResult table').size() == 0)
-		{
-			$('#candidateMapping').hide();
-			
-			$('#matchedMapping').fadeIn();
-			
-			$('#showCandidateMapping').hide();
-		}else{
-			$('#candidateMapping').fadeIn();
-			
-			$('#matchedMapping').hide();
-			
-			$('#showCandidateMapping').show();
-		}
+		$('#matchingSelectedPredictor').text($('#validatePredictors option:eq(0)').text());
 		
 		$('#validatePredictors option').each(function()
 		{
 			$(this).hover(
-					function(){
-						$(this).css({
-							"font-weight" : "bolder",
-							"color" : "grey"
-						});
-					},function(){
-						$(this).css({
-							"font-weight" : "normal",
-							"color" : "black"
-						});
-					}
+				function(){
+					$(this).css({
+						"font-weight" : "bolder",
+						"color" : "grey"
+					});
+				},function(){
+					$(this).css({
+						"font-weight" : "normal",
+						"color" : "black"
+					});
+				}
 			);
 		});
 		
 		$('#mappingResult tr td:first-child').each(function(){
 
-			identifier = $(this).parent().attr('id');
-			
-			identifier = identifier.replace("_row", "_details");
-			
-			$('#' + identifier).show();
+			identifier = $(this).parent().attr('id').replace("_row", "_details");
 			
 			$('#' + identifier).click(function()
 			{
 				predictor = $(this).parents('table').eq(0).attr('id').replace("mapping_","");
-				retrieveExpandedQueries(predictor, identifier.replace("_details", ""), url);
+				
+				retrieveExpandedQueries(predictor, $(this), url);
 			});	
-
-			$(this).hover(
-				function () {
-					$(this).css("font-weight", "bolder");
-					identifier = $(this).parent().attr('id');
-					identifier = identifier.replace("_row", "_details");
-					$('#' + identifier).show();
-				},
-				function () {
-					$(this).css("font-weight", "normal");
-				}
-			);
-
-			$(this).children('span').click(function()
-			{
-				measurementName = $(this).text();
-
-				trackInTree(measurementName, url);
-			});
 		});
 
-		$('#validatePredictors').click(function()
+		$('#validatePredictors').change(function()
 		{
-			predictorName = $(this).find('option:selected').eq(0).text();
-
-			$('#matchingSelectedPredictor').text(predictorName);
+			elementOption = $(this).find('option:selected');
+			
+			$('#matchingSelectedPredictor').text(elementOption.text());
 
 			$('#mappingResult table').hide();
 
 			$('#existingMappings table').hide();
 
-			id = $("#validatePredictors option:selected").attr('id');
+			tableID = elementOption.data('table_ID');
 
-			identifierForNew = "mapping_" + id;
-
-			$('#' + identifierForNew).show();
-
-			identifierForExisting = "matched_" + id;
-
-			$('#' + identifierForExisting).show();
+			$('#' + tableID).show();
 		});
 
 		$('#existingMappings tr td:last-child >div').each(function()
@@ -195,7 +148,7 @@ function retrieveResult(url)
 			});
 		});
 		
-		initializeTree(url);
+//		initializeTree(url);
 
 		$('#validatePredictors option:first-child').attr('selected', true).click();
 
@@ -232,9 +185,9 @@ function showExistingMapping(url)
 	}
 }
 
-function validateStudy(name)
+function validateStudy(formName)
 {
-	if($('#listOfCohortStudies option').length == 0){
+	if($('#listOfCohortStudies').siblings('table').find('tr:gt(0)').length == 0){
 
 		showMessage("There are no cohort studies to validate the prediction model", false);
 
@@ -244,13 +197,22 @@ function validateStudy(name)
 
 	}else{
 
-		predictionModel = $('#selectPredictionModel').val();
-
-		validationStudy = $('#listOfCohortStudies').val();
+//		predictionModel = $('#selectPredictionModel').val();
+//
+//		validationStudy = $('#listOfCohortStudies').val();
 
 		$('#details').empty();
 
-		$('#browser').empty();
+//		$('#browser').empty();
+		
+		selectedStudies = {};
+		
+		$('#listOfCohortStudies').siblings('table').find('tr:gt(0)').each(function(){
+			
+			selectedStudies[$(this).children('td:eq(0)').text()] = $(this).children('td:eq(0)').text();
+		});
+		
+		$('input[name=\"selectedStudiesToMatch\"]').val(JSON.stringify(selectedStudies));
 
 		$('#existingMappings').empty();
 
@@ -262,7 +224,7 @@ function validateStudy(name)
 
 		$("input[name=\"__action\"]").val("loadMapping");
 
-		$("form[name=\"" + name + "\"]").submit();
+		$("form[name=\"" + formName + "\"]").submit();
 	}
 }
 
@@ -297,7 +259,7 @@ function removeSingleMapping(element, url)
 
 	$.ajax({
 		url : url + "&__action=download_json_removeMapping&predictor=" 
-		+ $('#validatePredictors').val(),
+		+ $('#validatePredictors').attr('id'),
 		async : false,
 		data : data,
 	}).done(function(status){
@@ -397,28 +359,36 @@ function saveMapping(mappings, url)
 function retrieveExpandedQueries(predictor, matchedVariable, url)
 {	
 	$.ajax({
-		url : url + "&__action=download_json_retrieveExpandedQuery&predictor="
-		+ predictor + "&matchedVariable=" + matchedVariable,
-		async: false,
-
+		url : url + "&__action=download_json_retrieveExpandedQuery",
+		data : {
+			"predictor" : predictor,
+			"identifier" : $(matchedVariable).parents('tr').eq(0).attr('id').replace('_row', ''),
+			"matchedVariable" : $(matchedVariable).parents('td').eq(0).children('span:first-child').text(),
+			"investigationName" : $('#matchingValidationStudy').val(),
+		},
+		async : false,
 	}).done(function(status){
 
 		table = status["table"];
 
+		$('#expandedQueryTable').remove();
+		
 		$('#afterMapping').append(table);
 
-		$('#' + matchedVariable).dialog({
-			title : "Expanded queries",
-			height: 300,
-			width: 600,
-			modal: true,
-			buttons: {
-				Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			},
-		});
-		$('#' + matchedVariable).show();
+//		$('#' + matchedVariable).dialog({
+//			title : "Expanded queries",
+//			height: 300,
+//			width: 600,
+//			modal: true,
+//			buttons: {
+//				Cancel: function() {
+//					$( this ).dialog( "close" );
+//				}
+//			},
+//		});
+//		$('#' + matchedVariable).show();
+		
+		$('#expandedQueryTable').modal('show');
 	});
 }
 
@@ -431,13 +401,21 @@ function insertNewRow(url)
 	if($('#' + $('#nameOfPredictor').val()).length == 0){
 
 		data = {};
+		
 		data["selected"] = $('#selectPredictionModel').val();
-		data["name"] = $('#nameOfPredictor').val();
-		data["label"] = $('#nameOfPredictor').val();
+		data["name"] = $('#nameOfPredictor').val() + "_" + data["selected"];
+	
+		if($('#labelOfPredictor').val() == "")
+		{
+			data["label"] = $('#nameOfPredictor').val();
+		
+		}else{
+			data["label"] = $('#labelOfPredictor').val();
+		}
 		data["description"] = $('#descriptionOfPredictor').val();
 		data["dataType"] = $('#dataTypeOfPredictor').val();
-		data["unit"] = $('#unitOfPredictor').val();
-		data["category"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
+		data["unit_name"] = $('#unitOfPredictor').val();
+		data["categories_name"] = uniqueElementToString($('#categoryOfPredictor').val().split(","), ",");
 
 		buildingBlockString = uniqueElementToString($('#buildingBlocks').val().split(";"), ";");
 
@@ -445,6 +423,7 @@ function insertNewRow(url)
 
 		//add the data to table
 		identifier = data["name"].replace(/\s/g,"_");
+		
 		data["identifier"] = identifier;
 
 		$.ajax({
@@ -453,7 +432,7 @@ function insertNewRow(url)
 		}).done(function(status){
 			message["message"] = status["message"];
 			message["success"] = status["success"];
-			message["identifier"] = data["identifier"];
+			data["identifier"] = message["identifier"];
 		});
 
 		if(message["success"] == true){
@@ -471,55 +450,21 @@ function insertNewRow(url)
 
 function populateRowInTable(data, url)
 {
+	name = data["name"];
 	label = data["label"];
 	description = data["description"];
-	dataType = data["dataType"];
-	categories = data["category"];
-	unit = data["unit"];
-	buildingBlocks = data["buildingBlocks"];
 	identifier = data["identifier"];
 
 	newRow =  "<tr id=\"" + identifier + "\" name=\"" + identifier + "\" style=\"width:100%;\">";
-	newRow += "<td name=\"name\" class=\"ui-corner-all\"><span style=\"margin:10px;margin-right:2px;float:left;width:12%;\">" + label + "</span>";
-	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:3px;\" "
+	newRow += "<td name=\"variableName\" class=\"ui-corner-all\"><span style=\"float:left;cursor:pointer;\">" + name + "</span>";
+	newRow += "<div id=\"" + identifier + "_remove\" style=\"cursor:pointer;height:16px;width:16px;float:right;margin:10px;margin-left:2px;\" "
 	+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
 	+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
 	+ "</div></td>";
-	newRow += "<td name=\"description\" class=\"ui-corner-all\" style=\"width:20%;\">" + description + "</td>";
-	newRow += "<td name=\"dataType\" class=\"ui-corner-all\" style=\"width:8%;\">" + dataType + "</td>";
-	newRow += "<td name=\"unit\" class=\"ui-corner-all\" style=\"width:10%;\">" + unit + "</td>";
-
-	addedCategory = "";
-
-	if(categories != "" && categories != null)
-	{
-		blocks = categories.split(",");
-		addedCategory = createMultipleSelect(blocks);
-	}
-
-	newRow += "<td name=\"category\" class=\"ui-corner-all\" style=\"width:20%;\">" + addedCategory + "</td>";
-
-	selectBlocks = "";
-
-	if(buildingBlocks != "" && buildingBlocks != null)
-	{
-
-		for( var i = 0 ; i < buildingBlocks.split(";").length ; i++)
-		{
-			eachDefinition = buildingBlocks.split(";")[i];
-			blocks = eachDefinition.split(",");
-			selectBlocks += createMultipleSelect(blocks);		
-		}
-	}
-
-	newRow += "<td name=\"buildingBlocks\" class=\"ui-corner-all\" style=\"width:40%\">" + selectBlocks + "</td>";
-	newRow += "</tr>";
+	newRow += "<td id=\"label\" name=\"label\" class=\"ui-corner-all\">" + label + "</td>";
+	newRow += "<td id=\"description\" name=\"description\" class=\"ui-corner-all\">" + description + "</td></tr>";
 
 	$('#overviewTable').append(newRow);
-
-	$('td[name="buildingBlocks"] >select').chosen();
-
-	$('td[name="category"] >select').chosen();
 
 	$('#' + identifier + '_remove').click(function(){
 		removePredictor($(this), url);
@@ -529,6 +474,114 @@ function populateRowInTable(data, url)
 		'vertical-align':'middle',
 		'text-align':'center',
 		'font-size':'16px',
+	});
+	
+	$('#' + identifier).data('dataObject', data);
+	
+	$('#' + identifier + ' td:first-child').click(function(){
+		
+		dataObject = $(this).parents('tr').eq(0).data("dataObject");
+		
+		$(document).data("selectedVariable", dataObject["name"]);
+		
+		identifier = dataObject["identifier"];
+		label = dataObject["label"];
+		name = dataObject["name"];
+		description = dataObject["description"];
+		dataType = data["dataType"];
+		categories = data["category"];
+		unit = data["unit"];
+		buildingBlocks = data["buildingBlocks"];
+		
+		row = "<tr><th class=\"ui-corner-all\">ID:</td>";
+		row += "<td class=\"ui-corner-all\">" + identifier + "<div style=\"cursor:pointer;height:16px;width:16px;" 
+			+ "float:right;margin:10px;margin-left:2px;\" "
+			+ "class=\"ui-state-default ui-corner-all\" title=\"remove this predictor\">"
+			+ "<span class=\"ui-icon ui-icon-circle-close\"></span>"
+			+ "</div></td></tr>";
+		row += "<tr><th class=\"ui-corner-all\">Name:</td>";
+		row += "<td class=\"ui-corner-all\"><span style=\"float:left;cursor:pointer;\">" + name + "</span></td></tr>";
+		row += "<tr><th class=\"ui-corner-all\">Label:</td>";
+		row += "<td class=\"ui-corner-all\">" + label + "</td></tr>";
+		row += "<tr><th class=\"ui-corner-all\">Description:</td>";
+		row += "<td id=\"variableDescription\" name=\"variableDescription\"  class=\"ui-corner-all\">" + description + "</td></tr>";
+
+		if(buildingBlocks != "" && buildingBlocks != null)
+		{
+			selectBlocks = "";
+			
+			for( var i = 0 ; i < buildingBlocks.split(";").length ; i++)
+			{
+				eachDefinition = buildingBlocks.split(";")[i];
+				blocks = eachDefinition.split(",");
+				selectBlocks += createMultipleSelect(blocks);		
+			}
+			
+			row += "<tr><th class=\"ui-corner-all\">Building blocks:</td>"
+				+ "<td id=\"variableBuildingBlocks\" name=\"variableBuildingBlocks\" class=\"ui-corner-all\">" + selectBlocks + "</td></tr>";
+		}
+		
+		row += "<tr><td></td><td><input type=\"button\" id=\"matchSelectedVariable\"  style=\"margin-left:250px;\"" 
+			+  "class=\"btn btn-info btn-small\" value=\"Match selected variable\"></td><tr>";
+		
+		$('#variableDetail').empty().append(row);
+		
+		$('td[name="variableBuildingBlocks"] >select').chosen();
+
+		$('td[name="category"] >select').chosen();
+		
+		$('#variableDetail tr:eq(0) div').click(function()
+		{
+			$('#overviewTable').parents('div').eq(0).width("100%").find('tr').children().show();
+			$("input[name=\"selectedVariableID\"]").val(null);
+		});
+		
+		$('#matchSelectedVariable').click(function(){
+			
+			$("input[name=\"selectedVariableID\"]").val($(document).data('selectedVariable'));
+			
+			$('#whetherWholeSet').text($(this).parents('table:eq(0)').find('tr:eq(2) td').text());
+			
+			$('#selectCohortStudyPanel').modal('show');
+			
+//			selectPredictionModelModal = "<div id=\"\" class=\"modal hide fade\"><div class=\"modal-header\">Select validation study(ies) to match</div>"
+//									   + "<div class=\"modal-body\"></div><div class=\"modal-footer\">"
+//									   + "<input type=\"button\" id=\"matchSelectedVariable\""
+//									   +  "class=\"btn btn-info btn-small\" value=\"Match selected variable\">" 
+//									   +  "<button class=\"btn btn-info btn-small\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</button></div></div>";
+//			
+//			$('#beforeMapping').append(selectPredictionModelModal);
+		});
+		
+//		$('#matchSelectedVariable').click(function()
+//		{	
+//			formName = $(this).parents('form').eq(0).attr('name');
+//			
+//			selectedVariableID = $(document).data('selectedVariable');
+//			
+//			$("input[name=\"selectedVariableID\"]").val(selectedVariableID);
+//			
+//			$("input[name=\"__action\"]").val("loadMapping");
+//			
+//			$("form[name=\"" + formName + "\"]").submit();
+//		});
+		
+		$('#overviewTable tr').each(function(){
+			
+			var i = 0;
+			
+			$(this).children().each(function()
+			{
+				if(i > 0)
+				{
+					$(this).hide();
+				}
+				
+				i++;
+			});
+		});
+		
+		$('#overviewTable').parents('div').eq(0).css('width', '35%');
 	});
 
 	cancelAddPredictorPanel();
@@ -566,7 +619,8 @@ function addNewPredictionModel(url)
 
 function removePredictionModel(url)
 {	
-	if($('#selectPredictionModel option').length > 0){
+	if($('#selectPredictionModel option').length > 0)
+	{
 		selected = $('#selectPredictionModel').val();
 
 		$.ajax({
@@ -604,27 +658,35 @@ function addPredictor(url)
 		message = result["message"];
 		success = result["success"];
 		predictor = result["identifier"];
-		if(success == true){
-			summaryAddOne(predictor);
-		}
 	}
+	
 	showMessage(message, success);
+	
+	showPredictors($('#selectPredictionModel').val(), url);
 }
 
 function removePredictor(element, url)
 {	
-	predictor = $(element).parents('td').eq(0).text();
+	predictorName = $(element).parents('td').eq(0).children('span:first-child').text();
+	
+	predictorID = $(element).parents('tr').eq(0).attr('id');
+	
 	selected = $('#selectPredictionModel').val();
+	
 	$.ajax({
 		url : url + "&__action=download_json_removePredictors&name=" 
-		+ predictor + "&predictionModel=" + selected,
+		+ predictorName + "&predictorID=" + predictorID + "&predictionModel=" + selected,
 		async: false,
 	}).done(function(status){
+		
 		message = status["message"];
+		
 		success = status["success"];
+		
 		showMessage(message, success);
-		if(success == true){
-			summaryRemoveOne(identifier);
+		
+		if(success == true)
+		{
 			$(element).parents('tr').eq(0).remove();
 		}
 	});
@@ -636,24 +698,30 @@ function showPredictors(predictionModelName, url)
 		url : url + "&__action=download_json_showPredictors&name=" + predictionModelName,
 		async: false,
 	}).done(function(status){
-
-		$('#selectedPredictionModelName').val(status["selected"]);
-		$('#numberOfPredictors').val(status["numberOfPredictors"]);
-		$('#buildingBlocksDefined').val(status["buildingBlocksDefined"]);
+		
+		$('#overviewTable').parents('div').eq(0).width("100%").find('tr').children().show();
+		
+		$('#selectedPredictionModelName').val(status["name"]);
+		
 		$('#formula').val(status["formula"]);
+		
 		$('#showFormula').val(status["formula"]);
-		delete status["selected"];
-		delete status["numberOfPredictors"];
-		delete status["buildingBlocksDefined"]; 
-		delete status["formula"];  
 
 		$('#showPredictorPanel table tr:gt(0)').remove();
-
-		$.each(status, function(predictor, Info){
-			populateRowInTable(Info, url);
-		});
-
-		$('#summaryPanel').fadeIn().draggable();
+		
+		listOfFeatures = status["predictorObjects"];
+		
+		if(listOfFeatures != null)
+		{
+			for(var i = 0; i < listOfFeatures.length; i++)
+			{
+				populateRowInTable(listOfFeatures[i], url);
+			}
+		}
+		
+//		$.each(predictionModelObject["predictorObjects"], function(predictor, Info){
+//			populateRowInTable(Info, url);
+//		});
 	});
 }
 
@@ -680,7 +748,7 @@ function defineFormula(url)
 //Make the add predictor panel disappear
 function cancelAddPredictorPanel()
 {	
-	$('#defineVariablePanel').fadeOut();
+	$('#defineVariablePanel').modal('hide');
 	$('#defineVariablePanel input[type="text"]').val('');
 	$('#dataTypeOfPredictor option:first-child').attr('selected',true);
 	$('#categoryOfPredictor').attr('disabled', true);
@@ -728,28 +796,6 @@ function createMultipleSelect(listOfTerms)
 	selectBlocks += "</select>";
 
 	return selectBlocks;
-}
-
-function summaryAddOne(identifier)
-{	
-	numberOfPredcitors = $('#numberOfPredictors').val();
-	buildingBlocksDefine = $('#buildingBlocksDefined').val();
-	$('#numberOfPredictors').val(++numberOfPredcitors);
-	if($('#' + identifier + ' td:last-child >select').length > 0){
-		++buildingBlocksDefine;
-	}
-	$('#buildingBlocksDefined').val(buildingBlocksDefine);
-}
-
-function summaryRemoveOne(identifier)
-{
-	numberOfPredcitors = $('#numberOfPredictors').val();
-	buildingBlocksDefine = $('#buildingBlocksDefined').val();
-	$('#numberOfPredictors').val(--numberOfPredcitors);
-	if($('#' + identifier + ' td:last-child >select').length > 0){
-		--buildingBlocksDefine;
-	}
-	$('#buildingBlocksDefined').val(buildingBlocksDefine);
 }
 
 function showMessage(message, success)

@@ -24,6 +24,10 @@ import org.molgenis.compute.runtime.ComputeTask;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -44,8 +48,8 @@ public class ComputeCommandLine
 	private String currentScheduler = "null";
 
 	protected ComputeBundle computeBundle;
-	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
-	protected String outputdir, templatedir, backend;
+	protected File parametersfile, workflowfile, worksheetfile, templatedir, protocoldir, workingdir;
+	protected String outputdir, backend;
 	protected Hashtable<String, Object> userValues = new Hashtable<String, Object>();
 	private List<ComputeTask> tasks = new ArrayList<ComputeTask>();
 	private Worksheet worksheet;
@@ -336,13 +340,11 @@ public class ComputeCommandLine
 
 		String ls = System.getProperty("line.separator");
 
-		scripttemplate = "<#include \"Header.ftl\"/>" + scripttemplate + ls + "<#include \"Footer.ftl\"/>";
-		// + "<#include \"Macros.ftl\"/>" + ls
-		// + "<@begin/>" + ls
-		// + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
-		// + scripttemplate
-		// + (interpreter.equalsIgnoreCase("R") ? "<@Rend/>" + ls : "")
-		// + "<@end/>" + ls;
+		// TODO: only add Header/Footer if exist
+		scripttemplate = "<#attempt><#include \"Header.ftl\"><#recover></#attempt>" + ls + scripttemplate;
+		scripttemplate = scripttemplate + ls + "<#attempt><#include \"Footer.ftl\"><#recover></#attempt>";
+		// scripttemplate = "<#include \"Header.ftl\"/>" + ls + scripttemplate +
+		// ls + "<#include \"Footer.ftl\"/>";
 
 		return (scripttemplate);
 	}
@@ -406,8 +408,22 @@ public class ComputeCommandLine
 		Configuration cfg = new Configuration();
 
 		// add path to loader
-		// FileTemplateLoader ftl1 = new FileTemplateLoader(this.workflowdir);
-		cfg.setDirectoryForTemplateLoading(this.protocoldir);
+		// first search in protocols, then in system
+		FileTemplateLoader ftl1 = new FileTemplateLoader(this.protocoldir);
+		FileTemplateLoader ftl2 = new FileTemplateLoader();
+		// only import templates if the respective dir exists
+		if (this.templatedir.exists())
+		{
+			ftl2 = new FileTemplateLoader(this.templatedir);
+		}
+		ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "");
+		TemplateLoader[] loaders = new TemplateLoader[]
+		{ ftl1, ftl2, ctl };
+		MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
+
+		cfg.setTemplateLoader(mtl);
+
+		// cfg.setDirectoryForTemplateLoading(this.systemdir);
 
 		Template template = new Template(jobname, new StringReader(scripttemplate), cfg);
 		StringWriter filledtemplate = new StringWriter();
@@ -455,11 +471,22 @@ public class ComputeCommandLine
 	public static void main(String[] args)
 	{
 		// Parse command line arguments
-		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args);
+		LinkedHashMap<String, String> argsMap = ArgumentParser.parseParameters(args, new Exiter()
+		{
+
+			@Override
+			public void exit()
+			{
+				System.exit(1);
+
+			}
+
+		});
 
 		ComputeCommandLine ccl = new ComputeCommandLine();
 
 		ccl.workflowfile = new File(argsMap.get("workflow"));
+		ccl.templatedir = new File(argsMap.get("templates"));
 		ccl.protocoldir = new File(argsMap.get("protocols"));
 		ccl.parametersfile = new File(argsMap.get("parameters"));
 		ccl.worksheetfile = new File(argsMap.get("worksheet"));
@@ -590,7 +617,7 @@ public class ComputeCommandLine
 	 */
 	/* } */
 
-	/** Convert all compute jobs into scripts + submit.sh */
+	/** Convert all compute jobs into scripts + submit.sh + dataTransfer.sh */
 	private void generateScripts()
 	{
 		new File(outputdir).mkdirs();
@@ -603,12 +630,23 @@ public class ComputeCommandLine
 
 		try
 		{
-			String result = new FreemarkerView(this.protocoldir + File.separator + "Submit.sh.ftl", params).render();
+			// submit.sh, from template dir or else protocol dir
+			String protocol = this.templatedir + File.separator + "Submit.sh.ftl";
+			if (!(new File(protocol).isFile()))
+			{
+				protocol = this.protocoldir + File.separator + "Submit.sh.ftl";
+			}
+			String result = new FreemarkerView(protocol, params).render();
 			FileUtils.write(new File(outputdir + File.separator + "submit.sh"), result);
 
-			// and produce submit.sh
-			// PrintWriter submitWriter = new PrintWriter(new File(outputdir +
-			// File.separator + "submit.sh"));
+			// dataTransfer.sh, from template dir or else protocol dir
+			protocol = this.templatedir + File.separator + "DataTransfer.sh.ftl";
+			if (!(new File(protocol).isFile()))
+			{
+				protocol = this.protocoldir + File.separator + "DataTransfer.sh.ftl";
+			}
+			result = new FreemarkerView(protocol, params).render();
+			FileUtils.write(new File(outputdir + File.separator + "dataTransfer.sh"), result);
 
 			// also produce a runlocal.sh
 			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "runlocal.sh"));
