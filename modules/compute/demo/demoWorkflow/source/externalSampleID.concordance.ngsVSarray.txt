@@ -1,2 +1,0 @@
-name, step, nSNPs, PercDbSNP, Ti/Tv_known, Ti/Tv_Novel, All_comp_het_called_het, Known_comp_het_called_het, Non-Ref_Sensitivity, Non-Ref_discrepancy, Overall_concordance
-[1] 1_D01_1683_RF4,q20_dp10_concordance,2185,100.00,5.50,0.00,3.88,99.94,3.88,0.06,99.97

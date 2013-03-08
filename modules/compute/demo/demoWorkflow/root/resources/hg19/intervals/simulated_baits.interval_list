@@ -1,5 +1,0 @@
-@HD	VN:1.0	SO:coordinate
-@SQ	SN:1	LN:50	UR:file:/Users/mdijkstra/Documents/work/git/molgenis_apps/modules/compute/demo/demoWorkflow/root/resources/hg19/indices/simulatedReferenceGenome.fa	M5:ae6efe8d51e955c4e51f4de3308bfe30
-@SQ	SN:2	LN:50	UR:file:/Users/mdijkstra/Documents/work/git/molgenis_apps/modules/compute/demo/demoWorkflow/root/resources/hg19/indices/simulatedReferenceGenome.fa	M5:917506d2ce5df6bece9cdb8d830ac602
-1	1	50	+	bait1
-2	1	50	+	bait2
