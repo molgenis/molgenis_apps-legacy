@@ -201,15 +201,15 @@ else
 	sed -e 's/chr//' ${sample}.genotypeArray.vcf | awk '{OFS="\t"; if (!/^#/){print $1,$2-1,$2}}' \
 	> ${sample}.genotypeArray.bed
 	
-	${tooldir}/BEDTools-Version-2.11.2/bin/fastaFromBed \
-	-fi ${resdir}/b36/hs_ref_b36.fasta \
-	-bed ${sample}.genotypeArray.bed \
-	-fo ${sample}.genotypeArray.fasta -tab
-	
-	
 	####################################
 	if [ $build == "build36" ]
 	then # File is on build36
+
+		##Create tabular fasta from bed
+		${tooldir}/BEDTools-Version-2.11.2/bin/fastaFromBed \
+		-fi ${resdir}/b36/hs_ref_b36.fasta \
+		-bed ${sample}.genotypeArray.bed \
+		-fo ${sample}.genotypeArray.fasta -tab
 	
 		##Align vcf to reference AND DO NOT FLIP STRANDS!!! (genotype data is already in forward-forward format) If flipping is needed use "-f" command before sample.genotype_array.vcf
 		perl ${tooldir}/scripts/align-vcf-to-ref.pl \
@@ -284,10 +284,17 @@ else
 		--comp comp_immuno \
 		--header >> ${sampleconcordancefile}
 	fi
+
 	if [ $build == "build37" ]
 	then
 		###################################
 		#Arrayfile is on build 37
+
+		##Create tabular fasta from bed
+		${tooldir}/BEDTools-Version-2.11.2/bin/fastaFromBed \
+		-fi ${indexfile} \
+		-bed ${sample}.genotypeArray.bed \
+		-fo ${sample}.genotypeArray.fasta -tab
 		
 		##Align vcf to reference AND DO NOT FLIP STRANDS!!! (genotype data is already in forward-forward format) If flipping is needed use "-f" command before sample.genotype_array.vcf
 		perl ${tooldir}/scripts/align-vcf-to-ref.pl \
