@@ -59,6 +59,7 @@ then
 	if [ ! -f ${tmpOutput}_info ]
 	then
 	
+		echo "Impute2 found not SNPs in this region. We now create empty output"
 		echo "Touching file: ${tmpOutput}"
 		echo "Touching file: ${tmpOutput}_info"
 		echo "Touching file: ${tmpOutput}_info_by_sample"
