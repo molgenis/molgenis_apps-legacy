@@ -501,7 +501,7 @@ public class ComputeCommandLine
 		ccl.userValues.put("McId", argsMap.get("id"));
 		ccl.userValues.put("McParameters", argsMap.get("parameters"));
 		ccl.userValues.put("McProtocols", argsMap.get("protocols"));
-		ccl.userValues.put("McTemplates", "N/A");
+		ccl.userValues.put("McTemplates", argsMap.get("templates"));
 		ccl.userValues.put("McWorkflow", argsMap.get("workflow"));
 		ccl.userValues.put("McWorksheet", argsMap.get("worksheet"));
 		ccl.userValues.put("McScripts", argsMap.get("outputdir"));
