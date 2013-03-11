@@ -156,6 +156,8 @@ public class ArgumentParser
 			System.err
 					.println("  -workflow=<inputdir/workflow.csv>     # A file describing the workflowsteps and their interdependencies.");
 			System.err
+					.println("  -templates=<inputdir/templates>       # A directory containing your *.ftl template files.");
+			System.err
 					.println("  -protocols=<inputdir/protocols>       # A directory containing the *.ftl protocol files.");
 			System.err
 					.println("  -parameters=<inputdir/parameters.csv> # A file that describes the parameters that are used in the protocols.");
