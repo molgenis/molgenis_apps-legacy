@@ -666,11 +666,15 @@ public class MatrixViewer extends HtmlWidget
 										{
 											// List will remain empty
 										}
+
+										relName = relName
+												+ "<a href=\"#\" onmouseover=\"toolTip('"
+												+ infoBoxContents
+												+ "')\" onmouseout=\"toolTip()\"><img src = \"res/img/display_info_tooltip_14x13.png\" style = \"vertical-align: middle; padding:4px;\"></a>";
 									}
-									else
-									{
-										valueToShow = relName;
-									}
+
+									valueToShow = relName;
+
 								}
 
 								// If timing should be shown:
@@ -1842,6 +1846,16 @@ public class MatrixViewer extends HtmlWidget
 	public void setShowValueValidRange(boolean showValueValidRange)
 	{
 		this.showValueValidRange = showValueValidRange;
+	}
+
+	public boolean isShowTargetTooltip()
+	{
+		return showTargetTooltip;
+	}
+
+	public void setShowTargetTooltip(boolean showTargetTooltip)
+	{
+		this.showTargetTooltip = showTargetTooltip;
 	}
 
 	private String valueListToString(List<? extends ObservedValue> valueList)

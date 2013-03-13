@@ -433,6 +433,7 @@ public class Breedingnew extends PluginModel<Entity>
 			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(
 					Panel.class, Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
 					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+			litterMatrixViewer.setShowTargetTooltip(true);
 		}
 		catch (Exception e)
 		{
@@ -2243,8 +2244,11 @@ public class Breedingnew extends PluginModel<Entity>
 		db.add(app);
 		String paName = app.getName();
 		// Parentgroup
+
 		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Parentgroup", litterName, null,
 				selectedParentgroup));
+		// ParentgroupMother / parentgroupFater
+
 		// Set Line also on Litter
 		if (lineName != null)
 		{
