@@ -375,6 +375,7 @@ public class Breedingnew extends PluginModel<Entity>
 			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(Panel.class,
 					Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
 					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+			pgMatrixViewer.setShowTargetTooltip(true);
 
 		}
 		catch (Exception e)
