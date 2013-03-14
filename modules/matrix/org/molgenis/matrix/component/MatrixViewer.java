@@ -93,6 +93,8 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showNameFilter = true;
 	private boolean isEditable;
 	private boolean showTargetTooltip = false;
+	private boolean filterVisibility = true;
+	// private boolean addRemColumnVisibility = true;
 	private String APPLICATION_STRING = "GENERIC";
 
 	private String downloadLink = null;
@@ -131,6 +133,7 @@ public class MatrixViewer extends HtmlWidget
 	public String REMALLCOLHEADERFILTER = getName() + "_remAllColHeaderFilter";
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
 	public String OPERATOR = getName() + "_operator";
+	public String TOGGLEFILTERSETTINGSVISIBILITY = getName() + "_toggleFilterSettingsVisibility";
 	// hack to pass database to toHtml() via toHtml(db)
 	private Database db;
 
@@ -444,9 +447,11 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;\" src=\"res/img/addremcol_32.png\" "
 				+ "onclick=\"if (document.getElementById('addRemCol').style.display=='none') {document.getElementById('addRemCol').style.display='block';} else {document.getElementById('addRemCol').style.display='none';} \" "
 				+ "/>";
-		divContents += "<img id='showHideFilterButton' title=\"Add or Remove a data filter \" style=\"padding:2px;\" src=\"res/img/filter_32.png\" "
-				+ "onclick=\"if (document.getElementById('addFilter').style.display=='none') {document.getElementById('addFilter').style.display='block';} else {document.getElementById('addFilter').style.display='none';} \" "
-				+ "/>";
+		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">";
+		ActionInput toggleFilterSettings = new ActionInput(TOGGLEFILTERSETTINGSVISIBILITY, "", "");
+		toggleFilterSettings.setIcon("res/img/filter_32.png");
+		divContents += toggleFilterSettings.render() + "</div>";
+
 		// the header filter div (add remo cols)
 
 		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
@@ -473,12 +478,17 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "</div></div>";
 
 		// the filter div
-		divContents += "<div id='addFilter' style='display:block;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-		divContents += "<div id='closeAddFilter' style='float:right;clear:both' ><img id='closeButton' onclick=\"document.getElementById('addFilter').style.display='none';\" src='res/img/exit.png' /></div> ";
-		divContents += renderFilterPart();
-		divContents += "</div></div>";
+		if (filterVisibility)
+		{
+			divContents += "<div id='addFilter' style='display:block;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+			// divContents +=
+			// "<div id='closeAddFilter' style='float:right;clear:both' ><img id='closeButton' onclick=\"document.getElementById('addFilter').style.display='none';\" src='res/img/exit.png' /></div> ";
+			divContents += renderFilterPart();
+			divContents += "</div></div>";
 
+		}
 		return divContents;
+
 	}
 
 	/**
@@ -666,11 +676,15 @@ public class MatrixViewer extends HtmlWidget
 										{
 											// List will remain empty
 										}
+
+										relName = relName
+												+ "<a href=\"#\" onmouseover=\"toolTip('"
+												+ infoBoxContents
+												+ "')\" onmouseout=\"toolTip()\"><img src = \"res/img/display_info_tooltip_14x13.png\" style = \"vertical-align: middle; padding:4px;\"></a>";
 									}
-									else
-									{
-										valueToShow = relName;
-									}
+
+									valueToShow = relName;
+
 								}
 
 								// If timing should be shown:
@@ -1797,6 +1811,18 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
+	public void toggleFilterSettingsVisibility(Database db, MolgenisRequest t) throws MatrixException
+	{
+		if (filterVisibility)
+		{
+			filterVisibility = false;
+		}
+		else
+		{
+			filterVisibility = true;
+		}
+	}
+
 	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
@@ -1842,6 +1868,16 @@ public class MatrixViewer extends HtmlWidget
 	public void setShowValueValidRange(boolean showValueValidRange)
 	{
 		this.showValueValidRange = showValueValidRange;
+	}
+
+	public boolean isShowTargetTooltip()
+	{
+		return showTargetTooltip;
+	}
+
+	public void setShowTargetTooltip(boolean showTargetTooltip)
+	{
+		this.showTargetTooltip = showTargetTooltip;
 	}
 
 	private String valueListToString(List<? extends ObservedValue> valueList)
