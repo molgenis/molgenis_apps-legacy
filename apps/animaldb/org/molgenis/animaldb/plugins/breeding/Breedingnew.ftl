@@ -109,7 +109,9 @@
 							$( "#startdate${n}" ).datepicker({
 								numberOfMonths: 1,
 								showButtonPanel: true,
-								dateFormat: "yy-mm-dd"
+								dateFormat: "yy-mm-dd",
+								changeYear: true,
+                    			changeMonth: true
 							});
 						});
 					</script>
@@ -197,6 +199,8 @@
                         numberOfMonths: 1,
                         showButtonPanel: true,
                         dateFormat: "yy-mm-dd",
+                        changeYear: true,
+                    	changeMonth: true,
                         minDate: "${screen.getBirthdate()}"
                     });
                   });  
@@ -442,14 +446,18 @@
 		$("#birthdate").datepicker({
 			numberOfMonths: 1,
 			showButtonPanel: true,
-			dateFormat: "yy-mm-dd"			
+			dateFormat: "yy-mm-dd",
+			changeYear: true,
+            changeMonth: true			
 		});
 	});
 	$(function() {
         $( "#genodate" ).datepicker({
             numberOfMonths: 1,
             showButtonPanel: true,
-            dateFormat: "yy-mm-dd"
+            dateFormat: "yy-mm-dd",
+            changeYear: true,
+            changeMonth: true
         });
     });
 
