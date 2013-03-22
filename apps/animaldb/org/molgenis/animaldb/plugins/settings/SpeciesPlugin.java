@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.settings;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +125,22 @@ public class SpeciesPlugin extends PluginModel<Entity>
 
 			if (action.equals("addSpecies"))
 			{
-				//
+
+				String speciesName = request.getString("speciesname");
+				String speciesLatinName = request.getString("specieslatinname");
+				String speciesDutchName = request.getString("speciesdutchname");
+				String nvwaCategory = request.getString("nvwacategory");
+				String prefixString = request.getString("prefixstring");
+				String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
+				ct.createPanel(investigationName, speciesName);
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
+						"SetTypeOfGroup", "TypeOfGroup", speciesName, "Species", null));
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
+						"SetLatinSpecies", "LatinSpecies", speciesName, speciesLatinName, null));
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
+						"SetDutchSpecies", "DutchSpecies", speciesName, speciesDutchName, null));
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
+						"SetVWASpecies", "VWASpecies", speciesName, nvwaCategory, null));
 			}
 
 		}

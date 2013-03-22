@@ -35,19 +35,41 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
-	<div id="name" class="row">
-	<label for="name">Name:</label>
-	<input type="text" name="name" id="name" class="textbox" />
+	<div class="row">
+		<label for="speciesname">Species Name:</label>
+		<input type="text" name="speciesname" id="speciesname" class="textbox" />
+	</div>
+	<div class="row">
+		<label for="specieslatinname">Latin name:</label>
+		<input type="text" name="specieslatinname" id="specieslatinname" class="textbox" />
+	</div>
+	<div class="row">
+		<label for="speciesdutchname">Dutch name:</label>
+		<input type="text" name="speciesdutchname" id="speciesdutchname" class="textbox" />
+	</div>
+
+	<div class="row">
+		<label for="nvwacategory">NVWA species category:</label>
+		<input type="text" name="nvwacategory" id="nvwacategory" class="textbox" />
+	</div>
+	<!--
+	<div class="row">
+		<label for="species">NVWA species category:</label>
+		<select name="nvwacategory" id="nvwacategory" class="selectbox">
+			<#if screen.nvwaCategoryList??>
+				<#list screen.nvwaCategoryList as species>
+					<option value="${nvwaCategory.name}">${nvwaCategory.name}</option>
+				</#list>
+			</#if>
+		</select>
+	</div>-->
+	<div class="row">
+		<label for="prefixstring">species prefix string:</label>
+		<input type="text" name="nprefixstring" id="prefixstring" class="textbox" />
 	</div>
 	
-	<div id="superlocation" class="row">
-	<label for="superlocation">Sublocation of:</label>
-	<select name="superlocation" id="superlocation" class="selectbox">
-		<option value="0">&nbsp;</option>
-		<#list screen.locationList as ll>
-			<option value="${ll.id?string.computer}">${ll.name}</option>
-		</#list>
-	</select>
+	<div class='row'>
+		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addSpecies'" />
 	</div>
 	
 	<div id='buttons_part' class='row'>
@@ -56,9 +78,9 @@
 
 <#else>
 
-	<!--p>
-		<a href="molgenis.do?__target={screen.name}&__action=Add">Make new species</a>
-	</p-->
+	<p>
+		<a href="molgenis.do?__target=${screen.name}&__action=Add">Add new species</a>
+	</p>
 
 	<#if screen.speciesList?size gt 0>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="spectable">
