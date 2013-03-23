@@ -89,7 +89,6 @@ public class PrefillAnimalDB
 		}
 		// Run convertor steps
 		populateProtocolApplication();
-		populatePrefixes(path + "nameprefix.csv");
 		populateNews(path + "news.csv");
 		populateOntology(path + "ontology.csv");
 		populateOntologyTerm(path + "ontologyterm.csv");
@@ -102,6 +101,7 @@ public class PrefillAnimalDB
 		populateSource(path + "source.csv");
 		// Add it all to the database
 		writeToDb();
+		populatePrefixes(path + "nameprefix.csv");
 	}
 
 	public void writeToDb() throws Exception
@@ -141,6 +141,7 @@ public class PrefillAnimalDB
 			np.setTargetType(tuple.getString("targetType"));
 			np.setPrefix(tuple.getString("prefix"));
 			np.setHighestNumber(0);
+			np.setTargetName_Name(tuple.getString("targetName"));
 			db.add(np); // this one goes directly into the db, not through a
 						// list, because nothing links to it
 		}
