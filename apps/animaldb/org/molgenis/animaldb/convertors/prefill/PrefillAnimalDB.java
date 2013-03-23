@@ -271,7 +271,10 @@ public class PrefillAnimalDB
 		CsvFileReader reader = new CsvFileReader(file);
 		for (Tuple tuple : reader)
 		{
-			String specName = tuple.getString("name");
+			System.out.println(tuple);
+			System.out.println(tuple.getString("Name") + " ... ");
+			System.out.println(tuple.getString("VWASpecies"));
+			String specName = tuple.getString("Name");
 			panelsToAddList.add(ct.preparePanel(invName, specName));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), null,
 					"TypeOfGroup", specName, "Species", null));
@@ -281,6 +284,8 @@ public class PrefillAnimalDB
 					"LatinSpecies", specName, tuple.getString("LatinSpecies"), null));
 			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDutchSpecies"), new Date(), null,
 					"DutchSpecies", specName, tuple.getString("DutchSpecies"), null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetPrefixString"), new Date(), null,
+					"PrefixString", specName, tuple.getString("PrefixString"), null));
 		}
 	}
 
@@ -323,6 +328,7 @@ public class PrefillAnimalDB
 		makeProtocolApplication("SetDutchSpecies");
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetSourceType");
+		makeProtocolApplication("SetPrefixString");
 	}
 
 	public void makeProtocolApplication(String protocolName) throws Exception
