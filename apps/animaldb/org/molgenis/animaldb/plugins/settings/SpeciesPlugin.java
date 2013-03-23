@@ -21,6 +21,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
@@ -29,10 +30,18 @@ public class SpeciesPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
 	private List<ObservationTarget> speciesList;
+	private List<Category> nvwaCodeList;
 	private String action = "init";
 	private Map<Integer, String> dutchNameMap;
 	private Map<Integer, String> latinNameMap;
 	private Map<Integer, String> vwaNameMap;
+
+	public Map<Integer, String> getPrefixStringMap()
+	{
+		return prefixStringMap;
+	}
+
+	private Map<Integer, String> prefixStringMap;
 	private CommonService ct = CommonService.getInstance();
 
 	public SpeciesPlugin(String name, ScreenController<?> parent)
@@ -92,6 +101,21 @@ public class SpeciesPlugin extends PluginModel<Entity>
 		return vwaNameMap.get(speciesId);
 	}
 
+	public String getPrefixString(int speciesId)
+	{
+		return prefixStringMap.get(speciesId);
+	}
+
+	public List<Category> getNvwaCodeList()
+	{
+		return nvwaCodeList;
+	}
+
+	public void setNvwaCodeList(List<Category> nvwaCodeList)
+	{
+		this.nvwaCodeList = nvwaCodeList;
+	}
+
 	private String getSpeciesName(Database db, int speciesId, String measurementName) throws DatabaseException
 	{
 
@@ -141,6 +165,9 @@ public class SpeciesPlugin extends PluginModel<Entity>
 						"SetDutchSpecies", "DutchSpecies", speciesName, speciesDutchName, null));
 				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
 						"SetVWASpecies", "VWASpecies", speciesName, nvwaCategory, null));
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null,
+						"SetPrefixString", "PrefixString", speciesName, prefixString, null));
+				ct.updatePrefix("animal", prefixString, 0);
 			}
 
 		}
@@ -164,14 +191,19 @@ public class SpeciesPlugin extends PluginModel<Entity>
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			this.speciesList = ct.getAllMarkedPanels("Species", investigationNames);
 
+			// Populate nvwaCategoryList code list
+			this.setNvwaCodeList(ct.getAllCodesForFeature("VWASpecies"));
+
 			dutchNameMap = new HashMap<Integer, String>();
 			latinNameMap = new HashMap<Integer, String>();
 			vwaNameMap = new HashMap<Integer, String>();
+			prefixStringMap = new HashMap<Integer, String>();
 			for (ObservationTarget species : speciesList)
 			{
 				dutchNameMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "DutchSpecies"));
 				latinNameMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "LatinSpecies"));
 				vwaNameMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "VWASpecies"));
+				prefixStringMap.put(species.getId(), this.getSpeciesName(db, species.getId(), "PrefixString"));
 			}
 
 		}
@@ -186,5 +218,4 @@ public class SpeciesPlugin extends PluginModel<Entity>
 			e.printStackTrace();
 		}
 	}
-
 }

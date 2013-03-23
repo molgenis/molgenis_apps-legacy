@@ -48,24 +48,22 @@
 		<input type="text" name="speciesdutchname" id="speciesdutchname" class="textbox" />
 	</div>
 
-	<div class="row">
+	<!--<div class="row">
 		<label for="nvwacategory">NVWA species category:</label>
 		<input type="text" name="nvwacategory" id="nvwacategory" class="textbox" />
-	</div>
-	<!--
+	</div> -->
+	
 	<div class="row">
 		<label for="species">NVWA species category:</label>
 		<select name="nvwacategory" id="nvwacategory" class="selectbox">
-			<#if screen.nvwaCategoryList??>
-				<#list screen.nvwaCategoryList as species>
-					<option value="${nvwaCategory.name}">${nvwaCategory.name}</option>
-				</#list>
-			</#if>
+		<#list screen.nvwaCodeList as nvwacl>
+			<option value="${nvwacl.description}">${nvwacl.code_string} (${nvwacl.description})</option>
+		</#list>
 		</select>
-	</div>-->
+	</div>
 	<div class="row">
 		<label for="prefixstring">species prefix string:</label>
-		<input type="text" name="nprefixstring" id="prefixstring" class="textbox" />
+		<input type="text" name="prefixstring" id="prefixstring" class="textbox" />
 	</div>
 	
 	<div class='row'>
@@ -90,6 +88,7 @@
 					<th>Latin name</th>
 					<th>Dutch name</th>
 					<th>NVWA category</th>
+					<th>Prefix string</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -100,6 +99,7 @@
 					<td>${screen.getLatinName(specId)}</td>
 					<td>${screen.getDutchName(specId)}</td>
 					<td>${screen.getVwaName(specId)}</td>
+					<td>${screen.getPrefixString(specId)}</td>
 				</tr>
 			</#list>
 			</tbody>
