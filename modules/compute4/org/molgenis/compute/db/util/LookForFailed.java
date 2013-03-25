@@ -32,6 +32,7 @@ public class LookForFailed
                 if(task.getStatusCode().equalsIgnoreCase("failed"))
                 {
 				    task.setStatusCode("generated");
+                    task.setRunLog("");
                     System.out.println(task.getName() + " >>> changed from failed to generated");
                 }
 			}
