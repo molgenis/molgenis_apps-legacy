@@ -15,8 +15,8 @@ It should be used via 'import' plus passing of properties
 
 	<!-- static properties shared between all apps-->
 	<property file="${app_properties}" />
-	<property name="molgenis.dir" value="../molgenis" />
-	<property name="build.molgenis.dir" value="../molgenis/bin" />
+	<property name="molgenis.dir" value="../molgenis-legacy" />
+	<property name="build.molgenis.dir" value="../molgenis-legacy/bin" />
 	<property name="build.molgenis_apps.dir" value="build/classes" />
 	<property name="testng.report.dir" value="dist/test-output" />
 	<property name="war.dir" value="dist/war" />
@@ -28,7 +28,7 @@ It should be used via 'import' plus passing of properties
 	<path id="molgenis.classpath">
 		<pathelement location="${build.molgenis.dir}" />
 		<pathelement location="${build.molgenis_apps.dir}" />
-		<fileset dir="../molgenis/lib">
+		<fileset dir="../molgenis-legacy/lib">
 			<include name="**/*.jar" />
 		</fileset>
 		<fileset dir="WebContent/WEB-INF/lib">
