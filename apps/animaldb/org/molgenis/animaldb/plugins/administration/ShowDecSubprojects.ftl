@@ -407,7 +407,7 @@
 
 	<div id="experimentlist">
 		<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable">
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable" width="50%">
 			<thead>
 				<tr>
 					<th></th>
@@ -416,19 +416,19 @@
 					<th>Start date</th>
 					<th>End date</th>
 					<th>Animal Budget</th>
-					<th>DEC application</th>
-					<th>DEC subproject code</th>
-					<th>DEC subproject title</th>
-					<th>DEC subproject application PDF</th>
-					<th>DEC subproject approval PDF</th>
-					<th>Concern</th>
-					<th>Goal</th>
-					<th>Special techniques</th>
-					<th>Law definition</th>
-					<th>Toxic research</th>
-					<th>Anaesthesia</th>
-					<th>Pain management</th>
-					<th>Expected animal end status</th>
+					<!--<th>DEC application</th>-->
+					<!--<th>DEC subproject code</th>-->
+					<th>Subproject title</th>
+					<th>Application PDF</th>
+					<th>Approval PDF</th>
+					<!--<th>Concern</th>-->
+					<!--<th>Goal</th>-->
+					<!--<th>Special techniques</th>-->
+					<!--<th>Law definition</th>-->
+					<!--<th>Toxic research</th>-->
+					<!--<th>Anaesthesia</th>-->
+					<!--<th>Pain management</th>-->
+					<!--<th>Expected animal end status</th>-->
 					<th>Remarks</th>
 				</tr>
 			</thead>
@@ -443,19 +443,19 @@
 							<td><#if expl.startDate??>${expl.startDate}</#if></td>
 							<td><#if expl.endDate??>${expl.endDate}</#if></td>
 							<td><#if expl.decSubprojectBudget??>${expl.decSubprojectBudget}</#if></td> <! TODO remove this checkafter adding data to db, only for upgrade (2012-06-06) -->
-							<td><#if expl.decApplication??>${expl.decApplication}</#if></td>
-							<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>
+							<!--<td><#if expl.decApplication??>${expl.decApplication}</#if></td>-->
+							<!--<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>-->
 							<td><#if expl.experimentTitle??>${expl.experimentTitle}</#if></td>
-							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}">${expl.decSubprojectApplicationPdf}</a></#if></td>
-							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}">${expl.decSubprojectApprovalPdf}</a></#if></td>
-							<td><#if expl.concern??>${expl.concern}</#if></td>
+							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}"><img alt="subproject application pdf file" src="res/img/pdf_16x16.png" valign="middle"> application</a></#if></td>
+							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}"><img alt="subproject application pdf file" src="res/img/pdf_16x16.png"> approval</a></#if></td>
+							<!--<td><#if expl.concern??>${expl.concern}</#if></td>
 							<td><#if expl.goal??>${expl.goal}</#if></td>
 							<td><#if expl.specialTechn??>${expl.specialTechn}</#if></td>
 							<td><#if expl.lawDef??>${expl.lawDef}</#if></td>
 							<td><#if expl.toxRes??>${expl.toxRes}</#if></td>
 							<td><#if expl.anaesthesia??>${expl.anaesthesia}</#if></td>
 							<td><#if expl.painManagement??>${expl.painManagement}</#if></td>
-							<td><#if expl.animalEndStatus??>${expl.animalEndStatus}</#if></td>
+							<td><#if expl.animalEndStatus??>${expl.animalEndStatus}</#if></td>-->
 							<td><#if expl.remarks??>${expl.remarks}</#if></td>
 						</tr>
 						<#assign i = i + 1>
@@ -482,7 +482,8 @@
 	  "bJQueryUI": true,
 	  "aoColumnDefs": [ 
       	{ "sWidth": "30px", "aTargets": [ 0 ] }
-    	] 
+    	],
+ 
 	  }
 	  
 	);
