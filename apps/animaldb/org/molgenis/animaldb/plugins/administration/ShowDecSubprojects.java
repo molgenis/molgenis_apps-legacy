@@ -787,7 +787,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				remAnimalsMatrixViewer.setDatabase(db);
 			}
 
-			if (action.equals("RemoveAnimalsFromSubproject"))
+			if (action.equals("RemoveAnimalsFromSubproject") || action.equals("DeleteAnimalsFromSubproject"))
 			{
 				/*
 				 * animalRemoveIdList.clear(); for (int animalCounter = 0;
@@ -1150,6 +1150,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 
 				this.getMessages().add(new ScreenMessage("Animal(s) successfully added", true));
 				refresh = true;
+			}
+			if (action.equals("doDeleteAnimalsFromSubproject"))
+			{
+				// fout hier
+
 			}
 
 		}

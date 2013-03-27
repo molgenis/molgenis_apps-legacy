@@ -324,6 +324,9 @@
 	
 	</form>
 
+<#elseif screen.action == "DeleteAnimalsFromSubproject">
+	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+
 <#elseif screen.action == "ApplyRemoveAnimalsFromSubproject">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
