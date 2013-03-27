@@ -1162,12 +1162,57 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				this.getMessages().add(new ScreenMessage("Animal(s) successfully added", true));
 				refresh = true;
 			}
-			if (action.equals("doDeleteAnimalsFromSubproject"))
+			if (action.equals("ApplyDeleteAnimalsFromSubproject"))
 			{
-				// fout hier
+				List<ObservedValue> valuesToDeleteList = new ArrayList<ObservedValue>();
+				List<ProtocolApplication> paToDeleteList = new ArrayList<ProtocolApplication>();
+				for (int animalId : animalRemoveIdList)
+				{
+					String animalName = ct.getObservationTargetLabel(animalId);
+					// Get DEC subproject
+					Query<ObservedValue> q = db.query(ObservedValue.class);
+					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
+					q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, getSelectedDecSubproject()
+							.getName()));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
+
+					// sort descending on endtime to get the most recent first
+					q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+					List<ObservedValue> valueList = q.find();
+
+					ObservedValue value = valueList.get(0);
+					int pa = value.getProtocolApplication_Id();
+
+					// add the selected values based on the selected protocol
+					// application tot the removelist
+					Query<ObservedValue> pavalq = db.query(ObservedValue.class);
+					pavalq.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, pa));
+					valuesToDeleteList.addAll(pavalq.find());
+
+					// add the selected protocol applications to the remove
+					// list.
+					Query<ProtocolApplication> paq = db.query(ProtocolApplication.class);
+					paq.addRules(new QueryRule(ProtocolApplication.ID, Operator.EQUALS, pa));
+					paToDeleteList.addAll(paq.find());
+
+				}
+				try
+				{
+					db.remove(valuesToDeleteList);
+					db.remove(paToDeleteList);
+					String message = "animals succesfully removed from experiment: \n "
+							+ "The following animals were deleted from the database: \n" + animalRemoveIdList;
+
+					this.getMessages().add(new ScreenMessage(message, true));
+				}
+				catch (Exception e)
+				{
+					this.getMessages().add(
+							new ScreenMessage("something went wrong, animals not removed from project: errormessag: \n"
+									+ e.getMessage(), false));
+				}
 
 			}
-
 		}
 		catch (Exception e)
 		{

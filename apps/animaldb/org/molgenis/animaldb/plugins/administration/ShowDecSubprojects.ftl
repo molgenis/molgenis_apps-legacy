@@ -214,16 +214,16 @@
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
 				<thead>
 					<tr style="text-align:center;">
-						<th>Add to experiment</th>
-						<th>Remove from experiment</th>
-						<th>Delete from experiment</th>
+						<th>Add Animals</th>
+						<th>End experiment for selected animals</th>
+						<th>Delete animals from experiment</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr style="text-align:center;">
-						<td><input id="addAnimals" type="image" title="New subproject" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
-						<td><input id="removeAnimals" type="image" title="New subproject" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
-						<td><input id="deleteAnimals" type="image" title="New subproject" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
+						<td><input id="addAnimals" type="image" title="add animals to experiment" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
+						<td><input id="removeAnimals" type="image" title="End experiment for selected animals" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
+						<td><input id="deleteAnimals" type="image" title="Delete animals from experiment" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
 						<td><input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  /></td>
 					</tr>
 				</tbody>
@@ -305,6 +305,18 @@
 
 <#elseif screen.action == "DeleteAnimalsFromSubproject">
 	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+	<p> Do you realy want to delete the following animals from this DEC subproject?</p>
+	
+	<p>
+	    If you delete animals that were previously removed with status "Death in the framework of the experiment ("Dood in kader van de proef"),
+	    than the death date of these animals is removed and status is set back to Alive.
+	 <p><strong>   
+	    Be careful there is no way to undo the delete action.
+	 </strong></p>
+	 <div class='row'>
+		<input type='submit' id='dodelete' class='addbutton' value='Apply' onclick="__action.value='ApplyDeleteAnimalsFromSubproject'" />
+		<input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  />
+	</div>
 
 <#elseif screen.action == "ApplyRemoveAnimalsFromSubproject">
 
