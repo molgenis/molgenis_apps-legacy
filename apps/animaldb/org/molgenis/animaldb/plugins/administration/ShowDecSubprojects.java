@@ -1234,6 +1234,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					String animalEndStatus = ct.getMostRecentValueAsString(expName, "AnimalEndStatus");
 					String remarks = ct.getMostRecentValueAsString(expName, "Remark");
 					String decApplicationName = ct.getMostRecentValueAsXrefName(expName, "DecApplication");
+					String mainDecNr = ct.getMostRecentValueAsString(decApplicationName, "DecNr");
 					String startDate = null;
 					startDate = ct.getMostRecentValueAsString(expName, "StartDate");
 					String endDate = null;
@@ -1273,6 +1274,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					tmpExp.setAnimalEndStatus(animalEndStatus);
 					tmpExp.setRemarks(remarks);
 					tmpExp.setDecApplication(decApplicationName);
+					tmpExp.setMainDecNr(mainDecNr);
 					tmpExp.setNrOfAnimals(nrOfAnimals);
 					if (startDate != null) tmpExp.setStartDate(startDate);
 					if (endDate != null) tmpExp.setEndDate(endDate);

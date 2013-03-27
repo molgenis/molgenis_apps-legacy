@@ -18,6 +18,7 @@ public class DecSubproject extends DecEntity
 	private String animalEndStatus;
 	private String remarks;
 	private String decApplication;
+	private String mainDecNr;
 	private String decSubprojectBudget;
 	private int nrOfAnimals;
 
@@ -192,6 +193,17 @@ public class DecSubproject extends DecEntity
 	public String getDecApplication()
 	{
 		return decApplication;
+	}
+
+	public String getMainDecNr()
+	{
+		// mainDecNr = "blaat";
+		return mainDecNr;
+	}
+
+	public void setMainDecNr(String mainDecNr)
+	{
+		this.mainDecNr = mainDecNr;
 	}
 
 	public String getDecSubprojectBudget()
