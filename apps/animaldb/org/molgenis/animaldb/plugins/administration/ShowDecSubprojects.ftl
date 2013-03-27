@@ -201,7 +201,7 @@
 
 <#elseif screen.action == "EditAnimals">
 
-	<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>
+	<!--<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>-->
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	<h3>Manage animals in ${currentDecSubproject.name}</h3>
@@ -213,12 +213,35 @@
 	<input type="hidden" name="__action" />
 
 	
-	
+	<!--
 	<input type='submit' id='startadd' class='addbutton' value='Add animals' onclick="__action.value='AddAnimalToSubproject'" />
 	<br /><hr /><br />
 	
+	
+	<input type='submit' id='dorem' class='addbutton' value='Remove selected animals' onclick="__action.value='RemoveAnimalsFromSubproject'" />-->
 	${screen.renderRemAnimalsMatrixViewer()}
-	<input type='submit' id='dorem' class='addbutton' value='Remove selected animals' onclick="__action.value='RemoveAnimalsFromSubproject'" />
+	</div>
+		<!--<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
+		-->
+			<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Add to experiment</th>
+						<th>Remove from experiment</th>
+						<th>Delete from experiment</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="addAnimals" type="image" title="New subproject" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
+						<td><input id="removeAnimals" type="image" title="New subproject" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
+						<td><input id="deleteAnimals" type="image" title="New subproject" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
+						<td><input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  /></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	
 	</form>
 
@@ -404,9 +427,13 @@
 	</form>
 
 <#else>
+	<form method="post" enctype="multipart/form-data" name="${screen.name}">
+	<!--needed in every form: to redirect the request to the right screen-->
+	<input type="hidden" name="__target" value="${screen.name}"" />
+	<!--needed in every form: to define the action. This can be set by the submit button-->
+	<input type="hidden" name="__action" />
 
 	<div id="experimentlist">
-		<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable" width="50%">
 			<thead>
 				<tr>
@@ -464,8 +491,28 @@
 			</tbody>
 		</table>
 	</div>
+		<!--<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
+		-->
+			<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Add subproject</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="addSubproject" type="image" title="New subproject" onclick="__action.value='AddEdit'" src="generated-res/img/new.png""  /></td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
+	</form>
+		
 
 </#if>
+<div id="pushdown" style="clear:both;" ></div>
+
 	
 <#--end of your plugin-->	
 			</div>
@@ -487,6 +534,11 @@
 	  }
 	  
 	);
+	jQuery('#addSubproject').button();
+	jQuery('#addAnimals').button();
+	jQuery('#removeAnimals').button();
+	jQuery('#deleteAnimals').button();
+	jQuery('#cancel').button();
 </script>
 	
 </#macro>
