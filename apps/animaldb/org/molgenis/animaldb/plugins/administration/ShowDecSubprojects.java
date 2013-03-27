@@ -785,6 +785,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				remAnimalsMatrixViewer.setDatabase(db);
+				remAnimalsMatrixViewer.setFilterVisibility(false);
+
 			}
 
 			if (action.equals("RemoveAnimalsFromSubproject") || action.equals("DeleteAnimalsFromSubproject"))
@@ -848,6 +850,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				addAnimalsMatrixViewer.setDatabase(db);
+				addAnimalsMatrixViewer.setFilterVisibility(false);
 			}
 
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))
