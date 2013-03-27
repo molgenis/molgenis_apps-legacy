@@ -762,6 +762,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				measurementsToShow.add("Experiment");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
+				measurementsToShow.add("Location");
+				measurementsToShow.add("Background");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("DateOfBirth");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
@@ -820,9 +824,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// (Re)initialize add animals matrix viewer
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
-				measurementsToShow.add("Species");
-				measurementsToShow.add("Sex");
 				measurementsToShow.add("Experiment");
+				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
+				measurementsToShow.add("Location");
+				measurementsToShow.add("Background");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("DateOfBirth");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
