@@ -16,7 +16,13 @@
 		</#list>
 		
 		<div class="screenbody">
-			<div class="screenpadding">	
+			<div class="screenpadding">
+				<form method="post" enctype="multipart/form-data" name="${screen.name}">
+				<!--needed in every form: to redirect the request to the right screen-->
+				<input type="hidden" name="__target" value="${screen.name}"" />
+				<!--needed in every form: to define the action. This can be set by the submit button-->
+				<input type="hidden" name="__action" />
+	
 <#--begin your plugin-->
 
 <#if screen.action == "AddEdit">
@@ -31,12 +37,7 @@
 		<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	</#if>
 	
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
-	
+
 	<div class="row">
 		<label for="decapp">DEC application:</label>
 		<select name="decapp" id="decapp"> 
@@ -197,7 +198,7 @@
 		<input type='submit' id='addsubproject' class='addbutton' value='Save' onclick="__action.value='addEditDecSubproject'" />
 	</div>
 	
-	</form>
+
 
 <#elseif screen.action == "EditAnimals">
 
@@ -205,24 +206,10 @@
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	<h3>Manage animals in ${currentDecSubproject.name}</h3>
-
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
-
 	
-	<!--
-	<input type='submit' id='startadd' class='addbutton' value='Add animals' onclick="__action.value='AddAnimalToSubproject'" />
-	<br /><hr /><br />
-	
-	
-	<input type='submit' id='dorem' class='addbutton' value='Remove selected animals' onclick="__action.value='RemoveAnimalsFromSubproject'" />-->
 	${screen.renderRemAnimalsMatrixViewer()}
 	</div>
-		<!--<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
-		-->
+		
 			<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
 				<thead>
@@ -243,7 +230,6 @@
 			</table>
 		</div>
 	
-	</form>
 
 <#elseif screen.action == "RemoveAnimalsFromSubproject">
 
@@ -256,12 +242,6 @@
 	</#list>
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	from ${currentDecSubproject.name}</h3>
-	
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
 	
 	<div class="row">
 		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
@@ -322,7 +302,6 @@
 		<input type='submit' id='dorem' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
 	</div>
 	
-	</form>
 
 <#elseif screen.action == "DeleteAnimalsFromSubproject">
 	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
@@ -342,31 +321,7 @@
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	<p><h3>Adding animal(s) to ${currentDecSubproject.name}</h3></p>
 	
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
-		
-	<!--div style='float:left'>
-		<label for='animal'>Animal(s):</label>
-		<select name='animal' id='animal' size='20' multiple='multiple'>
-		<list screen.allAnimalIdList as animalId>
-			<assign name = screen.getAnimalName(animalId)>
-			<option value="{animalId?string.computer}">{name}</option>
-		</list>
-		</select>
-	</div>
-	
-	<div>
-		<label for='groupname'>Batch(es):</label>
-		<select name='groupname' id='groupname' size='20' multiple='multiple'>
-			<list screen.batchList as batch>
-				<option value="{batch.id?string.computer}">{batch.name}</option>
-			</list>
-		</select>
-	</div-->
-	
+
 	${screen.renderAddAnimalsMatrixViewer()}
 	
 	<hr />
@@ -427,14 +382,8 @@
 		<input type='submit' id='doadd' class='addbutton' value='Apply' onclick="__action.value='ApplyAddAnimalToSubproject'" />
 	</div>
 	
-	</form>
 
 <#else>
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
 
 	<div id="experimentlist">
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable" width="50%">
@@ -510,7 +459,6 @@
 				</tbody>
 			</table>
 		</div>
-	</form>
 		
 
 </#if>
@@ -518,6 +466,7 @@
 
 	
 <#--end of your plugin-->	
+				</form>
 			</div>
 		</div>
 	</div>
