@@ -805,6 +805,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				animalRemoveIdList.clear();
 				List<ObservationElement> rows = (List<ObservationElement>) remAnimalsMatrixViewer.getSelection(db);
 				int rowCnt = 0;
+				int selCnt = 0;
 				for (ObservationElement row : rows)
 				{
 					if (request.getBoolean(REMANIMALSMATRIX + "_selected_" + rowCnt) != null)
@@ -814,8 +815,16 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						{
 							animalRemoveIdList.add(animalId);
 						}
+						selCnt++;
 					}
 					rowCnt++;
+				}
+
+				if (selCnt == 0)
+				{
+					this.setAction("EditAnimals");
+					throw new Exception("You did not select any animals");
+
 				}
 			}
 
