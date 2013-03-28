@@ -243,6 +243,15 @@
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	from ${currentDecSubproject.name}</h3>
 	
+	<div class='row'>
+		<label for='endstatus'>Actual animal end status:</label>
+		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
+		<#list screen.actualEndstatusCodeList as ecl>
+			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
+		</#list>
+		</select>
+	</div>
+	
 	<div class="row">
 		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
 		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='${screen.currentDate}'  autocomplete='off' />
@@ -268,14 +277,6 @@
 		</select>
 	</div>
 	
-	<div class='row'>
-		<label for='endstatus'>Actual animal end status:</label>
-		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
-		<#list screen.actualEndstatusCodeList as ecl>
-			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
-		</#list>
-		</select>
-	</div>
 	
 	<div id="deathdatediv" class="row" style="display:block">
 		<label for="deathdate">Date of death:</label>
@@ -309,12 +310,10 @@
 	
 	<p>
 	    If you delete animals that were previously removed with status "Death in the framework of the experiment ("Dood in kader van de proef"),
-	    than the death date of these animals is removed and status is set back to Alive.
-	 <p><strong>   
-	    Be careful there is no way to undo the delete action.
-	 </strong></p>
+	    than the death date of these animals is not removed and status is not set back to Alive.
+	 
 	 <div class='row'>
-		<input type='submit' id='dodelete' class='addbutton' value='Apply' onclick="__action.value='ApplyDeleteAnimalsFromSubproject'" />
+		<input type='submit' id='dodelete' class='ui-button ui-widget ui-state-default ui-corner-all' value='Delete' onclick="__action.value='ApplyDeleteAnimalsFromSubproject'" />
 		<input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  />
 	</div>
 
