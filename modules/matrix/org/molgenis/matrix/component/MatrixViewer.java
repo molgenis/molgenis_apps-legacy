@@ -1917,4 +1917,14 @@ public class MatrixViewer extends HtmlWidget
 		APPLICATION_STRING = aPPLICATION_STRING;
 	}
 
+	public boolean isFilterVisibility()
+	{
+		return filterVisibility;
+	}
+
+	public void setFilterVisibility(boolean filterVisibility)
+	{
+		this.filterVisibility = filterVisibility;
+	}
+
 }
