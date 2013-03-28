@@ -1241,10 +1241,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		ct.setDatabase(db);
 		this.toHtmlDb = db;
 
-		// if (this.refresh == true || this.getLogin().getUserId().intValue() !=
-		// userId)
-		// {
-		System.out.println("!!!!!!!!!!!!!!!!!! kom ik hierlangs? ");
 		userId = this.getLogin().getUserId().intValue();
 		refresh = false;
 		try
@@ -1370,8 +1366,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			e.printStackTrace();
 		}
 	}
-
-	// }
 
 	public String renderAddAnimalsMatrixViewer()
 	{
