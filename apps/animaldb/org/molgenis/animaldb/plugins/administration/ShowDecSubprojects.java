@@ -408,7 +408,20 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				return; // avoid matrix reinitialization
 			}
 
-			if (action.equals("AddEdit") || action.equals("EditAnimals"))
+			if (action.equals("AddEdit"))
+			{
+				try
+				{
+					listId = request.getInt("id");
+				}
+				catch (Exception e)
+				{
+					// if listid is null, than add new subproject
+					listId = -1;
+				}
+
+			}
+			if (action.equals("EditAnimals"))
 			{
 				listId = request.getInt("id");
 			}
@@ -498,14 +511,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					}
 				}
 
-				// DEC subproject application pdf
-				String decapppdf = null;
-				if (request.getString("decapppdf") != null && !request.getString("decapppdf").equals(""))
-				{
-					decapppdf = request.getString("decapppdf");
-				}
-
-				// DEC application PDF
+				// DEC sub application PDF
 				String decsubapplicationpdf = null;
 				if (listId == 0)
 				{
@@ -680,14 +686,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						enddate, "ExperimentNr", name, expnumber, null));
 				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
 						enddate, "ExperimentTitle", name, title, null));
-				if (decapppdf != null)
-				{
-					// valuesToAddList.add(ct.createObservedValue(investigationName,
-					// protocolApplicationName, startdate,
-					// enddate, "DecSubprojectApplicationPdf", name, decapppdf,
-					// null));
-				}
-				//
+
 				if (decsubapplicationpdf != null)
 				{
 					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate,
