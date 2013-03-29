@@ -436,8 +436,8 @@
 							<!--<td><#if expl.decApplication??>${expl.decApplication}</#if></td>-->
 							<!--<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>-->
 							<td><#if expl.experimentTitle??>${expl.experimentTitle}</#if></td>
-							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}"><img alt="subproject application pdf file" src="res/img/pdf_32x32.png" align="middle"> application</a></#if></td>
-							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}"><img alt="subproject application pdf file" src="res/img/pdf_32x32.png" align="middle" > approval</a></#if></td>
+							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}"><img alt="subproject application pdf file" src="res/img/pdf_16x16.png" align="middle"> application</a></#if></td>
+							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}"><img alt="subproject application pdf file" src="res/img/pdf_16x16.png" align="middle" > approval</a></#if></td>
 							<!--<td><#if expl.concern??>${expl.concern}</#if></td>
 							<td><#if expl.goal??>${expl.goal}</#if></td>
 							<td><#if expl.specialTechn??>${expl.specialTechn}</#if></td>
@@ -456,7 +456,7 @@
 	</div>
 		<!--<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
 		-->
-			<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+		<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
 				<thead>
 					<tr style="text-align:center;">
