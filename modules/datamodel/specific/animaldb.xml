@@ -17,6 +17,7 @@
 			<field name="targetType" type="enum" enum_options="[animal,parentgroup,litter]" nillable="false" />
 			<field name="prefix" type="string" nillable="true" />
 			<field name="highestNumber" type="int" />
+			<field name="targetName" type="xref" xref_entity="Panel" nillable ="true" />
 		</entity>
 		<entity name="DeletedObservedValue" implements="Identifiable,Observation">
 			<description>Alternative for ObservedValue containing extra fields stating
