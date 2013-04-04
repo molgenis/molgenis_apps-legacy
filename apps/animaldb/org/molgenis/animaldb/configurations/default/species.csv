@@ -1,10 +1,1 @@
-name;VwaSpecies;LatinSpecies;DutchSpecies
-House mouse;Muizen;Mus musculus;Huismuis
-Brown rat;Ratten;Rattus norvegicus;Bruine rat
-Common vole;And. knaagdieren;Microtus arvalis;Veldmuis
-Tundra vole;And. knaagdieren;Microtus oeconomus;Noordse woelmuis
-Syrian hamster;Hamsters;Mesocricetus auratus;Goudhamster
-European groundsquirrel;And. knaagdieren;Spermophilus citellus;Europese grondeekhoorn
-Siberian hamster;Hamsters;Phodopus sungorus;Siberische hamster
-Domestic guinea pig;Cavia's;Cavia porcellus;Cavia
-Fat-tailed dunnart;And. Zoogdieren;Sminthopsis granulipes;Dikstaartsmalvoetbuidelmuis
+Name;VwaSpecies;LatinSpecies;DutchSpecies;PrefixStringHouse mouse;Muizen;Mus musculus;Huismuis;mm_Brown rat;Ratten;Rattus norvegicus;Bruine rat;rn_Common vole;And. knaagdieren;Microtus arvalis;Veldmuis;mar_Tundra vole;And. knaagdieren;Microtus oeconomus;Noordse woelmuis;mo_Syrian hamster;Hamsters;Mesocricetus auratus;Goudhamster;ma_European groundsquirrel;And. knaagdieren;Spermophilus citellus;Europese grondeekhoorn;sc_Siberian hamster;Hamsters;Phodopus sungorus;Siberische hamster;ps_Domestic guinea pig;Cavia's;Cavia porcellus;Cavia;cp_Fat-tailed dunnart;And. Zoogdieren;Sminthopsis granulipes;Dikstaartsmalvoetbuidelmuis;sg_

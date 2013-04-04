@@ -55,7 +55,7 @@
 		     <arg value="--short"/>			
 		     <arg value="HEAD"/>
 		</exec>
-		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.version}</echo>
+		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.molgenis.version} (molgenis) and ${git.apps.version} (apps)</echo>
 	</target>
 	
 	<!-- Make a distribution:
@@ -83,10 +83,11 @@
 		<property name="workflows_dir" value="${app-r_distro_dir}/workflows/"/>
 		<property name="app_module_dir" value="${basedir}/modules/compute/" />
 		
-		<!-- Copy README to the distro dir -->
-		<copy todir="${app-r_distro_dir}">
-			<fileset dir="${basedir}/apps/${app_name}/org/molgenis/${app_name}/">
-				<include name="README*"/>
+		<!-- Copy documentation to the distro dir -->
+		<mkdir dir="${app-r_distro_dir}/docs/"/>
+		<copy todir="${app-r_distro_dir}/docs/">
+			<fileset dir="${basedir}/doc/${app_name}/">
+				<include name="*"/>
 			</fileset>
 		</copy>
 		

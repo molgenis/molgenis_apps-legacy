@@ -88,14 +88,9 @@ public class ComputeCommandLine
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
 		// create hash of all workflow elements (needed for dependencies)
-<<<<<<< HEAD
-		Map<String, WorkflowElement> wfeMap = new LinkedMap<String, WorkflowElement>();
-		for (WorkflowElement wfe : computeBundle.getWorkflowElements()) {
-=======
 		Map<String, WorkflowElement> wfeMap = new HashMap<String, WorkflowElement>();
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
 		{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 			wfeMap.put(wfe.getName(), wfe);
 		}
 
@@ -223,14 +218,9 @@ public class ComputeCommandLine
 					}
 
 					// we calculate dependencies
-<<<<<<< HEAD
-					Set<String> dependencies = new LinkedSet<String>();
-					for (int i = 0; i < size; i++) {
-=======
 					Set<String> dependencies = new HashSet<String>();
 					for (int i = 0; i < size; i++)
 					{
->>>>>>> 06fb9f329f9296789a7381785d7c82bd8e08fe0f
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name())
 						{

@@ -433,6 +433,7 @@ public class Breedingnew extends PluginModel<Entity>
 			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(
 					Panel.class, Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
 					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+			litterMatrixViewer.setShowTargetTooltip(true);
 		}
 		catch (Exception e)
 		{
@@ -2151,7 +2152,6 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 				this.setBackgroundList(bckgrlist);
 
-				this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationNames));
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
 				// Populate gene name list
@@ -2244,8 +2244,11 @@ public class Breedingnew extends PluginModel<Entity>
 		db.add(app);
 		String paName = app.getName();
 		// Parentgroup
+
 		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Parentgroup", litterName, null,
 				selectedParentgroup));
+		// ParentgroupMother / parentgroupFater
+
 		// Set Line also on Litter
 		if (lineName != null)
 		{
@@ -3075,20 +3078,24 @@ public class Breedingnew extends PluginModel<Entity>
 				db.update(value);
 			}
 			// Set background
-			String backgroundName = request.getString("4_" + animalCount);
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames, invName)
-					.get(0);
-			value.setRelation(ct.getObservationTargetByName(backgroundName).getId());
+			// check for null
 
-			if (value.getProtocolApplication_Id() == null)
+			String backgroundName = request.getString("4_" + animalCount);
+			if (backgroundName != null && !backgroundName.equals(""))
 			{
-				String paName = ct.makeProtocolApplication(invName, "SetBackground");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
-			}
-			else
-			{
-				db.update(value);
+				value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Background", investigationNames,
+						invName).get(0);
+				value.setRelation(ct.getObservationTargetByName(backgroundName).getId());
+				if (value.getProtocolApplication_Id() == null)
+				{
+					String paName = ct.makeProtocolApplication(invName, "SetBackground");
+					value.setProtocolApplication_Name(paName);
+					db.add(value);
+				}
+				else
+				{
+					db.update(value);
+				}
 			}
 
 			// Set genotype(s)
