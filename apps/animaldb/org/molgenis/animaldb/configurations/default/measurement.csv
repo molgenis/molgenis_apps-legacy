@@ -1,6 +1,7 @@
 name;unit;targetType;panelLabel;temporal;dataType;description
 TypeOfGroup;String;;;false;string;To label a group of targets.
 Species;TargetLink;panel;Species;false;xref;To set the species of an animal.
+PrefixString;String;;;false;string;To set a name prefix String that is appended to all new observation targets of a specified type when added to the database.
 Sex;TargetLink;panel;Sex;false;xref;To set the sex of an animal.
 Location;TargetLink;location;;false;xref;To set the location of a target.
 Weight;Gram;;;true;decimal;To set the weight of a target.

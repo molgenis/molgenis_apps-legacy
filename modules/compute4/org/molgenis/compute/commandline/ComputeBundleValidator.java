@@ -1,12 +1,14 @@
 package org.molgenis.compute.commandline;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.WorkflowElement;
@@ -152,6 +154,46 @@ public class ComputeBundleValidator
 						+ "' in the 'protocol_name' column, does not refer to a known protocol.\nPlease upload a protocol with the name '"
 						+ pn + ".ftl' or change '" + pn + "' to the name of a known protocol.");
 			}
+		}
+
+		// Do same for {Header,Footer}.ftl. If non-existent: create empty ones
+		// and warn user.
+		boolean headerMissing = !protocolNames.contains("Header");
+		boolean footerMissing = !protocolNames.contains("Footer");
+
+		if (headerMissing || footerMissing)
+		{
+			if (headerMissing)
+			{
+				// create it in templates dir
+				File header = new File(cb.getTemplateDir().toString() + File.separator + "Header.ftl");
+				try
+				{
+					FileUtils.writeStringToFile(header, "\n# Empty header\n");
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+			if (footerMissing)
+			{
+				// create it in templates dir
+				File footer = new File(cb.getTemplateDir().toString() + File.separator + "Footer.ftl");
+				try
+				{
+					FileUtils.writeStringToFile(footer, "\n# Empty footer\n");
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+			printError("The following file(s) were missing:\n" + (headerMissing ? "Header.ftl\n" : "")
+					+ (footerMissing ? "Footer.ftl\n" : "") + "\nWe added them to your templates directory:\n"
+					+ cb.getTemplateDir().toString() + "\n\nPlease regenerate.");
 		}
 
 		// Validate that a file called 'Submit.sh.ftl' exists.

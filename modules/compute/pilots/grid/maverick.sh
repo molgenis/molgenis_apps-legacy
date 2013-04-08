@@ -1,6 +1,7 @@
 #<ip>:<port> of ComputeServer should be filled for usage
 #maverick files should be placed in $HOME/maverick/ directory
 
+export MODULEPATH=${VO_BBMRI_NL_SW_DIR}/modules/:${MODULEPATH}
 export WORKDIR=$TMPDIR
 source dataTransferSRM.sh
 

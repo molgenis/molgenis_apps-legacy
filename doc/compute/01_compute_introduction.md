@@ -22,11 +22,11 @@ To use *MOLGENIS Compute*, you need the following.
 Below use of *MOLGENIS Compute* is described:
 
 * [Download compute](#Download-compute) explains how to get the software
-* [Workflow creation](#Workflow-creation) explains the basic use of \mc in a basic workflow.  
+* [Workflow creation](#Workflow-creation) explains the basic use of Molgenis Compute in a basic workflow.  
 * [Workflow execution](#Workflow-execution) describes how to execute this workflow.  
 * [Compute advanced features](#Compute-advanced-features) extends that workflow commonly used features. All sections assume that you run *MOLGENIS Compute* from the command line.  
 * [Workflow deployment](#Workflow-deployment) details best practices with binaries and files
-* [Compute database]() shows how one can run *MOLGENIS Compute* from a database instead of commandline which is needed when using grid (such as BigGrid).
+* [Compute database]() shows how one can run *MOLGENIS Compute* from a database instead of commandline. Molgenis Compute *db* makes use of pilot jobs which enable 'self-scheduled' execution on grid (such as BigGrid).
 
 The manual is in the form of a walkthrough manual.
 
@@ -39,8 +39,12 @@ You can download a ready made binary as follows:
 
 >mkdir mycompute  
 >cd mycompute  
->wget #paste here url to binary zip  
->unzip molgenis_apps/dist/molgenis_compute-\<version>.zip   
+>\# Check www.molgenis.org/wiki/ComputeStart for the latest and greatest version!
+
+>wget http://www.molgenis.org/raw-attachment/wiki/ComputeStart/molgenis_compute-fb05467.zip
+
+>unzip molgenis_compute-\<version>.zip
+
 >mv molgenis_compute-\<version>/* .  
 >  
 >\#test  
@@ -51,10 +55,10 @@ Alternatively to download you can checkout the latest code:
 
 >mkdir mycompute  
 >cd mycompute  
->git clone https://github.com/molgenis/molgenis_apps.git  
->git clone https://github.com/molgenis/molgenis.git  
->ant -f molgenis_apps/build_compute.xml clean-generate-compile-makedistro  
->unzip molgenis_apps/dist/molgenis_compute-*.zip  
+>git clone https://github.com/molgenis/molgenis_apps-legacy.git  
+>git clone https://github.com/molgenis/molgenis-legacy.git  
+>ant -f molgenis_apps-legacy/build_compute.xml clean-generate-compile-makedistro  
+>unzip molgenis_apps-legacy/dist/molgenis_compute-*.zip  
 >mv molgenis_compute-*/* .  
 >  
 >\#test  
@@ -75,7 +79,7 @@ This section explains how one can use *MOLGENIS Compute* to create a workflow of
 
 
 ###Workflow
-The most simple workflow contains only one step. Let's call this step `GuestInvitationStep`. Now create a file called `workflow.cscv` with the following content as follows:
+The most simple workflow contains only one step. Let's call this step `GuestInvitationStep`. Now create a file called `workflow.csv` with the following content as follows:
 
 >\#create new workflow dir  
 >mkdir invitationWorkflow    
@@ -136,15 +140,16 @@ Paste:
   
 *Explanation:* The first row contains parameter names (c.q. target types), comma separated. In our case we only have one parameter, called `guest`. Each of the following rows contains the parameters values. When running \mc, the protocols are subsequently applied to each of the values. I.e., in our example, we will generate a different invitation script for each of our guests.
 
+*Note:* There is a list of variables names that are reserved and therefore cannot be used in any of the files presented. These words are: inputDir, outputDir, workflow, parameters, template, worksheet, id.
+
 ###Script generation
-You need at least two command line parameters to generate the scripts: `input` and `id`. The first parameter (`input`) refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`. The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where *MOLGENIS Compute* will store the generated scripts.   
+You need no command line parameters if your  files (workflow.csv, worksheet.csv, parameters.csv) and (protocol, template) directories, is in the directory from which you run molgenis_compute.sh. Otherwise, you may want to specify the *-inputdir* that refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify (or overwrite) each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`. The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where *MOLGENIS Compute* will store the generated scripts.   
 
 Let's now generate the scripts with the invitations by running the following command. We assume that you have put your workflow, parameters, worksheet files and protocols directory in a directory called `helloWorld`.
   
 >cd ..  
 >sh molgenis_compute.sh \   
->-input=invitationWorkflow \  
->-id=run01 
+>-inputdir=invitationWorkflow
 
 *Tip*: In your protocols, you may want to use the values of the command line parameters. However, be aware that the parameter names you have to use are slightly different from the command line parameters: `${McWorkflow}`,`${McProtocols}`, `${McParameters}`, `${McWorksheet}`, and `${McScripts}`. 
 
@@ -173,7 +178,7 @@ Next to the analysis scripts, three submit scripts are generated to allow you to
 
 * `runlocal.sh` executes the analysis scripts sequentially (ideal for testing)
 * `submit.sh` submits the analysis scripts to a PBS scheduler
-* `submitCustom.sh` is a script that is based on the template `CustomSubmit.sh.ftl` which you can find in the `system` directory. You can customize the way the analysis scripts are submitted by customizing this protocol.
+* `submit.sh.ftl` is a script that is based on the template `submit.sh.ftl` which you can find in the `templates` directory. You can customize the way the analysis scripts are submitted by customizing this protocol.
 
 %todo add grid to commandline?
 %todo example output for runlocal?
@@ -291,7 +296,8 @@ The header of a protocol may contain the following line in which you specify the
 where `walltime` is the maximum execution time, `mem` is the memory (e.g. 512MB or 4GB), `nodes` is the number of nodes (default=1) and `cores` is the number of cores that you request for the execution of this analysis.
 
 ###Get input files
-A protocol may be executed in a distributed environment. As a result, the data may not be available on the node where the execution takes place. Therefore, one should first download the data to the execution node. In some distributed environments this may involve a series of statements that one actually does not want to care about. To make this process easier for our users, we come with the following solution. For every file that you want to use in the analysis protocol, you may include the following statement in the protocol before using it.
+A protocol may be executed in a distributed environment. As a result, the data may not be available on the node where the execution takes place. Therefore, one should first 
+the data to the execution node. In some distributed environments this may involve a series of statements that one actually does not want to care about. To make this process easier for our users, we come with the following solution. For every file that you want to use in the analysis protocol, you may include the following statement in the protocol before using it.
 
 >getFile "${myInputFile}"
 
@@ -334,7 +340,7 @@ A protocol that wants use plink, for example, may look like this:
 >--het --out \$WORKDIR/lspilot1/GvNL\_good\_samples.out7
 
 ###Customize headers and footers
-In the `system` directory of compute you may edit two files `Header.ftl` and `Footer.ftl`. The contents of this files will be respectively prepended and appended to each of your protocols when generating a workflow. Alternatively, you can change the system directory using option `-system=mysystem`.
+In the `templates` directory of compute you may edit two files `Header.ftl` and `Footer.ftl`. The contents of this files will be respectively prepended and appended to each of your protocols when generating a workflow. Alternatively, you can change the templates directory using option `-templates=myTemplatesDir`.
 
 ##Deployment of the database version of compute
 

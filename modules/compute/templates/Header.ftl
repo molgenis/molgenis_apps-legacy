@@ -13,9 +13,9 @@
 #!/bin/bash
 #$ -N ${jobname}
 #$ -q ${clusterQueue}
-#$ -p ${cores}
+#$ -pe smp ${cores}
 #$ -l h_rt=${walltime}
-#$ -l h_vmem=${mem}
+#$ -l mem_free=${mem}
 #$ -e ${jobname}.err
 #$ -o ${jobname}.out
 
@@ -34,11 +34,11 @@
 </#if>
 
 # Source functions for data transfer to cluster
-. dataTransfer.sh
+source dataTransfer.sh
 
 <#if scheduler != "GRID">
 # Configures the GCC bash environment
-. ${root}/gcc.bashrc
+source ${root}/gcc.bashrc
 </#if>
 
 <#include "Macros.ftl"/>

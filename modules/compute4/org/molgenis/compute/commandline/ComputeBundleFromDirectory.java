@@ -22,11 +22,18 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 {
 	Logger logger = Logger.getLogger(ComputeBundleFromDirectory.class);
 
+	private File protocolDir, templateDir;
+
 	/**
 	 * Load ComputeBundle
 	 */
 	public ComputeBundleFromDirectory(ComputeCommandLine options) throws Exception
 	{
+		// set path to protocol and template dir, so that validator can validate
+		// that Header.ftl and Footer.ftl are present
+		this.protocolDir = options.protocoldir;
+		this.templateDir = options.templatedir;
+
 		// validate headers
 		ComputeBundleValidator cbv = new ComputeBundleValidator(this);
 		cbv.validateFileHeaders(options);
@@ -281,6 +288,16 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		}
 		reader.close();
 		return fileData.toString();
+	}
+
+	public File getProtocolDir()
+	{
+		return protocolDir;
+	}
+
+	public File getTemplateDir()
+	{
+		return templateDir;
 	}
 
 	// public static void main(String[] args) throws Exception
