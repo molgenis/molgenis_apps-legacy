@@ -426,17 +426,19 @@ public class MatrixViewer extends HtmlWidget
 			// divContents +=
 			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			// + downloadVisExcel.render() + "</div>";
-			ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS, "", "All to SPSS");
-			downloadAllSPSS.setIcon("generated-res/img/download.png");
-			downloadAllSPSS.setWidth(180);
-			menu.AddAction(downloadAllSPSS);
-			// divContents +=
-			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-			// + downloadAllSPSS.render() + "</div>";
-			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
-			downloadVisSPSS.setIcon("generated-res/img/download.png");
-			downloadVisSPSS.setWidth(180);
-			menu.AddAction(downloadVisSPSS);
+			/*
+			 * ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS,
+			 * "", "All to SPSS");
+			 * downloadAllSPSS.setIcon("generated-res/img/download.png");
+			 * downloadAllSPSS.setWidth(180); menu.AddAction(downloadAllSPSS);
+			 * // divContents += //
+			 * "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			 * // + downloadAllSPSS.render() + "</div>"; ActionInput
+			 * downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "",
+			 * "Visible to SPSS");
+			 * downloadVisSPSS.setIcon("generated-res/img/download.png");
+			 * downloadVisSPSS.setWidth(180); menu.AddAction(downloadVisSPSS);
+			 */
 			// divContents +=
 			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			// + downloadVisSPSS.render() + "</div>";
@@ -1328,7 +1330,8 @@ public class MatrixViewer extends HtmlWidget
 
 					rowCnt++;
 				}
-				db.getEntityManager().clear();
+				// db.getEntityManager().clear(); //commented out, 2012-04-09 //
+				// seems to have no effect on function but did cause an error...
 			}
 
 			workbook.write();

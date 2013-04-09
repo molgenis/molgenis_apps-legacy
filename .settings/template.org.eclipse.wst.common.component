@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <project-modules id="moduleCoreId" project-version="1.5.0">
-  <wb-module deploy-name="molgenis_apps">
+  <wb-module deploy-name="molgenis_apps-legacy">
     <property name="java-output-path" value="build/classes"></property>
-    <property name="context-root" value="molgenis_apps"></property>
-    <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
+    <property name="context-root" value="molgenis_apps-legacy"></property>
+    <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis-legacy/molgenis-legacy">
       <dependency-type>uses</dependency-type>
     </dependent-module>
     <wb-resource deploy-path="/" source-path="/WebContent"/>
