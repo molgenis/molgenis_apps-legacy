@@ -30,8 +30,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.animaldb.SavedMatrixFilters;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
@@ -99,6 +101,7 @@ public class MatrixViewer extends HtmlWidget
 
 	private String downloadLink = null;
 	private Measurement d_selectedMeasurement = null;
+	private SavedMatrixFilters d_selectedSavedFilter = null;
 
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -122,6 +125,9 @@ public class MatrixViewer extends HtmlWidget
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
+	public String FILTERSAVE = getName() + "_filterSave";
+	public String FILTERLOAD = getName() + "_filterLoad";
+	public String SAVEDFILTERS = getName() + "_savedFilters";
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
@@ -798,6 +804,12 @@ public class MatrixViewer extends HtmlWidget
 																			// FF+IE
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
 
+		divContents += new ActionInput(FILTERSAVE, "", "Save Filters").render();
+
+		divContents += buildSavedFiltersInput().render();
+
+		divContents += new ActionInput(FILTERLOAD, "", "Load Filters").render();
+
 		return divContents;
 	}
 
@@ -893,6 +905,26 @@ public class MatrixViewer extends HtmlWidget
 		}
 		colId.setNillable(true);
 		return colId;
+	}
+
+	private SelectInput buildSavedFiltersInput() throws DatabaseException
+	{
+		SelectInput savedFiltersInput = new SelectInput(SAVEDFILTERS);
+
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		// Nasty trick to circumvent the not present SELECT DISTINCT statement:
+		fq.addRules(new QueryRule(SavedMatrixFilters.RULENR, Operator.EQUALS, 0));
+		fq.addRules(new QueryRule(Operator.SORTASC, SavedMatrixFilters.NAME));
+		List<SavedMatrixFilters> savedFilters = new ArrayList<SavedMatrixFilters>();
+		savedFilters = fq.find();
+
+		for (SavedMatrixFilters f : savedFilters)
+		{
+			savedFiltersInput.addOption(f.getName(), f.getName());
+		}
+		savedFiltersInput.setNillable(true);
+		return savedFiltersInput;
 	}
 
 	private String generateFilterRules() throws MatrixException, DatabaseException
@@ -1510,6 +1542,115 @@ public class MatrixViewer extends HtmlWidget
 			}
 		}
 		matrix.reload(); // to make sure the paging info is correctly updated
+	}
+
+	public void filterSave(Database db, MolgenisRequest t) throws Exception
+	{
+
+		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
+
+		Date now = new Date();
+		long date = now.getTime();
+		String name = "blaat_" + String.valueOf(date);
+
+		int filterCnt = 0;
+		for (MatrixQueryRule mqr : this.matrix.getRules())
+		{
+			SavedMatrixFilters savFil = new SavedMatrixFilters();
+			savFil.setOwner(db.getLogin().getUserId());
+			savFil.setName(name);
+			savFil.setRuleNr(filterCnt);
+			savFil.setFilterType(mqr.getFilterType().toString());
+			savFil.setDimIndex(mqr.getDimIndex());
+			savFil.setField(mqr.getField());
+			// convert the operator to the text options used in the queryrule
+			// class where necessary
+			String operator = mqr.getOperator().toString();
+			System.out.println("----> show the operator:   " + mqr.getOperator() + " " + operator);
+			if (operator.equals("="))
+			{
+				operator = "EQUALS";
+			}
+			else if (operator.equals(">"))
+			{
+				operator = "GREATER";
+			}
+			else if (operator.equals(">="))
+			{
+				operator = "GREATER_EQUAL";
+			}
+			else if (operator.equals("<"))
+			{
+				operator = "LESS";
+			}
+			else if (operator.equals("<="))
+			{
+				operator = "LESS_EQUAL";
+			}
+			else if (operator.equals("!="))
+			{
+				operator = "NOT";
+			}
+			savFil.setOperator(operator);
+			savFil.setValue(mqr.getValue().toString());
+			filterList.add(savFil);
+
+			filterCnt++;
+		}
+
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, name));
+		if (fq.count() > 0)
+		{
+			// delete existing set and than add the new set
+			System.out.println("____WTF!");
+			// TODO!!!!!!!!!
+			// filterList.clear();
+		}
+		else
+		{
+			// add the new set
+			db.add(filterList);
+		}
+		filterList.clear();
+
+	}
+
+	public void filterLoad(Database db, MolgenisRequest t) throws Exception
+	{
+		String filterName = t.getString(SAVEDFILTERS);
+		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
+		filterList = fq.find();
+		int filterCnt = 0;
+		for (SavedMatrixFilters filter : filterList)
+		{
+			if (filter.getFilterType().equals("colValueProperty"))
+			{
+				// re-build the queryrule and add it.
+				// reconstruct operator:
+
+				int index = filter.getDimIndex();
+				String field = filter.getField();
+				Operator op = Operator.valueOf(filter.getOperator());
+				Object value = filter.getValue();
+				// Type type, Integer colIndex, String colProperty, Operator
+				// operator, Object object
+				matrix.getRules().add(
+						new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op, value));
+				// reload matrix to apply filter
+				matrix.reload();
+
+			}
+			else
+			{
+				// for now do nothing with the other filter types.
+			}
+
+		}
 	}
 
 	public void updateColHeaderFilter(Database db, MolgenisRequest t) throws Exception
