@@ -1301,7 +1301,8 @@ public class MatrixViewer extends HtmlWidget
 
 					rowCnt++;
 				}
-				db.getEntityManager().clear();
+				// db.getEntityManager().clear(); //commented out, 2012-04-09 //
+				// seems to have no effect on function but did cause an error...
 			}
 
 			workbook.write();
