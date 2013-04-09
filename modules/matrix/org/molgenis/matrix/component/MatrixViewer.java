@@ -777,31 +777,26 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
+
 		String divContents = new Paragraph("filterRules", "<strong>Active filters</strong>:" + generateFilterRules())
 				.render();
+		// divContents += "<div>";
+		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
+		// "remove all filters");
+		// removeAllFilters.setIcon("generated-res/img/delete.png");
+		// removeAllFilters.setShowLabel(true);
+		// divContents += removeAllFilters.render();
 
 		// add column filter
 
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		// divContents +=
 		// "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
+
 		divContents += buildFilterChoices(colHeaders).render();
-		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO:
-																			// chosen()
-																			// screws
-																			// up
-																			// vertical
-																			// alignment
-																			// under
-																			// FF+IE
-		divContents += buildFilterInput(d_selectedMeasurement).render(); // TODO:
-																			// chosen()
-																			// screws
-																			// up
-																			// vertical
-																			// alignment
-																			// under
-																			// FF+IE
+		divContents += buildFilterOperator(d_selectedMeasurement).render();
+		divContents += buildFilterInput(d_selectedMeasurement).render(); //
+
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
 
 		divContents += new ActionInput(FILTERSAVE, "", "Save Filters").render();
@@ -809,7 +804,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += buildSavedFiltersInput().render();
 
 		divContents += new ActionInput(FILTERLOAD, "", "Load Filters").render();
-
+		// divContents += "</div>";
 		return divContents;
 	}
 
