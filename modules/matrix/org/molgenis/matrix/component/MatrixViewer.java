@@ -784,11 +784,12 @@ public class MatrixViewer extends HtmlWidget
 		// String divContents = new Paragraph("filterRules",
 		// "<strong>Active filters</strong>:" + generateFilterRules())
 		// .render();
-		String divContents = "<strong>Active filters</strong>: ";
-		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;\" src=\"res/img/save.png\" "
-				+ "onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" "
-				+ "/>";
+		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
 		divContents += generateFilterRules();
+		divContents += "</br><img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/save.png\" "
+				+ "onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" "
+				+ "/> Save filters.";
+		divContents += "</div><div style=\"float:left; padding:10px;\">";
 
 		// divContents += "<div>";
 		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
@@ -805,20 +806,20 @@ public class MatrixViewer extends HtmlWidget
 		// divContents +=
 		// "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
 
-		divContents += buildFilterChoices(colHeaders).render();
-		divContents += buildFilterOperator(d_selectedMeasurement).render();
-		divContents += buildFilterInput(d_selectedMeasurement).render(); //
+		divContents += "</br>" + buildFilterChoices(colHeaders).render();
+		divContents += "</br>" + buildFilterOperator(d_selectedMeasurement).render();
+		divContents += "</br>" + buildFilterInput(d_selectedMeasurement).render(); //
+		divContents += "</br>" + new ActionInput(FILTERCOL, "", "Apply").render();
 
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
+		divContents += "</div>";
 
-		divContents += "<div id='saveFilterDiv' style='display:none;float:left;;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-		divContents += "<div id='closeSaveFilterDiv' style='float:right;clear:both;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
-		divContents += new StringInput(FILTERSAVENAME, "Filter name").render();
-		divContents += new ActionInput(FILTERSAVE, "", "Save Filters").render();
-		divContents += "<br>";
-		divContents += buildSavedFiltersInput().render();
-
-		divContents += new ActionInput(FILTERLOAD, "", "Load Filters").render();
+		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		divContents += "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+		divContents += "</br>" + new StringInput(FILTERSAVENAME, "Filter name").render();
+		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save Filters").render();
+		divContents += "</br>";
+		divContents += "</br>" + buildSavedFiltersInput().render();
+		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load Filters").render();
 		divContents += "</div>";
 		return divContents;
 	}
