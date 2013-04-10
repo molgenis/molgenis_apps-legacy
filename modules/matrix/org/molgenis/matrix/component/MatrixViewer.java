@@ -126,6 +126,7 @@ public class MatrixViewer extends HtmlWidget
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
 	public String FILTERSAVE = getName() + "_filterSave";
+	public String FILTERSAVENAME = getName() + "_filterSaveNAme";
 	public String FILTERLOAD = getName() + "_filterLoad";
 	public String SAVEDFILTERS = getName() + "_savedFilters";
 	public String ROWHEADER = getName() + "_rowHeader";
@@ -488,7 +489,7 @@ public class MatrixViewer extends HtmlWidget
 		// the filter div
 		if (filterVisibility)
 		{
-			divContents += "<div id='addFilter' style='display:block;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+			divContents += "<div id='addFilter' style='float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
 			// divContents +=
 			// "<div id='closeAddFilter' style='float:right;clear:both' ><img id='closeButton' onclick=\"document.getElementById('addFilter').style.display='none';\" src='res/img/exit.png' /></div> ";
 			divContents += renderFilterPart();
@@ -780,8 +781,15 @@ public class MatrixViewer extends HtmlWidget
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
 
-		String divContents = new Paragraph("filterRules", "<strong>Active filters</strong>:" + generateFilterRules())
-				.render();
+		// String divContents = new Paragraph("filterRules",
+		// "<strong>Active filters</strong>:" + generateFilterRules())
+		// .render();
+		String divContents = "<strong>Active filters</strong>: ";
+		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;\" src=\"res/img/save.png\" "
+				+ "onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" "
+				+ "/>";
+		divContents += generateFilterRules();
+
 		// divContents += "<div>";
 		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
 		// "remove all filters");
@@ -791,6 +799,8 @@ public class MatrixViewer extends HtmlWidget
 
 		// add column filter
 
+		// divContents += "</div>";
+		// divContents = "<div style=\"float:left;width=25%\">";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		// divContents +=
 		// "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
@@ -801,12 +811,15 @@ public class MatrixViewer extends HtmlWidget
 
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
 
+		divContents += "<div id='saveFilterDiv' style='display:none;float:left;;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		divContents += "<div id='closeSaveFilterDiv' style='float:right;clear:both;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+		divContents += new StringInput(FILTERSAVENAME, "Filter name").render();
 		divContents += new ActionInput(FILTERSAVE, "", "Save Filters").render();
-
+		divContents += "<br>";
 		divContents += buildSavedFiltersInput().render();
 
 		divContents += new ActionInput(FILTERLOAD, "", "Load Filters").render();
-		// divContents += "</div>";
+		divContents += "</div>";
 		return divContents;
 	}
 
@@ -1550,6 +1563,7 @@ public class MatrixViewer extends HtmlWidget
 		Date now = new Date();
 		long date = now.getTime();
 		String name = "blaat_" + String.valueOf(date);
+		name = t.get(FILTERSAVENAME).toString();
 
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
