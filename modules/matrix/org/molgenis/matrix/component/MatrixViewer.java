@@ -127,6 +127,7 @@ public class MatrixViewer extends HtmlWidget
 	public String FILTERCOL = getName() + "_filterCol";
 	public String FILTERSAVE = getName() + "_filterSave";
 	public String FILTERSAVENAME = getName() + "_filterSaveNAme";
+	public String SAVEDFILTERSDELETE = getName() + "_savedFiltersDelete";
 	public String FILTERLOAD = getName() + "_filterLoad";
 	public String SAVEDFILTERS = getName() + "_savedFilters";
 	public String ROWHEADER = getName() + "_rowHeader";
@@ -814,12 +815,15 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "</div>";
 
 		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-		divContents += "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+		divContents += "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+		divContents += "<strong>Save current filters to new filterset: </strong>";
 		divContents += "</br>" + new StringInput(FILTERSAVENAME, "Filter name").render();
 		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save Filters").render();
 		divContents += "</br>";
+		divContents += "</br><strong>load or delete a saved filterset: </strong>";
 		divContents += "</br>" + buildSavedFiltersInput().render();
-		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load Filters").render();
+		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
+		divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
 		divContents += "</div>";
 		return divContents;
 	}
@@ -1664,6 +1668,17 @@ public class MatrixViewer extends HtmlWidget
 			}
 
 		}
+	}
+
+	public void savedFiltersDelete(Database db, MolgenisRequest t) throws DatabaseException
+	{
+		String filterName = t.getString(SAVEDFILTERS);
+		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
+		filterList = fq.find();
+		db.remove(filterList);
 	}
 
 	public void updateColHeaderFilter(Database db, MolgenisRequest t) throws Exception
