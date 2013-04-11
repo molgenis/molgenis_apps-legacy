@@ -19,7 +19,7 @@
 			<field name="highestNumber" type="int" />
 			<field name="targetName" type="xref" xref_entity="Panel" nillable ="true" />
 		</entity>
-		<entity name="SavedMatrixFilters">
+		<!-- <entity name="SavedMatrixFilters">
 			<description>Stores saved (sets of) MatrixQueryrules on a per user basis.</description>
 			<field name="id" type="autoid" description="automatically generated id" />
 			<field name="name" nillable="false" unique="false" type="string" />
@@ -33,7 +33,7 @@
 			<field name="value" type="string" nillable ="true" description="The value to compare entries of the field in the database with" />
 			<unique fields="owner,name,ruleNr" />
 			
-		</entity>
+		</entity> -->
 		<entity name="DeletedObservedValue" implements="Identifiable,Observation">
 			<description>Alternative for ObservedValue containing extra fields stating
 				when it was deleted and by whom.</description>

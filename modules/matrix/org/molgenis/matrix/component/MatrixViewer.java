@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.animaldb.SavedMatrixFilters;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -58,6 +57,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.SavedMatrixFilters;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
@@ -459,7 +459,7 @@ public class MatrixViewer extends HtmlWidget
 				+ "/>";
 		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">";
 		ActionInput toggleFilterSettings = new ActionInput(TOGGLEFILTERSETTINGSVISIBILITY, "", "");
-		toggleFilterSettings.setIcon("res/img/filter_32.png");
+		toggleFilterSettings.setIcon("generated-res/img/filter_funnel_32x32.png");
 		divContents += toggleFilterSettings.render() + "</div>";
 
 		// the header filter div (add remo cols)
@@ -787,10 +787,10 @@ public class MatrixViewer extends HtmlWidget
 		// .render();
 		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
 		divContents += generateFilterRules();
-		divContents += "</br><img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/save.png\" "
-				+ "onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" "
-				+ "/> Save filters.";
-		divContents += "</div><div style=\"float:left; padding:10px;\">";
+		divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
+		divContents += "more filter settings: ";
+		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
+		divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
 
 		// divContents += "<div>";
 		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
@@ -948,10 +948,11 @@ public class MatrixViewer extends HtmlWidget
 
 	private String generateFilterRules() throws MatrixException, DatabaseException
 	{
-		String outStr = "";
+		String outStr = "<table>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
+			outStr += "<tr>";
 			// Show only column value filters to user
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)
 					|| (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
@@ -959,11 +960,12 @@ public class MatrixViewer extends HtmlWidget
 				outStr += generateFilterRule(filterCnt, mqr);
 			}
 			System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
+			outStr += "</tr>";
 			++filterCnt;
 		}
-
+		outStr += "</table>";
 		// Show applied filter rules
-		return outStr.equals("") ? " none" : outStr;
+		return outStr.equals("") ? " </br>none " : outStr;
 	}
 
 	private String generateFilterRule(int filterCnt, MatrixQueryRule mqr) throws MatrixException, DatabaseException
@@ -991,11 +993,11 @@ public class MatrixViewer extends HtmlWidget
 		{
 			field = "." + mqr.getField();
 		}
-		String outStr = "<br />" + measurementName + field + " " + mqr.getOperator().toString() + " "
-				+ (value != null ? value.toString() : "NULL");
+		String outStr = "<td>" + measurementName + field + " " + mqr.getOperator().toString() + " "
+				+ (value != null ? value.toString() + " " : "NULL ") + "</td>";
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
-		removeButton.setIcon("generated-res/img/delete.png");
-		outStr += removeButton.render();
+		removeButton.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
+		outStr += "<td>" + removeButton.render() + "</td>";
 		return outStr;
 	}
 
