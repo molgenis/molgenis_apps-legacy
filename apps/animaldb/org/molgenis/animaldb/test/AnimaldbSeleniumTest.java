@@ -468,7 +468,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("DEC subprojects"));
 		// Make a DEC subproject
-		selenium.click("id=add_subproject");
+		selenium.click("id=addSubproject");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=experimenttitle", "MyProject");
 		selenium.type("id=expnumber", "A");
@@ -487,7 +487,7 @@ public class AnimaldbSeleniumTest
 		// Add animals to DEC
 		selenium.click("id=manage_animals_in_subproject");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=startadd");
+		selenium.click("id=addAnimals");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		// toggle selectboxes for first five animals in list
 		selenium.click("id=addanimalsmatrix_selected_0");
@@ -505,8 +505,9 @@ public class AnimaldbSeleniumTest
 		// toggle selectboxes for first two animals in list
 		selenium.click("id=remanimalsmatrix_selected_0");
 		selenium.click("id=remanimalsmatrix_selected_1");
-		selenium.click("id=dorem"); // click Remove button
+		selenium.click("id=removeAnimals");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+
 		selenium.click("id=dorem"); // click Apply button
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully removed"));
