@@ -874,6 +874,7 @@ public class MatrixViewer extends HtmlWidget
 			operatorInput.addOption(Operator.LESS_EQUAL.name(), Operator.LESS_EQUAL.name());
 			operatorInput.addOption(Operator.GREATER.name(), Operator.GREATER.name());
 			operatorInput.addOption(Operator.GREATER_EQUAL.name(), Operator.GREATER_EQUAL.name());
+			operatorInput.setLabel("Filter operator: ");
 			return operatorInput;
 		}
 
@@ -881,6 +882,7 @@ public class MatrixViewer extends HtmlWidget
 		{
 			operatorInput.addOption(operator, operator);
 		}
+		operatorInput.setLabel("Filter operator: ");
 		return operatorInput;
 	}
 
@@ -919,6 +921,7 @@ public class MatrixViewer extends HtmlWidget
 			// TODO!!!!!
 		}
 		colId.setNillable(true);
+		colId.setLabel("filter column: ");
 		return colId;
 	}
 
@@ -929,6 +932,7 @@ public class MatrixViewer extends HtmlWidget
 		// check if a filterset with this name exists, update if so.
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		// Nasty trick to circumvent the not present SELECT DISTINCT statement:
+		fq.addRules(new QueryRule(SavedMatrixFilters.OWNER, Operator.EQUALS, db.getLogin().getUserId()));
 		fq.addRules(new QueryRule(SavedMatrixFilters.RULENR, Operator.EQUALS, 0));
 		fq.addRules(new QueryRule(Operator.SORTASC, SavedMatrixFilters.NAME));
 		List<SavedMatrixFilters> savedFilters = new ArrayList<SavedMatrixFilters>();
@@ -1636,37 +1640,45 @@ public class MatrixViewer extends HtmlWidget
 
 	public void filterLoad(Database db, MolgenisRequest t) throws Exception
 	{
+		// get the existing filters, to remove duplicates later
+		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
+
+		// get the name of the selected saved filter.
 		String filterName = t.getString(SAVEDFILTERS);
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
-		// check if a filterset with this name exists, update if so.
+
+		// retrieve all the rules with this name from the db
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
 		filterList = fq.find();
 		int filterCnt = 0;
+
 		for (SavedMatrixFilters filter : filterList)
 		{
+			// for now only do something with colValue property filters, other
+			// types can be added later.
 			if (filter.getFilterType().equals("colValueProperty"))
 			{
 				// re-build the queryrule and add it.
-				// reconstruct operator:
 
 				int index = filter.getDimIndex();
 				String field = filter.getField();
 				Operator op = Operator.valueOf(filter.getOperator());
 				Object value = filter.getValue();
-				// Type type, Integer colIndex, String colProperty, Operator
-				// operator, Object object
-				matrix.getRules().add(
-						new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op, value));
+				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op,
+						value);
+				// prevent duplicate rules
+				if (!existingFilters.contains(newRule))
+				{
+					matrix.getRules().add(newRule);
+				}
 				// reload matrix to apply filter
 				matrix.reload();
-
 			}
 			else
 			{
 				// for now do nothing with the other filter types.
 			}
-
 		}
 	}
 
