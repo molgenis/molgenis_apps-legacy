@@ -213,7 +213,9 @@
 					<form name="files" entity="AnimalDbFile" view="list" label="Files">
 						<plugin name="Viewer"
 							type="org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewer" />
+							
 					</form>
+					<form name="matrixfilters" entity="SavedMatrixFilters" view="list" label="Saved Matrix filters" />
 				</menu>
 				<menu name="deltablemenu" position="left" label="Deletion tables">
 					<form name="delindividual" entity="DeletedIndividual" view="list"
