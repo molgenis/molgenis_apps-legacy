@@ -997,6 +997,7 @@ public class CommonService
 		if (targetRefName != null)
 		{
 			// newValue.setRelation_Name(targetRefName);
+			System.out.println("RRRRetteketet:             " + getObservationTargetByName(targetRefName).getId());
 			newValue.setRelation(getObservationTargetByName(targetRefName).getId());
 
 		}
