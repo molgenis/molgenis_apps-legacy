@@ -567,21 +567,28 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			String backgroundName = request.getString("8_" + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Background", investigationNames, invName).get(
 					0);
-			value.setRelation(cs.getObservationTargetByName(backgroundName).getId());
 
 			if (value.getProtocolApplication_Id() == null)
 			{
-				if (value != null)
+				if (!backgroundName.equals("") || backgroundName == null)
 				{
-
 					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetBackground",
 							"Background", e.getName(), null, backgroundName));
 				}
 			}
-
 			else
 			{
-				db.update(value);
+				if (backgroundName == null || backgroundName.equals(""))
+				{
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setRelation(cs.getObservationTargetByName(backgroundName).getId());
+					db.update(value);
+				}
 			}
 
 			// Earmark
