@@ -570,7 +570,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			if (value.getProtocolApplication_Id() == null)
 			{
-				if (!backgroundName.equals("") || backgroundName == null)
+				if (!backgroundName.equals("") || backgroundName != null)
 				{
 					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetBackground",
 							"Background", e.getName(), null, backgroundName));
