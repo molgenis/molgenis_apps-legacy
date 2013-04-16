@@ -18,6 +18,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
@@ -310,13 +311,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 				// animalTypeInput.setValue(getAnimalType(e.getName()));
 				animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
-				// System.out.println("### " +
-				// cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
 				animalTypeInput.setWidth(-1);
 				editTable.setCell(0, row, animalTypeInput);
-
-				// String line = getAnimalLine(e.getName());
-				// String specie = null;
 
 				// Background
 				List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
@@ -353,6 +349,15 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				colorInput.setValue(getAnimalColor(e.getName()));
 				colorInput.setWidth(-1);
 				editTable.setCell(2, row, colorInput);
+
+				// DateOfbirth
+				DateInput dateOfBirthInput = new DateInput(this.fpMap.get("DateOfBirth") + e.getName());
+				dateOfBirthInput.setId(this.fpMap.get("DateOfBirth") + e.getName());
+				dateOfBirthInput.setDateFormat("yyyy-MM-dd");
+				dateOfBirthInput.setValue(getAnimalBirthDate(e.getName()));
+				dateOfBirthInput
+						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				editTable.setCell(3, row, dateOfBirthInput);
 
 				/*
 				 * 
@@ -391,13 +396,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				 * lineInput.setValue(getAnimalLine(e.getName()));
 				 * lineInput.setWidth(-1); editTable.setCell(5, row, lineInput);
 				 * 
-				 * // DateOfbirth DateInput dateOfBirthInput = new
-				 * DateInput("7_" + e.getName()); dateOfBirthInput.setId("7_" +
-				 * e.getName()); dateOfBirthInput.setDateFormat("yyyy-MM-dd");
-				 * dateOfBirthInput.setValue(getAnimalBirthDate(e.getName()));
-				 * dateOfBirthInput .setJqueryproperties(
-				 * "dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1"
-				 * ); editTable.setCell(6, row, dateOfBirthInput);
 				 * 
 				 * 
 				 * // Earmark SelectInput earmarkInput = new SelectInput("9_" +
@@ -447,7 +445,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			// AnimalType
 			String animalTypeName = request.getString(fpMap.get("AnimalType") + e.getName());
-			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>" + animalTypeName);
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "AnimalType", investigationNames, invName).get(
 					0);
 			value.setValue(animalTypeName);
@@ -471,7 +468,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			if (value.getProtocolApplication_Id() == null)
 			{
-				if (!backgroundName.equals("") || backgroundName != null)
+				if (backgroundName != null && !backgroundName.equals(""))
 				{
 					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetBackground",
 							"Background", e.getName(), null, backgroundName));
@@ -499,6 +496,22 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			if (value.getProtocolApplication_Id() == null)
 			{
 				String paName = cs.makeProtocolApplication(invName, "SetColor");
+				value.setProtocolApplication_Name(paName);
+				db.add(value);
+			}
+			else
+			{
+				db.update(value);
+			}
+
+			// Date of Birth
+			String birthName = request.getString(this.fpMap.get("DateOfBirth") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "DateOfBirth", investigationNames, invName)
+					.get(0);
+			value.setValue(birthName);
+			if (value.getProtocolApplication_Id() == null)
+			{
+				String paName = cs.makeProtocolApplication(invName, "SetDateOfBirth");
 				value.setProtocolApplication_Name(paName);
 				db.add(value);
 			}
@@ -552,15 +565,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			 * cs.makeProtocolApplication(invName, "SetLine");
 			 * value.setProtocolApplication_Name(paName); db.add(value); } else
 			 * { db.update(value); }
-			 * 
-			 * // Date of Birth String birthName = request.getString("6_" +
-			 * e.getName()); value =
-			 * cs.getObservedValuesByTargetAndFeature(e.getName(),
-			 * "DateOfBirth", investigationNames, invName) .get(0);
-			 * value.setValue(birthName); if (value.getProtocolApplication_Id()
-			 * == null) { String paName = cs.makeProtocolApplication(invName,
-			 * "SetDateOfBirth"); value.setProtocolApplication_Name(paName);
-			 * db.add(value); } else { db.update(value); }
 			 * 
 			 * 
 			 * // Earmark String earmarkName = request.getString("9_" +
