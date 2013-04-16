@@ -136,6 +136,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Background");
 				measurementsToShow.add("DateOfBirth");
+				measurementsToShow.add("AnimalType");
+				measurementsToShow.add("Earmark");
 				measurementsToShow.add("GeneModification");
 				measurementsToShow.add("GeneState");
 				measurementsToShow.add("Line");
@@ -152,6 +154,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
 						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
+				animalMatrixViewer.setFilterVisibility(false);
 				animalMatrixViewer.setDatabase(db);
 			}
 			catch (Exception e)
@@ -271,28 +274,41 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			editTable = new JQueryDataTable("EditTable", "");
 
 			// editTable.addColumn("Active");
-			editTable.addColumn("AnimalType");
-			this.fpMap.put("AnimalType", "0_");
 			editTable.addColumn("Background");
 			this.fpMap.put("Background", "1_");
-			editTable.addColumn("Color"); // 3
+			editTable.addColumn("Color");
 			this.fpMap.put("Color", "2_");
-			editTable.addColumn("DateOfBirth"); // 4
+			editTable.addColumn("DateOfBirth");
 			this.fpMap.put("DateOfBirth", "3_");
-			editTable.addColumn("Earmark"); // 5
-			editTable.addColumn("Line"); // 6
-			editTable.addColumn("Sex"); // 7
-			editTable.addColumn("Source"); // 8
-			editTable.addColumn("Species"); // 9
+			editTable.addColumn("Earmark");
+			this.fpMap.put("EarMark", "4_");
+			editTable.addColumn("Line");
+			this.fpMap.put("Line", "5_");
+			editTable.addColumn("Sex");
+			this.fpMap.put("Sex", "6_");
 
-			for (Individual e : obsTargets)
+			// these fields are only available for editing by admin.
+			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 			{
-				// editTable.addColumn(e);
-				editTable.addRow(e.getName());
+				editTable.addColumn("AnimalType");
+				this.fpMap.put("AnimalType", "100_");
+				editTable.addColumn("Source");
+				this.fpMap.put("Source", "101_");
+				editTable.addColumn("Species");
+				this.fpMap.put("Species", "102_");
 			}
 
+			// add a row for each selected animal.
+			// for (Individual e : obsTargets)
+			// {
+			// editTable.addColumn(e);
+			// editTable.addRow(e.getName());
+			// }
+
 			for (Individual e : obsTargets)
 			{
+				// add a row in the eit table for each selected animal.
+				editTable.addRow(e.getName());
 
 				List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(
 						ObservedValue.TARGET_NAME, Operator.EQUALS, e.getName()));
@@ -301,18 +317,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					observableFeat.put(val.getFeature_Name(), val.getValue());
 				}
 
+				// Add all the inputs for each column.
 				// AnimalType
-				SelectInput animalTypeInput = new SelectInput(fpMap.get("AnimalType") + e.getName());
-				animalTypeInput.setId(fpMap.get("AnimalType") + e.getName());
-
-				for (Category animalType : this.animalTypeList)
-				{
-					animalTypeInput.addOption(animalType.getDescription(), animalType.getDescription());
-				}
-				// animalTypeInput.setValue(getAnimalType(e.getName()));
-				animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
-				animalTypeInput.setWidth(-1);
-				editTable.setCell(0, row, animalTypeInput);
 
 				// Background
 				List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
@@ -336,7 +342,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				backgroundInput.setValue(getAnimalBackground(e.getName()));
 				backgroundInput.setWidth(-1);
-				editTable.setCell(1, row, backgroundInput);
+				editTable.setCell(0, row, backgroundInput);
 
 				// Color
 				SelectInput colorInput = new SelectInput(fpMap.get("Color") + e.getName());
@@ -348,7 +354,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 				colorInput.setValue(getAnimalColor(e.getName()));
 				colorInput.setWidth(-1);
-				editTable.setCell(2, row, colorInput);
+				editTable.setCell(1, row, colorInput);
 
 				// DateOfbirth
 				DateInput dateOfBirthInput = new DateInput(this.fpMap.get("DateOfBirth") + e.getName());
@@ -357,66 +363,92 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				dateOfBirthInput.setValue(getAnimalBirthDate(e.getName()));
 				dateOfBirthInput
 						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
-				editTable.setCell(3, row, dateOfBirthInput);
+				editTable.setCell(2, row, dateOfBirthInput);
 
-				/*
-				 * 
-				 * // Species SelectInput speciesInput = new SelectInput("2_" +
-				 * e.getName()); speciesInput.setId("2_" + e.getName()); for
-				 * (ObservationTarget species : this.speciesList) {
-				 * speciesInput.addOption(species.getName(), species.getName());
-				 * } speciesInput.setValue(getAnimalSpecies(e.getName()));
-				 * 
-				 * speciesInput.setWidth(-1); editTable.setCell(2, row,
-				 * speciesInput);
-				 * 
-				 * // Sex SelectInput sexInput = new SelectInput("3_" +
-				 * e.getName()); sexInput.setId("3_" + e.getName()); for
-				 * (ObservationTarget sex : this.sexList) {
-				 * sexInput.addOption(sex.getName(), sex.getName()); }
-				 * sexInput.setValue(getAnimalSex(e.getName()));
-				 * sexInput.setWidth(-1); editTable.setCell(3, row, sexInput);
-				 * 
-				 * // Source SelectInput sourceInput = new SelectInput("5_" +
-				 * e.getName()); sourceInput.setId("5_" + e.getName());
-				 * 
-				 * for (ObservationTarget source : this.sourceList) {
-				 * sourceInput.addOption(source.getName(), source.getName());
-				 * 
-				 * } sourceInput.setValue(getAnimalSource(e.getName()));
-				 * sourceInput.setWidth(-1); editTable.setCell(4, row,
-				 * sourceInput);
-				 * 
-				 * // Line SelectInput lineInput = new SelectInput("6_" +
-				 * e.getName()); lineInput.setId("6_" + e.getName());
-				 * lineInput.addOption("", ""); for (ObservationTarget lineT :
-				 * this.lineList) {
-				 * 
-				 * lineInput.addOption(lineT.getName(), lineT.getName()); }
-				 * lineInput.setValue(getAnimalLine(e.getName()));
-				 * lineInput.setWidth(-1); editTable.setCell(5, row, lineInput);
-				 * 
-				 * 
-				 * 
-				 * // Earmark SelectInput earmarkInput = new SelectInput("9_" +
-				 * e.getName()); earmarkInput.setId("9_" + e.getName());
-				 * 
-				 * for (String earmark : this.earmarkList) {
-				 * earmarkInput.addOption(earmark, earmark);
-				 * 
-				 * } earmarkInput.addOption("", "");
-				 * earmarkInput.setValue(getAnimalEarmark(e.getName()));
-				 * earmarkInput.setWidth(-1); editTable.setCell(8, row,
-				 * earmarkInput);
-				 * 
-				 * // Responsible researcher
-				 * 
-				 * // weandate
-				 * 
-				 * // experiment
-				 * 
-				 * // Genotype
-				 */
+				// Earmark
+				SelectInput earmarkInput = new SelectInput(this.fpMap.get("Earmark") + e.getName());
+				earmarkInput.setId(this.fpMap.get("Earmark") + e.getName());
+
+				for (String earmark : this.earmarkList)
+				{
+					earmarkInput.addOption(earmark, earmark);
+				}
+				earmarkInput.addOption("", "");
+				earmarkInput.setValue(getAnimalEarmark(e.getName()));
+				earmarkInput.setWidth(-1);
+				editTable.setCell(3, row, earmarkInput);
+
+				// Line
+				SelectInput lineInput = new SelectInput(this.fpMap.get("Line") + e.getName());
+				lineInput.setId(this.fpMap.get("Line") + e.getName());
+				lineInput.addOption("", "");
+				for (ObservationTarget lineT : this.lineList)
+				{
+					lineInput.addOption(lineT.getName(), lineT.getName());
+				}
+				lineInput.setValue(getAnimalLine(e.getName()));
+				lineInput.setWidth(-1);
+				editTable.setCell(4, row, lineInput);
+
+				// Sex
+				SelectInput sexInput = new SelectInput(this.fpMap.get("Sex") + e.getName());
+				sexInput.setId(this.fpMap.get("Sex") + e.getName());
+				for (ObservationTarget sex : this.sexList)
+				{
+					sexInput.addOption(sex.getName(), sex.getName());
+				}
+				sexInput.setValue(getAnimalSex(e.getName()));
+				sexInput.setWidth(-1);
+				editTable.setCell(5, row, sexInput);
+
+				if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
+				{
+					// AnimalType
+					SelectInput animalTypeInput = new SelectInput(fpMap.get("AnimalType") + e.getName());
+					animalTypeInput.setId(fpMap.get("AnimalType") + e.getName());
+
+					for (Category animalType : this.animalTypeList)
+					{
+						animalTypeInput.addOption(animalType.getDescription(), animalType.getDescription());
+					}
+					// animalTypeInput.setValue(getAnimalType(e.getName()));
+					animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
+					animalTypeInput.setWidth(-1);
+					editTable.setCell(6, row, animalTypeInput);
+
+					// Source
+					SelectInput sourceInput = new SelectInput(this.fpMap.get("Source") + e.getName());
+					sourceInput.setId(this.fpMap.get("Source") + e.getName());
+
+					for (ObservationTarget source : this.sourceList)
+					{
+						sourceInput.addOption(source.getName(), source.getName());
+					}
+					sourceInput.setValue(getAnimalSource(e.getName()));
+					sourceInput.setWidth(-1);
+					editTable.setCell(7, row, sourceInput);
+
+					// Species
+					SelectInput speciesInput = new SelectInput(this.fpMap.get("Species") + e.getName());
+					speciesInput.setId(this.fpMap.get("Species") + e.getName());
+					for (ObservationTarget species : this.speciesList)
+					{
+						speciesInput.addOption(species.getName(), species.getName());
+					}
+					speciesInput.setValue(getAnimalSpecies(e.getName()));
+					speciesInput.setWidth(-1);
+					editTable.setCell(8, row, speciesInput);
+
+				}
+
+				// Responsible researcher
+
+				// weandate
+
+				// experiment
+
+				// Genotype
+
 				row++;
 
 			}
@@ -443,26 +475,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			invName = cs.getObservationTargetByName(e.getName()).getInvestigation_Name();
 			ObservedValue value = new ObservedValue();
 
-			// AnimalType
-			String animalTypeName = request.getString(fpMap.get("AnimalType") + e.getName());
-			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "AnimalType", investigationNames, invName).get(
-					0);
-			value.setValue(animalTypeName);
-
-			if (value.getProtocolApplication_Id() == null)
-			{
-				String paName = cs.makeProtocolApplication(invName, "SetAnimalType");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
-			}
-			else
-			{
-
-				db.update(value);
-			}
-
 			// Background
-			String backgroundName = request.getString(fpMap.get("Background") + e.getName());
+			String backgroundName = request.getString(this.fpMap.get("Background") + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Background", investigationNames, invName).get(
 					0);
 
@@ -490,7 +504,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			}
 
 			// Color
-			String colorName = request.getString(fpMap.get("Color") + e.getName());
+			String colorName = request.getString(this.fpMap.get("Color") + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Color", investigationNames, invName).get(0);
 			value.setValue(colorName);
 			if (value.getProtocolApplication_Id() == null)
@@ -520,71 +534,109 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				db.update(value);
 			}
 
-			/*
-			 * // Species String speciesName = request.getString("2_" +
-			 * e.getName()); ObservationTarget species =
-			 * db.find(ObservationTarget.class, new
-			 * QueryRule(ObservationTarget.NAME, Operator.EQUALS,
-			 * speciesName)).get(0); value =
-			 * cs.getObservedValuesByTargetAndFeature(e.getName(), "Species",
-			 * investigationNames, invName).get(0); //
-			 * value.setRelation(cs.getObservationTargetByName
-			 * (speciesName).getId());
-			 * value.setRelation(cs.getObservationTargetById
-			 * (species.getId()).getId()); db.update(value);
-			 * 
-			 * // Sex String sexName = request.getString("2_" + e.getName());
-			 * value = cs.getObservedValuesByTargetAndFeature(e.getName(),
-			 * "Sex", investigationNames, invName).get(0);
-			 * value.setRelation(cs.getObservationTargetByName
-			 * (sexName).getId());
-			 * 
-			 * if (value.getProtocolApplication_Id() == null) { String paName =
-			 * cs.makeProtocolApplication(invName, "SetSex");
-			 * value.setProtocolApplication_Name(paName); db.add(value); } else
-			 * { db.update(value); }
-			 * 
-			 * // Source String sourceName = request.getString("4_" +
-			 * e.getName()); value =
-			 * cs.getObservedValuesByTargetAndFeature(e.getName(), "Source",
-			 * investigationNames, invName).get(0);
-			 * value.setRelation(cs.getObservationTargetByName
-			 * (sourceName).getId());
-			 * 
-			 * if (value.getProtocolApplication_Id() == null) { String paName =
-			 * cs.makeProtocolApplication(invName, "SetSource");
-			 * value.setProtocolApplication_Name(paName); db.add(value); } else
-			 * { db.update(value); } // Line String lineName =
-			 * request.getString("5_" + e.getName()); value =
-			 * cs.getObservedValuesByTargetAndFeature(e.getName(), "Line",
-			 * investigationNames, invName).get(0);
-			 * value.setRelation(cs.getObservationTargetByName
-			 * (lineName).getId());
-			 * 
-			 * if (value.getProtocolApplication_Id() == null) { String paName =
-			 * cs.makeProtocolApplication(invName, "SetLine");
-			 * value.setProtocolApplication_Name(paName); db.add(value); } else
-			 * { db.update(value); }
-			 * 
-			 * 
-			 * // Earmark String earmarkName = request.getString("9_" +
-			 * e.getName()); value =
-			 * cs.getObservedValuesByTargetAndFeature(e.getName(), "Earmark",
-			 * investigationNames, invName).get(0); value.setValue(earmarkName);
-			 * if (value.getProtocolApplication_Id() == null) {
-			 * 
-			 * String paName = cs.makeProtocolApplication(invName,
-			 * "SetEarmark"); value.setProtocolApplication_Name(paName);
-			 * db.add(value); } else { if (!value.equals("")) {
-			 * 
-			 * db.update(value); } else { db.remove(value);
-			 * 
-			 * db.remove(cs.getProtocolApplicationById(value.
-			 * getProtocolApplication_Id())); }
-			 * 
-			 * }
-			 */
+			// Earmark
+			String earmarkName = request.getString(this.fpMap.get("Earmark") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Earmark", investigationNames, invName).get(0);
+			value.setValue(earmarkName);
+			if (value.getProtocolApplication_Id() == null)
+			{
+				String paName = cs.makeProtocolApplication(invName, "SetEarmark");
+				value.setProtocolApplication_Name(paName);
+				db.add(value);
+			}
+			else
+			{
+				if (!value.equals(""))
+				{
+					db.update(value);
+				}
+				else
+				{
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationById(value.getProtocolApplication_Id()));
+				}
 
+			}
+
+			// Line
+			String lineName = request.getString(this.fpMap.get("Line") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Line", investigationNames, invName).get(0);
+			value.setRelation(cs.getObservationTargetByName(lineName).getId());
+			if (value.getProtocolApplication_Id() == null)
+			{
+				String paName = cs.makeProtocolApplication(invName, "SetLine");
+				value.setProtocolApplication_Name(paName);
+				db.add(value);
+			}
+			else
+			{
+				db.update(value);
+			}
+
+			// Sex
+			String sexName = request.getString(this.fpMap.get("Sex") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Sex", investigationNames, invName).get(0);
+			value.setRelation(cs.getObservationTargetByName(sexName).getId());
+
+			if (value.getProtocolApplication_Id() == null)
+			{
+				String paName = cs.makeProtocolApplication(invName, "SetSex");
+				value.setProtocolApplication_Name(paName);
+				db.add(value);
+			}
+			else
+			{
+				db.update(value);
+			}
+
+			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
+			{
+
+				// AnimalType
+				String animalTypeName = request.getString(this.fpMap.get("AnimalType") + e.getName());
+				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "AnimalType", investigationNames, invName)
+						.get(0);
+				value.setValue(animalTypeName);
+
+				if (value.getProtocolApplication_Id() == null)
+				{
+					String paName = cs.makeProtocolApplication(invName, "SetAnimalType");
+					value.setProtocolApplication_Name(paName);
+					db.add(value);
+				}
+				else
+				{
+
+					db.update(value);
+				}
+
+				// Source
+				String sourceName = request.getString(this.fpMap.get("Source") + e.getName());
+				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Source", investigationNames, invName).get(
+						0);
+				value.setRelation(cs.getObservationTargetByName(sourceName).getId());
+
+				if (value.getProtocolApplication_Id() == null)
+				{
+					String paName = cs.makeProtocolApplication(invName, "SetSource");
+					value.setProtocolApplication_Name(paName);
+					db.add(value);
+				}
+				else
+				{
+					db.update(value);
+				}
+
+				// Species
+				String speciesName = request.getString(this.fpMap.get("Species") + e.getName());
+				ObservationTarget species = db.find(ObservationTarget.class,
+						new QueryRule(ObservationTarget.NAME, Operator.EQUALS, speciesName)).get(0);
+				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Species", investigationNames, invName)
+						.get(0); //
+				value.setRelation(cs.getObservationTargetByName(speciesName).getId());
+				value.setRelation(cs.getObservationTargetById(species.getId()).getId());
+				db.update(value);
+			}
 		}
 	}
 
