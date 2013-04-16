@@ -274,9 +274,10 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			this.fpMap.put("AnimalType", "0_");
 			editTable.addColumn("Background");
 			this.fpMap.put("Background", "1_");
-
 			editTable.addColumn("Color"); // 3
+			this.fpMap.put("Color", "2_");
 			editTable.addColumn("DateOfBirth"); // 4
+			this.fpMap.put("DateOfBirth", "3_");
 			editTable.addColumn("Earmark"); // 5
 			editTable.addColumn("Line"); // 6
 			editTable.addColumn("Sex"); // 7
@@ -341,6 +342,18 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				backgroundInput.setWidth(-1);
 				editTable.setCell(1, row, backgroundInput);
 
+				// Color
+				SelectInput colorInput = new SelectInput(fpMap.get("Color") + e.getName());
+				colorInput.setId(fpMap.get("Color") + e.getName());
+
+				for (String color : this.colorList)
+				{
+					colorInput.addOption(color, color);
+				}
+				colorInput.setValue(getAnimalColor(e.getName()));
+				colorInput.setWidth(-1);
+				editTable.setCell(2, row, colorInput);
+
 				/*
 				 * 
 				 * // Species SelectInput speciesInput = new SelectInput("2_" +
@@ -386,15 +399,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				 * "dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1"
 				 * ); editTable.setCell(6, row, dateOfBirthInput);
 				 * 
-				 * // Color SelectInput colorInput = new SelectInput("8_" +
-				 * e.getName()); colorInput.setId("8_" + e.getName());
-				 * 
-				 * for (String color : this.colorList) {
-				 * colorInput.addOption(color, color);
-				 * 
-				 * } colorInput.setValue(getAnimalColor(e.getName()));
-				 * colorInput.setWidth(-1); editTable.setCell(7, row,
-				 * colorInput);
 				 * 
 				 * // Earmark SelectInput earmarkInput = new SelectInput("9_" +
 				 * e.getName()); earmarkInput.setId("9_" + e.getName());
@@ -487,6 +491,22 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					db.update(value);
 				}
 			}
+
+			// Color
+			String colorName = request.getString(fpMap.get("Color") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Color", investigationNames, invName).get(0);
+			value.setValue(colorName);
+			if (value.getProtocolApplication_Id() == null)
+			{
+				String paName = cs.makeProtocolApplication(invName, "SetColor");
+				value.setProtocolApplication_Name(paName);
+				db.add(value);
+			}
+			else
+			{
+				db.update(value);
+			}
+
 			/*
 			 * // Species String speciesName = request.getString("2_" +
 			 * e.getName()); ObservationTarget species =
@@ -542,15 +562,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			 * "SetDateOfBirth"); value.setProtocolApplication_Name(paName);
 			 * db.add(value); } else { db.update(value); }
 			 * 
-			 * // Color String colorName = request.getString("7_" +
-			 * e.getName()); value =
-			 * cs.getObservedValuesByTargetAndFeature(e.getName(), "Color",
-			 * investigationNames, invName).get(0); value.setValue(colorName);
-			 * 
-			 * if (value.getProtocolApplication_Id() == null) { String paName =
-			 * cs.makeProtocolApplication(invName, "SetColor");
-			 * value.setProtocolApplication_Name(paName); db.add(value); } else
-			 * { db.update(value); }
 			 * 
 			 * // Earmark String earmarkName = request.getString("9_" +
 			 * e.getName()); value =
