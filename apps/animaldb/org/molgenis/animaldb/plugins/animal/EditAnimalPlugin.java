@@ -306,7 +306,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				for (Category animalType : this.animalTypeList)
 				{
-					animalTypeInput.addOption(animalType.getName(), animalType.getDescription());
+					animalTypeInput.addOption(animalType.getDescription(), animalType.getDescription());
 				}
 				// animalTypeInput.setValue(getAnimalType(e.getName()));
 				animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
@@ -447,7 +447,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			// AnimalType
 			String animalTypeName = request.getString(fpMap.get("AnimalType") + e.getName());
-
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>" + animalTypeName);
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "AnimalType", investigationNames, invName).get(
 					0);
 			value.setValue(animalTypeName);
