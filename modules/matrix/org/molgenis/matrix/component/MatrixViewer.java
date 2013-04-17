@@ -786,7 +786,11 @@ public class MatrixViewer extends HtmlWidget
 		// "<strong>Active filters</strong>:" + generateFilterRules())
 		// .render();
 		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
+
+		// show the actie filters and a quick option to add a new
+		// colValueProperty filter
 		divContents += generateFilterRules();
+
 		divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
 		divContents += "filter settings: ";
 		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
@@ -799,22 +803,6 @@ public class MatrixViewer extends HtmlWidget
 		// removeAllFilters.setShowLabel(true);
 		// divContents += removeAllFilters.render();
 
-		// add column filter
-
-		// divContents += "</div>";
-		// divContents = "<div style=\"float:left;width=25%\">";
-		List<? extends Object> colHeaders = matrix.getColHeaders();
-		// divContents +=
-		// "<hr><div style=\"clear:both\"><strong>Add new filter: </strong><br />";
-
-		divContents += "</br>" + buildFilterChoices(colHeaders).render();
-		divContents += "</br>" + buildFilterOperator(d_selectedMeasurement).render();
-		divContents += "</br>" + buildFilterInput(d_selectedMeasurement).render();
-		ActionInput blaat = new ActionInput(FILTERCOL, "", "Apply");
-		blaat.setIcon("generated-res/img/filter_funnel_add_24x24.png");
-		// divContents += "</br>" + new ActionInput(FILTERCOL, "",
-		// "Apply").render();
-		divContents += "</br>" + blaat.toHtml();
 		divContents += "</div>";
 
 		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
@@ -893,6 +881,7 @@ public class MatrixViewer extends HtmlWidget
 	private SelectInput buildFilterChoices(List<? extends Object> colHeaders)
 	{
 		SelectInput colId = new SelectInput(COLID);
+
 		if (showNameFilter == true)
 		{
 			colId.addOption(-1, "name");
@@ -951,22 +940,40 @@ public class MatrixViewer extends HtmlWidget
 
 	private String generateFilterRules() throws MatrixException, DatabaseException
 	{
-		String outStr = "<table>";
+		String outStr = "<table id=\"filterstable\" name=\"filterstable\">";
+		// outStr += "<thead></thead>";
+		outStr += "<thead> <tr><th></th><th></th><th></th><th></th></tr></thead>";
+		outStr += "<tbody>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
-			outStr += "<tr>";
 			// Show only column value filters to user
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)
 					|| (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
 			{
-				outStr += generateFilterRule(filterCnt, mqr);
+				outStr += "<tr>" + generateFilterRule(filterCnt, mqr) + "</tr>";
 			}
 			System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
-			outStr += "</tr>";
 			++filterCnt;
 		}
-		outStr += "</table>";
+		// add quickadd options for simple new colValueProperty filter
+		List<? extends Object> colHeaders = matrix.getColHeaders();
+		outStr += "<tr>";
+		outStr += "<td>" + buildFilterChoices(colHeaders).render();
+		outStr += "<td>" + buildFilterOperator(d_selectedMeasurement).render();
+		outStr += "<td>" + buildFilterInput(d_selectedMeasurement).render();
+		ActionInput addButton = new ActionInput(FILTERCOL, "Apply", "");
+		addButton.setIcon("generated-res/img/filter_funnel_add_24x24.png");
+		outStr += "<td>" + addButton.render() + "</td>";
+		outStr += "</tr></tbody></table>";
+		// add the javascript code for the table
+		// outStr += "<script> $('#filterstable').dataTable(); </script>";
+		outStr += "<script>";
+		outStr += "jQuery('#filterstable').dataTable(";
+		outStr += "{\"bJQueryUI\": true, \"sDom\": 'Hrt',\"bSort\": false";
+		outStr += "})";
+		outStr += "</script>";
+
 		// Show applied filter rules
 		return outStr.equals("") ? " </br>none " : outStr;
 	}
@@ -996,7 +1003,7 @@ public class MatrixViewer extends HtmlWidget
 		{
 			field = "." + mqr.getField();
 		}
-		String outStr = "<td>" + measurementName + field + " " + mqr.getOperator().toString() + " "
+		String outStr = "<td>" + measurementName + field + "</td><td>" + mqr.getOperator().toString() + "</td><td>"
 				+ (value != null ? value.toString() + " " : "NULL ") + "</td>";
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 		removeButton.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
