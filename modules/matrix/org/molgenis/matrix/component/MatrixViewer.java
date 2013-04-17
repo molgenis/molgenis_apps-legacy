@@ -942,7 +942,7 @@ public class MatrixViewer extends HtmlWidget
 	{
 		String outStr = "<table id=\"filterstable\" name=\"filterstable\">";
 		// outStr += "<thead></thead>";
-		outStr += "<thead> <tr><th>Column</th><th>Operator</th><th>Value</th><th></th></tr></thead>";
+		outStr += "<thead> <tr align=\"center\"><th>Column</th><th>Operator</th><th>Value</th><th></th></tr></thead>";
 		outStr += "<tbody>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
