@@ -18,6 +18,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
@@ -233,20 +234,34 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			if (action.equals("editAnimals"))
 			{
+
 				List<Individual> selectedIndividuals = new ArrayList<Individual>();
 				List<Individual> rows = (List<Individual>) animalMatrixViewer.getSelection(db);
+
 				int rowCnt = 0;
+				int selRowCnt = 0;
 				for (Individual row : rows)
 				{
 					if (request.getBoolean(ANIMALMATRIX + "_selected_" + rowCnt) != null)
 					{
 						selectedIndividuals.add(row);
 						System.out.println(row);
+						selRowCnt++;
 					}
 					rowCnt++;
+					System.out.println("-------------------------kom ik hier!!!! " + rows.size());
 				}
-				listOfSelectedIndividuals = selectedIndividuals;
-				makeTable(db, selectedIndividuals);
+				if (selRowCnt == 0)
+				{
+					this.setMessages(new ScreenMessage("No animals selected", false));
+					this.action = "start";
+				}
+				else
+				{
+
+					listOfSelectedIndividuals = selectedIndividuals;
+					makeTable(db, selectedIndividuals);
+				}
 			}
 			if (action.equals("saveAnimals"))
 			{
