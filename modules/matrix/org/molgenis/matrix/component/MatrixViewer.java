@@ -806,12 +806,13 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "</div>";
 
 		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-		divContents += "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
-		divContents += "<strong>Save current filters to new filterset: </strong>";
+		// divContents +=
+		// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+		divContents += "<strong>Save active filters: </strong>";
 		divContents += "</br>" + new StringInput(FILTERSAVENAME, "Filter name").render();
 		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save Filters").render();
 		divContents += "</br>";
-		divContents += "</br><strong>load or delete a saved filterset: </strong>";
+		divContents += "</br><strong>load or delete saved filters: </strong>";
 		divContents += "</br>" + buildSavedFiltersInput().render();
 		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
 		divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
@@ -853,6 +854,7 @@ public class MatrixViewer extends HtmlWidget
 	private SelectInput buildFilterOperator(Measurement selectedMeasurement)
 	{
 		SelectInput operatorInput = new SelectInput(OPERATOR);
+		operatorInput.setWidth(8);
 		// At this moment, selectedMeasurement is always null. Temp. fix:
 		if (selectedMeasurement == null)
 		{
@@ -881,6 +883,7 @@ public class MatrixViewer extends HtmlWidget
 	private SelectInput buildFilterChoices(List<? extends Object> colHeaders)
 	{
 		SelectInput colId = new SelectInput(COLID);
+		colId.setWidth(12);
 
 		if (showNameFilter == true)
 		{
