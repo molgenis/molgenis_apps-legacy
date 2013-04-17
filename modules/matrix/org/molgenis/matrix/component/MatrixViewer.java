@@ -788,7 +788,7 @@ public class MatrixViewer extends HtmlWidget
 		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
 		divContents += generateFilterRules();
 		divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
-		divContents += "more filter settings: ";
+		divContents += "filter settings: ";
 		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
 		divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
 
@@ -809,9 +809,12 @@ public class MatrixViewer extends HtmlWidget
 
 		divContents += "</br>" + buildFilterChoices(colHeaders).render();
 		divContents += "</br>" + buildFilterOperator(d_selectedMeasurement).render();
-		divContents += "</br>" + buildFilterInput(d_selectedMeasurement).render(); //
-		divContents += "</br>" + new ActionInput(FILTERCOL, "", "Apply").render();
-
+		divContents += "</br>" + buildFilterInput(d_selectedMeasurement).render();
+		ActionInput blaat = new ActionInput(FILTERCOL, "", "Apply");
+		blaat.setIcon("generated-res/img/filter_funnel_add_24x24.png");
+		// divContents += "</br>" + new ActionInput(FILTERCOL, "",
+		// "Apply").render();
+		divContents += "</br>" + blaat.toHtml();
 		divContents += "</div>";
 
 		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
@@ -2108,6 +2111,11 @@ public class MatrixViewer extends HtmlWidget
 	public void setFilterVisibility(boolean filterVisibility)
 	{
 		this.filterVisibility = filterVisibility;
+	}
+
+	public void setShowDownloadOptions(boolean showDownloadOptions)
+	{
+		this.showDownloadOptions = showDownloadOptions;
 	}
 
 }

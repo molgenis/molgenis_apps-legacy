@@ -156,6 +156,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				animalMatrixViewer.setFilterVisibility(false);
+				animalMatrixViewer.setShowDownloadOptions(true);
 				animalMatrixViewer.setDatabase(db);
 			}
 			catch (Exception e)
@@ -234,7 +235,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			if (action.equals("editAnimals"))
 			{
-
 				List<Individual> selectedIndividuals = new ArrayList<Individual>();
 				List<Individual> rows = (List<Individual>) animalMatrixViewer.getSelection(db);
 
@@ -245,11 +245,9 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					if (request.getBoolean(ANIMALMATRIX + "_selected_" + rowCnt) != null)
 					{
 						selectedIndividuals.add(row);
-						System.out.println(row);
 						selRowCnt++;
 					}
 					rowCnt++;
-					System.out.println("-------------------------kom ik hier!!!! " + rows.size());
 				}
 				if (selRowCnt == 0)
 				{
@@ -258,7 +256,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 				else
 				{
-
 					listOfSelectedIndividuals = selectedIndividuals;
 					makeTable(db, selectedIndividuals);
 				}
