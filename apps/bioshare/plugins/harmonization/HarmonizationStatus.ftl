@@ -25,7 +25,7 @@
 			$("form[name=\"" + FORM_NAME + "\"]").submit();
 		});
 		
-		timer = setInterval(function(){monitorJobs(URL)}, 6000);
+		timer = setInterval(function(){monitorJobs(URL)}, 10000);
 	});
 	
 </script>
@@ -44,7 +44,7 @@
 				<div style="width:900px;height:300px">
 					<div id="summaryPanel" style="width:500px;height:300px;float:left;" class="ui-tabs-nav ui-corner-all ui-widget-content">
 						<div class="ui-widget-header ui-corner-all" style="height:30px;">
-							<div style="margin:3px;float:left;">Summary of the job</div>
+							<div style="margin:3px;float:left;">Summary of the job:  <span id="jobTitle"></span></div>
 						</div>
 						<div id="summaryOfJobs" style="margin:10px;width:90%;">
 							<div>Processed time: <span id="processedTime" style="float:right;">
@@ -56,8 +56,10 @@
 						<div id="information" style="margin:10px;width:90%;">
 							<div>Prediction model: <span id="predictionModel" style="float:right;">
 								${screen.getSelectedPredictionModel()}</span></div>
-							<div>Validation study: <span id="validationStudy" style="float:right;">
-								${screen.getSelectedValidationStudy()}</span></div>
+							<div>Validation study(ies): <span id="validationStudy" style="float:right;">
+								<#list screen.getSelectedValidationStudy() as study>${study}, </#list></span></div>
+								
+								
 						</div>
 						<hr>
 						<div style="margin-left:10px;margin-top:20px;font-style:italic;">Finished:<span id="progressBarMessage"></span></div>

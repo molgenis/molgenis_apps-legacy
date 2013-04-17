@@ -18,7 +18,7 @@ alloutputsexist \
 
 mkdir -p ${studyMerlinChrDir}
 
-#Conver SNP ID to chr_pos and remove 3e column to adhere to merlin
+#Convert SNP ID to chr_pos and remove 3e column to adhere to merlin
 gawk '
 	BEGIN {$1="CHROMOSOME";$2="MARKER";$3="POSITION";print $0}
 	{$2=$1":"$4;print $1,$2,$4}
@@ -29,7 +29,7 @@ gawk 'BEGIN {print "T","pheno";}{print "M",$1":"$4}' ${preparedStudyDir}/chr${ch
 set +o posix
 
 #Create merlin ped from genotypes outputed by imputation tool but use fam id, sample id and phenodata from original pedmap
-paste <(awk '{print $1,$2,$3,$4,$5,$6}' ${studyPedMapChr}.ped) <(awk '{for(i=7;i<NF;i++) $(i-6) = $i;print $0}' ${preparedStudyDir}/chr${chr}.ped) -d ' ' > ${studyMerlinChrPed}
+paste <(awk '{print $1,$2,$3,$4,$5,$6}' ${studyPedMapChr}.ped) <(awk '{for(i=7;i<=NF;i++) $(i-6) = $i;NF-=6;print}' ${preparedStudyDir}/chr${chr}.ped) -d ' ' > ${studyMerlinChrPed}
 
 putFile ${studyMerlinChrMap}
 putFile ${studyMerlinChrDat}

@@ -8,11 +8,11 @@
 package plugins.system.settings;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import filehandling.storage.Report;
 import filehandling.storage.StorageHandler;
@@ -47,7 +47,7 @@ public class Settings<E extends Entity> extends PluginModel<E>
 		return "plugins/system/settings/Settings.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

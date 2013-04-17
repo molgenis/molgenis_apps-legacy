@@ -21,6 +21,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -40,7 +41,6 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Tuple;
 
 public class RemAnimalPluginMatrix extends EasyPluginController
 {
@@ -62,7 +62,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, MolgenisRequest request, OutputStream out)
 	{
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null)
@@ -88,7 +88,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				int rowCnt = 0;
 				for (ObservationElement row : rows)
 				{
-					if (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null)
+					if (request.getBoolean(TARGETMATRIX + "_selected_" + rowCnt) != null)
 					{
 						targetList.add(row.getId());
 					}
@@ -233,10 +233,17 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Location");
+				measurementsToShow.add("DateOfBirth");
 				measurementsToShow.add("Experiment");
+				measurementsToShow.add("GeneModification");
+				measurementsToShow.add("GeneState");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("Litter");
+				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
 				measurementsToShow.add("Line");
+
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));

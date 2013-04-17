@@ -32,8 +32,10 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -55,6 +57,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.SavedMatrixFilters;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
@@ -70,11 +73,12 @@ import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.Tuple;
 
 public class MatrixViewer extends HtmlWidget
 {
 	private static final int BATCHSIZE = 100;
+
+	private static final String ADDREMCOLS = null;
 
 	ScreenController<?> callingScreenController;
 
@@ -87,13 +91,17 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showLimitControls = true;
 	private int selectMultiple = 0;
 	private boolean showValueValidRange = false;
-	private boolean showDownloadOptions = false;
+	private boolean showDownloadOptions = true;
 	private boolean showNameFilter = true;
 	private boolean isEditable;
+	private boolean showTargetTooltip = false;
+	private boolean filterVisibility = false;
+	// private boolean addRemColumnVisibility = true;
 	private String APPLICATION_STRING = "GENERIC";
 
 	private String downloadLink = null;
 	private Measurement d_selectedMeasurement = null;
+	private SavedMatrixFilters d_selectedSavedFilter = null;
 
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -117,6 +125,11 @@ public class MatrixViewer extends HtmlWidget
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
+	public String FILTERSAVE = getName() + "_filterSave";
+	public String FILTERSAVENAME = getName() + "_filterSaveNAme";
+	public String SAVEDFILTERSDELETE = getName() + "_savedFiltersDelete";
+	public String FILTERLOAD = getName() + "_filterLoad";
+	public String SAVEDFILTERS = getName() + "_savedFilters";
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
@@ -128,6 +141,7 @@ public class MatrixViewer extends HtmlWidget
 	public String REMALLCOLHEADERFILTER = getName() + "_remAllColHeaderFilter";
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
 	public String OPERATOR = getName() + "_operator";
+	public String TOGGLEFILTERSETTINGSVISIBILITY = getName() + "_toggleFilterSettingsVisibility";
 	// hack to pass database to toHtml() via toHtml(db)
 	private Database db;
 
@@ -220,7 +234,7 @@ public class MatrixViewer extends HtmlWidget
 		this.showNameFilter = showNameFilter;
 	}
 
-	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
+	public void handleRequest(Database db, MolgenisRequest t) throws HandleRequestDelegationException
 	{
 		try
 		{
@@ -334,7 +348,7 @@ public class MatrixViewer extends HtmlWidget
 			result += "</td></tr><tr><td>";
 			result += renderTable();
 			result += "</td></tr><tr><td>";
-			result += renderFilterPart();
+			// result += renderFilterPart();
 			result += "</td></tr></table>";
 			result += "</div>";
 
@@ -348,7 +362,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
-	public String renderHeader() throws MatrixException
+	public String renderHeader() throws MatrixException, DatabaseException
 	{
 		String divContents = "";
 		// reload
@@ -357,10 +371,10 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "<div style=\"float:left; vertical-align:middle\">" + reload.render() + "</div>";
 		// move vertical (row paging)
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
-		moveUpEnd.setIcon("generated-res/img/first.png");
+		moveUpEnd.setIcon("generated-res/img/first_32.png");
 		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + moveUpEnd.render();
 		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
-		moveUp.setIcon("generated-res/img/prev.png");
+		moveUp.setIcon("generated-res/img/prev_32.png");
 		divContents += moveUp.render();
 		int rowOffset = this.matrix.getRowOffset();
 		int rowLimit = this.matrix.getRowLimit();
@@ -377,10 +391,10 @@ public class MatrixViewer extends HtmlWidget
 			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
 		}
 		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
-		moveDown.setIcon("generated-res/img/next.png");
+		moveDown.setIcon("generated-res/img/next_32.png");
 		divContents += moveDown.render();
 		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
-		moveDownEnd.setIcon("generated-res/img/last.png");
+		moveDownEnd.setIcon("generated-res/img/last_32.png");
 		divContents += moveDownEnd.render() + "</div>";
 		// download options
 		if (showDownloadOptions)
@@ -414,17 +428,19 @@ public class MatrixViewer extends HtmlWidget
 			// divContents +=
 			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			// + downloadVisExcel.render() + "</div>";
-			ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS, "", "All to SPSS");
-			downloadAllSPSS.setIcon("generated-res/img/download.png");
-			downloadAllSPSS.setWidth(180);
-			menu.AddAction(downloadAllSPSS);
-			// divContents +=
-			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-			// + downloadAllSPSS.render() + "</div>";
-			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
-			downloadVisSPSS.setIcon("generated-res/img/download.png");
-			downloadVisSPSS.setWidth(180);
-			menu.AddAction(downloadVisSPSS);
+			/*
+			 * ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS,
+			 * "", "All to SPSS");
+			 * downloadAllSPSS.setIcon("generated-res/img/download.png");
+			 * downloadAllSPSS.setWidth(180); menu.AddAction(downloadAllSPSS);
+			 * // divContents += //
+			 * "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			 * // + downloadAllSPSS.render() + "</div>"; ActionInput
+			 * downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "",
+			 * "Visible to SPSS");
+			 * downloadVisSPSS.setIcon("generated-res/img/download.png");
+			 * downloadVisSPSS.setWidth(180); menu.AddAction(downloadVisSPSS);
+			 */
 			// divContents +=
 			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			// + downloadVisSPSS.render() + "</div>";
@@ -434,7 +450,55 @@ public class MatrixViewer extends HtmlWidget
 
 		}
 
+		// add remove columns from matrix.
+
+		// addRemCols.setIcon("generated-res/img/plus.png");
+
+		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;\" src=\"res/img/addremcol_32.png\" "
+				+ "onclick=\"if (document.getElementById('addRemCol').style.display=='none') {document.getElementById('addRemCol').style.display='block';} else {document.getElementById('addRemCol').style.display='none';} \" "
+				+ "/>";
+		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">";
+		ActionInput toggleFilterSettings = new ActionInput(TOGGLEFILTERSETTINGSVISIBILITY, "", "");
+		toggleFilterSettings.setIcon("generated-res/img/filter_funnel_32x32.png");
+		divContents += toggleFilterSettings.render() + "</div>";
+
+		// the header filter div (add remo cols)
+
+		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		divContents += "<div id='closeAddRemCol' style='float:right;clear:both' ><img id='close' onclick=\"document.getElementById('addRemCol').style.display='none';\" src='res/img/exit.png' /></div> ";
+		List<? extends Object> colHeaders = matrix.getColHeaders();
+		@SuppressWarnings("rawtypes")
+		List selectedMeasurements = new ArrayList(colHeaders);
+		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", selectedMeasurements,
+				false, false, "Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
+				Measurement.class);
+		// disable display of button for adding new measurements from here
+		measurementChooser.setIncludeAddButton(false);
+		divContents += new Newline().render();
+		divContents += "<div style=\"clear: both; vertical-align:middle\"> <strong>Add/remove columns: </strong><br />";
+		divContents += measurementChooser.render();
+		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+		// if (this.APPLICATION_STRING != "ANIMALDB")
+		// {
+		// divContents += new ActionInput(ADDALLCOLHEADERFILTER, "",
+		// "Add all").render();
+		// }
+		// divContents += new ActionInput(REMALLCOLHEADERFILTER, "",
+		// "Remove all").render();
+		divContents += "</div></div>";
+
+		// the filter div
+		if (filterVisibility)
+		{
+			divContents += "<div id='addFilter' style='float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+			// divContents +=
+			// "<div id='closeAddFilter' style='float:right;clear:both' ><img id='closeButton' onclick=\"document.getElementById('addFilter').style.display='none';\" src='res/img/exit.png' /></div> ";
+			divContents += renderFilterPart();
+			divContents += "</div></div>";
+
+		}
 		return divContents;
+
 	}
 
 	/**
@@ -572,56 +636,64 @@ public class MatrixViewer extends HtmlWidget
 								if (val instanceof ObservedValue && valueToShow == null)
 								{
 									String relName = ((ObservedValue) val).getRelation_Name();
+
 									// Make a nice info box about the target in
 									// the cell:
-									String infoBoxContents = "<strong>" + relName + "</strong><hr>";
-									infoBoxContents += "<p>Values set on this target:</p>";
-									infoBoxContents += "<ul>";
-									try
+									if (this.showTargetTooltip)
 									{
-										List<ObservedValue> valList = db.query(ObservedValue.class)
-												.eq(ObservedValue.TARGET_NAME, relName)
-												.sortASC(ObservedValue.FEATURE_NAME).find();
-										for (ObservedValue infoVal : valList)
+										String infoBoxContents = "<strong>" + relName + "</strong><hr>";
+										infoBoxContents += "<p>Values set on this target:</p>";
+										infoBoxContents += "<ul>";
+										try
 										{
-											String infoValue = infoVal.getValue();
-											if (infoValue == null)
+											List<ObservedValue> valList = db.query(ObservedValue.class)
+													.eq(ObservedValue.TARGET_NAME, relName)
+													.sortASC(ObservedValue.FEATURE_NAME).find();
+											for (ObservedValue infoVal : valList)
 											{
-												infoValue = infoVal.getRelation_Name();
+												String infoValue = infoVal.getValue();
+												if (infoValue == null)
+												{
+													infoValue = infoVal.getRelation_Name();
+												}
+												infoBoxContents += "<li>"
+														+ (infoVal.getFeature_Name() + ": " + infoValue + "</li>");
 											}
-											infoBoxContents += "<li>"
-													+ (infoVal.getFeature_Name() + ": " + infoValue + "</li>");
+											infoBoxContents += "</ul>";
+											// If you want info about values in
+											// which the target is referred to:
+											// infoBoxContents +=
+											// "<p>Values in which this target is referred to:</p>";
+											// infoBoxContents += "<ul>";
+											// valList =
+											// db.query(ObservedValue.class).
+											// eq(ObservedValue.RELATION_NAME,
+											// relName).
+											// sortASC(ObservedValue.FEATURE_NAME).
+											// find();
+											// for (ObservedValue infoVal :
+											// valList)
+											// {
+											// infoBoxContents +="<li>" +
+											// (infoVal.getFeature_Name() + ": "
+											// +
+											// infoVal.getTarget_Name() +
+											// "</li>");
+											// }
+											// infoBoxContents +="</ul>";
 										}
-										infoBoxContents += "</ul>";
-										// If you want info about values in
-										// which the target is referred to:
-										// infoBoxContents +=
-										// "<p>Values in which this target is referred to:</p>";
-										// infoBoxContents += "<ul>";
-										// valList =
-										// db.query(ObservedValue.class).
-										// eq(ObservedValue.RELATION_NAME,
-										// relName).
-										// sortASC(ObservedValue.FEATURE_NAME).
-										// find();
-										// for (ObservedValue infoVal : valList)
-										// {
-										// infoBoxContents +="<li>" +
-										// (infoVal.getFeature_Name() + ": " +
-										// infoVal.getTarget_Name() + "</li>");
-										// }
-										// infoBoxContents +="</ul>";
+										catch (DatabaseException e)
+										{
+											// List will remain empty
+										}
+
+										relName = relName
+												+ "<a href=\"#\" onmouseover=\"toolTip('"
+												+ infoBoxContents
+												+ "')\" onmouseout=\"toolTip()\"><img src = \"res/img/display_info_tooltip_14x13.png\" style = \"vertical-align: middle; padding:4px;\"></a>";
 									}
-									catch (DatabaseException e)
-									{
-										// List will remain empty
-									}
-									// valueToShow =
-									// "<a href=\"\" onclick=\"alert('" +
-									// infoBoxContents + "');\">" +
-									// relName + "</a>" +
-									valueToShow = relName + "<a href=\"#\" onMouseOver=\"toolTip('" + infoBoxContents
-											+ "')\" onMouseOut=\"toolTip()\">...</a>";
+
+									valueToShow = relName;
 
 								}
 
@@ -709,52 +781,42 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-		String divContents = "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" "
-				+ "onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" "
-				+ "/>";
-		divContents += "<div id='advancedSettings' style='display:none'>";
-		divContents += new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
-		// add column filter
-		List<? extends Object> colHeaders = matrix.getColHeaders();
-		divContents += "<div style=\"clear:both\">Add filter:";
-		divContents += buildFilterChoices(colHeaders).render();
-		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO:
-																			// chosen()
-																			// screws
-																			// up
-																			// vertical
-																			// alignment
-																			// under
-																			// FF+IE
-		divContents += buildFilterInput(d_selectedMeasurement).render(); // TODO:
-																			// chosen()
-																			// screws
-																			// up
-																			// vertical
-																			// alignment
-																			// under
-																			// FF+IE
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div>";
-		// column header filter
-		@SuppressWarnings("rawtypes")
-		List selectedMeasurements = new ArrayList(colHeaders);
-		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", selectedMeasurements,
-				false, false, "Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
-				Measurement.class);
-		// disable display of button for adding new measurements from here
-		measurementChooser.setIncludeAddButton(false);
-		divContents += new Newline().render();
-		divContents += "<div style=\"clear: both; vertical-align:middle\">Add/remove columns:";
-		divContents += measurementChooser.render();
-		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
-		if (this.APPLICATION_STRING != "ANIMALDB")
-		{
-			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
-		}
 
-		// divContents += new ActionInput(REMALLCOLHEADERFILTER, "",
-		// "Remove all").render();
-		divContents += "</div></div>";
+		// String divContents = new Paragraph("filterRules",
+		// "<strong>Active filters</strong>:" + generateFilterRules())
+		// .render();
+		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
+
+		// show the actie filters and a quick option to add a new
+		// colValueProperty filter
+		divContents += generateFilterRules();
+
+		divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
+		divContents += "filter settings: ";
+		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
+		divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
+
+		// divContents += "<div>";
+		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
+		// "remove all filters");
+		// removeAllFilters.setIcon("generated-res/img/delete.png");
+		// removeAllFilters.setShowLabel(true);
+		// divContents += removeAllFilters.render();
+
+		divContents += "</div>";
+
+		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		// divContents +=
+		// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+		divContents += "<strong>Save active filters: </strong>";
+		divContents += "</br>" + new StringInput(FILTERSAVENAME, "Filter name").render();
+		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save Filters").render();
+		divContents += "</br>";
+		divContents += "</br><strong>load or delete saved filters: </strong>";
+		divContents += "</br>" + buildSavedFiltersInput().render();
+		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
+		divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
+		divContents += "</div>";
 		return divContents;
 	}
 
@@ -792,11 +854,12 @@ public class MatrixViewer extends HtmlWidget
 	private SelectInput buildFilterOperator(Measurement selectedMeasurement)
 	{
 		SelectInput operatorInput = new SelectInput(OPERATOR);
+		operatorInput.setWidth(8);
 		// At this moment, selectedMeasurement is always null. Temp. fix:
 		if (selectedMeasurement == null)
 		{
-			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			operatorInput.addOption(Operator.LIKE.name(), Operator.LIKE.name());
+			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			// operatorInput.addOption(Operator.ISNA, Operator.ISNA.name());
 			// TODO: implement! Find a way to filter on ObservedValues that are
 			// NOT present
@@ -804,6 +867,7 @@ public class MatrixViewer extends HtmlWidget
 			operatorInput.addOption(Operator.LESS_EQUAL.name(), Operator.LESS_EQUAL.name());
 			operatorInput.addOption(Operator.GREATER.name(), Operator.GREATER.name());
 			operatorInput.addOption(Operator.GREATER_EQUAL.name(), Operator.GREATER_EQUAL.name());
+			operatorInput.setLabel("Filter operator: ");
 			return operatorInput;
 		}
 
@@ -811,6 +875,7 @@ public class MatrixViewer extends HtmlWidget
 		{
 			operatorInput.addOption(operator, operator);
 		}
+		operatorInput.setLabel("Filter operator: ");
 		return operatorInput;
 	}
 
@@ -818,6 +883,8 @@ public class MatrixViewer extends HtmlWidget
 	private SelectInput buildFilterChoices(List<? extends Object> colHeaders)
 	{
 		SelectInput colId = new SelectInput(COLID);
+		colId.setWidth(12);
+
 		if (showNameFilter == true)
 		{
 			colId.addOption(-1, "name");
@@ -849,12 +916,37 @@ public class MatrixViewer extends HtmlWidget
 			// TODO!!!!!
 		}
 		colId.setNillable(true);
+		colId.setLabel("filter column: ");
 		return colId;
+	}
+
+	private SelectInput buildSavedFiltersInput() throws DatabaseException
+	{
+		SelectInput savedFiltersInput = new SelectInput(SAVEDFILTERS);
+
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		// Nasty trick to circumvent the not present SELECT DISTINCT statement:
+		fq.addRules(new QueryRule(SavedMatrixFilters.OWNER, Operator.EQUALS, db.getLogin().getUserId()));
+		fq.addRules(new QueryRule(SavedMatrixFilters.RULENR, Operator.EQUALS, 0));
+		fq.addRules(new QueryRule(Operator.SORTASC, SavedMatrixFilters.NAME));
+		List<SavedMatrixFilters> savedFilters = new ArrayList<SavedMatrixFilters>();
+		savedFilters = fq.find();
+
+		for (SavedMatrixFilters f : savedFilters)
+		{
+			savedFiltersInput.addOption(f.getName(), f.getName());
+		}
+		savedFiltersInput.setNillable(true);
+		return savedFiltersInput;
 	}
 
 	private String generateFilterRules() throws MatrixException, DatabaseException
 	{
-		String outStr = "";
+		String outStr = "<table id=\"filterstable\" name=\"filterstable\">";
+		// outStr += "<thead></thead>";
+		outStr += "<thead> <tr align=\"center\"><th>Column</th><th>Operator</th><th>Value</th><th></th></tr></thead>";
+		outStr += "<tbody>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
@@ -862,14 +954,31 @@ public class MatrixViewer extends HtmlWidget
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)
 					|| (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
 			{
-				outStr += generateFilterRule(filterCnt, mqr);
+				outStr += "<tr align=\"center\">" + generateFilterRule(filterCnt, mqr) + "</tr>";
 			}
 			System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
 			++filterCnt;
 		}
+		// add quickadd options for simple new colValueProperty filter
+		List<? extends Object> colHeaders = matrix.getColHeaders();
+		outStr += "<tr>";
+		outStr += "<td>" + buildFilterChoices(colHeaders).render();
+		outStr += "<td>" + buildFilterOperator(d_selectedMeasurement).render();
+		outStr += "<td>" + buildFilterInput(d_selectedMeasurement).render();
+		ActionInput addButton = new ActionInput(FILTERCOL, "Apply", "");
+		addButton.setIcon("generated-res/img/filter_funnel_add_24x24.png");
+		outStr += "<td>" + addButton.render() + "</td>";
+		outStr += "</tr></tbody></table>";
+		// add the javascript code for the table
+		// outStr += "<script> $('#filterstable').dataTable(); </script>";
+		outStr += "<script>";
+		outStr += "jQuery('#filterstable').dataTable(";
+		outStr += "{\"bJQueryUI\": true, \"sDom\": 'Hrt',\"bSort\": false";
+		outStr += "})";
+		outStr += "</script>";
 
 		// Show applied filter rules
-		return outStr.equals("") ? " none" : outStr;
+		return outStr.equals("") ? " </br>none " : outStr;
 	}
 
 	private String generateFilterRule(int filterCnt, MatrixQueryRule mqr) throws MatrixException, DatabaseException
@@ -897,11 +1006,11 @@ public class MatrixViewer extends HtmlWidget
 		{
 			field = "." + mqr.getField();
 		}
-		String outStr = "<br />" + measurementName + field + " " + mqr.getOperator().toString() + " "
-				+ (value != null ? value.toString() : "NULL");
+		String outStr = "<td>" + measurementName + field + "</td><td>" + mqr.getOperator().toString() + "</td><td>"
+				+ (value != null ? value.toString() + " " : "NULL ") + "</td>";
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
-		removeButton.setIcon("generated-res/img/delete.png");
-		outStr += removeButton.render();
+		removeButton.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
+		outStr += "<td>" + removeButton.render() + "</td>";
 		return outStr;
 	}
 
@@ -957,7 +1066,7 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void clearFilters(Database db, Tuple t) throws MatrixException
+	public void clearFilters(Database db, MolgenisRequest t) throws MatrixException
 	{
 		matrix.reset();
 	}
@@ -969,7 +1078,7 @@ public class MatrixViewer extends HtmlWidget
 	 * @param t
 	 * @throws MatrixException
 	 */
-	public void clearValueFilters(Database db, Tuple t) throws MatrixException
+	public void clearValueFilters(Database db, MolgenisRequest t) throws MatrixException
 	{
 		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -998,13 +1107,13 @@ public class MatrixViewer extends HtmlWidget
 		return file;
 	}
 
-	public void download(Database db, Tuple t)
+	public void download(Database db, MolgenisRequest t)
 	{
 		// to prevent nullpointer error when clicking the Download menu button
 	}
 
 	@SuppressWarnings("unchecked")
-	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
+	public void downloadAllCsv(Database db, MolgenisRequest t) throws MatrixException, IOException
 	{
 		File file = makeFile("_All", "csv");
 
@@ -1107,7 +1216,7 @@ public class MatrixViewer extends HtmlWidget
 	// }
 
 	@SuppressWarnings("unchecked")
-	public void downloadVisibleCsv(Database db, Tuple t) throws MatrixException, IOException
+	public void downloadVisibleCsv(Database db, MolgenisRequest t) throws MatrixException, IOException
 	{
 		File file = makeFile("_Visible", "csv");
 		if (matrix instanceof SliceablePhenoMatrixMV)
@@ -1185,20 +1294,11 @@ public class MatrixViewer extends HtmlWidget
 	}
 
 	@SuppressWarnings("unchecked")
-	public void downloadAllExcel(Database db, Tuple t) throws MatrixException, IOException, RowsExceededException,
-			WriteException
+	public void downloadAllExcel(Database db, MolgenisRequest t) throws MatrixException, IOException,
+			RowsExceededException, WriteException
 	{
 		File excelFile = makeFile("_All", "xls");
-		if (matrix instanceof SliceablePhenoMatrixMV)
-		{
-			// ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// exporter =
-			// new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// ((SliceablePhenoMatrixMV<ObservationTarget, Measurement,
-			// ObservedValue>)matrix, new FileOutputStream(excelFile));
-			// exportAll(excelFile, exporter);
-		}
-		else
+		if (!(matrix instanceof SliceablePhenoMatrixMV))
 		{
 			// remember old limits and offset
 			int rowOffset = matrix.getRowOffset();
@@ -1267,7 +1367,8 @@ public class MatrixViewer extends HtmlWidget
 
 					rowCnt++;
 				}
-				db.getEntityManager().clear();
+				// db.getEntityManager().clear(); //commented out, 2012-04-09 //
+				// seems to have no effect on function but did cause an error...
 			}
 
 			workbook.write();
@@ -1284,19 +1385,10 @@ public class MatrixViewer extends HtmlWidget
 	}
 
 	@SuppressWarnings("unchecked")
-	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
+	public void downloadVisibleExcel(Database db, MolgenisRequest t) throws Exception
 	{
 		File excelFile = makeFile("_Visible", "xls");
-		if (matrix instanceof SliceablePhenoMatrixMV)
-		{
-			// ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// exporter =
-			// new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-			// ((SliceablePhenoMatrixMV<ObservationTarget, Measurement,
-			// ObservedValue>)matrix, new FileOutputStream(excelFile));
-			// exportVisible(excelFile.getName(), exporter);
-		}
-		else
+		if (!(matrix instanceof SliceablePhenoMatrixMV))
 		{
 
 			if (this.matrix instanceof DatabaseMatrix)
@@ -1414,54 +1506,27 @@ public class MatrixViewer extends HtmlWidget
 		return result;
 	}
 
-	public void reloadMatrix(Database db, Tuple t) throws MatrixException
+	public void reloadMatrix(Database db, MolgenisRequest t) throws MatrixException
 	{
 		matrix.reload();
 	}
 
-	public void filterCol(Database db, Tuple t) throws Exception
+	public void filterCol(Database db, MolgenisRequest t) throws Exception
 	{
-		if (matrix instanceof SliceablePhenoMatrixMV)
+		if (t.get(COLVALUE) == null)
 		{
-			String valuePropertyToUse = ObservedValue.VALUE;
-			String protocolMeasurementIds = t.getString(COLID);
-			String[] values = StringUtils.split(protocolMeasurementIds, ";");
-			int protocolId = Integer.parseInt(values[0]);
-			int measurementId = Integer.parseInt(values[1]);
-			// First find out whether to filter on the value or the
-			// relation_Name field
-			Measurement filterMeasurement;
-			try
-			{
-				filterMeasurement = db.findById(Measurement.class, measurementId);
-			}
-			catch (DatabaseException e)
-			{
-				throw new MatrixException(e);
-			}
-			if (filterMeasurement.getDataType().equals("xref"))
-			{
-				valuePropertyToUse = ObservedValue.RELATION_NAME;
-			}
-			// Find out operator to use
-			Operator op = Operator.valueOf(t.getString(OPERATOR));
-			// new Operator(t.getString(OPERATOR));
-			// Then do the actual slicing
-			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
-
+			this.callingScreenController.getModel().setMessages(
+					new ScreenMessage("The value field cannot be empty if you want to add a filter", false));
 		}
 		else
 		{
-			String valuePropertyToUse = ObservedValue.VALUE;
-			int measurementId = t.getInt(COLID);
-			if (measurementId == -1)
-			{ // Filter on name
-				matrix.getRules().add(
-						new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
-								.getObject(COLVALUE)));
-			}
-			else
+			if (matrix instanceof SliceablePhenoMatrixMV)
 			{
+				String valuePropertyToUse = ObservedValue.VALUE;
+				String protocolMeasurementIds = t.getString(COLID);
+				String[] values = StringUtils.split(protocolMeasurementIds, ";");
+				int protocolId = Integer.parseInt(values[0]);
+				int measurementId = Integer.parseInt(values[1]);
 				// First find out whether to filter on the value or the
 				// relation_Name field
 				Measurement filterMeasurement;
@@ -1481,14 +1546,178 @@ public class MatrixViewer extends HtmlWidget
 				Operator op = Operator.valueOf(t.getString(OPERATOR));
 				// new Operator(t.getString(OPERATOR));
 				// Then do the actual slicing
-				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+				matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+
 			}
+			else
+			{
+				String valuePropertyToUse = ObservedValue.VALUE;
+				int measurementId = t.getInt(COLID);
+				if (measurementId == -1)
+				{ // Filter on name
+					matrix.getRules().add(
+							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
+									.get(COLVALUE)));
+				}
+				else
+				{
+					// First find out whether to filter on the value or the
+					// relation_Name field
+					Measurement filterMeasurement;
+					try
+					{
+						filterMeasurement = db.findById(Measurement.class, measurementId);
+					}
+					catch (DatabaseException e)
+					{
+						throw new MatrixException(e);
+					}
+					if (filterMeasurement.getDataType().equals("xref"))
+					{
+						valuePropertyToUse = ObservedValue.RELATION_NAME;
+					}
+					// Find out operator to use
+					Operator op = Operator.valueOf(t.getString(OPERATOR));
+					// new Operator(t.getString(OPERATOR));
+					// Then do the actual slicing
+					matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+				}
+			}
+			matrix.reload(); // to make sure the paging info is correctly
+								// updated
 		}
-		matrix.reload(); // to make sure the paging info is correctly updated
 	}
 
-	@SuppressWarnings("unchecked")
-	public void updateColHeaderFilter(Database db, Tuple t) throws Exception
+	public void filterSave(Database db, MolgenisRequest t) throws Exception
+	{
+
+		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
+
+		Date now = new Date();
+		long date = now.getTime();
+		String name = "blaat_" + String.valueOf(date);
+		name = t.get(FILTERSAVENAME).toString();
+
+		int filterCnt = 0;
+		for (MatrixQueryRule mqr : this.matrix.getRules())
+		{
+			SavedMatrixFilters savFil = new SavedMatrixFilters();
+			savFil.setOwner(db.getLogin().getUserId());
+			savFil.setName(name);
+			savFil.setRuleNr(filterCnt);
+			savFil.setFilterType(mqr.getFilterType().toString());
+			savFil.setDimIndex(mqr.getDimIndex());
+			savFil.setField(mqr.getField());
+			// convert the operator to the text options used in the queryrule
+			// class where necessary
+			String operator = mqr.getOperator().toString();
+			System.out.println("----> show the operator:   " + mqr.getOperator() + " " + operator);
+			if (operator.equals("="))
+			{
+				operator = "EQUALS";
+			}
+			else if (operator.equals(">"))
+			{
+				operator = "GREATER";
+			}
+			else if (operator.equals(">="))
+			{
+				operator = "GREATER_EQUAL";
+			}
+			else if (operator.equals("<"))
+			{
+				operator = "LESS";
+			}
+			else if (operator.equals("<="))
+			{
+				operator = "LESS_EQUAL";
+			}
+			else if (operator.equals("!="))
+			{
+				operator = "NOT";
+			}
+			savFil.setOperator(operator);
+			savFil.setValue(mqr.getValue().toString());
+			filterList.add(savFil);
+
+			filterCnt++;
+		}
+
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, name));
+		if (fq.count() > 0)
+		{
+			// delete existing set and than add the new set
+			System.out.println("____WTF!");
+			// TODO!!!!!!!!!
+			// filterList.clear();
+		}
+		else
+		{
+			// add the new set
+			db.add(filterList);
+		}
+		filterList.clear();
+
+	}
+
+	public void filterLoad(Database db, MolgenisRequest t) throws Exception
+	{
+		// get the existing filters, to remove duplicates later
+		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
+
+		// get the name of the selected saved filter.
+		String filterName = t.getString(SAVEDFILTERS);
+		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
+
+		// retrieve all the rules with this name from the db
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
+		filterList = fq.find();
+		int filterCnt = 0;
+
+		for (SavedMatrixFilters filter : filterList)
+		{
+			// for now only do something with colValue property filters, other
+			// types can be added later.
+			if (filter.getFilterType().equals("colValueProperty"))
+			{
+				// re-build the queryrule and add it.
+
+				int index = filter.getDimIndex();
+				String field = filter.getField();
+				Operator op = Operator.valueOf(filter.getOperator());
+				Object value = filter.getValue();
+				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op,
+						value);
+				// prevent duplicate rules
+				if (!existingFilters.contains(newRule))
+				{
+					matrix.getRules().add(newRule);
+				}
+				// reload matrix to apply filter
+				matrix.reload();
+			}
+			else
+			{
+				// for now do nothing with the other filter types.
+			}
+		}
+	}
+
+	public void savedFiltersDelete(Database db, MolgenisRequest t) throws DatabaseException
+	{
+		String filterName = t.getString(SAVEDFILTERS);
+		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
+		// check if a filterset with this name exists, update if so.
+		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
+		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
+		filterList = fq.find();
+		db.remove(filterList);
+	}
+
+	public void updateColHeaderFilter(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1597,7 +1826,7 @@ public class MatrixViewer extends HtmlWidget
 		System.out.println("----------");
 	}
 
-	public void addAllColHeaderFilter(Database db, Tuple t) throws Exception
+	public void addAllColHeaderFilter(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1664,7 +1893,7 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void remAllColHeaderFilter(Database db, Tuple t) throws Exception
+	public void remAllColHeaderFilter(Database db, MolgenisRequest t) throws Exception
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
@@ -1688,17 +1917,17 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
-	public void rowHeaderEquals(Database db, Tuple t) throws Exception
+	public void rowHeaderEquals(Database db, MolgenisRequest t) throws Exception
 	{
 		matrix.sliceByRowProperty(ObservationElement.ID, QueryRule.Operator.EQUALS, t.getString(ROWHEADER));
 	}
 
-	public void changeRowLimit(Database db, Tuple t)
+	public void changeRowLimit(Database db, MolgenisRequest t)
 	{
 		this.matrix.setRowLimit(t.getInt(ROWLIMIT));
 	}
 
-	public void moveLeftEnd(Database db, Tuple t) throws MatrixException
+	public void moveLeftEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1707,7 +1936,7 @@ public class MatrixViewer extends HtmlWidget
 		this.matrix.setColOffset(0);
 	}
 
-	public void moveLeft(Database db, Tuple t) throws MatrixException
+	public void moveLeft(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1717,7 +1946,7 @@ public class MatrixViewer extends HtmlWidget
 				- matrix.getColLimit() : 0);
 	}
 
-	public void moveRight(Database db, Tuple t) throws MatrixException
+	public void moveRight(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1727,7 +1956,7 @@ public class MatrixViewer extends HtmlWidget
 				.getColOffset() + matrix.getColLimit() : matrix.getColOffset());
 	}
 
-	public void moveRightEnd(Database db, Tuple t) throws MatrixException
+	public void moveRightEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1738,7 +1967,7 @@ public class MatrixViewer extends HtmlWidget
 				.intValue()) * matrix.getColLimit());
 	}
 
-	public void moveUpEnd(Database db, Tuple t) throws MatrixException
+	public void moveUpEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1747,7 +1976,7 @@ public class MatrixViewer extends HtmlWidget
 		this.matrix.setRowOffset(0);
 	}
 
-	public void moveUp(Database db, Tuple t) throws MatrixException
+	public void moveUp(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -1757,35 +1986,56 @@ public class MatrixViewer extends HtmlWidget
 				- matrix.getRowLimit() : 0);
 	}
 
-	public void moveDown(Database db, Tuple t) throws MatrixException
+	public void moveDown(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
-				.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
+		// prevent sql out of bounds error.
+		if (this.matrix.getRowCount() > 0)
+		{
+			this.matrix.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix.getRowCount() ? matrix
+					.getRowOffset() + matrix.getRowLimit() : matrix.getRowOffset());
+		}
 	}
 
-	public void moveDownEnd(Database db, Tuple t) throws MatrixException
+	public void moveDownEnd(Database db, MolgenisRequest t) throws MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix.getRowCount()
-				/ matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount() / matrix.getRowLimit())
-				.intValue()) * matrix.getRowLimit());
+		// prevent sql out of bounds error.
+		if (this.matrix.getRowCount() > 0)
+		{
+			this.matrix.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(matrix
+					.getRowCount() / matrix.getRowLimit()).intValue() - 1 : new Double(matrix.getRowCount()
+					/ matrix.getRowLimit()).intValue())
+					* matrix.getRowLimit());
+		}
 	}
 
-	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
+	public void toggleFilterSettingsVisibility(Database db, MolgenisRequest t) throws MatrixException
+	{
+		if (filterVisibility)
+		{
+			filterVisibility = false;
+		}
+		else
+		{
+			filterVisibility = true;
+		}
+	}
+
+	public void delegate(String action, Database db, MolgenisRequest request) throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
 		// try/catch for method calling
 		try
 		{
 			System.out.println("trying to use reflection to call ######## " + this.getClass().getName() + "." + action);
-			Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
+			Method m = this.getClass().getMethod(action, Database.class, MolgenisRequest.class);
 			m.invoke(this, db, request);
 			logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 					+ " completed");
@@ -1825,6 +2075,16 @@ public class MatrixViewer extends HtmlWidget
 		this.showValueValidRange = showValueValidRange;
 	}
 
+	public boolean isShowTargetTooltip()
+	{
+		return showTargetTooltip;
+	}
+
+	public void setShowTargetTooltip(boolean showTargetTooltip)
+	{
+		this.showTargetTooltip = showTargetTooltip;
+	}
+
 	private String valueListToString(List<? extends ObservedValue> valueList)
 	{
 		if (valueList == null) return "NA";
@@ -1860,6 +2120,21 @@ public class MatrixViewer extends HtmlWidget
 	public void setAPPLICATION_STRING(String aPPLICATION_STRING)
 	{
 		APPLICATION_STRING = aPPLICATION_STRING;
+	}
+
+	public boolean isFilterVisibility()
+	{
+		return filterVisibility;
+	}
+
+	public void setFilterVisibility(boolean filterVisibility)
+	{
+		this.filterVisibility = filterVisibility;
+	}
+
+	public void setShowDownloadOptions(boolean showDownloadOptions)
+	{
+		this.showDownloadOptions = showDownloadOptions;
 	}
 
 }

@@ -516,14 +516,14 @@ package org.molgenis.matrix.component.legacy;
 //						* matrix.getRowLimit());
 //	}
 //	
-//	public void handleRequest(Database db, Tuple request, OutputStream out)
+//	public void handleRequest(Database db, MolgenisRequest request, OutputStream out)
 //			throws HandleRequestDelegationException
 //	{
 //		// automatically calls functions with same name as action (ommiting widget specific prefix)
 //		delegate( request.getAction(), db, request);
 //	}
 //
-//	public void delegate(String action, Database db, Tuple request)
+//	public void delegate(String action, Database db, MolgenisRequest request)
 //			throws HandleRequestDelegationException
 //	{
 //		// try/catch for db.rollbackTx

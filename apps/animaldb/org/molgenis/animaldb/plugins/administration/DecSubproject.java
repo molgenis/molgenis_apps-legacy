@@ -5,7 +5,9 @@ public class DecSubproject extends DecEntity
 	private int decExpListId;
 	private String experimentNr;
 	private String experimentTitle;
-	private String decSubprojectApplicationPDF;
+	// private String decSubprojectApplicationPDF;
+	private String decSubprojectApplicationPdf;
+	private String decSubprojectApprovalPdf;
 	private String concern;
 	private String goal;
 	private String specialTechn;
@@ -16,6 +18,7 @@ public class DecSubproject extends DecEntity
 	private String animalEndStatus;
 	private String remarks;
 	private String decApplication;
+	private String mainDecNr;
 	private String decSubprojectBudget;
 	private int nrOfAnimals;
 
@@ -59,14 +62,33 @@ public class DecSubproject extends DecEntity
 		return experimentTitle;
 	}
 
-	public void setDecSubprojectApplicationPDF(String decSubprojectApplicationPDF)
+	/*
+	 * public void setDecSubprojectApplicationPDF(String
+	 * decSubprojectApplicationPDF) { this.decSubprojectApplicationPDF =
+	 * decSubprojectApplicationPDF; }
+	 * 
+	 * public String getDecSubprojectApplicationPDF() { return
+	 * decSubprojectApplicationPDF; }
+	 */
+
+	public String getDecSubprojectApplicationPdf()
 	{
-		this.decSubprojectApplicationPDF = decSubprojectApplicationPDF;
+		return decSubprojectApplicationPdf;
 	}
 
-	public String getDecSubprojectApplicationPDF()
+	public void setDecSubprojectApplicationPdf(String pdfDecSubApplication)
 	{
-		return decSubprojectApplicationPDF;
+		this.decSubprojectApplicationPdf = pdfDecSubApplication;
+	}
+
+	public String getDecSubprojectApprovalPdf()
+	{
+		return decSubprojectApprovalPdf;
+	}
+
+	public void setDecSubprojectApprovalPdf(String pdfDecSubApproval)
+	{
+		this.decSubprojectApprovalPdf = pdfDecSubApproval;
 	}
 
 	public void setConcern(String concern)
@@ -171,6 +193,17 @@ public class DecSubproject extends DecEntity
 	public String getDecApplication()
 	{
 		return decApplication;
+	}
+
+	public String getMainDecNr()
+	{
+		// mainDecNr = "blaat";
+		return mainDecNr;
+	}
+
+	public void setMainDecNr(String mainDecNr)
+	{
+		this.mainDecNr = mainDecNr;
 	}
 
 	public String getDecSubprojectBudget()

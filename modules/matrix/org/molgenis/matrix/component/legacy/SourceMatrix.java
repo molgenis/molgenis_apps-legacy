@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component.legacy;
 
-import java.util.List;
 
 // TODO merge this with the rendere as it is MatrixMetadata
 // J: in the original design we wanted to keep this seperate.

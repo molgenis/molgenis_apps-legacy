@@ -1,77 +1,129 @@
 package plugins.HarmonizationComponent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MappingList
 {
+	private Map<ExpandedQueryObject, Double> uniqueElements = new HashMap<ExpandedQueryObject, Double>();
 
-	private List<LinkedInformation> links = new ArrayList<LinkedInformation>();
+	// private Map<ExpandedQueryObject, LinkedInformation> uniqueElements = new
+	// HashMap<ExpandedQueryObject, LinkedInformation>();
 
-	private HashMap<String, LinkedInformation> uniqueElements = new HashMap<String, LinkedInformation>();
-
-	public void add(String expandedQuery, String matchedItem, Double similarity, String measurementName)
-			throws Exception
+	public void add(String expandedQuery, Integer featureID, double similarity) throws Exception
 	{
+		if (expandedQuery == null || featureID == null) throw new Exception("Parameters have to be not null!");
 
-		if (expandedQuery == null || matchedItem == null || similarity == null || measurementName == null) throw new Exception(
-				"Parameters have to be not null!");
+		if (expandedQuery.isEmpty()) throw new Exception("Parameters have to be not empty");
 
-		if (expandedQuery.equals("") || matchedItem.equals("")) throw new Exception("Parameters have to be not empty");
+		ExpandedQueryObject uniqueName = new ExpandedQueryObject(expandedQuery, featureID);
 
-		LinkedInformation inf = new LinkedInformation(expandedQuery, matchedItem, similarity, measurementName);
-
-		if (uniqueElements.containsKey(expandedQuery + measurementName))
+		if (uniqueElements.containsKey(uniqueName))
 		{
-			if (similarity > uniqueElements.get(inf.expandedQuery + measurementName).similarity)
+			if (similarity > uniqueElements.get(uniqueName))
 			{
-				uniqueElements.get(expandedQuery + measurementName).similarity = similarity;
+				uniqueElements.put(uniqueName, similarity);
 			}
 		}
 		else
 		{
-			links.add(inf);
-			uniqueElements.put(expandedQuery + measurementName, inf);
-		}
-	}
+			// LinkedInformation inf = new LinkedInformation(expandedQuery,
+			// matchedItem, similarity, measurementName);
 
-	public void remove(String expandedQuery)
-	{
-		if (uniqueElements.containsKey(expandedQuery))
-		{
-			uniqueElements.remove(expandedQuery);
-			links.remove(uniqueElements.get(expandedQuery));
+			uniqueElements.put(uniqueName, similarity);
 		}
 	}
 
 	public List<LinkedInformation> getSortedInformation()
 	{
+		List<LinkedInformation> sortedLinks = new ArrayList<LinkedInformation>(uniqueElements.size());
 
-		LinkedInformation[] columns = new LinkedInformation[links.size()];
-
-		if (links != null)
+		for (Map.Entry<ExpandedQueryObject, Double> entry : uniqueElements.entrySet())
 		{
-			int i = 0;
-
-			for (LinkedInformation eachElement : links)
-			{
-				columns[i] = eachElement;
-				i++;
-			}
-			Arrays.sort(columns);
-
-			links = Arrays.asList(columns);
-			//
-			// for (LinkedInformation inf : links)
-			// {
-			// System.out.println(inf.expandedQuery +
-			// " ------------ similarity: " + inf.similarity);
-			//
-			// }
+			sortedLinks.add(new LinkedInformation(entry.getKey().getExpandedQuery(), entry.getKey().getFeatureID(),
+					entry.getValue()));
 		}
 
-		return (links.size() > 100 ? links.subList(links.size() - 100, links.size()) : links);
+		Collections.sort(sortedLinks);
+
+		return (sortedLinks.size() > 100 ? sortedLinks.subList(sortedLinks.size() - 100, sortedLinks.size())
+				: sortedLinks);
+	}
+
+	// private static class SimilarityRecord
+	// {
+	// private final String matchedItem;
+	// private double similarity;
+	//
+	// public SimilarityRecord(String matchedItem, double similarity)
+	// {
+	// this.matchedItem = matchedItem;
+	// this.setSimilarity(similarity);
+	// }
+	//
+	// public double getSimilarity()
+	// {
+	// return similarity;
+	// }
+	//
+	// public void setSimilarity(double similarity)
+	// {
+	// this.similarity = similarity;
+	// }
+	// }
+
+	private static class ExpandedQueryObject
+	{
+		private final String expandedQuery;
+		private final Integer featureID;
+
+		public ExpandedQueryObject(String expandedQuery, Integer featureID)
+		{
+			this.expandedQuery = expandedQuery;
+			this.featureID = featureID;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((expandedQuery == null) ? 0 : expandedQuery.hashCode());
+			result = prime * result + ((featureID == null) ? 0 : featureID.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			ExpandedQueryObject other = (ExpandedQueryObject) obj;
+			if (expandedQuery == null)
+			{
+				if (other.expandedQuery != null) return false;
+			}
+			else if (!expandedQuery.equals(other.expandedQuery)) return false;
+			if (featureID == null)
+			{
+				if (other.featureID != null) return false;
+			}
+			else if (!featureID.equals(other.featureID)) return false;
+			return true;
+		}
+
+		public String getExpandedQuery()
+		{
+			return expandedQuery;
+		}
+
+		public Integer getFeatureID()
+		{
+			return featureID;
+		}
 	}
 }

@@ -9,7 +9,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class TupleSource
 {

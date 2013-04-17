@@ -9,6 +9,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -20,7 +21,6 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * ViewFamilyController takes care of all user requests and application logic.
@@ -109,12 +109,14 @@ public class ViewFamily extends PluginModel<Entity>
 				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
-				measurementsToShow.add("Mother");
-				measurementsToShow.add("Father");
-				measurementsToShow.add("Parentgroup");
-				measurementsToShow.add("Litter");
+				measurementsToShow.add("DateOfBirth");
+				measurementsToShow.add("GeneModification");
+				measurementsToShow.add("GeneState");
 				measurementsToShow.add("Line");
+				measurementsToShow.add("Litter");
+				measurementsToShow.add("Location");
 				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
@@ -150,7 +152,7 @@ public class ViewFamily extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		cs.setDatabase(db);
 		if (animalMatrixViewer != null)

@@ -40,7 +40,7 @@ import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.service.WorkflowService;
 import org.molgenis.submission.Submission;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class PatientService implements Serializable
 {

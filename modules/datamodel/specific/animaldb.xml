@@ -17,7 +17,23 @@
 			<field name="targetType" type="enum" enum_options="[animal,parentgroup,litter]" nillable="false" />
 			<field name="prefix" type="string" nillable="true" />
 			<field name="highestNumber" type="int" />
+			<field name="targetName" type="xref" xref_entity="Panel" nillable ="true" />
 		</entity>
+		<!-- <entity name="SavedMatrixFilters">
+			<description>Stores saved (sets of) MatrixQueryrules on a per user basis.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="name" nillable="false" unique="false" type="string" />
+			<field name="ruleNr" nillable="false" unique="false" type="int" />
+			<field name="owner" type="xref" xref_entity="MolgenisUser" nillable="false" />
+			<field name="prefix" type="string" nillable="true" />
+			<field name="filterType" type="string" nillable ="true" description="the aspect of the matrix to be filtered." />
+			<field name="dimIndex" type="int" nillable ="true" description="for xValue filters, the index of the dimension. E.g. colId" />
+			<field name="field" type="string" nillable ="true" description="The field-name (eq column-name) in the database" />
+			<field name="operator" type="string" nillable ="true" description="The operator being applied to the field and value" />
+			<field name="value" type="string" nillable ="true" description="The value to compare entries of the field in the database with" />
+			<unique fields="owner,name,ruleNr" />
+			
+		</entity> -->
 		<entity name="DeletedObservedValue" implements="Identifiable,Observation">
 			<description>Alternative for ObservedValue containing extra fields stating
 				when it was deleted and by whom.</description>

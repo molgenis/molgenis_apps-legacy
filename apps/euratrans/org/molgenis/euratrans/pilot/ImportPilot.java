@@ -7,7 +7,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.CsvImport;
 import app.DatabaseFactory;

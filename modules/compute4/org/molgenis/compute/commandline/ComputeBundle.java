@@ -63,6 +63,11 @@ public class ComputeBundle
 		this.computeProtocols = computeProtocols;
 	}
 
+	public void appendComputeProtocols(List<ComputeProtocol> computeProtocols)
+	{
+		this.computeProtocols.addAll(computeProtocols);
+	}
+
 	public List<WorkflowElement> getWorkflowElements()
 	{
 		return workflowElements;

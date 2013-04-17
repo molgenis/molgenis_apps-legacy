@@ -8,7 +8,9 @@
 	<!-- This determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="modules/compute4" />
+		<pathelement location="test/modules/compute4" />
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/file" />
 		<pathelement location="modules/datamodel" />
@@ -18,6 +20,28 @@
 
 	<!-- Import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
+	
+	<target name="test">
+		<!-- combine classpaths -->
+		<path id="combined.class.path">
+			<path refid="molgenis.classpath" />
+			<path refid="app.class.path" />
+			<path location="${output_src}" />
+		</path>
+
+
+		<!-- run the tests -->
+		<testng  outputDir="${testng.report.dir}" haltOnFailure="true">
+			<xmlfileset dir="${build.molgenis_apps.dir}" includes="org/molgenis/compute/commandline/testng-compute.xml" />
+			<classpath location="${cb.instrument.dir}" />
+			<classpath refid="combined.class.path"/>
+			<classfileset dir="${build.molgenis.dir}" includes="**/*Test*.class" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" value="${cb.file}" />
+			<jvmarg value="-noverify" />
+			<jvmarg value="-ea" />
+			<jvmarg value="-Xmx2048m" />
+		</testng>
+	</target>
 		
 	<target name="gitversion">
 		<!-- Get GIT revision info from the commandline GIT client-->
@@ -31,7 +55,7 @@
 		     <arg value="--short"/>			
 		     <arg value="HEAD"/>
 		</exec>
-		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.version}</echo>
+		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.molgenis.version} (molgenis) and ${git.apps.version} (apps)</echo>
 	</target>
 	
 	<!-- Make a distribution:
@@ -59,10 +83,11 @@
 		<property name="workflows_dir" value="${app-r_distro_dir}/workflows/"/>
 		<property name="app_module_dir" value="${basedir}/modules/compute/" />
 		
-		<!-- Copy README to the distro dir -->
-		<copy todir="${app-r_distro_dir}">
-			<fileset dir="${basedir}/apps/${app_name}/org/molgenis/${app_name}/">
-				<include name="README*"/>
+		<!-- Copy documentation to the distro dir -->
+		<mkdir dir="${app-r_distro_dir}/docs/"/>
+		<copy todir="${app-r_distro_dir}/docs/">
+			<fileset dir="${basedir}/doc/${app_name}/">
+				<include name="*"/>
 			</fileset>
 		</copy>
 		
@@ -75,7 +100,7 @@
 		
 		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
 		<copy todir="${templates_dir}">
-		    <fileset dir="${app_module_dir}/org/molgenis/${app_name}/templates/"/>
+		    <fileset dir="${app_module_dir}/templates/"/> <!-- org/molgenis/${app_name}/ -->
 		</copy>
 		<copy todir="${protocols_dir}">
 		    <fileset dir="${app_module_dir}/protocols/"/>
@@ -108,8 +133,13 @@
 # To get relative path to this script use $(dirname -- "$0").
 #
 
+# If -mcdir is not specified as argument then use the current path:
 MCDIR=$( cd -P "$( dirname "$0" )" &amp;&amp; pwd )
-			
+
+# If user has specified -mcdir, then use that one.                                                                                                                                  
+customMcdir=$(echo $* | grep -E "\-mcdir")
+if [[ ! $customMcdir ]]; then mcDirArg="-mcdir=${MCDIR}"; else mcDirArg=""; fi;
+
 java -cp \
 $(dirname -- "$0")/lib/molgenis-${git.molgenis.version}.jar:\
 $(dirname -- "$0")/lib/molgenis-compute-${git.apps.version}.jar:\
@@ -117,8 +147,9 @@ $(dirname -- "$0")/lib/commons-io-2.4.jar:\
 $(dirname -- "$0")/lib/freemarker.jar:\
 $(dirname -- "$0")/lib/log4j-1.2.15.jar \
 org.molgenis.compute.commandline.ComputeCommandLine \
--mcdir=${MCDIR} \
-$*
+$* \
+$mcDirArg
+
 		</echo>
 		<chmod file="${app-r_distro_dir}/molgenis_${app_name}.sh" perm="755"/>
 

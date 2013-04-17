@@ -14,13 +14,14 @@ import matrix.general.DataMatrixHandler;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.EntitiesImporter;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Tuple;
 
 import plugins.system.database.Settings;
-import app.CsvImport;
-import app.ExcelImport;
+import app.EntitiesImporterImpl;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
 {
@@ -45,7 +46,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		String action = request.getString("__action");
 		if (action.equals("setPathAndLoad"))
@@ -151,14 +152,15 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 
 				// USA probes (original name: 'probes_usa.txt', but renamed for
 				// CsvImport)
-				File probes = new File(importDir + File.separator + "probe.txt");
-				if (!probes.exists())
+				File usaProbes = new File(importDir, "probe.tsv");
+				if (!usaProbes.exists())
 				{
 					throw new Exception("USA probe file is missing!");
 				}
 
-				ExcelImport.importAll(wormQtlAnnotations, db, null);
-				CsvImport.importAll(new File(importDir), db, null);
+				EntitiesImporter entitiesImporter = new EntitiesImporterImpl(db);
+				entitiesImporter.importEntities(wormQtlAnnotations, DatabaseAction.ADD);
+				entitiesImporter.importEntities(usaProbes, DatabaseAction.ADD);
 
 				// relink datasets
 				relinkDatasets(db, dmh);

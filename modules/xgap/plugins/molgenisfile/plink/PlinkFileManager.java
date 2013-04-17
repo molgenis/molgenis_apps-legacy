@@ -21,15 +21,14 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
-import plugins.molgenisfile.plink.PlinkFileManagerModel;
 import decorators.NameConvention;
 import filehandling.generic.PerformUpload;
 
@@ -65,7 +64,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		try
 		{

@@ -12,10 +12,10 @@ inputs "${studyMerlinChrDat}"
 inputs "${McWorksheet}"
 
 
-#!!!!
-#alloutputsexist \
-#	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
-$	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
+
+alloutputsexist \
+	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat.snps" \
+	"${studyMerlinChrDir}/chunk$c-chr${chr}.dat"
 
 #Chunk chromosomes into pieces containing ~${chunkSize} markers
 
@@ -54,7 +54,7 @@ done
 
 
 #Merge worksheets
-module load jdk/${javaversion}
+${stage} jdk/${javaversion}
 
 #Run Jar to create full worksheet
 

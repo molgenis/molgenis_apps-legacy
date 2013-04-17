@@ -8,10 +8,11 @@
 package org.molgenis.sandbox.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 public class FreemarkerWidgets extends PluginModel
 {
@@ -33,7 +34,7 @@ public class FreemarkerWidgets extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		// replace example below with yours
 		// try

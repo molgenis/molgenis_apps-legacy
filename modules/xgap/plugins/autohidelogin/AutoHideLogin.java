@@ -1,11 +1,11 @@
 package plugins.autohidelogin;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.util.Tuple;
 
 public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 {
@@ -35,14 +35,14 @@ public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 	}
 
 	@Override
-	public void Login(Database db, Tuple request) throws Exception
+	public void Login(Database db, MolgenisRequest request) throws Exception
 	{
 		super.Login(db, request);
 		ac.sessionVariables.put(AUTOHIDE_LOGIN, false);
 	}
 
 	@Override
-	public void Logout(Database db, Tuple request) throws Exception
+	public void Logout(Database db, MolgenisRequest request) throws Exception
 	{
 		super.Logout(db, request);
 		ac.sessionVariables.put(AUTOHIDE_LOGIN, false);

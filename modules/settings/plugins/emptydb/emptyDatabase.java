@@ -1,23 +1,12 @@
 package plugins.emptydb;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
-import org.molgenis.util.JarClass;
-import org.molgenis.util.cmdline.CmdLineException;
-
-import app.FillMetadata;
 
 public class emptyDatabase
 {

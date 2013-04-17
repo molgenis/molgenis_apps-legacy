@@ -1,22 +1,20 @@
 package convertors;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.io.csv.CsvReader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
-import app.CsvExport;
+import app.CsvEntityExporter;
 
 public class GenericConvertor
 {
@@ -44,7 +42,7 @@ public class GenericConvertor
 
 		populateValue(file, invName, individual, sample, samplemeaslist);
 
-		CsvExport export = new CsvExport();
+		CsvEntityExporter entityExporter = new CsvEntityExporter();
 		tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 		logger.info("############   " + tmpDir.toString());
@@ -60,7 +58,7 @@ public class GenericConvertor
 		}
 		try
 		{
-			export.exportAll(tmpDir, individualsList, measurementsList, valuesList);
+			entityExporter.exportAll(tmpDir, individualsList, measurementsList, valuesList);
 		}
 		catch (Exception e)
 		{
@@ -113,27 +111,34 @@ public class GenericConvertor
 
 		final List<String> namesSeen = new ArrayList<String>();
 		this.invName = invName;
-		CsvFileReader reader = new CsvFileReader(file);
-		for (Tuple tuple : reader)
+		CsvReader csvReader = new CsvReader(file);
+		try
 		{
-			// Change id into the targetname/target id column
-			String indName = tuple.getString(individual);
-
-			// If individual not seen yet, create new
-			if (!namesSeen.contains(indName))
+			for (Tuple tuple : csvReader)
 			{
-				namesSeen.add(indName);
-				Individual newIndividual = new Individual();
-				newIndividual.setName(indName);
-				newIndividual.setInvestigation_Name(getInvestigation());
-				// Optionally
-				String mother_Name = tuple.getString(mother);
-				String father_Name = tuple.getString(father);
-				newIndividual.setMother_Name(mother_Name);
-				newIndividual.setFather_Name(father_Name);
+				// Change id into the targetname/target id column
+				String indName = tuple.getString(individual);
 
-				individualsList.add(newIndividual);
+				// If individual not seen yet, create new
+				if (!namesSeen.contains(indName))
+				{
+					namesSeen.add(indName);
+					Individual newIndividual = new Individual();
+					newIndividual.setName(indName);
+					newIndividual.setInvestigation_Name(getInvestigation());
+					// Optionally
+					String mother_Name = tuple.getString(mother);
+					String father_Name = tuple.getString(father);
+					newIndividual.setMother_Name(mother_Name);
+					newIndividual.setFather_Name(father_Name);
+
+					individualsList.add(newIndividual);
+				}
 			}
+		}
+		finally
+		{
+			csvReader.close();
 		}
 	}
 
@@ -144,33 +149,43 @@ public class GenericConvertor
 		measurementsList.clear();
 		totalMeasurementsList.clear();
 
-		CsvFileReader reader = new CsvFileReader(file);
-
-		for (String header : reader.colnames())
+		CsvReader csvReader = new CsvReader(file);
+		try
 		{
-			// optionally
-			// if (!header.equals("id_individual")) {
-			if (!header.equals(target) && !header.equals(mother) && !header.equals(father))
-			{
-				if (db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0)
-				{
-					Measurement measurement = new Measurement();
-					measurement.setName(header);
-					measurement.setInvestigation_Name(invName);
-					measurementsList.add(measurement);
-					totalMeasurementsList.add(measurement);
 
-				}
-				else
+			for (Iterator<String> it = csvReader.colNamesIterator(); it.hasNext();)
+			{
+				String header = it.next();
+
+				// optionally
+				// if (!header.equals("id_individual")) {
+				if (!header.equals(target) && !header.equals(mother) && !header.equals(father))
 				{
-					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
-					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System").find().get(0).getId();
-					Measurement meas = measList.get(0);
-					meas.setInvestigation_Id(invID);
-					db.update(meas);
-					totalMeasurementsList.add(meas);
+					if (db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0)
+					{
+						Measurement measurement = new Measurement();
+						measurement.setName(header);
+						measurement.setInvestigation_Name(invName);
+						measurementsList.add(measurement);
+						totalMeasurementsList.add(measurement);
+
+					}
+					else
+					{
+						List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
+						int invID = db.query(Investigation.class).eq(Investigation.NAME, "System").find().get(0)
+								.getId();
+						Measurement meas = measList.get(0);
+						meas.setInvestigation_Id(invID);
+						db.update(meas);
+						totalMeasurementsList.add(meas);
+					}
 				}
 			}
+		}
+		finally
+		{
+			csvReader.close();
 		}
 	}
 
@@ -184,39 +199,46 @@ public class GenericConvertor
 	{
 		valuesList.clear();
 
-		CsvFileReader reader = new CsvFileReader(file);
-		for (Tuple tuple : reader)
+		CsvReader csvReader = new CsvReader(file);
+		try
 		{
-			// Change targetname into the targetname/target id column
-			String targetName = tuple.getString(individual);
-
-			String sampleName = tuple.getString(sample);
-			System.out.println(sampleName);
-			if (sampleName != null)
+			for (Tuple tuple : csvReader)
 			{
-				for (Measurement m : totalMeasurementsList)
+				// Change targetname into the targetname/target id column
+				String targetName = tuple.getString(individual);
+
+				String sampleName = tuple.getString(sample);
+				System.out.println(sampleName);
+				if (sampleName != null)
 				{
-					String featureName = m.getName();
-
-					String value = tuple.getString(featureName);
-					ObservedValue newValue = new ObservedValue();
-					newValue.setFeature_Name(featureName);
-
-					if (samplemeaslist.contains(featureName))
+					for (Measurement m : totalMeasurementsList)
 					{
-						System.out.println("featureName(Sample): " + featureName);
-						newValue.setTarget_Name(sampleName);
+						String featureName = m.getName();
+
+						String value = tuple.getString(featureName);
+						ObservedValue newValue = new ObservedValue();
+						newValue.setFeature_Name(featureName);
+
+						if (samplemeaslist.contains(featureName))
+						{
+							System.out.println("featureName(Sample): " + featureName);
+							newValue.setTarget_Name(sampleName);
+						}
+						else
+						{
+							newValue.setTarget_Name(targetName);
+							System.out.println("featureName(individual): " + featureName);
+						}
+						newValue.setValue(value);
+						newValue.setInvestigation_Name(getInvestigation());
+						valuesList.add(newValue);
 					}
-					else
-					{
-						newValue.setTarget_Name(targetName);
-						System.out.println("featureName(individual): " + featureName);
-					}
-					newValue.setValue(value);
-					newValue.setInvestigation_Name(getInvestigation());
-					valuesList.add(newValue);
 				}
 			}
+		}
+		finally
+		{
+			csvReader.close();
 		}
 	}
 }

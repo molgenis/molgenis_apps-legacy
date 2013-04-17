@@ -15,14 +15,14 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
 
 public class MeasurementsDownloadForm extends PluginModel<Entity>
 {
@@ -55,7 +55,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws HandleRequestDelegationException, Exception
 	{
 
 		this.reload(db);

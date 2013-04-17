@@ -12,11 +12,11 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyService;
@@ -59,7 +59,7 @@ public class OntoCat extends PluginModel<Entity>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		if (request.getString("__action") != null)
 		{

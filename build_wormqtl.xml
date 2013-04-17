@@ -8,6 +8,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/_deprecated" />
 		<pathelement location="apps/xqtl" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
@@ -36,6 +37,21 @@
 		<delete includeemptydirs="true">
 			<fileset dir="hsqldb" includes="**/*" />
 		</delete>
+	</target>
+	
+	<!-- Remove anonymous permissions, essentially creating a private version -->
+	<target name="makePrivate" description="Switch to private mode">
+		<!--java maxmemory="4g" classname="org.molgenis.wormqtl.header.MakeWormQTLPrivate" fork="yes" failonerror="true">
+			<arg value="${username}"/>
+			<arg value="${password}"/>
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
+			</classpath>
+		</java-->
+		
+		<copy file="apps/wormqtl/org/molgenis/wormqtl/header/HomePagePrivate.ftl" tofile="apps/wormqtl/org/molgenis/wormqtl/header/HomePage.ftl" overwrite="true"/>
 	</target>
 	
 	<!-- Custom generate with a few extra tasks -->
@@ -96,6 +112,11 @@
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
 
+		<!-- copy source.R from generated to build -->
+		<copy todir="${build.molgenis_apps.dir}" verbose="true">
+			<fileset dir="${output_src}" includes="**/*.R" />
+		</copy>
+		
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
 		<antcall target="copy-persistence.xml" />
 		

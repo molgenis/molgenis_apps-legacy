@@ -2,26 +2,24 @@ package org.molgenis.omx.plugins;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
+import java.util.Set;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.io.excel.ExcelReader;
+import org.molgenis.io.excel.ExcelSheetReader;
+import org.molgenis.io.processor.LowerCaseProcessor;
 import org.molgenis.observ.DataSet;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import app.ImportWizardExcelPrognosis;
 
@@ -33,7 +31,7 @@ public class UploadWizardPage extends WizardPage
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		File file = request.getFile("upload");
 
@@ -119,63 +117,50 @@ public class UploadWizardPage extends WizardPage
 		getWizard().setFieldsUnknown(xlsValidator.getFieldsUnknown());
 	}
 
-	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws BiffException, IOException,
-			DatabaseException
+	private Map<String, Boolean> validateDataSetInstances(Database db, File file) throws IOException, DatabaseException
 	{
-
-		boolean dataSetExistsInDb = false;
-
-		// get dataset entity names
-
-		// get sheet names
-		String[] sheetNames = Workbook.getWorkbook(file).getSheetNames();
-		List<String> dataSetSheets = new ArrayList<String>();
 		Map<String, Boolean> dataSetValidationMap = new LinkedHashMap<String, Boolean>();
-		for (String sheetName : sheetNames)
+
+		ExcelReader excelReader = new ExcelReader(file);
+		excelReader.addCellProcessor(new LowerCaseProcessor(true, false));
+		try
 		{
-			if (sheetName.toLowerCase().startsWith("dataset_"))
+			ExcelSheetReader dataSetReader = excelReader.getSheet("dataset");
+			if (dataSetReader != null)
 			{
-				if (db.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, sheetName)) != null)
+				// get dataset identifiers
+				Set<String> datasetIdentifiers = new HashSet<String>();
+				for (Tuple tuple : dataSetReader)
 				{
-					dataSetExistsInDb = true;
-					String dataSetName = sheetName.substring("dataset_".length());
-					dataSetValidationMap.put(dataSetName, true);
+					String identifier = tuple.getString("identifier");
+					if (identifier != null) datasetIdentifiers.add(identifier);
 				}
-				String dataSetName = sheetName.substring("dataset_".length());
-				dataSetSheets.add(dataSetName);
 
-			}
-		}
-
-		Sheet sheet = Workbook.getWorkbook(file).getSheet("dataset");
-		if (sheet == null && dataSetExistsInDb == false) return null;
-
-		if (dataSetExistsInDb == false)
-		{
-			int rows = sheet.getRows();
-			if (rows <= 1) return Collections.emptyMap();
-
-			List<String> nameList = new ArrayList<String>();
-			Cell[] cells = sheet.getRow(0);
-			for (int col = 0; col < cells.length; ++col)
-			{
-				String colStr = cells[col].getContents();
-				if (colStr.toLowerCase().trim().equals("identifier"))
+				// check the matrix sheets
+				final int nrSheets = excelReader.getNumberOfSheets();
+				for (int i = 0; i < nrSheets; i++)
 				{
-					for (int row = 1; row < rows; ++row)
+					String sheetName = excelReader.getSheetName(i);
+					if (sheetName.toLowerCase().startsWith("dataset_"))
 					{
-						String datasetName = sheet.getCell(col, row).getContents();
-						nameList.add(datasetName.toLowerCase());
+						String identifier = sheetName.substring("dataset_".length());
+						boolean canImport;
+						if (datasetIdentifiers.contains(identifier)) canImport = true;
+						else if (!db
+								.find(DataSet.class, new QueryRule(DataSet.IDENTIFIER, Operator.EQUALS, identifier))
+								.isEmpty()) canImport = true;
+						else
+							canImport = false;
+						dataSetValidationMap.put(identifier, canImport);
 					}
 				}
 			}
-
-			for (String dataSetSheet : dataSetSheets)
-			{
-				dataSetValidationMap.put(dataSetSheet, nameList.contains(dataSetSheet));
-			}
 		}
+		finally
+		{
+			excelReader.close();
+		}
+
 		return dataSetValidationMap;
 	}
-
 }

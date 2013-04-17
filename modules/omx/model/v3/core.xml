@@ -1,0 +1,186 @@
+<molgenis name="org.molgenis.omx">
+	<module name="core" label="Core module">
+		<description>
+			Absolute minimal v3 model without decorators, labels,
+			hidden, or other (model-technically unneeded) modifiers for now.
+
+			Golden rule: this XML is completely stand-alone useable!
+		</description>
+
+		<entity name="Autoid" abstract="true">
+			<field name="Id" type="autoid" />
+		</entity>
+
+		<entity name="Identifiable" implements="Autoid" abstract="true"
+			xref_label="Identifier">
+			<field name="Identifier" type="string" />
+			<field name="Name" type="string" />
+			<unique fields="Identifier" />
+			<unique fields="Name,Identifier" />
+		</entity>
+
+		<entity name="Concept" implements="Identifiable">
+			<description>
+				Concepts are abstract objects that mediate between
+				thought, language, and
+				referents. In Observ-OMX, concepts can be
+				defined on any abstraction
+				level, including the point where
+				abstraction reaches a minimum and
+				actual physical objects are
+				denoted. Concepts can be specified via
+				subclasses, for example
+				'Marker' as a direct subclass of Concept,
+				'Target' to denote physical
+				objects in general, or 'Individual' as a
+				subclass of Target. When not
+				subclassed, Concept usually depicts a
+				characteristic or quality
+				belonging to a concept or target. Because
+				Concept is a superclass of
+				Target, the latter can be used
+				interchangeably via references on the
+				level of Concept. This enables
+				e.g. applying a Concept to a Concept
+				to add 'runtime attributes' or
+				create Target versus Target data in
+				the case of correlation
+				matrices. General examples of Concepts:
+				"Patient", "Height", "Marker
+				pkP1050", "Panel", "Heart rate",
+				"Sample". Examples of concepts on
+				different abstraction levels:
+				"Gene", "Gene expression", "Gene
+				HOXD9", or "Blood pressure",
+				"Systolic blood pressure".
+			</description>
+			<field name="Description" type="text" nillable="true"
+				description="Rudimentary meta data about this concept. Use of ontology 
+					terms references to establish unambigious descriptions is recommended." />
+			<field name="AlternativeIdentifier" type="mref" xref_entity="AlternativeIdentifier"
+				nillable="true" />
+		</entity>
+
+		<entity name="Target" extends="Concept">
+			<description>A physical object or collection thereof. They are
+				typically subjects for observation of particular features.
+			</description>
+		</entity>
+
+		<entity name="Feature" implements="Identifiable">
+			<description>The characterization of the role or the particular
+				procedure of involvement for a Concept in an ObservationSet. The
+				role 'target' replaces the old target XREF in value/ObservationSet
+				and can consist of multiple targets that together form one (possibly
+				unique) target.
+			</description>
+
+			<field name="Role" type="enum" default="value"
+				enum_options="[target, context, value, input, output]" />
+
+			<field name="Unit" type="xref" xref_entity="AlternativeIdentifier"
+				nillable="true"
+				description="(Optional) Reference to the well-defined measurement unit used to observe this feature 
+					(if feature is that concrete). E.g. mmHg" />
+
+			<field name="Concept" type="xref" xref_entity="Concept"
+				nillable="true" />
+
+			<field name="Temporal" type="boolean" nillable="true"
+				description="Whether this feature is time dependent and can have different values when measured 
+					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
+					temporal=false) " />
+
+		</entity>
+
+
+
+		<entity name="Protocol" extends="Target">
+			<description>The Protocol class defines parameterizable descriptions
+				of (analysis)methods. Examples of protocols are: Questionaires,
+				SOPs, assay platforms, statistical analyses, etc. Each protocol has
+				a unique identifier. Protocol has an association to OntologyTerm to
+				represent the type of protocol.
+			</description>
+			<field name="Features" type="mref" nillable="true" xref_entity="Feature"
+				description="Methods of observing a feature or describing the role of a target in this protocol." />
+			<field name="ProtocolType" nillable="true" type="xref"
+				xref_entity="AlternativeIdentifier" description="Classification of protocol. TODO: Examples?" />
+			<field name="Subprotocols" type="mref" xref_entity="Protocol"
+				nillable="true" description="Subprotocols of this protocol" />
+
+		</entity>
+
+		<entity name="DataSet" extends="Target">
+			<description>A data set is a collection of data, usually presented in
+				tabular form. Each column represents a particular variable. Each row
+				corresponds to a given member of the data set in question. It lists
+				values for each of the variables, such as height and weight of an
+				object. The variables included correspond to the ones in the
+				protocol that this data set belongs to. Any data set and can
+				therefore be thought of as an instance of the protocol it belongs
+				to, like rows in a database are instances of their table definition.
+			</description>
+			<field name="Protocol" type="xref" xref_entity="Protocol"
+				nillable="true" />
+			<field name="StartTime" type="datetime" nillable="true"
+				description="Time when the dataset was created." />
+			<field name="EndTime" type="datetime" nillable="true"
+				description="Time when the dataset was finished" />
+		</entity>
+
+		<entity name="Observation" implements="Autoid">
+			<description>A single row of values in a DataSet. The Methods of the
+				ObservedValues referring to this ObservationSet should correspond to
+				the Methods defined in the Protocol of the DataSet this
+				ObservationSet belongs to.
+			</description>
+			<field name="PartOfDataSet" type="xref" xref_entity="DataSet"
+				description="The DataSet this ObservationSet is part of." />
+			<field name="Time" type="datetime"
+				description="The date and time this ObservationSet was measured"
+				nillable="true" />
+			<unique fields="PartOfDataSet,Time" />
+		</entity>
+
+		<entity name="Value" implements="Autoid" abstract="true">
+			<description>The outcome of an observation on a particular concept.
+				Belongs to an ObservationSet, which is in essence a row in a
+				DataSet.
+			</description>
+			<field name="Observation" type="xref" xref_entity="Observation" />
+			<field name="Feature" type="xref" xref_entity="Feature" />
+			<unique fields="Observation,Feature" />
+		</entity>
+
+		<entity name="TextValue" implements="Value">
+			<description>An observation for which the value is a string of text.
+			</description>
+			<field name="Value" type="text" nillable="true" />
+		</entity>
+
+		<entity name="AlternativeIdentifier" extends="Concept">
+			<description>
+				An ontology term or other kind of alternative, often external
+				identifier. Usually a link to other kind of database, or just a string
+				denoting another possibility.
+			</description>
+			<field name="AlternativeIdentifierSource" type="xref"
+				xref_entity="AlternativeIdentifierSource" />
+		</entity>
+
+		<entity name="AlternativeIdentifierSource" extends="Concept">
+			<description>The location where this AlternativeIdentifier links to
+				or is originating from. The URL possibly needs a little mechanism to
+				insert the alternative identifier into, e.g. URL
+				"http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?g={id};r=13:32889611-32973347"
+				where {id} is replaced with an instance of
+				AlternativeIdentifier.Identifier "OTTHUMG00000017411" to form a
+				valid URL.
+			</description>
+			<field name="BaseURL" type="string" />
+		</entity>
+
+
+	</module>
+</molgenis>

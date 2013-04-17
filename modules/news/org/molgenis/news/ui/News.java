@@ -11,12 +11,12 @@ import java.text.ParseException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.news.service.NewsService;
-import org.molgenis.util.Tuple;
 
 public class News extends EasyPluginController<NewsModel>
 {
@@ -33,20 +33,20 @@ public class News extends EasyPluginController<NewsModel>
 		return new FreemarkerView("News.ftl", getModel());
 	}
 
-	public void entry(Database db, Tuple request) throws DatabaseException
+	public void entry(Database db, MolgenisRequest request) throws DatabaseException
 	{
 		this.getModel().setAction(request.getAction());
 		NewsService service = NewsService.getInstance(db);
 		this.getModel().setNewsItem(service.getNewsById(request.getInt("id")));
 	}
 
-	public void top(Database db, Tuple request)
+	public void top(Database db, MolgenisRequest request)
 	{
 		this.getModel().setAction(request.getAction());
 		// rest will be done by reload()
 	}
 
-	public void all(Database db, Tuple request) throws DatabaseException, ParseException
+	public void all(Database db, MolgenisRequest request) throws DatabaseException, ParseException
 	{
 		this.getModel().setAction(request.getAction());
 		NewsService service = NewsService.getInstance(db);

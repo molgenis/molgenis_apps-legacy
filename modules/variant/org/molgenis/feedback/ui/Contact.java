@@ -13,15 +13,15 @@ import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.HiddenInput;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.HttpServletRequestTuple;
 
 public class Contact extends EasyPluginController<ContactModel>
 {
@@ -33,13 +33,14 @@ public class Contact extends EasyPluginController<ContactModel>
 		this.setModel(new ContactModel(this)); // the default model
 	}
 
+	@Override
 	public ScreenView getView()
 	{
 		return new FreemarkerView("Contact.ftl", getModel());
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		this.getModel().setMessages();
 

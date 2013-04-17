@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,15 +14,16 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
+import plugins.HarmonizationComponent.NGramMatchingModel;
 import plugins.HarmonizationComponent.OWLFunction;
 
 public class developingAlgorithm extends PluginModel<Entity>
@@ -63,10 +65,10 @@ public class developingAlgorithm extends PluginModel<Entity>
 	private List<String> listOfParameters = new ArrayList<String>();
 	private List<Measurement> measurementsInStudy = new ArrayList<Measurement>();
 	private HashMap<String, String> variableFormula = new HashMap<String, String>();
-	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
+	private NGramMatchingModel model = new NGramMatchingModel();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, MolgenisRequest request) throws Exception
 	{
 
 		if (request.getAction().equals("generateAlgorithm"))
@@ -173,7 +175,7 @@ public class developingAlgorithm extends PluginModel<Entity>
 
 						String description = m.getDescription();
 
-						List<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
+						Set<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
 
 						double maxSimilarity = 0;
 
@@ -189,7 +191,7 @@ public class developingAlgorithm extends PluginModel<Entity>
 							for (String eachMatchingString : synonyms)
 							{
 
-								List<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString
+								Set<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString
 										.toLowerCase().trim(), false);
 
 								double similarity = model.calculateScore(tokensForBuildingBlock, tokensForDataItem);

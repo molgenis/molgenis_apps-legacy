@@ -23,8 +23,8 @@ public class ArgumentParser
 	/*
 	 * All command line parameters
 	 */
-	static List<String> parameters = Arrays.asList("inputdir", "outputdir", "workflow", "protocols", "parameters",
-			"worksheet", "mcdir", "id");
+	static List<String> parameters = Arrays.asList("inputdir", "outputdir", "workflow", "templates", "protocols",
+			"parameters", "worksheet", "mcdir", "id");
 
 	/*
 	 * Get value of command line option 'option' in set 'set'.
@@ -77,6 +77,7 @@ public class ArgumentParser
 		inputdir = paramMap.get("inputdir") + File.separator;
 
 		if (getValue(set, "workflow") == null) paramMap.put("workflow", inputdir + "workflow.csv");
+		if (getValue(set, "templates") == null) paramMap.put("templates", inputdir + "templates");
 		if (getValue(set, "protocols") == null) paramMap.put("protocols", inputdir + "protocols");
 		if (getValue(set, "parameters") == null) paramMap.put("parameters", inputdir + "parameters.csv");
 		if (getValue(set, "worksheet") == null) paramMap.put("worksheet", inputdir + "worksheet.csv");
@@ -132,7 +133,7 @@ public class ArgumentParser
 	 * not specified properly, then an error message this function produces an
 	 * error message and exits with status code 1.
 	 */
-	public static LinkedHashMap<String, String> parseParameters(String[] args)
+	public static LinkedHashMap<String, String> parseParameters(String[] args, Exiter exiter)
 	{
 		defineSets(args);
 
@@ -144,7 +145,7 @@ public class ArgumentParser
 			System.err.println("##");
 			System.err.println("#\n");
 
-			System.err.println(o.getCheckErrors());
+			// System.err.println(o.getCheckErrors());
 
 			System.err.println("Valid command line arguments are:\n");
 
@@ -154,6 +155,8 @@ public class ArgumentParser
 					.println("  -outputdir=<inputdir/id>              # Directory where the generated scripts will be stored.");
 			System.err
 					.println("  -workflow=<inputdir/workflow.csv>     # A file describing the workflowsteps and their interdependencies.");
+			System.err
+					.println("  -templates=<inputdir/templates>       # A directory containing your *.ftl template files.");
 			System.err
 					.println("  -protocols=<inputdir/protocols>       # A directory containing the *.ftl protocol files.");
 			System.err
@@ -175,7 +178,8 @@ public class ArgumentParser
 
 			System.err.println("\nProgram exits with status code 1.");
 
-			System.exit(1);
+			exiter.exit();
+			// systemExit();
 		}
 		else
 		{
@@ -186,5 +190,10 @@ public class ArgumentParser
 		}
 
 		return (paramMap);
+	}
+
+	private static void systemExit()
+	{
+		System.exit(1);
 	}
 }

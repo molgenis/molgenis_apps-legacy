@@ -17,6 +17,7 @@
 			<form name="ComputeTasks" entity="ComputeTask">
 				<form name="TaskHistory" entity="ComputeHistory" />
 			</form>
+            <form name="ComputeServers" entity="ComputeServer" viewtype="record" />
 			<form name="ComputeHosts" entity="ComputeHost">
 				<form name="Workers" entity="ComputeWorker">
 					<form name="WorkerHistory" entity="ComputeHistory" />

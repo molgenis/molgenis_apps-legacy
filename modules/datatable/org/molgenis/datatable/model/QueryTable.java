@@ -21,8 +21,9 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.tupletable.AbstractFilterableTupleTable;
 import org.molgenis.framework.tupletable.TableException;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.KeyValueTuple;
+import org.molgenis.util.tuple.Tuple;
+import org.molgenis.util.tuple.WritableTuple;
 import org.springframework.util.StringUtils;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -134,7 +135,7 @@ public class QueryTable extends AbstractFilterableTupleTable
 				@Override
 				public Object transform(Object o)
 				{
-					final Tuple tuple = new SimpleTuple();
+					final WritableTuple tuple = new KeyValueTuple();
 					final Object[] record = (Object[]) o;
 					try
 					{

@@ -28,7 +28,7 @@ import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.tuple.Tuple;
 
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.service.MutationService;
@@ -104,7 +104,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		// TODO: Danny: Use or loose
 		/* final List<PatientSummaryVO> patientList = */new ArrayList<PatientSummaryVO>(BATCH_SIZE);
 		// wrapper to count
-		final IntegerWrapper total = new IntegerWrapper(0);
+		final AtomicInteger total = new AtomicInteger(0);
 		reader.setMissingValues(missingValues);
 
 		Integer mutationIdentifier = uploadService.getMaxMutationIdentifier();

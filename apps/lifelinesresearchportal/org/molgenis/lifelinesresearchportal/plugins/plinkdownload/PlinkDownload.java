@@ -12,11 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -25,7 +23,6 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.VerticalLayout;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
 import org.molgenis.util.plink.writers.FamFileWriter;
 
@@ -105,7 +102,7 @@ public class PlinkDownload extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, MolgenisRequest request)
 	{
 		String action = request.getAction();
 

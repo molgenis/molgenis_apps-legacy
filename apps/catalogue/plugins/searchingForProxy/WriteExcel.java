@@ -1,7 +1,6 @@
 package plugins.searchingForProxy;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
