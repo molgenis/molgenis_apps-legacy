@@ -1510,47 +1510,20 @@ public class MatrixViewer extends HtmlWidget
 
 	public void filterCol(Database db, MolgenisRequest t) throws Exception
 	{
-		if (matrix instanceof SliceablePhenoMatrixMV)
+		if (t.get(COLVALUE) == null)
 		{
-			String valuePropertyToUse = ObservedValue.VALUE;
-			String protocolMeasurementIds = t.getString(COLID);
-			String[] values = StringUtils.split(protocolMeasurementIds, ";");
-			int protocolId = Integer.parseInt(values[0]);
-			int measurementId = Integer.parseInt(values[1]);
-			// First find out whether to filter on the value or the
-			// relation_Name field
-			Measurement filterMeasurement;
-			try
-			{
-				filterMeasurement = db.findById(Measurement.class, measurementId);
-			}
-			catch (DatabaseException e)
-			{
-				throw new MatrixException(e);
-			}
-			if (filterMeasurement.getDataType().equals("xref"))
-			{
-				valuePropertyToUse = ObservedValue.RELATION_NAME;
-			}
-			// Find out operator to use
-			Operator op = Operator.valueOf(t.getString(OPERATOR));
-			// new Operator(t.getString(OPERATOR));
-			// Then do the actual slicing
-			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.get(COLVALUE));
-
+			this.callingScreenController.getModel().setMessages(
+					new ScreenMessage("The value field cannot be empty if you want to add a filter", false));
 		}
 		else
 		{
-			String valuePropertyToUse = ObservedValue.VALUE;
-			int measurementId = t.getInt(COLID);
-			if (measurementId == -1)
-			{ // Filter on name
-				matrix.getRules().add(
-						new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
-								.get(COLVALUE)));
-			}
-			else
+			if (matrix instanceof SliceablePhenoMatrixMV)
 			{
+				String valuePropertyToUse = ObservedValue.VALUE;
+				String protocolMeasurementIds = t.getString(COLID);
+				String[] values = StringUtils.split(protocolMeasurementIds, ";");
+				int protocolId = Integer.parseInt(values[0]);
+				int measurementId = Integer.parseInt(values[1]);
 				// First find out whether to filter on the value or the
 				// relation_Name field
 				Measurement filterMeasurement;
@@ -1570,10 +1543,46 @@ public class MatrixViewer extends HtmlWidget
 				Operator op = Operator.valueOf(t.getString(OPERATOR));
 				// new Operator(t.getString(OPERATOR));
 				// Then do the actual slicing
-				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+				matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+
 			}
+			else
+			{
+				String valuePropertyToUse = ObservedValue.VALUE;
+				int measurementId = t.getInt(COLID);
+				if (measurementId == -1)
+				{ // Filter on name
+					matrix.getRules().add(
+							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
+									.get(COLVALUE)));
+				}
+				else
+				{
+					// First find out whether to filter on the value or the
+					// relation_Name field
+					Measurement filterMeasurement;
+					try
+					{
+						filterMeasurement = db.findById(Measurement.class, measurementId);
+					}
+					catch (DatabaseException e)
+					{
+						throw new MatrixException(e);
+					}
+					if (filterMeasurement.getDataType().equals("xref"))
+					{
+						valuePropertyToUse = ObservedValue.RELATION_NAME;
+					}
+					// Find out operator to use
+					Operator op = Operator.valueOf(t.getString(OPERATOR));
+					// new Operator(t.getString(OPERATOR));
+					// Then do the actual slicing
+					matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+				}
+			}
+			matrix.reload(); // to make sure the paging info is correctly
+								// updated
 		}
-		matrix.reload(); // to make sure the paging info is correctly updated
 	}
 
 	public void filterSave(Database db, MolgenisRequest t) throws Exception
