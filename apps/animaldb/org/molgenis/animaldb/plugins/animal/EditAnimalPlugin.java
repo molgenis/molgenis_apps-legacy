@@ -381,11 +381,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				// Line
 				SelectInput lineInput = new SelectInput(this.fpMap.get("Line") + e.getName());
 				lineInput.setId(this.fpMap.get("Line") + e.getName());
+				lineInput.addOption("", "");
 				for (ObservationTarget lineT : this.lineList)
 				{
 					lineInput.addOption(lineT.getName(), lineT.getName());
 				}
-				lineInput.addOption("", "");
 				lineInput.setValue(getAnimalLine(e.getName()));
 				lineInput.setWidth(-1);
 				editTable.setCell(4, row, lineInput);
@@ -509,13 +509,25 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			value.setValue(colorName);
 			if (value.getProtocolApplication_Id() == null)
 			{
-				String paName = cs.makeProtocolApplication(invName, "SetColor");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
+				if (colorName != null && !colorName.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetColor", "Color",
+							e.getName(), colorName, null));
+				}
 			}
 			else
 			{
-				db.update(value);
+				if (colorName == null || colorName.equals(""))
+				{
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setValue(colorName);
+					db.update(value);
+				}
 			}
 
 			// Date of Birth
@@ -525,69 +537,86 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			value.setValue(birthName);
 			if (value.getProtocolApplication_Id() == null)
 			{
-				String paName = cs.makeProtocolApplication(invName, "SetDateOfBirth");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
+				if (birthName != null && !birthName.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetDateOfBirth",
+							"DateOfBirth", e.getName(), birthName, null));
+				}
 			}
 			else
 			{
-				db.update(value);
+				if (birthName == null || birthName.equals(""))
+				{
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setValue(birthName);
+					db.update(value);
+				}
 			}
 
 			// Earmark
 			String earmarkName = request.getString(this.fpMap.get("Earmark") + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Earmark", investigationNames, invName).get(0);
-			value.setValue(earmarkName);
 			if (value.getProtocolApplication_Id() == null)
 			{
-				String paName = cs.makeProtocolApplication(invName, "SetEarmark");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
+				if (earmarkName != null && !earmarkName.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetEarmark", "Earmark",
+							e.getName(), earmarkName, null));
+				}
 			}
 			else
 			{
-				if (!value.equals(""))
+				if (earmarkName == null || earmarkName.equals(""))
 				{
-					db.update(value);
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
 				}
 				else
 				{
-					db.remove(value);
-					db.remove(cs.getProtocolApplicationById(value.getProtocolApplication_Id()));
+					value.setValue(earmarkName);
+					db.update(value);
 				}
-
 			}
 
 			// Line
 			String lineName = request.getString(this.fpMap.get("Line") + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Line", investigationNames, invName).get(0);
-			value.setRelation(cs.getObservationTargetByName(lineName).getId());
+
+			// value.setRelation(cs.getObservationTargetByName(lineName).getId());
 			if (value.getProtocolApplication_Id() == null)
 			{
-				String paName = cs.makeProtocolApplication(invName, "SetLine");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
+				if (lineName != null && !lineName.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetLine", "Line",
+							e.getName(), null, lineName));
+				}
 			}
 			else
 			{
-				db.update(value);
+				if (lineName == null || lineName.equals(""))
+				{
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setRelation(cs.getObservationTargetByName(lineName).getId());
+					db.update(value);
+				}
 			}
 
 			// Sex
 			String sexName = request.getString(this.fpMap.get("Sex") + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Sex", investigationNames, invName).get(0);
 			value.setRelation(cs.getObservationTargetByName(sexName).getId());
-
-			if (value.getProtocolApplication_Id() == null)
-			{
-				String paName = cs.makeProtocolApplication(invName, "SetSex");
-				value.setProtocolApplication_Name(paName);
-				db.add(value);
-			}
-			else
-			{
-				db.update(value);
-			}
+			db.update(value);
 
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 			{

@@ -40,8 +40,6 @@
 				</tbody>
 			</table>
 		</div>
-	
-	<input type='submit' id='save' value='Save' onclick="__action.value='saveAnimals'" />
 
 <#else>
 	
