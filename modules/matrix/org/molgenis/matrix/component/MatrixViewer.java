@@ -942,7 +942,7 @@ public class MatrixViewer extends HtmlWidget
 	{
 		String outStr = "<table id=\"filterstable\" name=\"filterstable\">";
 		// outStr += "<thead></thead>";
-		outStr += "<thead> <tr><th></th><th></th><th></th><th></th></tr></thead>";
+		outStr += "<thead> <tr><th>Column</th><th>Operator</th><th>Value</th><th></th></tr></thead>";
 		outStr += "<tbody>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -951,7 +951,7 @@ public class MatrixViewer extends HtmlWidget
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)
 					|| (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
 			{
-				outStr += "<tr>" + generateFilterRule(filterCnt, mqr) + "</tr>";
+				outStr += "<tr align=\"center\">" + generateFilterRule(filterCnt, mqr) + "</tr>";
 			}
 			System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
 			++filterCnt;
