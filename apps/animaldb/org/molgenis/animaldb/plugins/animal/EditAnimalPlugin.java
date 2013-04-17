@@ -153,10 +153,9 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 				animalMatrixViewer = new MatrixViewer(this, ANIMALMATRIX,
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
-						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
+						2, true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				animalMatrixViewer.setFilterVisibility(false);
-				animalMatrixViewer.setShowDownloadOptions(true);
 				animalMatrixViewer.setDatabase(db);
 			}
 			catch (Exception e)

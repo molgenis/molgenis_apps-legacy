@@ -91,11 +91,11 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showLimitControls = true;
 	private int selectMultiple = 0;
 	private boolean showValueValidRange = false;
-	private boolean showDownloadOptions = false;
+	private boolean showDownloadOptions = true;
 	private boolean showNameFilter = true;
 	private boolean isEditable;
 	private boolean showTargetTooltip = false;
-	private boolean filterVisibility = true;
+	private boolean filterVisibility = false;
 	// private boolean addRemColumnVisibility = true;
 	private String APPLICATION_STRING = "GENERIC";
 
