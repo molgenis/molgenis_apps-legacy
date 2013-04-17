@@ -39,6 +39,21 @@
 		</delete>
 	</target>
 	
+	<!-- Remove anonymous permissions, essentially creating a private version -->
+	<target name="makePrivate" description="Switch to private mode">
+		<!--java maxmemory="4g" classname="org.molgenis.wormqtl.header.MakeWormQTLPrivate" fork="yes" failonerror="true">
+			<arg value="${username}"/>
+			<arg value="${password}"/>
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
+			</classpath>
+		</java-->
+		
+		<copy file="apps/wormqtl/org/molgenis/wormqtl/header/HomePagePrivate.ftl" tofile="apps/wormqtl/org/molgenis/wormqtl/header/HomePage.ftl" overwrite="true"/>
+	</target>
+	
 	<!-- Custom generate with a few extra tasks -->
 	<target name="generate" depends="update-eclipse">
 		<!-- clean generated folders -->
