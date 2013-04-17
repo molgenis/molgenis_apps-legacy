@@ -381,11 +381,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				// Line
 				SelectInput lineInput = new SelectInput(this.fpMap.get("Line") + e.getName());
 				lineInput.setId(this.fpMap.get("Line") + e.getName());
-				lineInput.addOption("", "");
 				for (ObservationTarget lineT : this.lineList)
 				{
 					lineInput.addOption(lineT.getName(), lineT.getName());
 				}
+				lineInput.addOption("", "");
 				lineInput.setValue(getAnimalLine(e.getName()));
 				lineInput.setWidth(-1);
 				editTable.setCell(4, row, lineInput);
