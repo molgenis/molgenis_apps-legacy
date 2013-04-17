@@ -60,9 +60,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	private List<ObservationTarget> speciesList;
 	private List<ObservationTarget> sourceList;
 	private List<Category> animalTypeList;
-	private List<ObservationTarget> lineList;
 	private List<String> colorList;
-
 	private List<String> earmarkList;
 	private List<Individual> listOfSelectedIndividuals = new ArrayList<Individual>();
 
@@ -171,14 +169,12 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		{
 			try
 			{
+				// fill some global lookup lists.
 				this.setSexList(cs.getAllMarkedPanels("Sex", investigationNames));
 				this.setSpeciesList(cs.getAllMarkedPanels("Species", investigationNames));
 				this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
 				this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
-				this.setLineList(cs.getAllMarkedPanels("Line", investigationNames));
 				this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
-				// this.setBackgroundList(cs.getAllMarkedPanels("Background",
-				// investigationNames));
 				this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
 
 				loaded = true;
@@ -393,10 +389,16 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				SelectInput lineInput = new SelectInput(this.fpMap.get("Line") + e.getName());
 				lineInput.setId(this.fpMap.get("Line") + e.getName());
 				lineInput.addOption("", "");
-				for (ObservationTarget lineT : this.lineList)
+
+				for (ObservationTarget b : cs.getAllMarkedPanels("Line", investigationNames))
 				{
-					lineInput.addOption(lineT.getName(), lineT.getName());
+					// Only show if line belongs to chosen species
+					if (cs.getMostRecentValueAsXrefName(b.getName(), "Species").equals(getAnimalSpecies(e.getName())))
+					{
+						lineInput.addOption(b.getName(), b.getName());
+					}
 				}
+
 				lineInput.setValue(getAnimalLine(e.getName()));
 				lineInput.setWidth(-1);
 				editTable.setCell(4, row, lineInput);
@@ -867,16 +869,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public void setAnimalTypeList(List<Category> animalTypeList)
 	{
 		this.animalTypeList = animalTypeList;
-	}
-
-	public List<ObservationTarget> getLineList()
-	{
-		return lineList;
-	}
-
-	public void setLineList(List<ObservationTarget> lineList)
-	{
-		this.lineList = lineList;
 	}
 
 	public Date getAnimalBirthDate(String animalName)
