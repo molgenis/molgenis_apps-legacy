@@ -15,38 +15,39 @@
 		<#--optional: mechanism to show messages-->
 		<#list screen.getMessages() as message>
 			<#if message.success>
-		<p class="successmessage">${message.text}</p>
+				<script>$.ctNotify("${message.text}", {type: 'confirmation', delay: 5000});</script>
+				<!-- <p class="successmessage">${message.text}</p> -->
 			<#else>
-		<p class="errormessage">${message.text}</p>
+				<script>$.ctNotify("${message.text}", {type: 'error', delay: 7000});</script>	        	
+				<!-- <p class="errormessage">${message.text}</p> -->
 			</#if>
 		</#list>
 		
 		<div class="screenbody">
 			<div class="screenpadding">	
-<#--begin your plugin-->
-${screen.editTable}
+			
+<#--begin your plugin-->	
+
+<#if screen.action="editAnimals">
+	${screen.editTable}
 	
-	<input type='submit' id='save' value='Save' onclick="__action.value='editAnimal'" />
+	<input type='submit' id='save' value='Save' onclick="__action.value='saveAnimals'" />
+
+<#else>
+		<label for="animalmatrix">Choose animal:</label>
+		${screen.animalMatrix}
+		<br />
+		blaaa
+		<input type='submit' class='addbutton' value='Edit animals' onclick="__action.value='editAnimals'" />
+	<#--<#if screen.info??><p>${screen.info}</p></#if>-->
+</#if>	
+	
+
+	
 	
 <#--end of your plugin-->	
 			</div>
 		</div>
 	</div>
 </form>
-
-<script>
-	var oTable = jQuery('#loctable').dataTable(
-	{ "bProcessing": true,
-	  "bServerSide": false,
-	  "sPaginationType": "full_numbers",
-	  "bSaveState": true,
-	  "bAutoWidth": false,
-	  "bJQueryUI" : true,
-	  "aoColumnDefs": [ 
-      	{ "sWidth": "30px", "aTargets": [ 0 ] }
-    	] 
-	  }
-	);
-</script>
-
 </#macro>
