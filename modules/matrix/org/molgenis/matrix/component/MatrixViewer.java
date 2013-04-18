@@ -96,6 +96,12 @@ public class MatrixViewer extends HtmlWidget
 	private boolean isEditable;
 	private boolean showTargetTooltip = false;
 	private boolean filterVisibility = false;
+
+	private enum filSavSelEnum
+	{
+		doFilterSave, doColumnSave, doFilterAndColumnSave;
+	}
+
 	// private boolean addRemColumnVisibility = true;
 	private String APPLICATION_STRING = "GENERIC";
 
@@ -126,6 +132,8 @@ public class MatrixViewer extends HtmlWidget
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
 	public String FILTERSAVE = getName() + "_filterSave";
+	public String DOFILTERSAVE = "doFilterSave";
+	public String DOCOLUMNSAVE = "doColumnSave";
 	public String FILTERSAVENAME = getName() + "_filterSaveNAme";
 	public String SAVEDFILTERSDELETE = getName() + "_savedFiltersDelete";
 	public String FILTERLOAD = getName() + "_filterLoad";
@@ -809,8 +817,14 @@ public class MatrixViewer extends HtmlWidget
 		// divContents +=
 		// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
 		divContents += "<strong>Save active filters: </strong>";
-		divContents += "</br>" + new StringInput(FILTERSAVENAME, "Filter name").render();
-		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save Filters").render();
+		List<String> test = new ArrayList<String>();
+		test.add("blaat");
+		divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterSave\" checked=\"checked\" / > Save only filters.";
+		divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doColumnSave\"  / > Save only Columns.";
+		divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterAndColumnSave\"  / > Save Filters & Columns.";
+		divContents += "</br><label for=\"" + FILTERSAVENAME + "\">name: </label>"
+				+ new StringInput(FILTERSAVENAME, "Filter name").setLabel("name: ").render();
+		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save").render();
 		divContents += "</br>";
 		divContents += "</br><strong>load or delete saved filters: </strong>";
 		divContents += "</br>" + buildSavedFiltersInput().render();
@@ -1593,14 +1607,12 @@ public class MatrixViewer extends HtmlWidget
 
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
 
-		Date now = new Date();
-		long date = now.getTime();
-		String name = "blaat_" + String.valueOf(date);
-		name = t.get(FILTERSAVENAME).toString();
+		String name = t.get(FILTERSAVENAME).toString();
 
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
+
 			SavedMatrixFilters savFil = new SavedMatrixFilters();
 			savFil.setOwner(db.getLogin().getUserId());
 			savFil.setName(name);
@@ -1608,10 +1620,10 @@ public class MatrixViewer extends HtmlWidget
 			savFil.setFilterType(mqr.getFilterType().toString());
 			savFil.setDimIndex(mqr.getDimIndex());
 			savFil.setField(mqr.getField());
-			// convert the operator to the text options used in the queryrule
+			// convert the operator to the text options used in the
+			// queryrule
 			// class where necessary
 			String operator = mqr.getOperator().toString();
-			System.out.println("----> show the operator:   " + mqr.getOperator() + " " + operator);
 			if (operator.equals("="))
 			{
 				operator = "EQUALS";
@@ -1638,9 +1650,34 @@ public class MatrixViewer extends HtmlWidget
 			}
 			savFil.setOperator(operator);
 			savFil.setValue(mqr.getValue().toString());
-			filterList.add(savFil);
 
-			filterCnt++;
+			filSavSelEnum value = filSavSelEnum.valueOf(t.get("filterSaveSelect").toString());
+			switch (value)
+			{
+				case doFilterSave:
+					if (mqr.getFilterType().toString().equals("colValueProperty")
+							|| mqr.getFilterType().toString().equals("rowHeader"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					break;
+
+				case doColumnSave:
+					System.out.println("case docolumnsave" + "  " + mqr.getFilterType());
+					if (mqr.getFilterType().toString().equals("colHeader"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					break;
+
+				case doFilterAndColumnSave:
+					filterList.add(savFil);
+					filterCnt++;
+					break;
+			}
+
 		}
 
 		// check if a filterset with this name exists, update if so.
