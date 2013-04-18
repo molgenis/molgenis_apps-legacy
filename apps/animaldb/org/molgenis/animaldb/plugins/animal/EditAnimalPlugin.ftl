@@ -30,19 +30,43 @@
 
 <#if screen.action="editAnimals">
 	${screen.editTable}
-	
-	<input type='submit' id='save' value='Save' onclick="__action.value='saveAnimals'" />
+	<div id='animalActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="saveAnimals" type="image" title="Save your" onclick="__action.value='saveAnimals'" src="generated-res/img/save.png"  /></td>
+						<td><input id="cancel" type="image" title="Cancel" onclick="__action.value='start'" src="generated-res/img/cancel.png"  /></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
 <#else>
-		<label for="animalmatrix">Choose animal:</label>
+	
 		${screen.animalMatrix}
-		<br />
-		blaaa
-		<input type='submit' class='addbutton' value='Edit animals' onclick="__action.value='editAnimals'" />
-	<#--<#if screen.info??><p>${screen.info}</p></#if>-->
+
+	<div id='animalActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="litterActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Edit</th>
+						<th>Delete</th>
+						<!--th>Print Cagelabels</th-->
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="editAnimals" type="image" title="Edit the selected animals." onclick="__action.value='editAnimals'" src="generated-res/img/editview.gif"  /></td>
+						<td><input id="deleteAnimals" type="image" title="Delete the selected animals." onclick="__action.value='deleteAnimals'" src="generated-res/img/delete.png"  /></td>
+						<!--td><input id="printCagelabels" type="image" title="Print cage labels for the selected animals." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td-->
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
 </#if>	
 	
-
+<div id="pushdown" style="clear:both;" ></div>
 	
 	
 <#--end of your plugin-->	
@@ -50,4 +74,12 @@
 		</div>
 	</div>
 </form>
+
+<script>
+	jQuery('#editAnimals').button()
+	jQuery('#deleteAnimals').button()
+	jQuery('#printCagelabels').button()
+	jQuery('#saveAnimals').button()
+	jQuery('#cancel').button()
+</script>
 </#macro>
