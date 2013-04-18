@@ -280,6 +280,8 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		// selenium.click("id=showHideFilterButton");
 		Thread.sleep(1000);
+		selenium.click("id=mothermatrix_toggleFilterSettingsVisibility");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=mothermatrix_removeFilter_2");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=mothermatrix_selected_0"); // select first mother
