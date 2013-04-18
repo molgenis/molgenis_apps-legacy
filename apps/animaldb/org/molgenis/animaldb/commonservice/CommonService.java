@@ -996,7 +996,9 @@ public class CommonService
 		newValue.setTarget_Name(subjectTargetName);
 		if (targetRefName != null)
 		{
-			newValue.setRelation_Name(targetRefName);
+			// newValue.setRelation_Name(targetRefName);
+			newValue.setRelation(getObservationTargetByName(targetRefName).getId());
+
 		}
 		else
 		{
@@ -1728,6 +1730,18 @@ public class CommonService
 		}
 		else
 			throw new DatabaseException("No protocolapplication with name " + name + "could be found.");
+	}
+
+	public ProtocolApplication getProtocolApplicationById(int id) throws DatabaseException, ParseException
+	{
+		Query<ProtocolApplication> q = db.query(ProtocolApplication.class);
+		q.addRules(new QueryRule(ProtocolApplication.ID, Operator.EQUALS, id));
+		if (!q.find().isEmpty())
+		{
+			return q.find().get(0);
+		}
+		else
+			throw new DatabaseException("No protocolapplication with name " + id + "could be found.");
 	}
 
 	/**
