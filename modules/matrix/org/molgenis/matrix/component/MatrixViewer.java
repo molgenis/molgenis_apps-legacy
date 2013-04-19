@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -1604,6 +1605,11 @@ public class MatrixViewer extends HtmlWidget
 
 	public void filterSave(Database db, MolgenisRequest t) throws Exception
 	{
+		// TODO : Find a way to store also filters on rowheaders:
+		// these are done by slicing the phenomatrix and not by adding a
+		// QueryRule.
+		// We now store only applied Queryrules and therby miss out on these
+		// filters.
 
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
 
@@ -1688,15 +1694,6 @@ public class MatrixViewer extends HtmlWidget
 		{
 			// delete existing set and than add the new set
 			System.out.println("deleting filterset with the same name");
-			// String filterName = t.getString(SAVEDFILTERS);
-			// List<SavedMatrixFilters> existingFiltersList = new
-			// ArrayList<SavedMatrixFilters>();
-			// check if a filterset with this name exists, update if so.
-			// Query<SavedMatrixFilters> efq =
-			// db.query(SavedMatrixFilters.class);
-			// efq.addRules(new QueryRule(SavedMatrixFilters.NAME,
-			// Operator.EQUALS, filterName));
-			// existingFiltersList = efq.find();
 			db.remove(fq.find());
 		}
 		// add the new set
@@ -1709,7 +1706,7 @@ public class MatrixViewer extends HtmlWidget
 	{
 		// get the existing filters, to remove duplicates later
 		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
-
+		List<MatrixQueryRule> newFilterList = existingFilters;
 		// get the name of the selected saved filter.
 		String filterName = t.getString(SAVEDFILTERS);
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
@@ -1719,9 +1716,12 @@ public class MatrixViewer extends HtmlWidget
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
 		filterList = fq.find();
 		int filterCnt = 0;
-
 		for (SavedMatrixFilters filter : filterList)
 		{
+			String field = filter.getField();
+			Operator op = Operator.valueOf(filter.getOperator());
+			Object value = filter.getValue();
+
 			// for now only do something with colValue property filters, other
 			// types can be added later.
 			if (filter.getFilterType().equals("colValueProperty"))
@@ -1729,22 +1729,45 @@ public class MatrixViewer extends HtmlWidget
 				// re-build the queryrule and add it.
 
 				int index = filter.getDimIndex();
-				String field = filter.getField();
-				Operator op = Operator.valueOf(filter.getOperator());
-				Object value = filter.getValue();
 				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op,
 						value);
 				// prevent duplicate rules
 				if (!existingFilters.contains(newRule))
 				{
-					matrix.getRules().add(newRule);
+					// matrix.getRules().add(newRule);
+					newFilterList.add(newRule);
 				}
 				// reload matrix to apply filter
-				matrix.reload();
+				// matrix.reload();
+			}
+			else if (filter.getFilterType().equals("colHeader"))
+			{
+
+				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, null, field, op, value); // ArrayList<MatrixQueryRule>();
+				// remove existing colheader and replace with saved one
+
+				List<String> chosenMeasurementNames = new ArrayList<String>();
+				for (MatrixQueryRule qr : existingFilters)
+				{
+					if (qr.getFilterType().toString().equals("colHeader"))
+					{
+						String valueStr = value.toString();
+						valueStr = valueStr.substring(1);
+						valueStr = valueStr.substring(0, valueStr.length() - 1);
+						String[] strlist = StringUtils.split(valueStr, ", ");
+						chosenMeasurementNames = Arrays.asList(strlist);
+					}
+				}
+				setColHeaderFilter(chosenMeasurementNames);
 			}
 			else
 			{
 				// for now do nothing with the other filter types.
+			}
+			matrix.getRules().clear();
+			for (MatrixQueryRule qr : newFilterList)
+			{
+				matrix.getRules().add(qr);
 			}
 		}
 	}
@@ -1897,6 +1920,7 @@ public class MatrixViewer extends HtmlWidget
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
+			System.out.println("matrix is instance of SliceablePhenoMatrixMV");
 			List<Integer> measurementIds = new ArrayList<Integer>(chosenMeasurements.size());
 			for (String mId : chosenMeasurements)
 			{
@@ -1906,6 +1930,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 		else
 		{
+			System.out.println("matrix is not an instance of SliceablePhenoMatrixMV");
 			// Find and update col header filter rule
 			boolean hasRule = false;
 			for (MatrixQueryRule mqr : matrix.getRules())
