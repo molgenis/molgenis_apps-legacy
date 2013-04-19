@@ -1659,10 +1659,10 @@ public class MatrixViewer extends HtmlWidget
 
 			filSavSelEnum value = filSavSelEnum.valueOf(t.get("filterSaveSelect").toString());
 			switch (value)
+			// skip the rowHeader filters for now.
 			{
 				case doFilterSave:
-					if (mqr.getFilterType().toString().equals("colValueProperty")
-							|| mqr.getFilterType().toString().equals("rowHeader"))
+					if (mqr.getFilterType().toString().equals("colValueProperty"))
 					{
 						filterList.add(savFil);
 						filterCnt++;
@@ -1679,8 +1679,13 @@ public class MatrixViewer extends HtmlWidget
 					break;
 
 				case doFilterAndColumnSave:
-					filterList.add(savFil);
-					filterCnt++;
+					if (mqr.getFilterType().toString().equals("colValueProperty")
+							|| mqr.getFilterType().toString().equals("colValueProperty"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+
 					break;
 			}
 
