@@ -1680,21 +1680,27 @@ public class MatrixViewer extends HtmlWidget
 
 		}
 
-		// check if a filterset with this name exists, update if so.
+		// check if a filterset with this name exists, if so delete it first and
+		// thena add.
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, name));
 		if (fq.count() > 0)
 		{
 			// delete existing set and than add the new set
-			System.out.println("____WTF!");
-			// TODO!!!!!!!!!
-			// filterList.clear();
+			System.out.println("deleting filterset with the same name");
+			// String filterName = t.getString(SAVEDFILTERS);
+			// List<SavedMatrixFilters> existingFiltersList = new
+			// ArrayList<SavedMatrixFilters>();
+			// check if a filterset with this name exists, update if so.
+			// Query<SavedMatrixFilters> efq =
+			// db.query(SavedMatrixFilters.class);
+			// efq.addRules(new QueryRule(SavedMatrixFilters.NAME,
+			// Operator.EQUALS, filterName));
+			// existingFiltersList = efq.find();
+			db.remove(fq.find());
 		}
-		else
-		{
-			// add the new set
-			db.add(filterList);
-		}
+		// add the new set
+		db.add(filterList);
 		filterList.clear();
 
 	}
