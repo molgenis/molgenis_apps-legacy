@@ -139,6 +139,8 @@ public class MatrixViewer extends HtmlWidget
 	public String SAVEDFILTERSDELETE = getName() + "_savedFiltersDelete";
 	public String FILTERLOAD = getName() + "_filterLoad";
 	public String SAVEDFILTERS = getName() + "_savedFilters";
+	public String QUICKVIEW = getName() + "_quickView";
+	public String APPLYQUICKVIEW = getName() + "_applyQuickView";
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
@@ -463,16 +465,28 @@ public class MatrixViewer extends HtmlWidget
 
 		// addRemCols.setIcon("generated-res/img/plus.png");
 
-		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;\" src=\"res/img/addremcol_32.png\" "
+		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;float:left;\" src=\"res/img/addremcol_32.png\" "
 				+ "onclick=\"if (document.getElementById('addRemCol').style.display=='none') {document.getElementById('addRemCol').style.display='block';} else {document.getElementById('addRemCol').style.display='none';} \" "
 				+ "/>";
 		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">";
 		ActionInput toggleFilterSettings = new ActionInput(TOGGLEFILTERSETTINGSVISIBILITY, "", "");
 		toggleFilterSettings.setIcon("generated-res/img/filter_funnel_32x32.png");
 		divContents += toggleFilterSettings.render() + "</div>";
+		// input for quick application of filters
+		if (true)
+		{
+			SelectInput quickViewInput = buildSavedFiltersInput(QUICKVIEW);
+			quickViewInput.setWidth(12);
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + quickViewInput
+					+ new ActionInput(APPLYQUICKVIEW, "Load").render();
+			// divContents += "<script> $(\"#" + QUICKVIEW
+			// +
+			// "\").change(function() { $(this).parents(\"form\").submit();});</script>";
+			// // this.form.submit()
+			// divContents += "</div>";
+		}
 
-		// the header filter div (add remo cols)
-
+		// the Div for the add/remove column inputs.
 		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
 		divContents += "<div id='closeAddRemCol' style='float:right;clear:both' ><img id='close' onclick=\"document.getElementById('addRemCol').style.display='none';\" src='res/img/exit.png' /></div> ";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
@@ -828,7 +842,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save").render();
 		divContents += "</br>";
 		divContents += "</br><strong>load or delete saved filters: </strong>";
-		divContents += "</br>" + buildSavedFiltersInput().render();
+		divContents += "</br>" + buildSavedFiltersInput(SAVEDFILTERS).render();
 		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
 		divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
 		divContents += "</div>";
@@ -935,9 +949,9 @@ public class MatrixViewer extends HtmlWidget
 		return colId;
 	}
 
-	private SelectInput buildSavedFiltersInput() throws DatabaseException
+	private SelectInput buildSavedFiltersInput(String name) throws DatabaseException
 	{
-		SelectInput savedFiltersInput = new SelectInput(SAVEDFILTERS);
+		SelectInput savedFiltersInput = new SelectInput(name);
 
 		// check if a filterset with this name exists, update if so.
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
@@ -1685,7 +1699,6 @@ public class MatrixViewer extends HtmlWidget
 						filterList.add(savFil);
 						filterCnt++;
 					}
-
 					break;
 			}
 
@@ -1707,13 +1720,27 @@ public class MatrixViewer extends HtmlWidget
 
 	}
 
+	public void applyQuickView(Database db, MolgenisRequest t) throws DatabaseException, Exception
+	{
+		String filterName = t.getString(QUICKVIEW);
+		matrix.getRules().clear();
+		doFilterLoad(filterName);
+	}
+
 	public void filterLoad(Database db, MolgenisRequest t) throws Exception
+	{
+		String filterName = t.getString(SAVEDFILTERS);
+		doFilterLoad(filterName);
+	}
+
+	public void doFilterLoad(String filterName) throws Exception
 	{
 		// get the existing filters, to remove duplicates later
 		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
 		List<MatrixQueryRule> newFilterList = existingFilters;
 		// get the name of the selected saved filter.
-		String filterName = t.getString(SAVEDFILTERS);
+		// String filterName = t.getString(SAVEDFILTERS);
+
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
 
 		// retrieve all the rules with this name from the db
