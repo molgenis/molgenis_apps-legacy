@@ -1678,6 +1678,7 @@ public class MatrixViewer extends HtmlWidget
 			// skip the rowHeader filters for now.
 			{
 				case doFilterSave:
+					System.out.println("case filtersave" + "  " + mqr.getFilterType());
 					if (mqr.getFilterType().toString().equals("colValueProperty"))
 					{
 						filterList.add(savFil);
@@ -1697,8 +1698,9 @@ public class MatrixViewer extends HtmlWidget
 					break;
 
 				case doFilterAndColumnSave:
+					System.out.println("case filter&columnsave" + "  " + mqr.getFilterType());
 					if (mqr.getFilterType().toString().equals("colValueProperty")
-							|| mqr.getFilterType().toString().equals("colValueProperty"))
+							|| mqr.getFilterType().toString().equals("colHeader"))
 					{
 						filterList.add(savFil);
 						System.out.println("<<<<<<<<<<< filter&column" + filterList);
@@ -1754,7 +1756,13 @@ public class MatrixViewer extends HtmlWidget
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
 		filterList = fq.find();
 		System.out.println(">>>>>>>>>" + filterList);
-		int filterCnt = 0;
+		// int filterCnt = 0;
+
+		// prepare variables for colHeader filter application
+		boolean applyColHeaderFilter = false;
+		List<String> chosenMeasurementNames = new ArrayList<String>();
+
+		// iterate over the filters in the retrieved list.
 		for (SavedMatrixFilters filter : filterList)
 		{
 			String field = filter.getField();
@@ -1781,11 +1789,7 @@ public class MatrixViewer extends HtmlWidget
 			}
 			else if (filter.getFilterType().equals("colHeader"))
 			{
-
-				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, null, field, op, value); // ArrayList<MatrixQueryRule>();
 				// remove existing colheader and replace with saved one
-
-				List<String> chosenMeasurementNames = new ArrayList<String>();
 				for (MatrixQueryRule qr : existingFilters)
 				{
 					if (qr.getFilterType().toString().equals("colHeader"))
@@ -1797,7 +1801,7 @@ public class MatrixViewer extends HtmlWidget
 						chosenMeasurementNames = Arrays.asList(strlist);
 					}
 				}
-				setColHeaderFilter(chosenMeasurementNames);
+				applyColHeaderFilter = true;
 			}
 			else
 			{
@@ -1808,6 +1812,13 @@ public class MatrixViewer extends HtmlWidget
 			{
 				matrix.getRules().add(qr);
 			}
+			// apply the colHeaderFilter to finalize if present.
+			if (applyColHeaderFilter)
+			{
+				setColHeaderFilter(chosenMeasurementNames);
+			}
+			// reload the matrix to apply everything.
+			// matrix.reload();
 		}
 	}
 
