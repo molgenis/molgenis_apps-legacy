@@ -456,7 +456,7 @@ public class MatrixViewer extends HtmlWidget
 			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			// + downloadVisSPSS.render() + "</div>";
 
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + menu.render()
+			divContents += "<div style=\"padding-left:5px; float:left; vertical-align:middle\">" + menu.render()
 					+ "</div>";
 
 		}
@@ -468,7 +468,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;float:left;\" src=\"res/img/addremcol_32.png\" "
 				+ "onclick=\"if (document.getElementById('addRemCol').style.display=='none') {document.getElementById('addRemCol').style.display='block';} else {document.getElementById('addRemCol').style.display='none';} \" "
 				+ "/>";
-		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">";
+		divContents += "<div style=\"padding-left:5px; float:left; vertical-align:middle\">";
 		ActionInput toggleFilterSettings = new ActionInput(TOGGLEFILTERSETTINGSVISIBILITY, "", "");
 		toggleFilterSettings.setIcon("generated-res/img/filter_funnel_32x32.png");
 		divContents += toggleFilterSettings.render() + "</div>";
@@ -476,9 +476,11 @@ public class MatrixViewer extends HtmlWidget
 		if (true)
 		{
 			SelectInput quickViewInput = buildSavedFiltersInput(QUICKVIEW);
-			quickViewInput.setWidth(12);
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + quickViewInput
-					+ new ActionInput(APPLYQUICKVIEW, "Load").render();
+			quickViewInput.setWidth(6);
+			divContents += "<div style=\"padding-left:5px; border-left-width:1px; border-left-style:solid; float:left; vertical-align:middle\">"
+					+ quickViewInput + "</div>";
+			divContents += "<div style=\"float:left; vertical-align:middle\">"
+					+ new ActionInput(APPLYQUICKVIEW, "Load").render() + "</div>";
 			// divContents += "<script> $(\"#" + QUICKVIEW
 			// +
 			// "\").change(function() { $(this).parents(\"form\").submit();});</script>";
@@ -487,7 +489,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 
 		// the Div for the add/remove column inputs.
-		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
 		divContents += "<div id='closeAddRemCol' style='float:right;clear:both' ><img id='close' onclick=\"document.getElementById('addRemCol').style.display='none';\" src='res/img/exit.png' /></div> ";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		@SuppressWarnings("rawtypes")
