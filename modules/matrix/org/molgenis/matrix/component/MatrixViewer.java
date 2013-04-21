@@ -1628,15 +1628,11 @@ public class MatrixViewer extends HtmlWidget
 		// filters.
 
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
-
 		String name = t.get(FILTERSAVENAME).toString();
-
-		System.out.println("<<<<<<<<<" + name);
 
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
-
 			SavedMatrixFilters savFil = new SavedMatrixFilters();
 			savFil.setOwner(db.getLogin().getUserId());
 			savFil.setName(name);
@@ -1680,32 +1676,26 @@ public class MatrixViewer extends HtmlWidget
 			// skip the rowHeader filters for now.
 			{
 				case doFilterSave:
-					System.out.println("case filtersave" + "  " + mqr.getFilterType());
 					if (mqr.getFilterType().toString().equals("colValueProperty"))
 					{
 						filterList.add(savFil);
-						System.out.println("<<<<<<<<<<< onlyfilter" + filterList);
 						filterCnt++;
 					}
 					break;
 
 				case doColumnSave:
-					System.out.println("case docolumnsave" + "  " + mqr.getFilterType());
 					if (mqr.getFilterType().toString().equals("colHeader"))
 					{
 						filterList.add(savFil);
-						System.out.println("<<<<<<<<<<< onlycolumn" + filterList);
 						filterCnt++;
 					}
 					break;
 
 				case doFilterAndColumnSave:
-					System.out.println("case filter&columnsave" + "  " + mqr.getFilterType());
 					if (mqr.getFilterType().toString().equals("colValueProperty")
 							|| mqr.getFilterType().toString().equals("colHeader"))
 					{
 						filterList.add(savFil);
-						System.out.println("<<<<<<<<<<< filter&column" + filterList);
 						filterCnt++;
 					}
 					break;
@@ -1744,7 +1734,6 @@ public class MatrixViewer extends HtmlWidget
 
 	public void doFilterLoad(String filterName) throws Exception
 	{
-		System.out.println(">>>>>>>>>>> do we get here????");
 		// the existing filters, to remove duplicates later
 		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
 		List<MatrixQueryRule> newFilterList = existingFilters;
@@ -1757,8 +1746,6 @@ public class MatrixViewer extends HtmlWidget
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
 		filterList = fq.find();
-		System.out.println(">>>>>>>>>" + filterList);
-		// int filterCnt = 0;
 
 		// prepare variables for colHeader filter application
 		boolean applyColHeaderFilter = false;
@@ -1776,7 +1763,6 @@ public class MatrixViewer extends HtmlWidget
 			if (filter.getFilterType().equals("colValueProperty"))
 			{
 				// re-build the queryrule and add it.
-
 				int index = filter.getDimIndex();
 				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op,
 						value);
@@ -1839,7 +1825,6 @@ public class MatrixViewer extends HtmlWidget
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
-
 			List<Integer> measurementIds = new ArrayList<Integer>();
 			List<String> list = (List<String>) t.getList(MEASUREMENTCHOOSER);
 			for (String s : list)
@@ -1847,7 +1832,6 @@ public class MatrixViewer extends HtmlWidget
 				measurementIds.add(Integer.parseInt(s));
 			}
 			resetColumns(measurementIds);
-
 		}
 		else
 		{
@@ -1868,7 +1852,6 @@ public class MatrixViewer extends HtmlWidget
 			}
 			setColHeaderFilter(chosenMeasurementNames);
 		}
-
 	}
 
 	public void resetColumns(final List<Integer> columnIds) throws DatabaseException
