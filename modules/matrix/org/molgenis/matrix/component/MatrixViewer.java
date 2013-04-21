@@ -1622,12 +1622,14 @@ public class MatrixViewer extends HtmlWidget
 		// TODO : Find a way to store also filters on rowheaders:
 		// these are done by slicing the phenomatrix and not by adding a
 		// QueryRule.
-		// We now store only applied Queryrules and therby miss out on these
+		// We now store only applied Queryrules and thereby miss out on these
 		// filters.
 
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
 
 		String name = t.get(FILTERSAVENAME).toString();
+
+		System.out.println("<<<<<<<<<" + name);
 
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -1679,6 +1681,7 @@ public class MatrixViewer extends HtmlWidget
 					if (mqr.getFilterType().toString().equals("colValueProperty"))
 					{
 						filterList.add(savFil);
+						System.out.println("<<<<<<<<<<< onlyfilter" + filterList);
 						filterCnt++;
 					}
 					break;
@@ -1688,6 +1691,7 @@ public class MatrixViewer extends HtmlWidget
 					if (mqr.getFilterType().toString().equals("colHeader"))
 					{
 						filterList.add(savFil);
+						System.out.println("<<<<<<<<<<< onlycolumn" + filterList);
 						filterCnt++;
 					}
 					break;
@@ -1697,6 +1701,7 @@ public class MatrixViewer extends HtmlWidget
 							|| mqr.getFilterType().toString().equals("colValueProperty"))
 					{
 						filterList.add(savFil);
+						System.out.println("<<<<<<<<<<< filter&column" + filterList);
 						filterCnt++;
 					}
 					break;
@@ -1723,7 +1728,7 @@ public class MatrixViewer extends HtmlWidget
 	public void applyQuickView(Database db, MolgenisRequest t) throws DatabaseException, Exception
 	{
 		String filterName = t.getString(QUICKVIEW);
-		matrix.getRules().clear();
+		// matrix.getRules().clear();
 		doFilterLoad(filterName);
 	}
 
@@ -1735,7 +1740,8 @@ public class MatrixViewer extends HtmlWidget
 
 	public void doFilterLoad(String filterName) throws Exception
 	{
-		// get the existing filters, to remove duplicates later
+		System.out.println(">>>>>>>>>>> do we get here????");
+		// the existing filters, to remove duplicates later
 		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
 		List<MatrixQueryRule> newFilterList = existingFilters;
 		// get the name of the selected saved filter.
@@ -1747,6 +1753,7 @@ public class MatrixViewer extends HtmlWidget
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
 		filterList = fq.find();
+		System.out.println(">>>>>>>>>" + filterList);
 		int filterCnt = 0;
 		for (SavedMatrixFilters filter : filterList)
 		{
