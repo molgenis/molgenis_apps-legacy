@@ -449,7 +449,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				List<ObservedValue> allValuesGeneMod = cs.getObservedValuesByTargetAndFeature(e.getName(),
 						"GeneModification", investigationNames, invName);
 				int countGeneMod = 0;
-				List<SelectInput> listOfSelectInput = new ArrayList<SelectInput>();
+				String allGeneModInputs = "";
 				for (ObservedValue value : allValuesGeneMod)
 				{
 					SelectInput geneModInput = new SelectInput(this.fpMap.get("GeneModification") + e.getName() + "_"
@@ -463,17 +463,19 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					geneModInput.setValue(value.getValue());
 					geneModInput.setWidth(-1);
 
-					listOfSelectInput.add(geneModInput);
+					allGeneModInputs += geneModInput.toHtml() + "</br>";
 					countGeneMod++;
 				}
 
-				editTable.setCell(8, row, listOfSelectInput);
+				// editTable.setCell(8, row, listOfSelectInput);
+				editTable.setCell(8, row, allGeneModInputs);
 
 				// GeneState
 				List<ObservedValue> allValues = cs.getObservedValuesByTargetAndFeature(e.getName(), "GeneState",
 						investigationNames, invName);
 				int countGeneState = 0;
-				listOfSelectInput = new ArrayList<SelectInput>();
+
+				String allGeneStateInputs = "";
 				for (ObservedValue value : allValues)
 				{
 					SelectInput geneStateInput = new SelectInput(this.fpMap.get("GeneState") + e.getName() + "_"
@@ -487,11 +489,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					geneStateInput.setValue(value.getValue());
 					geneStateInput.setWidth(-1);
 
-					listOfSelectInput.add(geneStateInput);
+					allGeneStateInputs += geneStateInput.toHtml() + "</br>";
 					countGeneState++;
 				}
 
-				editTable.setCell(9, row, listOfSelectInput);
+				editTable.setCell(9, row, allGeneStateInputs);
 
 				if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 				{
