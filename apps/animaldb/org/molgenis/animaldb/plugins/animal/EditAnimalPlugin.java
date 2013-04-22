@@ -32,6 +32,7 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 
 /**
@@ -492,7 +493,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					allGeneStateInputs += geneStateInput.toHtml() + "</br>";
 					countGeneState++;
 				}
-
 				editTable.setCell(9, row, allGeneStateInputs);
 
 				if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
@@ -732,7 +732,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 			}
 
-			// Date of Birth
+			// WeanDate
 			String weanDate = request.getString(this.fpMap.get("WeanDate") + e.getName());
 			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "WeanDate", investigationNames, invName).get(0);
 			value.setValue(weanDate);
@@ -759,63 +759,61 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 			}
 
-			// GeneModificiation
+			// GeneModificiation & Gene State
 			List<ObservedValue> allValuesGeneModification = cs.getObservedValuesByTargetAndFeature(e.getName(),
 					"GeneModification", investigationNames, invName);
-			int countGeneMod = 0;
-
-			for (ObservedValue avgm : allValuesGeneModification)
-			{
-
-				value = avgm;
-
-				String geneModification = request.getString((this.fpMap.get("GeneModification")) + e.getName() + "_"
-						+ countGeneMod);
-				value.setValue(geneModification);
-				db.update(value);
-				countGeneMod++;
-
-			}
-			// GeneModificiation
 			List<ObservedValue> allValuesGeneState = cs.getObservedValuesByTargetAndFeature(e.getName(), "GeneState",
 					investigationNames, invName);
-			int countGeneState = 0;
+			ObservedValue modVal = new ObservedValue();
+			ObservedValue stateVal = new ObservedValue();
+			int cntGenoType = 0;
 
-			for (ObservedValue avgm : allValuesGeneState)
+			while (cntGenoType < allValuesGeneModification.size() && cntGenoType < allValuesGeneState.size())
 			{
+				modVal = allValuesGeneModification.get(cntGenoType);
+				stateVal = allValuesGeneState.get(cntGenoType);
+				String geneModification = request.getString((this.fpMap.get("GeneModification")) + e.getName() + "_"
+						+ cntGenoType);
+				String geneState = request.getString((this.fpMap.get("GeneState")) + e.getName() + "_" + cntGenoType);
 
-				value = avgm;
+				if (modVal.getProtocolApplication_Id() == null)
+				{
+					if ((geneModification != null && !geneModification.equals(""))
+							&& ((geneState != null && !geneState.equals(""))))
+					{
+						System.out.println(">>>>>>>>>>>>>> add something");
+						ProtocolApplication newGenoType = cs.createProtocolApplication(invName, "SetGenotype");
+						db.add(newGenoType);
+						db.add(cs.createObservedValue(invName, newGenoType.getName(), now, null, "GeneModification",
+								e.getName(), geneModification, null));
+						db.add(cs.createObservedValue(invName, newGenoType.getName(), now, null, "GeneState",
+								e.getName(), geneState, null));
+					}
+				}
+				else
+				{
+					if (geneModification == null || geneModification.equals("") || geneState == null
+							|| geneState.equals(""))
+					{
+						System.out.println(">>>>>>>>>>>>>> remove something");
+						// delete value to make it empty
+						db.remove(modVal);
+						db.remove(stateVal);
+						db.remove(cs.getProtocolApplicationById(modVal.getProtocolApplication_Id()));
+					}
+					else
+					{
+						System.out.println(">>>>>>>>>>>>>> update something");
+						modVal.setValue(geneModification);
+						stateVal.setValue(geneState);
+						db.update(modVal);
+						db.update(stateVal);
+					}
 
-				String geneState = request
-						.getString((this.fpMap.get("GeneState")) + e.getName() + "_" + countGeneState);
-				value.setValue(geneState);
-				db.update(value);
-				countGeneState++;
-
+				}
+				System.out.println(">>>>>>>>>>>>>>increase the genotype counter: " + cntGenoType);
+				cntGenoType++;
 			}
-			// if (value.getProtocolApplication_Id() == null)
-			// {
-			// if (geneModification != null && !geneModification.equals(""))
-			// {
-			// db.add(cs.createObservedValueWithProtocolApplication(invName,
-			// now, null, "SetEarmark", "Earmark",
-			// e.getName(), earmarkName, null));
-			// }
-			// }
-			// else
-			// {
-			// if (geneModification == null || geneModification.equals(""))
-			// {
-			// // delete value to make it empty
-			// db.remove(value);
-			// db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
-			// }
-			// else
-			// {
-			// value.setValue(geneModification);
-			// db.update(value);
-			// }
-			// }
 
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 			{
