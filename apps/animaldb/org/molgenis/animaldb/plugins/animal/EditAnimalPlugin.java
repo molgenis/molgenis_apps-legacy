@@ -781,7 +781,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					if ((geneModification != null && !geneModification.equals(""))
 							&& ((geneState != null && !geneState.equals(""))))
 					{
-						System.out.println(">>>>>>>>>>>>>> add something");
 						ProtocolApplication newGenoType = cs.createProtocolApplication(invName, "SetGenotype");
 						db.add(newGenoType);
 						db.add(cs.createObservedValue(invName, newGenoType.getName(), now, null, "GeneModification",
@@ -795,7 +794,6 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					if (geneModification == null || geneModification.equals("") || geneState == null
 							|| geneState.equals(""))
 					{
-						System.out.println(">>>>>>>>>>>>>> remove something");
 						// delete value to make it empty
 						db.remove(modVal);
 						db.remove(stateVal);
@@ -803,15 +801,12 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					else
 					{
-						System.out.println(">>>>>>>>>>>>>> update something");
 						modVal.setValue(geneModification);
 						stateVal.setValue(geneState);
 						db.update(modVal);
 						db.update(stateVal);
 					}
-
 				}
-				System.out.println(">>>>>>>>>>>>>>increase the genotype counter: " + cntGenoType);
 				cntGenoType++;
 			}
 
