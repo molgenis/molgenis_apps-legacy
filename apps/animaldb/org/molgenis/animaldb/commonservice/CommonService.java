@@ -1672,9 +1672,11 @@ public class CommonService
 			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
 			q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+			// add second order sort on ID, because often only date is set in
+			// observedValue.TIME
+			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.ID));
 			List<ObservedValue> vals = q.find();
-			// FIXME Why the heck does this "get"function add an empty value to
-			// the DB ? //ate 2012-06-14
+
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();
