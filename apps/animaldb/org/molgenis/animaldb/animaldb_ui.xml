@@ -46,7 +46,7 @@
 				type="org.molgenis.animaldb.plugins.animal.EditAnimalPlugin" label="Edit Animals" />
 				
 			<menu name="breedingmenu" position="left" label="Breeding">
-				<plugin name="Breeding"
+				<plugin name="BreedingOverview"
 					type="org.molgenis.animaldb.plugins.breeding.BreedingOverview" label="Overview" />
 				<plugin name="Breeding"
 					type="org.molgenis.animaldb.plugins.breeding.Breedingnew" label="BreedingModule" />
