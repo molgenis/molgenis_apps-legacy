@@ -33,16 +33,14 @@
 		<p><h2>Existing breeding lines</h2></p>
 		<#if screen.lineList??>
 			<#if screen.lineList?size gt 0>
-				<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
+				<table cellpadding="0" cellspacing="0" border="0" class="display" id="breedingOverviewTable">
 					<thead>
 						<tr>
-							<th></th>
 							<th>Name</th>
 							<th>Full name</th>
 							<th>Species</th>
 							<th>Source</th>
 							<th>Remarks</th>
-							<th></th>
 							
 						</tr>
 					</thead>
@@ -50,12 +48,11 @@
 					<#list screen.lineList as line>
 						<#assign lineName = line.getName()>
 						<tr>
-							<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
 							<td>${lineName}</td>
-							<td>${screen.getFullName(lineName)}</td>
-							<td>${screen.getSpeciesName(lineName)}</td>
-							<td>${screen.getSourceName(lineName)}</td>
-							<td>${screen.getRemarksString(lineName)}</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
 							<!--<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td-->
 						</tr>
 					</#list>
@@ -71,7 +68,7 @@
 </#if>
 
 <script>
-	var oTable = jQuery('#breedingSummaryTable').dataTable(
+	var oTable = jQuery('#breedingOverviewTable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
