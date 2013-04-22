@@ -33,15 +33,15 @@
 				<table cellpadding="0" cellspacing="0" border="0" class="display" id="breedingOverviewTable">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Species</th>
-							<th>Source</th>
-							<th>&#9794;</th>
-							<th>&#9792;</th>
-							<th>&#9794;/&#9792 ?</th>
-							<th>parent groups:</th>
-							<th>litters</th>
-							<th>unweaned</th>
+							<th style="font-weight:bold;">Name</th>
+							<th style="font-weight:bold;">Species</th>
+							<th style="font-weight:bold;">&#9794;</th>
+							<th style="font-weight:bold;">&#9792;</th>
+							<th style="font-weight:bold;">&#9794;/&#9792 ?</th>
+							<th style="font-weight:bold;">parent groups:</th>
+							<th style="font-weight:bold;">litters</th>
+							<th style="font-weight:bold;">unweaned</th>
+							<th style="font-weight:bold;">Source</th>
 							
 						</tr>
 					</thead>
@@ -51,13 +51,13 @@
 						<tr>
 							<td>${lineName}</td>
 							<td>${screen.getSpeciesName(lineName)}</td>
-							<td>${screen.getSourceName(lineName)}</td>
 							<td>${screen.getCountPerSex(lineName, "Male")}</td>
 							<td>${screen.getCountPerSex(lineName, "Female")}</td>
 							<td>${screen.getCountPerSex(lineName, "UnknownSex")}</td>
 							<td></td>
 							<td></td>
 							<td></td>
+							<td>${screen.getSourceName(lineName)}</td>
 							<!--<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td-->
 						</tr>
 					</#list>
