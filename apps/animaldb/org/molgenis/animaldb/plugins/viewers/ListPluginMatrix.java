@@ -184,7 +184,10 @@ public class ListPluginMatrix extends EasyPluginController
 							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class),
 							true, 0, true, false, filterRules, null, true);
 					// enable animalDB specific traits (sorting filtering etc)
+					targetMatrixViewer.setShowQuickView(true);
+					targetMatrixViewer.setShowfilterSaveOptions(true);
 					targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
+
 					// restore paging
 					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);
 					targetMatrixViewer.getMatrix().setRowLimit(oldLimit);
@@ -220,6 +223,8 @@ public class ListPluginMatrix extends EasyPluginController
 							true, 2, true, false, filterRules, measurements, false);
 
 					// enable animalDB specific traits (sorting filtering etc)
+					targetMatrixViewer.setShowQuickView(true);
+					targetMatrixViewer.setShowfilterSaveOptions(true);
 					targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 					// restore paging
 					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);

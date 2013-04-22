@@ -129,7 +129,9 @@ public class ViewFamily extends PluginModel<Entity>
 						1, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				animalMatrixViewer.setDatabase(db);
-				animalMatrixViewer.setLabel("Choose animal:");
+				animalMatrixViewer.setShowQuickView(true);
+				animalMatrixViewer.setShowfilterSaveOptions(true);
+				// animalMatrixViewer.setLabel("Choose animal:");
 			}
 			catch (Exception e)
 			{

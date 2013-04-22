@@ -70,9 +70,6 @@
 		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addSpecies'" />
 	</div>
 	
-	<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addSpecies'" />
-	</div>
 
 <#else>
 

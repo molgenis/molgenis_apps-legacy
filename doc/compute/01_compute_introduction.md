@@ -140,6 +140,8 @@ Paste:
   
 *Explanation:* The first row contains parameter names (c.q. target types), comma separated. In our case we only have one parameter, called `guest`. Each of the following rows contains the parameters values. When running \mc, the protocols are subsequently applied to each of the values. I.e., in our example, we will generate a different invitation script for each of our guests.
 
+*Note:* There is a list of variables names that are reserved and therefore cannot be used in any of the files presented. These words are: inputDir, outputDir, workflow, parameters, template, worksheet, id.
+
 ###Script generation
 You need no command line parameters if your  files (workflow.csv, worksheet.csv, parameters.csv) and (protocol, template) directories, is in the directory from which you run molgenis_compute.sh. Otherwise, you may want to specify the *-inputdir* that refers to the directory in which you have stored your `workflow.csv`, `protocol` directory,`parameters.csv` and `worksheet.csv`. Alternatively, you may specify (or overwrite) each of these files individually by `-workflow`, `-protocols`, `-parameters`, `-worksheet`. The second parameter (`id`) refers to the name you give your analysis run. This will automatically create a directory with the same name where all scripts will be generated. Alternatively, you may explicitly specificy `-scripts`, where the parameter `scripts` refers to the directory where *MOLGENIS Compute* will store the generated scripts.   
 

@@ -996,7 +996,9 @@ public class CommonService
 		newValue.setTarget_Name(subjectTargetName);
 		if (targetRefName != null)
 		{
-			newValue.setRelation_Name(targetRefName);
+			// newValue.setRelation_Name(targetRefName);
+			newValue.setRelation(getObservationTargetByName(targetRefName).getId());
+
 		}
 		else
 		{
@@ -1670,9 +1672,11 @@ public class CommonService
 			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
 			q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+			// add second order sort on ID, because often only date is set in
+			// observedValue.TIME
+			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.ID));
 			List<ObservedValue> vals = q.find();
-			// FIXME Why the heck does this "get"function add an empty value to
-			// the DB ? //ate 2012-06-14
+
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();
@@ -1728,6 +1732,18 @@ public class CommonService
 		}
 		else
 			throw new DatabaseException("No protocolapplication with name " + name + "could be found.");
+	}
+
+	public ProtocolApplication getProtocolApplicationById(int id) throws DatabaseException, ParseException
+	{
+		Query<ProtocolApplication> q = db.query(ProtocolApplication.class);
+		q.addRules(new QueryRule(ProtocolApplication.ID, Operator.EQUALS, id));
+		if (!q.find().isEmpty())
+		{
+			return q.find().get(0);
+		}
+		else
+			throw new DatabaseException("No protocolapplication with name " + id + "could be found.");
 	}
 
 	/**

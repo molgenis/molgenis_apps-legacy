@@ -124,39 +124,8 @@
 			<input type='submit' id='from2to3' class='addbutton' value='Next' onclick="__action.value='JensonButton'" />
 		</div>
 	</#if>
-	<#--input type='submit' name="submitswitch" id="submitswitch" class='addbutton' value='Switch' onclick="__action.value='SelectParentsswitchtofather'" /-->
-	</div>
-<#--
-<#elseif screen.action == "addParentgroupScreen3">
-
-	<div class="form_header">Create parentgroup, step 2/3: select father(s)</div>
-	<br />
-	${screen.fatherMatrixViewer}<br />
-	<div style="clear:both">
-		<input type='submit' id='cancel3' class='addbutton' value='Cancel' onclick="__action.value='init'" />
-		<input type='submit' id='from3to2' class='addbutton' value='Previous' onclick="__action.value='createParentgroup'" />
-		<input type='submit' id='from3to4' class='addbutton' value='Next' onclick="__action.value='addParentgroupScreen4'" />
 	</div>
 
-<#elseif screen.action == "addParentgroupScreen4">
-
-	<div class="form_header">Create parentgroup, step 3/3: set start date and remarks</div>
-	<br />
-	<div style="clear:both; display:block">
-		<label style="width:16em;float:left;" for="startdate">Start date:</label>
-		<input type="text" class="text ui-widget-content ui-corner-all" id="startdate" name="startdate" value="<#if screen.startdate?exists>${screen.getStartdate()}</#if>" onclick='showDateInput(this)' autocomplete='off'  />
-	</div>
-	<div style="clear:both; display:block">
-		<label style="width:16em;float:left;" for="remarks">Remarks:</label>
-		<input type="text" class="text ui-widget-content ui-corner-all" id="remarks" name="remarks" />
-	</div>
-	<br />
-	<div>
-		<input type='submit' id='cancel4' class='addbutton' value='Cancel' onclick="__action.value='init'" />
-		<input type='submit' id='from4to3' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen3'" />
-		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
-	</div>
--->
 <#elseif screen.action == "createLitter">
 
 	<div class="form_header">Create litter from parentgroup ${screen.getSelectedParentgroup()}</div>
