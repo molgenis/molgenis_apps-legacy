@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -32,6 +33,8 @@ public class BreedingOverview extends PluginModel<Entity>
 	private String sourceName;
 	private String speciesName;
 	private String remarks;
+	private Database DB = null;
+	private List<String> investigationNames;
 
 	private List<ObservationTarget> sourceList;
 	private List<ObservationTarget> lineList;
@@ -71,6 +74,111 @@ public class BreedingOverview extends PluginModel<Entity>
 		return action;
 	}
 
+	public String getFullName(String lineName)
+	{
+		String fullName = "";
+		try
+		{
+			if (cs.getMostRecentValueAsString(lineName, "LineFullName") != null)
+			{
+				fullName = cs.getMostRecentValueAsString(lineName, "LineFullName");
+			}
+		}
+		catch (Exception e)
+		{
+			fullName = "Error when retrieving full name";
+		}
+		return fullName;
+	}
+
+	public String getSourceName(String lineName)
+	{
+		String sourceName;
+		try
+		{
+			sourceName = cs.getMostRecentValueAsXrefName(lineName, "Source");
+		}
+		catch (Exception e)
+		{
+			sourceName = "Error when retrieving source";
+		}
+		return sourceName;
+	}
+
+	public String getSpeciesName(String lineName)
+	{
+		String speciesName;
+		try
+		{
+			speciesName = cs.getMostRecentValueAsXrefName(lineName, "Species");
+		}
+		catch (Exception e)
+		{
+			speciesName = "Error when retrieving species";
+		}
+		return speciesName;
+	}
+
+	public String getRemarksString(String lineName) throws DatabaseException
+	{
+		// List<String> remarksList = cs.getRemarks(lineId);
+		String returnString = "";
+		// for (String remark : remarksList) {
+		// returnString += (remark + "<br>");
+		// }
+		// if (returnString.length() > 0) {
+		// returnString = returnString.substring(0, returnString.length() - 4);
+		// }
+		try
+		{
+			if (cs.getMostRecentValueAsString(lineName, "Remark") != null)
+			{
+				returnString = cs.getMostRecentValueAsString(lineName, "Remark");
+			}
+		}
+		catch (Exception e)
+		{
+			returnString = "Error when retrieving remarks";
+		}
+		return returnString;
+	}
+
+	// public String getCountPerSex(String lineName, String sex)
+	public String getCountPerSex(String lineNameString, String sexString)
+	{
+		try
+		{
+			Query<ObservedValue> q1 = this.DB.query(ObservedValue.class);
+			QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
+			QueryRule r2 = new QueryRule(ObservedValue.RELATION, Operator.EQUALS, cs.getObservationTargetByName(
+					lineNameString).getId());
+			QueryRule r3 = new QueryRule(ObservedValue.RELATION, Operator.EQUALS, cs.getObservationTargetByName(
+					sexString).getId());
+			q1.addRules(r1, r2);
+			List<ObservedValue> ovl1 = q1.find();
+			Integer size = q1.find().size();
+			if (!size.equals(0))
+			{
+				List<Integer> il1 = new ArrayList<Integer>();
+				for (ObservedValue val : ovl1)
+				{
+					il1.add(val.getTarget_Id());
+				}
+				QueryRule r4 = new QueryRule(ObservedValue.TARGET, Operator.IN, il1);
+
+				Query<ObservedValue> q2 = this.DB.query(ObservedValue.class);
+				q2.addRules(r1, r3, r4);
+				size = q2.find().size();
+			}
+			return size.toString();
+		}
+		catch (Exception e)
+		{
+			speciesName = "Error when retrieving species";
+		}
+		return speciesName;
+	}
+
 	@Override
 	public void handleRequest(Database db, MolgenisRequest request)
 	{
@@ -101,12 +209,13 @@ public class BreedingOverview extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		this.DB = db;
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 
 		try
 		{
-			List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+			this.investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 			// Populate source list
 			// All source types pertaining to
 			// "Eigen fok binnen uw organisatorische werkeenheid"

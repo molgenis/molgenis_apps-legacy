@@ -19,28 +19,29 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<#if screen.action == "init">
-
-	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 	
 	<form method="post" enctype="multipart/form-data" name="${screen.name}">
 		<!--needed in every form: to redirect the request to the right screen-->
 		<input type="hidden" name="__target" value="${screen.name}"" />
 		<!--needed in every form: to define the action. This can be set by the submit button-->
 		<input type="hidden" name="__action" />
-		
+
+	
 		<div>
-		<p><h2>Existing breeding lines</h2></p>
 		<#if screen.lineList??>
 			<#if screen.lineList?size gt 0>
 				<table cellpadding="0" cellspacing="0" border="0" class="display" id="breedingOverviewTable">
 					<thead>
 						<tr>
 							<th>Name</th>
-							<th>Full name</th>
 							<th>Species</th>
 							<th>Source</th>
-							<th>Remarks</th>
+							<th>&#9794;</th>
+							<th>&#9792;</th>
+							<th>&#9794;/&#9792 ?</th>
+							<th>parent groups:</th>
+							<th>litters</th>
+							<th>unweaned</th>
 							
 						</tr>
 					</thead>
@@ -49,7 +50,11 @@
 						<#assign lineName = line.getName()>
 						<tr>
 							<td>${lineName}</td>
-							<td></td>
+							<td>${screen.getSpeciesName(lineName)}</td>
+							<td>${screen.getSourceName(lineName)}</td>
+							<td>${screen.getCountPerSex(lineName, "Male")}</td>
+							<td>${screen.getCountPerSex(lineName, "Female")}</td>
+							<td>${screen.getCountPerSex(lineName, "UnknownSex")}</td>
 							<td></td>
 							<td></td>
 							<td></td>
@@ -65,20 +70,20 @@
 			<p>There are no breeding lines yet.</p>
 		</#if>
 	</div>
-</#if>
 
 <script>
 	var oTable = jQuery('#breedingOverviewTable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
+	  "bSort": true,
+	  "bInfo": true,
 	  "sPaginationType": "full_numbers",
+	  "bLengthChange": true,
 	  "bSaveState": true,
-	  "bAutoWidth": false,
-	  "bJQueryUI": true,
-	  "aoColumnDefs": [ 
-      	{ "sWidth": "30px", "aTargets": [ 0 ] }
-    	] 
+	  "bAutoWidth": true,
+	  "bJQueryUI": true
 	  }
+	  
 	);
 	
 	
