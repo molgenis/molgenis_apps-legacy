@@ -54,6 +54,7 @@ public class BreedingOverview extends PluginModel<Entity>
 	private String remarks;
 	private Database DB = null;
 	private List<String> investigationNames;
+	private List<Integer> investigationIDs;
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	private List<ObservationTarget> sourceList;
@@ -303,6 +304,43 @@ public class BreedingOverview extends PluginModel<Entity>
 
 	}
 
+	public String getGenoTypes(String lineNameString) throws DatabaseException, ParseException
+	{
+		String genoTypes = "";
+
+		if (this.lineIndIDsInObsVal.size() > 0)
+		{
+			List<ObservationTarget> allLineAnimals = cs.getObservationTargetsbyId(this.lineIndIDsInObsVal);
+			if (allLineAnimals.size() > 0)
+			{
+				List<ObservedValue> allGenoTypes = cs.getObservedValuesByTargetAndMeasurement(allLineAnimals.get(0)
+						.getName(), "GeneModification", this.investigationIDs);
+
+				if (allGenoTypes != null)
+				{
+					for (ObservedValue ov : allGenoTypes)
+					{
+						genoTypes += ov.getValue() + "<br />";
+					}
+				}
+				else
+				{
+					genoTypes = "na";
+				}
+			}
+			else
+			{
+				genoTypes = "na";
+			}
+		}
+		else
+		{
+			genoTypes = "na";
+		}
+
+		return genoTypes;
+	}
+
 	public String getUnWeaned(String lineNameString) throws DatabaseException, ParseException
 	{
 		List<Integer> allLitterIDs = new ArrayList<Integer>();
@@ -495,6 +533,7 @@ public class BreedingOverview extends PluginModel<Entity>
 		try
 		{
 			this.investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+			this.investigationIDs = cs.getAllUserInvestigationIds(this.getLogin().getUserName());
 			// Populate source list
 			// All source types pertaining to
 			// "Eigen fok binnen uw organisatorische werkeenheid"
@@ -517,7 +556,8 @@ public class BreedingOverview extends PluginModel<Entity>
 				}
 			}
 			// Populate species list
-			this.speciesList = cs.getAllMarkedPanels("Species", investigationNames);
+			// this.speciesList = cs.getAllMarkedPanels("Species",
+			// investigationNames);
 			// Populate existing lines list
 			this.lineList = cs.getAllMarkedPanels("Line", investigationNames);
 

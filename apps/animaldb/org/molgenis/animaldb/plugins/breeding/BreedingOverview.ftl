@@ -37,7 +37,8 @@
 							<th style="font-weight:bold;">Species</th>
 							<th style="font-weight:bold;">&#9794;</th>
 							<th style="font-weight:bold;">&#9792;</th>
-							<th style="font-weight:bold;">?</th>
+							<th style="font-weight:bold;">GenoType</th>
+							<th style="font-weight:bold;"># animals</th>
 							<th style="font-weight:bold;">not yet weaned</th>
 							<th style="font-weight:bold;">last litter</th>
 							<th style="font-weight:bold;">age distribution (weeks)</th>
@@ -54,7 +55,8 @@
 							<td>${screen.getSpeciesName(lineName)}</td>
 							<td>${screen.getCountPerSex(lineName, "Male")}</td>
 							<td>${screen.getCountPerSex(lineName, "Female")}</td>
-							<td>${screen.getCountPerSex(lineName, "UnknownSex")}</td>
+							<td>${screen.getGenoTypes(lineName)}</td>
+							<td></td>
 							<td></td>
 							<td>${screen.getLastLitter(lineName)}</td>
 							<td>${screen.createAgeHistogram(lineName)}</td>
