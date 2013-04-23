@@ -360,6 +360,27 @@ public class CommonService
 	}
 
 	/**
+	 * Retrieve a list of observation targets by their id's. Gives back null if
+	 * not found.
+	 * 
+	 */
+	public List<ObservationTarget> getObservationTargetsbyId(List<Integer> idList) throws DatabaseException,
+			ParseException
+	{
+		if (idList.size() > 0)
+		{
+			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+			targetQuery.addRules(new QueryRule(ObservationTarget.ID, Operator.IN, idList));
+			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.ID));
+			return targetQuery.find();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
 	 * Retrieve an observation target by name. Gives back null if not found.
 	 * 
 	 */
