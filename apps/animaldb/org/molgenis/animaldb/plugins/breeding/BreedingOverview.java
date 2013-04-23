@@ -58,6 +58,7 @@ public class BreedingOverview extends PluginModel<Entity>
 	private List<ObservationTarget> sourceList;
 	private List<ObservationTarget> lineList;
 	private List<ObservationTarget> speciesList;
+	private List<ObservationTarget> litterList;
 
 	private List<Integer> aliveAnimalIDs = new ArrayList<Integer>();
 	// line info
@@ -236,7 +237,7 @@ public class BreedingOverview extends PluginModel<Entity>
 			}
 			else
 			{
-				return "<italic>na</italic>";
+				return "na";
 			}
 
 		}
@@ -293,12 +294,47 @@ public class BreedingOverview extends PluginModel<Entity>
 		}
 		else
 		{
-			return "<italic>na</italic>";
+			return "na";
 		}
 
 		// double[] dataArray =
 		// { 10, 3, 12, 30, 14, 15, 16, 55, 18, 19 };
 
+	}
+
+	public String getLastLitter(String lineNameString) throws DatabaseException
+	{
+		List<Integer> allLitterIDs = new ArrayList<Integer>();
+
+		for (ObservationTarget ot : this.litterList)
+		{
+			allLitterIDs.add(ot.getId());
+		}
+
+		if (allLitterIDs.size() > 0)
+		{
+			Query<ObservedValue> lq = this.DB.query(ObservedValue.class);
+			QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
+			QueryRule r2 = new QueryRule(ObservedValue.TARGET, Operator.IN, allLitterIDs);
+			QueryRule r3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Line");
+			QueryRule r4 = new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, lineNameString);
+			QueryRule r5 = new QueryRule(Operator.SORTDESC, ObservedValue.TIME);
+
+			lq.addRules(r1, r2, r3, r4, r5);
+
+			List<ObservedValue> lastLitterList = lq.find();
+			if (lastLitterList.size() > 0)
+			{
+				return this.dateOnlyFormat.format(lastLitterList.get(0).getTime());
+			}
+			else
+			{
+				return "na";
+			}
+
+		}
+
+		return "na";
 	}
 
 	public String createBarChart(double[] dataArray)
@@ -413,6 +449,8 @@ public class BreedingOverview extends PluginModel<Entity>
 			this.speciesList = cs.getAllMarkedPanels("Species", investigationNames);
 			// Populate existing lines list
 			this.lineList = cs.getAllMarkedPanels("Line", investigationNames);
+
+			this.litterList = cs.getAllMarkedPanels("Litter", investigationNames);
 
 			// make a list of all living animalIDs
 			// query the observedValue table for all obsval with relation line

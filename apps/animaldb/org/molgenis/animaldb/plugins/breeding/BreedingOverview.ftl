@@ -38,7 +38,7 @@
 							<th style="font-weight:bold;">&#9794;</th>
 							<th style="font-weight:bold;">&#9792;</th>
 							<th style="font-weight:bold;">&#9794;/&#9792 ?</th>
-							<th style="font-weight:bold;">not weaned</th>
+							<th style="font-weight:bold;">not yet weaned</th>
 							<th style="font-weight:bold;">last litter</th>
 							<th style="font-weight:bold;">age distribution (weeks)</th>
 							<th style="font-weight:bold;">Source</th>
