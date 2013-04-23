@@ -10,6 +10,7 @@ package org.molgenis.animaldb.plugins.breeding;
 import static com.googlecode.charts4j.Color.ALICEBLUE;
 import static com.googlecode.charts4j.Color.BLACK;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -300,6 +301,76 @@ public class BreedingOverview extends PluginModel<Entity>
 		// double[] dataArray =
 		// { 10, 3, 12, 30, 14, 15, 16, 55, 18, 19 };
 
+	}
+
+	public String getUnWeaned(String lineNameString) throws DatabaseException, ParseException
+	{
+		List<Integer> allLitterIDs = new ArrayList<Integer>();
+
+		for (ObservationTarget ot : this.litterList)
+		{
+			allLitterIDs.add(ot.getId());
+		}
+
+		if (allLitterIDs.size() > 0)
+		{
+			Query<ObservedValue> lq = this.DB.query(ObservedValue.class);
+			QueryRule ra1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
+			QueryRule ra2 = new QueryRule(ObservedValue.TARGET, Operator.IN, allLitterIDs);
+			QueryRule ra3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Line");
+			QueryRule ra4 = new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, lineNameString);
+			// QueryRule rc1 = new QueryRule(ObservedValue.FEATURE_NAME,
+			// Operator.EQUALS, "Active");
+			// QueryRule rc2 = new QueryRule(ObservedValue.RELATION_NAME,
+			// Operator.EQUALS, "Active");
+
+			lq.addRules(ra1, ra2, ra3, ra4);
+			List<ObservedValue> litterList = lq.find();
+
+			if (litterList.size() > 0)
+			{
+				List<Integer> activeLitterListIDs = new ArrayList<Integer>();
+				for (ObservedValue ov : litterList)
+				{
+					activeLitterListIDs.add(ov.getTarget_Id());
+				}
+				if (activeLitterListIDs.size() > 0)
+				{
+					Query<ObservedValue> bSizeq = this.DB.query(ObservedValue.class);
+					QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
+					QueryRule r2 = new QueryRule(ObservedValue.TARGET, Operator.IN, activeLitterListIDs);
+					QueryRule r3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Size");
+					// QueryRule r4 = new QueryRule(ObservedValue.RELATION_NAME,
+					// Operator.EQUALS, lineNameString);
+					lq.addRules(r1, r2, r3);
+					List<ObservedValue> bSizeList = bSizeq.find();
+					String blaat = "";
+					// for (ObservedValue bSize : bSizeList)
+					// {
+					// blaat += " " + bSize.getValue();
+					// }
+					Integer size = bSizeList.size();
+					return size.toString();
+				}
+				else
+				{
+					return "0";
+				}
+
+				// return "doigethere" +
+				// cs.getMostRecentValueAsString(lastLitterList.get(0).getTarget_Name(),
+				// "Size");
+				// return
+				// this.dateOnlyFormat.format(lastLitterList.get(0).getTime());
+			}
+			else
+			{
+				return "na";
+			}
+
+		}
+
+		return "na";
 	}
 
 	public String getLastLitter(String lineNameString) throws DatabaseException

@@ -37,7 +37,7 @@
 							<th style="font-weight:bold;">Species</th>
 							<th style="font-weight:bold;">&#9794;</th>
 							<th style="font-weight:bold;">&#9792;</th>
-							<th style="font-weight:bold;">&#9794;/&#9792 ?</th>
+							<th style="font-weight:bold;">?</th>
 							<th style="font-weight:bold;">not yet weaned</th>
 							<th style="font-weight:bold;">last litter</th>
 							<th style="font-weight:bold;">age distribution (weeks)</th>
