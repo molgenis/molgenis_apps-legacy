@@ -48,6 +48,7 @@
 					<tbody>
 					<#list screen.lineList as line>
 						<#assign lineName = line.getName()>
+						${screen.prepareLineInfo(lineName)}
 						<tr>
 							<td>${lineName}</td>
 							<td>${screen.getSpeciesName(lineName)}</td>
@@ -56,7 +57,7 @@
 							<td>${screen.getCountPerSex(lineName, "UnknownSex")}</td>
 							<td></td>
 							<td></td>
-							<td></td>
+							<td>${screen.createAgeHistogram(lineName)}</td>
 							<td>${screen.getSourceName(lineName)}</td>
 							<!--<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td-->
 						</tr>
