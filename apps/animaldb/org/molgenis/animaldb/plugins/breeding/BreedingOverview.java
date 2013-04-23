@@ -31,12 +31,13 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 
+import com.googlecode.charts4j.AxisLabels;
 import com.googlecode.charts4j.AxisLabelsFactory;
 import com.googlecode.charts4j.AxisStyle;
 import com.googlecode.charts4j.AxisTextAlignment;
 import com.googlecode.charts4j.BarChart;
 import com.googlecode.charts4j.BarChartPlot;
-import com.googlecode.charts4j.Data;
+import com.googlecode.charts4j.DataUtil;
 import com.googlecode.charts4j.Fills;
 import com.googlecode.charts4j.GCharts;
 import com.googlecode.charts4j.Plots;
@@ -246,7 +247,7 @@ public class BreedingOverview extends PluginModel<Entity>
 		return speciesName;
 	}
 
-	public String createAgeHistogram(String LineNameString) throws DatabaseException
+	public String createAgeHistogram(String lineNameString) throws DatabaseException
 	{
 		double[] histData = new double[10];
 		long twelveWeeks = 7257600000l;
@@ -262,6 +263,7 @@ public class BreedingOverview extends PluginModel<Entity>
 			QueryRule r2 = new QueryRule(ObservedValue.TARGET, Operator.IN, this.aliveAnimalIDs);
 			QueryRule r3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "DateOfBirth");
 			QueryRule r6 = new QueryRule(ObservedValue.TARGET, Operator.IN, this.lineIndIDsInObsVal);
+			System.out.println("## " + lineNameString);
 			for (int i = 0; i < 9; i++)
 			{
 
@@ -269,13 +271,15 @@ public class BreedingOverview extends PluginModel<Entity>
 						dateOnlyFormat.format(startDate));
 				QueryRule r5 = new QueryRule(ObservedValue.VALUE, Operator.LESS, dateOnlyFormat.format(endDate));
 
-				System.out.println("\n####### " + " " + startDate.getTime() + " startdate: "
-						+ dateOnlyFormat.format(startDate));
-				System.out.println("\n####### " + endDate.getTime() + " enddate: " + dateOnlyFormat.format(endDate));
+				// System.out.println("\n####### " + " " + startDate.getTime() +
+				// " startdate: "
+				// + dateOnlyFormat.format(startDate));
+				// System.out.println("\n####### " + endDate.getTime() +
+				// " enddate: " + dateOnlyFormat.format(endDate));
 				Query<ObservedValue> q2 = this.DB.query(ObservedValue.class);
 				q2.addRules(r1, r2, r3, r4, r5, r6);
 				histData[i] = (double) q2.find().size();
-				System.out.println("\n#### " + histData[i]);
+				// System.out.println("\n#### " + histData[i]);
 
 				startDate.setTime(startDate.getTime() - twelveWeeks);
 				endDate.setTime(endDate.getTime() - twelveWeeks);
@@ -299,50 +303,42 @@ public class BreedingOverview extends PluginModel<Entity>
 
 	public String createBarChart(double[] dataArray)
 	{
-		// EXAMPLE CODE START
 		// Defining data plots.
-
-		// double[] blaat = {8,9,10,11,12,13,14};
-		// BarChartPlot test1 =
-		// Plots.newBarChartPlot(Data.newData(1,2,3,4,5,6,7),ORANGERED);
-		// BarChartPlot test2 =
-		// Plots.newBarChartPlot(Data.newData(blaat),LIMEGREEN);
-		BarChartPlot ageHist = Plots.newBarChartPlot(Data.newData(dataArray), BLACK);
-
-		// BarChartPlot team1 = Plots.newBarChartPlot(Data.newData(25, 43, 12,
-		// 30), BLUEVIOLET, "Team A");
-		// BarChartPlot team2 = Plots.newBarChartPlot(Data.newData(8, 35, 11,
-		// 5), ORANGERED, "Team B");
-		// BarChartPlot team3 = Plots.newBarChartPlot(Data.newData(10, 20, 30,
-		// 30), LIMEGREEN, "Team C");
+		BarChartPlot ageHistMale = Plots.newBarChartPlot(DataUtil.scale(dataArray), BLACK);
+		// BarChartPlot ageHistFemale =
+		// Plots.newBarChartPlot(DataUtil.scale(dataArray), PINK);
 
 		// Instantiating chart.
-		BarChart chart = GCharts.newBarChart(ageHist);
+		// BarChart chart = GCharts.newBarChart(ageHistMale, ageHistFemale);
+		BarChart chart = GCharts.newBarChart(ageHistMale);
 
 		// Defining axis info and styles
-		AxisStyle axisStyle = AxisStyle.newAxisStyle(BLACK, 13, AxisTextAlignment.CENTER);
-		// AxisStyle xAxisStyle = AxisStyle.newAxisStyle(null, 0, null);
-		// AxisStyle yAxisStyle = AxisStyle.newAxisStyle(null, 0, null);
-
-		// AxisLabels freq = AxisLabelsFactory.newAxisLabels("Frequency", 50.0);
-		// freq.setAxisStyle(axisStyle);
-		// AxisLabels age = AxisLabelsFactory.newAxisLabels("Age (months)",
-		// 50.0);
-		// age.setAxisStyle(axisStyle);
+		AxisStyle axisStyle = AxisStyle.newAxisStyle(BLACK, 12, AxisTextAlignment.CENTER);
 
 		// Adding axis info to chart.
+		AxisLabels xAxisLabels = AxisLabelsFactory.newAxisLabels("0", "12", "24", "36", "48", "60", "72", "84", "96",
+				">96");
+		xAxisLabels.setAxisStyle(axisStyle);
+		chart.addXAxisLabels(xAxisLabels);
 
-		chart.addXAxisLabels(AxisLabelsFactory
-				.newAxisLabels("0", "12", "24", "36", "48", "60", "72", "84", "96", ">96"));
-		chart.addYAxisLabels(AxisLabelsFactory.newNumericRangeAxisLabels(0, 100));
-		// chart.addXAxisLabels(age);
-		// chart.addYAxisLabels(freq);
+		double maxVal = 0.0;
+		for (int counter = 1; counter < dataArray.length; counter++)
+		{
+			if (dataArray[counter] > maxVal)
+			{
+				maxVal = dataArray[counter];
+			}
+		}
 
-		chart.setSize(300, 150);
-		chart.setBarWidth(25);
+		AxisLabels yAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0, maxVal);
+		yAxisLabels.setAxisStyle(axisStyle);
+		chart.addYAxisLabels(yAxisLabels);
+
+		chart.setSize(250, 110);
+		chart.setBarWidth(20);
 		chart.setSpaceWithinGroupsOfBars(0);
-		chart.setSpaceBetweenGroupsOfBars(0);
-		chart.setDataStacked(true);
+		chart.setSpaceBetweenGroupsOfBars(1);
+		chart.setDataStacked(false);
 		// chart.setTitle("Team Scores", BLACK, 16);
 		// chart.setGrid(100, 10, 3, 2);
 		chart.setBackgroundFill(Fills.newSolidFill(ALICEBLUE));

@@ -38,9 +38,9 @@
 							<th style="font-weight:bold;">&#9794;</th>
 							<th style="font-weight:bold;">&#9792;</th>
 							<th style="font-weight:bold;">&#9794;/&#9792 ?</th>
-							<th style="font-weight:bold;">parent groups:</th>
-							<th style="font-weight:bold;">litters</th>
-							<th style="font-weight:bold;">unweaned</th>
+							<th style="font-weight:bold;">not weaned</th>
+							<th style="font-weight:bold;">last litter</th>
+							<th style="font-weight:bold;">age distribution (weeks)</th>
 							<th style="font-weight:bold;">Source</th>
 							
 						</tr>
@@ -56,7 +56,7 @@
 							<td>${screen.getCountPerSex(lineName, "Female")}</td>
 							<td>${screen.getCountPerSex(lineName, "UnknownSex")}</td>
 							<td></td>
-							<td></td>
+							<td>${screen.getLastLitter(lineName)}</td>
 							<td>${screen.createAgeHistogram(lineName)}</td>
 							<td>${screen.getSourceName(lineName)}</td>
 							<!--<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td-->
