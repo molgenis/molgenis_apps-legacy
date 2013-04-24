@@ -14,8 +14,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
@@ -68,6 +70,16 @@ public class BreedingOverview extends PluginModel<Entity>
 	private List<ObservedValue> lineObsVal;
 	private List<Individual> lineIndInObsVal;
 	private List<Integer> lineIndIDsInObsVal = new ArrayList<Integer>();
+	private List<String> lineIndNamesInObsVal = new ArrayList<String>();
+	private List<ObservedValue> dobValList = new ArrayList<ObservedValue>();
+	private List<ObservedValue> sexValList = new ArrayList<ObservedValue>();
+	private List<ObservedValue> gmValList = new ArrayList<ObservedValue>();
+	private List<ObservedValue> gsValList = new ArrayList<ObservedValue>();
+
+	// report values:a
+	private Map<String, String> maleCnt = new HashMap<String, String>();
+	private Map<String, String> femaleCnt = new HashMap<String, String>();
+	private Map<String, String> unknSexCnt = new HashMap<String, String>();
 
 	public BreedingOverview(String name, ScreenController<?> parent)
 	{
@@ -177,7 +189,8 @@ public class BreedingOverview extends PluginModel<Entity>
 		try
 		{
 			// query the observedValue table for all obsval with relation line
-			// name and store the result and the size of the array
+			// limited to living animals.
+			// store the results
 
 			Query<ObservedValue> q1 = this.DB.query(ObservedValue.class);
 			QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
@@ -191,18 +204,67 @@ public class BreedingOverview extends PluginModel<Entity>
 			// System.out.println("\n }}}}} : " + lineNameString + " " +
 			// this.lineObsValSize);
 			this.lineIndIDsInObsVal.clear();
+			this.lineIndNamesInObsVal.clear();
+
+			Integer mCnt = 0;
+			Integer fCnt = 0;
+			Integer uCnt = 0;
 
 			if (!this.lineObsValSize.equals(0))
 			{
 				for (ObservedValue val : this.lineObsVal)
 				{
 					this.lineIndIDsInObsVal.add(val.getTarget_Id());
+					this.lineIndNamesInObsVal.add(val.getTarget_Name());
 					// System.out.println("\n )))))))))))) : " +
 					// val.getTarget_Name() + " " + val.getTarget_Id());
 				}
+
+				this.dobValList = cs.getObservedValuesByTargetsAndMeasurement(this.lineIndNamesInObsVal, "DateOfBirth",
+						this.investigationIDs);
+				this.sexValList = cs.getObservedValuesByTargetsAndMeasurement(this.lineIndNamesInObsVal, "Sex",
+						this.investigationIDs);
+				this.gmValList = cs.getObservedValuesByTargetsAndMeasurement(this.lineIndNamesInObsVal,
+						"GeneModification", this.investigationIDs);
+				this.gsValList = cs.getObservedValuesByTargetsAndMeasurement(this.lineIndNamesInObsVal, "GeneState",
+						this.investigationIDs);
+
+				if (sexValList != null)
+				{
+
+					for (ObservedValue ovSex : sexValList)
+					{
+						if (ovSex.getRelation_Name().equalsIgnoreCase("male"))
+						{
+							mCnt++;
+						}
+						else if (ovSex.getRelation_Name().equalsIgnoreCase("female"))
+						{
+							fCnt++;
+						}
+						else
+						{
+							uCnt++;
+						}
+					}
+				}
+
+				// System.out.println("/n $$$$ dobValList " +
+				// dobValList.size());
+				// System.out.println("/n $$$$ dobSexList " +
+				// dobSexList.size());
+				// System.out.println("/n $$$$ dobGmList " + dobGmList.size());
+				// System.out.println("/n $$$$ dobGsList " + dobGsList.size());
 			}
+			this.maleCnt.put(lineNameString, mCnt.toString());
+			this.femaleCnt.put(lineNameString, fCnt.toString());
+			this.unknSexCnt.put(lineNameString, fCnt.toString());
+			// System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmm   " + this.maleCnt
+			// + "\n" + this.femaleCnt);
 
 			// store the relevant info
+			// aliveMalesIdsMap = new HashMap<Integer, Individual>();
+			// List<Individual> aliveLineAnimals = new ArrayList<Individual>();
 
 		}
 		catch (Exception e)
@@ -212,6 +274,23 @@ public class BreedingOverview extends PluginModel<Entity>
 	}
 
 	// public String getCountPerSex(String lineName, String sex)
+
+	public String getLineSexCnt(String lineNameString, String sexString)
+	{
+		if (sexString.equalsIgnoreCase("male"))
+		{
+			return this.maleCnt.get(lineNameString);
+		}
+		else if (sexString.equalsIgnoreCase("female"))
+		{
+			return this.femaleCnt.get(lineNameString);
+		}
+		else
+		{
+			return this.unknSexCnt.get(lineNameString);
+		}
+	}
+
 	public String getCountPerSex(String lineNameString, String sexString)
 	{
 		try
@@ -250,58 +329,61 @@ public class BreedingOverview extends PluginModel<Entity>
 		return speciesName;
 	}
 
-	public String createAgeHistogram(String lineNameString) throws DatabaseException
+	public String createAgeHistogram(String lineNameString) throws Exception
 	{
-		double[] histData = new double[10];
+		Date beforeDate = new Date(); // just for speed calc
+		long before = beforeDate.getTime();
+		double[] histData =
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };// new double[100];
 		long twelveWeeks = 7257600000l;
 		Date startDate = new Date();
 		Date endDate = new Date();
 		startDate.setTime(startDate.getTime() - twelveWeeks);
+		long sDate = startDate.getTime();
 
-		// List<ObservedValue> ovl1 = q1.find();
-		// Integer size = q1.find().size();
-		if (!this.lineObsValSize.equals(0))
+		if (this.dobValList != null && !this.lineObsValSize.equals(0))
 		{
-			QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
-			QueryRule r2 = new QueryRule(ObservedValue.TARGET, Operator.IN, this.aliveAnimalIDs);
-			QueryRule r3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "DateOfBirth");
-			QueryRule r6 = new QueryRule(ObservedValue.TARGET, Operator.IN, this.lineIndIDsInObsVal);
-			System.out.println("## " + lineNameString);
-			for (int i = 0; i < 9; i++)
+			// Date dobDate;
+			ArrayList<Date> dobDates = new ArrayList<Date>();
+			for (ObservedValue dobOv : this.dobValList)
 			{
-
-				QueryRule r4 = new QueryRule(ObservedValue.VALUE, Operator.GREATER_EQUAL,
-						dateOnlyFormat.format(startDate));
-				QueryRule r5 = new QueryRule(ObservedValue.VALUE, Operator.LESS, dateOnlyFormat.format(endDate));
-
-				// System.out.println("\n####### " + " " + startDate.getTime() +
-				// " startdate: "
-				// + dateOnlyFormat.format(startDate));
-				// System.out.println("\n####### " + endDate.getTime() +
-				// " enddate: " + dateOnlyFormat.format(endDate));
-				Query<ObservedValue> q2 = this.DB.query(ObservedValue.class);
-				q2.addRules(r1, r2, r3, r4, r5, r6);
-				histData[i] = (double) q2.find().size();
-				// System.out.println("\n#### " + histData[i]);
-
-				startDate.setTime(startDate.getTime() - twelveWeeks);
-				endDate.setTime(endDate.getTime() - twelveWeeks);
-
+				dobDates.add(dateOnlyFormat.parse(dobOv.getValue()));
 			}
-			Query<ObservedValue> q2 = this.DB.query(ObservedValue.class);
-			QueryRule r5 = new QueryRule(ObservedValue.VALUE, Operator.LESS, dateOnlyFormat.format(endDate));
-			q2.addRules(r1, r2, r3, r5, r6);
-			histData[9] = (double) q2.find().size();
+			// Collections.sort(dobDates);
+			// Collections.reverse(dobDates);
+
+			for (Date d : dobDates)
+			{
+				boolean sorted = false;
+				long dobDate = d.getTime();
+				for (int i = 0; i < 9; i++)
+				{
+					if (dobDate >= sDate - (i * twelveWeeks) && !sorted)
+					{
+						histData[i]++;
+						sorted = true;
+					}
+				}
+				if (!sorted)
+				{
+					histData[9]++;
+				}
+			}
+
+			Date afterDate = new Date();
+			long after = afterDate.getTime();
+
+			Date afterchartDate = new Date();
+			long afterchart = afterchartDate.getTime();
+			System.out.println("-----> " + lineNameString + " 2:  query time: " + ((after - before))
+					+ " chartcreation: " + ((afterchart - after)));
 			return "<img src=\"" + createBarChart(histData) + "\" />";
+
 		}
 		else
 		{
 			return "na";
 		}
-
-		// double[] dataArray =
-		// { 10, 3, 12, 30, 14, 15, 16, 55, 18, 19 };
-
 	}
 
 	public String getGenoTypes(String lineNameString) throws DatabaseException, ParseException
@@ -327,6 +409,9 @@ public class BreedingOverview extends PluginModel<Entity>
 				{
 					genoTypes = "na";
 				}
+
+				// count occurences of genotypes
+
 			}
 			else
 			{
@@ -474,8 +559,7 @@ public class BreedingOverview extends PluginModel<Entity>
 				maxVal = dataArray[counter];
 			}
 		}
-
-		AxisLabels yAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0, maxVal);
+		AxisLabels yAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0.0, maxVal);
 		yAxisLabels.setAxisStyle(axisStyle);
 		chart.addYAxisLabels(yAxisLabels);
 

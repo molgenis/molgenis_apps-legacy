@@ -37,8 +37,6 @@
 							<th style="font-weight:bold;">Species</th>
 							<th style="font-weight:bold;">&#9794;</th>
 							<th style="font-weight:bold;">&#9792;</th>
-							<th style="font-weight:bold;">GenoType</th>
-							<th style="font-weight:bold;"># animals</th>
 							<th style="font-weight:bold;">not yet weaned</th>
 							<th style="font-weight:bold;">last litter</th>
 							<th style="font-weight:bold;">age distribution (weeks)</th>
@@ -53,12 +51,11 @@
 						<tr>
 							<td>${lineName}</td>
 							<td>${screen.getSpeciesName(lineName)}</td>
-							<td>${screen.getCountPerSex(lineName, "Male")}</td>
-							<td>${screen.getCountPerSex(lineName, "Female")}</td>
-							<td>${screen.getGenoTypes(lineName)}</td>
-							<td></td>
+							<td>${screen.getLineSexCnt(lineName, "male")}</td>
+							<td>${screen.getLineSexCnt(lineName, "female")}</td>
 							<td></td>
 							<td>${screen.getLastLitter(lineName)}</td>
+							
 							<td>${screen.createAgeHistogram(lineName)}</td>
 							<td>${screen.getSourceName(lineName)}</td>
 							<!--<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td-->
