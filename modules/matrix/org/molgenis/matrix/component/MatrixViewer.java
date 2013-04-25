@@ -845,8 +845,7 @@ public class MatrixViewer extends HtmlWidget
 			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterSave\" checked=\"checked\" / > Save only filters.";
 			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doColumnSave\"  / > Save only Columns.";
 			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterAndColumnSave\"  / > Save Filters & Columns.";
-			divContents += "</br><label for=\"" + FILTERSAVENAME + "\">name: </label>"
-					+ new StringInput(FILTERSAVENAME, "Filter name").render();
+			divContents += "</br>name: " + new StringInput(FILTERSAVENAME, "Filter name").render();
 			divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save").render();
 			divContents += "</br>";
 			divContents += "</br><strong>load or delete saved filters: </strong>";
