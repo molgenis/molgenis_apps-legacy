@@ -790,7 +790,7 @@ public class MatrixViewer extends HtmlWidget
 		if (selectMultiple > 1)
 		{
 			dataTable.addRow("");
-			String selectAll = "<input type=\"button\" id=\"selectAllButton\" value=\"Select all visible\" onclick=\"";
+			String selectAll = "<input type=\"button\" id=\"selectAllButton\" value=\"Select all\" onclick=\"";
 			for (int i = 0; i < row; i++)
 			{ // putting for-loop inside
 				// javascript failed so we do it in
