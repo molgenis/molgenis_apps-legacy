@@ -299,44 +299,6 @@ public class BreedingOverview extends PluginModel<Entity>
 		}
 	}
 
-	public String getCountPerSex(String lineNameString, String sexString)
-	{
-		try
-		{
-			// Query<ObservedValue> q1 = this.DB.query(ObservedValue.class);
-			QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
-			QueryRule r2 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Sex");
-			QueryRule r3 = new QueryRule(ObservedValue.RELATION, Operator.EQUALS, cs.getObservationTargetByName(
-					sexString).getId());
-			// QueryRule r4 = new QueryRule(ObservedValue.TARGET, Operator.IN,
-			// this.aliveAnimalIDs);
-			// q1.addRules(r1, r2);
-			// List<ObservedValue> ovl1 = q1.find();
-			// Integer size = q1.find().size();
-			if (!this.lineObsValSize.equals(0)) // TODO check if we can improve
-												// by checking size of
-												// individual ids.
-			{
-				QueryRule r5 = new QueryRule(ObservedValue.TARGET, Operator.IN, this.lineIndIDsInObsVal);
-				Query<ObservedValue> q2 = this.DB.query(ObservedValue.class);
-				q2.addRules(r1, r2, r3, r5);
-				Integer size = q2.find().size();
-				return size.toString();
-				// return "0";
-			}
-			else
-			{
-				return "na";
-			}
-
-		}
-		catch (Exception e)
-		{
-			speciesName = "Error when retrieving species";
-		}
-		return speciesName;
-	}
-
 	public String createAgeHistogram(String lineNameString) throws Exception
 	{
 		Date beforeDate = new Date(); // just for speed calc
