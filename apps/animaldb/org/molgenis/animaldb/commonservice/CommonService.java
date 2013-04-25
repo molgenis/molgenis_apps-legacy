@@ -360,6 +360,27 @@ public class CommonService
 	}
 
 	/**
+	 * Retrieve a list of observation targets by their id's. Gives back null if
+	 * not found.
+	 * 
+	 */
+	public List<ObservationTarget> getObservationTargetsbyId(List<Integer> idList) throws DatabaseException,
+			ParseException
+	{
+		if (idList.size() > 0)
+		{
+			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+			targetQuery.addRules(new QueryRule(ObservationTarget.ID, Operator.IN, idList));
+			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.ID));
+			return targetQuery.find();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
 	 * Retrieve an observation target by name. Gives back null if not found.
 	 * 
 	 */
@@ -1637,6 +1658,46 @@ public class CommonService
 
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+		List<ObservedValue> vals = q.find();
+
+		if (vals.isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			obsVal.addAll(vals);
+			return obsVal;
+		}
+	}
+
+	/**
+	 * Returns all observed values for a given ObservationTarget and
+	 * measurement, sorted so that the most recent one comes first.
+	 * 
+	 * @param targetname
+	 *            The name of the target
+	 * @param measurementname
+	 *            The name of the measurement
+	 * @param investigation
+	 *            list A list of investigations of which the target can be part
+	 *            of.
+	 * @throws IOException
+	 * @throws DatabaseException
+	 * @return a list of observed values.
+	 * 
+	 */
+
+	public List<ObservedValue> getObservedValuesByTargetsAndMeasurement(List<String> targetNames, String mName,
+			List<Integer> investigationIds) throws DatabaseException, ParseException
+	{
+		List<ObservedValue> obsVal = new ArrayList<ObservedValue>();
+
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, targetNames));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
 		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));

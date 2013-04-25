@@ -158,6 +158,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 						2, true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				animalMatrixViewer.setFilterVisibility(false);
+				animalMatrixViewer.setShowQuickView(true);
+				animalMatrixViewer.setShowfilterSaveOptions(true);
 				animalMatrixViewer.setDatabase(db);
 			}
 			catch (Exception e)
