@@ -166,14 +166,7 @@ public class BreedingOverview extends PluginModel<Entity>
 
 	public String getRemarksString(String lineName) throws DatabaseException
 	{
-		// List<String> remarksList = cs.getRemarks(lineId);
 		String returnString = "";
-		// for (String remark : remarksList) {
-		// returnString += (remark + "<br>");
-		// }
-		// if (returnString.length() > 0) {
-		// returnString = returnString.substring(0, returnString.length() - 4);
-		// }
 		try
 		{
 			if (cs.getMostRecentValueAsString(lineName, "Remark") != null)
@@ -205,8 +198,6 @@ public class BreedingOverview extends PluginModel<Entity>
 			q1.addRules(r1, r2, r3, r4);
 			this.lineObsVal = q1.find();
 			this.lineObsValSize = q1.find().size();
-			// System.out.println("\n }}}}} : " + lineNameString + " " +
-			// this.lineObsValSize);
 			this.lineIndIDsInObsVal.clear();
 			this.lineIndNamesInObsVal.clear();
 
@@ -220,8 +211,6 @@ public class BreedingOverview extends PluginModel<Entity>
 				{
 					this.lineIndIDsInObsVal.add(val.getTarget_Id());
 					this.lineIndNamesInObsVal.add(val.getTarget_Name());
-					// System.out.println("\n )))))))))))) : " +
-					// val.getTarget_Name() + " " + val.getTarget_Id());
 				}
 
 				this.dobValList = cs.getObservedValuesByTargetsAndMeasurement(this.lineIndNamesInObsVal, "DateOfBirth",
@@ -257,23 +246,10 @@ public class BreedingOverview extends PluginModel<Entity>
 						this.femaleOv.put(lineNameString, f);
 					}
 				}
-
-				// System.out.println("/n $$$$ dobValList " +
-				// dobValList.size());
-				// System.out.println("/n $$$$ dobSexList " +
-				// dobSexList.size());
-				// System.out.println("/n $$$$ dobGmList " + dobGmList.size());
-				// System.out.println("/n $$$$ dobGsList " + dobGsList.size());
 			}
 			this.maleCnt.put(lineNameString, mCnt.toString());
 			this.femaleCnt.put(lineNameString, fCnt.toString());
 			this.unknSexCnt.put(lineNameString, fCnt.toString());
-			// System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmm   " + this.maleCnt
-			// + "\n" + this.femaleCnt);
-
-			// store the relevant info
-			// aliveMalesIdsMap = new HashMap<Integer, Individual>();
-			// List<Individual> aliveLineAnimals = new ArrayList<Individual>();
 
 		}
 		catch (Exception e)
@@ -281,8 +257,6 @@ public class BreedingOverview extends PluginModel<Entity>
 			e.printStackTrace();
 		}
 	}
-
-	// public String getCountPerSex(String lineName, String sex)
 
 	public String getLineSexCnt(String lineNameString, String sexString)
 	{
@@ -302,16 +276,12 @@ public class BreedingOverview extends PluginModel<Entity>
 
 	public String createAgeHistogram(String lineNameString) throws Exception
 	{
-		Date beforeDate = new Date(); // just for speed calc
-		long before = beforeDate.getTime();
-
 		if (this.dobValList != null && !this.lineObsValSize.equals(0))
 		{
 			ArrayList<String> males = new ArrayList<String>();
 			ArrayList<String> females = new ArrayList<String>();
 			List<ObservedValue> mov = this.maleOv.get(lineNameString);
 			List<ObservedValue> fov = this.femaleOv.get(lineNameString);
-			System.out.println(">>>>>>>>> m: " + mov.size() + " f: " + fov.size());
 			for (ObservedValue male : mov)
 			{
 				males.add(male.getTarget_Name());
@@ -320,7 +290,6 @@ public class BreedingOverview extends PluginModel<Entity>
 			{
 				females.add(female.getTarget_Name());
 			}
-			System.out.println(males);
 			// Date dobDate;
 			ArrayList<Date> mdobDates = new ArrayList<Date>();
 			ArrayList<Date> fdobDates = new ArrayList<Date>();
@@ -329,21 +298,15 @@ public class BreedingOverview extends PluginModel<Entity>
 				if (males.contains(dobOv.getTarget_Name()))
 				{
 					mdobDates.add(dateOnlyFormat.parse(dobOv.getValue()));
-					// System.out.println("in males " + dobOv.getTarget_Name());
 				}
 				if (females.contains(dobOv.getTarget_Name()))
 				{
 					fdobDates.add(dateOnlyFormat.parse(dobOv.getValue()));
-					// System.out.println("in males " + dobOv.getTarget_Name());
 				}
 			}
 			ArrayList<ArrayList<Date>> dobDates = new ArrayList<ArrayList<Date>>();
 			dobDates.add(mdobDates);
 			dobDates.add(fdobDates);
-			System.out.println(">>> " + mdobDates);
-			System.out.println(">>> " + fdobDates);
-			// Collections.sort(dobDates);
-			// Collections.reverse(dobDates);
 			List<double[]> histDataList = new ArrayList<double[]>();
 			for (ArrayList<Date> al : dobDates)
 			{
@@ -351,7 +314,6 @@ public class BreedingOverview extends PluginModel<Entity>
 				{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };// new
 				long twelveWeeks = 7257600000l;
 				Date startDate = new Date();
-				Date endDate = new Date();
 				startDate.setTime(startDate.getTime() - twelveWeeks);
 				long sDate = startDate.getTime();
 
@@ -375,41 +337,10 @@ public class BreedingOverview extends PluginModel<Entity>
 
 				}
 				histDataList.add(histData);
-				String o = "";
-				for (double each : histData)
-				{
-					o += (each + ", ");
-				}
-				System.out.println(">>> " + o);
-				// String o = "";
-				// for (double each : histData)
-				// {
-				// o += (each + ", ");
-				// }
-				// System.out.println(">>> " + o);
-				// Date afterDate = new Date();
-				// long after = afterDate.getTime();
-
-				// Date afterchartDate = new Date();
-				// long afterchart = afterchartDate.getTime();
-				// System.out.println("-----> " + lineNameString +
-				// " 2:  query time: " + ((after - before))
-				// + " chartcreation: " + ((afterchart - after)));
-				// return "<img src=\"" + createBarChart(histData) + "\" />";
 			}
 			try
 			{
-				for (double[] histData : histDataList)
-				{
-					String o = "";
-					for (double each : histData)
-					{
-						o += (each + ", ");
-					}
-					System.out.println(">>> " + o);
-				}
 				String chart = "";
-				System.out.println(histDataList.size() + " " + histDataList.get(0) + "  " + histDataList.get(1));
 				chart = createBarChart(histDataList.get(0), histDataList.get(1));
 				return "<img src=\"" + chart + "\" />";
 			}
@@ -481,10 +412,6 @@ public class BreedingOverview extends PluginModel<Entity>
 			QueryRule ra2 = new QueryRule(ObservedValue.TARGET, Operator.IN, allLitterIDs);
 			QueryRule ra3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Line");
 			QueryRule ra4 = new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, lineNameString);
-			// QueryRule rc1 = new QueryRule(ObservedValue.FEATURE_NAME,
-			// Operator.EQUALS, "Active");
-			// QueryRule rc2 = new QueryRule(ObservedValue.RELATION_NAME,
-			// Operator.EQUALS, "Active");
 
 			lq.addRules(ra1, ra2, ra3, ra4);
 			List<ObservedValue> litterList = lq.find();
@@ -502,15 +429,10 @@ public class BreedingOverview extends PluginModel<Entity>
 					QueryRule r1 = new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames);
 					QueryRule r2 = new QueryRule(ObservedValue.TARGET, Operator.IN, activeLitterListIDs);
 					QueryRule r3 = new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Size");
-					// QueryRule r4 = new QueryRule(ObservedValue.RELATION_NAME,
-					// Operator.EQUALS, lineNameString);
+
 					lq.addRules(r1, r2, r3);
 					List<ObservedValue> bSizeList = bSizeq.find();
-					String blaat = "";
-					// for (ObservedValue bSize : bSizeList)
-					// {
-					// blaat += " " + bSize.getValue();
-					// }
+
 					Integer size = bSizeList.size();
 					return size.toString();
 				}
@@ -519,11 +441,6 @@ public class BreedingOverview extends PluginModel<Entity>
 					return "0";
 				}
 
-				// return "doigethere" +
-				// cs.getMostRecentValueAsString(lastLitterList.get(0).getTarget_Name(),
-				// "Size");
-				// return
-				// this.dateOnlyFormat.format(lastLitterList.get(0).getTime());
 			}
 			else
 			{
@@ -621,7 +538,6 @@ public class BreedingOverview extends PluginModel<Entity>
 		xAxisLabels.setAxisStyle(axisStyle);
 		chart.addXAxisLabels(xAxisLabels);
 
-		System.out.println(">>>>> maxVal = " + maxVal);
 		AxisLabels yAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0.0, maxVal);
 		yAxisLabels.setAxisStyle(axisStyle);
 		chart.addYAxisLabels(yAxisLabels);
