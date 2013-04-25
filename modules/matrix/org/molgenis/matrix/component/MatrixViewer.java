@@ -97,6 +97,8 @@ public class MatrixViewer extends HtmlWidget
 	private boolean isEditable;
 	private boolean showTargetTooltip = false;
 	private boolean filterVisibility = false;
+	private boolean showQuickView = false;
+	private boolean showfilterSaveOptions = false;
 
 	private enum filSavSelEnum
 	{
@@ -473,7 +475,7 @@ public class MatrixViewer extends HtmlWidget
 		toggleFilterSettings.setIcon("generated-res/img/filter_funnel_32x32.png");
 		divContents += toggleFilterSettings.render() + "</div>";
 		// input for quick application of filters
-		if (true)
+		if (showQuickView)
 		{
 			SelectInput quickViewInput = buildSavedFiltersInput(QUICKVIEW);
 			quickViewInput.setWidth(6);
@@ -816,11 +818,13 @@ public class MatrixViewer extends HtmlWidget
 		// colValueProperty filter
 		divContents += generateFilterRules();
 
-		divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
-		divContents += "filter settings: ";
-		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
-		divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
-
+		if (showfilterSaveOptions)
+		{
+			divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
+			divContents += "filter settings: ";
+			divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
+			divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
+		}
 		// divContents += "<div>";
 		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
 		// "remove all filters");
@@ -830,24 +834,27 @@ public class MatrixViewer extends HtmlWidget
 
 		divContents += "</div>";
 
-		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-		// divContents +=
-		// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
-		divContents += "<strong>Save active filters: </strong>";
-		List<String> test = new ArrayList<String>();
-		test.add("blaat");
-		divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterSave\" checked=\"checked\" / > Save only filters.";
-		divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doColumnSave\"  / > Save only Columns.";
-		divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterAndColumnSave\"  / > Save Filters & Columns.";
-		divContents += "</br><label for=\"" + FILTERSAVENAME + "\">name: </label>"
-				+ new StringInput(FILTERSAVENAME, "Filter name").setLabel("name: ").render();
-		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save").render();
-		divContents += "</br>";
-		divContents += "</br><strong>load or delete saved filters: </strong>";
-		divContents += "</br>" + buildSavedFiltersInput(SAVEDFILTERS).render();
-		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
-		divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
-		divContents += "</div>";
+		if (showfilterSaveOptions)
+		{
+			divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+			// divContents +=
+			// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+			divContents += "<strong>Save active filters: </strong>";
+			List<String> test = new ArrayList<String>();
+			test.add("blaat");
+			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterSave\" checked=\"checked\" / > Save only filters.";
+			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doColumnSave\"  / > Save only Columns.";
+			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterAndColumnSave\"  / > Save Filters & Columns.";
+			divContents += "</br><label for=\"" + FILTERSAVENAME + "\">name: </label>"
+					+ new StringInput(FILTERSAVENAME, "Filter name").render();
+			divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save").render();
+			divContents += "</br>";
+			divContents += "</br><strong>load or delete saved filters: </strong>";
+			divContents += "</br>" + buildSavedFiltersInput(SAVEDFILTERS).render();
+			divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
+			divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
+			divContents += "</div>";
+		}
 		return divContents;
 	}
 
@@ -2238,6 +2245,26 @@ public class MatrixViewer extends HtmlWidget
 	public void setShowDownloadOptions(boolean showDownloadOptions)
 	{
 		this.showDownloadOptions = showDownloadOptions;
+	}
+
+	public boolean isShowQuickView()
+	{
+		return showQuickView;
+	}
+
+	public boolean isShowfilterSaveOptions()
+	{
+		return showfilterSaveOptions;
+	}
+
+	public void setShowQuickView(boolean showQuickView)
+	{
+		this.showQuickView = showQuickView;
+	}
+
+	public void setShowfilterSaveOptions(boolean showfilterSaveOptions)
+	{
+		this.showfilterSaveOptions = showfilterSaveOptions;
 	}
 
 }
