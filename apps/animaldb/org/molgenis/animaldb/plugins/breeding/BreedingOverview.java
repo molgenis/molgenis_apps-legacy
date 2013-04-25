@@ -9,6 +9,7 @@ package org.molgenis.animaldb.plugins.breeding;
 
 import static com.googlecode.charts4j.Color.ALICEBLUE;
 import static com.googlecode.charts4j.Color.BLACK;
+import static com.googlecode.charts4j.Color.BLUE;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,7 +79,9 @@ public class BreedingOverview extends PluginModel<Entity>
 
 	// report values:a
 	private Map<String, String> maleCnt = new HashMap<String, String>();
+	private Map<String, List<ObservedValue>> maleOv = new HashMap<String, List<ObservedValue>>();
 	private Map<String, String> femaleCnt = new HashMap<String, String>();
+	private Map<String, List<ObservedValue>> femaleOv = new HashMap<String, List<ObservedValue>>();
 	private Map<String, String> unknSexCnt = new HashMap<String, String>();
 
 	public BreedingOverview(String name, ScreenController<?> parent)
@@ -231,21 +234,26 @@ public class BreedingOverview extends PluginModel<Entity>
 
 				if (sexValList != null)
 				{
-
+					List<ObservedValue> m = new ArrayList<ObservedValue>();
+					List<ObservedValue> f = new ArrayList<ObservedValue>();
 					for (ObservedValue ovSex : sexValList)
 					{
 						if (ovSex.getRelation_Name().equalsIgnoreCase("male"))
 						{
+							m.add(ovSex);
 							mCnt++;
 						}
 						else if (ovSex.getRelation_Name().equalsIgnoreCase("female"))
 						{
+							f.add(ovSex);
 							fCnt++;
 						}
 						else
 						{
 							uCnt++;
 						}
+						this.maleOv.put(lineNameString, m);
+						this.femaleOv.put(lineNameString, f);
 					}
 				}
 
@@ -333,8 +341,7 @@ public class BreedingOverview extends PluginModel<Entity>
 	{
 		Date beforeDate = new Date(); // just for speed calc
 		long before = beforeDate.getTime();
-		double[] histData =
-		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };// new double[100];
+
 		long twelveWeeks = 7257600000l;
 		Date startDate = new Date();
 		Date endDate = new Date();
@@ -343,42 +350,92 @@ public class BreedingOverview extends PluginModel<Entity>
 
 		if (this.dobValList != null && !this.lineObsValSize.equals(0))
 		{
+			ArrayList<String> males = new ArrayList<String>();
+			ArrayList<String> females = new ArrayList<String>();
+			List<ObservedValue> mov = this.maleOv.get(lineNameString);
+			List<ObservedValue> fov = this.maleOv.get(lineNameString);
+			System.out.println(">>>>>>>>> m: " + mov.size() + " f: " + fov.size());
+			for (ObservedValue male : mov)
+			{
+				males.add(male.getTarget_Name());
+			}
+			for (ObservedValue female : fov)
+			{
+				females.add(female.getTarget_Name());
+			}
+			System.out.println(males);
 			// Date dobDate;
-			ArrayList<Date> dobDates = new ArrayList<Date>();
+			ArrayList<Date> mdobDates = new ArrayList<Date>();
+			ArrayList<Date> fdobDates = new ArrayList<Date>();
 			for (ObservedValue dobOv : this.dobValList)
 			{
-				dobDates.add(dateOnlyFormat.parse(dobOv.getValue()));
+				if (males.contains(dobOv.getTarget_Name()))
+				{
+					mdobDates.add(dateOnlyFormat.parse(dobOv.getValue()));
+					System.out.println("in males " + dobOv.getTarget_Name());
+				}
+				if (females.contains(dobOv.getTarget_Name()))
+				{
+					fdobDates.add(dateOnlyFormat.parse(dobOv.getValue()));
+					System.out.println("in males " + dobOv.getTarget_Name());
+				}
 			}
+			ArrayList<ArrayList<Date>> dobDates = new ArrayList<ArrayList<Date>>();
+			dobDates.add(mdobDates);
+			dobDates.add(fdobDates);
 			// Collections.sort(dobDates);
 			// Collections.reverse(dobDates);
-
-			for (Date d : dobDates)
+			List<double[]> histDataList = new ArrayList<double[]>();
+			for (ArrayList<Date> al : dobDates)
 			{
-				boolean sorted = false;
-				long dobDate = d.getTime();
-				for (int i = 0; i < 9; i++)
+				for (Date d : al)
 				{
-					if (dobDate >= sDate - (i * twelveWeeks) && !sorted)
+					double[] histData =
+					{ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };// new
+																			// double[100];
+					boolean sorted = false;
+					long dobDate = d.getTime();
+					for (int i = 0; i < 9; i++)
 					{
-						histData[i]++;
-						sorted = true;
+						if (dobDate >= sDate - (i * twelveWeeks) && !sorted)
+						{
+							histData[i]++;
+							sorted = true;
+						}
 					}
+					if (!sorted)
+					{
+						histData[9]++;
+					}
+					histDataList.add(histData);
 				}
-				if (!sorted)
-				{
-					histData[9]++;
-				}
+				// String o = "";
+				// for (double each : histData)
+				// {
+				// o += (each + ", ");
+				// }
+				// System.out.println(">>> " + o);
+				// Date afterDate = new Date();
+				// long after = afterDate.getTime();
+
+				// Date afterchartDate = new Date();
+				// long afterchart = afterchartDate.getTime();
+				// System.out.println("-----> " + lineNameString +
+				// " 2:  query time: " + ((after - before))
+				// + " chartcreation: " + ((afterchart - after)));
+				// return "<img src=\"" + createBarChart(histData) + "\" />";
 			}
-
-			Date afterDate = new Date();
-			long after = afterDate.getTime();
-
-			Date afterchartDate = new Date();
-			long afterchart = afterchartDate.getTime();
-			System.out.println("-----> " + lineNameString + " 2:  query time: " + ((after - before))
-					+ " chartcreation: " + ((afterchart - after)));
-			return "<img src=\"" + createBarChart(histData) + "\" />";
-
+			try
+			{
+				String chart = "";
+				chart = createBarChart(histDataList);
+				return "<img src=\"" + chart + "\" />";
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				return "na";
+			}
 		}
 		else
 		{
@@ -531,16 +588,34 @@ public class BreedingOverview extends PluginModel<Entity>
 		return "na";
 	}
 
-	public String createBarChart(double[] dataArray)
+	public String createBarChart(List<double[]> dataArrayList)
 	{
-		// Defining data plots.
-		BarChartPlot ageHistMale = Plots.newBarChartPlot(DataUtil.scale(dataArray), BLACK);
-		// BarChartPlot ageHistFemale =
-		// Plots.newBarChartPlot(DataUtil.scale(dataArray), PINK);
 
+		// Defining data plots.
+		boolean colorbool = true;
+		List<BarChartPlot> plots = new ArrayList<BarChartPlot>();
+		for (double[] dataArray : dataArrayList)
+		{
+			if (colorbool)
+			{
+				BarChartPlot ageHistPlot = Plots.newBarChartPlot(DataUtil.scale(dataArray), BLACK);
+				plots.add(ageHistPlot);
+				colorbool = false;
+			}
+			else
+			{
+				BarChartPlot ageHistPlot = Plots.newBarChartPlot(DataUtil.scale(dataArray), BLUE);
+				plots.add(ageHistPlot);
+				colorbool = true;
+			}
+
+		}
 		// Instantiating chart.
 		// BarChart chart = GCharts.newBarChart(ageHistMale, ageHistFemale);
-		BarChart chart = GCharts.newBarChart(ageHistMale);
+		BarChart chart = GCharts.newBarChart(plots);
+
+		// BarChartPlot ageHistFemale =
+		// Plots.newBarChartPlot(DataUtil.scale(dataArray), PINK);
 
 		// Defining axis info and styles
 		AxisStyle axisStyle = AxisStyle.newAxisStyle(BLACK, 12, AxisTextAlignment.CENTER);
@@ -551,12 +626,16 @@ public class BreedingOverview extends PluginModel<Entity>
 		xAxisLabels.setAxisStyle(axisStyle);
 		chart.addXAxisLabels(xAxisLabels);
 
-		double maxVal = 0.0;
-		for (int counter = 1; counter < dataArray.length; counter++)
+		double maxVal = 10;
+
+		for (double[] dataArray : dataArrayList)
 		{
-			if (dataArray[counter] > maxVal)
+			for (int counter = 1; counter < dataArray.length; counter++)
 			{
-				maxVal = dataArray[counter];
+				if (dataArray[counter] > maxVal)
+				{
+					maxVal = dataArray[counter];
+				}
 			}
 		}
 		AxisLabels yAxisLabels = AxisLabelsFactory.newNumericRangeAxisLabels(0.0, maxVal);
