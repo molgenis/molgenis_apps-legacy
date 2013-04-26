@@ -1812,7 +1812,7 @@ public class MatrixViewer extends HtmlWidget
 				setColHeaderFilter(chosenMeasurementNames);
 			}
 			// reload the matrix to apply everything.
-			// matrix.reload();
+			matrix.reload();
 		}
 	}
 
