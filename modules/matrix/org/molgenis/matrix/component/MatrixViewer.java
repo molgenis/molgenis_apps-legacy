@@ -146,6 +146,7 @@ public class MatrixViewer extends HtmlWidget
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
+	public String CLEARVALUEFILTERS = getName() + "_clearValueFilters";
 	public String REMOVEFILTER = getName() + "_removeFilter";
 	public String RELOADMATRIX = getName() + "_reloadMatrix";
 	public String SELECTED = getName() + "_selected";
@@ -825,12 +826,6 @@ public class MatrixViewer extends HtmlWidget
 			divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
 			divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
 		}
-		// divContents += "<div>";
-		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
-		// "remove all filters");
-		// removeAllFilters.setIcon("generated-res/img/delete.png");
-		// removeAllFilters.setShowLabel(true);
-		// divContents += removeAllFilters.render();
 
 		divContents += "</div>";
 
@@ -1004,6 +999,14 @@ public class MatrixViewer extends HtmlWidget
 		outStr += "<td>" + buildFilterInput(d_selectedMeasurement).render();
 		ActionInput addButton = new ActionInput(FILTERCOL, "Apply", "");
 		addButton.setIcon("generated-res/img/filter_funnel_add_24x24.png");
+
+		// add remove all filters button
+		// ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS,
+		// "remove all filters", "");
+		// removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
+
+		// outStr += "<td>" + addButton.render() + " " +
+		// removeAllFilters.render() + "</td>";
 		outStr += "<td>" + addButton.render() + "</td>";
 		outStr += "</tr></tbody></table>";
 		// add the javascript code for the table
@@ -1812,7 +1815,7 @@ public class MatrixViewer extends HtmlWidget
 				setColHeaderFilter(chosenMeasurementNames);
 			}
 			// reload the matrix to apply everything.
-			// matrix.reload();
+			matrix.reload();
 		}
 	}
 
