@@ -1699,6 +1699,11 @@ public class MatrixViewer extends HtmlWidget
 						filterList.add(savFil);
 						filterCnt++;
 					}
+					else if (mqr.getFilterType().toString().equals("rowHeader") && mqr.getField().equals("name"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
 					break;
 
 				case doColumnSave:
@@ -1712,6 +1717,11 @@ public class MatrixViewer extends HtmlWidget
 				case doFilterAndColumnSave:
 					if (mqr.getFilterType().toString().equals("colValueProperty")
 							|| mqr.getFilterType().toString().equals("colHeader"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					else if (mqr.getFilterType().toString().equals("rowHeader") && mqr.getField().equals("name"))
 					{
 						filterList.add(savFil);
 						filterCnt++;
@@ -1825,6 +1835,12 @@ public class MatrixViewer extends HtmlWidget
 					}
 				}
 				applyColHeaderFilter = true;
+			}
+			else if (filter.getFilterType().equals("rowHeader"))
+			{
+				// at the moment this can only be the name filter (2013-04-29)
+				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, field, op, value);
+				newFilterList.add(newRule);
 			}
 			else
 			{
