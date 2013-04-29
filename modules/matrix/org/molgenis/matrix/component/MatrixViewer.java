@@ -1753,8 +1753,25 @@ public class MatrixViewer extends HtmlWidget
 	public void doFilterLoad(String filterName) throws Exception
 	{
 		// the existing filters, to remove duplicates later
+		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
+		List<MatrixQueryRule> newFilterList = new ArrayList<MatrixQueryRule>();
 		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
-		List<MatrixQueryRule> newFilterList = existingFilters;
+		// remove the existing columnfilters, valuefilters and the namefilter
+		for (MatrixQueryRule mqr : existingFilters)
+		{
+			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
+			{
+				removeList.add(mqr);
+			}
+			else if (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name"))
+			{
+				removeList.add(mqr);
+			}
+
+		}
+		this.matrix.getRules().removeAll(removeList);
+		existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
+		newFilterList = existingFilters;
 		// get the name of the selected saved filter.
 		// String filterName = t.getString(SAVEDFILTERS);
 
