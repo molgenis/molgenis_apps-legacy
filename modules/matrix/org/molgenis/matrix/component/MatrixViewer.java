@@ -1119,12 +1119,23 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public void clearValueFilters(Database db, MolgenisRequest t) throws MatrixException
 	{
+		boolean clearNameFilters = true; // FIXME for now als clear the name
+											// filter with this action, but need
+											// to find a more elgegant solution
+											// for this.
 		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
 			{
 				removeList.add(mqr);
+			}
+			else if (clearNameFilters)
+			{
+				if (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name"))
+				{
+					removeList.add(mqr);
+				}
 			}
 		}
 		this.matrix.getRules().removeAll(removeList);
