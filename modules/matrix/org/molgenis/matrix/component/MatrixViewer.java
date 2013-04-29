@@ -1004,16 +1004,8 @@ public class MatrixViewer extends HtmlWidget
 		outStr += "<td>" + buildFilterInput(d_selectedMeasurement).render() + "</td>";
 		ActionInput addButton = new ActionInput(FILTERCOL, "Apply", "");
 		addButton.setIcon("generated-res/img/filter_funnel_add_24x24.png");
-		// outStr += "<td>" + addButton.render() + " " +
-		// removeAllFilters.render() + "</td>";
 		outStr += "<td>" + addButton.render() + "</td></tr>";
 
-		// add remove all filters button
-		// ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS,
-		// "remove all filters", "");
-		// removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
-		// outStr += "<tr><td></td><td></td><td>remove all filters:</td><td>" +
-		// removeAllFilters.render() + "</td></tr>";
 		outStr += "</tbody></table>";
 		// add the javascript code for the table
 		// outStr += "<script> $('#filterstable').dataTable(); </script>";
