@@ -975,9 +975,14 @@ public class MatrixViewer extends HtmlWidget
 
 	private String generateFilterRules() throws MatrixException, DatabaseException
 	{
+		// add remove all filters button
+		ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS, "remove all filters", "");
+		removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_all_24x24.png");
+
 		String outStr = "<table id=\"filterstable\" name=\"filterstable\">";
 		// outStr += "<thead></thead>";
-		outStr += "<thead> <tr align=\"center\"><th>Column</th><th>Operator</th><th>Value</th><th></th></tr></thead>";
+		outStr += "<thead> <tr align=\"center\"><th>Column</th><th>Operator</th><th>Value</th><th>"
+				+ removeAllFilters.render() + "</th></tr></thead>";
 		outStr += "<tbody>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -1004,9 +1009,11 @@ public class MatrixViewer extends HtmlWidget
 		outStr += "<td>" + addButton.render() + "</td></tr>";
 
 		// add remove all filters button
-		ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS, "remove all filters", "");
-		removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
-		outStr += "<tr><td></td><td></td><td>remove all filters:</td><td>" + removeAllFilters.render() + "</td></tr>";
+		// ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS,
+		// "remove all filters", "");
+		// removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
+		// outStr += "<tr><td></td><td></td><td>remove all filters:</td><td>" +
+		// removeAllFilters.render() + "</td></tr>";
 		outStr += "</tbody></table>";
 		// add the javascript code for the table
 		// outStr += "<script> $('#filterstable').dataTable(); </script>";
