@@ -791,7 +791,7 @@ public class MatrixViewer extends HtmlWidget
 		if (selectMultiple > 1)
 		{
 			dataTable.addRow("");
-			String selectAll = "<input type=\"button\" id=\"selectAllButton\" value=\"Select all visible\" onclick=\"";
+			String selectAll = "<input type=\"button\" id=\"selectAllButton\" value=\"Select all\" onclick=\"";
 			for (int i = 0; i < row; i++)
 			{ // putting for-loop inside
 				// javascript failed so we do it in
@@ -975,9 +975,14 @@ public class MatrixViewer extends HtmlWidget
 
 	private String generateFilterRules() throws MatrixException, DatabaseException
 	{
+		// add remove all filters button
+		ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS, "remove all filters", "");
+		removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_all_16x16.png");
+
 		String outStr = "<table id=\"filterstable\" name=\"filterstable\">";
 		// outStr += "<thead></thead>";
-		outStr += "<thead> <tr align=\"center\"><th>Column</th><th>Operator</th><th>Value</th><th></th></tr></thead>";
+		outStr += "<thead> <tr align=\"center\"><th>Column</th><th>Operator</th><th>Value</th><th>"
+				+ removeAllFilters.render() + "</th></tr></thead>";
 		outStr += "<tbody>";
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -994,21 +999,14 @@ public class MatrixViewer extends HtmlWidget
 		// add quickadd options for simple new colValueProperty filter
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		outStr += "<tr>";
-		outStr += "<td>" + buildFilterChoices(colHeaders).render();
-		outStr += "<td>" + buildFilterOperator(d_selectedMeasurement).render();
-		outStr += "<td>" + buildFilterInput(d_selectedMeasurement).render();
-		ActionInput addButton = new ActionInput(FILTERCOL, "Apply", "");
+		outStr += "<td>" + buildFilterChoices(colHeaders).render() + "</td>";
+		outStr += "<td>" + buildFilterOperator(d_selectedMeasurement).render() + "</td>";
+		outStr += "<td>" + buildFilterInput(d_selectedMeasurement).render() + "</td>";
+		ActionInput addButton = new ActionInput(FILTERCOL, "", "");
 		addButton.setIcon("generated-res/img/filter_funnel_add_24x24.png");
+		outStr += "<td>" + addButton.render() + "</td></tr>";
 
-		// add remove all filters button
-		// ActionInput removeAllFilters = new ActionInput(CLEARVALUEFILTERS,
-		// "remove all filters", "");
-		// removeAllFilters.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
-
-		// outStr += "<td>" + addButton.render() + " " +
-		// removeAllFilters.render() + "</td>";
-		outStr += "<td>" + addButton.render() + "</td>";
-		outStr += "</tr></tbody></table>";
+		outStr += "</tbody></table>";
 		// add the javascript code for the table
 		// outStr += "<script> $('#filterstable').dataTable(); </script>";
 		outStr += "<script>";
@@ -1120,12 +1118,23 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public void clearValueFilters(Database db, MolgenisRequest t) throws MatrixException
 	{
+		boolean clearNameFilters = true; // FIXME for now als clear the name
+											// filter with this action, but need
+											// to find a more elgegant solution
+											// for this.
 		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
 			{
 				removeList.add(mqr);
+			}
+			else if (clearNameFilters)
+			{
+				if (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name"))
+				{
+					removeList.add(mqr);
+				}
 			}
 		}
 		this.matrix.getRules().removeAll(removeList);
@@ -1690,6 +1699,11 @@ public class MatrixViewer extends HtmlWidget
 						filterList.add(savFil);
 						filterCnt++;
 					}
+					else if (mqr.getFilterType().toString().equals("rowHeader") && mqr.getField().equals("name"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
 					break;
 
 				case doColumnSave:
@@ -1703,6 +1717,11 @@ public class MatrixViewer extends HtmlWidget
 				case doFilterAndColumnSave:
 					if (mqr.getFilterType().toString().equals("colValueProperty")
 							|| mqr.getFilterType().toString().equals("colHeader"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					else if (mqr.getFilterType().toString().equals("rowHeader") && mqr.getField().equals("name"))
 					{
 						filterList.add(savFil);
 						filterCnt++;
@@ -1744,8 +1763,25 @@ public class MatrixViewer extends HtmlWidget
 	public void doFilterLoad(String filterName) throws Exception
 	{
 		// the existing filters, to remove duplicates later
+		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
+		List<MatrixQueryRule> newFilterList = new ArrayList<MatrixQueryRule>();
 		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
-		List<MatrixQueryRule> newFilterList = existingFilters;
+		// remove the existing columnfilters, valuefilters and the namefilter
+		for (MatrixQueryRule mqr : existingFilters)
+		{
+			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
+			{
+				removeList.add(mqr);
+			}
+			else if (mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name"))
+			{
+				removeList.add(mqr);
+			}
+
+		}
+		this.matrix.getRules().removeAll(removeList);
+		existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
+		newFilterList = existingFilters;
 		// get the name of the selected saved filter.
 		// String filterName = t.getString(SAVEDFILTERS);
 
@@ -1799,6 +1835,12 @@ public class MatrixViewer extends HtmlWidget
 					}
 				}
 				applyColHeaderFilter = true;
+			}
+			else if (filter.getFilterType().equals("rowHeader"))
+			{
+				// at the moment this can only be the name filter (2013-04-29)
+				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, field, op, value);
+				newFilterList.add(newRule);
 			}
 			else
 			{
