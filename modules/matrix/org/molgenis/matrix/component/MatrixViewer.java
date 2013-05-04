@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -96,6 +97,14 @@ public class MatrixViewer extends HtmlWidget
 	private boolean isEditable;
 	private boolean showTargetTooltip = false;
 	private boolean filterVisibility = false;
+	private boolean showQuickView = false;
+	private boolean showfilterSaveOptions = false;
+
+	private enum filSavSelEnum
+	{
+		doFilterSave, doColumnSave, doFilterAndColumnSave;
+	}
+
 	// private boolean addRemColumnVisibility = true;
 	private String APPLICATION_STRING = "GENERIC";
 
@@ -126,10 +135,14 @@ public class MatrixViewer extends HtmlWidget
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
 	public String FILTERSAVE = getName() + "_filterSave";
+	public String DOFILTERSAVE = "doFilterSave";
+	public String DOCOLUMNSAVE = "doColumnSave";
 	public String FILTERSAVENAME = getName() + "_filterSaveNAme";
 	public String SAVEDFILTERSDELETE = getName() + "_savedFiltersDelete";
 	public String FILTERLOAD = getName() + "_filterLoad";
 	public String SAVEDFILTERS = getName() + "_savedFilters";
+	public String QUICKVIEW = getName() + "_quickView";
+	public String APPLYQUICKVIEW = getName() + "_applyQuickView";
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
@@ -445,7 +458,7 @@ public class MatrixViewer extends HtmlWidget
 			// "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			// + downloadVisSPSS.render() + "</div>";
 
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + menu.render()
+			divContents += "<div style=\"padding-left:5px; float:left; vertical-align:middle\">" + menu.render()
 					+ "</div>";
 
 		}
@@ -454,17 +467,31 @@ public class MatrixViewer extends HtmlWidget
 
 		// addRemCols.setIcon("generated-res/img/plus.png");
 
-		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;\" src=\"res/img/addremcol_32.png\" "
+		divContents += "<img id='showHideAddRemColButton' title=\"Add or Remove a datacolumn\" style=\"padding:2px;float:left;\" src=\"res/img/addremcol_32.png\" "
 				+ "onclick=\"if (document.getElementById('addRemCol').style.display=='none') {document.getElementById('addRemCol').style.display='block';} else {document.getElementById('addRemCol').style.display='none';} \" "
 				+ "/>";
-		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">";
+		divContents += "<div style=\"padding-left:5px; float:left; vertical-align:middle\">";
 		ActionInput toggleFilterSettings = new ActionInput(TOGGLEFILTERSETTINGSVISIBILITY, "", "");
 		toggleFilterSettings.setIcon("generated-res/img/filter_funnel_32x32.png");
 		divContents += toggleFilterSettings.render() + "</div>";
+		// input for quick application of filters
+		if (showQuickView)
+		{
+			SelectInput quickViewInput = buildSavedFiltersInput(QUICKVIEW);
+			quickViewInput.setWidth(6);
+			divContents += "<div style=\"padding-left:5px; border-left-width:1px; border-left-style:solid; float:left; vertical-align:middle\">"
+					+ quickViewInput + "</div>";
+			divContents += "<div style=\"float:left; vertical-align:middle\">"
+					+ new ActionInput(APPLYQUICKVIEW, "Load").render() + "</div>";
+			// divContents += "<script> $(\"#" + QUICKVIEW
+			// +
+			// "\").change(function() { $(this).parents(\"form\").submit();});</script>";
+			// // this.form.submit()
+			// divContents += "</div>";
+		}
 
-		// the header filter div (add remo cols)
-
-		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+		// the Div for the add/remove column inputs.
+		divContents += "<div id='addRemCol' style='display:none;float:left;clear:both; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
 		divContents += "<div id='closeAddRemCol' style='float:right;clear:both' ><img id='close' onclick=\"document.getElementById('addRemCol').style.display='none';\" src='res/img/exit.png' /></div> ";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		@SuppressWarnings("rawtypes")
@@ -791,11 +818,13 @@ public class MatrixViewer extends HtmlWidget
 		// colValueProperty filter
 		divContents += generateFilterRules();
 
-		divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
-		divContents += "filter settings: ";
-		divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
-		divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
-
+		if (showfilterSaveOptions)
+		{
+			divContents += "<p><span onclick=\"if (document.getElementById('saveFilterDiv').style.display=='none') {document.getElementById('saveFilterDiv').style.display='block';} else {document.getElementById('saveFilterDiv').style.display='none';} \" >";
+			divContents += "filter settings: ";
+			divContents += "<img id='showHideSaveFilterButton' title=\"Save Filters\" style=\"padding:2px;vertical-align:middle;\" src=\"res/img/animaldb/settings_24x24.png\" /> ";
+			divContents += "</span></p></div><div style=\"float:left; padding:10px;\">";
+		}
 		// divContents += "<div>";
 		// ActionInput removeAllFilters = new ActionInput(CLEARFILTERS,
 		// "remove all filters");
@@ -805,18 +834,27 @@ public class MatrixViewer extends HtmlWidget
 
 		divContents += "</div>";
 
-		divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-		// divContents +=
-		// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
-		divContents += "<strong>Save active filters: </strong>";
-		divContents += "</br>" + new StringInput(FILTERSAVENAME, "Filter name").render();
-		divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save Filters").render();
-		divContents += "</br>";
-		divContents += "</br><strong>load or delete saved filters: </strong>";
-		divContents += "</br>" + buildSavedFiltersInput().render();
-		divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
-		divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
-		divContents += "</div>";
+		if (showfilterSaveOptions)
+		{
+			divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
+			// divContents +=
+			// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
+			divContents += "<strong>Save active filters: </strong>";
+			List<String> test = new ArrayList<String>();
+			test.add("blaat");
+			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterSave\" checked=\"checked\" / > Save only filters.";
+			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doColumnSave\"  / > Save only Columns.";
+			divContents += "</br><input type=\"radio\" id=\"filterSaveSelect\" name=\"filterSaveSelect\" value=\"doFilterAndColumnSave\"  / > Save Filters & Columns.";
+			divContents += "</br><label for=\"" + FILTERSAVENAME + "\">name: </label>"
+					+ new StringInput(FILTERSAVENAME, "Filter name").render();
+			divContents += "</br>" + new ActionInput(FILTERSAVE, "", "Save").render();
+			divContents += "</br>";
+			divContents += "</br><strong>load or delete saved filters: </strong>";
+			divContents += "</br>" + buildSavedFiltersInput(SAVEDFILTERS).render();
+			divContents += "</br>" + new ActionInput(FILTERLOAD, "", "Load").render();
+			divContents += new ActionInput(SAVEDFILTERSDELETE, "", "Delete").render();
+			divContents += "</div>";
+		}
 		return divContents;
 	}
 
@@ -920,9 +958,9 @@ public class MatrixViewer extends HtmlWidget
 		return colId;
 	}
 
-	private SelectInput buildSavedFiltersInput() throws DatabaseException
+	private SelectInput buildSavedFiltersInput(String name) throws DatabaseException
 	{
-		SelectInput savedFiltersInput = new SelectInput(SAVEDFILTERS);
+		SelectInput savedFiltersInput = new SelectInput(name);
 
 		// check if a filterset with this name exists, update if so.
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
@@ -1590,13 +1628,14 @@ public class MatrixViewer extends HtmlWidget
 
 	public void filterSave(Database db, MolgenisRequest t) throws Exception
 	{
+		// TODO : Find a way to store also filters on rowheaders:
+		// these are done by slicing the phenomatrix and not by adding a
+		// QueryRule.
+		// We now store only applied Queryrules and thereby miss out on these
+		// filters.
 
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
-
-		Date now = new Date();
-		long date = now.getTime();
-		String name = "blaat_" + String.valueOf(date);
-		name = t.get(FILTERSAVENAME).toString();
+		String name = t.get(FILTERSAVENAME).toString();
 
 		int filterCnt = 0;
 		for (MatrixQueryRule mqr : this.matrix.getRules())
@@ -1608,10 +1647,10 @@ public class MatrixViewer extends HtmlWidget
 			savFil.setFilterType(mqr.getFilterType().toString());
 			savFil.setDimIndex(mqr.getDimIndex());
 			savFil.setField(mqr.getField());
-			// convert the operator to the text options used in the queryrule
+			// convert the operator to the text options used in the
+			// queryrule
 			// class where necessary
 			String operator = mqr.getOperator().toString();
-			System.out.println("----> show the operator:   " + mqr.getOperator() + " " + operator);
 			if (operator.equals("="))
 			{
 				operator = "EQUALS";
@@ -1638,71 +1677,143 @@ public class MatrixViewer extends HtmlWidget
 			}
 			savFil.setOperator(operator);
 			savFil.setValue(mqr.getValue().toString());
-			filterList.add(savFil);
 
-			filterCnt++;
+			filSavSelEnum value = filSavSelEnum.valueOf(t.get("filterSaveSelect").toString());
+			switch (value)
+			// skip the rowHeader filters for now.
+			{
+				case doFilterSave:
+					if (mqr.getFilterType().toString().equals("colValueProperty"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					break;
+
+				case doColumnSave:
+					if (mqr.getFilterType().toString().equals("colHeader"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					break;
+
+				case doFilterAndColumnSave:
+					if (mqr.getFilterType().toString().equals("colValueProperty")
+							|| mqr.getFilterType().toString().equals("colHeader"))
+					{
+						filterList.add(savFil);
+						filterCnt++;
+					}
+					break;
+			}
+
 		}
 
-		// check if a filterset with this name exists, update if so.
+		// check if a filterset with this name exists, if so delete it first and
+		// thena add.
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, name));
 		if (fq.count() > 0)
 		{
 			// delete existing set and than add the new set
-			System.out.println("____WTF!");
-			// TODO!!!!!!!!!
-			// filterList.clear();
+			System.out.println("deleting filterset with the same name");
+			db.remove(fq.find());
 		}
-		else
-		{
-			// add the new set
-			db.add(filterList);
-		}
+		// add the new set
+		db.add(filterList);
 		filterList.clear();
 
 	}
 
+	public void applyQuickView(Database db, MolgenisRequest t) throws DatabaseException, Exception
+	{
+		String filterName = t.getString(QUICKVIEW);
+		// matrix.getRules().clear();
+		doFilterLoad(filterName);
+	}
+
 	public void filterLoad(Database db, MolgenisRequest t) throws Exception
 	{
-		// get the existing filters, to remove duplicates later
-		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
-
-		// get the name of the selected saved filter.
 		String filterName = t.getString(SAVEDFILTERS);
+		doFilterLoad(filterName);
+	}
+
+	public void doFilterLoad(String filterName) throws Exception
+	{
+		// the existing filters, to remove duplicates later
+		List<MatrixQueryRule> existingFilters = new ArrayList<MatrixQueryRule>(matrix.getRules());
+		List<MatrixQueryRule> newFilterList = existingFilters;
+		// get the name of the selected saved filter.
+		// String filterName = t.getString(SAVEDFILTERS);
+
 		List<SavedMatrixFilters> filterList = new ArrayList<SavedMatrixFilters>();
 
 		// retrieve all the rules with this name from the db
 		Query<SavedMatrixFilters> fq = db.query(SavedMatrixFilters.class);
 		fq.addRules(new QueryRule(SavedMatrixFilters.NAME, Operator.EQUALS, filterName));
 		filterList = fq.find();
-		int filterCnt = 0;
 
+		// prepare variables for colHeader filter application
+		boolean applyColHeaderFilter = false;
+		List<String> chosenMeasurementNames = new ArrayList<String>();
+
+		// iterate over the filters in the retrieved list.
 		for (SavedMatrixFilters filter : filterList)
 		{
+			String field = filter.getField();
+			Operator op = Operator.valueOf(filter.getOperator());
+			Object value = filter.getValue();
+
 			// for now only do something with colValue property filters, other
 			// types can be added later.
 			if (filter.getFilterType().equals("colValueProperty"))
 			{
 				// re-build the queryrule and add it.
-
 				int index = filter.getDimIndex();
-				String field = filter.getField();
-				Operator op = Operator.valueOf(filter.getOperator());
-				Object value = filter.getValue();
 				MatrixQueryRule newRule = new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, index, field, op,
 						value);
 				// prevent duplicate rules
 				if (!existingFilters.contains(newRule))
 				{
-					matrix.getRules().add(newRule);
+					// matrix.getRules().add(newRule);
+					newFilterList.add(newRule);
 				}
 				// reload matrix to apply filter
-				matrix.reload();
+				// matrix.reload();
+			}
+			else if (filter.getFilterType().equals("colHeader"))
+			{
+				// remove existing colheader and replace with saved one
+				for (MatrixQueryRule qr : existingFilters)
+				{
+					if (qr.getFilterType().toString().equals("colHeader"))
+					{
+						String valueStr = value.toString();
+						valueStr = valueStr.substring(1);
+						valueStr = valueStr.substring(0, valueStr.length() - 1);
+						String[] strlist = StringUtils.split(valueStr, ", ");
+						chosenMeasurementNames = Arrays.asList(strlist);
+					}
+				}
+				applyColHeaderFilter = true;
 			}
 			else
 			{
 				// for now do nothing with the other filter types.
 			}
+			matrix.getRules().clear();
+			for (MatrixQueryRule qr : newFilterList)
+			{
+				matrix.getRules().add(qr);
+			}
+			// apply the colHeaderFilter to finalize if present.
+			if (applyColHeaderFilter)
+			{
+				setColHeaderFilter(chosenMeasurementNames);
+			}
+			// reload the matrix to apply everything.
+			// matrix.reload();
 		}
 	}
 
@@ -1721,7 +1832,6 @@ public class MatrixViewer extends HtmlWidget
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
-
 			List<Integer> measurementIds = new ArrayList<Integer>();
 			List<String> list = (List<String>) t.getList(MEASUREMENTCHOOSER);
 			for (String s : list)
@@ -1729,7 +1839,6 @@ public class MatrixViewer extends HtmlWidget
 				measurementIds.add(Integer.parseInt(s));
 			}
 			resetColumns(measurementIds);
-
 		}
 		else
 		{
@@ -1750,7 +1859,6 @@ public class MatrixViewer extends HtmlWidget
 			}
 			setColHeaderFilter(chosenMeasurementNames);
 		}
-
 	}
 
 	public void resetColumns(final List<Integer> columnIds) throws DatabaseException
@@ -1854,6 +1962,7 @@ public class MatrixViewer extends HtmlWidget
 	{
 		if (matrix instanceof SliceablePhenoMatrixMV)
 		{
+			System.out.println("matrix is instance of SliceablePhenoMatrixMV");
 			List<Integer> measurementIds = new ArrayList<Integer>(chosenMeasurements.size());
 			for (String mId : chosenMeasurements)
 			{
@@ -1863,6 +1972,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 		else
 		{
+			System.out.println("matrix is not an instance of SliceablePhenoMatrixMV");
 			// Find and update col header filter rule
 			boolean hasRule = false;
 			for (MatrixQueryRule mqr : matrix.getRules())
@@ -2135,6 +2245,26 @@ public class MatrixViewer extends HtmlWidget
 	public void setShowDownloadOptions(boolean showDownloadOptions)
 	{
 		this.showDownloadOptions = showDownloadOptions;
+	}
+
+	public boolean isShowQuickView()
+	{
+		return showQuickView;
+	}
+
+	public boolean isShowfilterSaveOptions()
+	{
+		return showfilterSaveOptions;
+	}
+
+	public void setShowQuickView(boolean showQuickView)
+	{
+		this.showQuickView = showQuickView;
+	}
+
+	public void setShowfilterSaveOptions(boolean showfilterSaveOptions)
+	{
+		this.showfilterSaveOptions = showfilterSaveOptions;
 	}
 
 }

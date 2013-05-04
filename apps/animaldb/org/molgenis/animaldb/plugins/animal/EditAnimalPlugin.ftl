@@ -50,14 +50,14 @@
 				<thead>
 					<tr style="text-align:center;">
 						<th>Edit</th>
-						<th>Delete</th>
+						<!--th>Delete</th-->
 						<!--th>Print Cagelabels</th-->
 					</tr>
 				</thead>
 				<tbody>
 					<tr style="text-align:center;">
 						<td><input id="editAnimals" type="image" title="Edit the selected animals." onclick="__action.value='editAnimals'" src="generated-res/img/editview.gif"  /></td>
-						<td><input id="deleteAnimals" type="image" title="Delete the selected animals." onclick="__action.value='deleteAnimals'" src="generated-res/img/delete.png"  /></td>
+						<!--td><input id="deleteAnimals" type="image" title="Delete the selected animals." onclick="__action.value='deleteAnimals'" src="generated-res/img/delete.png"  /></td-->
 						<!--td><input id="printCagelabels" type="image" title="Print cage labels for the selected animals." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td-->
 					</tr>
 				</tbody>

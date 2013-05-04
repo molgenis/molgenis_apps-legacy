@@ -28,7 +28,6 @@
 			
 <#--begin your plugin-->	
 
-<label for="animalmatrix">Choose animal:</label>
 ${screen.animalMatrix}
 <br />
 <input type='submit' class='addbutton' value='Show family info' onclick="__action.value='reqInfo'" />

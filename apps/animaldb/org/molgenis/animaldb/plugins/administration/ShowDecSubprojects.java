@@ -790,6 +790,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				remAnimalsMatrixViewer.setDatabase(db);
 				remAnimalsMatrixViewer.setFilterVisibility(false);
+				remAnimalsMatrixViewer.setShowQuickView(true);
+				remAnimalsMatrixViewer.setShowfilterSaveOptions(true);
 
 			}
 

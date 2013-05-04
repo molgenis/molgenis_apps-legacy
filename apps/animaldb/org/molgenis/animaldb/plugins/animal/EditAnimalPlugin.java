@@ -22,6 +22,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -31,6 +32,7 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 
 /**
@@ -62,6 +64,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	private List<Category> animalTypeList;
 	private List<String> colorList;
 	private List<String> earmarkList;
+	private List<String> geneModList;
+	private List<String> geneStateList;
 	private List<Individual> listOfSelectedIndividuals = new ArrayList<Individual>();
 
 	// map to store tablecell locations of measurements
@@ -154,6 +158,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 						2, true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				animalMatrixViewer.setFilterVisibility(false);
+				animalMatrixViewer.setShowQuickView(true);
+				animalMatrixViewer.setShowfilterSaveOptions(true);
 				animalMatrixViewer.setDatabase(db);
 			}
 			catch (Exception e)
@@ -176,6 +182,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
 				this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
 				this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
+				this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
+				this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
 
 				loaded = true;
 			}
@@ -293,6 +301,14 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			this.fpMap.put("Line", "5_");
 			editTable.addColumn("Sex");
 			this.fpMap.put("Sex", "6_");
+			editTable.addColumn("ResponsibleResearcher");
+			this.fpMap.put("ResponsibleResearcher", "7_");
+			editTable.addColumn("WeanDate");
+			this.fpMap.put("WeanDate", "8_");
+			editTable.addColumn("GeneModification");
+			this.fpMap.put("GeneModification", "9_");
+			editTable.addColumn("GeneState");
+			this.fpMap.put("GeneState", "10_");
 
 			// these fields are only available for editing by admin.
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
@@ -314,6 +330,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			for (Individual e : obsTargets)
 			{
+				String invName = cs.getObservationTargetByName(e.getName()).getInvestigation_Name();
 				// add a row in the eit table for each selected animal.
 				editTable.addRow(e.getName());
 
@@ -414,6 +431,72 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				sexInput.setWidth(-1);
 				editTable.setCell(5, row, sexInput);
 
+				// Responsible researcher
+				StringInput respresInput = new StringInput(this.fpMap.get("ResponsibleResearcher") + e.getName());
+				respresInput.setId(this.fpMap.get("ResponsibleResearcher") + e.getName());
+
+				respresInput.setValue(getAnimalResponsibleResearcher(e.getName()));
+
+				editTable.setCell(6, row, respresInput);
+
+				// weandate
+				DateInput weandateInput = new DateInput(this.fpMap.get("WeanDate") + e.getName());
+				weandateInput.setId(this.fpMap.get("WeanDate") + e.getName());
+				weandateInput.setDateFormat("yyyy-MM-dd");
+				weandateInput.setValue(getAnimalWeanDate(e.getName()));
+				weandateInput
+						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				editTable.setCell(7, row, weandateInput);
+
+				// GeneModification
+				List<ObservedValue> allValuesGeneMod = cs.getObservedValuesByTargetAndFeature(e.getName(),
+						"GeneModification", investigationNames, invName);
+				int countGeneMod = 0;
+				String allGeneModInputs = "";
+				for (ObservedValue value : allValuesGeneMod)
+				{
+					SelectInput geneModInput = new SelectInput(this.fpMap.get("GeneModification") + e.getName() + "_"
+							+ countGeneMod);
+					geneModInput.setId(this.fpMap.get("GeneModification") + e.getName() + "_" + countGeneMod);
+
+					for (String geneMod : this.geneModList)
+					{
+						geneModInput.addOption(geneMod, geneMod);
+					}
+					geneModInput.setValue(value.getValue());
+					geneModInput.setWidth(-1);
+
+					allGeneModInputs += geneModInput.toHtml() + "</br>";
+					countGeneMod++;
+				}
+
+				// editTable.setCell(8, row, listOfSelectInput);
+				editTable.setCell(8, row, allGeneModInputs);
+
+				// GeneState
+				List<ObservedValue> allValues = cs.getObservedValuesByTargetAndFeature(e.getName(), "GeneState",
+						investigationNames, invName);
+				int countGeneState = 0;
+
+				String allGeneStateInputs = "";
+				for (ObservedValue value : allValues)
+				{
+					SelectInput geneStateInput = new SelectInput(this.fpMap.get("GeneState") + e.getName() + "_"
+							+ countGeneState);
+					geneStateInput.setId(this.fpMap.get("GeneState") + e.getName() + "_" + countGeneState);
+
+					for (String geneMod : this.geneStateList)
+					{
+						geneStateInput.addOption(geneMod, geneMod);
+					}
+					geneStateInput.setValue(value.getValue());
+					geneStateInput.setWidth(-1);
+
+					allGeneStateInputs += geneStateInput.toHtml() + "</br>";
+					countGeneState++;
+				}
+				editTable.setCell(9, row, allGeneStateInputs);
+
 				if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 				{
 					// AnimalType
@@ -427,7 +510,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					// animalTypeInput.setValue(getAnimalType(e.getName()));
 					animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
 					animalTypeInput.setWidth(-1);
-					editTable.setCell(6, row, animalTypeInput);
+					editTable.setCell(10, row, animalTypeInput);
 
 					// Source
 					SelectInput sourceInput = new SelectInput(this.fpMap.get("Source") + e.getName());
@@ -439,7 +522,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					sourceInput.setValue(getAnimalSource(e.getName()));
 					sourceInput.setWidth(-1);
-					editTable.setCell(7, row, sourceInput);
+					editTable.setCell(11, row, sourceInput);
 
 					// Species
 					SelectInput speciesInput = new SelectInput(this.fpMap.get("Species") + e.getName());
@@ -450,18 +533,9 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					speciesInput.setValue(getAnimalSpecies(e.getName()));
 					speciesInput.setWidth(-1);
-					editTable.setCell(8, row, speciesInput);
+					editTable.setCell(12, row, speciesInput);
 
 				}
-
-				// Responsible researcher
-
-				// weandate
-
-				// experiment
-
-				// Genotype
-
 				row++;
 
 			}
@@ -631,6 +705,113 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			value.setRelation(cs.getObservationTargetByName(sexName).getId());
 			db.update(value);
 
+			// ResponsibleResearcher
+			String responsibleResearcher = request.getString(this.fpMap.get("ResponsibleResearcher") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "ResponsibleResearcher", investigationNames,
+					invName).get(0);
+			value.setValue(responsibleResearcher);
+			if (value.getProtocolApplication_Id() == null)
+			{
+				if (responsibleResearcher != null && !responsibleResearcher.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null,
+							"SetResponsibleResearcher", "ResponsibleResearcher", e.getName(), responsibleResearcher,
+							null));
+				}
+			}
+			else
+			{
+				if (responsibleResearcher == null || responsibleResearcher.equals(""))
+				{
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setValue(responsibleResearcher);
+					db.update(value);
+				}
+			}
+
+			// WeanDate
+			String weanDate = request.getString(this.fpMap.get("WeanDate") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "WeanDate", investigationNames, invName).get(0);
+			value.setValue(weanDate);
+			if (value.getProtocolApplication_Id() == null)
+			{
+				if (weanDate != null && !weanDate.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanDate", "WeanDate",
+							e.getName(), weanDate, null));
+				}
+			}
+			else
+			{
+				if (weanDate == null || weanDate.equals(""))
+				{
+					// delete value to make it empty
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setValue(weanDate);
+					db.update(value);
+				}
+			}
+
+			// GeneModificiation & Gene State
+			List<ObservedValue> allValuesGeneModification = cs.getObservedValuesByTargetAndFeature(e.getName(),
+					"GeneModification", investigationNames, invName);
+			List<ObservedValue> allValuesGeneState = cs.getObservedValuesByTargetAndFeature(e.getName(), "GeneState",
+					investigationNames, invName);
+			ObservedValue modVal = new ObservedValue();
+			ObservedValue stateVal = new ObservedValue();
+			int cntGenoType = 0;
+
+			while (cntGenoType < allValuesGeneModification.size() && cntGenoType < allValuesGeneState.size())
+			{
+				modVal = allValuesGeneModification.get(cntGenoType);
+				stateVal = allValuesGeneState.get(cntGenoType);
+				String geneModification = request.getString((this.fpMap.get("GeneModification")) + e.getName() + "_"
+						+ cntGenoType);
+				String geneState = request.getString((this.fpMap.get("GeneState")) + e.getName() + "_" + cntGenoType);
+
+				if (modVal.getProtocolApplication_Id() == null)
+				{
+					if ((geneModification != null && !geneModification.equals(""))
+							&& ((geneState != null && !geneState.equals(""))))
+					{
+						ProtocolApplication newGenoType = cs.createProtocolApplication(invName, "SetGenotype");
+						db.add(newGenoType);
+						db.add(cs.createObservedValue(invName, newGenoType.getName(), now, null, "GeneModification",
+								e.getName(), geneModification, null));
+						db.add(cs.createObservedValue(invName, newGenoType.getName(), now, null, "GeneState",
+								e.getName(), geneState, null));
+					}
+				}
+				else
+				{
+					if (geneModification == null || geneModification.equals("") || geneState == null
+							|| geneState.equals(""))
+					{
+						// delete value to make it empty
+						db.remove(modVal);
+						db.remove(stateVal);
+						db.remove(cs.getProtocolApplicationById(modVal.getProtocolApplication_Id()));
+					}
+					else
+					{
+						modVal.setValue(geneModification);
+						stateVal.setValue(geneState);
+						db.update(modVal);
+						db.update(stateVal);
+					}
+				}
+				cntGenoType++;
+			}
+
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 			{
 
@@ -762,6 +943,31 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		}
 	}
 
+	public String getAnimalResponsibleResearcher(String animal)
+	{
+		try
+		{
+			return cs.getMostRecentValueAsString(animal, "ResponsibleResearcher");
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	public Date getAnimalWeanDate(String animal)
+	{
+		try
+		{
+			String weanDateString = cs.getMostRecentValueAsString(animal, "WeanDate");
+			return newDateOnlyFormat.parse(weanDateString);
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
 	public String getAnimalDateOfBirth(String animal)
 	{
 		try
@@ -773,6 +979,48 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			return null;
 		}
 	}
+
+	public String getAnimalGeneMod(String animalname)
+	{
+		try
+		{
+			if (cs.getMostRecentValueAsString(animalname, "GeneModificiation") != null)
+			{
+				return cs.getMostRecentValueAsString(animalname, "GeneModificiation");
+			}
+			else
+			{
+				return "";
+			}
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	// public String getAnimalGeneState(String animalname)
+	// {
+	// try
+	// {
+	//
+	// cs.getObservedValuesByTargetAndFeature(animalname, "GeneState",inves);
+	// cs.getAllObservedValues(measurementId, investigationIds) !=null)
+	// if (cs.getMostRecentValueAsString(targetName, featureName)(animalname,
+	// "GeneState") != null)
+	// {
+	// return cs.getMostRecentValueAsString(animalname, "GeneState");
+	// }
+	// else
+	// {
+	// return "";
+	// }
+	// }
+	// catch (Exception e)
+	// {
+	// return null;
+	// }
+	// }
 
 	public String getAnimalColor(String animalname)
 	{
@@ -902,6 +1150,26 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public void setEarmarkList(List<String> earmarkList)
 	{
 		this.earmarkList = earmarkList;
+	}
+
+	public List<String> getGeneModList()
+	{
+		return geneModList;
+	}
+
+	public void setGeneModList(List<String> geneModList)
+	{
+		this.geneModList = geneModList;
+	}
+
+	public List<String> getGeneStateList()
+	{
+		return geneStateList;
+	}
+
+	public void setGeneStateList(List<String> geneStateList)
+	{
+		this.geneStateList = geneStateList;
 	}
 
 }
