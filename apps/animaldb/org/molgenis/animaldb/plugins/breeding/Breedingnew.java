@@ -473,10 +473,10 @@ public class Breedingnew extends PluginModel<Entity>
 
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-
+		boolean updateDb = true;
 		for (String parentName : parentNameList)
 		{
-			if (parentName != null)
+			if (parentName != null && !parentName.equals(""))
 			{
 				// Find the 'SetParentgroupMother'/'SetParentgroupFather' event
 				// type
@@ -507,11 +507,14 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 			else
 			{
-
+				updateDb = false;
 			}
 		}
 		// Add everything to DB
-		db.add(valuesToAddList);
+		if (updateDb)
+		{
+			db.add(valuesToAddList);
+		}
 	}
 
 	@Override
@@ -668,6 +671,8 @@ public class Breedingnew extends PluginModel<Entity>
 					boolean papa = false;
 					boolean mama = false;
 					List<String> pgNames = new ArrayList<String>();
+
+					// check for empty mother and father fields.
 					for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
 					{
 
@@ -689,52 +694,56 @@ public class Breedingnew extends PluginModel<Entity>
 							}
 						}
 					}
-					if (papa == false || mama == false)
+					// disable the check on empty partents for now to allow PG's
+					// without known parents
+					// if (papa == false || mama == false)
+					// {
+
+					for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
 					{
 
-						for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
+						String x = "";
+						String y = "";
+						if (request.getDate("startdate" + entry.getKey()) != null)
 						{
-
-							String x = "";
-							String y = "";
-							if (request.getDate("startdate" + entry.getKey()) != null)
-							{
-								x = request.getString("startdate" + entry.getKey());
-							}
-							if (request.getString("remarks" + entry.getKey()) != null)
-							{
-								y = request.getString("remarks" + entry.getKey());
-							}
-
-							pgNames.add(AddParentgroup2(db, request, entry.getValue(), hashMothers.get(entry.getKey()),
-									x, y));
-
-							// Reset matrix and add filter on name of newly
-							// added PG:
-							loadPgMatrixViewer(db);
-							pgMatrixViewer.setDatabase(db);
-							// pgMatrixViewer.getMatrix().getRules().add(new
-							// MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
-							// Individual.NAME, Operator.EQUALS, pgNames));
-							pgMatrixViewer.reloadMatrix(db, null);
-							pgMatrixViewerString = pgMatrixViewer.render();
-							// Reset other fields
-							this.action = "init";
-							this.startdate = newDateOnlyFormat.format(new Date());
-							this.remarks = null;
-							motherMatrixViewer = null;
-							this.setSuccess("Parentgroup(s) " + pgNames + " successfully created. ");
+							x = request.getString("startdate" + entry.getKey());
 						}
-						hashFathers.clear();
-						hashMothers.clear();
-						numberOfPG = null;
+						if (request.getString("remarks" + entry.getKey()) != null)
+						{
+							y = request.getString("remarks" + entry.getKey());
+						}
 
+						pgNames.add(AddParentgroup2(db, request, entry.getValue(), hashMothers.get(entry.getKey()), x,
+								y));
+
+						// Reset matrix and add filter on name of newly
+						// added PG:
+						loadPgMatrixViewer(db);
+						pgMatrixViewer.setDatabase(db);
+						// pgMatrixViewer.getMatrix().getRules().add(new
+						// MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+						// Individual.NAME, Operator.EQUALS, pgNames));
+						pgMatrixViewer.reloadMatrix(db, null);
+						pgMatrixViewerString = pgMatrixViewer.render();
+						// Reset other fields
+						this.action = "init";
+						this.startdate = newDateOnlyFormat.format(new Date());
+						this.remarks = null;
+						motherMatrixViewer = null;
+						this.setSuccess("Parentgroup(s) " + pgNames + " successfully created. ");
 					}
-					else
-					{
-						this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
-						action = "selectParents";
-					}
+					hashFathers.clear();
+					hashMothers.clear();
+					numberOfPG = null;
+
+					// }
+					// else
+					// {
+					// this.setMessages(new
+					// ScreenMessage("Not all fathers or mothers are filled in",
+					// false));
+					// action = "selectParents";
+					// }
 				}
 			}
 			catch (Exception e)
@@ -2025,8 +2034,18 @@ public class Breedingnew extends PluginModel<Entity>
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLine", "Line", groupName, null,
 				line));
 		// Add parent(s)
-		AddParents(db, mama, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
-		AddParents(db, papa, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
+		System.out.println("m>>>>>>>>>>>>>>>>>>>>>>>>>>> " + mama.size() + mama);
+		System.out.println("p>>>>>>>>>>>>>>>>>>>>>>>>>>> " + papa.size() + papa);
+		if (mama.size() > 0)
+		{
+			AddParents(db, mama, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
+		}
+		if (papa.size() > 0)
+		{
+			AddParents(db, papa, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
+
+		}
+
 		// Set line
 
 		// Set start date
