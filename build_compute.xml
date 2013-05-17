@@ -78,10 +78,8 @@
 		<!-- Create folder substructure for distro -->
 		<property name="app-r_distro_dir" value="${app_distro_dir}/molgenis_${app_name}-${git.apps.version}/"/>
 		<property name="lib_dir" value="${app-r_distro_dir}/lib/"/>
-		<property name="templates_dir" value="${app-r_distro_dir}/templates/"/>
-		<property name="protocols_dir" value="${app-r_distro_dir}/protocols/"/>
-		<property name="workflows_dir" value="${app-r_distro_dir}/workflows/"/>
-		<property name="app_module_dir" value="${basedir}/modules/compute/" />
+		<property name="pipelines_dir" value="${app-r_distro_dir}/pipelines/"/>
+		<property name="app_module_dir" value="${basedir}/../molgenis-pipelines/" />
 		
 		<!-- Copy documentation to the distro dir -->
 		<mkdir dir="${app-r_distro_dir}/docs/"/>
@@ -99,14 +97,8 @@
 		</copy>
 		
 		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
-		<copy todir="${templates_dir}">
-		    <fileset dir="${app_module_dir}/templates/"/> <!-- org/molgenis/${app_name}/ -->
-		</copy>
-		<copy todir="${protocols_dir}">
-		    <fileset dir="${app_module_dir}/protocols/"/>
-		</copy>
-		<copy todir="${workflows_dir}">
-			<fileset dir="${app_module_dir}/workflows/"/>
+		<copy todir="${pipelines_dir}">
+			<fileset dir="${app_module_dir}/compute4/"/>
 		</copy>
 		
 		<!-- Copy all dependencies to the distro lib dir -->
