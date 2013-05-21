@@ -2,7 +2,7 @@
 <#macro begin>
 ##### BEFORE #####
 touch $PBS_O_WORKDIR/${jobname}.out
-source ${importscript}
+<#if importscript?has_content>source ${importscript}</#if>
 before="$(date +%s)"
 echo "Begin job ${jobname} at $(date)" >> $PBS_O_WORKDIR/RUNTIME.log
 
