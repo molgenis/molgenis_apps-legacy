@@ -1,3 +1,0 @@
-project,prePhasingResultDir,referencePanel,imputationPipeline,genomeBuild,chr,autostart,sampleChunk,chrChunk,imputationResultDir,referencePanel
-hapmapCEUr22b37,/your/input/data/,/home/hapmapCEUr22b37/prePhasingResult,minimac,b37,20,FALSE,1,1,/home/hapmapCEUr22b37/imputationResult/,giant1000gv3.20101123
-hapmapCEUr22b37,/your/input/data/,/home/hapmapCEUr22b37/prePhasingResult,minimac,b37,21,FALSE,1,1,/home/hapmapCEUr22b37/imputationResult/,giant1000gv3.20101123
