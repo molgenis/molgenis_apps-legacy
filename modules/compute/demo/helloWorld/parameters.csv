@@ -1,5 +1,8 @@
-Name, defaultValue, description, dataType, hasOne_name
-guest, , , ,
-party, wedding, , ,
-organizer, , , ,
-group, , , , organizer
+Name,defaultValue,description,dataType,hasOne_name
+scheduler,PBS,"Default resource scheduler.",,
+clusterQueue,default,"Resource scheduler's default queue to which the jobs will be submitted.",,
+root,/,"Default prefix to where your software/data tree is installed.",,
+guest,,,,
+party,wedding,,,
+organizer,,,,
+group,,,,organizer
