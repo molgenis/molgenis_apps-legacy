@@ -49,4 +49,4 @@ source ${root}/gcc.bashrc
 <#include "Macros.ftl"/>
 <@begin/>
 <#include "NGSHeader.ftl"/>
-<#if defaultInterpreter = "R"><@Rbegin/></#if>
+<#if defaultInterpreter?has_content><#if defaultInterpreter = "R"><@Rbegin/></#if></#if>
