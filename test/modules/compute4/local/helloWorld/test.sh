@@ -12,18 +12,18 @@ rm -rf $testResults
 echo "2. Create directory 'testResults' for the results of this test..."
 mkdir -p $testResults
 
-echo "2. Generate new result..."
+echo "3. Generate new result..."
 sh $workdir/generate_HelloWorld_test.sh > $testResults/generate.log
 
-echo "3. Compare generated and expected pipeline..."
-diff -rq $generatedScriptsDir $workdir/helloWorld/expected_scripts > $testResults/diff_generated_vs_expected_pipeline.log
+echo "4. Compare generated and expected pipeline..."
+diff -rqw $generatedScriptsDir $workdir/helloWorld/expected_scripts > $testResults/diff_generated_vs_expected_pipeline.log
 isEmpty $testResults/diff_generated_vs_expected_pipeline.log
 
-echo "4. Execute pipeline and produce results..."
+echo "5. Execute pipeline and produce results..."
 cd $generatedScriptsDir
 sh runlocal.sh > $testResults/current_results.log
 
-echo "5. Compare produced and expected results..."
+echo "6. Compare produced and expected results..."
 diff $testResults/current_results.log $workdir/helloWorld/expected_results.log > $testResults/diff_generated_vs_expected_results.log
 isEmpty $testResults/diff_generated_vs_expected_results.log
 

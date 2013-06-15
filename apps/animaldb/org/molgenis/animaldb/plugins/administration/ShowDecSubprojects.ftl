@@ -16,7 +16,13 @@
 		</#list>
 		
 		<div class="screenbody">
-			<div class="screenpadding">	
+			<div class="screenpadding">
+				<form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
+				<!--needed in every form: to redirect the request to the right screen-->
+				<input type="hidden" name="__target" value="${screen.name}"" />
+				<!--needed in every form: to define the action. This can be set by the submit button-->
+				<input type="hidden" name="__action" />
+	
 <#--begin your plugin-->
 
 <#if screen.action == "AddEdit">
@@ -31,12 +37,7 @@
 		<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	</#if>
 	
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
-	
+
 	<div class="row">
 		<label for="decapp">DEC application:</label>
 		<select name="decapp" id="decapp"> 
@@ -197,30 +198,38 @@
 		<input type='submit' id='addsubproject' class='addbutton' value='Save' onclick="__action.value='addEditDecSubproject'" />
 	</div>
 	
-	</form>
+
 
 <#elseif screen.action == "EditAnimals">
 
-	<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>
+	<!--<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>-->
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	<h3>Manage animals in ${currentDecSubproject.name}</h3>
-
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
-
-	
-	
-	<input type='submit' id='startadd' class='addbutton' value='Add animals' onclick="__action.value='AddAnimalToSubproject'" />
-	<br /><hr /><br />
 	
 	${screen.renderRemAnimalsMatrixViewer()}
-	<input type='submit' id='dorem' class='addbutton' value='Remove selected animals' onclick="__action.value='RemoveAnimalsFromSubproject'" />
+	</div>
+		
+			<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Add Animals</th>
+						<th>End experiment for selected animals</th>
+						<th>Delete animals from experiment</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="addAnimals" type="image" title="add animals to experiment" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
+						<td><input id="removeAnimals" type="image" title="End experiment for selected animals" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
+						<td><input id="deleteAnimals" type="image" title="Delete animals from experiment" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
+						<td><input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  /></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	
-	</form>
 
 <#elseif screen.action == "RemoveAnimalsFromSubproject">
 
@@ -234,11 +243,14 @@
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	from ${currentDecSubproject.name}</h3>
 	
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
+	<div class='row'>
+		<label for='endstatus'>Actual animal end status:</label>
+		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
+		<#list screen.actualEndstatusCodeList as ecl>
+			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
+		</#list>
+		</select>
+	</div>
 	
 	<div class="row">
 		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
@@ -265,14 +277,6 @@
 		</select>
 	</div>
 	
-	<div class='row'>
-		<label for='endstatus'>Actual animal end status:</label>
-		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
-		<#list screen.actualEndstatusCodeList as ecl>
-			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
-		</#list>
-		</select>
-	</div>
 	
 	<div id="deathdatediv" class="row" style="display:block">
 		<label for="deathdate">Date of death:</label>
@@ -299,7 +303,19 @@
 		<input type='submit' id='dorem' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
 	</div>
 	
-	</form>
+
+<#elseif screen.action == "DeleteAnimalsFromSubproject">
+	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+	<p> Do you realy want to delete the following animals from this DEC subproject?</p>
+	
+	<p>
+	    If you delete animals that were previously removed with status "Death in the framework of the experiment ("Dood in kader van de proef"),
+	    than the death date of these animals is not removed and status is not set back to Alive.
+	 
+	 <div class='row'>
+		<input type='submit' id='dodelete' class='ui-button ui-widget ui-state-default ui-corner-all' value='Delete' onclick="__action.value='ApplyDeleteAnimalsFromSubproject'" />
+		<input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  />
+	</div>
 
 <#elseif screen.action == "ApplyRemoveAnimalsFromSubproject">
 
@@ -316,31 +332,7 @@
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
 	<p><h3>Adding animal(s) to ${currentDecSubproject.name}</h3></p>
 	
-	<form method="post" enctype="multipart/form-data" name="${screen.name}">
-	<!--needed in every form: to redirect the request to the right screen-->
-	<input type="hidden" name="__target" value="${screen.name}"" />
-	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" />
-		
-	<!--div style='float:left'>
-		<label for='animal'>Animal(s):</label>
-		<select name='animal' id='animal' size='20' multiple='multiple'>
-		<list screen.allAnimalIdList as animalId>
-			<assign name = screen.getAnimalName(animalId)>
-			<option value="{animalId?string.computer}">{name}</option>
-		</list>
-		</select>
-	</div>
-	
-	<div>
-		<label for='groupname'>Batch(es):</label>
-		<select name='groupname' id='groupname' size='20' multiple='multiple'>
-			<list screen.batchList as batch>
-				<option value="{batch.id?string.computer}">{batch.name}</option>
-			</list>
-		</select>
-	</div-->
-	
+
 	${screen.renderAddAnimalsMatrixViewer()}
 	
 	<hr />
@@ -401,34 +393,32 @@
 		<input type='submit' id='doadd' class='addbutton' value='Apply' onclick="__action.value='ApplyAddAnimalToSubproject'" />
 	</div>
 	
-	</form>
 
 <#else>
 
 	<div id="experimentlist">
-		<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable">
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable" width="50%">
 			<thead>
 				<tr>
 					<th></th>
 					<th>Animals</th>
-					<th>Name</th>
+					<th>DEC Nr:</th>
 					<th>Start date</th>
 					<th>End date</th>
 					<th>Animal Budget</th>
-					<th>DEC application</th>
-					<th>DEC subproject code</th>
-					<th>DEC subproject title</th>
-					<th>DEC subproject application PDF</th>
-					<th>DEC subproject approval PDF</th>
-					<th>Concern</th>
-					<th>Goal</th>
-					<th>Special techniques</th>
-					<th>Law definition</th>
-					<th>Toxic research</th>
-					<th>Anaesthesia</th>
-					<th>Pain management</th>
-					<th>Expected animal end status</th>
+					<!--<th>DEC application</th>-->
+					<!--<th>DEC subproject code</th>-->
+					<th>Subproject title</th>
+					<th>Application PDF</th>
+					<th>Approval PDF</th>
+					<!--<th>Concern</th>-->
+					<!--<th>Goal</th>-->
+					<!--<th>Special techniques</th>-->
+					<!--<th>Law definition</th>-->
+					<!--<th>Toxic research</th>-->
+					<!--<th>Anaesthesia</th>-->
+					<!--<th>Pain management</th>-->
+					<!--<th>Expected animal end status</th>-->
 					<th>Remarks</th>
 				</tr>
 			</thead>
@@ -439,23 +429,23 @@
 						<tr>
 							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}"><img id="edit_decsubproject" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
 							<td> <a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'><img id="manage_animals_in_subproject" class="edit_button" title="add/remove animals to/from subproject" alt="Manage" src="generated-res/img/grid-manage-icon.gif"></a>  [${expl.nrOfAnimals}]</td>
-							<td>${expl.name}</td>
+							<td><#if expl.decApplication??>${expl.mainDecNr}</#if> <#if expl.experimentNr??>${expl.experimentNr}</#if></td>
 							<td><#if expl.startDate??>${expl.startDate}</#if></td>
 							<td><#if expl.endDate??>${expl.endDate}</#if></td>
 							<td><#if expl.decSubprojectBudget??>${expl.decSubprojectBudget}</#if></td> <! TODO remove this checkafter adding data to db, only for upgrade (2012-06-06) -->
-							<td><#if expl.decApplication??>${expl.decApplication}</#if></td>
-							<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>
+							<!--<td><#if expl.decApplication??>${expl.decApplication}</#if></td>-->
+							<!--<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>-->
 							<td><#if expl.experimentTitle??>${expl.experimentTitle}</#if></td>
-							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}">${expl.decSubprojectApplicationPdf}</a></#if></td>
-							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}">${expl.decSubprojectApprovalPdf}</a></#if></td>
-							<td><#if expl.concern??>${expl.concern}</#if></td>
+							<td><#if expl.decSubprojectApplicationPdf??><a href="downloadfile?name=${expl.decSubprojectApplicationPdf}"><img alt="subproject application pdf file" src="res/img/pdf_16x16.png" align="middle"> application</a></#if></td>
+							<td><#if expl.decSubprojectApprovalPdf??><a href="downloadfile?name=${expl.decSubprojectApprovalPdf}"><img alt="subproject application pdf file" src="res/img/pdf_16x16.png" align="middle" > approval</a></#if></td>
+							<!--<td><#if expl.concern??>${expl.concern}</#if></td>
 							<td><#if expl.goal??>${expl.goal}</#if></td>
 							<td><#if expl.specialTechn??>${expl.specialTechn}</#if></td>
 							<td><#if expl.lawDef??>${expl.lawDef}</#if></td>
 							<td><#if expl.toxRes??>${expl.toxRes}</#if></td>
 							<td><#if expl.anaesthesia??>${expl.anaesthesia}</#if></td>
 							<td><#if expl.painManagement??>${expl.painManagement}</#if></td>
-							<td><#if expl.animalEndStatus??>${expl.animalEndStatus}</#if></td>
+							<td><#if expl.animalEndStatus??>${expl.animalEndStatus}</#if></td>-->
 							<td><#if expl.remarks??>${expl.remarks}</#if></td>
 						</tr>
 						<#assign i = i + 1>
@@ -464,10 +454,30 @@
 			</tbody>
 		</table>
 	</div>
+		<!--<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new DEC subproject" src="generated-res/img/new.png"></a></p>
+		-->
+		<div id='subprojectActions' style='float:left; background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4'>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
+				<thead>
+					<tr style="text-align:center;">
+						<th>Add subproject</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="text-align:center;">
+						<td><input id="addSubproject" type="image" title="New subproject" onclick="__action.value='AddEdit'" src="generated-res/img/new.png""  /></td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
+		
 
 </#if>
+<div id="pushdown" style="clear:both;" ></div>
+
 	
 <#--end of your plugin-->	
+				</form>
 			</div>
 		</div>
 	</div>
@@ -482,10 +492,16 @@
 	  "bJQueryUI": true,
 	  "aoColumnDefs": [ 
       	{ "sWidth": "30px", "aTargets": [ 0 ] }
-    	] 
+    	],
+ 
 	  }
 	  
 	);
+	jQuery('#addSubproject').button();
+	jQuery('#addAnimals').button();
+	jQuery('#removeAnimals').button();
+	jQuery('#deleteAnimals').button();
+	jQuery('#cancel').button();
 </script>
 	
 </#macro>

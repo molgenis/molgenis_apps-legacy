@@ -443,7 +443,8 @@ public class PrintLabelPlugin extends EasyPluginController
 				Individual.class, Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
 				MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		targetMatrixViewer.setDatabase(db);
-		targetMatrixViewer.setLabel("Choose animals:");
+		targetMatrixViewer.setShowQuickView(true);
+		targetMatrixViewer.setShowfilterSaveOptions(true);
 		panel.add(targetMatrixViewer);
 		panel.add(new HorizontalRuler());
 

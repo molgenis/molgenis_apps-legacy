@@ -65,6 +65,8 @@
 		
 		<dependency org="org.expressme" name="JOpenId" rev="1.08" />
 		
+		<dependency org="com.googlecode.charts4j" name="charts4j" rev="1.3" />
+		
 		<dependency org="org.apache.lucene" name="lucene-core" rev="3.0.2" />
 		<dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.0.2" />
 		<dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1.1"/>
@@ -72,6 +74,5 @@
 		  	<exclude name="jcl104-over-slf4j" /> 
       	 	<exclude name="slf4j-log4j12" />
 		</dependency>
-	
 	</dependencies>
 </ivy-module>

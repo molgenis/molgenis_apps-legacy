@@ -33,15 +33,20 @@
 
 </#if>
 
-# Source functions for data transfer to cluster
-source dataTransfer.sh
-
 <#if scheduler != "GRID">
-# Configures the GCC bash environment
+#
+# Source functions for data transfer to cluster.
+#
+SCRIPTDIR=${outputdir}
+<#noparse>source ${SCRIPTDIR}/dataTransfer.sh</#noparse>
+
+#
+# Configure the GCC bash environment.
+#
 source ${root}/gcc.bashrc
 </#if>
 
 <#include "Macros.ftl"/>
 <@begin/>
 <#include "NGSHeader.ftl"/>
-<#if defaultInterpreter = "R"><@Rbegin/></#if>
+<#if defaultInterpreter?has_content><#if defaultInterpreter = "R"><@Rbegin/></#if></#if>
