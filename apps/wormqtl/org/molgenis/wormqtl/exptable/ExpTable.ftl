@@ -419,6 +419,43 @@
 			<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=43">43</a>
 		</td>
 	</tr>
+	<tr>
+ 		<td>
+            Dauer formation
+        </td>
+        <td>
+            n/a
+        </td>
+        <td>
+            90 NILs and 20 Wild-Isolates
+        </td>
+        <td>
+            CB4856; N2
+        </td>
+        <td>
+            <b>Green et al. 2013;</b> Genetic mapping of variation in dauer larvae development in growing populations of </i> Caenorhabditis elegans</i>.
+        </td>
+        <td>
+            <a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/23715016">23715016</a>
+        </td>
+        <td>
+            20oC
+        </td>
+        <td>
+            Multi-generational
+        </td>
+        <td>
+            OP50
+        </td>
+        <td>
+            Dauer agar Plate
+        </td>
+        <td>
+            <a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=44">44</a>,
+            <a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=45">45</a>,
+            <a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=46">46</a>
+        </td>
+    </tr>
 </table>
 <br>
 
