@@ -28,6 +28,69 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 
 	private static final long serialVersionUID = -3744678801173089268L;
 
+	static String[] qtlFinderPerms = new String[]
+	{
+
+			// allow to see the QTL finder
+			"app.ui.QtlFinderPublic2Plugin",
+
+			// allow to see genome browser
+			"app.ui.GenomeBrowserPlugin",
+
+			// allow to see experiment overview
+			"app.ui.ExpTablePlugin",
+
+			// allow to see help
+			"app.ui.HelpPlugin",
+
+			// enable the Browse Data menu (minus Inspector and matrix
+			// removal)
+			"app.ui.InvestigationsFormController",
+			"app.ui.DatasFormController",
+			"app.ui.ManagerPlugin",
+
+			// needed to query elements for investigation overview
+			"org.molgenis.pheno.ObservationElement",
+
+			// needed to view the generated annotation menus
+			// some unused datatypes in the current wormqtl release are
+			// left out for anonymous
+			"app.ui.PanelsFormController", "org.molgenis.pheno.Panel",
+
+			"app.ui.ChromosomesFormController", "org.molgenis.xgap.Chromosome",
+
+			"app.ui.MarkersFormController", "org.molgenis.xgap.Marker",
+
+			"app.ui.GenesFormController", "org.molgenis.xgap.Gene",
+
+			"app.ui.TranscriptsFormController", "org.molgenis.xgap.Transcript",
+
+			"app.ui.MeasurementsFormController", "org.molgenis.pheno.Measurement",
+
+			"app.ui.DerivedTraitsFormController", "org.molgenis.xgap.DerivedTrait",
+
+			"app.ui.ProbesFormController", "org.molgenis.xgap.Probe",
+
+			"app.ui.SamplesFormController",
+			"org.molgenis.xgap.Sample",
+
+			// allow reading datasets and investigations
+			"org.molgenis.organization.Investigation", "org.molgenis.data.Data", "org.molgenis.data.BinaryDataMatrix",
+			"org.molgenis.data.CSVDataMatrix", "org.molgenis.data.DecimalDataElement",
+			"org.molgenis.data.TextDataElement",
+
+			// allow reading dataset backend files (include seperate
+			// InvestigationFile for overview plugin)
+			"org.molgenis.core.MolgenisFile", "org.molgenis.xgap.InvestigationFile",
+
+			// allow to see how uploaded this dataset
+			"org.molgenis.protocol.ProtocolApplication_Performer",
+
+			// allow to see analysis metadata
+			"org.molgenis.cluster.DataSet", "org.molgenis.cluster.DataName", "org.molgenis.cluster.DataValue",
+
+	};
+
 	public HomePage(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -60,69 +123,6 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 	{
 		try
 		{
-
-			String[] qtlFinderPerms = new String[]
-			{
-
-					// allow to see the QTL finder
-					"app.ui.QtlFinderPublic2Plugin",
-
-					// allow to see genome browser
-					"app.ui.GenomeBrowserPlugin",
-
-					// allow to see experiment overview
-					"app.ui.ExpTablePlugin",
-
-					// allow to see help
-					"app.ui.HelpPlugin",
-
-					// enable the Browse Data menu (minus Inspector and matrix
-					// removal)
-					"app.ui.InvestigationsFormController",
-					"app.ui.DatasFormController",
-					"app.ui.ManagerPlugin",
-
-					// needed to query elements for investigation overview
-					"org.molgenis.pheno.ObservationElement",
-
-					// needed to view the generated annotation menus
-					// some unused datatypes in the current wormqtl release are
-					// left out for anonymous
-					"app.ui.PanelsFormController", "org.molgenis.pheno.Panel",
-
-					"app.ui.ChromosomesFormController", "org.molgenis.xgap.Chromosome",
-
-					"app.ui.MarkersFormController", "org.molgenis.xgap.Marker",
-
-					"app.ui.GenesFormController", "org.molgenis.xgap.Gene",
-
-					"app.ui.TranscriptsFormController", "org.molgenis.xgap.Transcript",
-
-					"app.ui.MeasurementsFormController", "org.molgenis.pheno.Measurement",
-
-					"app.ui.DerivedTraitsFormController", "org.molgenis.xgap.DerivedTrait",
-
-					"app.ui.ProbesFormController", "org.molgenis.xgap.Probe",
-
-					"app.ui.SamplesFormController",
-					"org.molgenis.xgap.Sample",
-
-					// allow reading datasets and investigations
-					"org.molgenis.organization.Investigation", "org.molgenis.data.Data",
-					"org.molgenis.data.BinaryDataMatrix", "org.molgenis.data.CSVDataMatrix",
-					"org.molgenis.data.DecimalDataElement", "org.molgenis.data.TextDataElement",
-
-					// allow reading dataset backend files (include seperate
-					// InvestigationFile for overview plugin)
-					"org.molgenis.core.MolgenisFile", "org.molgenis.xgap.InvestigationFile",
-
-					// allow to see how uploaded this dataset
-					"org.molgenis.protocol.ProtocolApplication_Performer",
-
-					// allow to see analysis metadata
-					"org.molgenis.cluster.DataSet", "org.molgenis.cluster.DataName", "org.molgenis.cluster.DataValue",
-
-			};
 
 			for (String e : qtlFinderPerms)
 			{
