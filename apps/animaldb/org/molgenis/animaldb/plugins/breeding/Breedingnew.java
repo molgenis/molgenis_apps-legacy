@@ -473,10 +473,10 @@ public class Breedingnew extends PluginModel<Entity>
 
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-
+		boolean updateDb = true;
 		for (String parentName : parentNameList)
 		{
-			if (parentName != null)
+			if (parentName != null && !parentName.equals(""))
 			{
 				// Find the 'SetParentgroupMother'/'SetParentgroupFather' event
 				// type
@@ -507,11 +507,14 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 			else
 			{
-
+				updateDb = false;
 			}
 		}
 		// Add everything to DB
-		db.add(valuesToAddList);
+		if (updateDb)
+		{
+			db.add(valuesToAddList);
+		}
 	}
 
 	@Override
@@ -668,6 +671,8 @@ public class Breedingnew extends PluginModel<Entity>
 					boolean papa = false;
 					boolean mama = false;
 					List<String> pgNames = new ArrayList<String>();
+
+					// check for empty mother and father fields.
 					for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
 					{
 
@@ -689,9 +694,16 @@ public class Breedingnew extends PluginModel<Entity>
 							}
 						}
 					}
-					if (papa == false || mama == false)
+					// disable the check on empty partents for now to allow PG's
+					// without known parents
+					if (papa == true && mama == true)
 					{
+						this.setMessages(new ScreenMessage("fill in at least one parent for each parentgroup.", false));
+						action = "selectParents";
 
+					}
+					else
+					{
 						for (Entry<Integer, List<String>> entry : hashFathers.entrySet())
 						{
 
@@ -730,11 +742,7 @@ public class Breedingnew extends PluginModel<Entity>
 						numberOfPG = null;
 
 					}
-					else
-					{
-						this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
-						action = "selectParents";
-					}
+
 				}
 			}
 			catch (Exception e)
@@ -1438,11 +1446,19 @@ public class Breedingnew extends PluginModel<Entity>
 		// right name prefix
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
-		// this.setMotherLocation(ct.getMostRecentValueAsXrefName(motherName,
-		// "Location"));
-		// TODO: get rid of duplication with AddAnimalPlugin
-		// TODO: put this hardcoded info in the database (NamePrefix table)
+		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
+		String speciesName = "";
+		if (motherName == null || motherName.equalsIgnoreCase("") || motherName.equalsIgnoreCase("Unknown"))
+		{
+			speciesName = ct.getMostRecentValueAsXrefName(fatherName, "Species");
+		}
+		else
+		{
+			speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
+		}// this.setMotherLocation(ct.getMostRecentValueAsXrefName(motherName,
+			// "Location"));
+			// TODO: get rid of duplication with AddAnimalPlugin
+			// TODO: put this hardcoded info in the database (NamePrefix table)
 		if (speciesName.equals("House mouse"))
 		{
 			this.prefix = "mm_";
@@ -2025,8 +2041,18 @@ public class Breedingnew extends PluginModel<Entity>
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLine", "Line", groupName, null,
 				line));
 		// Add parent(s)
-		AddParents(db, mama, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
-		AddParents(db, papa, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
+		System.out.println("m>>>>>>>>>>>>>>>>>>>>>>>>>>> " + mama.size() + mama);
+		System.out.println("p>>>>>>>>>>>>>>>>>>>>>>>>>>> " + papa.size() + papa);
+		if (mama.size() > 0)
+		{
+			AddParents(db, mama, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
+		}
+		if (papa.size() > 0)
+		{
+			AddParents(db, papa, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
+
+		}
+
 		// Set line
 
 		// Set start date
@@ -2392,7 +2418,9 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 		else
 		{
-			throw new DatabaseException("Fatal error: no " + parentSex + " found for parentgroup " + parentgroupName);
+			return "Unknown";
+			// throw new DatabaseException("Fatal error: no " + parentSex +
+			// " found for parentgroup " + parentgroupName);
 		}
 	}
 
@@ -2418,6 +2446,13 @@ public class Breedingnew extends PluginModel<Entity>
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		// Find Line for this Parentgroup
 		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
+		String animalType = "";
+		String speciesName = "";
+		String color = "";
+		String motherBackgroundName = null;
+		String fatherBackgroundName = null;
+		List<ObservedValue> motherAllGeneMods = null;
+		List<ObservedValue> fatherAllGeneMods = null;
 		// Find first mother, plus her animal type, species, color, background,
 		// gene modification and gene state
 
@@ -2426,42 +2461,88 @@ public class Breedingnew extends PluginModel<Entity>
 		// TODO: properly handle the situation of harem breeding (basicly group
 		// of possible mothers/fathers) / maybe make a totally different plugin
 		// for this situation?
-		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
-		String motherAnimalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
-		String color = ct.getMostRecentValueAsString(motherName, "Color");
-		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
 
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(userName);
-		// HUGE
-		// to each other?, via prot app??
-		List<ObservedValue> motherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(motherName,
-				"GeneModification", investigationIds); // this does not work,
-														// only get the ones for
-														// the current animal.
-		// List<ObservedValue> motherAllGeneStates =
-		// ct.getObservedValuesByTargetAndMeasurement(motherName,
-		// "GeneModification", investigationIds);
+		// handle situation that only one of the parents is known.
+		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+
+		if (motherName.equals("Unknown"))
+		{
+			speciesName = "Unknown";
+			String motherAnimalType = "Unknown";
+			color = "Unknown";
+			motherBackgroundName = "Unknown";
+
+		}
+		else
+		{
+			speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
+			String motherAnimalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
+			animalType = motherAnimalType;
+			color = ct.getMostRecentValueAsString(motherName, "Color");
+			motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
+
+			// HUGE
+			// to each other?, via prot app??
+			motherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(motherName, "GeneModification",
+					investigationIds); // this does not
+										// work,
+										// only get the ones
+										// for
+										// the current
+										// animal.
+			// List<ObservedValue> motherAllGeneStates =
+			// ct.getObservedValuesByTargetAndMeasurement(motherName,
+			// "GeneModification", investigationIds);
+
+		}
 
 		// Find father and his background
-		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
-		String fatherBackgroundName = ct.getMostRecentValueAsXrefName(fatherName, "Background");
-		String fatherAnimalType = ct.getMostRecentValueAsString(fatherName, "AnimalType");
-		List<ObservedValue> fatherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(fatherName,
-				"GeneModification", investigationIds); // this does not work,
-														// only get the ones for
-														// the current animal.
-		// List<ObservedValue> fatherAllGeneStates =
-		// ct.getObservedValuesByTargetAndMeasurement(fatherName,
-		// "GeneModification", investigationIds);
 
-		// Deduce animal type
-		String animalType = motherAnimalType;
-		// If one of the parents is GMO, animal is GMO
-		if (motherAnimalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier"))
+		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
+		if (fatherName.equalsIgnoreCase("Unknown") && motherName.equalsIgnoreCase("Unknown"))
 		{
-			animalType = "B. Transgeen dier";
+			throw new DatabaseException("Fatal error: no parents found for parentgroup " + parentgroupName);
 		}
+		else if (fatherName.equalsIgnoreCase("Unknown"))
+		{
+			fatherBackgroundName = "Unknown";
+			String fatherAnimalType = "Unknown";
+
+		}
+		else
+		{
+			if (!motherName.equalsIgnoreCase("Unknown"))
+			{
+				speciesName = ct.getMostRecentValueAsXrefName(fatherName, "Species");
+				color = ct.getMostRecentValueAsString(fatherName, "Color");
+			}
+
+			fatherBackgroundName = ct.getMostRecentValueAsXrefName(fatherName, "Background");
+			String fatherAnimalType = ct.getMostRecentValueAsString(fatherName, "AnimalType");
+			fatherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(fatherName, "GeneModification",
+					investigationIds); // this does not
+										// work,
+										// only get the ones
+										// for
+										// the current
+										// animal.
+			// List<ObservedValue> fatherAllGeneStates =
+			// ct.getObservedValuesByTargetAndMeasurement(fatherName,
+			// "GeneModification", investigationIds);
+
+			// If one of the parents is GMO, animal is GMO
+			if (animalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier"))
+			{
+				animalType = "B. Transgeen dier";
+			}
+			else
+			{
+				animalType = fatherAnimalType;
+			}
+
+		}
+
 		// Keep normal and transgene types, but set type of child from wild
 		// mother to normal
 		if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop"))
@@ -2509,12 +2590,12 @@ public class Breedingnew extends PluginModel<Entity>
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetLitter",
 					"Litter", animalName, null, litter));
 			// Link to parents using the Mother and Father measurements
-			if (motherName != null)
+			if (motherName != null && !motherName.equalsIgnoreCase("Unknown"))
 			{
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetMother",
 						"Mother", animalName, null, motherName));
 			}
-			if (fatherName != null)
+			if (fatherName != null && !fatherName.equalsIgnoreCase("Unknown"))
 			{
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetFather",
 						"Father", animalName, null, fatherName));
