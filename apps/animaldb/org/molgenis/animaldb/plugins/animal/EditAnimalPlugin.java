@@ -161,6 +161,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				animalMatrixViewer.setShowQuickView(true);
 				animalMatrixViewer.setShowfilterSaveOptions(true);
 				animalMatrixViewer.setDatabase(db);
+				// enable sorting etc.
+				animalMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 			}
 			catch (Exception e)
 			{
