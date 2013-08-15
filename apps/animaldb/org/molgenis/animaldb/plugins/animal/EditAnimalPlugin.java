@@ -727,11 +727,13 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				if (responsibleResearcher == null || responsibleResearcher.equals(""))
 				{
 					// delete value to make it empty
+					// FIXME: this fails when one PA is used to bundle the
+					// application of multiple / Protocols
+					// this prevents the update of a following record because of
+					// the errors thrown.
+
 					db.remove(value);
-					if (cs.getProtocolApplicationByName(value.getProtocolApplication_Name()) != null)
-					{
-						db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
-					}
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
 				}
 				else
 				{
