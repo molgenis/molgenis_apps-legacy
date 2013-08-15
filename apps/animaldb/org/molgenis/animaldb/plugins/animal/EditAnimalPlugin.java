@@ -714,6 +714,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			value.setValue(responsibleResearcher);
 			if (value.getProtocolApplication_Id() == null)
 			{
+
 				if (responsibleResearcher != null && !responsibleResearcher.equals(""))
 				{
 					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null,
@@ -727,7 +728,10 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				{
 					// delete value to make it empty
 					db.remove(value);
-					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+					if (cs.getProtocolApplicationByName(value.getProtocolApplication_Name()) != null)
+					{
+						db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+					}
 				}
 				else
 				{
