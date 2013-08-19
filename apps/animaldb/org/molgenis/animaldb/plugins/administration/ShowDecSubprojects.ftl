@@ -231,7 +231,7 @@
 						<td><input id="addAnimals" type="image" title="add animals to experiment" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
 						<td><input id="removeAnimals" type="image" title="End experiment for selected animals" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
 						<td><input id="deleteAnimals" type="image" title="Delete animals from experiment" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
-						<td><input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  /></td>
+						<td><input id="cancel" type='submit' title="Cancel"  value='Cancel' onclick="__action.value='Show'""  /></td>
 					</tr>
 				</tbody>
 			</table>
