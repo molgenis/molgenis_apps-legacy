@@ -187,7 +187,6 @@ public class PrintLabelPlugin extends EasyPluginController
 					{
 						genotypeValue += (geneMod + ": " + geneState);
 					}
-
 				}
 				elementList.add(genotypeValue);
 
