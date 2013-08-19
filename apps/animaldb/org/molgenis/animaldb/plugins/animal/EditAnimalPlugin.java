@@ -173,35 +173,28 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		animalMatrixRendered = animalMatrixViewer.render();
 		List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 
-		if (!loaded)
+		try
 		{
-			try
-			{
-				// fill some global lookup lists.
-				this.setSexList(cs.getAllMarkedPanels("Sex", investigationNames));
-				this.setSpeciesList(cs.getAllMarkedPanels("Species", investigationNames));
-				this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
-				this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
-				this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
-				this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
-				this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
-				this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
-
-				loaded = true;
-			}
-			catch (DatabaseException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (ParseException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			// fill some global lookup lists.
+			this.setSexList(cs.getAllMarkedPanels("Sex", investigationNames));
+			this.setSpeciesList(cs.getAllMarkedPanels("Species", investigationNames));
+			this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
+			this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
+			this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
+			this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
+			this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
+			this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
 		}
-
+		catch (DatabaseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (ParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
