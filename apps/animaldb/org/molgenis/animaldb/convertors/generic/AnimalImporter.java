@@ -238,7 +238,7 @@ public class AnimalImporter
 			this.defaultSpecies = tuple.getString("Species");
 			this.defaultSpeciesNamePrefix = tuple.getString("SpeciesNamePrefix");
 			this.defaultBreedingLine = tuple.getString("BreedingLine");
-			this.defaultResponsibleResearcher = tuple.getString("Responsible Researcher");
+			this.defaultResponsibleResearcher = tuple.getString("ResponsibleResearcher");
 			this.highestNr = ct.getHighestNumberForPrefix(this.defaultSpeciesNamePrefix) + 1;
 			this.highestPGNr = ct.getHighestNumberForPrefix("PG_" + this.defaultBreedingLine + "_");
 			this.highestLTNr = ct.getHighestNumberForPrefix("LT_" + this.defaultBreedingLine + "_");

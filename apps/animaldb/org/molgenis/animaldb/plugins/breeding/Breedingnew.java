@@ -3500,7 +3500,16 @@ public class Breedingnew extends PluginModel<Entity>
 			String geneState = ct.getMostRecentValueAsString(animalName, "GeneState");
 			if (geneMod != null)
 			{
-				genotypeValue += (geneMod + ": " + geneState);
+				// on request per 2013-08-08: suppress output of Genestate,
+				// when state unknown.
+				if (geneState.equalsIgnoreCase("unknown"))
+				{
+					genotypeValue += (geneMod + ":    ");
+				}
+				else
+				{
+					genotypeValue += (geneMod + ": " + geneState);
+				}
 			}
 			elementList.add(genotypeValue);
 

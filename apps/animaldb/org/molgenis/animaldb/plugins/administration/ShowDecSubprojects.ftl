@@ -25,7 +25,14 @@
 	
 <#--begin your plugin-->
 
-<#if screen.action == "AddEdit">
+<#if screen.action == "DeleteSubproject">
+	<#if screen.listId != -1>
+		<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
+	</#if>
+	
+	<p>Do you really want to delete subproject ${currentDecSubproject.getDecExpListId()} ${currentDecSubproject.getExperimentNr()} </p>
+
+<#elseif screen.action == "AddEdit">
 
 	<p><strong>
 	<#if screen.listId == -1>Add<#else>Edit</#if> DEC subproject
@@ -224,7 +231,7 @@
 						<td><input id="addAnimals" type="image" title="add animals to experiment" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
 						<td><input id="removeAnimals" type="image" title="End experiment for selected animals" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
 						<td><input id="deleteAnimals" type="image" title="Delete animals from experiment" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
-						<td><input id="cancel" type='submit' title="Cancel" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='Show'""  /></td>
+						<td><input id="cancel" type='submit' title="Cancel"  value='Cancel' onclick="__action.value='Show'""  /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -420,6 +427,7 @@
 					<!--<th>Pain management</th>-->
 					<!--<th>Expected animal end status</th>-->
 					<th>Remarks</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -447,6 +455,7 @@
 							<td><#if expl.painManagement??>${expl.painManagement}</#if></td>
 							<td><#if expl.animalEndStatus??>${expl.animalEndStatus}</#if></td>-->
 							<td><#if expl.remarks??>${expl.remarks}</#if></td>
+							<td><!--<a href='molgenis.do?__target=${screen.name}&__action=DeleteSubproject&id=${i}'><img id="delete_subproject" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a>--></td>
 						</tr>
 						<#assign i = i + 1>
 					</#list>

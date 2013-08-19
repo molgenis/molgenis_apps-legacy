@@ -173,35 +173,28 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		animalMatrixRendered = animalMatrixViewer.render();
 		List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 
-		if (!loaded)
+		try
 		{
-			try
-			{
-				// fill some global lookup lists.
-				this.setSexList(cs.getAllMarkedPanels("Sex", investigationNames));
-				this.setSpeciesList(cs.getAllMarkedPanels("Species", investigationNames));
-				this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
-				this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
-				this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
-				this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
-				this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
-				this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
-
-				loaded = true;
-			}
-			catch (DatabaseException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (ParseException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			// fill some global lookup lists.
+			this.setSexList(cs.getAllMarkedPanels("Sex", investigationNames));
+			this.setSpeciesList(cs.getAllMarkedPanels("Species", investigationNames));
+			this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
+			this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
+			this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
+			this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
+			this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
+			this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
 		}
-
+		catch (DatabaseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (ParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -714,6 +707,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			value.setValue(responsibleResearcher);
 			if (value.getProtocolApplication_Id() == null)
 			{
+
 				if (responsibleResearcher != null && !responsibleResearcher.equals(""))
 				{
 					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null,
@@ -726,6 +720,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				if (responsibleResearcher == null || responsibleResearcher.equals(""))
 				{
 					// delete value to make it empty
+					// FIXME: this fails when one PA is used to bundle the
+					// application of multiple / Protocols
+					// this prevents the update of a following record because of
+					// the errors thrown.
+
 					db.remove(value);
 					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
 				}
