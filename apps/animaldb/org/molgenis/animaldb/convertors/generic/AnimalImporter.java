@@ -340,6 +340,13 @@ public class AnimalImporter
 						animalName, weanDateString, null));
 
 			}
+			// convert Remarks -> Remarks
+			String remarkString = tuple.getString("Remarks");
+			if (remarkString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
+						animalName, remarkString, null));
+			}
 			else
 			{
 				// FIXME fail badly
