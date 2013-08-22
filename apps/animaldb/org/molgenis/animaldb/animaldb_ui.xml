@@ -39,10 +39,10 @@
 				and browse litters, print cage labels; Flavor: Freemarker -->
 				
 			<menu name="breedingmenu" position="left" label="Breeding">
-				<plugin name="BreedingOverview"
-					type="org.molgenis.animaldb.plugins.breeding.BreedingOverview" label="Overview" />
 				<plugin name="Breeding"
 					type="org.molgenis.animaldb.plugins.breeding.Breedingnew" label="BreedingModule" />
+				<plugin name="BreedingOverview"
+					type="org.molgenis.animaldb.plugins.breeding.BreedingOverview" label="Overview" />
 				<plugin name="ViewFamily"
 				type="org.molgenis.animaldb.plugins.viewers.ViewFamily" label="Family viewer" />
 			</menu>
