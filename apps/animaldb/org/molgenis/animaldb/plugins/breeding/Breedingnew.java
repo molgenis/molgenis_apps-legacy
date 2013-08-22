@@ -934,13 +934,8 @@ public class Breedingnew extends PluginModel<Entity>
 				List<?> rows = litterMatrixViewer.getSelection(db);
 				try
 				{
-					if (request.getInt(LITTERMATRIX + "_selected") != null)
-					{
-						int row = request.getInt(LITTERMATRIX + "_selected");
-
-						this.litter = ((ObservationElement) rows.get(row)).getName();
-					}
-
+					int row = request.getInt(LITTERMATRIX + "_selected");
+					this.litter = ((ObservationElement) rows.get(row)).getName();
 				}
 				catch (Exception e)
 				{
@@ -950,7 +945,6 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 
 				editLitter(db);
-
 			}
 
 			if (action.equals("editIndividual"))
