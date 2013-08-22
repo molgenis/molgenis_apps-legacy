@@ -207,12 +207,17 @@
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='respres'>Responsible researcher:</label>
-			<input type='text' class="text ui-widget-content ui-corner-all" name='respres' id='respres' value='<#if screen.responsibleResearcher?exists>${screen.getResponsibleResearcher()}</#if>' />
+			<input type='text' class="text ui-widget-content ui-corner-all" name='respres' id='respres' value='<#if screen.motherResponsibleResearcher?exists>${screen.getMotherResponsibleResearcher()}</#if>' />
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for="location">Location (optional):</label>
 			<select id="location" name="location">
-				<option value=""></option>
+				<#if screen.motherLocation??>
+					<option value="${screen.motherLocation}">${screen.motherLocation}</option>
+				<#else>
+					<option value="">&nbsp;</option>
+				</#if>
+				
 				<#list screen.locationList as loc>
 					<option value="${loc.name}">${loc.name}</option>
 				</#list>

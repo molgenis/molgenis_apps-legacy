@@ -91,6 +91,7 @@ public class Breedingnew extends PluginModel<Entity>
 	private boolean litterSizeApproximate;
 	private String locName = null;
 	private String motherLocation = null;
+	private String motherResponsibleResearcher = null;
 	private String respres = null;
 	private int weanSizeFemale;
 	private int weanSizeMale;
@@ -1445,14 +1446,19 @@ public class Breedingnew extends PluginModel<Entity>
 		if (motherName == null || motherName.equalsIgnoreCase("") || motherName.equalsIgnoreCase("Unknown"))
 		{
 			speciesName = ct.getMostRecentValueAsXrefName(fatherName, "Species");
+			this.setMotherLocation("");
+			this.setMotherResponsibleResearcher("");
 		}
 		else
 		{
 			speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
-		}// this.setMotherLocation(ct.getMostRecentValueAsXrefName(motherName,
-			// "Location"));
-			// TODO: get rid of duplication with AddAnimalPlugin
-			// TODO: put this hardcoded info in the database (NamePrefix table)
+			this.setMotherLocation(ct.getMostRecentValueAsXrefName(motherName, "Location"));
+			this.setMotherResponsibleResearcher(ct.getMostRecentValueAsString(motherName, "ResponsibleResearcher"));
+
+		}
+		this.setMotherLocation(ct.getMostRecentValueAsXrefName(motherName, "Location"));
+		// TODO: get rid of duplication with AddAnimalPlugin
+		// TODO: put this hardcoded info in the database (NamePrefix table)
 		if (speciesName.equals("House mouse"))
 		{
 			this.prefix = "mm_";
@@ -3719,5 +3725,15 @@ public class Breedingnew extends PluginModel<Entity>
 	public void setMotherLocation(String motherLocation)
 	{
 		this.motherLocation = motherLocation;
+	}
+
+	public String getMotherResponsibleResearcher()
+	{
+		return motherResponsibleResearcher;
+	}
+
+	public void setMotherResponsibleResearcher(String motherResponsibleResearcher)
+	{
+		this.motherResponsibleResearcher = motherResponsibleResearcher;
 	}
 }
