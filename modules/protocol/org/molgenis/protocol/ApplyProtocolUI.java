@@ -37,15 +37,18 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.util.ValueLabel;
 
 public class ApplyProtocolUI
 {
 
 	private Container protocolApplicationContainer = null;
+	private DivPanel mTypeDiv;
 	private DivPanel protocolDiv;
 	private DivPanel tableDiv;
 	private Table valueTable;
+	private SelectInput mType;
 	private SelectInput protocols;
 	MatrixViewer targetMatrixViewer = null;
 	static String TARGETMATRIX = "targetmatrix";
@@ -53,6 +56,7 @@ public class ApplyProtocolUI
 	private RadioInput newOrEditButtons;
 	private CheckboxInput timeBox;
 	private CheckboxInput allValuesBox;
+	private String observationTargetType = "Individuals";
 
 	private ApplyProtocolPluginModel model;
 	private ApplyProtocolService service;
@@ -74,9 +78,11 @@ public class ApplyProtocolUI
 		model.setNewProtocolApplication(false);
 		model.setTimeInfo(false);
 		protocolApplicationContainer = new Container();
+		mTypeDiv = new DivPanel("mTypePanel", null);
 		protocolDiv = new DivPanel("ProtocolPanel", null);
 		tableDiv = new DivPanel("TablePanel", null);
 		tableDiv.setStyle("width:0");
+		makeTargetTypeSelect();
 		makeProtocolSelect(db);
 		makeTargetsMatrix(db, plugin, userId);
 		makeBatchSelect(db);
@@ -232,7 +238,23 @@ public class ApplyProtocolUI
 	 */
 	public void fillContainer()
 	{
+		protocolApplicationContainer.add(mTypeDiv);
 		protocolApplicationContainer.add(protocolDiv);
+	}
+
+	public void makeTargetTypeSelect()
+	{
+		mType = new SelectInput("observationTargetType");
+		mType.setLabel("Choose ObservationTarget Type:");
+		mType.addOption("Individuals", "Individuals");
+		mType.addOption("Panels", "Panels");
+		mType.setValue(this.observationTargetType);
+
+		ActionInput targetTypeSelectButton = new ActionInput("setTargetType", "", "Set TargetType");
+
+		mTypeDiv.add(mType);
+		mTypeDiv.add(targetTypeSelectButton);
+		mTypeDiv.add(new HorizontalRuler());
 	}
 
 	/**
@@ -282,22 +304,43 @@ public class ApplyProtocolUI
 
 	public void makeTargetsMatrix(Database db, ScreenController<?> plugin, int userId) throws Exception
 	{
-
-		List<String> investigationNames = service.getAllUserInvestigationNames(db, userId);
-		List<String> measurementsToShow = new ArrayList<String>();
-		measurementsToShow.add("Species");
-		measurementsToShow.add("Sex");
-		measurementsToShow.add("Active");
-		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, Operator.IN,
-				investigationNames));
-		targetMatrixViewer = new MatrixViewer(plugin, TARGETMATRIX, new SliceablePhenoMatrix<Individual, Measurement>(
-				Individual.class, Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
-				MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		targetMatrixViewer.setDatabase(db);
-		targetMatrixViewer.setLabel("Choose animals:");
-		protocolDiv.add(targetMatrixViewer);
-		protocolDiv.add(new HorizontalRuler());
+		if (this.observationTargetType.equals("Individuals"))
+		{
+			List<String> investigationNames = service.getAllUserInvestigationNames(db, userId);
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("Species");
+			measurementsToShow.add("Sex");
+			measurementsToShow.add("Active");
+			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
+					Operator.IN, investigationNames));
+			targetMatrixViewer = new MatrixViewer(plugin, TARGETMATRIX,
+					new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2,
+					false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME,
+							Operator.IN, measurementsToShow));
+			targetMatrixViewer.setDatabase(db);
+			targetMatrixViewer.setLabel("Choose animals:");
+			protocolDiv.add(targetMatrixViewer);
+			protocolDiv.add(new HorizontalRuler());
+		}
+		else if (this.observationTargetType.equals("Panels"))
+		{
+			List<String> investigationNames = service.getAllUserInvestigationNames(db, userId);
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("TypeOfGroup");
+			// measurementsToShow.add("Sex");
+			// measurementsToShow.add("Active");
+			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
+					Operator.IN, investigationNames));
+			targetMatrixViewer = new MatrixViewer(plugin, TARGETMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(
+					Panel.class, Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
+					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+			targetMatrixViewer.setDatabase(db);
+			targetMatrixViewer.setLabel("Choose panel:");
+			protocolDiv.add(targetMatrixViewer);
+			protocolDiv.add(new HorizontalRuler());
+		}
 	}
 
 	/**
@@ -384,6 +427,7 @@ public class ApplyProtocolUI
 	 * Create a button to clear selections
 	 * 
 	 */
+
 	public void makeClearButton()
 	{
 		ActionInput clearButton = new ActionInput("Clear", "", "Reset");
@@ -696,6 +740,16 @@ public class ApplyProtocolUI
 		}
 
 		valueTable.setCell(col, row, input);
+	}
+
+	public String getObservationTargetType()
+	{
+		return observationTargetType;
+	}
+
+	public void setObservationTargetType(String observationTargetType)
+	{
+		this.observationTargetType = observationTargetType;
 	}
 
 }

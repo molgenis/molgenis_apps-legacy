@@ -55,6 +55,10 @@ public class ApplyProtocolPlugin extends EasyPluginController
 				ui.targetMatrixViewer.handleRequest(db, request);
 				action = "init";
 			}
+			if (action.equals("setTargetType"))
+			{
+				message = handleSetTargetType(request, db);
+			}
 			if (action.equals("Select"))
 			{
 				message = handleSelect(db, request);
@@ -127,6 +131,13 @@ public class ApplyProtocolPlugin extends EasyPluginController
 		MolgenisForm form = new MolgenisForm(this.model);
 		form.add(ui.getProtocolApplicationContainer());
 		return form;
+	}
+
+	ScreenMessage handleSetTargetType(MolgenisRequest request, Database db) throws Exception
+	{
+		ui.setObservationTargetType(request.getString("observationTargetType"));
+		ui.initScreen(db, this, db.getLogin().getUserId(), db.getLogin().getUserName());
+		return null;
 	}
 
 	ScreenMessage handleApply(MolgenisRequest request, Database db)
