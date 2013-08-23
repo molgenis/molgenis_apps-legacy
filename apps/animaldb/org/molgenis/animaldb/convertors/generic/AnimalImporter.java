@@ -350,10 +350,8 @@ public class AnimalImporter
 			// import genetic modification
 			String gm1String = tuple.getString("GeneModification1");
 			String gs1String = tuple.getString("GeneState1");
-			System.out.println("~~~ " + gm1String + " " + gs1String);
 			if (gm1String != null && gs1String != null)
 			{
-				System.out.println("----------------------> I am here");
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), now, null,
 						"GeneModification", animalName, gm1String, null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), now, null, "GeneState",
@@ -782,7 +780,6 @@ public class AnimalImporter
 		makeProtocolApplication("SetEarmark");
 		makeProtocolApplication("SetResponsibleResearcher");
 		makeProtocolApplication("SetGenotype");
-		// makeProtocolApplication("SetGeneState");
 
 		// parent relations
 		makeProtocolApplication("SetParentgroupMother");
