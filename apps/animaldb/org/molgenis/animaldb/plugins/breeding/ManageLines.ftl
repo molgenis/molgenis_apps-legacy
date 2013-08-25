@@ -27,6 +27,48 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
+<#if screen.lineName?exists><div></div><#else>
+<div>
+	<p><h2>Existing breeding lines</h2></p>
+	<#if screen.lineList??>
+		<#if screen.lineList?size gt 0>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>Full name</th>
+						<th>Species</th>
+						<th>Source</th>
+						<th>Remarks</th>
+						<th></th>
+						
+					</tr>
+				</thead>
+				<tbody>
+				<#list screen.lineList as line>
+					<#assign lineName = line.getName()>
+					<tr>
+						<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
+						<td>${lineName}</td>
+						<td>${screen.getFullName(lineName)}</td>
+						<td>${screen.getSpeciesName(lineName)}</td>
+						<td>${screen.getSourceName(lineName)}</td>
+						<td>${screen.getRemarksString(lineName)}</td>
+						<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td>
+					</tr>
+				</#list>
+				</tbody>
+			</table>
+		<#else>
+			<p>There are no breeding lines yet.</p>
+		</#if>
+	<#else>
+		<p>There are no breeding lines yet.</p>
+	</#if>
+</div>
+</br>
+<hr></#if>
 <div>
 
 	<p><h2><#if screen.lineName?exists>Update<#else>Add</#if> breeding line</h2></p>
@@ -67,50 +109,11 @@
 	</div>
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
-		<input type='submit' id='add' class='addbutton' value='<#if screen.lineName?exists>Update<#else>Add</#if>' onclick="__action.value='addLine'" />
+		<input type='submit' id='add' class='addbutton' <#if screen.lineName?exists>value='Update' onclick="__action.value='updateLine'" <#else>value='Add' onclick="__action.value='addLine'" </#if> />
 	</div>
 	
 </div>
-<br />
-<div>
-	<p><h2>Existing breeding lines</h2></p>
-	<#if screen.lineList??>
-		<#if screen.lineList?size gt 0>
-			<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Name</th>
-						<th>Full name</th>
-						<th>Species</th>
-						<th>Source</th>
-						<th>Remarks</th>
-						<th></th>
-						
-					</tr>
-				</thead>
-				<tbody>
-				<#list screen.lineList as line>
-					<#assign lineName = line.getName()>
-					<tr>
-						<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
-						<td>${lineName}</td>
-						<td>${screen.getFullName(lineName)}</td>
-						<td>${screen.getSpeciesName(lineName)}</td>
-						<td>${screen.getSourceName(lineName)}</td>
-						<td>${screen.getRemarksString(lineName)}</td>
-						<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td>
-					</tr>
-				</#list>
-				</tbody>
-			</table>
-		<#else>
-			<p>There are no breeding lines yet.</p>
-		</#if>
-	<#else>
-		<p>There are no breeding lines yet.</p>
-	</#if>
-</div>
+
 
 
 <#--end of your plugin-->	

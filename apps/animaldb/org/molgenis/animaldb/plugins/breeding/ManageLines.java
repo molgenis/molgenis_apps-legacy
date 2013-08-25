@@ -179,8 +179,70 @@ public class ManageLines extends PluginModel<Entity>
 
 			}
 
+			if (action.equals("updateLine"))
+			{
+				Date now = new Date();
+				lineName = request.getString("lineName");
+				String invName = cs.getOwnUserInvestigationName(this.getLogin().getUserName());
+				List<String> invNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+				String message = "";
+
+				ObservationTarget line = cs.getObservationTargetById(lineId);
+				line.setName(lineName); // maybe user has changed name
+				db.update(line);
+				message = "Line successfully updated";
+
+				// Set full name
+				if (request.getString("fullname") != null)
+				{
+					fullName = request.getString("fullname");
+					List<ObservedValue> ovl = cs.getObservedValuesByTargetAndFeature(lineName, "LineFullName",
+							invNames, invName);
+					ovl.get(0).setValue(fullName);
+					db.update(ovl.get(0));
+				}
+				if (request.getString("species") != null)
+				{
+					// Set species
+					speciesName = request.getString("species");
+					List<ObservedValue> ovl = cs.getObservedValuesByTargetAndFeature(lineName, "Species", invNames,
+							invName);
+					ovl.get(0).setValue(speciesName);
+					db.update(ovl.get(0));
+				}
+				if (request.getString("source") != null)
+				{
+					// Set source
+					sourceName = request.getString("source");
+					List<ObservedValue> ovl = cs.getObservedValuesByTargetAndFeature(lineName, "Source", invNames,
+							invName);
+					ovl.get(0).setValue(sourceName);
+					db.update(ovl.get(0));
+				}
+
+				// Set remark
+				if (request.getString("remarks") != null)
+				{
+					remarks = request.getString("remarks");
+					List<ObservedValue> ovl = cs.getObservedValuesByTargetAndFeature(lineName, "Remark", invNames,
+							invName);
+					ovl.get(0).setValue(remarks);
+					db.update(ovl.get(0));
+
+				}
+
+				// Reset everything so form is empty again
+				lineId = -1;
+				lineName = null;
+				fullName = null;
+				speciesName = null;
+				sourceName = null;
+				remarks = null;
+
+			}
 			if (action.equals("addLine"))
 			{
+
 				Date now = new Date();
 				lineName = request.getString("lineName");
 				String invName = cs.getOwnUserInvestigationName(this.getLogin().getUserName());
@@ -190,9 +252,12 @@ public class ManageLines extends PluginModel<Entity>
 				{
 					lineId = cs.createPanel(invName, lineName);
 					message = "Line successfully added";
+					System.out.println(" add   ");
 				}
 				else
 				{
+					System.out.println(" update   ");
+
 					ObservationTarget line = cs.getObservationTargetById(lineId);
 					line.setName(lineName); // maybe user has changed name
 					db.update(line);
