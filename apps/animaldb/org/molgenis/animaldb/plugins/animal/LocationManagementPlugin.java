@@ -205,6 +205,9 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 						Individual.class, Measurement.class), true, 2, false, true, filterRules, new MatrixQueryRule(
 						MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
+				animalsNotInLocMatrixViewer.setFilterVisibility(false);
+				animalsNotInLocMatrixViewer.setShowQuickView(true);
+				animalsNotInLocMatrixViewer.setShowfilterSaveOptions(true);
 			}
 
 			if (action.equals("ApplyAddAnimals"))
@@ -298,6 +301,10 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
 						measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
+		animalsInLocMatrixViewer.setFilterVisibility(false);
+		animalsInLocMatrixViewer.setShowQuickView(true);
+		animalsInLocMatrixViewer.setShowfilterSaveOptions(true);
+
 		this.matrixLabel = "Animals in " + locationName + ":";
 	}
 
