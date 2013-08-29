@@ -212,7 +212,9 @@
 	<!--<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>-->
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
-	<h3>Administrate DEC subproject:  ${currentDecSubproject.name}</h3>
+	<h2>Administrate DEC subproject:  ${currentDecSubproject.name}</h2>
+	<hr>
+	<h3>Overview of active in the experimental protocol: </h3>
 	
 	${screen.renderRemAnimalsMatrixViewer()}
 	</div>
