@@ -212,7 +212,7 @@
 	<!--<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>-->
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
-	<h3>Manage animals in ${currentDecSubproject.name}</h3>
+	<h3>Administrate DEC subproject:  ${currentDecSubproject.name}</h3>
 	
 	${screen.renderRemAnimalsMatrixViewer()}
 	</div>
@@ -221,15 +221,18 @@
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
 				<thead>
 					<tr style="text-align:center;">
-						<th>Add Animals</th>
-						<th>End experiment for selected animals</th>
-						<th>Delete animals from experiment</th>
+						<th>Start experiment </br>for selected animals &nbsp;</th>
+						<th>End experiment </br>for selected animals &nbsp;</th>
+						<th> &nbsp;</th>
+						<th>Delete animals </br>from experiment &nbsp;</th>
+						<th> &nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr style="text-align:center;">
 						<td><input id="addAnimals" type="image" title="add animals to experiment" onclick="__action.value='AddAnimalToSubproject'" src="generated-res/img/new.png""  /></td>
 						<td><input id="removeAnimals" type="image" title="End experiment for selected animals" onclick="__action.value='RemoveAnimalsFromSubproject'" src="res/img/remove.png""  /></td>
+						<td> &nbsp;</td>
 						<td><input id="deleteAnimals" type="image" title="Delete animals from experiment" onclick="__action.value='DeleteAnimalsFromSubproject'" src="generated-res/img/delete.png""  /></td>
 						<td><input id="cancel" type='submit' title="Cancel"  value='Cancel' onclick="__action.value='Show'""  /></td>
 					</tr>
@@ -334,15 +337,15 @@
 
 <#elseif screen.action == "AddAnimalToSubproject">
 
-	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
-	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
-	<p><h3>Adding animal(s) to ${currentDecSubproject.name}</h3></p>
+	<p><h3>1: Select the animal(s) you want to add to ${currentDecSubproject.name}: </h3></p>
 	
 
 	${screen.renderAddAnimalsMatrixViewer()}
 	
 	<hr />
+	
+	<p><h3>2: Select the appropriate project settings for the animal(s) you want to add to ${currentDecSubproject.name}: </h3></p>
 	
 	<div class="row" style='clear:left'>
 		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>
@@ -397,7 +400,9 @@
 	</div>
 	
 	<div class='row'>
-		<input type='submit' id='doadd' class='addbutton' value='Apply' onclick="__action.value='ApplyAddAnimalToSubproject'" />
+		<input type='submit' id='doadd' class='addbutton' value='Add Animals' onclick="__action.value='ApplyAddAnimalToSubproject'" />
+		<a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}"> &nbsp; Cancel </a>
+		<!--input type='submit' id='canceladd' class='addbutton' value='Cancel' onclick="__target.value='AddSubproject'; __action.value='EditAnimals&id=${screen.listId?string.computer}'" /-->
 	</div>
 	
 
