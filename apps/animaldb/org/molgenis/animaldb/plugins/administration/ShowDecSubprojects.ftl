@@ -209,12 +209,13 @@
 
 <#elseif screen.action == "EditAnimals">
 
-	<!--<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>-->
+	<!--p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p-->
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
-	<h2>Administrate DEC subproject:  ${currentDecSubproject.name}</h2>
+	
+	<h2>Manage DEC subproject:  ${currentDecSubproject.name}</h2>
 	<hr>
-	<h3>Overview of active in the experimental protocol: </h3>
+	<h3>Overview of active animals in the experimental protocol: </h3>
 	
 	${screen.renderRemAnimalsMatrixViewer()}
 	</div>
@@ -223,8 +224,8 @@
 			<table cellpadding="0" cellspacing="0" border="0" class="display" id="subprojectActionsTable">
 				<thead>
 					<tr style="text-align:center;">
-						<th>Start experiment </br>for selected animals &nbsp;</th>
-						<th>End experiment </br>for selected animals &nbsp;</th>
+						<th>Add new animals</br> to the experiment &nbsp;</th>
+						<th>End experiment for the </br>above selected animals &nbsp;</th>
 						<th> &nbsp;</th>
 						<th>Delete animals </br>from experiment &nbsp;</th>
 						<th> &nbsp;</th>
