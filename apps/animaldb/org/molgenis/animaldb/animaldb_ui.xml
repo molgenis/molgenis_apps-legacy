@@ -68,10 +68,7 @@
 		</menu>
 
 		<menu name="decmenu" position="left" label="DEC and NVWA">
-			<!-- DecStatus; Goal: start screen with a quick overview of all active 
-				DECs and their subprojects; Flavor: Java-only -->
-			<plugin name="DecStatus"
-				type="org.molgenis.animaldb.plugins.administration.DecStatus" label="DEC status portal" />
+			
 			<!-- ShowDecProjects; Goal: create, edit and browse DEC projects; Flavor: 
 				Freemarker -->
 			<plugin name="AddProject"
@@ -82,6 +79,10 @@
 			<plugin name="AddSubproject"
 				type="org.molgenis.animaldb.plugins.administration.ShowDecSubprojects"
 				label="DEC subprojects" />
+			<!-- DecStatus; Goal: start screen with a quick overview of all active 
+				DECs and their subprojects; Flavor: Java-only -->
+			<plugin name="DecStatus"
+				type="org.molgenis.animaldb.plugins.administration.DecStatus" label="DEC status portal" />
 			<!-- YearlyReportModule; Goal: create yearly reports for the NVWA; Flavor: 
 				Freemarker -->
 			<plugin name="YearlyReportModule"
