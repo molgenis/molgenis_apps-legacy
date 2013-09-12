@@ -244,6 +244,8 @@ public class PrintLabelPlugin extends EasyPluginController
 					}
 					elementLabelList.add(value.getFeature_Name());
 					elementList.add(actualValue);
+					elementLabelList.add("Remarks");
+					elementList.add("\n\n\n\n\n");
 				}
 
 			}
