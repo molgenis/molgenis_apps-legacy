@@ -124,17 +124,6 @@
 				type="org.molgenis.animaldb.plugins.settings.SourceTypePlugin" label="Animal sources" /-->
 			<!-- GenePlugin; Goal: create and browse gene modifications; Flavor: Freemarker -->
 			
-			<menu name="errorcorrectmenu" position="top_left" label="Correct errors">
-				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: 
-					Freemarker -->
-				<plugin name="ErrorCorrectionIndividual"
-					type="org.molgenis.animaldb.plugins.system.ErrorCorrectionIndividualPlugin"
-					label="Animals" />
-				<!-- ErrorCorrectionPlugin; Goal: (un)delete values; Flavor: Freemarker -->
-				<plugin name="ErrorCorrectionValue"
-					type="org.molgenis.animaldb.plugins.system.ErrorCorrectionPlugin"
-					label="Values" />
-			</menu>
 		</menu>
 
 		<menu name="Admin" position="top_left" label="Admin">
@@ -224,12 +213,24 @@
 					</form>
 					<form name="matrixfilters" entity="SavedMatrixFilters" view="list" label="Saved Matrix filters" />
 				</menu>
-				<menu name="deltablemenu" position="top_left" label="Deletion tables">
+				<menu name="errorcorrectmenu" position="top_left" label="Correct errors">
+				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: 
+					Freemarker -->
+				<plugin name="ErrorCorrectionIndividual"
+					type="org.molgenis.animaldb.plugins.system.ErrorCorrectionIndividualPlugin"
+					label="Animals" />
+				<!-- ErrorCorrectionPlugin; Goal: (un)delete values; Flavor: Freemarker -->
+				<plugin name="ErrorCorrectionValue"
+					type="org.molgenis.animaldb.plugins.system.ErrorCorrectionPlugin"
+					label="Values" />
+					<menu name="deltablemenu" position="top_left" label="Deletion tables">
 					<form name="delindividual" entity="DeletedIndividual" view="list"
 						label="Individuals" />
 					<form name="delobservedvalue" entity="DeletedObservedValue"
 						view="list" label="Values" />
 				</menu>
+			</menu>
+				
 				<plugin label="File storage" name="FileStorage"
 					type="plugins.system.settings.Settings" />
 			</menu>
