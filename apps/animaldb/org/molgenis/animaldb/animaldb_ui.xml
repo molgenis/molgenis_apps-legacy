@@ -14,12 +14,12 @@
 			label="Welcome" />
 
 		<!-- ManualPlugin; Goal: provide links to AnimalDB manuals; Flavor: Freemarker -->
-		<menu name="manualmenu" position="left" label="Manuals">
+		<menu name="manualmenu" position="top_left" label="Manuals">
 			<plugin name="Manual"
 				type="org.molgenis.animaldb.plugins.accessibility.ManualPlugin"
 				label="Manuals" />
 		</menu>
-		<menu name="animalmenu" position="left" label="Animals">
+		<menu name="animalmenu" position="top_left" label="Animals">
 		
 			<!-- ListPluginMatrix; Goal: matrix for viewing animal values; Flavor: 
 				Java-only -->
@@ -38,7 +38,7 @@
 			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype 
 				and browse litters, print cage labels; Flavor: Freemarker -->
 				
-			<menu name="breedingmenu" position="left" label="Breeding">
+			<menu name="breedingmenu" position="top_left" label="Breeding">
 				<plugin name="Breeding"
 					type="org.molgenis.animaldb.plugins.breeding.Breedingnew" label="BreedingModule" />
 				<plugin name="BreedingOverview"
@@ -67,7 +67,7 @@
 			
 		</menu>
 
-		<menu name="decmenu" position="left" label="DEC and NVWA">
+		<menu name="decmenu" position="top_left" label="DEC and NVWA">
 			
 			<!-- ShowDecProjects; Goal: create, edit and browse DEC projects; Flavor: 
 				Freemarker -->
@@ -98,7 +98,7 @@
 			type="plugins.batch.BatchPlugin" label="Batch management" /> <plugin name="BatchView" 
 			type="plugins.batch.BatchViewPlugin" label="Batch viewer" /> </menu -->
 
-		<menu name="Settings" position="left" label="Settings">
+		<menu name="Settings" position="top_left" label="Settings">
 			<!-- ManageLines; Goal: create, edit and browse breeding lines; Flavor: 
 				Freemarker -->
 			<plugin name="ManageLines"
@@ -124,7 +124,7 @@
 				type="org.molgenis.animaldb.plugins.settings.SourceTypePlugin" label="Animal sources" /-->
 			<!-- GenePlugin; Goal: create and browse gene modifications; Flavor: Freemarker -->
 			
-			<menu name="errorcorrectmenu" position="left" label="Correct errors">
+			<menu name="errorcorrectmenu" position="top_left" label="Correct errors">
 				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: 
 					Freemarker -->
 				<plugin name="ErrorCorrectionIndividual"
@@ -137,9 +137,9 @@
 			</menu>
 		</menu>
 
-		<menu name="Admin" position="left" label="Admin">
+		<menu name="Admin" position="top_left" label="Admin">
 
-			<menu name="securitymenu" position="left" label="Security">
+			<menu name="securitymenu" position="top_left" label="Security">
 				<!-- AnimalDbUsers; Goal: manage rights on investigations, create new 
 					users; Flavor: Freemarker -->
 				<plugin name="AnimalDbUsers"
@@ -151,7 +151,7 @@
 				<plugin name="PermissionManagementPlugin"
 					type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
 					label="Permission management" />
-				<menu name="secmenu" position="left" label="Security tables">
+				<menu name="secmenu" position="top_left" label="Security tables">
 					<form name="MolgenisUser" entity="MolgenisUser" view="list"
 						label="Users" />
 					<form name="Persons" entity="Person" />
@@ -167,7 +167,7 @@
 				</menu>
 			</menu>
 
-			<menu name="systemmenu" position="left" label="System">
+			<menu name="systemmenu" position="top_left" label="System">
 				<!-- PreFillDatabasePlugin; Goal: reset the database, putting back only 
 					the basic security entries; Flavor: Freemarker -->
 				<!--<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.system.PreFillDatabasePlugin" 
@@ -198,7 +198,7 @@
 					to use as labels for animals instead of their names; Flavor: Freemarker -->
 				<!-- <plugin name="SetCustomLabelFeature" type="org.molgenis.animaldb.plugins.system.SetCustomLabelFeaturePlugin" 
 					label="Set custom label feature" /> -->
-				<menu name="tablemenu" position="left" label="Content tables">
+				<menu name="tablemenu" position="top_left" label="Content tables">
 					<form name="investigation" entity="Investigation" view="list"
 						label="Investigations" />
 					<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
@@ -224,7 +224,7 @@
 					</form>
 					<form name="matrixfilters" entity="SavedMatrixFilters" view="list" label="Saved Matrix filters" />
 				</menu>
-				<menu name="deltablemenu" position="left" label="Deletion tables">
+				<menu name="deltablemenu" position="top_left" label="Deletion tables">
 					<form name="delindividual" entity="DeletedIndividual" view="list"
 						label="Individuals" />
 					<form name="delobservedvalue" entity="DeletedObservedValue"
