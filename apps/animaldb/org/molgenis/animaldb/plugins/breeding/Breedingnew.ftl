@@ -351,7 +351,7 @@
 						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
 						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editLT_32.png"  /></td>
 						<td><input id="printcagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
-						<td><input id="deactivate" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
+						<td><input id="deActivateLitter" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -395,6 +395,7 @@
 	jQuery('#createParentgroup').button();
 	jQuery('#addpg').button();
 	jQuery('#deactivatePG').button();
+	jQuery('#deActivateLitter').button();
 	jQuery('#weanlitter').button();
 	jQuery('#genotypelitter').button();
 	jQuery('#editlitter').button();
