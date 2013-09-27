@@ -320,7 +320,7 @@
 					<tr style="text-align:center;">
 						<td><input id="createParentgroup" type="image" title="New parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
 						<td><input id="createLitter" type="image" title="Create new litter from selected parent group." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
-						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
+						<td><input id="deactivatePG" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivatePG'" /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -394,7 +394,7 @@
 	jQuery('#cancel4').button();
 	jQuery('#createParentgroup').button();
 	jQuery('#addpg').button();
-	jQuery('#deactivate').button();
+	jQuery('#deactivatePG').button();
 	jQuery('#weanlitter').button();
 	jQuery('#genotypelitter').button();
 	jQuery('#editlitter').button();
