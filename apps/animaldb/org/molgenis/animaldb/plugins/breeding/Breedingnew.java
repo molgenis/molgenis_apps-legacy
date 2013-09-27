@@ -379,7 +379,7 @@ public class Breedingnew extends PluginModel<Entity>
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
 					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
 			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(Panel.class,
-					Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
+					Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
 					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 			pgMatrixViewer.setShowTargetTooltip(true);
 
@@ -787,31 +787,50 @@ public class Breedingnew extends PluginModel<Entity>
 				this.action = "init";
 			}
 
-			if (action.equals("deActivate"))
+			if (action.equals("deActivatePG"))
 			{
-				List<?> rows = pgMatrixViewer.getSelection(db);
+				List<Integer> targetList = new ArrayList<Integer>();
+				// Get targets from matrix
+				@SuppressWarnings("unchecked")
+				List<ObservationElement> rows = (List<ObservationElement>) pgMatrixViewer.getSelection(db);
 				String pgName;
-				try
+				int rowCnt = 0;
+				for (ObservationElement row : rows)
 				{
-					int row = request.getInt(PGMATRIX + "_selected");
-					pgName = ((ObservationElement) rows.get(row)).getName();
+					if (request.getBoolean(PGMATRIX + "_selected_" + rowCnt) != null)
+					{
+						targetList.add(row.getId());
+						rowCnt++;
+					}
+
 				}
-				catch (Exception e)
+
+				if (rowCnt > 0)
 				{
-					this.action = "init";
-					throw new Exception("No parentgroup selected");
-				}
-				ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, pgName)
-						.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
-				if (activeVal.getValue().equals("Active"))
-				{
-					activeVal.setValue("Inactive");
+					for (Integer pgId : targetList)
+					{
+						pgName = ct.getObservationTargetLabel(pgId);
+						ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, pgName)
+								.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
+						if (activeVal.getValue().equals("Active"))
+						{
+							activeVal.setValue("Inactive");
+						}
+						else
+						{
+							activeVal.setValue("Active");
+						}
+						db.update(activeVal);
+					}
 				}
 				else
 				{
-					activeVal.setValue("Active");
+					// nothing selected, inform user
+					this.action = "init";
+					throw new Exception("No parentgroup selected");
 				}
-				db.update(activeVal);
+
+				targetList.clear();
 				// Reset matrix and return to main screen
 				loadPgMatrixViewer(db);
 				pgMatrixViewer.setDatabase(db);
