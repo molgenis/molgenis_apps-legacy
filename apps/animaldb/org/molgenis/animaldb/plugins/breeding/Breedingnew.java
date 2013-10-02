@@ -875,8 +875,6 @@ public class Breedingnew extends PluginModel<Entity>
 
 				List<Integer> targetList = new ArrayList<Integer>();
 				targetList = getSelectedFromMatrix(request, PGMATRIX, pgMatrixViewer, db);
-				System.out.println("@@@@@@@@@@@@@@@@@@@ targetlist: " + targetList + " " + targetList.size());
-				System.out.println("@@@@@@@@@@@@@@@@@@@ request: " + request);
 
 				if (targetList.size() == 1)
 				{
