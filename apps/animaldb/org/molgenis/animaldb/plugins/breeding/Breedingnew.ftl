@@ -292,7 +292,7 @@
 	</div>
 <#elseif screen.action == "makeLabels">
 
-	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
+	<div class="form_header">Download cage labels for the selected litter(s)</div>
 	<#if screen.labelDownloadLink??>
 		<p>${screen.labelDownloadLink}</p>
 	</#if>

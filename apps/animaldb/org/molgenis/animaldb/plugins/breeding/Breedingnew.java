@@ -101,6 +101,7 @@ public class Breedingnew extends PluginModel<Entity>
 	private String nameBase = null;
 	private int startNumber = -1;
 	private String litter;
+	private List<String> litterList;
 	private int weansize = 0;
 	private String weanparentgroup = null;
 	private String prefix = "";
@@ -1103,30 +1104,40 @@ public class Breedingnew extends PluginModel<Entity>
 				// Get selected litter
 				List<Integer> targetList = new ArrayList<Integer>();
 				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
-				if (targetList.size() == 1)
+				if (targetList.size() > 0)
 				{
-					this.litter = ct.getObservationTargetLabel(targetList.get(0));
-				}
-				else
-				{
-					this.action = "init";
-					this.entity = "Litters";
-					throw new Exception("No, or multiple litter(s) selected");
-				}
-				if (ct.getMostRecentValueAsString(this.litter, "WeanDate") == null)
-				{
-					this.action = "init";
-					this.entity = "Litters";
-					throw new Exception("Cannot make labels for an unweaned litter");
-					// disable temporary cage label for now, because it is not
-					// part of the flow anymore
-					// } else if (ct.getMostRecentValueAsString(this.litter,
-					// "GenotypeDate") == null) {
-					// makeTempCageLabels(db);
-				}
-				else
-				{
+					// int ctr = 0;
+					boolean notPrintable = false;
+					List<String> notPrintableList = new ArrayList<String>();
+					List<String> litterList = new ArrayList<String>();
+					for (Integer each : targetList)
+					{
+						String litter = ct.getObservationTargetLabel(each);
+						if (ct.getMostRecentValueAsString(litter, "WeanDate") != null)
+						{
+							litterList.add(litter);
+							// ctr++;
+						}
+						else
+						{
+							notPrintable = true;
+							notPrintableList.add(litter);
+						}
+					}
+					setLitterList(litterList);
 					createDefCageLabels(db);
+
+					if (notPrintable)
+					{
+						throw new Exception("The labels for litter(s) " + notPrintableList
+								+ "Were not printed because these litters have not yet been weaned.");
+					}
+				}
+				else
+				{
+					this.action = "init";
+					this.entity = "Litters";
+					throw new Exception("No litter(s) selected");
 				}
 			}
 
@@ -3468,131 +3479,133 @@ public class Breedingnew extends PluginModel<Entity>
 		labelgenerator.startDocument(pdfFile);
 
 		// Litter stuff
-		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
-		String line = this.getLineInfo(parentgroupName);
-		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-		// String motherInfo = this.getGenoInfo(motherName, db);
-		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
-		// String fatherInfo = this.getGenoInfo(fatherName, db);
-
-		List<String> elementLabelList;
-		List<String> elementList;
-		int sexctr = 0;
-		for (Individual animal : this.getAnimalsInLitter(litter, db))
+		for (String litter : this.litterList)
 		{
-			String animalName = animal.getName();
-			elementList = new ArrayList<String>();
-			elementLabelList = new ArrayList<String>();
-			sexctr += 1;
-			// Name / custom label
-			elementLabelList.add("Name:");
-			elementList.add(animalName);
-			// Species
-			elementLabelList.add("Species:");
-			elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Species"));
-			// Sex
-			String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
-			elementLabelList.add("Sex:");
-			elementList.add(sex);
-			if (first)
-			{
-				lastSex = sex;
-			}
-			// Earmark
-			elementLabelList.add("Earmark:");
-			elementList.add(ct.getMostRecentValueAsString(animalName, "Earmark"));
-			// Line
-			elementLabelList.add("Line:");
-			elementList.add(line);
-			// Background + GeneModification + GeneState
-			elementLabelList.add("Background:");
-			elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Background"));
+			String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
+			String line = this.getLineInfo(parentgroupName);
+			String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+			// String motherInfo = this.getGenoInfo(motherName, db);
+			String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
+			// String fatherInfo = this.getGenoInfo(fatherName, db);
 
-			// FIXME (can only show one gene modification....
-
-			elementLabelList.add("Genotype:");
-			String genotypeValue = "";
-			String geneMod = ct.getMostRecentValueAsString(animalName, "GeneModification");
-			String geneState = ct.getMostRecentValueAsString(animalName, "GeneState");
-			if (geneMod != null)
+			List<String> elementLabelList;
+			List<String> elementList;
+			int sexctr = 0;
+			for (Individual animal : this.getAnimalsInLitter(litter, db))
 			{
-				// on request per 2013-08-08: suppress output of Genestate,
-				// when state unknown.
-				if (geneState.equalsIgnoreCase("unknown"))
+				String animalName = animal.getName();
+				elementList = new ArrayList<String>();
+				elementLabelList = new ArrayList<String>();
+				sexctr += 1;
+				// Name / custom label
+				elementLabelList.add("Name:");
+				elementList.add(animalName);
+				// Species
+				elementLabelList.add("Species:");
+				elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Species"));
+				// Sex
+				String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
+				elementLabelList.add("Sex:");
+				elementList.add(sex);
+				if (first)
 				{
-					genotypeValue += (geneMod + ":    ");
+					lastSex = sex;
+				}
+				// Earmark
+				elementLabelList.add("Earmark:");
+				elementList.add(ct.getMostRecentValueAsString(animalName, "Earmark"));
+				// Line
+				elementLabelList.add("Line:");
+				elementList.add(line);
+				// Background + GeneModification + GeneState
+				elementLabelList.add("Background:");
+				elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Background"));
+
+				// FIXME (can only show one gene modification....
+
+				elementLabelList.add("Genotype:");
+				String genotypeValue = "";
+				String geneMod = ct.getMostRecentValueAsString(animalName, "GeneModification");
+				String geneState = ct.getMostRecentValueAsString(animalName, "GeneState");
+				if (geneMod != null)
+				{
+					// on request per 2013-08-08: suppress output of Genestate,
+					// when state unknown.
+					if (geneState.equalsIgnoreCase("unknown"))
+					{
+						genotypeValue += (geneMod + ":    ");
+					}
+					else
+					{
+						genotypeValue += (geneMod + ": " + geneState);
+					}
+				}
+				elementList.add(genotypeValue);
+
+				// Birthdate
+				elementLabelList.add("Birthdate:");
+				elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
+				// Geno mother
+				elementLabelList.add("Father:\nMother:");
+				String fatherValue = ct.getMostRecentValueAsXrefName(animalName, "Father");
+				String motherValue = ct.getMostRecentValueAsXrefName(animalName, "Mother");
+				if (fatherValue == null)
+				{
+					fatherValue = "";
+				}
+				if (motherValue == null)
+				{
+					motherValue = "";
+				}
+				elementList.add(fatherValue + "\n" + motherValue);
+				// litter
+				elementLabelList.add("Litter:");
+				elementList.add(litter);
+				// Add DEC nr, if present, or empty if not
+				elementLabelList.add("Researcher: ");
+				elementList.add(ct.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
+
+				elementLabelList.add("DEC:");
+				String decNr = ct.getMostRecentValueAsString(animalName, "DecNr");
+				String expNr = ct.getMostRecentValueAsString(animalName, "ExperimentNr");
+				String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
+				elementList.add(decInfo);
+				elementLabelList.add("Remarks");
+				elementList.add("\n\n\n\n\n");
+
+				if (sex.equals(lastSex))
+				{
+					System.out.println(sexctr + " equals: " + sex);
+					labelgenerator.addLabelToDocument(elementLabelList, elementList);
 				}
 				else
 				{
-					genotypeValue += (geneMod + ": " + geneState);
+					System.out.println(sexctr + " not equals: " + sex);
+					// add empty label on odd labelnr.
+					if ((sexctr - 1) % 2 != 0)
+					{
+						labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+					}
+					labelgenerator.finishPage();
+					labelgenerator.nextPage();
+					sexctr = 1; // reset the sexcounter to keep track of odd and
+								// even numbers.
+					labelgenerator.addLabelToDocument(elementLabelList, elementList);
 				}
-			}
-			elementList.add(genotypeValue);
 
-			// Birthdate
-			elementLabelList.add("Birthdate:");
-			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
-			// Geno mother
-			elementLabelList.add("Father:\nMother:");
-			String fatherValue = ct.getMostRecentValueAsXrefName(animalName, "Father");
-			String motherValue = ct.getMostRecentValueAsXrefName(animalName, "Mother");
-			if (fatherValue == null)
-			{
-				fatherValue = "";
-			}
-			if (motherValue == null)
-			{
-				motherValue = "";
-			}
-			elementList.add(fatherValue + "\n" + motherValue);
-			// litter
-			elementLabelList.add("Litter:");
-			elementList.add(litter);
-			// Add DEC nr, if present, or empty if not
-			elementLabelList.add("Researcher: ");
-			elementList.add(ct.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
+				lastSex = sex;
 
-			elementLabelList.add("DEC:");
-			String decNr = ct.getMostRecentValueAsString(animalName, "DecNr");
-			String expNr = ct.getMostRecentValueAsString(animalName, "ExperimentNr");
-			String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
-			elementList.add(decInfo);
-			elementLabelList.add("Remarks");
-			elementList.add("\n\n\n\n\n");
-
-			if (sex.equals(lastSex))
-			{
-				System.out.println(sexctr + " equals: " + sex);
-				labelgenerator.addLabelToDocument(elementLabelList, elementList);
-			}
-			else
-			{
-				System.out.println(sexctr + " not equals: " + sex);
-				// add empty label on odd labelnr.
-				if ((sexctr - 1) % 2 != 0)
+				if (first)
 				{
-					labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+					first = false;
 				}
-				labelgenerator.finishPage();
-				labelgenerator.nextPage();
-				sexctr = 1; // reset the sexcounter to keep track of odd and
-							// even numbers.
-				labelgenerator.addLabelToDocument(elementLabelList, elementList);
 			}
 
-			lastSex = sex;
-
-			if (first)
+			if (sexctr % 2 != 0)
 			{
-				first = false;
+				labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
 			}
-		}
-
-		if (sexctr % 2 != 0)
-		{
-			labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
-		}
-
+		}// close for loop
 		labelgenerator.finishPage();
 		labelgenerator.finishDocument();
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
@@ -3770,5 +3783,15 @@ public class Breedingnew extends PluginModel<Entity>
 	public void setMotherResponsibleResearcher(String motherResponsibleResearcher)
 	{
 		this.motherResponsibleResearcher = motherResponsibleResearcher;
+	}
+
+	public List<String> getLitterList()
+	{
+		return litterList;
+	}
+
+	public void setLitterList(List<String> litterList)
+	{
+		this.litterList = litterList;
 	}
 }
