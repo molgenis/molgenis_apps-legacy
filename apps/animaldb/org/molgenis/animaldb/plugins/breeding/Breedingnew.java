@@ -41,6 +41,7 @@ import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -438,7 +439,7 @@ public class Breedingnew extends PluginModel<Entity>
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
 					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
 			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(
-					Panel.class, Measurement.class), true, 1, false, false, filterRules, new MatrixQueryRule(
+					Panel.class, Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
 					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 			litterMatrixViewer.setShowTargetTooltip(true);
 		}
@@ -791,25 +792,14 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				List<Integer> targetList = new ArrayList<Integer>();
 				// Get targets from matrix
-				@SuppressWarnings("unchecked")
-				List<ObservationElement> rows = (List<ObservationElement>) pgMatrixViewer.getSelection(db);
-				String pgName;
-				int rowCnt = 0;
-				for (ObservationElement row : rows)
-				{
-					if (request.getBoolean(PGMATRIX + "_selected_" + rowCnt) != null)
-					{
-						targetList.add(row.getId());
-						rowCnt++;
-					}
+				targetList = getSelectedFromMatrix(request, PGMATRIX, pgMatrixViewer, db);
+				targetList = getSelectedFromMatrix(request, PGMATRIX, pgMatrixViewer, db);
 
-				}
-
-				if (rowCnt > 0)
+				if (targetList.size() > 0)
 				{
 					for (Integer pgId : targetList)
 					{
-						pgName = ct.getObservationTargetLabel(pgId);
+						String pgName = ct.getObservationTargetLabel(pgId);
 						ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, pgName)
 								.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
 						if (activeVal.getValue().equals("Active"))
@@ -841,29 +831,36 @@ public class Breedingnew extends PluginModel<Entity>
 
 			if (action.equals("deActivateLitter"))
 			{
-				List<?> rows = litterMatrixViewer.getSelection(db);
-				String litterName;
-				try
+				List<Integer> targetList = new ArrayList<Integer>();
+				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
+
+				if (targetList.size() > 0)
 				{
-					int row = request.getInt(LITTERMATRIX + "_selected");
-					litterName = ((ObservationElement) rows.get(row)).getName();
-				}
-				catch (Exception e)
-				{
-					this.action = "init";
-					throw new Exception("No litter selected");
-				}
-				ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, litterName)
-						.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
-				if (activeVal.getValue().equals("Active"))
-				{
-					activeVal.setValue("Inactive");
+
+					for (Integer ltId : targetList)
+					{
+						String ltName = ct.getObservationTargetLabel(ltId);
+						ObservedValue activeVal = db.query(ObservedValue.class).eq(ObservedValue.TARGET_NAME, ltName)
+								.eq(ObservedValue.FEATURE_NAME, "Active").find().get(0);
+						if (activeVal.getValue().equals("Active"))
+						{
+							activeVal.setValue("Inactive");
+						}
+						else
+						{
+							activeVal.setValue("Active");
+						}
+						db.update(activeVal);
+					}
 				}
 				else
 				{
-					activeVal.setValue("Active");
+					// nothing selected, inform user
+					this.action = "init";
+					throw new Exception("No litter(s) selected");
 				}
-				db.update(activeVal);
+
+				targetList.clear();
 				// Reset matrix and return to main screen
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
@@ -874,19 +871,26 @@ public class Breedingnew extends PluginModel<Entity>
 
 			if (action.equals("createLitter"))
 			{
-				this.entity = "Litters"; // switch to litter view
 				// Get selected parentgroup from PARENTGROUP matrix
-				List<?> rows = pgMatrixViewer.getSelection(db);
-				try
+
+				List<Integer> targetList = new ArrayList<Integer>();
+				targetList = getSelectedFromMatrix(request, PGMATRIX, pgMatrixViewer, db);
+				System.out.println("@@@@@@@@@@@@@@@@@@@ targetlist: " + targetList + " " + targetList.size());
+				System.out.println("@@@@@@@@@@@@@@@@@@@ request: " + request);
+
+				if (targetList.size() == 1)
 				{
-					int row = request.getInt(PGMATRIX + "_selected");
-					this.selectedParentgroup = ((ObservationElement) rows.get(row)).getName();
+					this.entity = "Litters"; // switch to litter view
+					this.selectedParentgroup = ct.getObservationTargetLabel((targetList.get(0)));
 				}
-				catch (Exception e)
+				else
 				{
+
 					this.action = "init";
-					throw new Exception("No parentgroup selected");
+					throw new Exception("No or to many parentgroup(s) selected");
 				}
+				// clean the list for next action.
+				targetList.clear();
 			}
 
 			if (action.equals("addLitter"))
@@ -922,20 +926,23 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				stillToWeanYN = true;
 				// Get selected litter
-				List<?> rows = litterMatrixViewer.getSelection(db);
 
-				try
+				List<Integer> targetList = new ArrayList<Integer>();
+				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
+
+				if (targetList.size() == 1)
 				{
-					int row = request.getInt(LITTERMATRIX + "_selected");
-					this.litter = ((ObservationElement) rows.get(row)).getName();
+					this.litter = ct.getObservationTargetLabel(targetList.get(0));
 					this.birthdate = ct.getMostRecentValueAsString(this.litter, "DateOfBirth");
 				}
-				catch (Exception e)
+				else
 				{
 					this.action = "init";
 					this.entity = "Litters";
-					throw new Exception("No litter selected");
+					throw new Exception("No, or more than 1 litter(s) selected");
 				}
+
+				// check if litter is already weaned, if so, do not wean again.
 				if (isWeaned(db))
 				{
 					stillToWeanYN = false;
@@ -946,25 +953,25 @@ public class Breedingnew extends PluginModel<Entity>
 				{
 					weanLitter(db);
 				}
-
+				targetList.clear();
 			}
 
 			if (action.equals("EditLitter"))
 			{
-				List<?> rows = litterMatrixViewer.getSelection(db);
-				try
+				List<Integer> targetList = new ArrayList<Integer>();
+				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
+				if (targetList.size() == 1)
 				{
-					int row = request.getInt(LITTERMATRIX + "_selected");
-					this.litter = ((ObservationElement) rows.get(row)).getName();
+					this.litter = ct.getObservationTargetLabel(targetList.get(0));
+					editLitter(db);
 				}
-				catch (Exception e)
+				else
 				{
 					this.action = "init";
 					this.entity = "Litters";
-					throw new Exception("No litter selected");
+					throw new Exception("No, or multiple litter(s) selected");
 				}
 
-				editLitter(db);
 			}
 
 			if (action.equals("editIndividual"))
@@ -976,13 +983,13 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				// Prepare parent info
 				stillToGenotypeYN = true;
-				List<?> rows = litterMatrixViewer.getSelection(db);
-				try
+				List<Integer> targetList = new ArrayList<Integer>();
+				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
+				if (targetList.size() == 1)
 				{
-					int row = request.getInt(LITTERMATRIX + "_selected");
-					this.litter = ((ObservationElement) rows.get(row)).getName();
+					this.litter = ct.getObservationTargetLabel(targetList.get(0));
 				}
-				catch (Exception e)
+				else
 				{
 					this.action = "init";
 					this.entity = "Litters";
@@ -1096,17 +1103,17 @@ public class Breedingnew extends PluginModel<Entity>
 			if (action.equals("makeLabels"))
 			{
 				// Get selected litter
-				List<?> rows = litterMatrixViewer.getSelection(db);
-				try
+				List<Integer> targetList = new ArrayList<Integer>();
+				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
+				if (targetList.size() == 1)
 				{
-					int row = request.getInt(LITTERMATRIX + "_selected");
-					this.litter = ((ObservationElement) rows.get(row)).getName();
+					this.litter = ct.getObservationTargetLabel(targetList.get(0));
 				}
-				catch (Exception e)
+				else
 				{
 					this.action = "init";
 					this.entity = "Litters";
-					throw new Exception("No litter selected");
+					throw new Exception("No, or multiple litter(s) selected");
 				}
 				if (ct.getMostRecentValueAsString(this.litter, "WeanDate") == null)
 				{
@@ -1984,8 +1991,6 @@ public class Breedingnew extends PluginModel<Entity>
 			else
 			{
 				String newValue = request.getString(e);
-
-				System.out.println("########### " + ov);
 				String val = ov.getValue();
 				String rel = ov.getRelation_Name();
 				if (val != null || rel != null)
@@ -1993,12 +1998,10 @@ public class Breedingnew extends PluginModel<Entity>
 					if (val != null)
 					{
 						ov.setValue(newValue);
-						System.out.println("###################--> " + val);
 					}
 					else
 					{
 						ov.setRelation_Name(rel);
-						System.out.println("###################--> " + rel);
 					}
 				}
 
@@ -2025,7 +2028,6 @@ public class Breedingnew extends PluginModel<Entity>
 					{
 						ov.setProtocolApplication_Name(applicationProtocolName);
 					}
-
 					db.add(ov);
 				}
 			}
@@ -2060,8 +2062,6 @@ public class Breedingnew extends PluginModel<Entity>
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetLine", "Line", groupName, null,
 				line));
 		// Add parent(s)
-		System.out.println("m>>>>>>>>>>>>>>>>>>>>>>>>>>> " + mama.size() + mama);
-		System.out.println("p>>>>>>>>>>>>>>>>>>>>>>>>>>> " + papa.size() + papa);
 		if (mama.size() > 0)
 		{
 			AddParents(db, mama, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
@@ -2069,7 +2069,6 @@ public class Breedingnew extends PluginModel<Entity>
 		if (papa.size() > 0)
 		{
 			AddParents(db, papa, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
-
 		}
 
 		// Set line
@@ -3600,6 +3599,25 @@ public class Breedingnew extends PluginModel<Entity>
 		labelgenerator.finishDocument();
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
 				+ "\" target=\"blank\">Download cage labels as pdf</a>");
+	}
+
+	public List<Integer> getSelectedFromMatrix(MolgenisRequest request, String matrixName, MatrixViewer matrixViewer,
+			Database db) throws MatrixException
+	{
+		List<Integer> targetList = new ArrayList<Integer>();
+		// Get targets from matrix
+		@SuppressWarnings("unchecked")
+		List<ObservationElement> rows = (List<ObservationElement>) matrixViewer.getSelection(db);
+		int rowCnt = 0;
+		for (ObservationElement row : rows)
+		{
+			if (request.getBoolean(matrixName + "_selected_" + rowCnt) != null)
+			{
+				targetList.add(row.getId());
+			}
+			rowCnt++;
+		}
+		return targetList;
 	}
 
 	public void setGeneNameList(List<String> geneNameList)
