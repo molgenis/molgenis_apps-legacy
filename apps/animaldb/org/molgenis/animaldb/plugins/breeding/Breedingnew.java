@@ -2173,6 +2173,36 @@ public class Breedingnew extends PluginModel<Entity>
 			this.setError(message);
 			e.printStackTrace();
 		}
+		// some init that needs to be done on every reload
+		try
+		{
+			// Populate backgrounds list (changes depending on the species of
+			// the breedingline choosen)
+			String species = ct.getMostRecentValueAsXrefName(line, "Species");
+			System.out.println(" --------------->  " + species);
+			List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
+			for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationNames))
+			{
+				// Only show if background belongs to chosen species
+				if (ct.getMostRecentValueAsXrefName(b.getName(), "Species").equals(species))
+				{
+					bckgrlist.add(b);
+					System.out.println(" ------------------>  " + b);
+				}
+			}
+			this.setBackgroundList(bckgrlist);
+		}
+		catch (Exception e)
+		{
+			String message = "Something went wrong while loading the genetic backgrounds list";
+			if (e.getMessage() != null)
+			{
+				message += (": " + e.getMessage());
+			}
+			this.setError(message);
+			e.printStackTrace();
+		}
+
 		// Some init that only needs to be done once after login
 		if (userName != this.getLogin().getUserName())
 		{
@@ -2195,22 +2225,6 @@ public class Breedingnew extends PluginModel<Entity>
 			litterMatrixViewerString = litterMatrixViewer.render();
 			try
 			{
-				// Populate backgrounds list
-				// this.setBackgroundList(ct.getAllMarkedPanels("Background",
-				// investigationNames));
-				// FIXME, filter by species
-				String species = ct.getMostRecentValueAsXrefName(line, "Species");
-				List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
-				for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationNames))
-				{
-					// Only show if background belongs to chosen species
-					if (ct.getMostRecentValueAsXrefName(b.getName(), "Species").equals(species))
-					{
-						bckgrlist.add(b);
-					}
-				}
-				this.setBackgroundList(bckgrlist);
-
 				// Populate sexes list
 				this.setSexList(ct.getAllMarkedPanels("Sex", investigationNames));
 				// Populate gene name list
