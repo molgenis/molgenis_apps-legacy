@@ -2179,7 +2179,6 @@ public class Breedingnew extends PluginModel<Entity>
 			// Populate backgrounds list (changes depending on the species of
 			// the breedingline choosen)
 			String species = ct.getMostRecentValueAsXrefName(line, "Species");
-			System.out.println(" --------------->  " + species);
 			List<ObservationTarget> bckgrlist = new ArrayList<ObservationTarget>();
 			for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationNames))
 			{
@@ -2187,7 +2186,6 @@ public class Breedingnew extends PluginModel<Entity>
 				if (ct.getMostRecentValueAsXrefName(b.getName(), "Species").equals(species))
 				{
 					bckgrlist.add(b);
-					System.out.println(" ------------------>  " + b);
 				}
 			}
 			this.setBackgroundList(bckgrlist);
