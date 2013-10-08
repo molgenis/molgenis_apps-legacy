@@ -4,6 +4,7 @@ Species;TargetLink;panel;Species;false;xref;To set the species of an animal.
 PrefixString;String;;;false;string;To set a name prefix String that is appended to all new observation targets of a specified type when added to the database.
 Sex;TargetLink;panel;Sex;false;xref;To set the sex of an animal.
 Location;TargetLink;location;;false;xref;To set the location of a target.
+LocationHistory;TargetLink;location;;false;xref;To keep track of the previous locations of a the location of a target.
 Weight;Gram;;;true;decimal;To set the weight of a target.
 ParentgroupFather;TargetLink;individual;;false;xref;To link a parent-group to an animal that may be a father.
 ParentgroupMother;TargetLink;individual;;false;xref;To link a parent-group to an animal that may be a mother.
