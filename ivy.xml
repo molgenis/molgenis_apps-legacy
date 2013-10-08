@@ -20,11 +20,11 @@
 		<!-- testing -->
 		<dependency org="org.testng" name="testng" rev="6.4" />
 		<dependency org="org.seleniumhq.selenium" name="selenium-java"
-			rev="2.19.0" />
+			rev="2.35.0" />
 		<dependency org="org.seleniumhq.selenium" name="selenium-firefox-driver"
-			rev="2.19.0" />
+			rev="2.35.0" />
 		<dependency org="org.seleniumhq.selenium" name="selenium-server"
-			rev="2.19.0" />
+			rev="2.35.0" />
 		<dependency org="org.mockito" name="mockito-core" rev="1.9.0" />
 		
 		<dependency org="org.apache.poi" name="poi" rev="3.8" />
