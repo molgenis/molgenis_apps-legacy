@@ -30,13 +30,7 @@ public class LabelGenerator
 	private Document document;
 	private PdfPTable table;
 	private Rectangle pgSize;
-
 	private int nrOfColumns;
-
-	public LabelGenerator(int nrOfColumns)
-	{
-		this.nrOfColumns = nrOfColumns;
-	}
 
 	public void startDocument(File pdfFile, String template) throws LabelGeneratorException
 	{
@@ -44,10 +38,12 @@ public class LabelGenerator
 		{
 			Rectangle pgSize2 = new Rectangle(310, 380);
 			this.pgSize = pgSize2;
+			this.nrOfColumns = 1;
 		}
 		else
 		{
 			this.pgSize = PageSize.A4;
+			this.nrOfColumns = 2;
 		}
 
 		document = new Document(this.pgSize);
@@ -170,6 +166,16 @@ public class LabelGenerator
 		labelCell.setPadding(1);
 		labelCell.setBorderWidth(1);
 		table.addCell(labelCell);
+	}
+
+	public int getNrOfColumns()
+	{
+		return nrOfColumns;
+	}
+
+	public void setNrOfColumns(int nrOfColumns)
+	{
+		this.nrOfColumns = nrOfColumns;
 	}
 
 }

@@ -3507,7 +3507,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 			columns = 1;
 		}
-		LabelGenerator labelgenerator = new LabelGenerator(columns);
+		LabelGenerator labelgenerator = new LabelGenerator();
 		labelgenerator.startDocument(pdfFile, labelType);
 
 		// Litter stuff
