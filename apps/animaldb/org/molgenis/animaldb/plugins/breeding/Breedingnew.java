@@ -1101,44 +1101,11 @@ public class Breedingnew extends PluginModel<Entity>
 
 			if (action.equals("makeLabels"))
 			{
-				// Get selected litter
-				List<Integer> targetList = new ArrayList<Integer>();
-				targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
-				if (targetList.size() > 0)
-				{
-					// int ctr = 0;
-					boolean notPrintable = false;
-					List<String> notPrintableList = new ArrayList<String>();
-					List<String> litterList = new ArrayList<String>();
-					for (Integer each : targetList)
-					{
-						String litter = ct.getObservationTargetLabel(each);
-						if (ct.getMostRecentValueAsString(litter, "WeanDate") != null)
-						{
-							litterList.add(litter);
-							// ctr++;
-						}
-						else
-						{
-							notPrintable = true;
-							notPrintableList.add(litter);
-						}
-					}
-					setLitterList(litterList);
-					createDefCageLabels(db);
-
-					if (notPrintable)
-					{
-						throw new Exception("The labels for litter(s) " + notPrintableList
-								+ "Were not printed because these litters have not yet been weaned.");
-					}
-				}
-				else
-				{
-					this.action = "init";
-					this.entity = "Litters";
-					throw new Exception("No litter(s) selected");
-				}
+				prepareCageLabels(db, request, "A4");
+			}
+			if (action.equals("makeDymoLabels"))
+			{
+				prepareCageLabels(db, request, "Dymo");
 			}
 
 			if (action.equals("addIndividualToWeanGroup"))
@@ -3477,7 +3444,50 @@ public class Breedingnew extends PluginModel<Entity>
 		return genotypeTable.render();
 	}
 
-	private void createDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException
+	private void prepareCageLabels(Database db, MolgenisRequest request, String template) throws Exception
+	{
+		// Get selected litter
+		List<Integer> targetList = new ArrayList<Integer>();
+		targetList = getSelectedFromMatrix(request, LITTERMATRIX, litterMatrixViewer, db);
+		if (targetList.size() > 0)
+		{
+			// int ctr = 0;
+			boolean notPrintable = false;
+			List<String> notPrintableList = new ArrayList<String>();
+			List<String> litterList = new ArrayList<String>();
+			for (Integer each : targetList)
+			{
+				String litter = ct.getObservationTargetLabel(each);
+				if (ct.getMostRecentValueAsString(litter, "WeanDate") != null)
+				{
+					litterList.add(litter);
+					// ctr++;
+				}
+				else
+				{
+					notPrintable = true;
+					notPrintableList.add(litter);
+				}
+			}
+			setLitterList(litterList);
+			createDefCageLabels(db, template);
+
+			if (notPrintable)
+			{
+				throw new Exception("The labels for litter(s) " + notPrintableList
+						+ "Were not printed because these litters have not yet been weaned.");
+			}
+		}
+		else
+		{
+			this.action = "init";
+			this.entity = "Litters";
+			throw new Exception("No litter(s) selected");
+		}
+	}
+
+	private void createDefCageLabels(Database db, String labelType) throws LabelGeneratorException, DatabaseException,
+			ParseException
 	{
 
 		// PDF file stuff
@@ -3487,8 +3497,18 @@ public class Breedingnew extends PluginModel<Entity>
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
 		String filename = pdfFile.getName();
-		LabelGenerator labelgenerator = new LabelGenerator(2);
-		labelgenerator.startDocument(pdfFile);
+		int columns = 1;
+		if (labelType.equalsIgnoreCase("A4"))
+		{
+			columns = 2;
+		}
+		else if (labelType.equalsIgnoreCase("Dymo"))
+		{
+
+			columns = 1;
+		}
+		LabelGenerator labelgenerator = new LabelGenerator(columns);
+		labelgenerator.startDocument(pdfFile, labelType);
 
 		// Litter stuff
 		for (String litter : this.litterList)
@@ -3585,32 +3605,54 @@ public class Breedingnew extends PluginModel<Entity>
 				elementLabelList.add("Remarks");
 				elementList.add("\n\n\n\n\n");
 
-				if (sex.equals(lastSex))
+				if (labelType.equalsIgnoreCase("A4"))
 				{
-					System.out.println(sexctr + " equals: " + sex);
-					labelgenerator.addLabelToDocument(elementLabelList, elementList);
-				}
-				else
-				{
-					System.out.println(sexctr + " not equals: " + sex);
-					// add empty label on odd labelnr.
-					if ((sexctr - 1) % 2 != 0)
+					if (sex.equals(lastSex))
 					{
-						labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+						System.out.println(sexctr + " equals: " + sex);
+						labelgenerator.addLabelToDocument(elementLabelList, elementList);
 					}
+					else
+					{
+						System.out.println(sexctr + " not equals: " + sex);
+						// add empty label on odd labelnr.
+						if ((sexctr - 1) % 2 != 0)
+						{
+							labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
+						}
+						labelgenerator.finishPage();
+						labelgenerator.nextPage();
+						sexctr = 1; // reset the sexcounter to keep track of odd
+									// and
+									// even numbers.
+						labelgenerator.addLabelToDocument(elementLabelList, elementList);
+						System.out.println("A4^^^^^^^^^^^^^^^^^^^^^^^^" + elementList);
+					}
+
+					lastSex = sex;
+
+					if (first)
+					{
+						first = false;
+					}
+				}
+				else if (labelType.equalsIgnoreCase("Dymo"))
+				{
+					if (first)
+					{
+						labelgenerator.addLabelToDocument(elementLabelList, elementList);
+						System.out.println("Dymo^first^^^^^^^^^^^^^^^^^^^^^^^" + elementList);
+						first = false;
+						sexctr = 2;
+					}
+
 					labelgenerator.finishPage();
 					labelgenerator.nextPage();
-					sexctr = 1; // reset the sexcounter to keep track of odd and
-								// even numbers.
 					labelgenerator.addLabelToDocument(elementLabelList, elementList);
+					System.out.println("Dymo^^^^^^^^^^^^^^^^^^^^^^^^" + elementList);
+
 				}
 
-				lastSex = sex;
-
-				if (first)
-				{
-					first = false;
-				}
 			}
 
 			if (sexctr % 2 != 0)
@@ -3618,10 +3660,13 @@ public class Breedingnew extends PluginModel<Entity>
 				labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
 			}
 		}// close for loop
+
 		labelgenerator.finishPage();
 		labelgenerator.finishDocument();
+		System.out.println("%%%%%%%%%%%% Do I get here 1?");
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
 				+ "\" target=\"blank\">Download cage labels as pdf</a>");
+		System.out.println("%%%%%%%%%%%% Do I get here 2?");
 	}
 
 	public List<Integer> getSelectedFromMatrix(MolgenisRequest request, String matrixName, MatrixViewer matrixViewer,

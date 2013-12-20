@@ -11,7 +11,9 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -27,6 +29,7 @@ public class LabelGenerator
 
 	private Document document;
 	private PdfPTable table;
+	private Rectangle pgSize;
 
 	private int nrOfColumns;
 
@@ -35,9 +38,19 @@ public class LabelGenerator
 		this.nrOfColumns = nrOfColumns;
 	}
 
-	public void startDocument(File pdfFile) throws LabelGeneratorException
+	public void startDocument(File pdfFile, String template) throws LabelGeneratorException
 	{
-		document = new Document();
+		if (template.equalsIgnoreCase("Dymo"))
+		{
+			Rectangle pgSize2 = new Rectangle(310, 380);
+			this.pgSize = pgSize2;
+		}
+		else
+		{
+			this.pgSize = PageSize.A4;
+		}
+
+		document = new Document(this.pgSize);
 		try
 		{
 			PdfWriter.getInstance(document, new FileOutputStream(pdfFile));

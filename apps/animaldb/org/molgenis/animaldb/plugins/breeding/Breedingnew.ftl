@@ -298,6 +298,15 @@
 	</#if>
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
+
+<#elseif screen.action == "makeDymoLabels">
+
+	<div class="form_header">Download cage labels for the selected litter(s)</div>
+	<#if screen.labelDownloadLink??>
+		<p>${screen.labelDownloadLink}</p>
+	</#if>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+
 <#else>
 
 	<#if screen.entity == "Parentgroups">
@@ -341,7 +350,8 @@
 						<th>Wean</th>
 						<th>Genotype</th>
 						<th>Edit</th>
-						<th>Print cagelabels</th>
+						<th>Cagelabels (A4)</th>
+						<th>Cagelabels (Dymo)</th>
 						<th>Activate/Deactivate</th>
 					</tr>
 				</thead>
@@ -351,6 +361,7 @@
 						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
 						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editLT_32.png"  /></td>
 						<td><input id="printcagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
+						<td><input id="printdymocagelabels" type="image" title="Print Dymo cage labels for the indivduals in the selected litter." onclick="__action.value='makeDymoLabels'" src="res/img/dymo_32.png"  /></td>
 						<td><input id="deActivateLitter" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
 					</tr>
 				</tbody>
@@ -400,6 +411,7 @@
 	jQuery('#genotypelitter').button();
 	jQuery('#editlitter').button();
 	jQuery('#printcagelabels').button();
+	jQuery('#printdymocagelabels').button();
 	jQuery('#addlitter').button();
 	jQuery('#wean').button();
 	jQuery('#addgenocol').button();
