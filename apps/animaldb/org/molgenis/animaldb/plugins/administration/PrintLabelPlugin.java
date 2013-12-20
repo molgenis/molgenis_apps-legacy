@@ -116,7 +116,7 @@ public class PrintLabelPlugin extends EasyPluginController
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
 		String filename = pdfFile.getName();
 
-		labelGenerator.startDocument(pdfFile);
+		labelGenerator.startDocument(pdfFile, "A4");
 
 		List<String> investigationNames = cs.getAllUserInvestigationNames(userName);
 		List<ObservationTarget> individualList = getIndividualsFromUi(db, request);
@@ -376,7 +376,7 @@ public class PrintLabelPlugin extends EasyPluginController
 			targetMatrixViewer.setDatabase(db);
 		}
 
-		labelGenerator = new LabelGenerator(2);
+		labelGenerator = new LabelGenerator();
 
 		try
 		{
