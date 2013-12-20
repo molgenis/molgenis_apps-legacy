@@ -443,6 +443,17 @@ public class PrintLabelPlugin extends EasyPluginController
 	{
 		List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 		List<String> measurementsToShow = new ArrayList<String>();
+		measurementsToShow.add("Active");
+		measurementsToShow.add("Background");
+		measurementsToShow.add("DateOfBirth");
+		measurementsToShow.add("AnimalType");
+		measurementsToShow.add("Earmark");
+		measurementsToShow.add("GeneModification");
+		measurementsToShow.add("GeneState");
+		measurementsToShow.add("Line");
+		measurementsToShow.add("Litter");
+		measurementsToShow.add("Location");
+		measurementsToShow.add("Sex");
 		measurementsToShow.add("Species");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, Operator.IN,
