@@ -31,22 +31,30 @@ public class LabelGenerator
 	private PdfPTable table;
 	private Rectangle pgSize;
 	private int nrOfColumns;
+	private String outputTemplate;
 
-	public void startDocument(File pdfFile, String template) throws LabelGeneratorException
+	public void startDocument(File pdfFile, String outputTemplate) throws LabelGeneratorException
 	{
-		if (template.equalsIgnoreCase("Dymo"))
+		this.outputTemplate = outputTemplate;
+		if (outputTemplate.equalsIgnoreCase("Dymo"))
 		{
-			Rectangle pgSize2 = new Rectangle(310, 380);
-			this.pgSize = pgSize2;
+			// TODO make proper template engine:
+			// the sizes used here are for the type 99014 labels (101mmx54mm)
+			// Rectangle pgSize2 = new Rectangle(310, 380);
+			this.pgSize = new Rectangle(com.itextpdf.text.Utilities.millimetersToPoints(54),
+					com.itextpdf.text.Utilities.millimetersToPoints(101));
 			this.nrOfColumns = 1;
+			document = new Document(this.pgSize);
+			float margin = com.itextpdf.text.Utilities.millimetersToPoints(2);
+			document.setMargins(margin, margin, margin, margin);
 		}
 		else
 		{
 			this.pgSize = PageSize.A4;
 			this.nrOfColumns = 2;
+			document = new Document(this.pgSize);
 		}
 
-		document = new Document(this.pgSize);
 		try
 		{
 			PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
@@ -63,6 +71,11 @@ public class LabelGenerator
 		}
 		document.open();
 		table = new PdfPTable(nrOfColumns);
+		if (!this.outputTemplate.equalsIgnoreCase("A4"))
+		{
+			table.setWidthPercentage(100);
+		}
+
 	}
 
 	public void nextPage() throws LabelGeneratorException
@@ -71,6 +84,10 @@ public class LabelGenerator
 		{
 			document.newPage();
 			table = new PdfPTable(nrOfColumns);
+			if (!this.outputTemplate.equalsIgnoreCase("A4"))
+			{
+				table.setWidthPercentage(100);
+			}
 		}
 		catch (Exception e)
 		{
@@ -112,8 +129,8 @@ public class LabelGenerator
 		PdfPTable elementTable = new PdfPTable(5);
 		// elementTable.
 		int elementCtr = 0;
-		Font valueFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD, new BaseColor(0, 0, 0)));
-		Font headerFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL, new BaseColor(0, 0, 0)));
+		Font valueFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD, new BaseColor(0, 0, 0)));
+		Font headerFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL, new BaseColor(0, 0, 0)));
 		for (String header : elementHeaderList)
 		{
 
@@ -143,10 +160,19 @@ public class LabelGenerator
 			elementTable.addCell(valueCell);
 		}
 		elementTable.setWidthPercentage(100);
-		labelCell.setPadding(20);
-		labelCell.setBorderWidth(1);
+		if (this.outputTemplate.equalsIgnoreCase("A4"))
+		{
+			labelCell.setPadding(20);
+			labelCell.setBorderWidth(1);
+		}
+		else
+		{
+			labelCell.setPadding(0);
+			labelCell.setBorderWidth(0);
+		}
 		labelCell.addElement(elementTable);
 		table.addCell(labelCell);
+
 	}
 
 	/**

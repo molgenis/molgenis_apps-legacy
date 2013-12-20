@@ -3626,7 +3626,6 @@ public class Breedingnew extends PluginModel<Entity>
 									// and
 									// even numbers.
 						labelgenerator.addLabelToDocument(elementLabelList, elementList);
-						System.out.println("A4^^^^^^^^^^^^^^^^^^^^^^^^" + elementList);
 					}
 
 					lastSex = sex;
@@ -3641,7 +3640,6 @@ public class Breedingnew extends PluginModel<Entity>
 					if (first)
 					{
 						labelgenerator.addLabelToDocument(elementLabelList, elementList);
-						System.out.println("Dymo^first^^^^^^^^^^^^^^^^^^^^^^^" + elementList);
 						first = false;
 						sexctr = 2;
 					}
@@ -3649,8 +3647,6 @@ public class Breedingnew extends PluginModel<Entity>
 					labelgenerator.finishPage();
 					labelgenerator.nextPage();
 					labelgenerator.addLabelToDocument(elementLabelList, elementList);
-					System.out.println("Dymo^^^^^^^^^^^^^^^^^^^^^^^^" + elementList);
-
 				}
 
 			}
@@ -3663,10 +3659,8 @@ public class Breedingnew extends PluginModel<Entity>
 
 		labelgenerator.finishPage();
 		labelgenerator.finishDocument();
-		System.out.println("%%%%%%%%%%%% Do I get here 1?");
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
 				+ "\" target=\"blank\">Download cage labels as pdf</a>");
-		System.out.println("%%%%%%%%%%%% Do I get here 2?");
 	}
 
 	public List<Integer> getSelectedFromMatrix(MolgenisRequest request, String matrixName, MatrixViewer matrixViewer,
