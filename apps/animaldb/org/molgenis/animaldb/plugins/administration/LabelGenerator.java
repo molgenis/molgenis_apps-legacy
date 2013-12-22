@@ -45,8 +45,9 @@ public class LabelGenerator
 					com.itextpdf.text.Utilities.millimetersToPoints(101));
 			this.nrOfColumns = 1;
 			document = new Document(this.pgSize);
-			float margin = com.itextpdf.text.Utilities.millimetersToPoints(2);
-			document.setMargins(margin, margin, margin, margin);
+			float lrmargin = com.itextpdf.text.Utilities.millimetersToPoints(5);
+			float tbmargin = com.itextpdf.text.Utilities.millimetersToPoints(7);
+			document.setMargins(lrmargin, lrmargin, tbmargin, tbmargin);
 		}
 		else
 		{
