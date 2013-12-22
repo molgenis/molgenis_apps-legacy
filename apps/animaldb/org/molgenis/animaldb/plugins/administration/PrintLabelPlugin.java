@@ -116,7 +116,34 @@ public class PrintLabelPlugin extends EasyPluginController
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
 		String filename = pdfFile.getName();
 
-		labelGenerator.startDocument(pdfFile, "A4");
+		boolean dymoLabels = true;
+		if (request.get("printDymoCageLabels") == null)
+		{
+			dymoLabels = false;
+		}
+		boolean defaultCheckBox = true;
+		if (request.get("printDefaultCageLabel") == null)
+		{
+			defaultCheckBox = false;
+		}
+
+		if (dymoLabels && !defaultCheckBox)
+		{
+			dymoLabels = false;
+			this.setMessages(new ScreenMessage(
+					"The Dymo label layout is only available for the default cage label, Your labels have been created using the alternative A4 template.",
+					true));
+
+		}
+
+		if (dymoLabels)
+		{
+			labelGenerator.startDocument(pdfFile, "Dymo");
+		}
+		else
+		{
+			labelGenerator.startDocument(pdfFile, "A4");
+		}
 
 		List<String> investigationNames = cs.getAllUserInvestigationNames(userName);
 		List<ObservationTarget> individualList = getIndividualsFromUi(db, request);
@@ -129,11 +156,6 @@ public class PrintLabelPlugin extends EasyPluginController
 		int sexctr = 0;
 		List<String> elementLabelList;
 		List<String> elementList;
-		boolean defaultCheckBox = true;
-		if (request.get("printDefaultCageLabel") == null)
-		{
-			defaultCheckBox = false;
-		}
 
 		// if default label is selected
 
@@ -420,8 +442,18 @@ public class PrintLabelPlugin extends EasyPluginController
 				false);
 		defOrCustom.setName("printDefaultCageLabel");
 		defOrCustom.setLabel("Use default cagelabel layout");
-
 		panel.add(defOrCustom);
+
+		List<String> layoutOptions = new ArrayList<String>();
+		layoutOptions.add("Dymo");
+		List<String> layoutOptionLabels = new ArrayList<String>();
+		layoutOptionLabels.add("Use Dymo label layout");
+		CheckboxInput labelType = new CheckboxInput("printDymoCageLabels", layoutOptions, layoutOptionLabels, "", null,
+				true, false);
+		labelType.setName("printDymoCageLabels");
+		labelType.setLabel("Create Dymo sticker labels");
+		panel.add(labelType);
+
 		makeFeaturesSelect(db);
 		makePrintButton();
 		container.add(panel);
@@ -512,6 +544,16 @@ public class PrintLabelPlugin extends EasyPluginController
 	 * Create the Print button.
 	 */
 	private void makePrintButton()
+	{
+		printButton = new ActionInput("Print", "", "Print");
+		printButton.setIcon("dymo_32.png");
+		panel.add(printButton);
+	}
+
+	/**
+	 * Create the Print button.
+	 */
+	private void creatDymoPrintButton()
 	{
 		printButton = new ActionInput("Print", "", "Print");
 		panel.add(printButton);
