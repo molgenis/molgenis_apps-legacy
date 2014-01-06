@@ -1168,6 +1168,7 @@ public class Breedingnew extends PluginModel<Entity>
 		genotypeTable.addColumn("Color");
 		genotypeTable.addColumn("Earmark");
 		genotypeTable.addColumn("Background");
+		genotypeTable.addColumn("Remark");
 		genotypeTable.addColumn("Gene modification");
 		genotypeTable.addColumn("Gene state");
 		int row = 0;
@@ -1235,27 +1236,34 @@ public class Breedingnew extends PluginModel<Entity>
 			backgroundInput.setWidth(-1);
 			genotypeTable.setCell(4, row, backgroundInput);
 
+			// Remark
+			StringInput remarkInput = new StringInput("5_" + row);
+
+			remarkInput.setValue(getAnimalRemark(animalName));
+			remarkInput.setWidth(15);
+			genotypeTable.setCell(5, row, remarkInput);
+
 			// TODO: show columns and selectboxes for ALL set geno mods
 
 			// Gene mod name (1)
-			SelectInput geneNameInput = new SelectInput("5_" + row);
+			SelectInput geneNameInput = new SelectInput("6_" + row);
 			for (String geneName : this.geneNameList)
 			{
 				geneNameInput.addOption(geneName, geneName);
 			}
 			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
 			geneNameInput.setWidth(-1);
-			genotypeTable.setCell(5, row, geneNameInput);
+			genotypeTable.setCell(6, row, geneNameInput);
 
 			// Gene state (1)
-			SelectInput geneStateInput = new SelectInput("6_" + row);
+			SelectInput geneStateInput = new SelectInput("7_" + row);
 			for (String geneState : this.geneStateList)
 			{
 				geneStateInput.addOption(geneState, geneState);
 			}
 			geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, 0, db));
 			geneStateInput.setWidth(-1);
-			genotypeTable.setCell(6, row, geneStateInput);
+			genotypeTable.setCell(7, row, geneStateInput);
 			row++;
 		}
 	}
@@ -1413,19 +1421,26 @@ public class Breedingnew extends PluginModel<Entity>
 		backgroundInput.setWidth(-1);
 		genotypeTable.setCell(4, row, backgroundInput);
 
+		// Remark
+		StringInput remarkInput = new StringInput("5_" + row);
+
+		remarkInput.setValue(getAnimalRemark(animalName));
+		remarkInput.setWidth(15);
+		genotypeTable.setCell(5, row, remarkInput);
+
 		// TODO: show columns and selectboxes for ALL set geno mods
 
 		// Gene mod name (1)
-		SelectInput geneNameInput = new SelectInput("5_" + row);
+		SelectInput geneNameInput = new SelectInput("6_" + row);
 		for (String geneName : this.geneNameList)
 		{
 			geneNameInput.addOption(geneName, geneName);
 		}
 		geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
 		geneNameInput.setWidth(-1);
-		genotypeTable.setCell(5, row, geneNameInput);
+		genotypeTable.setCell(7, row, geneNameInput);
 		// Gene state (1)
-		SelectInput geneStateInput = new SelectInput("6_" + row);
+		SelectInput geneStateInput = new SelectInput("7_" + row);
 		for (String geneState : this.geneStateList)
 		{
 			geneStateInput.addOption(geneState, geneState);
@@ -1552,6 +1567,7 @@ public class Breedingnew extends PluginModel<Entity>
 		genotypeTable.addColumn("Color");
 		genotypeTable.addColumn("Earmark");
 		genotypeTable.addColumn("Background");
+		genotypeTable.addColumn("Remark");
 		genotypeTable.addColumn("Gene modification");
 		genotypeTable.addColumn("Gene state");
 		int row = 0;
@@ -1615,26 +1631,33 @@ public class Breedingnew extends PluginModel<Entity>
 			backgroundInput.setWidth(-1);
 			genotypeTable.setCell(4, row, backgroundInput);
 
+			// Remark
+			StringInput remarkInput = new StringInput("5_" + row);
+
+			remarkInput.setValue(getAnimalRemark(animalName));
+			remarkInput.setWidth(15);
+			genotypeTable.setCell(5, row, remarkInput);
+
 			// TODO: show columns and selectboxes for ALL set geno mods
 
 			// Gene mod name (1)
-			SelectInput geneNameInput = new SelectInput("5_" + row);
+			SelectInput geneNameInput = new SelectInput("6_" + row);
 			for (String geneName : this.geneNameList)
 			{
 				geneNameInput.addOption(geneName, geneName);
 			}
 			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
 			geneNameInput.setWidth(-1);
-			genotypeTable.setCell(5, row, geneNameInput);
+			genotypeTable.setCell(6, row, geneNameInput);
 			// Gene state (1)
-			SelectInput geneStateInput = new SelectInput("6_" + row);
+			SelectInput geneStateInput = new SelectInput("7_" + row);
 			for (String geneState : this.geneStateList)
 			{
 				geneStateInput.addOption(geneState, geneState);
 			}
 			geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, 0, db));
 			geneStateInput.setWidth(-1);
-			genotypeTable.setCell(6, row, geneStateInput);
+			genotypeTable.setCell(7, row, geneStateInput);
 			row++;
 		}
 		action = "editIndividual";
@@ -3042,6 +3065,18 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
+	public String getAnimalRemark(String animalName)
+	{
+		try
+		{
+			return ct.getMostRecentValueAsString(animalName, "Remark");
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
 	public String getAnimalGeneInfo(String measurementName, String animalName, int genoNr, Database db)
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
@@ -3190,11 +3225,30 @@ public class Breedingnew extends PluginModel<Entity>
 					db.update(value);
 				}
 			}
+			// Set individual Remarks
+			String remarkName = request.getString("5_" + animalCount);
+			if (remarkName != null && !remarkName.equals(""))
+			{
+				value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Remark", investigationNames, invName)
+						.get(0);
+				value.setValue(remarkName);
+
+				if (value.getProtocolApplication_Id() == null)
+				{
+					String paName = ct.makeProtocolApplication(invName, "SetRemark");
+					value.setProtocolApplication_Name(paName);
+					db.add(value);
+				}
+				else
+				{
+					db.update(value);
+				}
+			}
 
 			// Set genotype(s)
 			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++)
 			{
-				int currCol = 5 + (genoNr * 2);
+				int currCol = 6 + (genoNr * 2);
 				String paName = ct.makeProtocolApplication(invName, "SetGenotype");
 				String geneName = request.getString(currCol + "_" + animalCount);
 				if (geneName == null || geneName.equals(""))
@@ -3305,9 +3359,17 @@ public class Breedingnew extends PluginModel<Entity>
 				genotypeTable.setCell(4, animalCount, input);
 			}
 
+			if (request.getString("5_" + animalCount) != null)
+			{
+				String remarkName = request.getString("5_" + animalCount);
+				input = (HtmlInput) genotypeTable.getCell(5, animalCount);
+				input.setValue(remarkName);
+				genotypeTable.setCell(5, animalCount, input);
+			}
+
 			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++)
 			{
-				int currCol = 5 + (genoNr * 2);
+				int currCol = 6 + (genoNr * 2);
 
 				if (request.getString(currCol + "_" + animalCount) != null)
 				{
@@ -3343,14 +3405,14 @@ public class Breedingnew extends PluginModel<Entity>
 			List<String> selectedGenes = new ArrayList<String>();
 			for (int genoNr = 0; genoNr < nrOfGenotypes - 1; genoNr++)
 			{
-				int currCol = 5 + (genoNr * 2);
+				int currCol = 6 + (genoNr * 2);
 				if (request.getString(currCol + "_" + row) != null)
 				{
 					selectedGenes.add(request.getString(currCol + "_" + row));
 				}
 			}
 			// Make new gene mod name box
-			int newCol = 5 + ((nrOfGenotypes - 1) * 2);
+			int newCol = 6 + ((nrOfGenotypes - 1) * 2);
 			SelectInput geneNameInput = new SelectInput(newCol + "_" + row);
 			for (String geneName : this.geneNameList)
 			{
