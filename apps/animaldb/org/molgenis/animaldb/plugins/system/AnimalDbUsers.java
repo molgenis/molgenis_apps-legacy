@@ -269,7 +269,8 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						"individualFormController", "panelFormController", "locationFormController",
 						"measurementFormController", "protocolFormController", "protocolapplicationFormController",
 						"observedvalueFormController", "prefixFormController", "newsFormController",
-						"contactFormController" });
+						"contactFormController", "AnimalValuePowereditorPlugin", "Settings",
+						"ErrorCorrectionValuePlugin", "ErrorCorrectionPlugin", "FileStoragePlugin" });
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();
 				Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
 				List<MolgenisEntity> entList = q.find();

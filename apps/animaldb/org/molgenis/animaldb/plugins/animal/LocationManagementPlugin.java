@@ -177,6 +177,7 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				measurementsToShow.add("Line");
 				measurementsToShow.add("Litter");
 				measurementsToShow.add("Location");
+				measurementsToShow.add("LocationHistory");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
 				// List<MatrixQueryRule> filterRules = new
@@ -205,6 +206,9 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 						Individual.class, Measurement.class), true, 2, false, true, filterRules, new MatrixQueryRule(
 						MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
+				animalsNotInLocMatrixViewer.setFilterVisibility(false);
+				animalsNotInLocMatrixViewer.setShowQuickView(true);
+				animalsNotInLocMatrixViewer.setShowfilterSaveOptions(true);
 			}
 
 			if (action.equals("ApplyAddAnimals"))
@@ -275,6 +279,7 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Active");
+		measurementsToShow.add("Background");
 		measurementsToShow.add("DateOfBirth");
 		measurementsToShow.add("Experiment");
 		measurementsToShow.add("GeneModification");
@@ -282,6 +287,7 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 		measurementsToShow.add("Line");
 		measurementsToShow.add("Litter");
 		measurementsToShow.add("Location");
+		measurementsToShow.add("LocationHistory");
 		measurementsToShow.add("Sex");
 		measurementsToShow.add("Species");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
@@ -295,9 +301,13 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				ObservedValue.ENDTIME, Operator.EQUALS, null));
 		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX,
 				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2, false,
-				true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+				false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
 						measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
+		animalsInLocMatrixViewer.setFilterVisibility(false);
+		animalsInLocMatrixViewer.setShowQuickView(true);
+		animalsInLocMatrixViewer.setShowfilterSaveOptions(true);
+
 		this.matrixLabel = "Animals in " + locationName + ":";
 	}
 
@@ -310,15 +320,21 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 		List<ObservedValue> valueList = q.find();
+		ObservedValue locHistValue = new ObservedValue();
+
 		if (valueList != null)
 		{
 			for (ObservedValue value : valueList)
 			{
-				value.setEndtime(startDate);
-				db.update(value);
+				// first create loction history entry from current loc.
+				locHistValue = ct.createObservedValueWithProtocolApplication(investigationName, value.getTime(),
+						startDate, "SetLocationHistory", "LocationHistory", animalName, null, value.getRelation_Name());
+				db.add(locHistValue);
+				// remove the old location value.
+				db.remove(value);
 			}
 		}
-		// Then make new one
+		// Add the new lcoation value
 		db.add(ct.createObservedValueWithProtocolApplication(investigationName, startDate, null, "SetLocation",
 				"Location", animalName, null, locationName));
 	}

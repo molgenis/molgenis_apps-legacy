@@ -26,6 +26,10 @@
 <#--begin your plugin-->
 
 <h3>Permanently delete selected targets and their observed values</h3>
+<div style="background-color:red">
+<p style="font-weight: bold">Beware, this is a very dangerous option!</p>
+<p>The selected target(s) and all their related protocol applications and measured values will be deleted irreversibly from the database! </br>&nbsp;</p>
+</div>
 <div id="targetselect">
 <label for="target">Target:</label>
 <select name="target" id="target" size='20' multiple='multiple'>
@@ -42,9 +46,12 @@
 <hr />
 <br />
 
+<!-- The below option is way to dangerous for production use and only interesting during development and is therefore commented out.-->
+<!-- 
 <div class='row'>
 	<input type="submit" class='addbutton' value="Permanently delete ALL animals and their observed values" onclick="__action.value='removeAllAnimals';return true;"/>
 </div>
+-->
 
 <#--end of your plugin-->	
 			</div>

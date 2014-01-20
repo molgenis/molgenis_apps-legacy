@@ -870,6 +870,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 								Measurement.NAME, Operator.IN, measurementsToShow));
 				addAnimalsMatrixViewer.setDatabase(db);
 				addAnimalsMatrixViewer.setFilterVisibility(false);
+				addAnimalsMatrixViewer.setShowQuickView(true);
+				addAnimalsMatrixViewer.setShowfilterSaveOptions(true);
 			}
 
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))

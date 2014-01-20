@@ -27,11 +27,11 @@
 
 	<div id=logo container style="width:100%; height:54px">
 		<div style="float:left; margin-top:3px; margin-bottom:2px">
-			<a href="http://www.animaldb.org" target="_blank"><img src="res/img/rug_fmns_animaldb_header_logo.png" width="620px" height="49px"></a>
+			<a href="http://www.animaldb.org" target="_blank"><img src="res/img/rug_fmns_animaldb_header_logo.png" width="506px" height="40px"></a>
 		</div>
 		
 		<div style="float:right">
-			<a href="http://www.molgenis.org" target="_blank"><img src="generated-res/img/logo_molgenis.gif" height="49px"></a>
+			<a href="http://www.molgenis.org" target="_blank"><img src="generated-res/img/logo_molgenis.gif" height="40px"></a>
 		</div>
 		
 		<div id="feedbackDiv" style="float:right; padding-right:75px; font-size: 75%; font-family: arial, sans-serif; font-style: italic; display:none; ">

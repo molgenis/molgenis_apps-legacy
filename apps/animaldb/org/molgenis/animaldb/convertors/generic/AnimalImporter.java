@@ -238,7 +238,7 @@ public class AnimalImporter
 			this.defaultSpecies = tuple.getString("Species");
 			this.defaultSpeciesNamePrefix = tuple.getString("SpeciesNamePrefix");
 			this.defaultBreedingLine = tuple.getString("BreedingLine");
-			this.defaultResponsibleResearcher = tuple.getString("Responsible Researcher");
+			this.defaultResponsibleResearcher = tuple.getString("ResponsibleResearcher");
 			this.highestNr = ct.getHighestNumberForPrefix(this.defaultSpeciesNamePrefix) + 1;
 			this.highestPGNr = ct.getHighestNumberForPrefix("PG_" + this.defaultBreedingLine + "_");
 			this.highestLTNr = ct.getHighestNumberForPrefix("LT_" + this.defaultBreedingLine + "_");
@@ -340,6 +340,24 @@ public class AnimalImporter
 						animalName, weanDateString, null));
 
 			}
+			// convert Remarks -> Remarks
+			String remarkString = tuple.getString("Remarks");
+			if (remarkString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), now, null, "Remark",
+						animalName, remarkString, null));
+			}
+			// import genetic modification
+			String gm1String = tuple.getString("GeneModification1");
+			String gs1String = tuple.getString("GeneState1");
+			if (gm1String != null && gs1String != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), now, null,
+						"GeneModification", animalName, gm1String, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), now, null, "GeneState",
+						animalName, gs1String, null));
+			}
+
 			else
 			{
 				// FIXME fail badly
@@ -761,6 +779,7 @@ public class AnimalImporter
 		makeProtocolApplication("SetDateOfBirth");
 		makeProtocolApplication("SetEarmark");
 		makeProtocolApplication("SetResponsibleResearcher");
+		makeProtocolApplication("SetGenotype");
 
 		// parent relations
 		makeProtocolApplication("SetParentgroupMother");

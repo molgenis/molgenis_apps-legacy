@@ -207,12 +207,17 @@
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='respres'>Responsible researcher:</label>
-			<input type='text' class="text ui-widget-content ui-corner-all" name='respres' id='respres' value='<#if screen.responsibleResearcher?exists>${screen.getResponsibleResearcher()}</#if>' />
+			<input type='text' class="text ui-widget-content ui-corner-all" name='respres' id='respres' value='<#if screen.motherResponsibleResearcher?exists>${screen.getMotherResponsibleResearcher()}</#if>' />
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for="location">Location (optional):</label>
 			<select id="location" name="location">
-				<option value=""></option>
+				<#if screen.motherLocation??>
+					<option value="${screen.motherLocation}">${screen.motherLocation}</option>
+				<#else>
+					<option value="">&nbsp;</option>
+				</#if>
+				
 				<#list screen.locationList as loc>
 					<option value="${loc.name}">${loc.name}</option>
 				</#list>
@@ -287,7 +292,16 @@
 	</div>
 <#elseif screen.action == "makeLabels">
 
-	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
+	<div class="form_header">Download cage labels for the selected litter(s)</div>
+	<#if screen.labelDownloadLink??>
+		<p>${screen.labelDownloadLink}</p>
+	</#if>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+
+
+<#elseif screen.action == "makeDymoLabels">
+
+	<div class="form_header">Download cage labels for the selected litter(s)</div>
 	<#if screen.labelDownloadLink??>
 		<p>${screen.labelDownloadLink}</p>
 	</#if>
@@ -315,7 +329,7 @@
 					<tr style="text-align:center;">
 						<td><input id="createParentgroup" type="image" title="New parentgroup(s)." onclick="__action.value='createParentgroup'" src="res/img/newPG_32.png"  /></td>
 						<td><input id="createLitter" type="image" title="Create new litter from selected parent group." onclick="__action.value='createLitter'" src="res/img/newLT_32.png"/></td>
-						<td><input id="deactivate" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivate'" /></td>
+						<td><input id="deactivatePG" type='submit' value='(De)Activate' title='Activate or Deactivate a parentgroup' onclick="__action.value='deActivatePG'" /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -336,7 +350,8 @@
 						<th>Wean</th>
 						<th>Genotype</th>
 						<th>Edit</th>
-						<th>Print cagelabels</th>
+						<th>Cagelabels (A4)</th>
+						<th>Cagelabels (Dymo)</th>
 						<th>Activate/Deactivate</th>
 					</tr>
 				</thead>
@@ -346,7 +361,8 @@
 						<td><input id="genotypelitter" type="image" title="Genotype the selected litter." onclick="__action.value='GenotypeLitter'" src="res/img/DNA_32.png"  /></td>
 						<td><input id="editlitter" type="image" title="Edit the selected litter." onclick="__action.value='EditLitter'" src="res/img/editLT_32.png"  /></td>
 						<td><input id="printcagelabels" type="image" title="Print cage labels for the indivduals in the selected litter." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td>
-						<td><input id="deactivate" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
+						<td><input id="printdymocagelabels" type="image" title="Print Dymo cage labels for the indivduals in the selected litter." onclick="__action.value='makeDymoLabels'" src="res/img/dymo_32.png"  /></td>
+						<td><input id="deActivateLitter" type='submit' id='deactivate' value='(De)activate litter' onclick="__action.value='deActivateLitter'" /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -389,11 +405,13 @@
 	jQuery('#cancel4').button();
 	jQuery('#createParentgroup').button();
 	jQuery('#addpg').button();
-	jQuery('#deactivate').button();
+	jQuery('#deactivatePG').button();
+	jQuery('#deActivateLitter').button();
 	jQuery('#weanlitter').button();
 	jQuery('#genotypelitter').button();
 	jQuery('#editlitter').button();
 	jQuery('#printcagelabels').button();
+	jQuery('#printdymocagelabels').button();
 	jQuery('#addlitter').button();
 	jQuery('#wean').button();
 	jQuery('#addgenocol').button();
