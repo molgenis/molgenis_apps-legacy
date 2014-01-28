@@ -39,9 +39,9 @@ public class VWAReport4 extends AnimalDBReport
 			this.type = type;
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-			String startOfYearString = year + "-01-01 00:00:00";
+			String startOfYearString = (year - 1) + "-12-31 23:59:59";
 			Date startOfYear = sdf.parse(startOfYearString);
-			String endOfYearString = (year + 1) + "-01-01 00:00:00";
+			String endOfYearString = (year) + "-12-31 23:59:59";
 			Date endOfYear = sdf.parse(endOfYearString);
 
 			ArrayList<ArrayList<Integer>> rowList = new ArrayList<ArrayList<Integer>>();
