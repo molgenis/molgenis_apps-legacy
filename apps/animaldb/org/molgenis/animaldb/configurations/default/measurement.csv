@@ -13,6 +13,9 @@ Father;TargetLink;individual;;false;xref;To link an animal to its father.
 Mother;TargetLink;individual;;false;xref;To link an animal to its mother.
 Group;TargetLink;panel;;false;xref;To add a target to a panel.
 Parentgroup;TargetLink;panel;Parentgroup;false;xref;To link a litter to a parent-group.
+FacilityEntryDate;Datetime;;;true;datetime;To set the date that a target's enters the facility. Determines counting startdate for yearly report.
+FacilityExitDate;Datetime;;;true;datetime;To set the date that a target's leaves the facility (Death or Alive). Determines counting startdate for yearly report.
+DateOfBirth;Datetime;;;true;datetime;To set a target's or a litter's date of birth.
 DateOfBirth;Datetime;;;true;datetime;To set a target's or a litter's date of birth.
 Size;Number;;;true;int;To set the size of a target-group, for instance a litter.
 WeanSize;Number;;;true;int;To set the wean size of a litter.
