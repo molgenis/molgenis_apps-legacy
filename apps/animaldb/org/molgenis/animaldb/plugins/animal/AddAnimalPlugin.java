@@ -80,7 +80,6 @@ public class AddAnimalPlugin extends EasyPluginController
 	private String resResearcher = null;
 	private List<String> genes = null;
 	private List<String> genestates = null;
-
 	public DateInput fakedate = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
@@ -408,7 +407,8 @@ public class AddAnimalPlugin extends EasyPluginController
 		protocolNameList.add("SetDateOfBirth");
 		protocolNameList.add("SetResponsibleResearcher");
 		protocolNameList.add("SetLocation");
-		for (int j = 0; j < 11; j++)
+		protocolNameList.add("SetFacilityEntryDate");
+		for (int j = 0; j < 12; j++)
 		{
 			ProtocolApplication newApp = ct.createProtocolApplication(invName, protocolNameList.get(j));
 			appsToAddList.add(newApp);
@@ -428,15 +428,24 @@ public class AddAnimalPlugin extends EasyPluginController
 		featureNameList.add("DateOfBirth");
 		featureNameList.add("ResponsibleResearcher");
 		featureNameList.add("Location");
+		featureNameList.add("FacilityEntryDate");
 		// Make all values
 		int animalCnt = 0;
 		for (Individual animal : animalsToAddList)
 		{
 			String animalName = animal.getName();
+			// FIXME: active start/enddates are deprecated, and replaced by
+			// facility start/exit date observed values, but leave them for now.
 			// Set Active, with (start)time = entrydate and endtime = null
 			ProtocolApplication app = appsToAddList.get(0);
 			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, featureNameList.get(0),
 					animalName, "Alive", null));
+
+			// Set facility entry date
+			app = appsToAddList.get(11);
+			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null,
+					featureNameList.get(12), animalName, this.dbFormat.format(entryDate), null));
+
 			// Set species
 			app = appsToAddList.get(1);
 			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, featureNameList.get(1),
