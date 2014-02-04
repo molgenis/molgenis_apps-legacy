@@ -1342,6 +1342,9 @@ public class Breedingnew extends PluginModel<Entity>
 		// Set 'Active' -> starts at wean date
 		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 				"SetActive", "Active", animalName, "Alive", null));
+		// FacilityEntry date starts at weandate
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+				"SetFacilityEntryDate", "FacilityEntryDate", animalName, newDateOnlyFormat.format(weanDate), null));
 		// Set 'Date of Birth'
 		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 				"SetDateOfBirth", "DateOfBirth", animalName, dob, null));
@@ -1976,12 +1979,18 @@ public class Breedingnew extends PluginModel<Entity>
 							invName.get(0)).get(0);
 					ObservedValue active = ct.getObservedValuesByTargetAndFeature(targetName, "Active", invName,
 							invName.get(0)).get(0);
+					ObservedValue facilityEntryDate = ct.getObservedValuesByTargetAndFeature(targetName,
+							"FacilityEntryDate", invName, invName.get(0)).get(0);
+
 					active.setTime(newDateOnlyFormat.parse(newValue));
 					weanDate.setValue(newValue);
+					facilityEntryDate.setValue(newValue);
 					db.update(weanDate);
 					db.update(active);
-					ov.setValue(newValue);
+					db.update(facilityEntryDate);
 
+					// ???
+					ov.setValue(newValue);
 					db.update(ov);
 
 				}
@@ -2668,6 +2677,9 @@ public class Breedingnew extends PluginModel<Entity>
 			// Set 'Active' -> starts at wean date
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetActive",
 					"Active", animalName, "Alive", null));
+			// FacilityEntry date starts at weandate
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
+					"SetFacilityEntryDate", "FacilityEntryDate", animalName, newDateOnlyFormat.format(weanDate), null));
 			// Set 'Date of Birth'
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 					"SetDateOfBirth", "DateOfBirth", animalName, litterBirthDateString, null));
