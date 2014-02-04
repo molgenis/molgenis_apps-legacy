@@ -958,6 +958,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName,
 									deathDate, null, "SetDeathDate", "DeathDate", animalName,
 									newDateOnlyFormat.format(deathDate), null));
+
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName,
+									deathDate, null, "SetFacilityExitDate", "FacilityExitDate", animalName,
+									newDateOnlyFormat.format(deathDate), null));
+
 						}
 
 						// Set subproject end values
