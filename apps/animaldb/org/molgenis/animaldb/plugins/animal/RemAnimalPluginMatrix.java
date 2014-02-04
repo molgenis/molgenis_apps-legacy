@@ -176,6 +176,10 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 						activeValue.setValue("Dead");
 						db.update(activeValue);
 					}
+					// Add FacilityExitDate Observed value
+					db.add(cs.createObservedValueWithProtocolApplication(investigationName, deathDate, null,
+							"SetFacilityExitDate", "FacilityExitDate", animalName,
+							this.newDateOnlyDbFormat.format(deathDate), null));
 					// If applicable, set Death date
 					if (removal.equals("dood"))
 					{
