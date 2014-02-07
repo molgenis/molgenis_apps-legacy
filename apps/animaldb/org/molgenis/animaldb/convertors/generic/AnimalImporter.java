@@ -357,6 +357,13 @@ public class AnimalImporter
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), now, null, "GeneState",
 						animalName, gs1String, null));
 			}
+			// convert Remarks -> Remarks
+			String chipNumberString = tuple.getString("ChipNumber");
+			if (chipNumberString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetChipNumber"), now, null,
+						"ChipNumber", animalName, chipNumberString, null));
+			}
 
 			else
 			{

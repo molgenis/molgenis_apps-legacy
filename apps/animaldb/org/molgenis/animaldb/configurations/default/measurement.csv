@@ -89,3 +89,4 @@ ResponsibleResearcher;String;;;false;string;To set the researcher responsible fo
 OldAnimalId;String;;;false;string;To store the AnimalId from the previous administration system on import into AnimalDB.
 OldLitterId;String;;;false;string;To store the LitterId from the previous administration system on import into AnimalDB.
 ImportTimestamp;TargetLink;panel;ImportTimestamp;false;xref;To mark and link animals that were imported in one batch via a timestamp.
+ChipNumber;String;;;false;string;To store the identification code of an implanted Chip/RFID.
