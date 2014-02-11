@@ -9,6 +9,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.PageSize;
@@ -143,8 +144,9 @@ public class LabelGenerator
 			headerCell.setBorder(0);
 			// headerCell.setBorderWidthRight(0);
 			// headerCell.setBorderWidthLeft(0);
-			headerCell.setPadding(1);
-			// headerCell.setVerticalAlignment(Element.ALIGN_TOP);
+			headerCell.setPaddingTop(0);
+			headerCell.setPaddingBottom(5);
+			headerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			if (elementCtr % 2 != 0)
 			{
 				headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
@@ -165,7 +167,8 @@ public class LabelGenerator
 			valueCell.addElement(valueChunk);
 			valueCell.setBorderWidthLeft(0);
 			valueCell.setBorder(0);
-			valueCell.setPadding(1);
+			valueCell.setPaddingTop(0);
+			valueCell.setPaddingBottom(5);
 			// valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			if (elementCtr % 2 != 0)
 			{
