@@ -140,14 +140,21 @@ public class LabelGenerator
 			headerChunk.setFont(headerFont);
 			headerCell.addElement(headerChunk);
 			headerCell.setColspan(2);
-			headerCell.setBorderWidthRight(0);
-			headerCell.setPadding(2);
+			headerCell.setBorder(0);
+			// headerCell.setBorderWidthRight(0);
+			// headerCell.setBorderWidthLeft(0);
+			headerCell.setPadding(1);
+			// headerCell.setVerticalAlignment(Element.ALIGN_TOP);
+			if (elementCtr % 2 != 0)
+			{
+				headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+			}
 
 			elementTable.addCell(headerCell);
 
 			PdfPCell valueCell = new PdfPCell();
 			valueCell.setColspan(3);
-			String value = elementList.get(elementCtr++);
+			String value = elementList.get(elementCtr);
 			if (value == null)
 			{
 				value = "";
@@ -157,8 +164,15 @@ public class LabelGenerator
 			valueChunk.setFont(valueFont);
 			valueCell.addElement(valueChunk);
 			valueCell.setBorderWidthLeft(0);
-			valueCell.setPadding(2);
+			valueCell.setBorder(0);
+			valueCell.setPadding(1);
+			// valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			if (elementCtr % 2 != 0)
+			{
+				valueCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+			}
 			elementTable.addCell(valueCell);
+			elementCtr++;
 		}
 		elementTable.setWidthPercentage(100);
 		if (this.outputTemplate.equalsIgnoreCase("A4"))

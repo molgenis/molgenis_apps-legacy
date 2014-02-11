@@ -3677,7 +3677,7 @@ public class Breedingnew extends PluginModel<Entity>
 				String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
 				elementList.add(decInfo);
 				elementLabelList.add("Remarks");
-				elementList.add("\n\n\n\n\n");
+				elementList.add("");
 
 				if (labelType.equalsIgnoreCase("A4"))
 				{

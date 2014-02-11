@@ -242,7 +242,7 @@ public class PrintLabelPlugin extends EasyPluginController
 				String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
 				elementList.add(decInfo);
 				elementLabelList.add("Remarks");
-				elementList.add("\n\n\n\n\n");
+				elementList.add("");
 			}
 			else
 			{
@@ -268,7 +268,7 @@ public class PrintLabelPlugin extends EasyPluginController
 					elementList.add(actualValue);
 				}
 				elementLabelList.add("Remarks");
-				elementList.add("\n\n\n\n\n");
+				elementList.add("");
 			}
 
 			if (sex.equals(lastSex))
