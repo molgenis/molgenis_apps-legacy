@@ -127,7 +127,7 @@ public class LabelGenerator
 	{
 
 		PdfPCell labelCell = new PdfPCell();
-		PdfPTable elementTable = new PdfPTable(6);
+		PdfPTable elementTable = new PdfPTable(7);
 		// elementTable.
 		int elementCtr = 0;
 		Font valueFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD, new BaseColor(0, 0, 0)));
@@ -139,7 +139,7 @@ public class LabelGenerator
 			Chunk headerChunk = new Chunk(header);
 			headerChunk.setFont(headerFont);
 			headerCell.addElement(headerChunk);
-			headerCell.setColspan(2);
+			headerCell.setColspan(3);
 			headerCell.setBorder(0);
 			// headerCell.setBorderWidthRight(0);
 			// headerCell.setBorderWidthLeft(0);
