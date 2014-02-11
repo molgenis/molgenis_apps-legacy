@@ -9,7 +9,6 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.PageSize;
@@ -128,7 +127,7 @@ public class LabelGenerator
 	{
 
 		PdfPCell labelCell = new PdfPCell();
-		PdfPTable elementTable = new PdfPTable(5);
+		PdfPTable elementTable = new PdfPTable(6);
 		// elementTable.
 		int elementCtr = 0;
 		Font valueFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD, new BaseColor(0, 0, 0)));
@@ -146,7 +145,8 @@ public class LabelGenerator
 			// headerCell.setBorderWidthLeft(0);
 			headerCell.setPaddingTop(0);
 			headerCell.setPaddingBottom(5);
-			headerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+			// headerCell.setFixedHeight(15);
+			// headerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			if (elementCtr % 2 != 0)
 			{
 				headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
@@ -155,7 +155,7 @@ public class LabelGenerator
 			elementTable.addCell(headerCell);
 
 			PdfPCell valueCell = new PdfPCell();
-			valueCell.setColspan(3);
+			valueCell.setColspan(4);
 			String value = elementList.get(elementCtr);
 			if (value == null)
 			{
@@ -169,6 +169,7 @@ public class LabelGenerator
 			valueCell.setBorder(0);
 			valueCell.setPaddingTop(0);
 			valueCell.setPaddingBottom(5);
+			// valueCell.setFixedHeight(15);
 			// valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			if (elementCtr % 2 != 0)
 			{
