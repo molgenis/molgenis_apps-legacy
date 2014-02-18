@@ -3713,7 +3713,6 @@ public class Breedingnew extends PluginModel<Entity>
 				{
 					if (first)
 					{
-						labelgenerator.addLabelToDocument(elementLabelList, elementList);
 						first = false;
 						sexctr = 2;
 					}
