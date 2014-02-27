@@ -1079,8 +1079,6 @@ public class MatrixViewer extends HtmlWidget
 		operatorInput.setId(OPERATOR + "_" + filterCnt);
 		operatorInput.setName(OPERATOR + "_" + filterCnt);
 		operatorInput.setValue(op.name());
-		System.out.println("!!!!!!!!!!!!!!!!!!!! " + op.name() + " " + op.toString() + " " + op.ordinal() + " " + op
-				+ " /n");
 		// operatorInput.isReadonly();
 
 		// create value input
@@ -1645,15 +1643,11 @@ public class MatrixViewer extends HtmlWidget
 
 			colId = t.getInt(COLID + "_" + filterNr);
 			operator = t.getString(OPERATOR + "_" + String.valueOf(filterNr));
-			System.out.println("--> " + operator);
 		}
 		else
 		{
 			filterVal = t.get(COLVALUE);
-			System.out.println(" --> filterval " + filterVal);
 			colId = t.getInt(COLID);
-			System.out.println(" --> COLID" + COLID);
-			System.out.println(" --> COLID" + t.getInt(COLID));
 			operator = t.getString(OPERATOR);
 		}
 
@@ -1736,8 +1730,6 @@ public class MatrixViewer extends HtmlWidget
 					// matrix.sliceByColValueProperty(measurementId,
 					// valuePropertyToUse, op, t.get(COLVALUE));
 					matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, filterVal);
-
-					System.out.println("-------->> matrix rules: " + matrix.getRules());
 				}
 			}
 			matrix.reload(); // to make sure the paging info is correctly
