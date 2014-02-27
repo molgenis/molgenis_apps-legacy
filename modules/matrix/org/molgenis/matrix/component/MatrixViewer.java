@@ -1700,8 +1700,8 @@ public class MatrixViewer extends HtmlWidget
 				if (measurementId == -1)
 				{ // Filter on name
 					matrix.getRules().add(
-							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.LIKE, t
-									.get(COLVALUE)));
+							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator
+									.valueOf(operator), t.get(COLVALUE)));
 					// FIXME: Add operator selection here!!!!
 
 				}
