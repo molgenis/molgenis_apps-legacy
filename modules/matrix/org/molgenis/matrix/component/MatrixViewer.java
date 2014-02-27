@@ -1701,8 +1701,7 @@ public class MatrixViewer extends HtmlWidget
 				{ // Filter on name
 					matrix.getRules().add(
 							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator
-									.valueOf(operator), t.get(COLVALUE)));
-					// FIXME: Add operator selection here!!!!
+									.valueOf(operator), filterVal));
 
 				}
 				else
