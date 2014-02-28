@@ -819,10 +819,6 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-
-		// String divContents = new Paragraph("filterRules",
-		// "<strong>Active filters</strong>:" + generateFilterRules())
-		// .render();
 		String divContents = "<div style=\"float:left; width=50%; padding:10px;\"><strong>Active filters</strong>: ";
 
 		// show the actie filters and a quick option to add a new
@@ -842,8 +838,6 @@ public class MatrixViewer extends HtmlWidget
 		if (showfilterSaveOptions)
 		{
 			divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-			// divContents +=
-			// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
 			divContents += "<strong>Save active filters: </strong>";
 			List<String> test = new ArrayList<String>();
 			test.add("blaat");
@@ -1018,7 +1012,6 @@ public class MatrixViewer extends HtmlWidget
 
 		outStr += "</tbody></table>";
 		// add the javascript code for the table
-		// outStr += "<script> $('#filterstable').dataTable(); </script>";
 		outStr += "<script>";
 		outStr += "jQuery('#filterstable').dataTable(";
 		outStr += "{\"bJQueryUI\": true, \"sDom\": 'Hrt',\"bSort\": false";
@@ -1057,7 +1050,6 @@ public class MatrixViewer extends HtmlWidget
 			field = "." + mqr.getField();
 		}
 		// create measurement input
-		// List<? extends Object> colHeaders = matrix.getColHeaders();
 		List<Measurement> colHeaders = (List<Measurement>) matrix.getColHeaders();
 		SelectInput measInput = buildFilterChoices(colHeaders);
 		measInput.setId(COLID + "_" + filterCnt);
@@ -1086,9 +1078,6 @@ public class MatrixViewer extends HtmlWidget
 		valInput.setId(COLVALUE + "_" + filterCnt);
 		valInput.setName(COLVALUE + "_" + filterCnt);
 		valInput.setValue(value != null ? value.toString() : "NULL ");
-		// String outStr = "<td>" + measurementName + field + "</td><td>" +
-		// mqr.getOperator().toString() + "</td><td>"
-		// + (value != null ? value.toString() + " " : "NULL ") + "</td>";
 
 		String outStr = "<td>" + measInput.render() + "</td><td>" + operatorInput.render() + "</td><td>"
 				+ valInput.render() + "</td>";
@@ -1630,11 +1619,9 @@ public class MatrixViewer extends HtmlWidget
 
 	public void filterCol(Database db, MolgenisRequest t, boolean update, int filterNr) throws Exception
 	{
-		// System.out.println("$$$$$$$$$$$$$$$$$$$$$$$ \n " + t);
-
 		Object filterVal;
 		int colId;
-		// String colIdString;
+
 		String operator;
 
 		if (update)
@@ -1651,7 +1638,6 @@ public class MatrixViewer extends HtmlWidget
 			operator = t.getString(OPERATOR);
 		}
 
-		// if (t.get(COLVALUE) == null)
 		if (filterVal == null)
 		{
 			this.callingScreenController.getModel().setMessages(
@@ -1662,7 +1648,6 @@ public class MatrixViewer extends HtmlWidget
 			if (matrix instanceof SliceablePhenoMatrixMV)
 			{
 				String valuePropertyToUse = ObservedValue.VALUE;
-				// String protocolMeasurementIds = t.getString(COLID);
 				String protocolMeasurementIds = String.valueOf(colId);
 				String[] values = StringUtils.split(protocolMeasurementIds, ";");
 				int protocolId = Integer.parseInt(values[0]);
@@ -1683,19 +1668,15 @@ public class MatrixViewer extends HtmlWidget
 					valuePropertyToUse = ObservedValue.RELATION_NAME;
 				}
 				// Find out operator to use
-				// Operator op = Operator.valueOf(t.getString(OPERATOR));
+
 				Operator op = Operator.valueOf(operator);
-				// new Operator(t.getString(OPERATOR));
-				// Then do the actual slicing
-				// matrix.sliceByColValueProperty(protocolId, measurementId,
-				// valuePropertyToUse, op, t.get(COLVALUE));
+
 				matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, filterVal);
 
 			}
 			else
 			{
 				String valuePropertyToUse = ObservedValue.VALUE;
-				// int measurementId = t.getInt(COLID);
 				int measurementId = colId;
 				if (measurementId == -1)
 				{ // Filter on name
@@ -1724,10 +1705,7 @@ public class MatrixViewer extends HtmlWidget
 					// Find out operator to use
 					// Operator op = Operator.valueOf(t.getString(OPERATOR));
 					Operator op = Operator.valueOf(operator);
-					// new Operator(t.getString(OPERATOR));
 					// Then do the actual slicing
-					// matrix.sliceByColValueProperty(measurementId,
-					// valuePropertyToUse, op, t.get(COLVALUE));
 					matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, filterVal);
 				}
 			}
