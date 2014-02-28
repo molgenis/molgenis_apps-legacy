@@ -823,7 +823,7 @@ public class MatrixViewer extends HtmlWidget
 		// String divContents = new Paragraph("filterRules",
 		// "<strong>Active filters</strong>:" + generateFilterRules())
 		// .render();
-		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
+		String divContents = "<div style=\"float:left; width=50%; padding:10px;\"><strong>Active filters</strong>: ";
 
 		// show the actie filters and a quick option to add a new
 		// colValueProperty filter
