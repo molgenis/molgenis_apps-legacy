@@ -21,6 +21,10 @@
 	<!-- Import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
 	
+	<!-- Set relative path to molgenis-pipeline repo. -->
+	<!-- We need it to bundle some demo and production pipelines with a compute distro. -->
+	<property name="pipelines_repo_dir" value="${basedir}/../molgenis-pipelines/" />
+	
 	<target name="test">
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
@@ -42,30 +46,52 @@
 		</testng>
 	</target>
 		
-	<target name="gitversion">
-		<!-- Get GIT revision info from the commandline GIT client-->
+	<!-- Get version and timestamp info from the commandline. -->
+	<target name="currentversion">
+		<!-- Get commit hashes from the commandline GIT client. -->
 		<exec executable="git" outputproperty="git.version">
 			<arg value="--version"/>
 		</exec>
 		<echo>Using ${git.version}</echo>
-		<exec executable="git" dir="${basedir}" outputproperty="git.apps.version">
+		<exec executable="git" dir="${basedir}" outputproperty="git.apps.hash-short">
 			<arg value="rev-parse"/>
 			<arg value="--short"/>
 			<arg value="HEAD"/>
 		</exec>
-		<exec executable="git" dir="${molgenis.dir}" outputproperty="git.molgenis.version">
+		<exec executable="git" dir="${basedir}" outputproperty="git.apps.hash-long">
+			<arg value="rev-parse"/>
+			<arg value="HEAD"/>
+		</exec>
+		<exec executable="git" dir="${molgenis.dir}" outputproperty="git.molgenis.hash-short">
 			<arg value="rev-parse"/>
 			<arg value="--short"/>
 			<arg value="HEAD"/>
 		</exec>
-		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.molgenis.version} (molgenis) and ${git.apps.version} (apps)</echo>
+		<exec executable="git" dir="${molgenis.dir}" outputproperty="git.molgenis.hash-long">
+			<arg value="rev-parse"/>
+			<arg value="HEAD"/>
+		</exec>
+		<exec executable="git" dir="${pipelines_repo_dir}" outputproperty="git.pipelines.hash-short">
+			<arg value="rev-parse"/>
+			<arg value="--short"/>
+			<arg value="HEAD"/>
+		</exec>
+		<exec executable="git" dir="${pipelines_repo_dir}" outputproperty="git.pipelines.hash-long">
+			<arg value="rev-parse"/>
+			<arg value="HEAD"/>
+		</exec>
+		<!-- Get timestamp for current build -->
+		<exec executable="date" dir="${pipelines_repo_dir}" outputproperty="timestamp">
+			<arg value="+%Y-%m-%dT%H:%M:%S%z"/>
+		</exec>
+		<echo>Creating MOLGENIS/compute distro based on Git commits: ${git.apps.hash-short} (molgenis_apps-legacy) depending on ${git.molgenis.hash-short} (molgenis-legacy) and bundled with ${git.pipelines.hash-short} (molgenis-pipelines).</echo>
 	</target>
 	
 	<!-- Make a distribution:
 		* Generate and compile this molgenis app
 		* Bundle it with all associated dependencies and resources like manuals, example files, etc.
 		* Create a *.zip archive -->
-	<target name="makedistro" depends="gitversion">
+	<target name="makedistro" depends="currentversion">
 		
 		<!-- Create folder structure for distro -->
 		<property name="root_distro_dir" value="${basedir}/dist/"/>
@@ -78,10 +104,29 @@
 				<fileset dir="${app_distro_dir}" />
 		</delete>
 		
+		<!-- Create label for this release which includes the short git hashes for all repos: 
+			MA = molgenis_apps-legacy 
+			M  = molgenis-legacy
+			MP = molgenis-pipelines -->
+		<property name="app-r_label" value="molgenis_${app_name}-MA_${git.apps.hash-short}-M_${git.molgenis.hash-short}-MP_${git.pipelines.hash-short}"/>
+		
 		<!-- Create folder substructure for distro -->
-		<property name="app-r_distro_dir" value="${app_distro_dir}/molgenis_${app_name}-${git.apps.version}/"/>
+		<property name="app-r_distro_dir" value="${app_distro_dir}/${app-r_label}/"/>
 		<property name="lib_dir" value="${app-r_distro_dir}/lib/"/>
-		<property name="pipelines_repo_dir" value="${basedir}/../molgenis-pipelines/" />
+		
+		<!-- Create RELEASE document with version numbers. -->
+		<echo file="${app-r_distro_dir}/RELEASE.txt">
+==========================================================================
+ MOLGENIS/compute distro release details
+==========================================================================
+Git commit hash tags for the code in this release: 
+ * molgenis_apps-legacy: ${git.apps.hash-long}
+ * molgenis-legacy:      ${git.molgenis.hash-long}
+ * molgenis-pipelines:   ${git.pipelines.hash-long}
+
+Release compiled on:     ${timestamp}
+==========================================================================
+		</echo>
 		
 		<!-- Copy documentation to the distro dir -->
 		<mkdir dir="${app-r_distro_dir}/docs/"/>
@@ -124,10 +169,10 @@
 		</copy>
 		
 		<!-- Create molgenis.jar -->
-		<jar jarfile="${lib_dir}/molgenis-${git.molgenis.version}.jar" basedir="${build.molgenis.dir}" update="false"/>
+		<jar jarfile="${lib_dir}/molgenis-${git.molgenis.hash-short}.jar" basedir="${build.molgenis.dir}" update="false"/>
 		
 		<!-- Create molgenis_app.jar in folder dist/${app} -->
-		<jar jarfile="${lib_dir}/molgenis-${app_name}-${git.apps.version}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
+		<jar jarfile="${lib_dir}/molgenis-${app_name}-${git.apps.hash-short}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
 		
 		<!-- Make shell script to start molgenis app from the commandline -->
 		<echo file="${app-r_distro_dir}/molgenis_${app_name}.sh">#!/bin/bash
@@ -145,8 +190,8 @@ customMcdir=$(echo $* | grep -E "\-mcdir")
 if [[ ! $customMcdir ]]; then mcDirArg="-mcdir=${MCDIR}"; else mcDirArg=""; fi;
 
 java -cp \
-${MCDIR}/lib/molgenis-${git.molgenis.version}.jar:\
-${MCDIR}/lib/molgenis-compute-${git.apps.version}.jar:\
+${MCDIR}/lib/molgenis-${git.molgenis.hash-short}.jar:\
+${MCDIR}/lib/molgenis-compute-${git.apps.hash-short}.jar:\
 ${MCDIR}/lib/commons-io-2.4.jar:\
 ${MCDIR}/lib/freemarker.jar:\
 ${MCDIR}/lib/log4j-1.2.15.jar \
@@ -158,7 +203,7 @@ $mcDirArg
 		<chmod file="${app-r_distro_dir}/molgenis_${app_name}.sh" perm="755"/>
 		
 		<!-- Make package with 'lib','workflows','protocols' and shell script -->
-		<zip destfile="${root_distro_dir}/molgenis_${app_name}-${git.apps.version}.zip" basedir="${app_distro_dir}" update="false" />
+		<zip destfile="${root_distro_dir}/${app-r_label}.zip" basedir="${app_distro_dir}" update="false" />
 		
 		<!-- Cleanup -->
 		<delete includeEmptyDirs="true" failonerror="false">
