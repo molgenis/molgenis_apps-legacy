@@ -124,6 +124,12 @@ public class Breedingnew extends PluginModel<Entity>
 	String sex = "not selected";
 	boolean stillToWeanYN = true;
 	boolean stillToGenotypeYN = true;
+
+	private List<ObservedValue> mGenoVals;
+	private List<ObservedValue> mGeneStateVals;
+	private List<ObservedValue> fGenoVals;
+	private List<ObservedValue> fGeneStateVals;
+
 	// HashMap<String,List<String>> hashMothers = new
 	// HashMap<String,List<String>>();
 	Map<Integer, List<String>> hashMothers = new LinkedHashMap<Integer, List<String>>();
@@ -3463,6 +3469,23 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
 		return lineName;
+	}
+
+	private void getParentGenoTypeInfo(String motherName, String fatherName, Database db) throws DatabaseException,
+			ParseException
+	{
+		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+		String userInvestigation = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
+		this.mGenoVals = ct.getObservedValuesByTargetAndFeature(motherName, "GeneModification", investigationNames,
+				userInvestigation);
+		this.mGeneStateVals = ct.getObservedValuesByTargetAndFeature(motherName, "GeneState", investigationNames,
+				userInvestigation);
+
+		this.fGeneStateVals = ct.getObservedValuesByTargetAndFeature(fatherName, "GeneState", investigationNames,
+				userInvestigation);
+		this.fGenoVals = ct.getObservedValuesByTargetAndFeature(fatherName, "GeneModification", investigationNames,
+				userInvestigation);
+
 	}
 
 	private String getGenoInfo(String animalName, Database db) throws DatabaseException, ParseException
