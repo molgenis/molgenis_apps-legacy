@@ -129,9 +129,9 @@ public class PrintLabelPlugin extends EasyPluginController
 
 		if (dymoLabels && !defaultCheckBox)
 		{
-			dymoLabels = false;
+			defaultCheckBox = true;
 			this.setMessages(new ScreenMessage(
-					"The Dymo label layout is only available for the default cage label, Your labels have been created using the alternative A4 template.",
+					"The Dymo label layout is only available for the default cage label, Your labels will be created using the default layout.",
 					true));
 
 		}
