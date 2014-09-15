@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.animaldb.plugins.administration.LabelGenerator;
@@ -1024,7 +1026,7 @@ public class Breedingnew extends PluginModel<Entity>
 						parentInfo += ("Mother: " + getGenoInfo(motherName, db) + "<br />");
 						String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
 						parentInfo += ("Father: " + getGenoInfo(fatherName, db) + "<br />");
-						genotypeLitter(db);
+						genotypeLitter(parentgroupName, db);
 					}
 				}
 
@@ -1163,10 +1165,40 @@ public class Breedingnew extends PluginModel<Entity>
 	 * Prepares the genotype editable table
 	 * 
 	 * @param db
+	 * @throws ParseException
+	 * @throws DatabaseException
 	 */
-	private void genotypeLitter(Database db)
+	private void genotypeLitter(String parentgroupName, Database db) throws DatabaseException, ParseException
 	{
-		nrOfGenotypes = 1;
+		nrOfGenotypes = 0;
+		// check the amount of geneModifications the combination of parents can
+		// have.
+		getGenoInfo(findParentForParentgroup(parentgroupName, "Mother", db), db);
+
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, findParentForParentgroup(parentgroupName,
+				"Mother", db)));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
+		List<ObservedValue> motherGenoModList = q.find();
+
+		Query<ObservedValue> q2 = db.query(ObservedValue.class);
+		q2.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, findParentForParentgroup(parentgroupName,
+				"Father", db)));
+		q2.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
+		List<ObservedValue> fatherGenoModList = q2.find();
+
+		List<ObservedValue> geneModlist = new ArrayList<ObservedValue>();
+		// compare and retain combination of unique genemodifications from both
+		// parents
+
+		Collection<ObservedValue> mSet = motherGenoModList;
+		Collection<ObservedValue> fSet = fatherGenoModList;
+		Collection<ObservedValue> diffSet = CollectionUtils.disjunction(mSet, fSet);
+		Collection<ObservedValue> sameSet = CollectionUtils.intersection(mSet, fSet);
+		Collection<ObservedValue> totalSet = CollectionUtils.union(diffSet, sameSet);
+
+		nrOfGenotypes = totalSet.size();
+
 		// Prepare table
 		genotypeTable = new JQueryDataTable("GenoTable", "");
 		genotypeTable.addColumn("Birth date");
@@ -1175,8 +1207,12 @@ public class Breedingnew extends PluginModel<Entity>
 		genotypeTable.addColumn("Earmark");
 		genotypeTable.addColumn("Background");
 		genotypeTable.addColumn("Remark");
-		genotypeTable.addColumn("Gene modification");
-		genotypeTable.addColumn("Gene state");
+		for (int i = 0; i < nrOfGenotypes; i++)
+		{
+			genotypeTable.addColumn("Gene modification");
+			genotypeTable.addColumn("Gene state");
+		}
+
 		int row = 0;
 		for (Individual animal : getAnimalsInLitter(db))
 		{
@@ -1200,76 +1236,87 @@ public class Breedingnew extends PluginModel<Entity>
 					+ "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 			dateInput.setValue(getAnimalBirthDate(animalName));
 
-			genotypeTable.setCell(0, row, dateInput);
+			int cellCtr = 0;
+			genotypeTable.setCell(cellCtr, row, dateInput);
 
 			// Sex
-			SelectInput sexInput = new SelectInput("1_" + row);
+			cellCtr++;
+			SelectInput sexInput = new SelectInput((cellCtr + "_") + row);
 			for (ObservationTarget sex : this.sexList)
 			{
 				sexInput.addOption(sex.getName(), sex.getName());
 			}
 			sexInput.setValue(getAnimalSex(animalName));
 			sexInput.setWidth(-1);
-			genotypeTable.setCell(1, row, sexInput);
+			genotypeTable.setCell(cellCtr, row, sexInput);
 
 			// Color
-			SelectInput colorInput = new SelectInput("2_" + row);
+			cellCtr++;
+			SelectInput colorInput = new SelectInput((cellCtr + "_") + row);
 			for (String color : this.colorList)
 			{
 				colorInput.addOption(color, color);
 			}
 			colorInput.setValue(getAnimalColor(animalName));
 			colorInput.setWidth(-1);
-			genotypeTable.setCell(2, row, colorInput);
+			genotypeTable.setCell(cellCtr, row, colorInput);
 
 			// Earmark
-			SelectInput earmarkInput = new SelectInput("3_" + row);
+			cellCtr++;
+			SelectInput earmarkInput = new SelectInput((cellCtr + "_") + row);
 			for (Category earmark : this.earmarkList)
 			{
 				earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
 			}
 			earmarkInput.setValue(getAnimalEarmark(animalName));
 			earmarkInput.setWidth(-1);
-			genotypeTable.setCell(3, row, earmarkInput);
+			genotypeTable.setCell(cellCtr, row, earmarkInput);
 
 			// Background
-			SelectInput backgroundInput = new SelectInput("4_" + row);
+			cellCtr++;
+			SelectInput backgroundInput = new SelectInput((cellCtr + "_") + row);
 			for (ObservationTarget background : this.backgroundList)
 			{
 				backgroundInput.addOption(background.getName(), background.getName());
 			}
 			backgroundInput.setValue(getAnimalBackground(animalName));
 			backgroundInput.setWidth(-1);
-			genotypeTable.setCell(4, row, backgroundInput);
+			genotypeTable.setCell(cellCtr, row, backgroundInput);
 
 			// Remark
-			StringInput remarkInput = new StringInput("5_" + row);
+			cellCtr++;
+			StringInput remarkInput = new StringInput((cellCtr + "_") + row);
 
 			remarkInput.setValue(getAnimalRemark(animalName));
 			remarkInput.setWidth(15);
-			genotypeTable.setCell(5, row, remarkInput);
+			genotypeTable.setCell(cellCtr, row, remarkInput);
 
 			// TODO: show columns and selectboxes for ALL set geno mods
 
-			// Gene mod name (1)
-			SelectInput geneNameInput = new SelectInput("6_" + row);
-			for (String geneName : this.geneNameList)
+			for (int i = 0; i < nrOfGenotypes; i++)
 			{
-				geneNameInput.addOption(geneName, geneName);
-			}
-			geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, 0, db));
-			geneNameInput.setWidth(-1);
-			genotypeTable.setCell(6, row, geneNameInput);
+				// Gene mod name (1)
+				cellCtr++;
+				SelectInput geneNameInput = new SelectInput((cellCtr + "_") + row);
+				for (String geneName : this.geneNameList)
+				{
+					geneNameInput.addOption(geneName, geneName);
+				}
+				geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalName, i, db));
+				geneNameInput.setWidth(-1);
+				genotypeTable.setCell(cellCtr, row, geneNameInput);
 
-			// Gene state (1)
-			SelectInput geneStateInput = new SelectInput("7_" + row);
-			for (String geneState : this.geneStateList)
-			{
-				geneStateInput.addOption(geneState, geneState);
+				// Gene state (1)
+				cellCtr++;
+				SelectInput geneStateInput = new SelectInput((cellCtr + "_") + row);
+				for (String geneState : this.geneStateList)
+				{
+					geneStateInput.addOption(geneState, geneState);
+				}
+				geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, i, db));
+				geneStateInput.setWidth(-1);
+				genotypeTable.setCell(cellCtr, row, geneStateInput);
 			}
-			geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalName, 0, db));
-			geneStateInput.setWidth(-1);
-			genotypeTable.setCell(7, row, geneStateInput);
 			row++;
 		}
 	}
