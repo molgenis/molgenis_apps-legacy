@@ -45,8 +45,8 @@ public class LabelGenerator
 					com.itextpdf.text.Utilities.millimetersToPoints(101));
 			this.nrOfColumns = 1;
 			document = new Document(this.pgSize);
-			float lrmargin = com.itextpdf.text.Utilities.millimetersToPoints(5);
-			float tbmargin = com.itextpdf.text.Utilities.millimetersToPoints(7);
+			float lrmargin = com.itextpdf.text.Utilities.millimetersToPoints(3); // 5
+			float tbmargin = com.itextpdf.text.Utilities.millimetersToPoints(3); // 7
 			document.setMargins(lrmargin, lrmargin, tbmargin, tbmargin);
 		}
 		else
@@ -131,7 +131,7 @@ public class LabelGenerator
 		// elementTable.
 		int elementCtr = 0;
 		Font valueFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD, new BaseColor(0, 0, 0)));
-		Font headerFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL, new BaseColor(0, 0, 0)));
+		Font headerFont = new Font(FontFactory.getFont(FontFactory.HELVETICA, 5, Font.NORMAL, new BaseColor(0, 0, 0)));
 		for (String header : elementHeaderList)
 		{
 
@@ -139,7 +139,7 @@ public class LabelGenerator
 			Chunk headerChunk = new Chunk(header);
 			headerChunk.setFont(headerFont);
 			headerCell.addElement(headerChunk);
-			headerCell.setColspan(3);
+			headerCell.setColspan(2);
 			headerCell.setBorder(0);
 			// headerCell.setBorderWidthRight(0);
 			// headerCell.setBorderWidthLeft(0);
@@ -155,7 +155,7 @@ public class LabelGenerator
 			elementTable.addCell(headerCell);
 
 			PdfPCell valueCell = new PdfPCell();
-			valueCell.setColspan(4);
+			valueCell.setColspan(6);
 			String value = elementList.get(elementCtr);
 			if (value == null)
 			{
