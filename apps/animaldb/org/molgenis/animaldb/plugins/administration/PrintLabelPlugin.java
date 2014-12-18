@@ -192,23 +192,40 @@ public class PrintLabelPlugin extends EasyPluginController
 				elementLabelList.add("Background:");
 				elementList.add(cs.getMostRecentValueAsXrefName(animalName, "Background"));
 
-				// FIXME (can only show one gene modification....
+				// Get lists of all genemodifications and gene states measured
+				// on the animal.
+				List<ObservedValue> geneMods = cs.getObservedValuesByTargetAndMeasurement(animalName,
+						"GeneModification", cs.getAllUserInvestigationIds(userName));
+				List<ObservedValue> geneStates = cs.getObservedValuesByTargetAndMeasurement(animalName, "GeneState",
+						cs.getAllUserInvestigationIds(userName));
+
 				elementLabelList.add("Genotype:");
 				String genotypeValue = "";
-				String geneMod = cs.getMostRecentValueAsString(animalName, "GeneModification");
-				String geneState = cs.getMostRecentValueAsString(animalName, "GeneState");
-				if (geneMod != null)
+				if (geneMods != null)
 				{
-					// on request per 2013-08-08: suppress output of Genestate,
-					// when state unknown.
-					if (geneState.equalsIgnoreCase("unknown"))
+					int ctr = 0;
+					for (ObservedValue geneMod : geneMods)
 					{
-						genotypeValue += (geneMod + ":    ");
+						if (ctr != 0)
+						{
+							genotypeValue += "\n";
+						}
+						// on request per 2013-08-08: suppress output of
+						// Genestate,
+						// when state unknown
+						String geneState = geneStates.get(ctr).getValue();
+						if (geneState.equalsIgnoreCase("unknown"))
+						{
+							genotypeValue += (geneMod.getValue() + ":    ");
+						}
+						else
+						{
+							genotypeValue += (geneMod.getValue() + ": " + geneState);
+						}
+
+						ctr++;
 					}
-					else
-					{
-						genotypeValue += (geneMod + ": " + geneState);
-					}
+
 				}
 				elementList.add(genotypeValue);
 

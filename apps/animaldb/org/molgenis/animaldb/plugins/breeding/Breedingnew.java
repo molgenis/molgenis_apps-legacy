@@ -3736,8 +3736,6 @@ public class Breedingnew extends PluginModel<Entity>
 				elementLabelList.add("Background:");
 				elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Background"));
 
-				// FIXME (can only show one gene modification....
-
 				// Get lists of all genemodifications and gene states measured
 				// on the animal.
 				List<ObservedValue> geneMods = ct.getObservedValuesByTargetAndMeasurement(animalName,
