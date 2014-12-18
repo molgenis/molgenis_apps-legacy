@@ -3652,22 +3652,40 @@ public class Breedingnew extends PluginModel<Entity>
 
 				// FIXME (can only show one gene modification....
 
+				// Get lists of all genemodifications and gene states measured
+				// on the animal.
+				List<ObservedValue> geneMods = ct.getObservedValuesByTargetAndMeasurement(animalName,
+						"GeneModification", ct.getAllUserInvestigationIds(this.getLogin().getUserName()));
+				List<ObservedValue> geneStates = ct.getObservedValuesByTargetAndMeasurement(animalName, "GeneState",
+						ct.getAllUserInvestigationIds(this.getLogin().getUserName()));
+
 				elementLabelList.add("Genotype:");
 				String genotypeValue = "";
-				String geneMod = ct.getMostRecentValueAsString(animalName, "GeneModification");
-				String geneState = ct.getMostRecentValueAsString(animalName, "GeneState");
-				if (geneMod != null)
+				if (geneMods != null)
 				{
-					// on request per 2013-08-08: suppress output of Genestate,
-					// when state unknown.
-					if (geneState.equalsIgnoreCase("unknown"))
+					int ctr = 0;
+					for (ObservedValue geneMod : geneMods)
 					{
-						genotypeValue += (geneMod + ":    ");
+						if (ctr != 0)
+						{
+							genotypeValue += "\n";
+						}
+						// on request per 2013-08-08: suppress output of
+						// Genestate,
+						// when state unknown
+						String geneState = geneStates.get(ctr).getValue();
+						if (geneState.equalsIgnoreCase("unknown"))
+						{
+							genotypeValue += (geneMod.getValue() + ":    ");
+						}
+						else
+						{
+							genotypeValue += (geneMod.getValue() + ": " + geneState);
+						}
+
+						ctr++;
 					}
-					else
-					{
-						genotypeValue += (geneMod + ": " + geneState);
-					}
+
 				}
 				elementList.add(genotypeValue);
 
