@@ -3801,8 +3801,26 @@ public class Breedingnew extends PluginModel<Entity>
 				String expNr = ct.getMostRecentValueAsString(animalName, "ExperimentNr");
 				String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
 				elementList.add(decInfo);
-				elementLabelList.add("Remarks");
-				elementList.add("");
+
+				// Note: litter remarks are only added while printing from the
+				// breeding screen, not in the cagelabel plugin.
+				elementLabelList.add("Litter Remarks\n\nRemarks:");
+
+				List<ObservedValue> litterRemarks = ct.getObservedValuesByTargetAndMeasurement(litter, "Remark",
+						ct.getAllUserInvestigationIds(this.getLogin().getUserName()));
+				String RemarkString = "";
+				if (litterRemarks != null)
+				{
+					for (ObservedValue each : litterRemarks)
+					{
+						RemarkString += each.getValue() + " ; ";
+					}
+				}
+
+				elementList.add(RemarkString + "\n");
+
+				// elementLabelList.add("Remarks");
+				// elementList.add("");
 
 				if (labelType.equalsIgnoreCase("A4"))
 				{
