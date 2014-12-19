@@ -143,8 +143,8 @@ public class LabelGenerator
 			headerCell.setBorder(0);
 			// headerCell.setBorderWidthRight(0);
 			// headerCell.setBorderWidthLeft(0);
-			headerCell.setPaddingTop(0);
-			headerCell.setPaddingBottom(5);
+			headerCell.setPaddingTop(3); // 0
+			headerCell.setPaddingBottom(3); // 5
 			// headerCell.setFixedHeight(15);
 			// headerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			if (elementCtr % 2 != 0)
@@ -168,7 +168,8 @@ public class LabelGenerator
 			valueCell.setBorderWidthLeft(0);
 			valueCell.setBorder(0);
 			valueCell.setPaddingTop(0);
-			valueCell.setPaddingBottom(5);
+			valueCell.setPaddingBottom(3); // 5
+
 			// valueCell.setFixedHeight(15);
 			// valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 			if (elementCtr % 2 != 0)
