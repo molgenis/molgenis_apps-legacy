@@ -36,7 +36,7 @@ public class Nvwa4ReportAction
 	{
 		report = new VWAReport4(cs.getDatabase(), userName);
 
-		report.makeReport(2014, "A", targetNameList);
+		report.makeReport(this.year, this.form, targetNameList);
 		return report;
 	}
 
