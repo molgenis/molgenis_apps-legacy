@@ -46,11 +46,9 @@ public class Nvwa4ReportAction
 		{
 			String action = request.getString("__action");
 
-			if (action.equals("generateYearlyReport"))
-			{
-				this.year = request.getInt("year");
-				this.form = request.getString("form");
-			}
+			this.year = request.getInt("year");
+			this.form = request.getString("form");
+
 		}
 		catch (Exception e)
 		{
