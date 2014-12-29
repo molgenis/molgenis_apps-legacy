@@ -59,7 +59,9 @@
 		</select>
 	</div>
 	<div class='row'>
-		<input type='submit' id='generate' class='addbutton' value='Generate' onclick="__action.value='generateNvwa4Report'" />
+		
+		<input id="generate" type="image" title="Create report " onclick="__action.value='generateNvwa4Report'" src="res/img/report-icon_32x32.png"  />
+		<input id="cancel" type="image" title="Cancel" onclick="__action.value='start'" src="generated-res/img/cancel.png"  />
 	</div>
 	
 <#elseif screen.action="nvwa4ShowReport">
@@ -110,5 +112,6 @@ ${screen.report}
 	jQuery('#printCagelabels').button()
 	jQuery('#saveAnimals').button()
 	jQuery('#cancel').button()
+	jQuery('#generate').button()
 </script>
 </#macro>
