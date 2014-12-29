@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.molgenis.animaldb.commonservice.CommonService;
+import org.molgenis.animaldb.plugins.administration.AnimalDBReport;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -50,9 +51,12 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -7609580651170222454L;
 	private List<Integer> animalIdList;
+	private List<Integer> lastYearsList;
 	private String action = "init";
 	private String info = "";
 	private CommonService cs = CommonService.getInstance();
+	private Nvwa4ReportAction nvwa4Action = null;
+	private AnimalDBReport report = null;
 	MatrixViewer animalMatrixViewer = null;
 	static String ANIMALMATRIX = "animalmatrix";
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -75,6 +79,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public EditAnimalPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+
 	}
 
 	public String getCustomHtmlHeaders()
@@ -125,6 +130,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		this.nvwa4Action = new Nvwa4ReportAction(this.getLogin().getUserName());
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		if (animalMatrixViewer != null)
@@ -264,6 +270,27 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				cs.setDatabase(db);
 
 				saveAnimalToDB(db, request, listOfSelectedIndividuals);
+			}
+
+			if (action.equals("nvwa4Animals"))
+			{
+
+				this.lastYearsList = nvwa4Action.getLastYearsList();
+
+			}
+			if (action.equals("generateNvwa4Report"))
+			{
+				nvwa4Action.ReadForm(request);
+				List<Individual> indList = (List<Individual>) animalMatrixViewer.getSelection(db);
+				List<String> targetNames = new ArrayList<String>();
+				for (Individual ind : indList)
+				{
+					targetNames.add(ind.getName());
+				}
+
+				this.report = nvwa4Action.createReport4(targetNames);
+				action = "nvwa4ShowReport";
+
 			}
 
 		}
@@ -908,6 +935,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		}
 	}
 
+	public void makeNvwa4Report()
+	{
+
+	}
+
 	public void setAction(String action)
 	{
 		this.action = action;
@@ -1227,6 +1259,26 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public void setGeneStateList(List<String> geneStateList)
 	{
 		this.geneStateList = geneStateList;
+	}
+
+	public List<Integer> getLastYearsList()
+	{
+		return lastYearsList;
+	}
+
+	public void setLastYearsList(List<Integer> lastYearsList)
+	{
+		this.lastYearsList = lastYearsList;
+	}
+
+	public AnimalDBReport getReport()
+	{
+		return report;
+	}
+
+	public void setReport(AnimalDBReport report)
+	{
+		this.report = report;
 	}
 
 }

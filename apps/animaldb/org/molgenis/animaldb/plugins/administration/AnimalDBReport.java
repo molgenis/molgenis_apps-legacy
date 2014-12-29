@@ -14,5 +14,5 @@ public abstract class AnimalDBReport
 	protected int nrCol;
 	protected List<String> warningsList;
 
-	abstract public void makeReport(int year, String type);
+	abstract public void makeReport(int year, String type, List<String> targetNameList);
 }

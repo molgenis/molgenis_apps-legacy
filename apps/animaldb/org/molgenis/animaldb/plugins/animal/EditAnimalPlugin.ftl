@@ -40,6 +40,31 @@
 				</tbody>
 			</table>
 		</div>
+<#elseif screen.action="nvwa4Animals">
+	<div id="yearselect" class="row">
+		<label for="year">Year:</label>
+		<select name="year" id="year" class="selectbox">
+			<#list screen.getLastYearsList() as y>
+				<option value="${y?string.computer}" <#if screen.year??><#if screen.year==y>selected="selected"</#if></#if> >${y?string.computer}</option>
+			</#list>
+		</select>
+	</div>
+	<div id="formselect" class="row">
+		<label for="form">Form:</label>
+		<select name="form" id="form" class="selectbox">
+			<option value="4A" <#if screen.form??><#if screen.form=="4A">selected="selected"</#if></#if> >4A</option>
+			<option value="4B" <#if screen.form??><#if screen.form=="4B">selected="selected"</#if></#if> >4B</option>
+			<option value="4C" <#if screen.form??><#if screen.form=="4C">selected="selected"</#if></#if> >4C</option>
+			<!--option value="5" <#if screen.form??><#if screen.form=="5">selected="selected"</#if></#if> >5</option--!>
+		</select>
+	</div>
+	<div class='row'>
+		<input type='submit' id='generate' class='addbutton' value='Generate' onclick="__action.value='generateNvwa4Report'" />
+	</div>
+	
+<#elseif screen.action="nvwa4ShowReport">
+${screen.report}
+<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
 <#else>
 	
@@ -50,6 +75,7 @@
 				<thead>
 					<tr style="text-align:center;">
 						<th>Edit</th>
+						<th>nVWA 4 report</th>
 						<!--th>Delete</th-->
 						<!--th>Print Cagelabels</th-->
 					</tr>
@@ -57,6 +83,8 @@
 				<tbody>
 					<tr style="text-align:center;">
 						<td><input id="editAnimals" type="image" title="Edit the selected animals." onclick="__action.value='editAnimals'" src="generated-res/img/editview.gif"  /></td>
+						<td><input id="nvwa4Animals" type="image" title="make nvwa form 4 report on selection" onclick="__action.value='nvwa4Animals'" src="generated-res/img/editview.gif"  /></td>
+						
 						<!--td><input id="deleteAnimals" type="image" title="Delete the selected animals." onclick="__action.value='deleteAnimals'" src="generated-res/img/delete.png"  /></td-->
 						<!--td><input id="printCagelabels" type="image" title="Print cage labels for the selected animals." onclick="__action.value='makeLabels'" src="res/img/print_32.png"  /></td-->
 					</tr>
@@ -77,6 +105,7 @@
 
 <script>
 	jQuery('#editAnimals').button()
+	jQuery('#nvwa4Animals').button()
 	jQuery('#deleteAnimals').button()
 	jQuery('#printCagelabels').button()
 	jQuery('#saveAnimals').button()

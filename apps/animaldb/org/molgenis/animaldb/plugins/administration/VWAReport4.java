@@ -31,7 +31,7 @@ public class VWAReport4 extends AnimalDBReport
 	}
 
 	@Override
-	public void makeReport(int year, String type)
+	public void makeReport(int year, String type, List<String> targetNameList)
 	{
 		try
 		{
@@ -48,7 +48,14 @@ public class VWAReport4 extends AnimalDBReport
 
 			// Go through all animals owned by the current user
 			List<String> investigationNames = ct.getOwnUserInvestigationNames(userName);
-			List<String> targetNameList = ct.getAllObservationTargetNames("Individual", false, investigationNames);
+
+			// filter animals by addtional criteria:
+
+			if (targetNameList == null)
+			{
+				targetNameList = ct.getAllObservationTargetNames("Individual", false, investigationNames);
+			}
+
 			for (String animalName : targetNameList)
 			{
 				// Check AnimalType
