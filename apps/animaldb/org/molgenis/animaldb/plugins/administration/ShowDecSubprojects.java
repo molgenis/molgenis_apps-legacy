@@ -89,7 +89,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public String getCustomHtmlHeaders()
 	{
 		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
-				+ "<script src=\"res/scripts/custom/animalterm.js\" language=\"javascript\"></script>\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
@@ -940,8 +939,30 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
 
 						// If applicable, end status Active and set Death date
-						if (endstatus.equals("A. Dood in het kader van de proef")
-								|| endstatus.equals("B. Gedood na beeindiging van de proef"))
+						if (endstatus.equals("A. Dood in het kader van de proef"))
+						{
+							Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
+							activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+							activeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
+							List<ObservedValue> activeValueList = activeQuery.find();
+							if (activeValueList.size() > 0)
+							{
+								// Take most recent one and update
+								ObservedValue activeValue = activeValueList.get(activeValueList.size() - 1);
+								activeValue.setEndtime(subProjectRemovalDate);
+								activeValue.setValue("Dead");
+								db.update(activeValue);
+							}
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName,
+									subProjectRemovalDate, null, "SetDeathDate", "DeathDate", animalName,
+									newDateOnlyFormat.format(subProjectRemovalDate), null));
+
+							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName,
+									subProjectRemovalDate, null, "SetFacilityExitDate", "FacilityExitDate", animalName,
+									newDateOnlyFormat.format(subProjectRemovalDate), null));
+
+						}
+						else if (endstatus.equals("B. Gedood na beeindiging van de proef"))
 						{
 							Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
 							activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
@@ -962,7 +983,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName,
 									deathDate, null, "SetFacilityExitDate", "FacilityExitDate", animalName,
 									newDateOnlyFormat.format(deathDate), null));
-
 						}
 
 						// Set subproject end values

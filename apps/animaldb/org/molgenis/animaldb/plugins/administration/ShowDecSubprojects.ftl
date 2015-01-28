@@ -258,7 +258,7 @@
 	
 	<div class='row'>
 		<label for='endstatus'>Actual animal end status:</label>
-		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
+		<select name='endstatus' id='endstatus' onchange="toggleDeathDatetime(this.value);">
 		<#list screen.actualEndstatusCodeList as ecl>
 			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
 		</#list>
@@ -291,9 +291,9 @@
 	</div>
 	
 	
-	<div id="deathdatediv" class="row" style="display:block">
+	<div id="deathdatediv" class="row" style="display:none">
 		<label for="deathdate">Date of death:</label>
-		<input type='text' class='textbox' id='deathdate' name='deathdate' value='${screen.currentDate}' autocomplete='off' />
+		<input type='text' class='textbox' id='deathdate' name='deathdate' value=''/>
 	    <script>
             $(function() {
                 $( "#deathdate" ).datepicker({
@@ -519,6 +519,15 @@
 	jQuery('#removeAnimals').button();
 	jQuery('#deleteAnimals').button();
 	jQuery('#cancel').button();
+	
+	function toggleDeathDatetime(removalType) {
+	if (removalType == "B. Gedood na beeindiging van de proef") {
+		document.getElementById("deathdatediv").style.display = "block";
+	} else {
+		document.getElementById("deathdatediv").style.display = "none";
+	}
+}
+	
 </script>
 	
 </#macro>
