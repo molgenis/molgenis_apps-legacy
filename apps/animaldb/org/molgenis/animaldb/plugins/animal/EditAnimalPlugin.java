@@ -42,9 +42,10 @@ import org.molgenis.util.Entity;
  * 
  * <li>Each user request is handled by its own method based action=methodName.
  * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
- * user <li>ViewFamilyModel holds application state and business logic on top of
- * domain model. Get it via this.getModel()/setModel(..) <li>ViewFamilyView
- * holds the template to show the layout. Get/set it via
+ * user
+ * <li>ViewFamilyModel holds application state and business logic on top of
+ * domain model. Get it via this.getModel()/setModel(..)
+ * <li>ViewFamilyView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
 public class EditAnimalPlugin extends PluginModel<Entity>
@@ -68,7 +69,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	private List<ObservationTarget> sourceList;
 	private List<Category> animalTypeList;
 	private List<String> colorList;
-	private List<String> earmarkList;
+	private List<Category> earmarkList;
 	private List<String> geneModList;
 	private List<String> geneStateList;
 	private List<Individual> listOfSelectedIndividuals = new ArrayList<Individual>();
@@ -158,12 +159,12 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, cs
-						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 				animalMatrixViewer = new MatrixViewer(this, ANIMALMATRIX,
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
-						2, true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
-								Measurement.NAME, Operator.IN, measurementsToShow));
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2,
+						true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME,
+								Operator.IN, measurementsToShow));
 				animalMatrixViewer.setFilterVisibility(false);
 				animalMatrixViewer.setShowQuickView(true);
 				animalMatrixViewer.setShowfilterSaveOptions(true);
@@ -188,7 +189,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
 			this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
 			this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
-			this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
+			this.setEarmarkList(cs.getAllCodesForFeature("Earmark"));
 			this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
 			this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
 		}
@@ -359,8 +360,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				// add a row in the eit table for each selected animal.
 				editTable.addRow(e.getName());
 
-				List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(
-						ObservedValue.TARGET_NAME, Operator.EQUALS, e.getName()));
+				List<ObservedValue> listObservedValues = db.find(ObservedValue.class,
+						new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, e.getName()));
 				for (ObservedValue val : listObservedValues)
 				{
 					observableFeat.put(val.getFeature_Name(), val.getValue());
@@ -410,17 +411,17 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				dateOfBirthInput.setId(this.fpMap.get("DateOfBirth") + e.getName());
 				dateOfBirthInput.setDateFormat("yyyy-MM-dd");
 				dateOfBirthInput.setValue(getAnimalBirthDate(e.getName()));
-				dateOfBirthInput
-						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				dateOfBirthInput.setJqueryproperties(
+						"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 				editTable.setCell(2, row, dateOfBirthInput);
 
 				// Earmark
 				SelectInput earmarkInput = new SelectInput(this.fpMap.get("Earmark") + e.getName());
 				earmarkInput.setId(this.fpMap.get("Earmark") + e.getName());
 
-				for (String earmark : this.earmarkList)
+				for (Category earmark : this.earmarkList)
 				{
-					earmarkInput.addOption(earmark, earmark);
+					earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
 				}
 				earmarkInput.addOption("", "");
 				earmarkInput.setValue(getAnimalEarmark(e.getName()));
@@ -469,8 +470,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				weandateInput.setId(this.fpMap.get("WeanDate") + e.getName());
 				weandateInput.setDateFormat("yyyy-MM-dd");
 				weandateInput.setValue(getAnimalWeanDate(e.getName()));
-				weandateInput
-						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				weandateInput.setJqueryproperties(
+						"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 				editTable.setCell(7, row, weandateInput);
 
 				// GeneModification
@@ -480,8 +481,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				String allGeneModInputs = "";
 				for (ObservedValue value : allValuesGeneMod)
 				{
-					SelectInput geneModInput = new SelectInput(this.fpMap.get("GeneModification") + e.getName() + "_"
-							+ countGeneMod);
+					SelectInput geneModInput = new SelectInput(
+							this.fpMap.get("GeneModification") + e.getName() + "_" + countGeneMod);
 					geneModInput.setId(this.fpMap.get("GeneModification") + e.getName() + "_" + countGeneMod);
 
 					for (String geneMod : this.geneModList)
@@ -506,8 +507,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				String allGeneStateInputs = "";
 				for (ObservedValue value : allValues)
 				{
-					SelectInput geneStateInput = new SelectInput(this.fpMap.get("GeneState") + e.getName() + "_"
-							+ countGeneState);
+					SelectInput geneStateInput = new SelectInput(
+							this.fpMap.get("GeneState") + e.getName() + "_" + countGeneState);
 					geneStateInput.setId(this.fpMap.get("GeneState") + e.getName() + "_" + countGeneState);
 
 					for (String geneMod : this.geneStateList)
@@ -597,8 +598,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			// Background
 			String backgroundName = request.getString(this.fpMap.get("Background") + e.getName());
-			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Background", investigationNames, invName).get(
-					0);
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Background", investigationNames, invName)
+					.get(0);
 
 			if (value.getProtocolApplication_Id() == null)
 			{
@@ -748,9 +749,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				if (responsibleResearcher != null && !responsibleResearcher.equals(""))
 				{
-					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null,
-							"SetResponsibleResearcher", "ResponsibleResearcher", e.getName(), responsibleResearcher,
-							null));
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetResponsibleResearcher",
+							"ResponsibleResearcher", e.getName(), responsibleResearcher, null));
 				}
 			}
 			else
@@ -813,8 +813,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			{
 				modVal = allValuesGeneModification.get(cntGenoType);
 				stateVal = allValuesGeneState.get(cntGenoType);
-				String geneModification = request.getString((this.fpMap.get("GeneModification")) + e.getName() + "_"
-						+ cntGenoType);
+				String geneModification = request
+						.getString((this.fpMap.get("GeneModification")) + e.getName() + "_" + cntGenoType);
 				String geneState = request.getString((this.fpMap.get("GeneState")) + e.getName() + "_" + cntGenoType);
 
 				if (modVal.getProtocolApplication_Id() == null)
@@ -907,8 +907,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				// Source
 				String sourceName = request.getString(this.fpMap.get("Source") + e.getName());
-				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Source", investigationNames, invName).get(
-						0);
+				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Source", investigationNames, invName)
+						.get(0);
 				value.setRelation(cs.getObservationTargetByName(sourceName).getId());
 
 				if (value.getProtocolApplication_Id() == null)
@@ -1231,12 +1231,12 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		this.colorList = colorList;
 	}
 
-	public List<String> getEarmarkList()
+	public List<Category> getEarmarkList()
 	{
 		return earmarkList;
 	}
 
-	public void setEarmarkList(List<String> earmarkList)
+	public void setEarmarkList(List<Category> earmarkList)
 	{
 		this.earmarkList = earmarkList;
 	}
