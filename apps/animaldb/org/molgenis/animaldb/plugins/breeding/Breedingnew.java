@@ -149,9 +149,11 @@ public class Breedingnew extends PluginModel<Entity>
 				+ "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
 				+ "<script src=\"res/scripts/custom/litters.js\" language=\"javascript\"></script>\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">";
-		// "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
+		// "<script type=\"text/javascript\"
+		// src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n"
 		// /+
-		// "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
+		// "<link rel=\"stylesheet\" style=\"text/css\"
+		// href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n"
 	}
 
 	public String getAnimalName(Integer id)
@@ -261,19 +263,19 @@ public class Breedingnew extends PluginModel<Entity>
 			 * ct.getMeasurementId("Sex"), ObservedValue.RELATION_NAME,
 			 * Operator.EQUALS, "Female"));
 			 */
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-					.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+					ct.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 			if (line != null)
 			{
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-						.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
 				// Setting filter on the RELATION field with value = line would
 				// be more efficient,
 				// but gives a very un-userfriendly toString value when shown in
 				// the MatrixViewer UI
 				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-						.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
 			}
 
 			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(
@@ -284,6 +286,8 @@ public class Breedingnew extends PluginModel<Entity>
 							measurementsToShow));
 			motherMatrixViewer.setShowQuickView(true);
 			motherMatrixViewer.setShowfilterSaveOptions(true);
+			// enable filter and sort on visible records:
+			motherMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 		}
 		catch (Exception e)
 		{
@@ -324,21 +328,21 @@ public class Breedingnew extends PluginModel<Entity>
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 					Operator.IN, investigationNames));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
+					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
-					ct.getMeasurementId("Sex"), ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-					.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+					ct.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 			if (line != null)
 			{
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-						.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
 				// Setting filter on the RELATION field with value = line would
 				// be more efficient,
 				// but gives a very un-userfriendly toString value when shown in
 				// the MatrixViewer UI
 				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-						.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, speciesName));
 			}
 			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(
 					Individual.class, Measurement.class);
@@ -348,6 +352,8 @@ public class Breedingnew extends PluginModel<Entity>
 							measurementsToShow));
 			fatherMatrixViewer.setShowQuickView(true);
 			fatherMatrixViewer.setShowfilterSaveOptions(true);
+			// enable filter and sort on visible records:
+			fatherMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 
 		}
 		catch (Exception e)
@@ -383,16 +389,19 @@ public class Breedingnew extends PluginModel<Entity>
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, Operator.IN,
 					investigationNames));
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-					.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+					ct.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Active"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
 					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
-			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(Panel.class,
-					Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
-					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+			pgMatrixViewer = new MatrixViewer(this, PGMATRIX,
+					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), true, 2, false, false,
+					filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+							measurementsToShow));
 			pgMatrixViewer.setShowTargetTooltip(true);
+			// enable filter and sort on visible records:
+			pgMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 
 		}
 		catch (Exception e)
@@ -442,16 +451,19 @@ public class Breedingnew extends PluginModel<Entity>
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, Operator.IN,
 					investigationNames));
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-					.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Litter"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+					ct.getMeasurementId("TypeOfGroup"), ObservedValue.VALUE, Operator.EQUALS, "Litter"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Active"));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
 					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
-			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, new SliceablePhenoMatrix<Panel, Measurement>(
-					Panel.class, Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
-					MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX,
+					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), true, 2, false, false,
+					filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+							measurementsToShow));
 			litterMatrixViewer.setShowTargetTooltip(true);
+			// enable filter and sort on visible records:
+			litterMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 		}
 		catch (Exception e)
 		{
@@ -539,6 +551,8 @@ public class Breedingnew extends PluginModel<Entity>
 			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName()))
 			{
 				motherMatrixViewer.setDatabase(db);
+				// enable filtering and sorting in visible records
+				motherMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 				motherMatrixViewer.handleRequest(db, request);
 				motherMatrixViewerString = motherMatrixViewer.render();
 				this.action = "selectParents"; // return to mother selection
@@ -549,6 +563,8 @@ public class Breedingnew extends PluginModel<Entity>
 			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName()))
 			{
 				fatherMatrixViewer.setDatabase(db);
+				// enable filtering and sorting in visible records
+				fatherMatrixViewer.setAPPLICATION_STRING("ANIMALDB"); //
 				fatherMatrixViewer.handleRequest(db, request);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
 				this.action = "addParentgroupScreen3"; // return to father
@@ -1052,11 +1068,8 @@ public class Breedingnew extends PluginModel<Entity>
 				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer
-						.getMatrix()
-						.getRules()
-						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
-								this.litter));
+				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+						Individual.NAME, Operator.EQUALS, this.litter));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				this.action = "init";
@@ -1076,11 +1089,8 @@ public class Breedingnew extends PluginModel<Entity>
 				// litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
-				litterMatrixViewer
-						.getMatrix()
-						.getRules()
-						.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS,
-								this.litter));
+				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader,
+						Individual.NAME, Operator.EQUALS, this.litter));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
 				// Reset other fields
@@ -1330,15 +1340,18 @@ public class Breedingnew extends PluginModel<Entity>
 			nameBas = targetName.substring(0, 3);
 
 			// Birthdate
-			ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth", listinvName,
-					listinvName.get(0)).get(0);
-			ObservedValue wean = ct.getObservedValuesByTargetAndFeature(targetName, "WeanDate", listinvName,
-					listinvName.get(0)).get(0);
-			ObservedValue type = ct.getObservedValuesByTargetAndFeature(targetName, "AnimalType", listinvName,
-					listinvName.get(0)).get(0);
+			ObservedValue birthDate = ct
+					.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth", listinvName, listinvName.get(0))
+					.get(0);
+			ObservedValue wean = ct
+					.getObservedValuesByTargetAndFeature(targetName, "WeanDate", listinvName, listinvName.get(0))
+					.get(0);
+			ObservedValue type = ct
+					.getObservedValuesByTargetAndFeature(targetName, "AnimalType", listinvName, listinvName.get(0))
+					.get(0);
 
-			ObservedValue color = ct.getObservedValuesByTargetAndFeature(targetName, "Color", listinvName,
-					listinvName.get(0)).get(0);
+			ObservedValue color = ct
+					.getObservedValuesByTargetAndFeature(targetName, "Color", listinvName, listinvName.get(0)).get(0);
 
 			weaner = wean.getValue();
 			dob = birthDate.getValue();
@@ -1390,13 +1403,13 @@ public class Breedingnew extends PluginModel<Entity>
 				"SetFather", "Father", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Father")));
 		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 				"SetMother", "Mother", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Mother")));
-		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
-				"SetBackground", "Background", animalName, null,
-				ct.getMostRecentValueAsXrefName(targetName, "Background")));
+		individualValuesToAddList
+				.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetBackground",
+						"Background", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Background")));
 		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 				"SetSource", "Source", animalName, null, ct.getMostRecentValueAsXrefName(targetName, "Source")));
-		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
-				"SetColor", "Color", animalName, colorA, null));
+		individualValuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetColor",
+				"Color", animalName, colorA, null));
 
 		db.add(individualValuesToAddList);
 
@@ -1584,8 +1597,8 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private void editIndividuals(Database db, String litter, MolgenisRequest request) throws DatabaseException,
-			ParseException, IOException
+	private void editIndividuals(Database db, String litter, MolgenisRequest request)
+			throws DatabaseException, ParseException, IOException
 	{
 		if (request.getString("addNew") != null)
 		{
@@ -1741,8 +1754,8 @@ public class Breedingnew extends PluginModel<Entity>
 
 		int row = 0;
 
-		List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET_NAME,
-				Operator.EQUALS, this.litter));
+		List<ObservedValue> listObservedValues = db.find(ObservedValue.class,
+				new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
 		editTable.addColumn(this.litter);
 
 		List<ObservationTarget> listObsTargets = new ArrayList<ObservationTarget>();
@@ -1751,8 +1764,8 @@ public class Breedingnew extends PluginModel<Entity>
 		for (ObservedValue val : listObservedValues)
 		{
 
-			listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME, Operator.EQUALS,
-					val.getTarget_Name()));
+			listObsTargets = db.find(ObservationTarget.class,
+					new QueryRule(ObservationTarget.NAME, Operator.EQUALS, val.getTarget_Name()));
 
 			if (val.getFeature_Name().equals("Parentgroup"))
 			{
@@ -1784,7 +1797,8 @@ public class Breedingnew extends PluginModel<Entity>
 		DateInput dateInputBirthDate = new DateInput("DateOfBirth");
 		dateInputBirthDate.setDateFormat("yyyy-MM-dd");
 		String maxD = observableFeat.get("WeanDate") == null ? "" : observableFeat.get("WeanDate");
-		// dateInputBirthDate.setJqueryproperties("maxDate: "newDateOnlyFormat.parse(observableFeat.get("WeanDate")"")
+		// dateInputBirthDate.setJqueryproperties("maxDate:
+		// "newDateOnlyFormat.parse(observableFeat.get("WeanDate")"")
 		if (observableFeat.containsKey("DateOfBirth"))
 		{
 
@@ -2004,13 +2018,14 @@ public class Breedingnew extends PluginModel<Entity>
 				{
 					for (ObservedValue v : individualValueList)
 					{
-						listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
-								Operator.EQUALS, v.getTarget_Name()));
+						listObsTargets = db.find(ObservationTarget.class,
+								new QueryRule(ObservationTarget.NAME, Operator.EQUALS, v.getTarget_Name()));
 						String targetName = listObsTargets.get(0).getName();
 
 						// Birthdate
-						ObservedValue birthDate = ct.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth",
-								invName, invName.get(0)).get(0);
+						ObservedValue birthDate = ct
+								.getObservedValuesByTargetAndFeature(targetName, "DateOfBirth", invName, invName.get(0))
+								.get(0);
 						birthDate.setValue(newValue);
 						db.update(birthDate);
 						ov.setValue(newValue);
@@ -2030,15 +2045,16 @@ public class Breedingnew extends PluginModel<Entity>
 
 				for (ObservedValue v : individualValueList)
 				{
-					listObsTargets = db.find(ObservationTarget.class, new QueryRule(ObservationTarget.NAME,
-							Operator.EQUALS, v.getTarget_Name()));
+					listObsTargets = db.find(ObservationTarget.class,
+							new QueryRule(ObservationTarget.NAME, Operator.EQUALS, v.getTarget_Name()));
 					String targetName = listObsTargets.get(0).getName();
 
 					// Weandate
-					ObservedValue weanDate = ct.getObservedValuesByTargetAndFeature(targetName, "WeanDate", invName,
-							invName.get(0)).get(0);
-					ObservedValue active = ct.getObservedValuesByTargetAndFeature(targetName, "Active", invName,
-							invName.get(0)).get(0);
+					ObservedValue weanDate = ct
+							.getObservedValuesByTargetAndFeature(targetName, "WeanDate", invName, invName.get(0))
+							.get(0);
+					ObservedValue active = ct
+							.getObservedValuesByTargetAndFeature(targetName, "Active", invName, invName.get(0)).get(0);
 					ObservedValue facilityEntryDate = ct.getObservedValuesByTargetAndFeature(targetName,
 							"FacilityEntryDate", invName, invName.get(0)).get(0);
 
@@ -2142,8 +2158,8 @@ public class Breedingnew extends PluginModel<Entity>
 		// Set line
 
 		// Set start date
-		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetStartDate", "StartDate",
-				groupName, dbFormat.format(eventDate), null));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetStartDate", "StartDate", groupName,
+				dbFormat.format(eventDate), null));
 		// Set remarks
 		if (remarks != null)
 		{
@@ -2272,6 +2288,8 @@ public class Breedingnew extends PluginModel<Entity>
 				loadPgMatrixViewer(db);
 			}
 			pgMatrixViewer.setDatabase(db);
+			// enable filter and sort on visible records:
+			pgMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 			pgMatrixViewerString = pgMatrixViewer.render();
 			// Prepare litter matrix
 			if (litterMatrixViewer == null)
@@ -2279,6 +2297,8 @@ public class Breedingnew extends PluginModel<Entity>
 				loadLitterMatrixViewer(db);
 			}
 			litterMatrixViewer.setDatabase(db);
+			// enable filter and sort on visible records:
+			litterMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 			litterMatrixViewerString = litterMatrixViewer.render();
 			try
 			{
@@ -2382,8 +2402,8 @@ public class Breedingnew extends PluginModel<Entity>
 		// Set Line also on Litter
 		if (lineName != null)
 		{
-			valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Line", litterName, null,
-					lineName));
+			valuesToAddList
+					.add(ct.createObservedValue(invName, paName, eventDate, null, "Line", litterName, null, lineName));
 		}
 		// Date of Birth
 		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "DateOfBirth", litterName,
@@ -2397,8 +2417,8 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 			valueString = "1";
 		}
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Certain", litterName,
-				valueString, null));
+		valuesToAddList.add(
+				ct.createObservedValue(invName, paName, eventDate, null, "Certain", litterName, valueString, null));
 		// Remarks
 		if (litterRemarks != null)
 		{
@@ -2413,8 +2433,8 @@ public class Breedingnew extends PluginModel<Entity>
 					"Source", litterName, null, sourceName));
 		}
 		// Active
-		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Active", litterName, "Active",
-				null));
+		valuesToAddList
+				.add(ct.createObservedValue(invName, paName, eventDate, null, "Active", litterName, "Active", null));
 		// Add everything to DB
 		db.add(valuesToAddList);
 
@@ -2649,8 +2669,8 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 		// Set wean sizes
 		int weanSize = weanSizeFemale + weanSizeMale + weanSizeUnknown;
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSize",
-				"WeanSize", litter, Integer.toString(weanSize), null));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSize", "WeanSize",
+				litter, Integer.toString(weanSize), null));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSizeFemale",
 				"WeanSizeFemale", litter, Integer.toString(weanSizeFemale), null));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetWeanSizeMale",
@@ -2741,13 +2761,13 @@ public class Breedingnew extends PluginModel<Entity>
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
 					"SetFacilityEntryDate", "FacilityEntryDate", animalName, newDateOnlyFormat.format(weanDate), null));
 			// Set 'Date of Birth'
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
-					"SetDateOfBirth", "DateOfBirth", animalName, litterBirthDateString, null));
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetDateOfBirth",
+					"DateOfBirth", animalName, litterBirthDateString, null));
 			// Set species
 			if (speciesName != null)
 			{
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null,
-						"SetSpecies", "Species", animalName, null, speciesName));
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetSpecies",
+						"Species", animalName, null, speciesName));
 			}
 			// Set animal type
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, "SetAnimalType",
@@ -2889,8 +2909,8 @@ public class Breedingnew extends PluginModel<Entity>
 							animalName, gm, null));
 					// Set gene state always on unknown, based on mother's (can
 					// be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState",
-							animalName, "unknown", null));
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState", animalName,
+							"unknown", null));
 				}
 
 			}
@@ -2913,8 +2933,8 @@ public class Breedingnew extends PluginModel<Entity>
 							animalName, mgm.getValue(), null));
 					// Set gene state always on unknown, based on mother's (can
 					// be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState",
-							animalName, "unknown", null));
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState", animalName,
+							"unknown", null));
 				}
 			}
 			else if (motherAllGeneMods == null && fatherAllGeneMods != null) // than
@@ -2936,8 +2956,8 @@ public class Breedingnew extends PluginModel<Entity>
 							animalName, fgm.getValue(), null));
 					// Set gene state always on unknown, based on mother's (can
 					// be changed during genotyping)
-					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState",
-							animalName, "unknown", null));
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, null, "GeneState", animalName,
+							"unknown", null));
 				}
 			}
 			else
@@ -3197,8 +3217,8 @@ public class Breedingnew extends PluginModel<Entity>
 		// Set genotyping remarks on litter
 		if (request.getString("remarks") != null)
 		{
-			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark",
-					this.litter, request.getString("remarks"), null));
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetRemark", "Remark", this.litter,
+					request.getString("remarks"), null));
 		}
 
 		int animalCount = updateLitterIndividuals(db, request, investigationNames, invName);
@@ -3216,8 +3236,8 @@ public class Breedingnew extends PluginModel<Entity>
 		{
 			// Set sex
 			String sexName = request.getString("1_" + animalCount);
-			ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames,
-					invName).get(0);
+			ObservedValue value = ct
+					.getObservedValuesByTargetAndFeature(animal.getName(), "Sex", investigationNames, invName).get(0);
 			value.setRelation(ct.getObservationTargetByName(sexName).getId());
 
 			if (value.getProtocolApplication_Id() == null)
@@ -3233,8 +3253,7 @@ public class Breedingnew extends PluginModel<Entity>
 			// Set birth date
 			String dob = request.getString("0_" + animalCount); // already in
 																// new format
-			value = ct
-					.getObservedValuesByTargetAndFeature(animal.getName(), "DateOfBirth", investigationNames, invName)
+			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "DateOfBirth", investigationNames, invName)
 					.get(0);
 			value.setValue(dob);
 			if (value.getProtocolApplication_Id() == null)
@@ -3249,8 +3268,8 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 			// Set color
 			String color = request.getString("2_" + animalCount);
-			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Color", investigationNames, invName).get(
-					0);
+			value = ct.getObservedValuesByTargetAndFeature(animal.getName(), "Color", investigationNames, invName)
+					.get(0);
 			value.setValue(color);
 			if (value.getProtocolApplication_Id() == null)
 			{
@@ -3525,8 +3544,8 @@ public class Breedingnew extends PluginModel<Entity>
 		return lineName;
 	}
 
-	private void getParentGenoTypeInfo(String motherName, String fatherName, Database db) throws DatabaseException,
-			ParseException
+	private void getParentGenoTypeInfo(String motherName, String fatherName, Database db)
+			throws DatabaseException, ParseException
 	{
 		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 		String userInvestigation = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
@@ -3542,21 +3561,21 @@ public class Breedingnew extends PluginModel<Entity>
 
 	}
 
-	private Collection<ObservedValue> getParentGeneMods(String parentgroupName, Database db) throws DatabaseException,
-			ParseException
+	private Collection<ObservedValue> getParentGeneMods(String parentgroupName, Database db)
+			throws DatabaseException, ParseException
 	{
 		// check the amount of geneModifications the combination of parents can
 		// have.
 
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, findParentForParentgroup(parentgroupName,
-				"Mother", db)));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS,
+				findParentForParentgroup(parentgroupName, "Mother", db)));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
 		List<ObservedValue> motherGenoModList = q.find();
 
 		Query<ObservedValue> q2 = db.query(ObservedValue.class);
-		q2.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, findParentForParentgroup(parentgroupName,
-				"Father", db)));
+		q2.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS,
+				findParentForParentgroup(parentgroupName, "Father", db)));
 		q2.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
 		List<ObservedValue> fatherGenoModList = q2.find();
 
@@ -3592,8 +3611,8 @@ public class Breedingnew extends PluginModel<Entity>
 				Query<ObservedValue> geneStateQuery = db.query(ObservedValue.class);
 				geneStateQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 				geneStateQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneState"));
-				geneStateQuery.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, value
-						.getProtocolApplication_Id()));
+				geneStateQuery.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS,
+						value.getProtocolApplication_Id()));
 				List<ObservedValue> geneStateValueList = geneStateQuery.find();
 				if (geneStateValueList != null && geneStateValueList.size() > 0)
 				{
@@ -3669,8 +3688,8 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
-	private void createDefCageLabels(Database db, String labelType) throws LabelGeneratorException, DatabaseException,
-			ParseException
+	private void createDefCageLabels(Database db, String labelType)
+			throws LabelGeneratorException, DatabaseException, ParseException
 	{
 
 		// PDF file stuff
@@ -3871,12 +3890,12 @@ public class Breedingnew extends PluginModel<Entity>
 			{
 				labelgenerator.addLabelToDocument(new ArrayList<String>(), new ArrayList<String>());
 			}
-		}// close for loop
+		} // close for loop
 
 		labelgenerator.finishPage();
 		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename
-				+ "\" target=\"blank\">Download cage labels as pdf</a>");
+		this.setLabelDownloadLink(
+				"<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download cage labels as pdf</a>");
 	}
 
 	public List<Integer> getSelectedFromMatrix(MolgenisRequest request, String matrixName, MatrixViewer matrixViewer,

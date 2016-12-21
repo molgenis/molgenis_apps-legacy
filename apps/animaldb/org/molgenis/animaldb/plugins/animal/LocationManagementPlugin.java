@@ -199,16 +199,18 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				// TODO: make MQRs combinable with OR so we can have animals
 				// with location NULL OR NOT current
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct
-						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						ct.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 
-				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, new SliceablePhenoMatrix(
-						Individual.class, Measurement.class), true, 2, false, true, filterRules, new MatrixQueryRule(
-						MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX,
+						new SliceablePhenoMatrix(Individual.class, Measurement.class), true, 2, false, true,
+						filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+								measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
 				animalsNotInLocMatrixViewer.setFilterVisibility(false);
 				animalsNotInLocMatrixViewer.setShowQuickView(true);
 				animalsNotInLocMatrixViewer.setShowfilterSaveOptions(true);
+				animalsNotInLocMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 			}
 
 			if (action.equals("ApplyAddAnimals"))
@@ -256,8 +258,8 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				}
 				prepareInLocMatrix(db, newLocationName);
 				action = "Manage";
-				this.setSuccess("Animals successfully moved to " + newLocationName
-						+ ". Now switching to that location.");
+				this.setSuccess(
+						"Animals successfully moved to " + newLocationName + ". Now switching to that location.");
 				return;
 			}
 
@@ -301,12 +303,13 @@ public class LocationManagementPlugin extends PluginModel<Entity>
 				ObservedValue.ENDTIME, Operator.EQUALS, null));
 		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX,
 				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2, false,
-				false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
-						measurementsToShow));
+				false, filterRules,
+				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
 		animalsInLocMatrixViewer.setFilterVisibility(false);
 		animalsInLocMatrixViewer.setShowQuickView(true);
 		animalsInLocMatrixViewer.setShowfilterSaveOptions(true);
+		animalsInLocMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 
 		this.matrixLabel = "Animals in " + locationName + ":";
 	}

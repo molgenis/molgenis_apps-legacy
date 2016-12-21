@@ -112,8 +112,8 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				deathdate.setNillable(false);
 				deathdate.setDescription("The date at which these animals died.");
 				deathdate.setDateFormat("yyyy-MM-dd");
-				deathdate
-						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				deathdate.setJqueryproperties(
+						"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 				// deathdate.setValue(new Date());
 				div.add(deathdate);
 
@@ -202,8 +202,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				{
 					this.getMessages()
 							.add(new ScreenMessage(
-									"Animal(s) "
-											+ notRemoved
+									"Animal(s) " + notRemoved
 											+ "not removed because they are still in a DEC subproject - remove them using the 'DEC subprojects' screen",
 									false));
 				}
@@ -215,8 +214,8 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.getMessages().add(
-					new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
+			this.getMessages()
+					.add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
 
 		return Show.SHOW_MAIN;
@@ -251,15 +250,17 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, cs
-						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX,
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
-						2, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
-								Measurement.NAME, Operator.IN, measurementsToShow));
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2,
+						false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME,
+								Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				targetMatrixViewer.setShowQuickView(true);
 				targetMatrixViewer.setShowfilterSaveOptions(true);
+				// enable sorting etc.
+				targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 				div.add(targetMatrixViewer);
 
 				ActionInput selectButton = new ActionInput("Select", "", "Select");
@@ -270,8 +271,8 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				this.getMessages().add(
-						new ScreenMessage("Something went wrong while loading matrix: " + e.getMessage(), false));
+				this.getMessages()
+						.add(new ScreenMessage("Something went wrong while loading matrix: " + e.getMessage(), false));
 			}
 		}
 		else
@@ -287,8 +288,8 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 		return view;
 	}
 
-	private boolean inExperiment(Database db, String animalName, Date deathDate) throws DatabaseException,
-			ParseException
+	private boolean inExperiment(Database db, String animalName, Date deathDate)
+			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
