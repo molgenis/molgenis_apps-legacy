@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.animaldb.plugins.administration.LabelGenerator;
@@ -1184,9 +1183,9 @@ public class Breedingnew extends PluginModel<Entity>
 		nrOfGenotypes = 0;
 		// check the amount of geneModifications the combination of parents can
 		// have.
-		Collection<ObservedValue> totalSet = getParentGeneMods(parentgroupName, db);
+		List<ObservedValue> parentGeneMods = getParentGeneMods(parentgroupName, db);
 
-		nrOfGenotypes = totalSet.size();
+		nrOfGenotypes = parentGeneMods.size();
 
 		// Prepare table
 		genotypeTable = new JQueryDataTable("GenoTable", "");
@@ -3561,7 +3560,7 @@ public class Breedingnew extends PluginModel<Entity>
 
 	}
 
-	private Collection<ObservedValue> getParentGeneMods(String parentgroupName, Database db)
+	private List<ObservedValue> getParentGeneMods(String parentgroupName, Database db)
 			throws DatabaseException, ParseException
 	{
 		// check the amount of geneModifications the combination of parents can
@@ -3582,13 +3581,26 @@ public class Breedingnew extends PluginModel<Entity>
 		List<ObservedValue> geneModlist = new ArrayList<ObservedValue>();
 		// compare and retain combination of unique genemodifications from both
 		// parents
-		Collection<ObservedValue> totalSet = new ArrayList<ObservedValue>();
+		Collection<ObservedValue> same = new ArrayList<ObservedValue>();
+		Collection<ObservedValue> different = new ArrayList<ObservedValue>();
 
+		Collection<ObservedValue> sameSet = motherGenoModList;
 		Collection<ObservedValue> mSet = motherGenoModList;
 		Collection<ObservedValue> fSet = fatherGenoModList;
-		Collection<ObservedValue> diffSet = CollectionUtils.disjunction(mSet, fSet);
-		Collection<ObservedValue> sameSet = CollectionUtils.intersection(mSet, fSet);
-		totalSet = CollectionUtils.union(diffSet, sameSet);
+		// calculate same objects
+		sameSet.retainAll(fSet);
+		// caluculate different objects m
+		mSet.removeAll(fSet);
+		fSet.removeAll(mSet);
+
+		List<ObservedValue> totalSet = new ArrayList<ObservedValue>();
+		totalSet.addAll(mSet);
+		totalSet.addAll(fSet);
+		totalSet.addAll(sameSet);
+		logger.debug(
+				"#################################################################################################");
+		logger.debug(totalSet.size());
+		logger.debug(totalSet);
 
 		return totalSet;
 	}
