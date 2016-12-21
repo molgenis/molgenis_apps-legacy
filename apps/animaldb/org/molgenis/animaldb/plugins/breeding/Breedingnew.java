@@ -3577,32 +3577,47 @@ public class Breedingnew extends PluginModel<Entity>
 				findParentForParentgroup(parentgroupName, "Father", db)));
 		q2.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
 		List<ObservedValue> fatherGenoModList = q2.find();
-
-		List<ObservedValue> geneModlist = new ArrayList<ObservedValue>();
-		// compare and retain combination of unique genemodifications from both
-		// parents
-		Collection<ObservedValue> same = new ArrayList<ObservedValue>();
-		Collection<ObservedValue> different = new ArrayList<ObservedValue>();
-
-		Collection<ObservedValue> sameSet = motherGenoModList;
-		Collection<ObservedValue> mSet = motherGenoModList;
-		Collection<ObservedValue> fSet = fatherGenoModList;
-		// calculate same objects
-		sameSet.retainAll(fSet);
-		// caluculate different objects m
-		mSet.removeAll(fSet);
-		fSet.removeAll(mSet);
-
 		List<ObservedValue> totalSet = new ArrayList<ObservedValue>();
-		totalSet.addAll(mSet);
-		totalSet.addAll(fSet);
-		totalSet.addAll(sameSet);
-		logger.debug(
-				"#################################################################################################");
-		logger.debug(totalSet.size());
-		logger.debug(totalSet);
 
-		return totalSet;
+		if ((motherGenoModList.size() + fatherGenoModList.size()) == 0)
+		{
+			return totalSet;
+
+		}
+		else if (motherGenoModList.size() == 0)
+		{
+			return fatherGenoModList;
+
+		}
+		else if (fatherGenoModList.size() == 0)
+		{
+			return motherGenoModList;
+
+		}
+		else
+		{
+			List<ObservedValue> geneModlist = new ArrayList<ObservedValue>();
+			// compare and retain combination of unique genemodifications from
+			// both
+			// parents
+			Collection<ObservedValue> same = new ArrayList<ObservedValue>();
+			Collection<ObservedValue> different = new ArrayList<ObservedValue>();
+
+			Collection<ObservedValue> sameSet = motherGenoModList;
+			Collection<ObservedValue> mSet = motherGenoModList;
+			Collection<ObservedValue> fSet = fatherGenoModList;
+			// calculate same objects
+			sameSet.retainAll(fSet);
+			// caluculate different objects m
+			mSet.removeAll(fSet);
+			fSet.removeAll(mSet);
+
+			totalSet.addAll(mSet);
+			totalSet.addAll(fSet);
+			totalSet.addAll(sameSet);
+
+			return totalSet;
+		}
 	}
 
 	private String getGenoInfo(String animalName, Database db) throws DatabaseException, ParseException
