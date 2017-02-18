@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.log4j.Logger;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.animaldb.plugins.administration.LabelGenerator;
 import org.molgenis.animaldb.plugins.administration.LabelGeneratorException;
@@ -60,6 +60,7 @@ import org.molgenis.util.Entity;
 public class Breedingnew extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
+	private transient Logger logger = Logger.getLogger(Breedingnew.class);
 	private CommonService ct = CommonService.getInstance();
 	// private SimpleDateFormat dateOnlyFormat = new
 	// SimpleDateFormat("MMMM d, yyyy", Locale.US);
@@ -1181,11 +1182,17 @@ public class Breedingnew extends PluginModel<Entity>
 	private void genotypeLitter(String parentgroupName, Database db) throws DatabaseException, ParseException
 	{
 		nrOfGenotypes = 0;
-		// check the amount of geneModifications the combination of parents can
+		// check the amount of geneModifications based on the first animal in
+		// the litter
 		// have.
-		List<ObservedValue> parentGeneMods = getParentGeneMods(parentgroupName, db);
+		// List<ObservedValue> parentGeneMods =
+		// getParentGeneMods(parentgroupName, db);
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, getAnimalsInLitter(db).get(0).getName()));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
+		List<ObservedValue> GenoModList = q.find();
 
-		nrOfGenotypes = parentGeneMods.size();
+		nrOfGenotypes = GenoModList.size();
 
 		// Prepare table
 		genotypeTable = new JQueryDataTable("GenoTable", "");
@@ -1608,13 +1615,12 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 		}
 		nrOfGenotypes = 0;
-		List<QueryRule> filterRules = new ArrayList<QueryRule>();
-		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
-		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ParentGroup"));
-		List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(filterRules));
-		Collection<ObservedValue> totalSet = getParentGeneMods(listObservedValues.get(0).getRelation_Name(), db);
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, getAnimalsInLitter(db).get(0).getName()));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
+		List<ObservedValue> GenoModList = q.find();
 
-		nrOfGenotypes = totalSet.size();
+		nrOfGenotypes = GenoModList.size();
 
 		// Prepare table
 		genotypeTable = new JQueryDataTable("GenoTable", "");
@@ -3541,83 +3547,6 @@ public class Breedingnew extends PluginModel<Entity>
 	{
 		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
 		return lineName;
-	}
-
-	private void getParentGenoTypeInfo(String motherName, String fatherName, Database db)
-			throws DatabaseException, ParseException
-	{
-		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
-		String userInvestigation = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
-		this.mGenoVals = ct.getObservedValuesByTargetAndFeature(motherName, "GeneModification", investigationNames,
-				userInvestigation);
-		this.mGeneStateVals = ct.getObservedValuesByTargetAndFeature(motherName, "GeneState", investigationNames,
-				userInvestigation);
-
-		this.fGeneStateVals = ct.getObservedValuesByTargetAndFeature(fatherName, "GeneState", investigationNames,
-				userInvestigation);
-		this.fGenoVals = ct.getObservedValuesByTargetAndFeature(fatherName, "GeneModification", investigationNames,
-				userInvestigation);
-
-	}
-
-	private List<ObservedValue> getParentGeneMods(String parentgroupName, Database db)
-			throws DatabaseException, ParseException
-	{
-		// check the amount of geneModifications the combination of parents can
-		// have.
-
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS,
-				findParentForParentgroup(parentgroupName, "Mother", db)));
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
-		List<ObservedValue> motherGenoModList = q.find();
-
-		Query<ObservedValue> q2 = db.query(ObservedValue.class);
-		q2.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS,
-				findParentForParentgroup(parentgroupName, "Father", db)));
-		q2.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GeneModification"));
-		List<ObservedValue> fatherGenoModList = q2.find();
-		List<ObservedValue> totalSet = new ArrayList<ObservedValue>();
-
-		if ((motherGenoModList.size() + fatherGenoModList.size()) == 0)
-		{
-			return totalSet;
-
-		}
-		else if (motherGenoModList.size() == 0)
-		{
-			return fatherGenoModList;
-
-		}
-		else if (fatherGenoModList.size() == 0)
-		{
-			return motherGenoModList;
-
-		}
-		else
-		{
-			List<ObservedValue> geneModlist = new ArrayList<ObservedValue>();
-			// compare and retain combination of unique genemodifications from
-			// both
-			// parents
-			Collection<ObservedValue> same = new ArrayList<ObservedValue>();
-			Collection<ObservedValue> different = new ArrayList<ObservedValue>();
-
-			Collection<ObservedValue> sameSet = motherGenoModList;
-			Collection<ObservedValue> mSet = motherGenoModList;
-			Collection<ObservedValue> fSet = fatherGenoModList;
-			// calculate same objects
-			sameSet.retainAll(fSet);
-			// caluculate different objects m
-			mSet.removeAll(fSet);
-			fSet.removeAll(mSet);
-
-			totalSet.addAll(mSet);
-			totalSet.addAll(fSet);
-			totalSet.addAll(sameSet);
-
-			return totalSet;
-		}
 	}
 
 	private String getGenoInfo(String animalName, Database db) throws DatabaseException, ParseException
