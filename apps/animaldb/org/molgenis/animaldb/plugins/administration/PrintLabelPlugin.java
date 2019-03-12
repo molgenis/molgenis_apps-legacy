@@ -104,8 +104,8 @@ public class PrintLabelPlugin extends EasyPluginController
 	 * @throws DatabaseException
 	 * @throws MatrixException
 	 */
-	private void handlePrintRequest(Database db, MolgenisRequest request) throws LabelGeneratorException,
-			DatabaseException, ParseException, MatrixException
+	private void handlePrintRequest(Database db, MolgenisRequest request)
+			throws LabelGeneratorException, DatabaseException, ParseException, MatrixException
 	{
 
 		cs.setDatabase(db);
@@ -253,11 +253,10 @@ public class PrintLabelPlugin extends EasyPluginController
 				elementLabelList.add("Researcher: ");
 				elementList.add(cs.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
 
-				elementLabelList.add("DEC:");
-				String decNr = cs.getMostRecentValueAsString(animalName, "DecNr");
-				String expNr = cs.getMostRecentValueAsString(animalName, "ExperimentNr");
-				String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
-				elementList.add(decInfo);
+				elementLabelList.add("IvD Nr:");
+				String IvDNr = cs.getMostRecentValueAsString(animalName, "IvDNr");
+				String IvDInfo = (IvDNr != null ? IvDNr : "");
+				elementList.add(IvDInfo);
 				elementLabelList.add("Remarks");
 				elementList.add("");
 			}
@@ -323,8 +322,8 @@ public class PrintLabelPlugin extends EasyPluginController
 
 		labelGenerator.finishPage();
 		labelGenerator.finishDocument();
-		text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename
-				+ "\" target=\"blank\">Download labels as pdf</a>");
+		text = new Paragraph("pdfFilename",
+				"<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download labels as pdf</a>");
 		text.setLabel("");
 		// text is added to panel on reload()
 		// if customlabel is to be made:
@@ -509,9 +508,10 @@ public class PrintLabelPlugin extends EasyPluginController
 				investigationNames));
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, cs.getMeasurementId("Active"),
 				ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-		targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, new SliceablePhenoMatrix<Individual, Measurement>(
-				Individual.class, Measurement.class), true, 2, false, false, filterRules, new MatrixQueryRule(
-				MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX,
+				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2, false,
+				false, filterRules,
+				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		targetMatrixViewer.setDatabase(db);
 		targetMatrixViewer.setShowQuickView(true);
 		targetMatrixViewer.setShowfilterSaveOptions(true);
@@ -529,7 +529,8 @@ public class PrintLabelPlugin extends EasyPluginController
 		// }
 		// } catch(Exception e) {
 		// this.setMessages(new
-		// ScreenMessage("An error occurred while retrieving animals from the database",
+		// ScreenMessage("An error occurred while retrieving animals from the
+		// database",
 		// false));
 		// }
 		// panel.add(targets);
