@@ -154,6 +154,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				measurementsToShow.add("Line");
 				measurementsToShow.add("Litter");
 				measurementsToShow.add("Location");
+				measurementsToShow.add("ResponsibleResearcher");
+				measurementsToShow.add("IvDNr");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
@@ -335,6 +337,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			this.fpMap.put("GeneState", "10_");
 			editTable.addColumn("Remark");
 			this.fpMap.put("Remark", "11_");
+			editTable.addColumn("IvDNr");
+			this.fpMap.put("IvDNr", "12_");
 
 			// these fields are only available for editing by admin.
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
@@ -524,12 +528,20 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				editTable.setCell(9, row, allGeneStateInputs);
 
 				// Remark
-				TextInput remarkInput = new TextInput(this.fpMap.get("Remark") + e.getName());
+				StringInput remarkInput = new TextInput(this.fpMap.get("Remark") + e.getName());
 				remarkInput.setId(this.fpMap.get("Remark") + e.getName());
 
 				remarkInput.setValue(getAnimalRemark(e.getName()));
 
 				editTable.setCell(10, row, remarkInput);
+
+				// IvD number
+				StringInput ivdInput = new StringInput(this.fpMap.get("IvDNr") + e.getName());
+				ivdInput.setId(this.fpMap.get("IvDNr") + e.getName());
+
+				ivdInput.setValue(getIvDNr(e.getName()));
+
+				editTable.setCell(11, row, ivdInput);
 
 				if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 				{
@@ -544,7 +556,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					// animalTypeInput.setValue(getAnimalType(e.getName()));
 					animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
 					animalTypeInput.setWidth(-1);
-					editTable.setCell(11, row, animalTypeInput);
+					editTable.setCell(12, row, animalTypeInput);
 
 					// Source
 					SelectInput sourceInput = new SelectInput(this.fpMap.get("Source") + e.getName());
@@ -556,7 +568,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					sourceInput.setValue(getAnimalSource(e.getName()));
 					sourceInput.setWidth(-1);
-					editTable.setCell(12, row, sourceInput);
+					editTable.setCell(13, row, sourceInput);
 
 					// Species
 					SelectInput speciesInput = new SelectInput(this.fpMap.get("Species") + e.getName());
@@ -567,7 +579,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					speciesInput.setValue(getAnimalSpecies(e.getName()));
 					speciesInput.setWidth(-1);
-					editTable.setCell(13, row, speciesInput);
+					editTable.setCell(14, row, speciesInput);
 
 				}
 				row++;
@@ -884,6 +896,39 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 			}
 
+			// IvD Number
+			String ivdNumber = request.getString(this.fpMap.get("IvDNr") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "IvDNr", investigationNames, invName).get(0);
+			value.setValue(ivdNumber);
+			if (value.getProtocolApplication_Id() == null)
+			{
+
+				if (ivdNumber != null && !ivdNumber.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetIvDNr", "IvDNr",
+							e.getName(), ivdNumber, null));
+				}
+			}
+			else
+			{
+				if (ivdNumber == null || ivdNumber.equals(""))
+				{
+					// delete value to make it empty
+					// FIXME: this fails when one PA is used to bundle the
+					// application of multiple / Protocols
+					// this prevents the update of a following record because of
+					// the errors thrown.
+
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setValue(responsibleResearcher);
+					db.update(value);
+				}
+			}
+
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 			{
 
@@ -1037,6 +1082,18 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		try
 		{
 			return cs.getMostRecentValueAsString(animal, "Remark");
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	public String getIvDNr(String animal)
+	{
+		try
+		{
+			return cs.getMostRecentValueAsString(animal, "IvDNr");
 		}
 		catch (Exception e)
 		{
