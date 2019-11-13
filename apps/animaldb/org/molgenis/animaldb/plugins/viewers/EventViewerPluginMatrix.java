@@ -83,8 +83,8 @@ public class EventViewerPluginMatrix extends EasyPluginController
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.getMessages().add(
-					new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
+			this.getMessages()
+					.add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
 
 		return Show.SHOW_MAIN;
@@ -143,8 +143,8 @@ public class EventViewerPluginMatrix extends EasyPluginController
 					// The actual value
 					String currentValueContents = "<strong>";
 					int featureId = currentValue.getFeature_Id();
-					Measurement currentFeature = db.find(Measurement.class,
-							new QueryRule(Measurement.ID, Operator.EQUALS, featureId)).get(0);
+					Measurement currentFeature = db
+							.find(Measurement.class, new QueryRule(Measurement.ID, Operator.EQUALS, featureId)).get(0);
 					if (currentFeature.getDataType().equals("xref"))
 					{
 						currentValueContents += currentValue.getRelation_Name();
@@ -188,12 +188,14 @@ public class EventViewerPluginMatrix extends EasyPluginController
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX,
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
-						1, false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
-								Measurement.NAME, Operator.IN, measurementsToShow));
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 1,
+						false, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME,
+								Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				targetMatrixViewer.setShowQuickView(true);
 				targetMatrixViewer.setShowfilterSaveOptions(true);
+				// enable filter and sort on visible records
+				targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 				div.add(targetMatrixViewer);
 
 				ActionInput selectButton = new ActionInput("Select", "", "Select");
@@ -205,8 +207,8 @@ public class EventViewerPluginMatrix extends EasyPluginController
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				this.getMessages().add(
-						new ScreenMessage("Something went wrong while loading matrix: " + e.getMessage(), false));
+				this.getMessages()
+						.add(new ScreenMessage("Something went wrong while loading matrix: " + e.getMessage(), false));
 			}
 		}
 		else

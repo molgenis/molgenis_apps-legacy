@@ -3,8 +3,10 @@ package org.molgenis.animaldb.plugins.administration;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
@@ -31,7 +33,7 @@ public class VWAReport4 extends AnimalDBReport
 	}
 
 	@Override
-	public void makeReport(int year, String type)
+	public void makeReport(int year, String type, List<String> targetNameList)
 	{
 		try
 		{
@@ -39,19 +41,85 @@ public class VWAReport4 extends AnimalDBReport
 			this.type = type;
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-			String startOfYearString = year + "-01-01 00:00:00";
+			String startOfYearString = (year - 1) + "-12-31 23:59:59";
 			Date startOfYear = sdf.parse(startOfYearString);
-			String endOfYearString = (year + 1) + "-01-01 00:00:00";
+			String endOfYearString = (year) + "-12-31 23:59:59";
 			Date endOfYear = sdf.parse(endOfYearString);
 
 			ArrayList<ArrayList<Integer>> rowList = new ArrayList<ArrayList<Integer>>();
 
 			// Go through all animals owned by the current user
 			List<String> investigationNames = ct.getOwnUserInvestigationNames(userName);
-			List<String> targetNameList = ct.getAllObservationTargetNames("Individual", false, investigationNames);
+			List<Integer> investigationIDs = new ArrayList<Integer>();
+			for (String each : investigationNames)
+			{
+				investigationIDs.add(ct.getInvestigationId(each));
+			}
+			investigationIDs.add(ct.getInvestigationId("System"));
+
+			// if not prefiltered: filter animals by addtional criteria:
+
+			if (targetNameList == null)
+			{
+				targetNameList = ct.getAllObservationTargetNames("Individual", false, investigationNames);
+
+				List<String> typeActiveFilteredIndNames = new ArrayList<String>();
+				List<String> actEndTimeFilteredIndNames = new ArrayList<String>();
+
+				List<ObservedValue> anTypeValues = ct.getAllObservedValues(ct.getMeasurementId("AnimalType"),
+						investigationIDs);
+
+				// filter vals by animal type
+				for (ObservedValue each : anTypeValues)
+				{
+					if (each.getValue().startsWith(type))
+					{
+						typeActiveFilteredIndNames.add(each.getTarget_Name());
+					}
+				}
+
+				// filter vals by active enddate
+				List<ObservedValue> actEndTimeValues = ct.getAllObservedValues(ct.getMeasurementId("Active"),
+						investigationIDs);
+
+				for (ObservedValue each : actEndTimeValues)
+				{
+					if (!each.getTime().after(endOfYear))
+					{
+						if (each.getEndtime() == null)
+						{
+							if (!each.getTarget_Name().startsWith("LT") && !each.getTarget_Name().startsWith("PG"))
+							{
+								typeActiveFilteredIndNames.add(each.getTarget_Name());
+							}
+
+						}
+						else if (!each.getEndtime().before(startOfYear))
+						{
+							if (!each.getTarget_Name().startsWith("LT") && !each.getTarget_Name().startsWith("PG"))
+							{
+								typeActiveFilteredIndNames.add(each.getTarget_Name());
+							}
+						}
+					}
+				}
+
+				Set<String> setToReturn = new HashSet();
+				Set<String> set1 = new HashSet();
+
+				for (String each : typeActiveFilteredIndNames)
+				{
+					if (!set1.add(each))
+					{
+						setToReturn.add(each);
+					}
+				}
+				targetNameList = new ArrayList(setToReturn);
+			}
+
 			for (String animalName : targetNameList)
 			{
-				// Check AnimalType
+				// // Check AnimalType
 				String animalType = "";
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
@@ -60,6 +128,7 @@ public class VWAReport4 extends AnimalDBReport
 				if (valueList.size() > 0)
 				{
 					animalType = valueList.get(0).getValue();
+
 					// Ignore animals that are not of the correct type for this
 					// report
 					if ((animalType.equals("A. Gewoon dier") && !type.equals("A"))

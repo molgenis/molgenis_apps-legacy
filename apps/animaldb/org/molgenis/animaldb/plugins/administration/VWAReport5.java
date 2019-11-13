@@ -32,7 +32,7 @@ public class VWAReport5 extends AnimalDBReport
 	}
 
 	@Override
-	public void makeReport(int year, String type)
+	public void makeReport(int year, String type, List<String> targetNameList)
 	{
 		try
 		{

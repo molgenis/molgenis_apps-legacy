@@ -85,7 +85,7 @@ It should be used via 'import' plus passing of properties
 		</copy>
 
 		<!-- call the generator -->
-		<java maxmemory="512m" classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+		<java maxmemory="1024m" classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<classpath refid="molgenis.classpath" />
 			<classpath refid="app.class.path" />
 			<arg value="${app_properties}" />
@@ -163,7 +163,7 @@ It should be used via 'import' plus passing of properties
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
-		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true" includeantruntime="false">
+		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="512m" memorymaximumsize="1024m" debug="true" includeantruntime="false">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -440,7 +440,7 @@ It should be used via 'import' plus passing of properties
 	</target>
 
 	<target name="run" description="Start the application on port 8080">
-		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+		<java maxmemory="1024m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
 				<path refid="molgenis.classpath" />
 				<path location="${build.molgenis.dir}" />
@@ -450,7 +450,7 @@ It should be used via 'import' plus passing of properties
 	</target>
 
 	<target name="runOn" description="Start the application on a specified port, e.g. ant -f build_myapp.xml runOn -Dport=9000">
-		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+		<java maxmemory="1024m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<arg value="${port}" />
 			<classpath>
 				<path refid="molgenis.classpath" />

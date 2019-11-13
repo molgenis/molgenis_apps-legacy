@@ -44,8 +44,9 @@ import filehandling.generic.PerformUpload;
 /**
  * @author erikroos
  * 
- *         Changelog <li>MS: Added constants to replace the String values that
- *         lead to so many typos. Can't we autogenerate all these services?</li>
+ *         Changelog
+ *         <li>MS: Added constants to replace the String values that lead to so
+ *         many typos. Can't we autogenerate all these services?</li>
  */
 public class CommonService
 {
@@ -120,8 +121,8 @@ public class CommonService
 																									// it
 																									// 'unique'
 		// if the name exists: delete the old one!
-		List<AnimalDbFile> afList = db.find(AnimalDbFile.class, new QueryRule(AnimalDbFile.NAME, Operator.EQUALS,
-				fileName));
+		List<AnimalDbFile> afList = db.find(AnimalDbFile.class,
+				new QueryRule(AnimalDbFile.NAME, Operator.EQUALS, fileName));
 		if (afList.size() == 1) // if there are more: you are in really big
 								// trouble because name is unique constraint!
 		{
@@ -364,8 +365,8 @@ public class CommonService
 	 * not found.
 	 * 
 	 */
-	public List<ObservationTarget> getObservationTargetsbyId(List<Integer> idList) throws DatabaseException,
-			ParseException
+	public List<ObservationTarget> getObservationTargetsbyId(List<Integer> idList)
+			throws DatabaseException, ParseException
 	{
 		if (idList.size() > 0)
 		{
@@ -473,8 +474,8 @@ public class CommonService
 		return newInd;
 	}
 
-	public Individual createIndividual(String investigationName, String individualName) throws DatabaseException,
-			ParseException, IOException
+	public Individual createIndividual(String investigationName, String individualName)
+			throws DatabaseException, ParseException, IOException
 	{
 		Individual newInd = new Individual();
 		newInd.setInvestigation_Name(investigationName);
@@ -662,8 +663,7 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservationTarget> getObservationTargets(List<String> nameList) throws DatabaseException,
-			ParseException
+	public List<ObservationTarget> getObservationTargets(List<String> nameList) throws DatabaseException, ParseException
 	{
 		if (nameList.size() > 0)
 		{
@@ -698,6 +698,7 @@ public class CommonService
 			return observationTargetNameMap.get(targetId);
 		}
 		return getObservationTargetById(targetId).getName();
+
 	}
 
 	/**
@@ -727,8 +728,8 @@ public class CommonService
 	/**
 	 * Creates a Location and adds it to the database.
 	 */
-	public int makeLocation(String investigationName, String locationName, String userName) throws DatabaseException,
-			ParseException, IOException
+	public int makeLocation(String investigationName, String locationName, String userName)
+			throws DatabaseException, ParseException, IOException
 	{
 		Location locationToAdd = new Location();
 		locationToAdd.setName(locationName);
@@ -746,20 +747,21 @@ public class CommonService
 	/**
 	 * Creates a Panel and adds it to the database.
 	 */
-	public int createPanel(String investigationName, String panelName) throws DatabaseException, IOException,
-			ParseException
+	public int createPanel(String investigationName, String panelName)
+			throws DatabaseException, IOException, ParseException
 	{
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation_Name(investigationName);
 		// make admin the default owner.
-		newGroup.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
+		newGroup.setOwns(
+				db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
 		db.add(newGroup);
 		return newGroup.getId();
 	}
 
-	public int createPanelOwnedByUser(String investigationName, String panelName, int userId) throws DatabaseException,
-			IOException, ParseException
+	public int createPanelOwnedByUser(String investigationName, String panelName, int userId)
+			throws DatabaseException, IOException, ParseException
 	{
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
@@ -774,8 +776,8 @@ public class CommonService
 	 * Creates a Panel but does NOT add it to the database. Uses Investigation
 	 * and User Names so it can be used with lists.
 	 */
-	public Panel preparePanel(String investigationName, String panelName) throws DatabaseException, IOException,
-			ParseException
+	public Panel preparePanel(String investigationName, String panelName)
+			throws DatabaseException, IOException, ParseException
 	{
 		if (panelName == null)
 		{
@@ -784,7 +786,8 @@ public class CommonService
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation_Name(investigationName);
-		newGroup.setOwns(db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
+		newGroup.setOwns(
+				db.find(MolgenisUser.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin")).get(0));
 		return newGroup;
 	}
 
@@ -927,8 +930,8 @@ public class CommonService
 	 * Makes a new ProtocolApplication, adds it to the database and return its
 	 * name.
 	 */
-	public String makeProtocolApplication(String investigationName, String protocolName) throws DatabaseException,
-			IOException, ParseException
+	public String makeProtocolApplication(String investigationName, String protocolName)
+			throws DatabaseException, IOException, ParseException
 	{
 		ProtocolApplication pa = createProtocolApplication(investigationName, protocolName);
 		db.add(pa);
@@ -944,8 +947,8 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ProtocolApplication> getAllProtocolApplicationsByType(String protocolName) throws DatabaseException,
-			ParseException
+	public List<ProtocolApplication> getAllProtocolApplicationsByType(String protocolName)
+			throws DatabaseException, ParseException
 	{
 		Query<ProtocolApplication> q = db.query(ProtocolApplication.class);
 		q.addRules(new QueryRule(ProtocolApplication.PROTOCOL_NAME, Operator.EQUALS, protocolName));
@@ -971,8 +974,8 @@ public class CommonService
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public ObservedValue createObservedValue(String investigationName, String protappName, Date starttime,
-			Date endtime, String featureName, String subjectTargetName, String valueString, String targetName)
+	public ObservedValue createObservedValue(String investigationName, String protappName, Date starttime, Date endtime,
+			String featureName, String subjectTargetName, String valueString, String targetName)
 			throws DatabaseException, IOException, ParseException
 	{
 		ObservedValue newValue = new ObservedValue();
@@ -1039,8 +1042,8 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public String getMostRecentValueAsString(String targetName, String featureName) throws DatabaseException,
-			ParseException
+	public String getMostRecentValueAsString(String targetName, String featureName)
+			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
@@ -1085,8 +1088,8 @@ public class CommonService
 	 * the ObservationTarget related to in the most recent ObservedValue, based
 	 * on the timestamp of its ProtocolApplication. Returns null if none found.
 	 */
-	public String getMostRecentValueAsXrefName(String targetName, String featureName) throws DatabaseException,
-			ParseException
+	public String getMostRecentValueAsXrefName(String targetName, String featureName)
+			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
@@ -1238,8 +1241,8 @@ public class CommonService
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public int makeOntologyTerm(String name, int ontologyId, String description) throws DatabaseException, IOException,
-			ParseException
+	public int makeOntologyTerm(String name, int ontologyId, String description)
+			throws DatabaseException, IOException, ParseException
 	{
 		OntologyTerm newOnt = new OntologyTerm();
 		newOnt.setName(name);
@@ -1274,8 +1277,8 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Measurement> getAllMeasurements(List<String> investigationNames) throws DatabaseException,
-			ParseException
+	public List<Measurement> getAllMeasurements(List<String> investigationNames)
+			throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		q.sortASC(Measurement.ID);
@@ -1339,8 +1342,8 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservableFeature> getAllObservableFeatures(List<String> investigationNames) throws DatabaseException,
-			ParseException
+	public List<ObservableFeature> getAllObservableFeatures(List<String> investigationNames)
+			throws DatabaseException, ParseException
 	{
 		Query<ObservableFeature> q = db.query(ObservableFeature.class);
 		q.sortASC(ObservableFeature.ID);
@@ -1498,8 +1501,8 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public void makeCategory(String code, String desc, String feat) throws DatabaseException, ParseException,
-			IOException
+	public void makeCategory(String code, String desc, String feat)
+			throws DatabaseException, ParseException, IOException
 	{
 		Category newCode = new Category();
 		newCode.setName(feat + "_" + code);
@@ -1526,8 +1529,8 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public Category createCategory(String code, String desc, String feat) throws DatabaseException, ParseException,
-			IOException
+	public Category createCategory(String code, String desc, String feat)
+			throws DatabaseException, ParseException, IOException
 	{
 		Category newCode = new Category();
 		newCode.setName(feat + "_" + code);
@@ -1766,8 +1769,8 @@ public class CommonService
 	 * object in the database.
 	 */
 	public List<ObservedValue> getObservedValuesByTargetAndFeature(String targetName, String measurementName,
-			List<String> investigationNames, String investigationToBeAddedToName) throws DatabaseException,
-			ParseException
+			List<String> investigationNames, String investigationToBeAddedToName)
+			throws DatabaseException, ParseException
 	{
 		List<String> measurementNameList = new ArrayList<String>();
 		measurementNameList.add(measurementName);
@@ -1923,8 +1926,8 @@ public class CommonService
 			{
 				Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, customNameFeatureId));
-				valueQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, getAllObservationTargetNames(
-						null, false, invNameList)));
+				valueQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN,
+						getAllObservationTargetNames(null, false, invNameList)));
 				List<ObservedValue> valueList = valueQuery.find();
 				for (ObservedValue value : valueList)
 				{
@@ -1999,8 +2002,8 @@ public class CommonService
 	public int getHighestNumberForPrefix(String prefix) throws DatabaseException
 	{
 
-		List<NamePrefix> prefixList = db.find(NamePrefix.class, new QueryRule(NamePrefix.PREFIX, Operator.EQUALS,
-				prefix));
+		List<NamePrefix> prefixList = db.find(NamePrefix.class,
+				new QueryRule(NamePrefix.PREFIX, Operator.EQUALS, prefix));
 		if (prefixList != null && prefixList.size() > 0)
 		{
 			return prefixList.get(0).getHighestNumber();
@@ -2038,8 +2041,8 @@ public class CommonService
 	public void updatePrefix(String targetType, String prefix, int highestNr) throws DatabaseException
 	{
 
-		List<NamePrefix> prefixList = db.find(NamePrefix.class, new QueryRule(NamePrefix.PREFIX, Operator.EQUALS,
-				prefix));
+		List<NamePrefix> prefixList = db.find(NamePrefix.class,
+				new QueryRule(NamePrefix.PREFIX, Operator.EQUALS, prefix));
 		if (prefixList != null && prefixList.size() > 0)
 		{
 			// Update

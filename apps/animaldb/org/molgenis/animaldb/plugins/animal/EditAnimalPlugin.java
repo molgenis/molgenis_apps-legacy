@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.molgenis.animaldb.commonservice.CommonService;
+import org.molgenis.animaldb.plugins.administration.AnimalDBReport;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -41,18 +42,22 @@ import org.molgenis.util.Entity;
  * 
  * <li>Each user request is handled by its own method based action=methodName.
  * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
- * user <li>ViewFamilyModel holds application state and business logic on top of
- * domain model. Get it via this.getModel()/setModel(..) <li>ViewFamilyView
- * holds the template to show the layout. Get/set it via
+ * user
+ * <li>ViewFamilyModel holds application state and business logic on top of
+ * domain model. Get it via this.getModel()/setModel(..)
+ * <li>ViewFamilyView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
 public class EditAnimalPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -7609580651170222454L;
 	private List<Integer> animalIdList;
+	private List<Integer> lastYearsList;
 	private String action = "init";
 	private String info = "";
 	private CommonService cs = CommonService.getInstance();
+	private Nvwa4ReportAction nvwa4Action = null;
+	private AnimalDBReport report = null;
 	MatrixViewer animalMatrixViewer = null;
 	static String ANIMALMATRIX = "animalmatrix";
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -64,7 +69,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	private List<ObservationTarget> sourceList;
 	private List<Category> animalTypeList;
 	private List<String> colorList;
-	private List<String> earmarkList;
+	private List<Category> earmarkList;
 	private List<String> geneModList;
 	private List<String> geneStateList;
 	private List<Individual> listOfSelectedIndividuals = new ArrayList<Individual>();
@@ -75,6 +80,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public EditAnimalPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+
 	}
 
 	public String getCustomHtmlHeaders()
@@ -125,6 +131,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		this.nvwa4Action = new Nvwa4ReportAction(this.getLogin().getUserName());
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		if (animalMatrixViewer != null)
@@ -147,17 +154,19 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				measurementsToShow.add("Line");
 				measurementsToShow.add("Litter");
 				measurementsToShow.add("Location");
+				measurementsToShow.add("ResponsibleResearcher");
+				measurementsToShow.add("IvDNr");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME,
 						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, cs
-						.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty,
+						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS, "Alive"));
 				animalMatrixViewer = new MatrixViewer(this, ANIMALMATRIX,
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true,
-						2, true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader,
-								Measurement.NAME, Operator.IN, measurementsToShow));
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), true, 2,
+						true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME,
+								Operator.IN, measurementsToShow));
 				animalMatrixViewer.setFilterVisibility(false);
 				animalMatrixViewer.setShowQuickView(true);
 				animalMatrixViewer.setShowfilterSaveOptions(true);
@@ -182,7 +191,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			this.setAnimalTypeList(cs.getAllCodesForFeature("AnimalType"));
 			this.setSourceList(cs.getAllMarkedPanels("Source", investigationNames));
 			this.setColorList(cs.getAllCodesForFeatureAsStrings("Color"));
-			this.setEarmarkList(cs.getAllCodesForFeatureAsStrings("Earmark"));
+			this.setEarmarkList(cs.getAllCodesForFeature("Earmark"));
 			this.setGeneModList(cs.getAllCodesForFeatureAsStrings("GeneModification"));
 			this.setGeneStateList(cs.getAllCodesForFeatureAsStrings("GeneState"));
 		}
@@ -266,6 +275,27 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				saveAnimalToDB(db, request, listOfSelectedIndividuals);
 			}
 
+			if (action.equals("nvwa4Animals"))
+			{
+
+				this.lastYearsList = nvwa4Action.getLastYearsList();
+
+			}
+			if (action.equals("generateNvwa4Report"))
+			{
+				nvwa4Action.ReadForm(request);
+				List<Individual> indList = (List<Individual>) animalMatrixViewer.getSelection(db);
+				List<String> targetNames = new ArrayList<String>();
+				for (Individual ind : indList)
+				{
+					targetNames.add(ind.getName());
+				}
+
+				this.report = nvwa4Action.createReport4(targetNames);
+				action = "nvwa4ShowReport";
+
+			}
+
 		}
 		catch (Exception e)
 		{
@@ -307,6 +337,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			this.fpMap.put("GeneState", "10_");
 			editTable.addColumn("Remark");
 			this.fpMap.put("Remark", "11_");
+			editTable.addColumn("IvDNr");
+			this.fpMap.put("IvDNr", "12_");
 
 			// these fields are only available for editing by admin.
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
@@ -332,8 +364,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				// add a row in the eit table for each selected animal.
 				editTable.addRow(e.getName());
 
-				List<ObservedValue> listObservedValues = db.find(ObservedValue.class, new QueryRule(
-						ObservedValue.TARGET_NAME, Operator.EQUALS, e.getName()));
+				List<ObservedValue> listObservedValues = db.find(ObservedValue.class,
+						new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, e.getName()));
 				for (ObservedValue val : listObservedValues)
 				{
 					observableFeat.put(val.getFeature_Name(), val.getValue());
@@ -383,17 +415,17 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				dateOfBirthInput.setId(this.fpMap.get("DateOfBirth") + e.getName());
 				dateOfBirthInput.setDateFormat("yyyy-MM-dd");
 				dateOfBirthInput.setValue(getAnimalBirthDate(e.getName()));
-				dateOfBirthInput
-						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				dateOfBirthInput.setJqueryproperties(
+						"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 				editTable.setCell(2, row, dateOfBirthInput);
 
 				// Earmark
 				SelectInput earmarkInput = new SelectInput(this.fpMap.get("Earmark") + e.getName());
 				earmarkInput.setId(this.fpMap.get("Earmark") + e.getName());
 
-				for (String earmark : this.earmarkList)
+				for (Category earmark : this.earmarkList)
 				{
-					earmarkInput.addOption(earmark, earmark);
+					earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
 				}
 				earmarkInput.addOption("", "");
 				earmarkInput.setValue(getAnimalEarmark(e.getName()));
@@ -442,8 +474,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				weandateInput.setId(this.fpMap.get("WeanDate") + e.getName());
 				weandateInput.setDateFormat("yyyy-MM-dd");
 				weandateInput.setValue(getAnimalWeanDate(e.getName()));
-				weandateInput
-						.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+				weandateInput.setJqueryproperties(
+						"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 				editTable.setCell(7, row, weandateInput);
 
 				// GeneModification
@@ -453,8 +485,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				String allGeneModInputs = "";
 				for (ObservedValue value : allValuesGeneMod)
 				{
-					SelectInput geneModInput = new SelectInput(this.fpMap.get("GeneModification") + e.getName() + "_"
-							+ countGeneMod);
+					SelectInput geneModInput = new SelectInput(
+							this.fpMap.get("GeneModification") + e.getName() + "_" + countGeneMod);
 					geneModInput.setId(this.fpMap.get("GeneModification") + e.getName() + "_" + countGeneMod);
 
 					for (String geneMod : this.geneModList)
@@ -479,8 +511,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				String allGeneStateInputs = "";
 				for (ObservedValue value : allValues)
 				{
-					SelectInput geneStateInput = new SelectInput(this.fpMap.get("GeneState") + e.getName() + "_"
-							+ countGeneState);
+					SelectInput geneStateInput = new SelectInput(
+							this.fpMap.get("GeneState") + e.getName() + "_" + countGeneState);
 					geneStateInput.setId(this.fpMap.get("GeneState") + e.getName() + "_" + countGeneState);
 
 					for (String geneMod : this.geneStateList)
@@ -496,12 +528,20 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				editTable.setCell(9, row, allGeneStateInputs);
 
 				// Remark
-				TextInput remarkInput = new TextInput(this.fpMap.get("Remark") + e.getName());
+				StringInput remarkInput = new TextInput(this.fpMap.get("Remark") + e.getName());
 				remarkInput.setId(this.fpMap.get("Remark") + e.getName());
 
 				remarkInput.setValue(getAnimalRemark(e.getName()));
 
 				editTable.setCell(10, row, remarkInput);
+
+				// IvD number
+				StringInput ivdInput = new StringInput(this.fpMap.get("IvDNr") + e.getName());
+				ivdInput.setId(this.fpMap.get("IvDNr") + e.getName());
+
+				ivdInput.setValue(getIvDNr(e.getName()));
+
+				editTable.setCell(11, row, ivdInput);
 
 				if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 				{
@@ -516,7 +556,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					// animalTypeInput.setValue(getAnimalType(e.getName()));
 					animalTypeInput.setValue(cs.getMostRecentValueAsString(e.getName(), "AnimalType"));
 					animalTypeInput.setWidth(-1);
-					editTable.setCell(11, row, animalTypeInput);
+					editTable.setCell(12, row, animalTypeInput);
 
 					// Source
 					SelectInput sourceInput = new SelectInput(this.fpMap.get("Source") + e.getName());
@@ -528,7 +568,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					sourceInput.setValue(getAnimalSource(e.getName()));
 					sourceInput.setWidth(-1);
-					editTable.setCell(12, row, sourceInput);
+					editTable.setCell(13, row, sourceInput);
 
 					// Species
 					SelectInput speciesInput = new SelectInput(this.fpMap.get("Species") + e.getName());
@@ -539,7 +579,7 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 					}
 					speciesInput.setValue(getAnimalSpecies(e.getName()));
 					speciesInput.setWidth(-1);
-					editTable.setCell(13, row, speciesInput);
+					editTable.setCell(14, row, speciesInput);
 
 				}
 				row++;
@@ -570,8 +610,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 			// Background
 			String backgroundName = request.getString(this.fpMap.get("Background") + e.getName());
-			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Background", investigationNames, invName).get(
-					0);
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Background", investigationNames, invName)
+					.get(0);
 
 			if (value.getProtocolApplication_Id() == null)
 			{
@@ -721,9 +761,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				if (responsibleResearcher != null && !responsibleResearcher.equals(""))
 				{
-					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null,
-							"SetResponsibleResearcher", "ResponsibleResearcher", e.getName(), responsibleResearcher,
-							null));
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetResponsibleResearcher",
+							"ResponsibleResearcher", e.getName(), responsibleResearcher, null));
 				}
 			}
 			else
@@ -786,8 +825,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 			{
 				modVal = allValuesGeneModification.get(cntGenoType);
 				stateVal = allValuesGeneState.get(cntGenoType);
-				String geneModification = request.getString((this.fpMap.get("GeneModification")) + e.getName() + "_"
-						+ cntGenoType);
+				String geneModification = request
+						.getString((this.fpMap.get("GeneModification")) + e.getName() + "_" + cntGenoType);
 				String geneState = request.getString((this.fpMap.get("GeneState")) + e.getName() + "_" + cntGenoType);
 
 				if (modVal.getProtocolApplication_Id() == null)
@@ -857,6 +896,39 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				}
 			}
 
+			// IvD Number
+			String ivdNumber = request.getString(this.fpMap.get("IvDNr") + e.getName());
+			value = cs.getObservedValuesByTargetAndFeature(e.getName(), "IvDNr", investigationNames, invName).get(0);
+			value.setValue(ivdNumber);
+			if (value.getProtocolApplication_Id() == null)
+			{
+
+				if (ivdNumber != null && !ivdNumber.equals(""))
+				{
+					db.add(cs.createObservedValueWithProtocolApplication(invName, now, null, "SetIvDNr", "IvDNr",
+							e.getName(), ivdNumber, null));
+				}
+			}
+			else
+			{
+				if (ivdNumber == null || ivdNumber.equals(""))
+				{
+					// delete value to make it empty
+					// FIXME: this fails when one PA is used to bundle the
+					// application of multiple / Protocols
+					// this prevents the update of a following record because of
+					// the errors thrown.
+
+					db.remove(value);
+					db.remove(cs.getProtocolApplicationByName(value.getProtocolApplication_Name()));
+				}
+				else
+				{
+					value.setValue(responsibleResearcher);
+					db.update(value);
+				}
+			}
+
 			if (this.getLogin().getUserName().equalsIgnoreCase("admin"))
 			{
 
@@ -880,8 +952,8 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 
 				// Source
 				String sourceName = request.getString(this.fpMap.get("Source") + e.getName());
-				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Source", investigationNames, invName).get(
-						0);
+				value = cs.getObservedValuesByTargetAndFeature(e.getName(), "Source", investigationNames, invName)
+						.get(0);
 				value.setRelation(cs.getObservationTargetByName(sourceName).getId());
 
 				if (value.getProtocolApplication_Id() == null)
@@ -906,6 +978,11 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 				db.update(value);
 			}
 		}
+	}
+
+	public void makeNvwa4Report()
+	{
+
 	}
 
 	public void setAction(String action)
@@ -1005,6 +1082,18 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		try
 		{
 			return cs.getMostRecentValueAsString(animal, "Remark");
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	public String getIvDNr(String animal)
+	{
+		try
+		{
+			return cs.getMostRecentValueAsString(animal, "IvDNr");
 		}
 		catch (Exception e)
 		{
@@ -1199,12 +1288,12 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 		this.colorList = colorList;
 	}
 
-	public List<String> getEarmarkList()
+	public List<Category> getEarmarkList()
 	{
 		return earmarkList;
 	}
 
-	public void setEarmarkList(List<String> earmarkList)
+	public void setEarmarkList(List<Category> earmarkList)
 	{
 		this.earmarkList = earmarkList;
 	}
@@ -1227,6 +1316,26 @@ public class EditAnimalPlugin extends PluginModel<Entity>
 	public void setGeneStateList(List<String> geneStateList)
 	{
 		this.geneStateList = geneStateList;
+	}
+
+	public List<Integer> getLastYearsList()
+	{
+		return lastYearsList;
+	}
+
+	public void setLastYearsList(List<Integer> lastYearsList)
+	{
+		this.lastYearsList = lastYearsList;
+	}
+
+	public AnimalDBReport getReport()
+	{
+		return report;
+	}
+
+	public void setReport(AnimalDBReport report)
+	{
+		this.report = report;
 	}
 
 }

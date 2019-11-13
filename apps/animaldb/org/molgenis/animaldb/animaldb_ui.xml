@@ -209,9 +209,9 @@
 					<form name="files" entity="AnimalDbFile" view="list" label="Files">
 						<plugin name="Viewer"
 							type="org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewer" />
-							
 					</form>
 					<form name="matrixfilters" entity="SavedMatrixFilters" view="list" label="Saved Matrix filters" />
+				
 				</menu>
 				<menu name="errorcorrectmenu" position="top_left" label="Correct errors">
 				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: 
@@ -233,6 +233,8 @@
 				
 				<plugin label="File storage" name="FileStorage"
 					type="plugins.system.settings.Settings" />
+				<plugin name="TemporaryTools"
+				type="org.molgenis.animaldb.plugins.system.TemporaryTools" label="temporary tools" />	
 			</menu>
 		</menu>
 

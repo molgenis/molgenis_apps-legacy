@@ -357,6 +357,13 @@ public class AnimalImporter
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), now, null, "GeneState",
 						animalName, gs1String, null));
 			}
+			// convert Remarks -> Remarks
+			String chipNumberString = tuple.getString("ChipNumber");
+			if (chipNumberString != null)
+			{
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetChipNumber"), now, null,
+						"ChipNumber", animalName, chipNumberString, null));
+			}
 
 			else
 			{
@@ -398,7 +405,10 @@ public class AnimalImporter
 				{
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemovalDate"), remDate, null,
 							"RemovalDate", animalName, remDateString, null));
+
 				}
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFacilityExitDate"), remDate, null,
+						"FacilityExitDate", animalName, remDateString, null));
 			}
 
 			// rem cause -> Removal
@@ -436,6 +446,8 @@ public class AnimalImporter
 			// add animal with state to active map and create the active value
 			activeMap.put(animalName, ct.createObservedValue(invName, appMap.get("SetActive"), startDate, remDate,
 					"Active", animalName, state, null));
+			valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFacilityEntryDate"), remDate, null,
+					"FacilityEntryDate", animalName, newDateOnlyFormat.format(startDate), null));
 
 			// convert Source -> Source
 			String sourceName = tuple.getString("Source");
@@ -775,6 +787,8 @@ public class AnimalImporter
 
 		makeProtocolApplication("SetImportTimestamp");
 		makeProtocolApplication("SetActive");
+		makeProtocolApplication("SetFacilityEntryDate");
+		makeProtocolApplication("SetFacilityExitDate");
 		makeProtocolApplication("SetRemoval");
 		makeProtocolApplication("SetDateOfBirth");
 		makeProtocolApplication("SetEarmark");

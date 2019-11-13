@@ -46,6 +46,7 @@ public class AddAnimalPlugin extends EasyPluginController
 	private CommonService ct = CommonService.getInstance();
 	// Screen components:
 	public StringInput researcher = null;
+	public StringInput ivd = null;
 	public SelectInput species = null;
 	public SelectInput sex = null;
 	public SelectInput animaltype = null;
@@ -78,9 +79,9 @@ public class AddAnimalPlugin extends EasyPluginController
 	private Date entryDate = null;
 	private String animalType = null;
 	private String resResearcher = null;
+	private String IvDNumber = null;
 	private List<String> genes = null;
 	private List<String> genestates = null;
-
 	public DateInput fakedate = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
@@ -94,7 +95,8 @@ public class AddAnimalPlugin extends EasyPluginController
 				+ "<script src=\"res/scripts/custom/addanimals.js\" type=\"text/javascript\" language=\"javascript\"></script>\n"
 				+ "<script src=\"res/jquery-plugins/multiselect/js/ui.multiselect.js\" type=\"text/javascript\" language=\"javascript\"></script>\n"
 				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/multiselect/css/ui.multiselect.css\">\n";
-		// "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/multiselect/css/common.css\">\n";
+		// "<link rel=\"stylesheet\" style=\"text/css\"
+		// href=\"res/jquery-plugins/multiselect/css/common.css\">\n";
 		// Moved the stuff that's really needed from common.css to
 		// ui.multiselect.css
 	}
@@ -134,6 +136,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		entryDate = null;
 		animalType = null;
 		resResearcher = null;
+		IvDNumber = null;
 		genes = null;
 		genestates = null;
 	}
@@ -274,6 +277,11 @@ public class AddAnimalPlugin extends EasyPluginController
 		{
 			resResearcher = researcher.getValue();
 		}
+		// IvD number
+		if (ivd.getObject() != null)
+		{
+			IvDNumber = ivd.getValue();
+		}
 		// Location
 		if (location.getObject() != null)
 		{
@@ -407,8 +415,10 @@ public class AddAnimalPlugin extends EasyPluginController
 		protocolNameList.add("SetGenotype");
 		protocolNameList.add("SetDateOfBirth");
 		protocolNameList.add("SetResponsibleResearcher");
+		protocolNameList.add("SetIvDNr");
 		protocolNameList.add("SetLocation");
-		for (int j = 0; j < 11; j++)
+		protocolNameList.add("SetFacilityEntryDate");
+		for (int j = 0; j < 13; j++)
 		{
 			ProtocolApplication newApp = ct.createProtocolApplication(invName, protocolNameList.get(j));
 			appsToAddList.add(newApp);
@@ -427,16 +437,26 @@ public class AddAnimalPlugin extends EasyPluginController
 		featureNameList.add("GeneState");
 		featureNameList.add("DateOfBirth");
 		featureNameList.add("ResponsibleResearcher");
+		featureNameList.add("IvDNr");
 		featureNameList.add("Location");
+		featureNameList.add("FacilityEntryDate");
 		// Make all values
 		int animalCnt = 0;
 		for (Individual animal : animalsToAddList)
 		{
 			String animalName = animal.getName();
+			// FIXME: active start/enddates are deprecated, and replaced by
+			// facility start/exit date observed values, but leave them for now.
 			// Set Active, with (start)time = entrydate and endtime = null
 			ProtocolApplication app = appsToAddList.get(0);
 			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, featureNameList.get(0),
 					animalName, "Alive", null));
+
+			// Set facility entry date
+			app = appsToAddList.get(11);
+			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, featureNameList.get(13),
+					animalName, this.dbFormat.format(entryDate), null));
+
 			// Set species
 			app = appsToAddList.get(1);
 			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, featureNameList.get(1),
@@ -510,12 +530,19 @@ public class AddAnimalPlugin extends EasyPluginController
 				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null,
 						featureNameList.get(10), animalName, resResearcher, null));
 			}
-			// Set location
-			if (locName != null && !locName.equals(""))
+			// Set IvD number
+			if (IvDNumber != null)
 			{
 				app = appsToAddList.get(10);
 				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null,
-						featureNameList.get(11), animalName, null, locName));
+						featureNameList.get(11), animalName, IvDNumber, null));
+			}
+			// Set location
+			if (locName != null && !locName.equals(""))
+			{
+				app = appsToAddList.get(11);
+				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null,
+						featureNameList.get(12), animalName, null, locName));
 			}
 			animalCnt++;
 		}
@@ -592,8 +619,8 @@ public class AddAnimalPlugin extends EasyPluginController
 		{
 			animaltype.addOption(c.getDescription(), c.getDescription());
 		}
-		animaltype
-				.setDescription("Give the type of the new animal(s). Select type 2 (GMO) to modify the genotype of the animal(s).");
+		animaltype.setDescription(
+				"Give the type of the new animal(s). Select type 2 (GMO) to modify the genotype of the animal(s).");
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");
 		animaltype.setNillable(false);
 		if (animalType != null)
@@ -605,8 +632,8 @@ public class AddAnimalPlugin extends EasyPluginController
 		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setDescription("The date of birth of the animal(s).");
 		birthdate.setDateFormat("yyyy-MM-dd");
-		birthdate
-				.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		birthdate.setJqueryproperties(
+				"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 		birthdate.setValue(null);
 		if (birthDate != null)
 		{
@@ -616,17 +643,17 @@ public class AddAnimalPlugin extends EasyPluginController
 		entrydate = new DateInput("entrydate");
 		entrydate.setLabel("Date of entry:");
 		entrydate.setNillable(false);
-		entrydate
-				.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
+		entrydate.setDescription(
+				"The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		entrydate.setDateFormat("yyyy-MM-dd");
-		entrydate
-				.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		entrydate.setJqueryproperties(
+				"dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 		entrydate.setValue(new Date());
 		if (entryDate != null)
 		{
 			entrydate.setValue(entryDate);
 		}
-
+		// responsible researcher field
 		researcher = new StringInput("researcher");
 		researcher.setLabel("Responsible researcher:");
 		researcher.setNillable(true);
@@ -635,6 +662,16 @@ public class AddAnimalPlugin extends EasyPluginController
 		if (resResearcher != null)
 		{
 			researcher.setValue(resResearcher);
+		}
+		// IvD protocol number field
+		ivd = new StringInput("ivd");
+		ivd.setLabel("IvD protocol number");
+		ivd.setNillable(true);
+		ivd.setDescription("Give the IvD protocol number.");
+		ivd.setTooltip("Give the IvD protocol number.");
+		if (IvDNumber != null)
+		{
+			ivd.setValue(IvDNumber);
 		}
 
 		// Populate locations list
@@ -665,6 +702,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		containingPanel.add(birthdate);
 		containingPanel.add(entrydate);
 		containingPanel.add(researcher);
+		containingPanel.add(ivd);
 		containingPanel.add(location);
 		containingPanel.add(buttonPanel);
 	}
@@ -892,8 +930,8 @@ public class AddAnimalPlugin extends EasyPluginController
 																				// for
 																				// default
 																				// prefix
-		startnumber
-				.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
+		startnumber.setDescription(
+				"Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
 		startnumber.setReadonly(true);
 
 		numberofmales = new IntInput("numberofmales");

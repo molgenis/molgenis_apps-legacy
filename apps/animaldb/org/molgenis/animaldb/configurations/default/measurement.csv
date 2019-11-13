@@ -13,6 +13,9 @@ Father;TargetLink;individual;;false;xref;To link an animal to its father.
 Mother;TargetLink;individual;;false;xref;To link an animal to its mother.
 Group;TargetLink;panel;;false;xref;To add a target to a panel.
 Parentgroup;TargetLink;panel;Parentgroup;false;xref;To link a litter to a parent-group.
+FacilityEntryDate;Datetime;;;true;datetime;To set the date that a target's enters the facility. Determines counting startdate for yearly report.
+FacilityExitDate;Datetime;;;true;datetime;To set the date that a target's leaves the facility (Death or Alive). Determines counting startdate for yearly report.
+DateOfBirth;Datetime;;;true;datetime;To set a target's or a litter's date of birth.
 DateOfBirth;Datetime;;;true;datetime;To set a target's or a litter's date of birth.
 Size;Number;;;true;int;To set the size of a target-group, for instance a litter.
 WeanSize;Number;;;true;int;To set the wean size of a litter.
@@ -86,3 +89,5 @@ ResponsibleResearcher;String;;;false;string;To set the researcher responsible fo
 OldAnimalId;String;;;false;string;To store the AnimalId from the previous administration system on import into AnimalDB.
 OldLitterId;String;;;false;string;To store the LitterId from the previous administration system on import into AnimalDB.
 ImportTimestamp;TargetLink;panel;ImportTimestamp;false;xref;To mark and link animals that were imported in one batch via a timestamp.
+ChipNumber;String;;;false;string;To store the identification code of an implanted Chip/RFID.
+IvDNr;String;;;false;string;To register an animals IvD protocol number.

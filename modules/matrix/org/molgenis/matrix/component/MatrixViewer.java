@@ -148,6 +148,7 @@ public class MatrixViewer extends HtmlWidget
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
 	public String CLEARVALUEFILTERS = getName() + "_clearValueFilters";
 	public String REMOVEFILTER = getName() + "_removeFilter";
+	public String UPDATEFILTER = getName() + "_updateFilter";
 	public String RELOADMATRIX = getName() + "_reloadMatrix";
 	public String SELECTED = getName() + "_selected";
 	public String UPDATECOLHEADERFILTER = getName() + "_updateColHeaderFilter";
@@ -261,6 +262,15 @@ public class MatrixViewer extends HtmlWidget
 												// action, take the whole
 												// action, as the filter number
 												// is encoded therein
+				return;
+			}
+			else if (t.getAction().startsWith(UPDATEFILTER))
+			{
+				updateFilter(t.getAction(), db, t); // in case of a update
+													// filter
+				// action, take the whole
+				// action, as the filter number
+				// is encoded therein
 				return;
 			}
 			else if (t.getAction().equals(this.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION))
@@ -809,11 +819,7 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-
-		// String divContents = new Paragraph("filterRules",
-		// "<strong>Active filters</strong>:" + generateFilterRules())
-		// .render();
-		String divContents = "<div style=\"float:left; width=25%; padding:10px;\"><strong>Active filters</strong>: ";
+		String divContents = "<div style=\"float:left; width=50%; padding:10px;\"><strong>Active filters</strong>: ";
 
 		// show the actie filters and a quick option to add a new
 		// colValueProperty filter
@@ -832,8 +838,6 @@ public class MatrixViewer extends HtmlWidget
 		if (showfilterSaveOptions)
 		{
 			divContents += "<div id='saveFilterDiv' style='display:none;float:left;background-color: #D3D6FF;padding:5px;margin:5px;border-radius: 5px; border:1px solid #5B82A4;'>";
-			// divContents +=
-			// "<div id='closeSaveFilterDiv' style='float:right;clear:both;width:15px;padding:5px;' ><img id='close' onclick=\"document.getElementById('saveFilterDiv').style.display='none';\" src='res/img/exit.png' /></div>";
 			divContents += "<strong>Save active filters: </strong>";
 			List<String> test = new ArrayList<String>();
 			test.add("blaat");
@@ -994,7 +998,7 @@ public class MatrixViewer extends HtmlWidget
 				outStr += "<tr align=\"center\">" + generateFilterRule(filterCnt, mqr) + "</tr>";
 			}
 			System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
-			++filterCnt;
+			filterCnt++;
 		}
 		// add quickadd options for simple new colValueProperty filter
 		List<? extends Object> colHeaders = matrix.getColHeaders();
@@ -1008,7 +1012,6 @@ public class MatrixViewer extends HtmlWidget
 
 		outStr += "</tbody></table>";
 		// add the javascript code for the table
-		// outStr += "<script> $('#filterstable').dataTable(); </script>";
 		outStr += "<script>";
 		outStr += "jQuery('#filterstable').dataTable(";
 		outStr += "{\"bJQueryUI\": true, \"sDom\": 'Hrt',\"bSort\": false";
@@ -1021,6 +1024,8 @@ public class MatrixViewer extends HtmlWidget
 
 	private String generateFilterRule(int filterCnt, MatrixQueryRule mqr) throws MatrixException, DatabaseException
 	{
+		// obivious fault
+
 		String measurementName = findMeasurementName(mqr);
 		Object value = mqr.getValue();
 		try
@@ -1044,11 +1049,45 @@ public class MatrixViewer extends HtmlWidget
 		{
 			field = "." + mqr.getField();
 		}
-		String outStr = "<td>" + measurementName + field + "</td><td>" + mqr.getOperator().toString() + "</td><td>"
-				+ (value != null ? value.toString() + " " : "NULL ") + "</td>";
+		// create measurement input
+		List<Measurement> colHeaders = (List<Measurement>) matrix.getColHeaders();
+		SelectInput measInput = buildFilterChoices(colHeaders);
+		measInput.setId(COLID + "_" + filterCnt);
+		measInput.setName(COLID + "_" + filterCnt);
+
+		// iterate over the available colheaders to find the id of the right
+		// one.
+		for (Measurement each : colHeaders)
+		{
+			if (each.getName().equalsIgnoreCase(measurementName))
+			{
+				measInput.setValue(each.getId());
+			}
+		}
+
+		// create operator input
+		Operator op = mqr.getOperator();
+		SelectInput operatorInput = buildFilterOperator(d_selectedMeasurement);
+		operatorInput.setId(OPERATOR + "_" + filterCnt);
+		operatorInput.setName(OPERATOR + "_" + filterCnt);
+		operatorInput.setValue(op.name());
+		// operatorInput.isReadonly();
+
+		// create value input
+		StringInput valInput = new StringInput();
+		valInput.setId(COLVALUE + "_" + filterCnt);
+		valInput.setName(COLVALUE + "_" + filterCnt);
+		valInput.setValue(value != null ? value.toString() : "NULL ");
+
+		String outStr = "<td>" + measInput.render() + "</td><td>" + operatorInput.render() + "</td><td>"
+				+ valInput.render() + "</td>";
+		ActionInput updateButton = new ActionInput(UPDATEFILTER + "_" + filterCnt, "", "");
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
+		updateButton.setIcon("generated-res/img/update.gif");
 		removeButton.setIcon("generated-res/img/filter_funnel_remove_24x24.png");
-		outStr += "<td>" + removeButton.render() + "</td>";
+
+		outStr += "<td>" + updateButton.render() + " " + removeButton.render() + "</td>";
+
 		return outStr;
 	}
 
@@ -1101,6 +1140,17 @@ public class MatrixViewer extends HtmlWidget
 	{
 		int filterNr = Integer.parseInt(action.substring(action.lastIndexOf("_") + 1));
 		this.matrix.getRules().remove(filterNr);
+		matrix.reload();
+	}
+
+	public void updateFilter(String action, Database db, MolgenisRequest t) throws Exception
+	{
+
+		int filterNr = Integer.parseInt(action.substring(action.lastIndexOf("_") + 1));
+		this.matrix.getRules().remove(filterNr);
+
+		filterCol(db, t, true, filterNr);
+
 		matrix.reload();
 	}
 
@@ -1562,7 +1612,33 @@ public class MatrixViewer extends HtmlWidget
 
 	public void filterCol(Database db, MolgenisRequest t) throws Exception
 	{
-		if (t.get(COLVALUE) == null)
+		// Overload the function with default update = false / filterNr 0, in
+		// case of adding a new filter.
+		filterCol(db, t, false, 0);
+	}
+
+	public void filterCol(Database db, MolgenisRequest t, boolean update, int filterNr) throws Exception
+	{
+		Object filterVal;
+		int colId;
+
+		String operator;
+
+		if (update)
+		{
+			filterVal = t.get(COLVALUE + "_" + String.valueOf(filterNr));
+
+			colId = t.getInt(COLID + "_" + filterNr);
+			operator = t.getString(OPERATOR + "_" + String.valueOf(filterNr));
+		}
+		else
+		{
+			filterVal = t.get(COLVALUE);
+			colId = t.getInt(COLID);
+			operator = t.getString(OPERATOR);
+		}
+
+		if (filterVal == null)
 		{
 			this.callingScreenController.getModel().setMessages(
 					new ScreenMessage("The value field cannot be empty if you want to add a filter", false));
@@ -1572,7 +1648,7 @@ public class MatrixViewer extends HtmlWidget
 			if (matrix instanceof SliceablePhenoMatrixMV)
 			{
 				String valuePropertyToUse = ObservedValue.VALUE;
-				String protocolMeasurementIds = t.getString(COLID);
+				String protocolMeasurementIds = String.valueOf(colId);
 				String[] values = StringUtils.split(protocolMeasurementIds, ";");
 				int protocolId = Integer.parseInt(values[0]);
 				int measurementId = Integer.parseInt(values[1]);
@@ -1592,21 +1668,22 @@ public class MatrixViewer extends HtmlWidget
 					valuePropertyToUse = ObservedValue.RELATION_NAME;
 				}
 				// Find out operator to use
-				Operator op = Operator.valueOf(t.getString(OPERATOR));
-				// new Operator(t.getString(OPERATOR));
-				// Then do the actual slicing
-				matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+
+				Operator op = Operator.valueOf(operator);
+
+				matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, filterVal);
 
 			}
 			else
 			{
 				String valuePropertyToUse = ObservedValue.VALUE;
-				int measurementId = t.getInt(COLID);
+				int measurementId = colId;
 				if (measurementId == -1)
 				{ // Filter on name
 					matrix.getRules().add(
-							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, t
-									.get(COLVALUE)));
+							new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator
+									.valueOf(operator), filterVal));
+
 				}
 				else
 				{
@@ -1626,10 +1703,10 @@ public class MatrixViewer extends HtmlWidget
 						valuePropertyToUse = ObservedValue.RELATION_NAME;
 					}
 					// Find out operator to use
-					Operator op = Operator.valueOf(t.getString(OPERATOR));
-					// new Operator(t.getString(OPERATOR));
+					// Operator op = Operator.valueOf(t.getString(OPERATOR));
+					Operator op = Operator.valueOf(operator);
 					// Then do the actual slicing
-					matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.get(COLVALUE));
+					matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, filterVal);
 				}
 			}
 			matrix.reload(); // to make sure the paging info is correctly

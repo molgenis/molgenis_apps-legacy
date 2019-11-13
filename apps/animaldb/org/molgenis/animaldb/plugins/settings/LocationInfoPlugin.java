@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.animaldb.convertors.locations.ImportAteLocations;
+import org.molgenis.animaldb.convertors.locations.ImportLocations;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -125,7 +125,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			if (action.equals("importLocations"))
 			{
 				String fileName = request.getString("csv");
-				ImportAteLocations importer = new ImportAteLocations(db, this.getLogin());
+				ImportLocations importer = new ImportLocations(db, this.getLogin());
 				importer.doImport(fileName);
 				this.setSuccess("Locations successfully imported");
 			}
